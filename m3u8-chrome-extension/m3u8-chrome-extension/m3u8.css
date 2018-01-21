@@ -1,0 +1,45 @@
+.right {
+    text-align: right;
+}
+
+.bodydef {
+    font-family: verdana;
+}
+
+div.content {
+    min-width: 200px;
+    /*width: 550px;*/
+    /*text-align: center;*/
+}
+table.content {
+    width: 100%;
+    overflow: hidden;
+    /*max-width: 550px;*/
+    font-size: 10px;
+}
+td.content {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    /*max-width: 550px;*/
+}
+h5.found {
+    text-align: left;
+    margin: 3px 0 3px 7px;
+    color: forestgreen;
+}
+h5.not-found {
+    color: maroon;
+    white-space: nowrap;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+a {
+    outline: none;
+    text-decoration: none;
+    color: dimgrey;    
+}
+    a:hover {
+        text-decoration: underline;
+        color: black;
+    }

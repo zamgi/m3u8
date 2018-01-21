@@ -1,0 +1,51 @@
+{
+  // Extension ID: knldjmfmopnpolahpmmgbagdohdnhkik
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDcBHwzDvyBQ6bDppkIs9MP4ksKqCMyXQ/A52JivHZKh4YO/9vJsT3oaYhSpDCE9RPocOEQvwsHsFReW2nUEc6OLLyoCFFxIb7KkLGsmfakkut/fFdNJYh0xOTbSN8YvLWcqph09XAY2Y/f0AL7vfO1cuCqtkMt8hFrBGWxDdf9CQIDAQAB",
+
+  "manifest_version": 2,
+
+  "name": "m3u8 file downloader",
+  "description": "m3u8 file downloader chrome extension.",
+  "version": "1.0",
+  "offline_enabled": true,
+  "icons": {
+    "32": "m3u8.png",
+    "128": "m3u8_148.png"
+  },
+  "options_ui": {
+    "chrome_style": true,
+    "page": "m3u8_options.html"
+  },
+  "browser_action": {
+    "default_icon": "m3u8.png",
+    "default_popup": "m3u8.html"
+  },
+
+  "permissions": [
+    "http://*/*",
+    "https://*/*",
+    "tabs",
+    "webRequest",
+    "background",
+    "nativeMessaging"
+    //,"downloads"
+    //,"downloads.shelf"
+    //"downloads.open"
+  ],
+
+  "background": {
+    "page": "background.html"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "script_in_content.js"
+      ]
+    }
+  ]
+}
