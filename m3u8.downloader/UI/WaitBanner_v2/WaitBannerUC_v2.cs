@@ -9,7 +9,7 @@ namespace m3u8.downloader.ui
     /// <summary>
     /// 
     /// </summary>
-    public partial class WaitBannerUC_v2 : UserControl, IWaitBannerMarker
+    internal sealed partial class WaitBannerUC_v2 : UserControl, IWaitBannerMarker
     {
         private const string CAPTION_TEXT = "...executing...";
 

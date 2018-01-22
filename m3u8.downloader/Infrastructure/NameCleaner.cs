@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Text;
-using m3u8.Properties;
 
 namespace m3u8.downloader
 {

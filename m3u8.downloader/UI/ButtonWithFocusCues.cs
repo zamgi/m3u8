@@ -3,7 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
-    internal class ButtonWithFocusCues : Button
+    internal sealed class ButtonWithFocusCues : Button
     {
         protected override bool ShowFocusCues
         {

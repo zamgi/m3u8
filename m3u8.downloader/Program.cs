@@ -80,6 +80,10 @@ namespace m3u8.downloader
         [STAThread]
         private static void Main( string[] args )
         {
+            Application.ThreadException                += Application_ThreadException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            Application.SetUnhandledExceptionMode( UnhandledExceptionMode.Automatic, true );
+
             #region [.parse if opened from 'chrome-extension'.]
             var m3u8FileUrl = default(string);
             if ( args.Any( a => a.StartsWith( "chrome-extension://", StringComparison.InvariantCultureIgnoreCase ) ) )
@@ -92,33 +96,9 @@ namespace m3u8.downloader
                     {
                         m3u8FileUrl = p.Value.m3u8FileUrl;
                     }
-
-                    #region comm. manual.
-                    /*
-                    var i_colon = text.IndexOf( ':' );
-                    if ( i_colon != -1 )
-                    {
-                        var i_quote_start = text.IndexOf( '"', i_colon + 1 );
-                        var i_quote_end   = text.LastIndexOf( '"' );
-
-                        if ( i_quote_start != -1 && i_quote_end != -1 )
-                        {
-                            m3u8FileUrl = text.Substring( i_quote_start + 1, i_quote_end - i_quote_start - 1 );
-
-                            //MessageBox.Show( $"m3u8_url: '{m3u8FileUrl}'" );
-                        }
-                    }
-                    else
-                    {
-                        //MessageBox.Show( $"length={text.Length}, '{text}'" );
-                    }
-                    */ 
-                    #endregion
                 }
             }
             #endregion
-
-//---NameCleaner.Clean( "video--hls--2018-01-13--8_Jigsaw.2O17.D.WEB-DL.1O8Op_720--playlist.m3u8" );
 
             #region [.check for upgrade user-settings for new version.]
             // Copy user settings from previous application version if necessary
@@ -129,10 +109,6 @@ namespace m3u8.downloader
                 Settings.Default.Save();
             }
             #endregion
-
-            Application.ThreadException                += Application_ThreadException;
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            Application.SetUnhandledExceptionMode( UnhandledExceptionMode.Automatic, true );
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
