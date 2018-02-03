@@ -11,7 +11,7 @@ function render_m3u8_urls(m3u8_urls) {
     var content = document.getElementById('content');
 
     if (!m3u8_urls || !m3u8_urls.length) {
-        content.innerHTML = '<h5 class="not-found">m3u8 ulrs not found on this page</h5>';
+        content.innerHTML = '<h5 class="not-found">m3u8 requests no were made from this page</h5>';
         return;
     }
     
@@ -20,7 +20,7 @@ function render_m3u8_urls(m3u8_urls) {
         var m3u8_url = m3u8_urls[i];
         trs.push('<tr><td class="content" title="' + m3u8_url + '"><a href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>' );
     }
-    content.innerHTML = '<h5 class="found">m3u8 ulrs: ' + m3u8_urls.length + '</h5>' +
+    content.innerHTML = '<h5 class="found">m3u8 urls: ' + m3u8_urls.length + '</h5>' +
                         '<table class="content">' + trs.join('') + '</table>';
 
     var aa = content.querySelectorAll('a');
