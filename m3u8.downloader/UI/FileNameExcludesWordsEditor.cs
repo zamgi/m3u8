@@ -32,16 +32,19 @@ namespace m3u8
 
         protected override bool ProcessCmdKey( ref Message msg, Keys keyData )
         {
-            switch ( keyData )
+            if ( !DGV.IsCurrentCellInEditMode )
             {
-                case Keys.Escape:
-                    this.Close();
-                    return (true);
+                switch ( keyData )
+                {
+                    case Keys.Escape:
+                        this.Close();
+                        return (true);
 
-                case Keys.Enter:
-                    DialogResult = DialogResult.OK;
-                    this.Close();
-                    return (true);
+                    case Keys.Enter:
+                        DialogResult = DialogResult.OK;
+                        this.Close();
+                        return (true);
+                }
             }
             return (base.ProcessCmdKey( ref msg, keyData ));
         }
@@ -74,26 +77,19 @@ namespace m3u8
         }
 
 
-        public string[] FileNameExcludesWords
+        public string[] GetFileNameExcludesWords()
         {
-            get
+            var data = new string[ DGV.RowCount - 1 ];
+            var rows = DGV.Rows;
+            for ( int i = DGV.RowCount - 1, j = 0; 0 <= i; i--  )
             {
-                var data = new string[ DGV.RowCount - 1 ];
-                var rows = DGV.Rows;
-                for ( int i = DGV.RowCount - 1, j = 0; 0 <= i; i--  )
+                var row = rows[ i ];
+                if ( !row.IsNewRow )
                 {
-                    var row = rows[ i ];
-                    if ( !row.IsNewRow )
-                    {
-                        data[ j++ ] = row.Cells[ 0 ].Value?.ToString();
-                    }
+                    data[ j++ ] = row.Cells[ 0 ].Value?.ToString();
                 }
-                return (data);
-
-                //return (_ExcludesWords.ToArray());
-
-                //return (new[] { "video", "hls", "WEB", "DL", "1O8Op", "720", "playlist", "m3u8" });
             }
+            return (data);
         }
     }
 }

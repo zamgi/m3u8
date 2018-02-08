@@ -184,7 +184,7 @@ namespace m3u8.downloader
         {
             outputFileNameTextBox_Text = null;
 
-            m3u8FileUrlTextBox.Focus();
+            outputFileNameTextBox.Focus(); // m3u8FileUrlTextBox.Focus();
         }
 
 
@@ -208,7 +208,7 @@ namespace m3u8.downloader
             {
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
-                    NameCleaner.ResetExcludesWords( f.FileNameExcludesWords );
+                    NameCleaner.ResetExcludesWords( f.GetFileNameExcludesWords() );
 
                     if ( Settings.Default.NameCleanerExcludesWords == null )
                     {

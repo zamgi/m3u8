@@ -21,7 +21,6 @@
         }
 
         #region Windows Form Designer generated code
-
         /// <summary>
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
@@ -40,7 +39,7 @@
             // 
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(155, 399);
+            this.cancelButton.Location = new System.Drawing.Point(156, 410);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 5;
@@ -51,7 +50,7 @@
             // 
             this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.okButton.Location = new System.Drawing.Point(74, 399);
+            this.okButton.Location = new System.Drawing.Point(75, 410);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 4;
@@ -75,10 +74,10 @@
             this.DGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DGV_excludesWordsColumn});
-            this.DGV.Location = new System.Drawing.Point(13, 13);
+            this.DGV.Location = new System.Drawing.Point(3, 3);
             this.DGV.Name = "DGV";
             this.DGV.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            this.DGV.Size = new System.Drawing.Size(282, 380);
+            this.DGV.Size = new System.Drawing.Size(302, 403);
             this.DGV.TabIndex = 6;
             this.DGV.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DGV_CellPainting);
             this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
@@ -105,9 +104,7 @@
             this.Text = "file name excludes words editor";
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).EndInit();
             this.ResumeLayout(false);
-
         }
-
         #endregion
 
         private System.Windows.Forms.Button cancelButton;
