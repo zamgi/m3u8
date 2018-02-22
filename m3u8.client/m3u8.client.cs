@@ -767,9 +767,9 @@ namespace m3u8
 
             public string OutputFileName { get; internal set; }
 
-            public int PartsSuccessCount { get; internal set; }
-            public int PartsErrorCount   { get; internal set; }
-            public int TotalBytes        { get; internal set; }
+            public int   PartsSuccessCount { get; internal set; }
+            public int   PartsErrorCount   { get; internal set; }
+            public ulong TotalBytes        { get; internal set; }
 
             public int TotalParts => (PartsSuccessCount + PartsErrorCount);
         }
@@ -804,7 +804,7 @@ namespace m3u8
                     fs.Write( bytes, 0, bytes.Length );
 
                     res.PartsSuccessCount++;
-                    res.TotalBytes += bytes.Length;
+                    res.TotalBytes += (uint) bytes.Length;
                 }
             }
 

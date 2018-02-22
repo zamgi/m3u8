@@ -426,7 +426,7 @@ namespace m3u8.downloader
                             m3u8FileResultTextBox.AppendText( $"\r\n downloaded & writed parts {res.PartsSuccessCount} of {res.TotalParts}\r\n" );
                             m3u8FileResultTextBox.AppendText( $" elapsed: {sw.Elapsed}\r\n" );
                             m3u8FileResultTextBox.AppendText( $" file: '{res.OutputFileName}'\r\n" );
-                            m3u8FileResultTextBox.AppendText( $" size: {(res.TotalBytes >> 20).ToString( "0,0" )} mb" );
+                            m3u8FileResultTextBox.AppendText( $" size: {(res.TotalBytes >> 20).ToString("0,0")} mb" );
 
                             success = true;                            
                         }
