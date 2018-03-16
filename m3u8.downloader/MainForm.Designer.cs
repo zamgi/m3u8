@@ -39,6 +39,8 @@
             this.outputFileNameClearButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.endStepActionLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.autoCloseApplicationWhenEndsDownloadLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.autoMinimizeWindowWhenStartsDownloadLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.excludesWordsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.maxDegreeOfParallelismLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.m3u8FileWholeLoadAndSaveButton = new System.Windows.Forms.ButtonWithFocusCues();
@@ -96,7 +98,7 @@
             // 
             this.outputFileNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.outputFileNameTextBox.Location = new System.Drawing.Point(444, 90);
+            this.outputFileNameTextBox.Location = new System.Drawing.Point(446, 90);
             this.outputFileNameTextBox.Name = "outputFileNameTextBox";
             this.outputFileNameTextBox.Size = new System.Drawing.Size(549, 20);
             this.outputFileNameTextBox.TabIndex = 4;
@@ -116,9 +118,9 @@
             // 
             this.outputFileNameClearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.outputFileNameClearButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.outputFileNameClearButton.Location = new System.Drawing.Point(995, 90);
+            this.outputFileNameClearButton.Location = new System.Drawing.Point(997, 90);
             this.outputFileNameClearButton.Name = "outputFileNameClearButton";
-            this.outputFileNameClearButton.Size = new System.Drawing.Size(20, 20);
+            this.outputFileNameClearButton.Size = new System.Drawing.Size(18, 20);
             this.outputFileNameClearButton.TabIndex = 5;
             this.outputFileNameClearButton.Text = "X";
             this.toolTip.SetToolTip(this.outputFileNameClearButton, "clear \'output file name\'");
@@ -129,10 +131,13 @@
             // 
             this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.endStepActionLabel,
+            this.autoCloseApplicationWhenEndsDownloadLabel,
+            this.autoMinimizeWindowWhenStartsDownloadLabel,
             this.excludesWordsLabel,
             this.maxDegreeOfParallelismLabel});
             this.statusBar.Location = new System.Drawing.Point(0, 557);
             this.statusBar.Name = "statusBar";
+            this.statusBar.ShowItemToolTips = true;
             this.statusBar.Size = new System.Drawing.Size(1015, 22);
             this.statusBar.TabIndex = 7;
             // 
@@ -140,9 +145,31 @@
             // 
             this.endStepActionLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.endStepActionLabel.Name = "endStepActionLabel";
-            this.endStepActionLabel.Size = new System.Drawing.Size(810, 17);
+            this.endStepActionLabel.Size = new System.Drawing.Size(591, 17);
             this.endStepActionLabel.Spring = true;
             this.endStepActionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // autoCloseApplicationWhenEndsDownloadLabel
+            // 
+            this.autoCloseApplicationWhenEndsDownloadLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.autoCloseApplicationWhenEndsDownloadLabel.Name = "autoCloseApplicationWhenEndsDownloadLabel";
+            this.autoCloseApplicationWhenEndsDownloadLabel.Size = new System.Drawing.Size(60, 17);
+            this.autoCloseApplicationWhenEndsDownloadLabel.Text = "auto close";
+            this.autoCloseApplicationWhenEndsDownloadLabel.ToolTipText = "auto close application when ends download";
+            this.autoCloseApplicationWhenEndsDownloadLabel.Click += new System.EventHandler(this.autoCloseApplicationWhenEndsDownloadLabel_Click);
+            this.autoCloseApplicationWhenEndsDownloadLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
+            this.autoCloseApplicationWhenEndsDownloadLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
+            // 
+            // autoMinimizeWindowWhenStartsDownloadLabel
+            // 
+            this.autoMinimizeWindowWhenStartsDownloadLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.autoMinimizeWindowWhenStartsDownloadLabel.Name = "autoMinimizeWindowWhenStartsDownloadLabel";
+            this.autoMinimizeWindowWhenStartsDownloadLabel.Size = new System.Drawing.Size(75, 17);
+            this.autoMinimizeWindowWhenStartsDownloadLabel.Text = "auto minimize";
+            this.autoMinimizeWindowWhenStartsDownloadLabel.ToolTipText = "auto minimize window when starts download";
+            this.autoMinimizeWindowWhenStartsDownloadLabel.Click += new System.EventHandler(this.autoMinimizeWindowWhenStartsDownloadLabel_Click);
+            this.autoMinimizeWindowWhenStartsDownloadLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
+            this.autoMinimizeWindowWhenStartsDownloadLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
             // 
             // excludesWordsLabel
             // 
@@ -153,8 +180,8 @@
             this.excludesWordsLabel.Text = "file name excludes words editor...";
             this.excludesWordsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.excludesWordsLabel.Click += new System.EventHandler(this.excludesWordsLabel_Click);
-            this.excludesWordsLabel.MouseLeave += new System.EventHandler(this.maxDegreeOfParallelismLabel_MouseLeave);
-            this.excludesWordsLabel.MouseHover += new System.EventHandler(this.maxDegreeOfParallelismLabel_MouseHover);
+            this.excludesWordsLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
+            this.excludesWordsLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
             // 
             // maxDegreeOfParallelismLabel
             // 
@@ -165,8 +192,8 @@
             this.maxDegreeOfParallelismLabel.Text = "?";
             this.maxDegreeOfParallelismLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.maxDegreeOfParallelismLabel.Click += new System.EventHandler(this.maxDegreeOfParallelismLabel_Click);
-            this.maxDegreeOfParallelismLabel.MouseLeave += new System.EventHandler(this.maxDegreeOfParallelismLabel_MouseLeave);
-            this.maxDegreeOfParallelismLabel.MouseHover += new System.EventHandler(this.maxDegreeOfParallelismLabel_MouseHover);
+            this.maxDegreeOfParallelismLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
+            this.maxDegreeOfParallelismLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
             // 
             // m3u8FileWholeLoadAndSaveButton
             // 
@@ -205,9 +232,9 @@
             this.Controls.Add(this.m3u8FileTextContentLoadButton);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.l2);
+            this.Icon = global::m3u8.Properties.Resources.m3u8_32x36;
             this.KeyPreview = true;
             this.Name = "MainForm";
-            this.Icon = m3u8.Properties.Resources.m3u8_32x36;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = ".m3u8 file downloader";
             this.panel1.ResumeLayout(false);
@@ -234,6 +261,8 @@
         private System.Windows.Forms.ToolStripStatusLabel maxDegreeOfParallelismLabel;
         private System.Windows.Forms.ToolStripStatusLabel endStepActionLabel;
         private System.Windows.Forms.ToolStripStatusLabel excludesWordsLabel;
+        private System.Windows.Forms.ToolStripStatusLabel autoMinimizeWindowWhenStartsDownloadLabel;
+        private System.Windows.Forms.ToolStripStatusLabel autoCloseApplicationWhenEndsDownloadLabel;
     }
 }
 

@@ -63,6 +63,16 @@ namespace m3u8.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon check_16 {
+            get {
+                object obj = ResourceManager.GetObject("check_16", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon i1 {
             get {
                 object obj = ResourceManager.GetObject("i1", resourceCulture);
@@ -146,6 +156,16 @@ namespace m3u8.Properties {
         internal static System.Drawing.Icon m3u8_32x36 {
             get {
                 object obj = ResourceManager.GetObject("m3u8_32x36", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon uncheck_16 {
+            get {
+                object obj = ResourceManager.GetObject("uncheck_16", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

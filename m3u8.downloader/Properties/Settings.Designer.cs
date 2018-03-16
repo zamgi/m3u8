@@ -12,7 +12,7 @@ namespace m3u8.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -20,17 +20,6 @@ namespace m3u8.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        public global::System.Collections.Specialized.StringCollection NameCleanerExcludesWords {
-            get {
-                return ((global::System.Collections.Specialized.StringCollection)(this["NameCleanerExcludesWords"]));
-            }
-            set {
-                this["NameCleanerExcludesWords"] = value;
             }
         }
         
@@ -48,6 +37,41 @@ namespace m3u8.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("E:\\")]
+        public string OutputFileDirectory {
+            get {
+                return ((string)(this["OutputFileDirectory"]));
+            }
+            set {
+                this["OutputFileDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(".avi")]
+        public string OutputFileExtension {
+            get {
+                return ((string)(this["OutputFileExtension"]));
+            }
+            set {
+                this["OutputFileExtension"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection NameCleanerExcludesWords {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["NameCleanerExcludesWords"]));
+            }
+            set {
+                this["NameCleanerExcludesWords"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("32")]
         public int MaxDegreeOfParallelism {
             get {
@@ -55,6 +79,30 @@ namespace m3u8.Properties {
             }
             set {
                 this["MaxDegreeOfParallelism"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoMinimizeWindowWhenStartsDownload {
+            get {
+                return ((bool)(this["AutoMinimizeWindowWhenStartsDownload"]));
+            }
+            set {
+                this["AutoMinimizeWindowWhenStartsDownload"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoCloseApplicationWhenEndsDownload {
+            get {
+                return ((bool)(this["AutoCloseApplicationWhenEndsDownload"]));
+            }
+            set {
+                this["AutoCloseApplicationWhenEndsDownload"] = value;
             }
         }
     }

@@ -125,9 +125,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\uncheck.16.ico" />
     <None Include="Resources\m3u8.png" />
     <None Include="Resources\m3u8_148x166.ico" />
     <None Include="Resources\m3u8_32x36.ico" />
+    <Content Include="Resources\check.16.ico" />
     <Content Include="Resources\m3u.jpg" />
     <Content Include="Resources\roller\i1.ico" />
     <Content Include="Resources\roller\i2.ico" />
