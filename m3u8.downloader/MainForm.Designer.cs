@@ -45,9 +45,11 @@
             this.m3u8FileWholeLoadAndSaveButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.m3u8FileTextContentLoadButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.m3u8FileResultTextBoxPanel = new System.Windows.Forms.Panel();
             this.topPanel.SuspendLayout();
             this.statusBar.SuspendLayout();
             this.mainLayoutPanel.SuspendLayout();
+            this.m3u8FileResultTextBoxPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // l1
@@ -85,23 +87,20 @@
             // 
             // m3u8FileResultTextBox
             // 
-            this.m3u8FileResultTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mainLayoutPanel.SetColumnSpan(this.m3u8FileResultTextBox, 5);
-            this.m3u8FileResultTextBox.Location = new System.Drawing.Point(3, 33);
+            this.m3u8FileResultTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m3u8FileResultTextBox.Location = new System.Drawing.Point(6, 0);
             this.m3u8FileResultTextBox.Multiline = true;
             this.m3u8FileResultTextBox.Name = "m3u8FileResultTextBox";
             this.m3u8FileResultTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.m3u8FileResultTextBox.Size = new System.Drawing.Size(1009, 440);
+            this.m3u8FileResultTextBox.Size = new System.Drawing.Size(1006, 446);
             this.m3u8FileResultTextBox.TabIndex = 5;
             // 
             // outputFileNameTextBox
             // 
             this.outputFileNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.outputFileNameTextBox.Location = new System.Drawing.Point(424, 5);
+            this.outputFileNameTextBox.Location = new System.Drawing.Point(427, 5);
             this.outputFileNameTextBox.Name = "outputFileNameTextBox";
-            this.outputFileNameTextBox.Size = new System.Drawing.Size(563, 20);
+            this.outputFileNameTextBox.Size = new System.Drawing.Size(560, 20);
             this.outputFileNameTextBox.TabIndex = 3;
             // 
             // l2
@@ -109,7 +108,7 @@
             this.l2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.l2.AutoSize = true;
             this.l2.ForeColor = System.Drawing.Color.SteelBlue;
-            this.l2.Location = new System.Drawing.Point(363, 2);
+            this.l2.Location = new System.Drawing.Point(366, 2);
             this.l2.Name = "l2";
             this.l2.Size = new System.Drawing.Size(55, 26);
             this.l2.TabIndex = 2;
@@ -202,7 +201,7 @@
             this.m3u8FileWholeLoadAndSaveButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.m3u8FileWholeLoadAndSaveButton.AutoSize = true;
             this.m3u8FileWholeLoadAndSaveButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.m3u8FileWholeLoadAndSaveButton.Location = new System.Drawing.Point(183, 3);
+            this.m3u8FileWholeLoadAndSaveButton.Location = new System.Drawing.Point(186, 3);
             this.m3u8FileWholeLoadAndSaveButton.Name = "m3u8FileWholeLoadAndSaveButton";
             this.m3u8FileWholeLoadAndSaveButton.Size = new System.Drawing.Size(165, 23);
             this.m3u8FileWholeLoadAndSaveButton.TabIndex = 1;
@@ -215,9 +214,9 @@
             this.m3u8FileTextContentLoadButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.m3u8FileTextContentLoadButton.AutoSize = true;
             this.m3u8FileTextContentLoadButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.m3u8FileTextContentLoadButton.Location = new System.Drawing.Point(3, 3);
+            this.m3u8FileTextContentLoadButton.Location = new System.Drawing.Point(6, 3);
             this.m3u8FileTextContentLoadButton.Name = "m3u8FileTextContentLoadButton";
-            this.m3u8FileTextContentLoadButton.Size = new System.Drawing.Size(153, 23);
+            this.m3u8FileTextContentLoadButton.Size = new System.Drawing.Size(156, 23);
             this.m3u8FileTextContentLoadButton.TabIndex = 0;
             this.m3u8FileTextContentLoadButton.Text = "load .m3u8 file text-content...";
             this.m3u8FileTextContentLoadButton.UseVisualStyleBackColor = true;
@@ -234,23 +233,33 @@
             this.mainLayoutPanel.Controls.Add(this.outputFileNameTextBox, 3, 0);
             this.mainLayoutPanel.Controls.Add(this.l2, 2, 0);
             this.mainLayoutPanel.Controls.Add(this.outputFileNameClearButton, 4, 0);
-            this.mainLayoutPanel.Controls.Add(this.m3u8FileResultTextBox, 0, 1);
             this.mainLayoutPanel.Controls.Add(this.m3u8FileWholeLoadAndSaveButton, 1, 0);
             this.mainLayoutPanel.Controls.Add(this.m3u8FileTextContentLoadButton, 0, 0);
-            this.mainLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.mainLayoutPanel.Location = new System.Drawing.Point(0, 81);
             this.mainLayoutPanel.Name = "mainLayoutPanel";
-            this.mainLayoutPanel.RowCount = 2;
+            this.mainLayoutPanel.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.mainLayoutPanel.RowCount = 1;
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.mainLayoutPanel.Size = new System.Drawing.Size(1015, 476);
+            this.mainLayoutPanel.Size = new System.Drawing.Size(1015, 30);
             this.mainLayoutPanel.TabIndex = 1;
+            // 
+            // m3u8FileResultTextBoxPanel
+            // 
+            this.m3u8FileResultTextBoxPanel.Controls.Add(this.m3u8FileResultTextBox);
+            this.m3u8FileResultTextBoxPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m3u8FileResultTextBoxPanel.Location = new System.Drawing.Point(0, 111);
+            this.m3u8FileResultTextBoxPanel.Name = "m3u8FileResultTextBoxPanel";
+            this.m3u8FileResultTextBoxPanel.Padding = new System.Windows.Forms.Padding(6, 0, 3, 0);
+            this.m3u8FileResultTextBoxPanel.Size = new System.Drawing.Size(1015, 446);
+            this.m3u8FileResultTextBoxPanel.TabIndex = 2;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1015, 579);
+            this.Controls.Add(this.m3u8FileResultTextBoxPanel);
             this.Controls.Add(this.mainLayoutPanel);
             this.Controls.Add(this.statusBar);
             this.Controls.Add(this.topPanel);
@@ -265,8 +274,11 @@
             this.statusBar.PerformLayout();
             this.mainLayoutPanel.ResumeLayout(false);
             this.mainLayoutPanel.PerformLayout();
+            this.m3u8FileResultTextBoxPanel.ResumeLayout(false);
+            this.m3u8FileResultTextBoxPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
         #endregion
 
@@ -287,5 +299,6 @@
         private System.Windows.Forms.ToolStripStatusLabel autoMinimizeWindowWhenStartsDownloadLabel;
         private System.Windows.Forms.ToolStripStatusLabel autoCloseApplicationWhenEndsDownloadLabel;
         private System.Windows.Forms.TableLayoutPanel mainLayoutPanel;
+        private System.Windows.Forms.Panel m3u8FileResultTextBoxPanel;
     }
 }
