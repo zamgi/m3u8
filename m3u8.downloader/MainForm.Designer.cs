@@ -278,7 +278,6 @@
             this.m3u8FileResultTextBoxPanel.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
         #endregion
 

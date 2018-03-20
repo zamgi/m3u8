@@ -489,6 +489,7 @@ namespace m3u8
                                     {
                                         ep.SuccessReceivedPartCount = Interlocked.Increment( ref successReceivedPartCount );
                                         ep.FailedReceivedPartCount  = failedReceivedPartCount;
+                                        ep.BytesLength              = downloadPart.Bytes.Length;
                                     }
                                     ip.progressStepAction?.Invoke( ep );
 
@@ -619,9 +620,10 @@ namespace m3u8
                 TotalPartCount = totalPartCount;
             }
 
-            public int TotalPartCount           { get; private set; }
+            public int TotalPartCount           { get; private  set; }
             public int SuccessReceivedPartCount { get; internal set; }
             public int FailedReceivedPartCount  { get; internal set; }
+            public int BytesLength              { get; internal set; }
         }
         /// <summary>
         /// 
