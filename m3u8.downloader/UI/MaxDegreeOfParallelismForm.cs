@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace m3u8
+namespace m3u8.downloader
 {
     /// <summary>
     /// 

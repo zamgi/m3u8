@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
-using m3u8.downloader.ui;
-
 namespace m3u8.downloader
 {
     /// <summary>

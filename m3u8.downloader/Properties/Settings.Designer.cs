@@ -61,6 +61,44 @@ namespace m3u8.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
+<ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
+  <string>1080</string>
+  <string>1080p</string>
+  <string>1O8O</string>
+  <string>1O8Op</string>
+  <string>360</string>
+  <string>480</string>
+  <string>720</string>
+  <string>720p</string>
+  <string>baibako</string>
+  <string>cb</string>
+  <string>coldfilm</string>
+  <string>content</string>
+  <string>DL</string>
+  <string>eng</string>
+  <string>films</string>
+  <string>hd1080p</string>
+  <string>hdtvrip</string>
+  <string>hls</string>
+  <string>index</string>
+  <string>ivs</string>
+  <string>lostfilm</string>
+  <string>m3u8</string>
+  <string>manifest</string>
+  <string>mp4</string>
+  <string>playlist</string>
+  <string>rus</string>
+  <string>sec</string>
+  <string>stream</string>
+  <string>track</string>
+  <string>tracks</string>
+  <string>tv</string>
+  <string>video</string>
+  <string>WEB</string>
+  <string>webdl</string>
+  <string>webrip</string>
+</ArrayOfString>")]
         public global::System.Collections.Specialized.StringCollection NameCleanerExcludesWords {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["NameCleanerExcludesWords"]));

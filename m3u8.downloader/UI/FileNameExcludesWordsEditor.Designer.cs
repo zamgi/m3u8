@@ -1,4 +1,4 @@
-﻿namespace m3u8
+﻿namespace m3u8.downloader
 {
     partial class FileNameExcludesWordsEditor
     {
@@ -32,6 +32,9 @@
             this.okButton = new System.Windows.Forms.Button();
             this.DGV = new System.Windows.Forms.DataGridView();
             this.DGV_excludesWordsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.l1 = new System.Windows.Forms.Label();
+            this.filterTextBox = new System.Windows.Forms.TextBox();
+            this.clearFilterButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -74,11 +77,11 @@
             this.DGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DGV_excludesWordsColumn});
-            this.DGV.Location = new System.Drawing.Point(3, 3);
+            this.DGV.Location = new System.Drawing.Point(3, 22);
             this.DGV.Name = "DGV";
             this.DGV.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
-            this.DGV.Size = new System.Drawing.Size(302, 403);
-            this.DGV.TabIndex = 6;
+            this.DGV.Size = new System.Drawing.Size(302, 384);
+            this.DGV.TabIndex = 0;
             this.DGV.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DGV_CellPainting);
             this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
             // 
@@ -88,11 +91,47 @@
             this.DGV_excludesWordsColumn.Name = "DGV_excludesWordsColumn";
             this.DGV_excludesWordsColumn.Width = 210;
             // 
+            // l1
+            // 
+            this.l1.AutoSize = true;
+            this.l1.Location = new System.Drawing.Point(12, 3);
+            this.l1.Name = "l1";
+            this.l1.Size = new System.Drawing.Size(29, 13);
+            this.l1.TabIndex = 1;
+            this.l1.Text = "filter:";
+            // 
+            // filterTextBox
+            // 
+            this.filterTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.filterTextBox.Location = new System.Drawing.Point(45, 1);
+            this.filterTextBox.Name = "filterTextBox";
+            this.filterTextBox.Size = new System.Drawing.Size(186, 20);
+            this.filterTextBox.TabIndex = 2;
+            this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
+            // 
+            // clearFilterButton
+            // 
+            this.clearFilterButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.clearFilterButton.Enabled = false;
+            this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.clearFilterButton.Location = new System.Drawing.Point(230, 1);
+            this.clearFilterButton.Name = "clearFilterButton";
+            this.clearFilterButton.Size = new System.Drawing.Size(16, 20);
+            this.clearFilterButton.TabIndex = 3;
+            this.clearFilterButton.Text = "x";
+            this.clearFilterButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.clearFilterButton.UseCompatibleTextRendering = true;
+            this.clearFilterButton.UseVisualStyleBackColor = true;
+            this.clearFilterButton.Click += new System.EventHandler(this.clearFilterButton_Click);
+            // 
             // FileNameExcludesWordsEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(307, 434);
+            this.Controls.Add(this.clearFilterButton);
+            this.Controls.Add(this.filterTextBox);
+            this.Controls.Add(this.l1);
             this.Controls.Add(this.DGV);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
@@ -104,6 +143,7 @@
             this.Text = "file name excludes words editor";
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
         }
         #endregion
 
@@ -111,5 +151,8 @@
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.DataGridView DGV;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_excludesWordsColumn;
+        private System.Windows.Forms.Label l1;
+        private System.Windows.Forms.TextBox filterTextBox;
+        private System.Windows.Forms.Button clearFilterButton;
     }
 }

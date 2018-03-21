@@ -1,4 +1,4 @@
-﻿namespace m3u8.downloader.ui
+﻿namespace m3u8.downloader
 {
     partial class WaitBannerUC_v2
     {

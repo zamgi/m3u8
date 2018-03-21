@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Windows.Forms;
 
 namespace m3u8.downloader
 {
@@ -65,6 +67,11 @@ namespace m3u8.downloader
             {
                 Debug.WriteLine( ex );
             }
+        }
+
+        public static void SetDoubleBuffered( this Control control, bool value )
+        {
+            typeof(Control).GetProperty( "DoubleBuffered", BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance )?.SetValue( control, value );
         }
     }
 }

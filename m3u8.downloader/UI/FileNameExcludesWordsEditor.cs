@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace m3u8
+namespace m3u8.downloader
 {
     /// <summary>
     /// 
@@ -90,6 +91,58 @@ namespace m3u8
                 }
             }
             return (data);
+        }
+
+        private void clearFilterButton_Click( object sender, EventArgs e )
+        {
+            filterTextBox.Text = null;
+        }
+        private string _LastFilterText;
+        private async void filterTextBox_TextChanged( object sender, EventArgs e )
+        {
+            var text = filterTextBox.Text.Trim();
+
+            if ( _LastFilterText != text )
+            {
+                _LastFilterText = text;
+                await Task.Delay( 250 );
+                filterTextBox_TextChanged( sender, e );
+                return;
+            }
+
+            var isEmpty = text.IsNullOrEmpty();
+
+            clearFilterButton.Enabled = !isEmpty;
+
+            //var cm = BindingContext[ DGV.DataSource ] as CurrencyManager;
+            //cm?.SuspendBinding();
+            DGV.SuspendDrawing();
+            try
+            {
+                if ( isEmpty )
+                {
+                    foreach ( var row in DGV.Rows.Cast< DataGridViewRow >() )
+                    {
+                        row.Visible = true;
+                    }
+                }
+                else
+                {
+                    foreach ( var row in DGV.Rows.Cast< DataGridViewRow >() )
+                    {
+                        if ( !row.IsNewRow )
+                        {
+                            var value = row.Cells[ 0 ].Value?.ToString();
+                            row.Visible = ((value != null) && (value.IndexOf( text, StringComparison.InvariantCultureIgnoreCase ) != -1));
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                //cm?.ResumeBinding();
+                DGV.ResumeDrawing();
+            }
         }
     }
 }

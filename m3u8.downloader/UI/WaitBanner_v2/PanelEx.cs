@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Windows.Forms;
 
-namespace m3u8.downloader.ui
+namespace m3u8.downloader
 {
     /// <summary>
     /// Good Draw panel on transparent parent user-control

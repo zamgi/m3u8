@@ -1,4 +1,4 @@
-﻿namespace m3u8
+﻿namespace m3u8.downloader
 {
     partial class MaxDegreeOfParallelismForm
     {
