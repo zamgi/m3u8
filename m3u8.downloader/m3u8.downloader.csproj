@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\m3u8-chrome-extension\m3u8-downloader-host\bin\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +30,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\m3u8-chrome-extension\m3u8-downloader-host\bin\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -63,6 +63,12 @@
     </Compile>
     <Compile Include="UI\FileNameExcludesWordsEditor.Designer.cs">
       <DependentUpon>FileNameExcludesWordsEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\ChangeOutputFileForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\ChangeOutputFileForm.Designer.cs">
+      <DependentUpon>ChangeOutputFileForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\MaxDegreeOfParallelismForm.cs">
       <SubType>Form</SubType>
@@ -112,6 +118,7 @@
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </None>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -125,11 +132,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\uncheck.16.ico" />
+    <None Include="Resources\uncheck.16.ico" />
     <None Include="Resources\m3u8.png" />
     <None Include="Resources\m3u8_148x166.ico" />
     <None Include="Resources\m3u8_32x36.ico" />
-    <Content Include="Resources\check.16.ico" />
+    <None Include="Resources\check.16.ico" />
     <Content Include="Resources\m3u.jpg" />
     <Content Include="Resources\roller\i1.ico" />
     <Content Include="Resources\roller\i2.ico" />

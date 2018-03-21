@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -23,6 +24,7 @@ namespace m3u8.downloader
         private WaitBannerUC_v1         _Wb;
 
         private string _m3u8FileUrl;
+        private string _OutputFileName;
         #endregion
 
         #region [.ctor().]
@@ -108,6 +110,22 @@ namespace m3u8.downloader
 
             base.OnKeyDown( e );
         }
+        protected override void OnClosing( CancelEventArgs e )
+        {
+            base.OnClosing( e );
+
+            _Cts?.Cancel();
+        }
+        protected override void OnClosed( EventArgs e )
+        {
+            base.OnClosed( e );
+
+            //still dowloading?
+            if ( (_Mc != null) || outputFileNameTextBox.ReadOnly /*(_Cts?.IsCancellationRequested).GetValueOrDefault()*/ )
+            {
+                Extensions.DeleteFile_NoThrow( _OutputFileName );
+            }
+        }
 
         #region comm
         /*private const int WM_SYSCOMMAND = 0x0112;
@@ -126,7 +144,7 @@ namespace m3u8.downloader
                 break;
             }
             base.WndProc( ref m );
-        }*/ 
+        }*/
         #endregion
         #endregion
 
@@ -334,20 +352,18 @@ namespace m3u8.downloader
             var m3u8FileUrlText = m3u8FileUrlTextBox.Text.Trim();
             var m3u8FileUrl     = new Uri( m3u8FileUrlText );
 
-            var outputFileName = default(string);
             using ( var sfd = new SaveFileDialog() { InitialDirectory = Settings.Default.OutputFileDirectory, DefaultExt = Settings.Default.OutputFileExtension, AddExtension = true } )
             {
-                //---sfd.FileName = PathnameCleaner.CleanPathnameAndFilename( Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath ) ).TrimStart( '-' );
                 sfd.FileName = PathnameCleaner.CleanPathnameAndFilename( outputFileNameTextBox_Text ).TrimStart( '-' );
                 if ( sfd.ShowDialog() != DialogResult.OK )
                 {
                     return;
                 }
 
-                outputFileName  = sfd.FileName;
-                Settings.Default.OutputFileDirectory = Path.GetDirectoryName( outputFileName );
+                _OutputFileName = sfd.FileName;
+                Settings.Default.OutputFileDirectory = Path.GetDirectoryName( _OutputFileName );
                 Settings.Default.Save();
-                outputFileNameTextBox_Text = Path.GetFileName( outputFileName );
+                outputFileNameTextBox_Text = Path.GetFileName( _OutputFileName );
                 m3u8FileResultTextBox.Focus();
             }
             #endregion
@@ -460,7 +476,7 @@ namespace m3u8.downloader
                     {
                         mc                     = _Mc,
                         m3u8File               = m3u8File,
-                        OutputFileName         = outputFileName,
+                        OutputFileName         = _OutputFileName,
                         Cts                    = _Cts,
                         MaxDegreeOfParallelism = Settings.Default.MaxDegreeOfParallelism,
                         StepAction             = stepAction,
@@ -477,6 +493,9 @@ namespace m3u8.downloader
                     sw.Stop();
 
                     var success = default(bool);
+                    var res     = default(m3u8_processor.DownloadPartsAndSaveResult);
+                    var renameOutputFileException = default(Exception);
+
                     if ( !_Cts.IsCancellationRequested )
                     {
                         if ( continuationTask.IsFaulted )
@@ -488,7 +507,25 @@ namespace m3u8.downloader
                         }
                         else if ( continuationTask.IsCompleted )
                         {
-                            var res = continuationTask.Result;
+                            res = continuationTask.Result;
+
+                            #region [.remane output file if changed.]
+                            var outputOnlyFileName = Path.GetFileName( res.OutputFileName );
+                            if ( outputOnlyFileName != outputFileNameTextBox_Text )
+                            {
+                                _OutputFileName = Path.Combine( Path.GetDirectoryName( res.OutputFileName ), outputFileNameTextBox_Text );
+                                try
+                                {
+                                    Extensions.DeleteFile_NoThrow( _OutputFileName );
+                                    File.Move( res.OutputFileName, _OutputFileName );
+                                    res.ResetOutputFileName( _OutputFileName );
+                                }
+                                catch ( Exception ex )
+                                {
+                                    renameOutputFileException = ex;                                    
+                                }
+                            }
+                            #endregion
 
                             m3u8FileResultTextBox.AppendText( $"\r\n downloaded & writed parts {res.PartsSuccessCount} of {res.TotalParts}\r\n" );
                             m3u8FileResultTextBox.AppendText( $" elapsed: {sw.Elapsed}\r\n" );
@@ -500,14 +537,22 @@ namespace m3u8.downloader
                     }
                     else
                     {
-                        Extensions.DeleteFile_NoThrow( outputFileName );
+                        Extensions.DeleteFile_NoThrow( _OutputFileName );
                     }
 
                     FinishOpAction( m3u8FileResultTextBox );
 
+                    #region [.error rename MessageBox.]
+                    if ( renameOutputFileException != null )
+                    {
+                        MessageBox.Show( this, $"Rename output file error => '{renameOutputFileException}'", this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error );
+                    }
+                    #endregion
+
+                    #region [.success MessageBox.]
                     if ( success )
                     {
-                        var res = continuationTask.Result;
+                        if ( res.IsEmpty() ) res = continuationTask.Result;
                         var msg = $"SUCCESS.\r\n\r\nelapsed: {sw.Elapsed}\r\nfile: '{res.OutputFileName}'\r\nsize: {(res.TotalBytes >> 20).ToString( "0,0" )} mb.";
                         MessageBox.Show( this, msg, this.Text, MessageBoxButtons.OK, MessageBoxIcon.Information );
 
@@ -518,6 +563,7 @@ namespace m3u8.downloader
                         }
                         #endregion
                     }
+                    #endregion
 
                 }, TaskScheduler.FromCurrentSynchronizationContext() );
             }
@@ -562,6 +608,7 @@ namespace m3u8.downloader
             WinApi.SetForegroundWindow( this.Handle );
 
             control4SetFocus?.Focus();
+            _ChangeOutputFileForm?.Close();
         }
 
         private void UnsetResultTextBox()
@@ -575,13 +622,61 @@ namespace m3u8.downloader
         {
             m3u8FileUrlTextBox   .ReadOnly = !enabled;
             outputFileNameTextBox.ReadOnly = !enabled;
+
+            outputFileNameTextBox.Click -= outputFileNameTextBox_Click;
+            if ( outputFileNameTextBox.ReadOnly )
+            {
+                outputFileNameTextBox.Cursor = Cursors.Hand;
+                outputFileNameTextBox.Click += outputFileNameTextBox_Click;
+            }
+            else
+            {
+                outputFileNameTextBox.Cursor = Cursors.IBeam;
+            }
+
             m3u8FileTextContentLoadButton .Enabled = enabled;
             m3u8FileWholeLoadAndSaveButton.Enabled = enabled;
             outputFileNameClearButton     .Enabled = enabled;
 
             maxDegreeOfParallelismLabel.Enabled = enabled;
             excludesWordsLabel         .Enabled = enabled;
-            //statusBar.Visible = enabled;
         }
+
+        #region [.ChangeOutputFileForm.]
+        private ChangeOutputFileForm _ChangeOutputFileForm;
+        private void outputFileNameTextBox_Click( object sender, EventArgs e )
+        {
+            if ( outputFileNameTextBox.ReadOnly )
+            {
+                if ( (_ChangeOutputFileForm == null) || _ChangeOutputFileForm.IsDisposed )
+                {
+                    _ChangeOutputFileForm = new ChangeOutputFileForm() { Owner = this };
+                    _ChangeOutputFileForm.FormClosed += _ChangeOutputFileForm_FormClosed;
+                }
+                _ChangeOutputFileForm.OutputFileName = outputFileNameTextBox.Text;
+                _ChangeOutputFileForm.Show( this );
+            }
+        }
+
+        private void _ChangeOutputFileForm_FormClosed( object sender, FormClosedEventArgs e )
+        {
+            if ( (e.CloseReason == CloseReason.UserClosing) && (_ChangeOutputFileForm.DialogResult == DialogResult.OK) && outputFileNameTextBox.ReadOnly )
+            {                
+                var outputFileName = PathnameCleaner.CleanPathnameAndFilename( _ChangeOutputFileForm.OutputFileName ).TrimStart( '-' );
+                if ( !outputFileName.IsNullOrWhiteSpace() )
+                {
+                    outputFileName = Path.GetFileName( outputFileName );
+                    var ext = Path.GetExtension( outputFileName );
+                    if ( !ext.Equals( Settings.Default.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
+                    {
+                        outputFileName += Settings.Default.OutputFileExtension;
+                    }
+                    outputFileNameTextBox_Text = outputFileName;
+                }
+            }
+            _ChangeOutputFileForm.FormClosed -= _ChangeOutputFileForm_FormClosed;
+            _ChangeOutputFileForm = null;
+        }
+        #endregion
     }
 }

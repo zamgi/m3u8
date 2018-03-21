@@ -774,6 +774,8 @@ namespace m3u8
             public ulong TotalBytes        { get; internal set; }
 
             public int TotalParts => (PartsSuccessCount + PartsErrorCount);
+            public void ResetOutputFileName( string outputFileName ) => OutputFileName = outputFileName;
+            public bool IsEmpty() => ((OutputFileName == null) && (PartsSuccessCount == 0) && (PartsErrorCount == 0) && (TotalBytes == 0UL));
         }
 
         public static DownloadPartsAndSaveResult DownloadPartsAndSave( DownloadPartsAndSaveInputParams ip )
