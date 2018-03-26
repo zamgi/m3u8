@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,28 +14,20 @@ namespace m3u8.ext
     /// </summary>
     internal static class Extensions
     {
-        public static bool IsNullOrEmpty( this string s )
-        {
-            return (string.IsNullOrEmpty( s ));
-        }
-        public static bool IsNullOrWhiteSpace( this string s )
-        {
-            return (string.IsNullOrWhiteSpace( s ));
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
 
-        public static string AsPartExceptionMessage( this string responseJson )
-        {
-            return (responseJson.IsNullOrWhiteSpace() ? string.Empty : ($", '{responseJson}'"));
-        }
-        public static string CreateExceptionMessage( this HttpResponseMessage response, string responseJson )
-        {
-            return ($"{(int) response.StatusCode}, {response.ReasonPhrase}{responseJson.AsPartExceptionMessage()}");
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
 
-        public static bool AnyEx< T >( this IEnumerable< T > seq )
-        {
-            return (seq != null && seq.Any());
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string AsPartExceptionMessage( this string responseJson ) => (responseJson.IsNullOrWhiteSpace() ? string.Empty : ($", '{responseJson}'"));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string CreateExceptionMessage( this HttpResponseMessage response, string responseJson ) => ($"{(int) response.StatusCode}, {response.ReasonPhrase}{responseJson.AsPartExceptionMessage()}");
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
 
         public static string ReadAsStringAsyncEx( this HttpContent content, CancellationToken ct )
         {
@@ -74,20 +67,15 @@ namespace m3u8.ext
             _DefaultConnectionLimit = ServicePointManager.DefaultConnectionLimit;
             ServicePointManager.DefaultConnectionLimit = connectionLimit;
         }
-        public static DefaultConnectionLimitSaver Create( int connectionLimit )
-        {
-            return (new DefaultConnectionLimitSaver( connectionLimit ));
-        }
-        public void Dispose()
-        {
-            ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
-        }
+        public static DefaultConnectionLimitSaver Create( int connectionLimit ) => new DefaultConnectionLimitSaver( connectionLimit );
+        public void Dispose() => ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
     }
 }
 
 namespace m3u8
 {
     using System.IO;
+
     using m3u8.ext;
 
     /// <summary>
@@ -105,21 +93,12 @@ namespace m3u8
         public int OrderNumber { get; private set; }
 
         public byte[] Bytes { get; private set; }
-        public void SetBytes( byte[] bytes )
-        {
-            Bytes = bytes;
-        }
+        public void SetBytes( byte[] bytes ) => Bytes = bytes;
 
         public Exception Error { get; private set; }
-        public void SetError( Exception error )
-        {
-            Error = error;
-        }
+        public void SetError( Exception error ) => Error = error;
 #if DEBUG
-        public override string ToString()
-        {
-            return ($"{OrderNumber}, '{RelativeUrlName}'");
-        }
+        public override string ToString() => ($"{OrderNumber}, '{RelativeUrlName}'");
 #endif
     }
     /// <summary>
@@ -127,10 +106,7 @@ namespace m3u8
     /// </summary>
     public struct m3u8_part_ts_comparer: IComparer< m3u8_part_ts >
     {
-        public int Compare( m3u8_part_ts x, m3u8_part_ts y )
-        {
-            return (x.OrderNumber - y.OrderNumber);
-        }
+        public int Compare( m3u8_part_ts x, m3u8_part_ts y ) => (x.OrderNumber - y.OrderNumber);
     }
 
     /// <summary>
@@ -169,11 +145,6 @@ namespace m3u8
     /// </summary>
     public static class m3u8_Extensions
     {
-        //private static string Unwrap4DialogMessage( this SmartCATArgumentException ex )
-        //{
-        //    return ((ex != null) ? $"SmartCATArgumentException: {ex.Message} => '{ex.ParamName}'" : null);
-        //}
-
         public static string Unwrap4DialogMessage( this Exception ex, out bool isCanceledException )
         {
             isCanceledException = false;
@@ -188,8 +159,7 @@ namespace m3u8
             var sex = ex as m3u8_ArgumentException;
             if ( sex != null )
             {
-                return ($"SmartCATArgumentException: '{sex.Message} => [{sex.ParamName}]'");
-                //return (sex.Unwrap4DialogMessage());
+                return ($"m3u8_ArgumentException: '{sex.Message} => [{sex.ParamName}]'");
             }
 
             var aex = ex as AggregateException;
@@ -205,7 +175,7 @@ namespace m3u8
                 {
                     if ( aex.InnerException is m3u8_Exception )
                     {
-                        return ("SmartCATException: '" + ((m3u8_Exception) aex.InnerException).Message + '\'');
+                        return ("m3u8_Exception: '" + ((m3u8_Exception) aex.InnerException).Message + '\'');
                     }
                     else if ( aex.InnerException is HttpRequestException )
                     {
@@ -226,6 +196,7 @@ namespace m3u8
             return (ex.ToString());
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Unwrap4DialogMessage( this Exception ex, bool ignoreCanceledException = true )
         {
             bool isCanceledException;
@@ -264,24 +235,21 @@ namespace m3u8
         /// </summary>
         public struct init_params
         {
-            //---public Uri BaseAddress { get; set; }
             public int?      AttemptRequestCount { get; set; }
             public TimeSpan? Timeout             { get; set; }
             public bool?     ConnectionClose     { get; set; }
         }
 
-
-        private HttpClient _HttpClient;
+        #region [.field's.]
+        private HttpClient _HttpClient; 
+        #endregion
 
         #region [.ctor().]
         public m3u8_client( init_params ip )
         {
-            //if ( p.BaseAddress == null ) throw (new SmartCATArgumentException( nameof(p.BaseAddress) ));
-
             InitParams = ip;
 
             _HttpClient = new HttpClient();
-            //_HttpClient.BaseAddress = p.BaseAddress;
             _HttpClient.DefaultRequestHeaders.ConnectionClose = ip.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
             if ( ip.Timeout.HasValue )
             {
@@ -289,10 +257,7 @@ namespace m3u8
             };
         }
 
-        public void Dispose()
-        {
-            _HttpClient.Dispose();
-        }
+        public void Dispose() => _HttpClient.Dispose();
         #endregion
 
         public init_params InitParams
@@ -305,6 +270,7 @@ namespace m3u8
             , CancellationToken? cancellationToken = null )
         {
             if ( url == null ) throw (new m3u8_ArgumentException( nameof(url) ));
+            //------------------------------------------------------------------//
 
             var ct = cancellationToken.GetValueOrDefault( CancellationToken.None );
             var attemptRequestCountByPart = InitParams.AttemptRequestCount.GetValueOrDefault( 1 );
@@ -345,6 +311,7 @@ namespace m3u8
         {
             if ( baseAddress == null ) throw (new m3u8_ArgumentException( nameof(baseAddress) ));
             if ( part.RelativeUrlName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(part.RelativeUrlName) ));
+            //----------------------------------------------------------------------------------------------------------------//
 
             var url = new Uri( baseAddress, part.RelativeUrlName );
             var ct = cancellationToken.GetValueOrDefault( CancellationToken.None );
@@ -698,7 +665,7 @@ namespace m3u8
         {
             if ( ip.m3u8FileUrl.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(ip.m3u8FileUrl) ));
             if ( ip.OutputFileName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(ip.OutputFileName) ));
-            //----------------------------------------------------------------------------------------//
+            //---------------------------------------------------------------------------------------------------------//
 
             var m3u8FileUrl = new Uri( ip.m3u8FileUrl );
 
@@ -783,7 +750,7 @@ namespace m3u8
             if ( ip.mc == null ) throw (new m3u8_ArgumentException( nameof(ip.mc) ));
             if ( !ip.m3u8File.Parts.AnyEx() ) throw (new m3u8_ArgumentException( nameof(ip.m3u8File) ));
             if ( ip.OutputFileName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(ip.OutputFileName) ));
-            //----------------------------------------------------------------------------------------//
+            //---------------------------------------------------------------------------------------------------------//
 
             //-1-//
             var res = new DownloadPartsAndSaveResult( ip.OutputFileName );
