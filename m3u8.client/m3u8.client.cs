@@ -41,19 +41,6 @@ namespace m3u8.ext
             t.Wait( ct );
             return (t.Result);
         }
-        /*public static Task< T > WithCancellation< T >( this Task< T > task, CancellationToken ct )
-        {
-            if ( task.IsCompleted )
-            {
-                return (task);
-            }
-
-            var continuetask = task.ContinueWith( completedTask => completedTask.GetAwaiter().GetResult(),
-                                                  ct,
-                                                  TaskContinuationOptions.ExecuteSynchronously,
-                                                  TaskScheduler.Default );
-            return (continuetask);
-        }*/
     }
 
     /// <summary>
@@ -123,7 +110,6 @@ namespace m3u8
         public static m3u8_file_t Parse( string content, Uri baseAddress )
         {
             var lines = from row in content.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
-//---.Take( 50 )
                         let line = row.Trim()
                         where (!line.IsNullOrEmpty() && !line.StartsWith( "#" ))
                         select line
@@ -250,7 +236,7 @@ namespace m3u8
             InitParams = ip;
 
             _HttpClient = new HttpClient();
-            _HttpClient.DefaultRequestHeaders.ConnectionClose = ip.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
+            _HttpClient.DefaultRequestHeaders.ConnectionClose = ip.ConnectionClose;
             if ( ip.Timeout.HasValue )
             {
                 _HttpClient.Timeout = ip.Timeout.Value;
@@ -426,7 +412,7 @@ namespace m3u8
                         var part = sourceQueue.Dequeue();
 
                         var p = StepActionParams.CreateSuccess( totalPatrs, n, part );
-                        ip.stepAction?.Invoke( p ); //---var ar = ip.stepAction?.BeginInvoke( p, null, null ); ip.stepAction?.EndInvoke( ar );
+                        ip.stepAction?.Invoke( p );
 
                         ip.mc.DownloadPart( part, baseAddress, ct )
                             .ContinueWith( (continuationTask) =>
@@ -474,9 +460,6 @@ namespace m3u8
                 for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.maxDegreeOfParallelism ) ); 
                         expectedPartNumber <= maxPartNumber /*&& !ct.IsCancellationRequested*/; )
                 {
-//#if DEBUG
-//                    CONSOLE.WriteLine( $"wait part #{expectedPartNumber}..." ); 
-//#endif
                     var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent, ct.WaitHandle } );
                     if ( idx == 1 ) //ct.IsCancellationRequested
                         break;
@@ -490,8 +473,6 @@ namespace m3u8
                             var min_part = downloadPartsSet.Min;
                             if ( expectedPartNumber == min_part.OrderNumber )
                             {
-                                //CONSOLE.WriteLine( $"receive part #{expectedPartNumber}." );
-
                                 downloadPartsSet.Remove( min_part );
 
                                 Interlocked.Increment( ref expectedPartNumber );
@@ -512,34 +493,6 @@ namespace m3u8
                         var part = localReadyParts.Dequeue();
                         yield return (part);
                     }
-
-                    #region comm. prev.
-                    /*
-                    lock ( downloadPartsSet )
-                    {
-                        for ( ; downloadPartsSet.Count != 0; )
-                        {
-                            var min_part = downloadPartsSet.Min;
-                            if ( expectedPartNumber == min_part.OrderNumber )
-                            {
-                                //CONSOLE.WriteLine( $"receive part #{expectedPartNumber}." );
-
-                                downloadPartsSet.Remove( min_part );
-
-                                Interlocked.Increment( ref expectedPartNumber );
-
-                                semaphore.Release();
-
-                                yield return (min_part);
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
-                    */
-                    #endregion
                 }
 
                 //-3-//
