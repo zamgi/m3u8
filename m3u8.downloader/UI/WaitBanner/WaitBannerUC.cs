@@ -9,7 +9,7 @@ namespace m3u8.downloader
     /// <summary>
     /// 
     /// </summary>
-    internal sealed partial class WaitBannerUC_v1 : UserControl, IWaitBannerMarker
+    internal sealed partial class WaitBannerUC : UserControl, IWaitBannerMarker
     {
         private const string CAPTION_TEXT = "...executing...";
 
@@ -26,7 +26,7 @@ namespace m3u8.downloader
         #endregion
 
         #region [.ctor().]
-        private WaitBannerUC_v1()
+        private WaitBannerUC()
         {
             InitializeComponent();
 
@@ -98,11 +98,11 @@ namespace m3u8.downloader
         }
 
 
-        public static WaitBannerUC_v1 Create( Control parent, CancellationTokenSource cts, string captionText = CAPTION_TEXT )
+        public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, string captionText = CAPTION_TEXT )
         {
             if ( cts == null ) throw (new ArgumentNullException( nameof(cts) ));
 
-            var uc = new WaitBannerUC_v1() { _CancellationTokenSource = cts, _CaptionText = captionText };            
+            var uc = new WaitBannerUC() { _CancellationTokenSource = cts, _CaptionText = captionText };            
             uc.Caption.Text = captionText;
             parent.Controls.Add( uc );
             uc.BringToFront();

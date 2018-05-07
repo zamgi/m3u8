@@ -15,16 +15,9 @@ namespace m3u8.downloader
         }
 
         private int _CurrentPos = -1;
-        public void Reset()
-        {
-            _CurrentPos = -1;
-        }
+        public void Reset() => _CurrentPos = -1;
 
-        public Bitmap[] Bitmaps
-        {
-            get;
-            private set;
-        }
+        public Bitmap[] Bitmaps { get; private set; }
         public Bitmap Current
         {
             get

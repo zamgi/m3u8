@@ -38,7 +38,6 @@
             this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.Location = new System.Drawing.Point(94, 56);
-            this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 2;
             this.okButton.Text = "Ok";
@@ -50,7 +49,6 @@
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.Location = new System.Drawing.Point(175, 56);
-            this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 3;
             this.cancelButton.Text = "Cancel";
@@ -61,7 +59,6 @@
             // 
             this.outputFileNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.outputFileNameTextBox.Location = new System.Drawing.Point(12, 12);
-            this.outputFileNameTextBox.Name = "outputFileNameTextBox";
             this.outputFileNameTextBox.Size = new System.Drawing.Size(310, 20);
             this.outputFileNameTextBox.TabIndex = 0;
             // 
@@ -70,7 +67,6 @@
             this.outputFileNameClearButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.outputFileNameClearButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.outputFileNameClearButton.Location = new System.Drawing.Point(325, 12);
-            this.outputFileNameClearButton.Name = "outputFileNameClearButton";
             this.outputFileNameClearButton.Size = new System.Drawing.Size(19, 20);
             this.outputFileNameClearButton.TabIndex = 1;
             this.outputFileNameClearButton.Text = "X";
@@ -90,7 +86,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "ChangeOutputFileForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

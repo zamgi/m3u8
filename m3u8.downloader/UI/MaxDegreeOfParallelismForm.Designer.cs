@@ -44,7 +44,6 @@
             0,
             0,
             0});
-            this.numericUpDown.Name = "numericUpDown";
             this.numericUpDown.Size = new System.Drawing.Size(89, 20);
             this.numericUpDown.TabIndex = 1;
             this.numericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -60,7 +59,6 @@
             this.infinityCheckBox.AutoSize = true;
             this.infinityCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.infinityCheckBox.Location = new System.Drawing.Point(65, 17);
-            this.infinityCheckBox.Name = "infinityCheckBox";
             this.infinityCheckBox.Size = new System.Drawing.Size(56, 17);
             this.infinityCheckBox.TabIndex = 0;
             this.infinityCheckBox.Text = "Infinity";
@@ -72,7 +70,6 @@
             this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.Location = new System.Drawing.Point(31, 77);
-            this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 2;
             this.okButton.Text = "Ok";
@@ -83,7 +80,6 @@
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.Location = new System.Drawing.Point(112, 77);
-            this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 3;
             this.cancelButton.Text = "Cancel";
@@ -102,7 +98,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "MaxDegreeOfParallelismForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
@@ -110,9 +105,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
-
         #endregion
 
         private System.Windows.Forms.NumericUpDown numericUpDown;

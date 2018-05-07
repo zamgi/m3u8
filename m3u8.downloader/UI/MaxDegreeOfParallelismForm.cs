@@ -15,14 +15,11 @@ namespace m3u8.downloader
             numericUpDown.Maximum = int.MaxValue;
         }
 
-        private void infinityCheckBox_CheckedChanged( object sender, EventArgs e )
-        {
-            numericUpDown.Enabled = !infinityCheckBox.Checked;
-        }
+        private void infinityCheckBox_CheckedChanged( object sender, EventArgs e ) => numericUpDown.Enabled = !infinityCheckBox.Checked;
 
         public int MaxDegreeOfParallelism
         {
-            get { return (IsInfinity ? int.MaxValue : Convert.ToInt32( numericUpDown.Value )); }
+            get => (IsInfinity ? int.MaxValue : Convert.ToInt32( numericUpDown.Value ));
             set
             {
                 numericUpDown   .Value   = value;
@@ -32,7 +29,7 @@ namespace m3u8.downloader
         }
         public bool IsInfinity
         {
-            get { return (infinityCheckBox.Checked); }
+            get => infinityCheckBox.Checked;
             set
             {
                 infinityCheckBox.Checked = value;

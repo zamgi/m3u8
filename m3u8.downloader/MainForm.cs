@@ -21,7 +21,7 @@ namespace m3u8.downloader
         #region [.fileds.]
         private m3u8_client             _Mc;
         private CancellationTokenSource _Cts;
-        private WaitBannerUC_v1         _Wb;
+        private WaitBannerUC         _Wb;
 
         private string _m3u8FileUrl;
         private string _OutputFileName;
@@ -195,13 +195,10 @@ namespace m3u8.downloader
         }
 
         private string _LastManualInputed_outputFileNameText;
-        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
-        {
-            _LastManualInputed_outputFileNameText = outputFileNameTextBox_Text;
-        }
+        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e ) => _LastManualInputed_outputFileNameText = outputFileNameTextBox_Text;
         private string outputFileNameTextBox_Text
         {
-            get { return (outputFileNameTextBox.Text.Trim()); }
+            get => outputFileNameTextBox.Text.Trim();
             set
             {
                 if ( outputFileNameTextBox.Text.Trim() != value )
@@ -282,18 +279,15 @@ namespace m3u8.downloader
                 this.Cursor = Cursors.Default;
             }
         }
-        private void maxDegreeOfParallelismLabel_set()
-        {
+
+        private void maxDegreeOfParallelismLabel_set() =>
             maxDegreeOfParallelismLabel.Text = $"max degree of parallelism: {((Settings.Default.MaxDegreeOfParallelism == int.MaxValue) ? "Infinity" : Settings.Default.MaxDegreeOfParallelism.ToString())}";
-        }
-        private void autoMinimizeWindowWhenStartsDownloadLabel_set()
-        {
+
+        private void autoMinimizeWindowWhenStartsDownloadLabel_set() =>
             autoMinimizeWindowWhenStartsDownloadLabel.Image = (Settings.Default.AutoMinimizeWindowWhenStartsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
-        }
-        private void autoCloseApplicationWhenEndsDownloadLabel_set()
-        {
+
+        private void autoCloseApplicationWhenEndsDownloadLabel_set() =>
             autoCloseApplicationWhenEndsDownloadLabel.Image = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
-        }
         #endregion
 
 
@@ -307,8 +301,6 @@ namespace m3u8.downloader
 
                 var task = Task.Run( () =>
                 {
-//Task.Delay( 5000 ).Wait( cts.Token );
-
                     //-1-//
                     var m3u8FileUrl = new Uri( m3u8FileUrlText );
                     var m3u8File = _Mc.DownloadFile( m3u8FileUrl, _Cts.Token ).Result;
@@ -322,7 +314,7 @@ namespace m3u8.downloader
                         if ( continuationTask.IsFaulted )
                         {
                             m3u8FileResultTextBox.ForeColor = Color.Red;
-                            m3u8FileResultTextBox.Text = continuationTask.Exception.ToString();
+                            m3u8FileResultTextBox.Text      = continuationTask.Exception.ToString();
                         }
                         else if ( continuationTask.IsCompleted )
                         {
@@ -396,7 +388,7 @@ namespace m3u8.downloader
                         if ( continuationTask.IsFaulted )
                         {
                             m3u8FileResultTextBox.ForeColor = Color.Red;
-                            m3u8FileResultTextBox.Text = continuationTask.Exception.ToString();
+                            m3u8FileResultTextBox.Text      = continuationTask.Exception.ToString();
                         }
                         else if ( continuationTask.IsCompleted )
                         {
@@ -583,7 +575,7 @@ namespace m3u8.downloader
 
             _Mc  = m3u8_client.CreateDefault( attemptRequestCountByPart.GetValueOrDefault( 10 ) );
             _Cts = new CancellationTokenSource();
-            _Wb  = WaitBannerUC_v1.Create( this, _Cts );
+            _Wb  = WaitBannerUC.Create( this, _Cts );
         }
         private void FinishOpAction( Control control4SetFocus = null )
         {

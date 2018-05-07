@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 
 namespace m3u8.downloader
@@ -13,43 +14,30 @@ namespace m3u8.downloader
     /// </summary>
     internal static class Extensions
     {
-        public static bool IsNullOrEmpty( this string s )
-        {
-            return (string.IsNullOrEmpty( s ));
-        }
-        public static bool IsNullOrWhiteSpace( this string s )
-        {
-            return (string.IsNullOrWhiteSpace( s ));
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
 
-        public static bool HasFirstCharNotDot( this string s )
-        {
-            return ((0 < (s?.Length).GetValueOrDefault()) && (s[ 0 ] != '.'));
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
 
-        public static bool AnyEx< T >( this IEnumerable< T > seq )
-        {
-            return (seq != null && seq.Any());
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool HasFirstCharNotDot( this string s ) => ((0 < (s?.Length).GetValueOrDefault()) && (s[ 0 ] != '.'));
 
-        public static T? Try2Enum< T >( this string s ) 
-            where T : struct
-        {
-            T t;
-            if ( Enum.TryParse< T >( s, true, out t ) )
-            {
-                return (t);
-            }
-            return (null);
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse<T>( s, true, out var t ) ? t : ((T?) null));
 
         public static Exception ShellExploreAndSelectFile( string filePath )
         {
             try
             {
                 var fileLocation = Path.GetFullPath( filePath );
-                Process.Start( "explorer", "/e,/select,\"" + fileLocation + "\"" );
-                return (null);
+                using ( Process.Start( "explorer", $"/e,/select,\"{fileLocation}\"" ) )
+                {
+                    return (null);
+                }
             }
             catch ( Exception ex )
             {
@@ -69,9 +57,7 @@ namespace m3u8.downloader
             }
         }
 
-        public static void SetDoubleBuffered( this Control control, bool value )
-        {
+        public static void SetDoubleBuffered( this Control control, bool value ) =>
             typeof(Control).GetProperty( "DoubleBuffered", BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance )?.SetValue( control, value );
-        }
     }
 }

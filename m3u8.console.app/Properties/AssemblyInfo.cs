@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("xz")]
 [assembly: AssemblyProduct("m3u8.app.console")]
-[assembly: AssemblyCopyright("Copyright © xz 2017")]
+[assembly: AssemblyCopyright("Copyright © xz 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

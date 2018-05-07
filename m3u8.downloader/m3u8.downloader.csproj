@@ -80,11 +80,11 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\IWaitBannerMarker.cs" />
-    <Compile Include="UI\WaitBanner_v1\WaitBannerUC_v1.cs">
+    <Compile Include="UI\WaitBanner\WaitBannerUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\WaitBanner_v1\WaitBannerUC_v1.designer.cs">
-      <DependentUpon>WaitBannerUC_v1.cs</DependentUpon>
+    <Compile Include="UI\WaitBanner\WaitBannerUC.designer.cs">
+      <DependentUpon>WaitBannerUC.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -96,15 +96,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\IconHolder.cs" />
-    <None Include="UI\WaitBanner_v2\PanelEx.cs">
-      <SubType>Component</SubType>
-    </None>
-    <None Include="UI\WaitBanner_v2\WaitBannerUC_v2.cs">
-      <SubType>UserControl</SubType>
-    </None>
-    <None Include="UI\WaitBanner_v2\WaitBannerUC_v2.Designer.cs">
-      <DependentUpon>WaitBannerUC_v2.cs</DependentUpon>
-    </None>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

@@ -9,10 +9,7 @@ namespace m3u8.downloader
     /// </summary>
     internal sealed partial class ChangeOutputFileForm : Form
     {
-        public ChangeOutputFileForm()
-        {
-            InitializeComponent();
-        }
+        public ChangeOutputFileForm() => InitializeComponent();
 
         protected override void OnFormClosing( FormClosingEventArgs e )
         {
@@ -45,10 +42,7 @@ namespace m3u8.downloader
             DialogResult = DialogResult.OK;
             this.Close();
         }
-        private void cancelButton_Click( object sender, EventArgs e )
-        {
-            this.Close();
-        }
+        private void cancelButton_Click( object sender, EventArgs e ) => this.Close();
 
         private void outputFileNameClearButton_Click( object sender, EventArgs e )
         {
@@ -58,7 +52,7 @@ namespace m3u8.downloader
 
         public string OutputFileName
         {
-            get { return (outputFileNameTextBox.Text.Trim()); }
+            get => outputFileNameTextBox.Text.Trim();
             set
             {
                 if ( outputFileNameTextBox.Text.Trim() != value )

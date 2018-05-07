@@ -14,13 +14,7 @@ namespace m3u8.downloader
             _DefaultConnectionLimit = ServicePointManager.DefaultConnectionLimit;
             ServicePointManager.DefaultConnectionLimit = connectionLimit;
         }
-        public static DefaultConnectionLimitSaver Create( int connectionLimit )
-        {
-            return (new DefaultConnectionLimitSaver( connectionLimit ));
-        }
-        public void Dispose()
-        {
-            ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
-        }
+        public static DefaultConnectionLimitSaver Create( int connectionLimit ) => new DefaultConnectionLimitSaver( connectionLimit );
+        public void Dispose() => ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
     }
 }

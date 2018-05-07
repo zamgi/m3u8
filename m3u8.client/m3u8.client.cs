@@ -142,16 +142,16 @@ namespace m3u8
                 return (cex.Message);
             }
 
-            var sex = ex as m3u8_ArgumentException;
-            if ( sex != null )
+            var mex = ex as m3u8_ArgumentException;
+            if ( mex != null )
             {
-                return ($"m3u8_ArgumentException: '{sex.Message} => [{sex.ParamName}]'");
+                return ($"m3u8_ArgumentException: '{mex.Message} => [{mex.ParamName}]'");
             }
 
             var aex = ex as AggregateException;
             if ( aex != null )
             {
-                if ( aex.InnerExceptions.All( ( _ex ) => _ex is OperationCanceledException ) )
+                if ( aex.InnerExceptions.All( _ex => _ex is OperationCanceledException ) )
                 {
                     isCanceledException = true;
                     return (aex.InnerExceptions.FirstOrDefault()?.Message);
@@ -161,7 +161,7 @@ namespace m3u8
                 {
                     if ( aex.InnerException is m3u8_Exception )
                     {
-                        return ("m3u8_Exception: '" + ((m3u8_Exception) aex.InnerException).Message + '\'');
+                        return ($"m3u8_Exception: '{((m3u8_Exception) aex.InnerException).Message}'");
                     }
                     else if ( aex.InnerException is HttpRequestException )
                     {
@@ -174,7 +174,7 @@ namespace m3u8
                     }
                     else
                     {
-                        return (ex.GetType().Name + ": '" + ex.ToString() + '\'');
+                        return ($"{ex.GetType().Name}: '{ex}'");
                     }
                 }
             }
@@ -185,9 +185,8 @@ namespace m3u8
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string Unwrap4DialogMessage( this Exception ex, bool ignoreCanceledException = true )
         {
-            bool isCanceledException;
-            var message = ex.Unwrap4DialogMessage( out isCanceledException );
-            return (isCanceledException ? null : message);
+            var message = ex.Unwrap4DialogMessage( out var isCanceledException );
+            return ((isCanceledException && ignoreCanceledException) ? null : message);
         }
     }
 
@@ -246,11 +245,7 @@ namespace m3u8
         public void Dispose() => _HttpClient.Dispose();
         #endregion
 
-        public init_params InitParams
-        {
-            get;
-            private set;
-        }
+        public init_params InitParams { get; private set; }
 
         public async Task< m3u8_file_t > DownloadFile( Uri url
             , CancellationToken? cancellationToken = null )
@@ -337,10 +332,7 @@ namespace m3u8
 
         public static m3u8_client CreateDefault( int attemptRequestCountByPart = 10 )
         {
-            var ip = new init_params()
-            {
-                AttemptRequestCount = attemptRequestCountByPart,
-            };
+            var ip = new init_params() { AttemptRequestCount = attemptRequestCountByPart, };
             var mc = new m3u8_client( ip );
             return (mc);
         }
@@ -520,11 +512,8 @@ namespace m3u8
                 return (this);
             }
 
-            internal static StepActionParams CreateSuccess( int totalPartCount, int partOrderNumber, m3u8_part_ts part )
-            {
-                var o = new StepActionParams() { TotalPartCount = totalPartCount, PartOrderNumber = partOrderNumber, Part = part };
-                return (o);
-            }
+            internal static StepActionParams CreateSuccess( int totalPartCount, int partOrderNumber, m3u8_part_ts part ) =>
+                new StepActionParams() { TotalPartCount = totalPartCount, PartOrderNumber = partOrderNumber, Part = part };
         }
         /// <summary>
         /// 
@@ -568,8 +557,8 @@ namespace m3u8
             private int? _MaxDegreeOfParallelism;
             public int MaxDegreeOfParallelism
             {
-                get { return (_MaxDegreeOfParallelism.GetValueOrDefault( DEFAULT_MAXDEGREEOFPARALLELISM )); }
-                set { _MaxDegreeOfParallelism = Math.Max( 1, value ); }
+                get => _MaxDegreeOfParallelism.GetValueOrDefault( DEFAULT_MAXDEGREEOFPARALLELISM );
+                set => _MaxDegreeOfParallelism = Math.Max( 1, value );
             }
 
             private m3u8_client.init_params? _NetParams;
@@ -616,7 +605,7 @@ namespace m3u8
 
         public static async Task< DownloadFileAndSaveResult > DownloadFileAndSave_Async( DownloadFileAndSaveInputParams ip )
         {
-            if ( ip.m3u8FileUrl.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(ip.m3u8FileUrl) ));
+            if ( ip.m3u8FileUrl   .IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(ip.m3u8FileUrl) ));
             if ( ip.OutputFileName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(ip.OutputFileName) ));
             //---------------------------------------------------------------------------------------------------------//
 

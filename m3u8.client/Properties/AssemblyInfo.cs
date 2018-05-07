@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle( "m3u8.client" )]
+[assembly: AssemblyTitle("m3u8.client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany( "xz" )]
-[assembly: AssemblyProduct( "m3u8.client" )]
-[assembly: AssemblyCopyright("Copyright © xz 2017")]
+[assembly: AssemblyCompany("xz")]
+[assembly: AssemblyProduct("m3u8.client")]
+[assembly: AssemblyCopyright("Copyright © xz 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -43,8 +43,6 @@
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.Location = new System.Drawing.Point(156, 410);
-            this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 5;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
@@ -54,7 +52,6 @@
             this.okButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.Location = new System.Drawing.Point(75, 410);
-            this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 4;
             this.okButton.Text = "Ok";
@@ -78,7 +75,6 @@
             this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DGV_excludesWordsColumn});
             this.DGV.Location = new System.Drawing.Point(3, 22);
-            this.DGV.Name = "DGV";
             this.DGV.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.DGV.Size = new System.Drawing.Size(302, 384);
             this.DGV.TabIndex = 0;
@@ -88,14 +84,12 @@
             // DGV_excludesWordsColumn
             // 
             this.DGV_excludesWordsColumn.HeaderText = "exclude word";
-            this.DGV_excludesWordsColumn.Name = "DGV_excludesWordsColumn";
             this.DGV_excludesWordsColumn.Width = 210;
             // 
             // l1
             // 
             this.l1.AutoSize = true;
             this.l1.Location = new System.Drawing.Point(12, 3);
-            this.l1.Name = "l1";
             this.l1.Size = new System.Drawing.Size(29, 13);
             this.l1.TabIndex = 1;
             this.l1.Text = "filter:";
@@ -104,7 +98,6 @@
             // 
             this.filterTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.filterTextBox.Location = new System.Drawing.Point(45, 1);
-            this.filterTextBox.Name = "filterTextBox";
             this.filterTextBox.Size = new System.Drawing.Size(186, 20);
             this.filterTextBox.TabIndex = 2;
             this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
@@ -115,7 +108,6 @@
             this.clearFilterButton.Enabled = false;
             this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.clearFilterButton.Location = new System.Drawing.Point(230, 1);
-            this.clearFilterButton.Name = "clearFilterButton";
             this.clearFilterButton.Size = new System.Drawing.Size(16, 20);
             this.clearFilterButton.TabIndex = 3;
             this.clearFilterButton.Text = "x";
@@ -136,7 +128,6 @@
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
             this.MinimizeBox = false;
-            this.Name = "FileNameExcludesWordsEditor";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;

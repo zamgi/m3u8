@@ -28,23 +28,20 @@ namespace m3u8.downloader
             public Point ptMaxPosition;
             public Rectangle rcNormalPosition;
 
-            public bool IsRestoredWindowWillBeMaximized
-            {
-                get { return (flags == WPF_RESTORETOMAXIMIZED); }
-            }
+            public bool IsRestoredWindowWillBeMaximized => (flags == WPF_RESTORETOMAXIMIZED);
             public static WINDOWPLACEMENT Default
             {
                 get
                 {
                     var wp = default(WINDOWPLACEMENT);
                     wp.length = Marshal.SizeOf( wp );
-                    return wp;
+                    return (wp);
                 }
             }
         }
 
-        [DllImport( "user32.dll" )]
-        [return: MarshalAs( UnmanagedType.Bool )]
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowPlacement( IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl );
 
         public static WINDOWPLACEMENT? GetWindowPlacement( IntPtr hWnd )
@@ -71,10 +68,7 @@ namespace m3u8.downloader
         private static extern int SendMessage( IntPtr hwnd, int wMsg, int wParam, int lParam );
         private const int WM_SETREDRAW = 0xB;
 
-        public static void SuspendDrawing( this Control control )
-        {
-            SendMessage( control.Handle, WM_SETREDRAW, 0 /*FALSE*/, 0 );
-        }
+        public static void SuspendDrawing( this Control control ) => SendMessage( control.Handle, WM_SETREDRAW, 0 /*FALSE*/, 0 );
         public static void ResumeDrawing( this Control control, bool redraw = true )
         {
             SendMessage( control.Handle, WM_SETREDRAW, 1 /*TRUE*/, 0 );
