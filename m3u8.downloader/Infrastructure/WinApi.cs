@@ -21,15 +21,15 @@ namespace m3u8.downloader
         {
             private const int WPF_RESTORETOMAXIMIZED = 2;
 
-            public int length;
-            public int flags;
-            public int showCmd;
-            public Point ptMinPosition;
-            public Point ptMaxPosition;
+            public int       length;
+            public int       flags;
+            public int       showCmd;
+            public Point     ptMinPosition;
+            public Point     ptMaxPosition;
             public Rectangle rcNormalPosition;
 
             public bool IsRestoredWindowWillBeMaximized => (flags == WPF_RESTORETOMAXIMIZED);
-            public static WINDOWPLACEMENT Default
+            public static WINDOWPLACEMENT Default 
             {
                 get
                 {

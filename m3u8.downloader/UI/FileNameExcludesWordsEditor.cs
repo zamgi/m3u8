@@ -31,6 +31,20 @@ namespace m3u8.downloader
             }
         }
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose( bool disposing )
+        {
+            if ( disposing && (components != null) )
+            {
+                components.Dispose();
+                _SF.Dispose();
+            }
+            base.Dispose( disposing );
+        }
+
         protected override bool ProcessCmdKey( ref Message msg, Keys keyData )
         {
             if ( !DGV.IsCurrentCellInEditMode )
@@ -93,10 +107,8 @@ namespace m3u8.downloader
             return (data);
         }
 
-        private void clearFilterButton_Click( object sender, EventArgs e )
-        {
-            filterTextBox.Text = null;
-        }
+        private void clearFilterButton_Click( object sender, EventArgs e ) => filterTextBox.Text = null;
+
         private string _LastFilterText;
         private async void filterTextBox_TextChanged( object sender, EventArgs e )
         {

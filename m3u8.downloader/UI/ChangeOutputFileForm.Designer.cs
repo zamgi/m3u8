@@ -94,6 +94,7 @@
             this.PerformLayout();
         }
         #endregion
+
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.TextBox outputFileNameTextBox;

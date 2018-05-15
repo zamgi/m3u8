@@ -41,7 +41,7 @@ namespace m3u8.downloader
             var buffer = new char[ length ];
             using ( var reader = new StreamReader( stdin ) )
             {
-                while ( reader.Peek() >= 0 )
+                while ( 0 <= reader.Peek() )
                 {
                     reader.Read( buffer, 0, buffer.Length );
                 }
@@ -137,13 +137,7 @@ namespace m3u8.downloader
             Application.Run( new MainForm( m3u8FileUrl ) );
         }
 
-        private static void Application_ThreadException( object sender, ThreadExceptionEventArgs e )
-        {
-            MessageBox.Show( e.Exception.ToString(), "Application.ThreadException", MessageBoxButtons.OK, MessageBoxIcon.Error );
-        }
-        private static void CurrentDomain_UnhandledException( object sender, UnhandledExceptionEventArgs e )
-        {
-            MessageBox.Show( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException", MessageBoxButtons.OK, MessageBoxIcon.Error );
-        }
+        private static void Application_ThreadException( object sender, ThreadExceptionEventArgs e ) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
+        private static void CurrentDomain_UnhandledException( object sender, UnhandledExceptionEventArgs e ) => Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
     }
 }

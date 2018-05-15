@@ -49,10 +49,7 @@ namespace m3u8.downloader
         }
         #endregion
 
-        private void WaitBannerUC_Load( object sender, EventArgs e )
-        {
-            fuskingTimer.Enabled = true;
-        }
+        private void WaitBannerUC_Load( object sender, EventArgs e ) => fuskingTimer.Enabled = true;
         private void cancelButton_Click( object sender, EventArgs e )
         {
             cancelButton.Enabled = false;
@@ -63,18 +60,18 @@ namespace m3u8.downloader
         {
             fuskingTimer.Interval = 200;
 
-            Caption .Text = $"{_CaptionText}{_PercentSteps}%";
-            Progress.Text = $"{_CurrentSteps} of {_TotalSteps}";
-            Elapsed .Text = '(' + (DateTime.Now - _StartDateTime).ToString( "hh\\:mm\\:ss" /*---/ "hh\\:mm\\:ss\\.f" /---*/ ) + ')';
+            captionLabel .Text = $"{_CaptionText}{_PercentSteps}%";
+            progressLabel.Text = $"{_CurrentSteps} of {_TotalSteps}";
+            elapsedLabel .Text = '(' + (DateTime.Now - _StartDateTime).ToString( "hh\\:mm\\:ss" /*---/ "hh\\:mm\\:ss\\.f" /---*/ ) + ')';
             if ( !_SpeedText.IsNullOrEmpty() )
             {
-                SpeedLabel.Text = '[' + _SpeedText + ']';
-                SpeedLabel.Visible = true;
+                speedLabel.Text = '[' + _SpeedText + ']';
+                speedLabel.Visible = true;
             }
             else
             {
-                SpeedLabel.Text = null;
-                SpeedLabel.Visible = false;
+                speedLabel.Text = null;
+                speedLabel.Visible = false;
             }
 
             indicatorPictureBox.Image   = BitmapHolder.IndicatorI.Next();
@@ -82,14 +79,11 @@ namespace m3u8.downloader
 
             //----------------------------------------------------------------------//
             _FirstAppForm.Text = (_FirstAppForm.WindowState == FormWindowState.Minimized)
-                                ? ($"{_PercentSteps}%, {Elapsed.Text}" + (!_SpeedText.IsNullOrEmpty() ? $", {_SpeedText}" : null ))
+                                ? ($"{_PercentSteps}%, {elapsedLabel.Text}" + (!_SpeedText.IsNullOrEmpty() ? $", {_SpeedText}" : null ))
                                 : _FirstAppFormText;
         }
 
-        public void SetTotalSteps( int totalSteps )
-        {
-            _TotalSteps = totalSteps;
-        }
+        public void SetTotalSteps( int totalSteps ) => _TotalSteps = totalSteps;
         public void IncreaseSteps( string speedText )
         {            
             _CurrentSteps++;
@@ -100,25 +94,18 @@ namespace m3u8.downloader
 
         public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, string captionText = CAPTION_TEXT )
         {
-            if ( cts == null ) throw (new ArgumentNullException( nameof(cts) ));
+            if ( parent == null ) throw (new ArgumentNullException( nameof(parent) ));
+            if ( cts    == null ) throw (new ArgumentNullException( nameof(cts) ));
+            //------------------------------------------------------------------------//
 
             var uc = new WaitBannerUC() { _CancellationTokenSource = cts, _CaptionText = captionText };            
-            uc.Caption.Text = captionText;
+            uc.captionLabel.Text = captionText;
             parent.Controls.Add( uc );
             uc.BringToFront();
             uc.Anchor = AnchorStyles.None;
             uc.Location = new Point( (parent.ClientSize.Width - uc.Size.Width) >> 1, (parent.ClientSize.Height - uc.Size.Height) >> 1 );
-            //---SetMainFormCursor( Cursors.AppStarting );
             Application.DoEvents();
             return (uc);
-        }
-        private static void SetMainFormCursor( Cursor cursor )
-        {
-            var mainForm = Application.OpenForms.Cast< Form >().FirstOrDefault();
-            if ( mainForm != null )
-            {
-                mainForm.Cursor = cursor;
-            }
         }
     }
 }

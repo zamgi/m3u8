@@ -9,22 +9,26 @@ namespace m3u8.downloader
     /// </summary>
     internal sealed class BitmapHolder
     {
-        public BitmapHolder( IEnumerable< Icon > _Icons )
+        private Bitmap[] _Bitmaps;
+        private int      _CurrentPos;
+
+        public BitmapHolder( IEnumerable<Icon> icons )
         {
-            this.Bitmaps = _Icons.Select( icon => icon.ToBitmap() ).ToArray();
+            _Bitmaps    = icons.Select( icon => icon.ToBitmap() ).ToArray();
+            _CurrentPos = -1;
         }
 
-        private int _CurrentPos = -1;
         public void Reset() => _CurrentPos = -1;
-
-        public Bitmap[] Bitmaps { get; private set; }
+        
         public Bitmap Current
         {
             get
             {
-                if ( _CurrentPos < 0 || Bitmaps.Length <= _CurrentPos )
-                   _CurrentPos = 0;
-                return (Bitmaps[ _CurrentPos ]);
+                if ( _CurrentPos < 0 || _Bitmaps.Length <= _CurrentPos )
+                {
+                    _CurrentPos = 0;
+                }
+                return (_Bitmaps[ _CurrentPos ]);
             }
         }
         public Bitmap Next()
