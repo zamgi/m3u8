@@ -38,19 +38,12 @@
             // 
             this.numericUpDown.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.numericUpDown.Location = new System.Drawing.Point(65, 40);
-            this.numericUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.numericUpDown.Minimum = new decimal( new int[] { 1, 0, 0, 0 } );
             this.numericUpDown.Size = new System.Drawing.Size(89, 20);
             this.numericUpDown.TabIndex = 1;
             this.numericUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.numericUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.numericUpDown.Value = new decimal( new int[] { 1, 0, 0, 0 } );
+            this.numericUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
             // 
             // infinityCheckBox
             // 
@@ -63,6 +56,7 @@
             this.infinityCheckBox.Text = "Infinity";
             this.infinityCheckBox.UseVisualStyleBackColor = true;
             this.infinityCheckBox.CheckedChanged += new System.EventHandler(this.infinityCheckBox_CheckedChanged);
+            this.infinityCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             // 
             // okButton
             // 
@@ -73,6 +67,8 @@
             this.okButton.TabIndex = 2;
             this.okButton.Text = "Ok";
             this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.okButton.Cursor = System.Windows.Forms.Cursors.Hand;
             // 
             // cancelButton
             // 
@@ -83,6 +79,8 @@
             this.cancelButton.TabIndex = 3;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.cancelButton.Cursor = System.Windows.Forms.Cursors.Hand;
             // 
             // MaxDegreeOfParallelismForm
             // 

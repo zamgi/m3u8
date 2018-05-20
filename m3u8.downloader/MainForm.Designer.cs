@@ -56,7 +56,7 @@
             // 
             this.l1.AutoSize = true;
             this.l1.ForeColor = System.Drawing.Color.SteelBlue;
-            this.l1.Location = new System.Drawing.Point(3, 9);
+            this.l1.Location = new System.Drawing.Point(3, 3);
             this.l1.Size = new System.Drawing.Size(69, 13);
             this.l1.TabIndex = 1;
             this.l1.Text = ".m3u8 file url:";
@@ -75,13 +75,15 @@
             this.m3u8FileUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.m3u8FileUrlTextBox.Location = new System.Drawing.Point(6, 26);
+            this.m3u8FileUrlTextBox.Location = new System.Drawing.Point(6, 20);
             this.m3u8FileUrlTextBox.Multiline = true;
             this.m3u8FileUrlTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.m3u8FileUrlTextBox.Size = new System.Drawing.Size(1006, 52);
+            this.m3u8FileUrlTextBox.Size = new System.Drawing.Size(1006, 58);
             this.m3u8FileUrlTextBox.TabIndex = 0;
             this.m3u8FileUrlTextBox.TextChanged += new System.EventHandler(this.m3u8FileUrlTextBox_TextChanged);
-            // 
+            this.m3u8FileUrlTextBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 11.5F );
+            this.m3u8FileUrlTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //
             // m3u8FileResultTextBox
             // 
             this.m3u8FileResultTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -90,13 +92,18 @@
             this.m3u8FileResultTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.m3u8FileResultTextBox.Size = new System.Drawing.Size(1006, 446);
             this.m3u8FileResultTextBox.TabIndex = 5;
+            this.m3u8FileResultTextBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 11.5F );
+            this.m3u8FileResultTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             // 
             // outputFileNameTextBox
             // 
             this.outputFileNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.outputFileNameTextBox.Location = new System.Drawing.Point(427, 5);
-            this.outputFileNameTextBox.Size = new System.Drawing.Size(560, 20);
+            this.outputFileNameTextBox.Size = new System.Drawing.Size(560, 18);
             this.outputFileNameTextBox.TabIndex = 3;
+            this.outputFileNameTextBox.WordWrap = false;
+            this.outputFileNameTextBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 11.5F );
+            this.outputFileNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             // 
             // l2
             // 
@@ -113,8 +120,9 @@
             // 
             this.outputFileNameClearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.outputFileNameClearButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.outputFileNameClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.outputFileNameClearButton.Location = new System.Drawing.Point(993, 5);
-            this.outputFileNameClearButton.Size = new System.Drawing.Size(19, 20);
+            this.outputFileNameClearButton.Size = new System.Drawing.Size(19, 18);
             this.outputFileNameClearButton.TabIndex = 4;
             this.outputFileNameClearButton.Text = "X";
             this.toolTip.SetToolTip(this.outputFileNameClearButton, "clear \'output file name\'");
@@ -133,6 +141,7 @@
             this.statusBar.ShowItemToolTips = true;
             this.statusBar.Size = new System.Drawing.Size(1015, 22);
             this.statusBar.TabIndex = 2;
+            this.statusBar.SizingGrip = false;
             // 
             // endStepActionLabel
             // 
@@ -188,6 +197,7 @@
             this.m3u8FileWholeLoadAndSaveButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.m3u8FileWholeLoadAndSaveButton.AutoSize = true;
             this.m3u8FileWholeLoadAndSaveButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.m3u8FileWholeLoadAndSaveButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.m3u8FileWholeLoadAndSaveButton.Location = new System.Drawing.Point(186, 3);
             this.m3u8FileWholeLoadAndSaveButton.Size = new System.Drawing.Size(165, 23);
             this.m3u8FileWholeLoadAndSaveButton.TabIndex = 1;
@@ -200,6 +210,7 @@
             this.m3u8FileTextContentLoadButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.m3u8FileTextContentLoadButton.AutoSize = true;
             this.m3u8FileTextContentLoadButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.m3u8FileTextContentLoadButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.m3u8FileTextContentLoadButton.Location = new System.Drawing.Point(6, 3);
             this.m3u8FileTextContentLoadButton.Size = new System.Drawing.Size(156, 23);
             this.m3u8FileTextContentLoadButton.TabIndex = 0;
@@ -239,6 +250,8 @@
             // 
             // MainForm
             // 
+            //---this.BackColor = System.Drawing.Color.FromArgb( 255, 212, 208, 200 );
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1015, 579);

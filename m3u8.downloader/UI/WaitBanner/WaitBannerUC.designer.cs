@@ -98,7 +98,7 @@
             // 
             this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.cancelButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.cancelButton.Location = new System.Drawing.Point(97, 74);
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 1;
@@ -132,7 +132,7 @@
             this.fuskingTimer.Interval = 2500;
             this.fuskingTimer.Tick += new System.EventHandler(this.fuskingTimer_Tick);
             // 
-            // WaitBannerUC_v1
+            // WaitBannerUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

@@ -34,6 +34,8 @@
             this.cancelButton.TabIndex = 5;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
+            this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.cancelButton.Cursor = System.Windows.Forms.Cursors.Hand;
             // 
             // okButton
             // 
@@ -44,6 +46,8 @@
             this.okButton.TabIndex = 4;
             this.okButton.Text = "Ok";
             this.okButton.UseVisualStyleBackColor = true;
+            this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.okButton.Cursor = System.Windows.Forms.Cursors.Hand;
             // 
             // DGV
             // 
@@ -68,6 +72,7 @@
             this.DGV.TabIndex = 0;
             this.DGV.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DGV_CellPainting);
             this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
+            this.DGV.BorderStyle = System.Windows.Forms.BorderStyle.None;
             // 
             // DGV_excludesWordsColumn
             // 
@@ -83,20 +88,23 @@
             this.l1.Text = "filter:";
             // 
             // filterTextBox
-            // 
-            this.filterTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.filterTextBox.Location = new System.Drawing.Point(45, 1);
-            this.filterTextBox.Size = new System.Drawing.Size(186, 20);
+            //             
+            this.filterTextBox.Location = new System.Drawing.Point(45, 2);
+            this.filterTextBox.Size = new System.Drawing.Size(184, 18);
             this.filterTextBox.TabIndex = 2;
             this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
+            this.filterTextBox.WordWrap = false;
+            this.filterTextBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 11.5F );
+            this.filterTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             // 
             // clearFilterButton
             // 
             this.clearFilterButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.clearFilterButton.Enabled = false;
             this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.clearFilterButton.Location = new System.Drawing.Point(230, 1);
-            this.clearFilterButton.Size = new System.Drawing.Size(16, 20);
+            this.clearFilterButton.Location = new System.Drawing.Point(230, 2);
+            this.clearFilterButton.Size = new System.Drawing.Size(16, 18);
             this.clearFilterButton.TabIndex = 3;
             this.clearFilterButton.Text = "x";
             this.clearFilterButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -106,6 +114,7 @@
             // 
             // FileNameExcludesWordsEditor
             // 
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(307, 434);
