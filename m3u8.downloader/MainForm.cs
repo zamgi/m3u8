@@ -269,7 +269,6 @@ namespace m3u8.downloader
             autoCloseApplicationWhenEndsDownloadLabel.Image = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
         #endregion
 
-
         private async void m3u8FileTextContentLoadButton_Click( object sender, EventArgs e )
         {
             try
@@ -303,7 +302,7 @@ namespace m3u8.downloader
             var m3u8FileUrlText = m3u8FileUrlTextBox.Text.Trim();
             var m3u8FileUrl     = new Uri( m3u8FileUrlText );
 
-            using ( var sfd = new SaveFileDialog() { InitialDirectory = Settings.Default.OutputFileDirectory, DefaultExt = Settings.Default.OutputFileExtension, AddExtension = true } )
+            using ( var sfd = new SaveFileDialog() { InitialDirectory = Settings.Default.OutputFileDirectory, DefaultExt = Settings.Default.OutputFileExtension, AddExtension = true, } )
             {
                 sfd.FileName = PathnameCleaner.CleanPathnameAndFilename( outputFileNameTextBox_Text ).TrimStart( '-' );
                 if ( sfd.ShowDialog() != DialogResult.OK )
@@ -341,7 +340,7 @@ namespace m3u8.downloader
                     Output2ResultTextBox( m3u8File );
 
                     //-2-//
-                    Task.Delay( 3000 ).Wait( _Cts.Token );
+                    await Task.Delay( 3000, _Cts.Token );
                     UnsetResultTextBox();
 
                     _Wb.SetTotalSteps( m3u8File.Parts.Count );
@@ -359,8 +358,6 @@ namespace m3u8.downloader
                                     m3u8FileResultTextBox.AppendText( $" => '{p.Error.Message}' ----FAILED");
                                 }
                                 m3u8FileResultTextBox.AppendText( Environment.NewLine );
-
-                                //---_Wb.IncreaseSteps();
                             } );
                             var stepAction = new m3u8_processor.StepActionDelegate( p => this.BeginInvoke( stepAction_UI, p ) );
 
@@ -435,10 +432,10 @@ namespace m3u8.downloader
                         }
                         #endregion
 
-                        m3u8FileResultTextBox.AppendText( $"\r\n downloaded & writed parts {res.PartsSuccessCount} of {res.TotalParts}\r\n" );
+                        m3u8FileResultTextBox.AppendText( $"\r\n downloaded & writed parts {res.PartsSuccessCount} of {res.TotalParts}\r\n\r\n" );
                         m3u8FileResultTextBox.AppendText( $" elapsed: {sw.Elapsed}\r\n" );
-                        m3u8FileResultTextBox.AppendText( $" file: '{res.OutputFileName}'\r\n" );
-                        m3u8FileResultTextBox.AppendText( $" size: {(res.TotalBytes >> 20).ToString("0,0")} mb" );
+                        m3u8FileResultTextBox.AppendText( $"         file: '{res.OutputFileName}'\r\n" );
+                        m3u8FileResultTextBox.AppendText( $"       size: {(res.TotalBytes >> 20).ToString("0,0")} mb" );
 
                         FinishOpAction( m3u8FileResultTextBox );
 
@@ -449,7 +446,7 @@ namespace m3u8.downloader
                         }
                         #endregion
 
-                        this.MessageBox_ShowInformation( $"SUCCESS.\r\n\r\nelapsed: {sw.Elapsed}\r\nfile: '{res.OutputFileName}'\r\nsize: {(res.TotalBytes >> 20).ToString( "0,0" )} mb.", this.Text );
+                        this.MessageBox_ShowInformation( $"SUCCESS.\r\n\r\nelapsed: {sw.Elapsed}\r\n       file: '{res.OutputFileName}'\r\n      size: {(res.TotalBytes >> 20).ToString( "0,0" )} mb.", this.Text );
 
                         #region [.auto close application when ends download.]
                         if ( Settings.Default.AutoCloseApplicationWhenEndsDownload )
