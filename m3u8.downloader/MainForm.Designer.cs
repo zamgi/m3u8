@@ -214,9 +214,10 @@
             this.m3u8FileTextContentLoadButton.Location = new System.Drawing.Point(6, 3);
             this.m3u8FileTextContentLoadButton.Size = new System.Drawing.Size(156, 23);
             this.m3u8FileTextContentLoadButton.TabIndex = 0;
-            this.m3u8FileTextContentLoadButton.Text = "load .m3u8 file text-content...";
+            this.m3u8FileTextContentLoadButton.Text = "(load .m3u8 file text-content)...";
             this.m3u8FileTextContentLoadButton.UseVisualStyleBackColor = true;
             this.m3u8FileTextContentLoadButton.Click += new System.EventHandler(this.m3u8FileTextContentLoadButton_Click);
+            this.m3u8FileTextContentLoadButton.ForeColor = System.Drawing.Color.FromArgb( 70, 70, 70 );
             // 
             // mainLayoutPanel
             // 

@@ -269,16 +269,44 @@ namespace m3u8.downloader
             autoCloseApplicationWhenEndsDownloadLabel.Image = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
         #endregion
 
+        private Uri TryGet_m3u8FileUrl( out Exception error )
+        {
+            try
+            {
+                var m3u8FileUrlText = m3u8FileUrlTextBox.Text.Trim();
+                var m3u8FileUrl     = new Uri( m3u8FileUrlText );
+                if ( (m3u8FileUrl.Scheme != Uri.UriSchemeHttp) && (m3u8FileUrl.Scheme != Uri.UriSchemeHttps) )
+                {
+                    throw (new ArgumentException( $"Only '{Uri.UriSchemeHttp}' and '{Uri.UriSchemeHttps}' schemes are allowed.", nameof(m3u8FileUrl) ));
+                }
+                error = null;
+                return (m3u8FileUrl);
+            }
+            catch ( Exception ex )
+            {
+                error = ex;
+                return (null);
+            }
+        }
+
         private async void m3u8FileTextContentLoadButton_Click( object sender, EventArgs e )
         {
+            #region [.url.]
+            var m3u8FileUrl = TryGet_m3u8FileUrl( out var error );
+            if ( error != null )
+            {
+                Output2ResultTextBox_WithDelay( error );
+                return;
+            }
+            #endregion
+            //----------------------------------------------------//
+
             try
             {
                 BeginOpAction( 1 );
 
                 try
                 {
-                    var m3u8FileUrlText = m3u8FileUrlTextBox.Text.Trim();
-                    var m3u8FileUrl = new Uri( m3u8FileUrlText );
                     var m3u8File = await _Mc.DownloadFile( m3u8FileUrl, _Cts.Token );
 
                     Output2ResultTextBox( m3u8File );
@@ -298,10 +326,16 @@ namespace m3u8.downloader
 
         private async void m3u8FileWholeLoadAndSaveButton_Click( object sender, EventArgs e )
         {
-            #region [.save file name dialog.]
-            var m3u8FileUrlText = m3u8FileUrlTextBox.Text.Trim();
-            var m3u8FileUrl     = new Uri( m3u8FileUrlText );
+            #region [.url.]
+            var m3u8FileUrl = TryGet_m3u8FileUrl( out var error );
+            if ( error != null )
+            {
+                Output2ResultTextBox_WithDelay( error );
+                return;
+            }
+            #endregion
 
+            #region [.save file name dialog.]
             using ( var sfd = new SaveFileDialog() { InitialDirectory = Settings.Default.OutputFileDirectory, DefaultExt = Settings.Default.OutputFileExtension, AddExtension = true, } )
             {
                 sfd.FileName = PathnameCleaner.CleanPathnameAndFilename( outputFileNameTextBox_Text ).TrimStart( '-' );
@@ -563,6 +597,12 @@ namespace m3u8.downloader
         {
             m3u8FileResultTextBox.ForeColor = Color.Red;
             m3u8FileResultTextBox.Text      = ex.ToString();
+        }
+        private async void Output2ResultTextBox_WithDelay( Exception ex, int millisecondsDelay = 250 )
+        {
+            m3u8FileResultTextBox.Text = null;
+            await Task.Delay( millisecondsDelay );
+            Output2ResultTextBox( ex );
         }
         private void Output2ResultTextBox_IfNotIsCancellationRequested( Exception ex )
         {
