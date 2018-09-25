@@ -31,7 +31,7 @@ namespace m3u8
                 {
                     var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( M3U8_FILE_URL ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
 
-                    var p = new m3u8_processor.DownloadFileAndSaveInputParams()
+                    var ip = new m3u8_processor.DownloadFileAndSaveInputParams()
                     {
                         Cts                    = cts,
                         m3u8FileUrl            = M3U8_FILE_URL,
@@ -43,21 +43,28 @@ namespace m3u8
                             Timeout             = TimeSpan.FromSeconds( 30 ),
                             ConnectionClose     = false,
                         },
-                        StepAction = new m3u8_processor.StepActionDelegate( ( t ) =>
+                        RequestStepAction = new m3u8_processor.RequestStepActionDelegate( p =>
                         {
-                            var msg = $"{t.PartOrderNumber} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'";
-                            if ( t.Error != null )
+                            var msg = $"{p.PartOrderNumber} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'";
+                            if ( p.Error != null )
                             {
-                                CONSOLE.WriteLineError( msg + $" => {t.Error.Message}" );
+                                CONSOLE.WriteLineError( msg + $" => {p.Error}" );
                             }
                             else
                             {
                                 CONSOLE.WriteLine( msg );
                             }
                         } ),
+                        ResponseStepAction = new m3u8_processor.ResponseStepActionDelegate( p =>
+                        {
+                            if ( p.Part.Error != null )
+                            {
+                                CONSOLE.WriteLineError( $" => {p.Part.Error}" );
+                            }
+                        } ),
                     };
 
-                    var res = m3u8_processor.DownloadFileAndSave_Async( p ).WaitForTaskEndsOrKeyboardBreak( cts );
+                    var res = m3u8_processor.DownloadFileAndSave_Async( ip ).WaitForTaskEndsOrKeyboardBreak( cts );
 
                     CONSOLE.WriteLine( $"\r\nM3U8-FILE-URL: '{res.m3u8FileUrl}'" );
                     CONSOLE.WriteLine( $"OutputFileName: '{res.OutputFileName}'" );

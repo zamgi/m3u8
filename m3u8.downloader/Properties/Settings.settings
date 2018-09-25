@@ -11,6 +11,15 @@
     <Setting Name="OutputFileExtension" Type="System.String" Scope="User">
       <Value Profile="(Default)">.avi</Value>
     </Setting>
+    <Setting Name="MaxDegreeOfParallelism" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">8</Value>
+    </Setting>
+    <Setting Name="AutoMinimizeWindowWhenStartsDownload" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="AutoCloseApplicationWhenEndsDownload" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
     <Setting Name="NameCleanerExcludesWords" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
 &lt;ArrayOfString xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
@@ -50,15 +59,6 @@
   &lt;string&gt;webdl&lt;/string&gt;
   &lt;string&gt;webrip&lt;/string&gt;
 &lt;/ArrayOfString&gt;</Value>
-    </Setting>
-    <Setting Name="MaxDegreeOfParallelism" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">32</Value>
-    </Setting>
-    <Setting Name="AutoMinimizeWindowWhenStartsDownload" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="AutoCloseApplicationWhenEndsDownload" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -1,17 +1,18 @@
 window.onload = function () {
-//debugger;
-
     // work object
     window.bg = new bgObj();
 
     chrome.webRequest.onCompleted.addListener(function (details) {
             var extension = details.url.split('?')[ 0 ].split('.').pop();
-            if ((extension || '').toLowerCase() == 'm3u8') {
-                //debugger;
-                //console.log("-=XXX=- => '" + details.url + "', tabId: " + details.tabId);
-
+            if ((extension || '').toLowerCase() === 'm3u8') {
                 window.bg.save_m3u8_url( details.tabId, details.url );
-                window.bg.tabs[ details.tabId ].port_info.postMessage({ method: 'set_m3u8_urls', data: window.bg.tabs[ details.tabId ].m3u8_urls });
+                try {
+                    var t = window.bg.tabs[ details.tabId ];
+                    t.port_info.postMessage({ method: 'set_m3u8_urls', data: t.m3u8_urls });
+                }
+                catch (ex) {
+                    console.log(ex);
+                }
                 window.bg.m3u8_urls_count( { tab_id: details.tabId } );
             }
         }, {
@@ -30,11 +31,10 @@ window.onload = function () {
 
     // set handler to tabs
     chrome.tabs.onUpdated.addListener(function (id, info, tab) {
-//debugger;
         // if tab load
         if (info && info.status && (info.status.toLowerCase() === 'complete')) {
             // if user open empty tab or ftp protocol and etc.
-            if (!id || !tab || !tab.url || ((tab.url.indexOf('http:') == -1) && (tab.url.indexOf('https:') == -1))) {
+            if (!id || !tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
                 if (id) {
                     chrome.browserAction.disable(id);
                 }
@@ -48,20 +48,20 @@ window.onload = function () {
 
             // connect with new tab, and save object
             var port = chrome.tabs.connect(id);
-            window.bg.tabs[id].port_info = port;
+            var t = window.bg.tabs[id];
+            t.port_info = port;
 
             // run function in script_in_content.js
             chrome.tabs.executeScript(id, { code: "initialization()" });
 
             // send id, hosts and others information into script_in_content.js
-            window.bg.tabs[id].port_info.postMessage({ method: 'setTabId', data: id });
-            window.bg.tabs[id].port_info.postMessage({ method: 'set_m3u8_urls', data: window.bg.tabs[id].m3u8_urls });
-            window.bg.tabs[id].port_info.postMessage({ method: 'run' });
-        };
+            port.postMessage({ method: 'setTabId', data: id });
+            port.postMessage({ method: 'set_m3u8_urls', data: t.m3u8_urls });
+            port.postMessage({ method: 'run' });
+        }
     });
 
     chrome.tabs.onRemoved.addListener(function (id, info) {
-//debugger;
         window.bg.removeTab(id);
     });
 };
@@ -112,7 +112,7 @@ window.bgObj.prototype = {
             else if (!o.m3u8_urls) {
                 o.m3u8_urls = [];
             }
-            if (o.m3u8_urls.indexOf(m3u8_url) == -1) {
+            if (o.m3u8_urls.indexOf(m3u8_url) === -1) {
                 o.m3u8_urls.push(m3u8_url);
             }
         }

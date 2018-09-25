@@ -384,27 +384,31 @@ namespace m3u8.downloader
                     {
                         var res = await Task.Run( () =>
                         {
-                            var stepAction_UI = new m3u8_processor.StepActionDelegate( p =>
+                            var requestStepAction_UI = new m3u8_processor.RequestStepActionDelegate( p =>
                             {
                                 m3u8FileResultTextBox.AppendText( $"#{p.PartOrderNumber} of {p.TotalPartCount}). '{p.Part.RelativeUrlName}'..." );
                                 if ( !p.Success )
                                 {
-                                    m3u8FileResultTextBox.AppendText( $" => '{p.Error.Message}' ----FAILED");
+                                    m3u8FileResultTextBox.AppendException( p.Error );
                                 }
-                                m3u8FileResultTextBox.AppendText( Environment.NewLine );
+                                m3u8FileResultTextBox.AppendEmptyLine();
                             } );
-                            var stepAction = new m3u8_processor.StepActionDelegate( p => this.BeginInvoke( stepAction_UI, p ) );
+                            var requestStepAction = new m3u8_processor.RequestStepActionDelegate( p => this.BeginInvoke( requestStepAction_UI, p ) );
 
                             var sw_download = new Stopwatch();
                             var totalBytesLength = 0L;
-                            var progressStepAction_UI = new m3u8_processor.ProgressStepActionDelegate( p =>
+                            var responseStepAction_UI = new m3u8_processor.ResponseStepActionDelegate( p =>
                             {
-                                endStepActionLabel.Text = $"received {p.SuccessReceivedPartCount} of {p.TotalPartCount}";
+                                responseStepActionLabel.Text = $"received {p.SuccessReceivedPartCount} of {p.TotalPartCount}";
                                 if ( p.FailedReceivedPartCount != 0 )
                                 {
-                                    endStepActionLabel.Text += $", (failed: {p.FailedReceivedPartCount})";
+                                    responseStepActionLabel.Text += $", (failed: {p.FailedReceivedPartCount})";
                                 }
 
+                                if ( p.Part.Error != null )
+                                {
+                                    m3u8FileResultTextBox.AppendException( p.Part.Error );
+                                }
 
                                 totalBytesLength += p.BytesLength;
                                 var speedText = default(string);
@@ -421,13 +425,13 @@ namespace m3u8.downloader
                                         if ( totalBytesLength < 100000 ) speedText = ((totalBytesLength / elapsedSeconds) / 1000).ToString("N2") + " Kbit/s";
                                         else                             speedText = ((totalBytesLength / elapsedSeconds) / 1000000).ToString("N1") + " Mbit/s";
 
-                                        endStepActionLabel.Text += $", [speed: {speedText}]";
+                                        responseStepActionLabel.Text += $", [speed: {speedText}]";
                                     }
                                 }
 
                                 _Wb.IncreaseSteps( speedText );
                             } );
-                            var progressStepAction = new m3u8_processor.ProgressStepActionDelegate( p => this.BeginInvoke( progressStepAction_UI, p ) );
+                            var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( p => this.BeginInvoke( responseStepAction_UI, p ) );
                             var ip = new m3u8_processor.DownloadPartsAndSaveInputParams()
                             {
                                 mc                     = _Mc,
@@ -435,8 +439,8 @@ namespace m3u8.downloader
                                 OutputFileName         = _OutputFileName,
                                 Cts                    = _Cts,
                                 MaxDegreeOfParallelism = Settings.Default.MaxDegreeOfParallelism,
-                                StepAction             = stepAction,
-                                ProgressStepAction     = progressStepAction,         
+                                RequestStepAction      = requestStepAction,
+                                ResponseStepAction     = responseStepAction,         
                             };
                             //sw_download.Start();
                             var result = m3u8_processor.DownloadPartsAndSave( ip );
@@ -529,9 +533,9 @@ namespace m3u8.downloader
         {
             if ( (_Cts?.IsCancellationRequested).GetValueOrDefault() )
             {
-                m3u8FileResultTextBox.AppendText( Environment.NewLine );
-                m3u8FileResultTextBox.AppendText( Environment.NewLine );
-                m3u8FileResultTextBox.AppendText( ".....cancel....." );
+                m3u8FileResultTextBox.AppendEmptyLine();
+                m3u8FileResultTextBox.AppendEmptyLine();
+                m3u8FileResultTextBox.AppendText( ".....Canceled by User....." );
             }
 
             _Mc? .Dispose(); _Mc  = null;
@@ -560,7 +564,7 @@ namespace m3u8.downloader
         {
             m3u8FileResultTextBox.ForeColor = Color.FromKnownColor( KnownColor.WindowText );
             m3u8FileResultTextBox.Clear();
-            endStepActionLabel.Text = string.Empty;
+            responseStepActionLabel.Text = string.Empty;
             Application.DoEvents();
         }
         private void SetEnabledUI( bool enabled )
@@ -614,9 +618,17 @@ namespace m3u8.downloader
         private void Append2ResultTextBox( Exception ex )
         {
             m3u8FileResultTextBox.ForeColor = Color.Red;
-            m3u8FileResultTextBox.AppendText( Environment.NewLine );
-            m3u8FileResultTextBox.AppendText( Environment.NewLine );
-            m3u8FileResultTextBox.AppendText( ex.ToString() );
+            m3u8FileResultTextBox.AppendEmptyLine();
+            m3u8FileResultTextBox.AppendEmptyLine();
+            var mex = ex as m3u8_Exception;
+            if ( mex != null )
+            {
+                m3u8FileResultTextBox.AppendText( mex.Message );
+            }
+            else
+            {
+                m3u8FileResultTextBox.AppendException( ex );
+            }
         }
 
         #region [.ChangeOutputFileForm.]

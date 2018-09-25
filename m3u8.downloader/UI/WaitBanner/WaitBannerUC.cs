@@ -58,19 +58,24 @@ namespace m3u8.downloader
         }
         private void fuskingTimer_Tick( object sender, EventArgs e )
         {
+            const string HH_MM_SS = "hh\\:mm\\:ss" /*---/ "hh\\:mm\\:ss\\.f" /---*/;
+            const string MM_SS    = "mm\\:ss";
+
             fuskingTimer.Interval = 200;
 
+            var ts = DateTime.Now - _StartDateTime;
+
             captionLabel .Text = $"{_CaptionText}{_PercentSteps}%";
-            progressLabel.Text = $"{_CurrentSteps} of {_TotalSteps}";
-            elapsedLabel .Text = '(' + (DateTime.Now - _StartDateTime).ToString( "hh\\:mm\\:ss" /*---/ "hh\\:mm\\:ss\\.f" /---*/ ) + ')';
+            progressLabel.Text = $"{_CurrentSteps} of {_TotalSteps}";            
+            elapsedLabel .Text = '(' + ts.ToString( HH_MM_SS ) + ')';
             if ( !_SpeedText.IsNullOrEmpty() )
             {
-                speedLabel.Text = '[' + _SpeedText + ']';
+                speedLabel.Text    = '[' + _SpeedText + ']';
                 speedLabel.Visible = true;
             }
             else
             {
-                speedLabel.Text = null;
+                speedLabel.Text    = null;
                 speedLabel.Visible = false;
             }
 
@@ -79,7 +84,9 @@ namespace m3u8.downloader
 
             //----------------------------------------------------------------------//
             _FirstAppForm.Text = (_FirstAppForm.WindowState == FormWindowState.Minimized)
-                                ? ($"{_PercentSteps}%, {elapsedLabel.Text}" + (!_SpeedText.IsNullOrEmpty() ? $", {_SpeedText}" : null ))
+                                ? ($"{_PercentSteps}%, ({((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )))})" +
+                                    (!_SpeedText.IsNullOrEmpty() ? $", {_SpeedText}" : null)
+                                  )
                                 : _FirstAppFormText;
         }
 
@@ -104,8 +111,17 @@ namespace m3u8.downloader
             uc.BringToFront();
             uc.Anchor = AnchorStyles.None;
             uc.Location = new Point( (parent.ClientSize.Width - uc.Size.Width) >> 1, (parent.ClientSize.Height - uc.Size.Height) >> 1 );
+            //---SetMainFormCursor( Cursors.AppStarting );
             Application.DoEvents();
             return (uc);
         }
+        /*private static void SetMainFormCursor( Cursor cursor )
+        {
+            var mainForm = Application.OpenForms.Cast< Form >().FirstOrDefault();
+            if ( mainForm != null )
+            {
+                mainForm.Cursor = cursor;
+            }
+        }*/
     }
 }

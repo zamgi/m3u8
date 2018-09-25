@@ -109,6 +109,7 @@ namespace m3u8
         public static m3u8_file_t Parse( string content, Uri baseAddress )
         {
             var lines = from row in content.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
+//---.Take( 50 )
                         let line = row.Trim()
                         where (!line.IsNullOrEmpty() && !line.StartsWith( "#" ))
                         select line
@@ -194,19 +195,14 @@ namespace m3u8
     /// </summary>
     public sealed class m3u8_ArgumentException : ArgumentNullException
     {
-        public m3u8_ArgumentException() : base() { }
         public m3u8_ArgumentException( string paramName ) : base( paramName ) { }
-        public m3u8_ArgumentException( string message, Exception innerException ) : base( message, innerException ) { }
-        public m3u8_ArgumentException( string paramName, string message ) : base( paramName, message ) { }
     }
     /// <summary>
     /// 
     /// </summary>
     public sealed class m3u8_Exception : HttpRequestException
-    {
-        public m3u8_Exception() : base() { }
+    {        
         public m3u8_Exception( string message ) : base( message ) { }
-        public m3u8_Exception( string message, Exception inner ) : base( message, inner ) { }
     }
 
     /// <summary>
@@ -254,6 +250,7 @@ namespace m3u8
 
             var ct = cancellationToken.GetValueOrDefault( CancellationToken.None );
             var attemptRequestCountByPart = InitParams.AttemptRequestCount.GetValueOrDefault( 1 );
+//Task.Delay( 5000 ).Wait( ct );
             for ( var attemptRequestCount = attemptRequestCountByPart; 0 < attemptRequestCount; attemptRequestCount-- )
             {
                 try
@@ -309,7 +306,7 @@ namespace m3u8
                             throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
                         }
 
-                        var bytes = content.ReadAsByteArrayAsyncEx( ct ); //---var bytes = await content.ReadAsByteArrayAsync();
+                        var bytes = content.ReadAsByteArrayAsyncEx( ct );
                         part.SetBytes( bytes );
                         return (part);
                     }
@@ -351,8 +348,8 @@ namespace m3u8
                 mc                     = _mc;
                 m3u8File               = _m3u8File;
                 cts                    = ip.Cts;
-                stepAction             = ip.StepAction;
-                progressStepAction     = ip.ProgressStepAction;
+                requestStepAction      = ip.RequestStepAction;
+                responseStepAction     = ip.ResponseStepAction;
                 maxDegreeOfParallelism = ip.MaxDegreeOfParallelism;
             }
             public download_m3u8File_parts_parallel_params_t( DownloadPartsAndSaveInputParams ip ) : this()
@@ -360,17 +357,17 @@ namespace m3u8
                 mc                     = ip.mc;
                 m3u8File               = ip.m3u8File;
                 cts                    = ip.Cts;
-                stepAction             = ip.StepAction;
-                progressStepAction     = ip.ProgressStepAction;
+                requestStepAction      = ip.RequestStepAction;
+                responseStepAction     = ip.ResponseStepAction;
                 maxDegreeOfParallelism = ip.MaxDegreeOfParallelism;
             }
-
+        
             public m3u8_client mc       { get; set; }
             public m3u8_file_t m3u8File { get; set; }
 
             public CancellationTokenSource    cts { get; set; }
-            public StepActionDelegate         stepAction { get; set; }
-            public ProgressStepActionDelegate progressStepAction { get; set; }
+            public RequestStepActionDelegate  requestStepAction { get; set; }
+            public ResponseStepActionDelegate responseStepAction { get; set; }
             public int                        maxDegreeOfParallelism { get; set; }
         }
 
@@ -382,7 +379,7 @@ namespace m3u8
             var successReceivedPartCount = 0;
             var failedReceivedPartCount  = 0;
 
-            ip.progressStepAction?.Invoke( new ProgressStepActionParams( totalPatrs ) );
+            ip.responseStepAction?.Invoke( new ResponseStepActionParams( totalPatrs ) );
 
             var expectedPartNumber = ip.m3u8File.Parts.FirstOrDefault().OrderNumber;
             var maxPartNumber      = ip.m3u8File.Parts.LastOrDefault ().OrderNumber;
@@ -390,6 +387,8 @@ namespace m3u8
             var downloadPartsSet   = new SortedSet< m3u8_part_ts >( default(m3u8_part_ts_comparer) );
 
             using ( DefaultConnectionLimitSaver.Create( ip.maxDegreeOfParallelism ) )
+            using ( var innerCts  = new CancellationTokenSource() )
+            using ( var joinedCts = CancellationTokenSource.CreateLinkedTokenSource( ct, innerCts.Token ) )
             using ( var canExtractPartEvent = new AutoResetEvent( false ) )
             using ( var semaphore = new SemaphoreSlim( ip.maxDegreeOfParallelism ) )
             {
@@ -398,43 +397,47 @@ namespace m3u8
                 {
                     for ( var n = 1; sourceQueue.Count != 0; n++ )
                     {
-                        semaphore.Wait( ct );
+                        semaphore.Wait( joinedCts.Token );
                         var part = sourceQueue.Dequeue();
 
-                        var p = StepActionParams.CreateSuccess( totalPatrs, n, part );
-                        ip.stepAction?.Invoke( p );
+                        var rq = RequestStepActionParams.CreateSuccess( totalPatrs, n, part );
+                        ip.requestStepAction?.Invoke( rq );
 
-                        ip.mc.DownloadPart( part, baseAddress, ct )
-                            .ContinueWith( (continuationTask) =>
+                        ip.mc.DownloadPart( part, baseAddress, joinedCts.Token )
+                            .ContinueWith( ( continuationTask ) =>
                             {
-                                var ep = new ProgressStepActionParams( totalPatrs );
+                                var rsp = new ResponseStepActionParams( totalPatrs );
 
                                 if ( continuationTask.IsFaulted )
                                 {
                                     Interlocked.Increment( ref expectedPartNumber );
 
-                                    ip.stepAction?.Invoke( p.SetError( continuationTask.Exception ) );
-                                    ep.SuccessReceivedPartCount = successReceivedPartCount;
-                                    ep.FailedReceivedPartCount  = Interlocked.Increment( ref failedReceivedPartCount );
+                                    part.SetError( continuationTask.Exception );
 
-                                    ip.progressStepAction?.Invoke( ep );
+                                    rsp.SuccessReceivedPartCount = successReceivedPartCount;
+                                    rsp.FailedReceivedPartCount = Interlocked.Increment( ref failedReceivedPartCount );
+                                    rsp.Part = part;
+
+                                    ip.responseStepAction?.Invoke( rsp );
+
+                                    innerCts.Cancel();
                                 }
                                 else if ( !continuationTask.IsCanceled )
                                 {
                                     var downloadPart = continuationTask.Result;
                                     if ( downloadPart.Error != null )
                                     {
-                                        ip.stepAction?.Invoke( p.SetError( downloadPart.Error ) );
-                                        ep.SuccessReceivedPartCount = successReceivedPartCount;
-                                        ep.FailedReceivedPartCount  = Interlocked.Increment( ref failedReceivedPartCount );
+                                        rsp.SuccessReceivedPartCount = successReceivedPartCount;
+                                        rsp.FailedReceivedPartCount = Interlocked.Increment( ref failedReceivedPartCount );
                                     }
                                     else
                                     {
-                                        ep.SuccessReceivedPartCount = Interlocked.Increment( ref successReceivedPartCount );
-                                        ep.FailedReceivedPartCount  = failedReceivedPartCount;
-                                        ep.BytesLength              = downloadPart.Bytes.Length;
+                                        rsp.SuccessReceivedPartCount = Interlocked.Increment( ref successReceivedPartCount );
+                                        rsp.FailedReceivedPartCount = failedReceivedPartCount;
+                                        rsp.BytesLength = downloadPart.Bytes.Length;
                                     }
-                                    ip.progressStepAction?.Invoke( ep );
+                                    rsp.Part = downloadPart;
+                                    ip.responseStepAction?.Invoke( rsp );
 
                                     lock ( downloadPartsSet )
                                     {
@@ -442,16 +445,16 @@ namespace m3u8
                                         canExtractPartEvent.Set();
                                     }
                                 }
-                            }, ct );
+                            }, joinedCts.Token );
                     }
-                }, ct );
+                }, joinedCts.Token );
 
                 //-2-//
-                for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.maxDegreeOfParallelism ) ); 
-                        expectedPartNumber <= maxPartNumber /*&& !ct.IsCancellationRequested*/; )
+                for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.maxDegreeOfParallelism ) );
+                        expectedPartNumber <= maxPartNumber; )
                 {
-                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent, ct.WaitHandle } );
-                    if ( idx == 1 ) //ct.IsCancellationRequested
+                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/,joinedCts.Token.WaitHandle /*1*/, } );
+                    if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
                         break;
                     if ( idx != 0 ) //[canExtractPartEvent := 0]
                         continue;
@@ -485,10 +488,17 @@ namespace m3u8
                     }
                 }
 
+                //-3.0-//
+                if ( innerCts.IsCancellationRequested )
+                {
+                    throw (new m3u8_Exception( "Canceled after part download error" ));
+                }
+
                 //-3-//
                 task_download.Wait();
             }
 
+            //-4-//
             ct.ThrowIfCancellationRequested();
         }
         //-----------------------------------------------------------------------------//
@@ -496,7 +506,7 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
-        public struct StepActionParams
+        public struct RequestStepActionParams
         {
             public int          TotalPartCount  { get; private set; }
             public int          PartOrderNumber { get; private set; }
@@ -504,38 +514,37 @@ namespace m3u8
             public Exception    Error           { get; private set; }
             public bool         Success         => (Error == null);
 
-            internal StepActionParams SetError( Exception error )
+            internal RequestStepActionParams SetError( Exception error )
             {
                 Error = error;
                 return (this);
             }
 
-            internal static StepActionParams CreateSuccess( int totalPartCount, int partOrderNumber, m3u8_part_ts part ) =>
-                new StepActionParams() { TotalPartCount = totalPartCount, PartOrderNumber = partOrderNumber, Part = part };
+            internal static RequestStepActionParams CreateSuccess( int totalPartCount, int partOrderNumber, m3u8_part_ts part ) 
+                => new RequestStepActionParams() { TotalPartCount = totalPartCount, PartOrderNumber = partOrderNumber, Part = part };
         }
         /// <summary>
         /// 
         /// </summary>
-        public delegate void StepActionDelegate( StepActionParams p );
+        public delegate void RequestStepActionDelegate( RequestStepActionParams p );
         /// <summary>
         /// 
         /// </summary>
-        public struct ProgressStepActionParams
+        public struct ResponseStepActionParams
         {
-            internal ProgressStepActionParams( int totalPartCount ) : this()
-            {
-                TotalPartCount = totalPartCount;
-            }
+            internal ResponseStepActionParams( int totalPartCount ) : this()
+                => TotalPartCount = totalPartCount;
 
             public int TotalPartCount           { get; private  set; }
             public int SuccessReceivedPartCount { get; internal set; }
             public int FailedReceivedPartCount  { get; internal set; }
             public int BytesLength              { get; internal set; }
+            public m3u8_part_ts Part            { get; internal set; }
         }
         /// <summary>
         /// 
         /// </summary>
-        public delegate void ProgressStepActionDelegate( ProgressStepActionParams p );
+        public delegate void ResponseStepActionDelegate( ResponseStepActionParams p );
 
         /// <summary>
         /// 
@@ -549,8 +558,8 @@ namespace m3u8
             public string OutputFileName { get; set; }
 
             public CancellationTokenSource    Cts { get; set; }
-            public StepActionDelegate         StepAction { get; set; }
-            public ProgressStepActionDelegate ProgressStepAction { get; set; }
+            public RequestStepActionDelegate  RequestStepAction { get; set; }
+            public ResponseStepActionDelegate ResponseStepAction { get; set; }
 
             private int? _MaxDegreeOfParallelism;
             public int MaxDegreeOfParallelism
@@ -660,8 +669,8 @@ namespace m3u8
             public string      OutputFileName { get; set; }
 
             public CancellationTokenSource    Cts { get; set; }
-            public StepActionDelegate         StepAction { get; set; }
-            public ProgressStepActionDelegate ProgressStepAction { get; set; }
+            public RequestStepActionDelegate  RequestStepAction { get; set; }
+            public ResponseStepActionDelegate ResponseStepAction { get; set; }
             public int                        MaxDegreeOfParallelism { get; set; }
         }
         /// <summary>
@@ -670,9 +679,7 @@ namespace m3u8
         public struct DownloadPartsAndSaveResult
         {
             internal DownloadPartsAndSaveResult( string outputFileName ) : this()
-            {
-                OutputFileName = outputFileName;
-            }
+                => OutputFileName = outputFileName;
 
             public string OutputFileName   { get; internal set; }
 

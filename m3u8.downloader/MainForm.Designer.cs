@@ -37,7 +37,7 @@
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.outputFileNameClearButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.statusBar = new System.Windows.Forms.StatusStrip();
-            this.endStepActionLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.responseStepActionLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.autoCloseApplicationWhenEndsDownloadLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.autoMinimizeWindowWhenStartsDownloadLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.excludesWordsLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -132,7 +132,7 @@
             // statusBar
             // 
             this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.endStepActionLabel,
+            this.responseStepActionLabel,
             this.autoCloseApplicationWhenEndsDownloadLabel,
             this.autoMinimizeWindowWhenStartsDownloadLabel,
             this.excludesWordsLabel,
@@ -143,12 +143,12 @@
             this.statusBar.TabIndex = 2;
             this.statusBar.SizingGrip = false;
             // 
-            // endStepActionLabel
+            // responseStepActionLabel
             // 
-            this.endStepActionLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.endStepActionLabel.Size = new System.Drawing.Size(675, 17);
-            this.endStepActionLabel.Spring = true;
-            this.endStepActionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.responseStepActionLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.responseStepActionLabel.Size = new System.Drawing.Size(675, 17);
+            this.responseStepActionLabel.Spring = true;
+            this.responseStepActionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // autoCloseApplicationWhenEndsDownloadLabel
             // 
@@ -289,7 +289,7 @@
         private System.Windows.Forms.ButtonWithFocusCues outputFileNameClearButton;
         private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel maxDegreeOfParallelismLabel;
-        private System.Windows.Forms.ToolStripStatusLabel endStepActionLabel;
+        private System.Windows.Forms.ToolStripStatusLabel responseStepActionLabel;
         private System.Windows.Forms.ToolStripStatusLabel excludesWordsLabel;
         private System.Windows.Forms.ToolStripStatusLabel autoMinimizeWindowWhenStartsDownloadLabel;
         private System.Windows.Forms.ToolStripStatusLabel autoCloseApplicationWhenEndsDownloadLabel;
