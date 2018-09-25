@@ -204,14 +204,8 @@ namespace m3u8
     /// </summary>
     internal static class _Extensions
     {
-        public static bool IsNullOrEmpty( this string s )
-        {
-            return (string.IsNullOrEmpty( s ));
-        }
-        public static bool IsNullOrWhiteSpace( this string s )
-        {
-            return (string.IsNullOrWhiteSpace( s ));
-        }
+        public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
+        public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
 
         public static void WaitForTaskEndsOrKeyboardBreak( this Task task, CancellationTokenSource cts )
         {

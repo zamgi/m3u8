@@ -12,7 +12,7 @@ namespace m3u8.downloader
         private Bitmap[] _Bitmaps;
         private int      _CurrentPos;
 
-        public BitmapHolder( IEnumerable<Icon> icons )
+        public BitmapHolder( IEnumerable< Icon > icons )
         {
             _Bitmaps    = icons.Select( icon => icon.ToBitmap() ).ToArray();
             _CurrentPos = -1;
@@ -45,7 +45,7 @@ namespace m3u8.downloader
             {
                 if ( _IndicatorI == null )
                 {
-                    lock (typeof(BitmapHolder))
+                    lock ( typeof(BitmapHolder) )
                     {
                         _IndicatorI = new BitmapHolder
                         (

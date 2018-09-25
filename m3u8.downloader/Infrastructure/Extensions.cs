@@ -29,26 +29,6 @@ namespace m3u8.downloader
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : (T?) null);
 
-        /*public static Exception ShellExploreAndSelectFile( string filePath )
-        {
-            try
-            {
-                var fileLocation = Path.GetFullPath( filePath );
-                using ( Process.Start( "explorer", $"/e,/select,\"{fileLocation}\"" ) )
-                {
-                    return (null);
-                }
-            }
-            catch ( Exception ex )
-            {
-                return (ex);
-            }
-        }*/
-
-        /*[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SetDoubleBuffered( this Control control, bool value ) =>
-            typeof(Control).GetProperty( "DoubleBuffered", BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance )?.SetValue( control, value );*/
-
         public static void DeleteFile_NoThrow( string fileName )
         {
             try

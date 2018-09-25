@@ -109,7 +109,6 @@ namespace m3u8
         public static m3u8_file_t Parse( string content, Uri baseAddress )
         {
             var lines = from row in content.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
-//---.Take( 50 )
                         let line = row.Trim()
                         where (!line.IsNullOrEmpty() && !line.StartsWith( "#" ))
                         select line
@@ -250,7 +249,7 @@ namespace m3u8
 
             var ct = cancellationToken.GetValueOrDefault( CancellationToken.None );
             var attemptRequestCountByPart = InitParams.AttemptRequestCount.GetValueOrDefault( 1 );
-//Task.Delay( 5000 ).Wait( ct );
+
             for ( var attemptRequestCount = attemptRequestCountByPart; 0 < attemptRequestCount; attemptRequestCount-- )
             {
                 try

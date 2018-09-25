@@ -43,8 +43,6 @@ namespace m3u8.downloader
             }
             base.Dispose( disposing );
 
-            //---SetMainFormCursor( Cursors.Default );
-            //---Application.DoEvents();
             _FirstAppForm.Text = _FirstAppFormText;
         }
         #endregion
@@ -111,17 +109,8 @@ namespace m3u8.downloader
             uc.BringToFront();
             uc.Anchor = AnchorStyles.None;
             uc.Location = new Point( (parent.ClientSize.Width - uc.Size.Width) >> 1, (parent.ClientSize.Height - uc.Size.Height) >> 1 );
-            //---SetMainFormCursor( Cursors.AppStarting );
             Application.DoEvents();
             return (uc);
         }
-        /*private static void SetMainFormCursor( Cursor cursor )
-        {
-            var mainForm = Application.OpenForms.Cast< Form >().FirstOrDefault();
-            if ( mainForm != null )
-            {
-                mainForm.Cursor = cursor;
-            }
-        }*/
     }
 }
