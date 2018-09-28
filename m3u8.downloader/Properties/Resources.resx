@@ -148,6 +148,9 @@
   <data name="m3u8_32x36" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\m3u8_32x36.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="settings_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\settings.16.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="uncheck_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\uncheck.16.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

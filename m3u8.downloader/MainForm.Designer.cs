@@ -42,6 +42,7 @@
             this.autoMinimizeWindowWhenStartsDownloadLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.excludesWordsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.maxDegreeOfParallelismLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.settingsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.m3u8FileWholeLoadAndSaveButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.m3u8FileTextContentLoadButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -136,7 +137,8 @@
             this.autoCloseApplicationWhenEndsDownloadLabel,
             this.autoMinimizeWindowWhenStartsDownloadLabel,
             this.excludesWordsLabel,
-            this.maxDegreeOfParallelismLabel});
+            this.maxDegreeOfParallelismLabel,
+            this.settingsLabel} );
             this.statusBar.Location = new System.Drawing.Point(0, 557);
             this.statusBar.ShowItemToolTips = true;
             this.statusBar.Size = new System.Drawing.Size(1015, 22);
@@ -191,6 +193,16 @@
             this.maxDegreeOfParallelismLabel.Click += new System.EventHandler(this.maxDegreeOfParallelismLabel_Click);
             this.maxDegreeOfParallelismLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
             this.maxDegreeOfParallelismLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
+            // 
+            // settingsLabel
+            // 
+            this.settingsLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right;
+            this.settingsLabel.Size = new System.Drawing.Size( 60, 17 );
+            this.settingsLabel.Image = m3u8.Properties.Resources.settings_16.ToBitmap();
+            this.settingsLabel.ToolTipText = "settings";
+            this.settingsLabel.Click += new System.EventHandler( this.settingsLabel_Click );
+            this.settingsLabel.MouseLeave += new System.EventHandler( this.statusBarLabel_MouseLeave );
+            this.settingsLabel.MouseHover += new System.EventHandler( this.statusBarLabel_MouseHover );
             // 
             // m3u8FileWholeLoadAndSaveButton
             // 
@@ -281,8 +293,8 @@
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.TextBox m3u8FileUrlTextBox;
         private System.Windows.Forms.ButtonWithFocusCues m3u8FileTextContentLoadButton;
-        private System.Windows.Forms.TextBox m3u8FileResultTextBox;
         private System.Windows.Forms.ButtonWithFocusCues m3u8FileWholeLoadAndSaveButton;
+        private System.Windows.Forms.TextBox m3u8FileResultTextBox;
         private System.Windows.Forms.TextBox outputFileNameTextBox;
         private System.Windows.Forms.Label l2;
         private System.Windows.Forms.ToolTip toolTip;
@@ -293,6 +305,7 @@
         private System.Windows.Forms.ToolStripStatusLabel excludesWordsLabel;
         private System.Windows.Forms.ToolStripStatusLabel autoMinimizeWindowWhenStartsDownloadLabel;
         private System.Windows.Forms.ToolStripStatusLabel autoCloseApplicationWhenEndsDownloadLabel;
+        private System.Windows.Forms.ToolStripStatusLabel settingsLabel;
         private System.Windows.Forms.TableLayoutPanel mainLayoutPanel;
         private System.Windows.Forms.Panel m3u8FileResultTextBoxPanel;
     }

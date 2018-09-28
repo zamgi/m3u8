@@ -80,6 +80,12 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\IWaitBannerMarker.cs" />
+    <Compile Include="UI\SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\SettingsForm.designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\WaitBanner\WaitBannerUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -123,6 +129,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\settings.16.ico" />
     <None Include="Resources\uncheck.16.ico" />
     <None Include="Resources\m3u8.png" />
     <None Include="Resources\m3u8_148x166.ico" />

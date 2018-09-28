@@ -89,8 +89,9 @@
             // 
             // filterTextBox
             //             
+            this.filterTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Top;
             this.filterTextBox.Location = new System.Drawing.Point(45, 2);
-            this.filterTextBox.Size = new System.Drawing.Size(184, 18);
+            this.filterTextBox.Size = new System.Drawing.Size(224, 18);
             this.filterTextBox.TabIndex = 2;
             this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
             this.filterTextBox.WordWrap = false;
@@ -99,11 +100,12 @@
             // 
             // clearFilterButton
             // 
+            this.clearFilterButton.Anchor = System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Top;
             this.clearFilterButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.clearFilterButton.Enabled = false;
             this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.clearFilterButton.Location = new System.Drawing.Point(230, 2);
+            this.clearFilterButton.Location = new System.Drawing.Point(270, 2);
             this.clearFilterButton.Size = new System.Drawing.Size(16, 18);
             this.clearFilterButton.TabIndex = 3;
             this.clearFilterButton.Text = "x";

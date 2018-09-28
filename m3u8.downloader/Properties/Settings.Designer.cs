@@ -97,6 +97,30 @@ namespace m3u8.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public int AttemptRequestCountByPart {
+            get {
+                return ((int)(this["AttemptRequestCountByPart"]));
+            }
+            set {
+                this["AttemptRequestCountByPart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00:00:15")]
+        public global::System.TimeSpan RequestTimeoutByPart {
+            get {
+                return ((global::System.TimeSpan)(this["RequestTimeoutByPart"]));
+            }
+            set {
+                this["RequestTimeoutByPart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute(@"<?xml version=""1.0"" encoding=""utf-16""?>
 <ArrayOfString xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"">
   <string>1080</string>

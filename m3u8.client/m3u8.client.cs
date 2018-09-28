@@ -324,9 +324,13 @@ namespace m3u8
         }
 
 
-        public static m3u8_client CreateDefault( int attemptRequestCountByPart = 10 )
+        public static m3u8_client Create( int attemptRequestCountByPart = 10, TimeSpan? timeout = null )
         {
-            var ip = new init_params() { AttemptRequestCount = attemptRequestCountByPart, };
+            var ip = new init_params()
+            {
+                Timeout             = timeout,
+                AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ),
+            };
             var mc = new m3u8_client( ip );
             return (mc);
         }

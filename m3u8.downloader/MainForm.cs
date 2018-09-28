@@ -36,16 +36,14 @@ namespace m3u8.downloader
             InitializeComponent();
 
             m3u8FileUrlTextBox_TextChanged( this, EventArgs.Empty );
-            maxDegreeOfParallelismLabel_set();
             autoMinimizeWindowWhenStartsDownloadLabel_set();
             autoCloseApplicationWhenEndsDownloadLabel_set();
+            maxDegreeOfParallelismLabel_set();
+            settingsLabel_set();
 
             NameCleaner.ResetExcludesWords( Settings.Default.NameCleanerExcludesWords?.Cast< string >() );
         }
-        public MainForm( string m3u8FileUrl ) : this()
-        {
-            _m3u8FileUrl = m3u8FileUrl;
-        }
+        public MainForm( string m3u8FileUrl ) : this() => _m3u8FileUrl = m3u8FileUrl;
 
         protected override void OnShown( EventArgs e )
         {
@@ -243,6 +241,19 @@ namespace m3u8.downloader
             Settings.Default.Save();
             autoCloseApplicationWhenEndsDownloadLabel_set();
         }
+        private void settingsLabel_Click( object sender, EventArgs e )
+        {
+            using ( var f = new SettingsForm( Settings.Default.AttemptRequestCountByPart, Settings.Default.RequestTimeoutByPart ) )
+            {
+                if ( f.ShowDialog() == DialogResult.OK )
+                {
+                    Settings.Default.AttemptRequestCountByPart = f.AttemptRequestCountByPart;
+                    Settings.Default.RequestTimeoutByPart      = f.RequestTimeoutByPart;
+                    Settings.Default.Save();
+                    settingsLabel_set();
+                }
+            }
+        }
 
         private void statusBarLabel_MouseHover( object sender, EventArgs e )
         {
@@ -259,14 +270,17 @@ namespace m3u8.downloader
             }
         }
 
-        private void maxDegreeOfParallelismLabel_set() =>
-            maxDegreeOfParallelismLabel.Text = $"max degree of parallelism: {((Settings.Default.MaxDegreeOfParallelism == int.MaxValue) ? "Infinity" : Settings.Default.MaxDegreeOfParallelism.ToString())}";
-
         private void autoMinimizeWindowWhenStartsDownloadLabel_set() =>
             autoMinimizeWindowWhenStartsDownloadLabel.Image = (Settings.Default.AutoMinimizeWindowWhenStartsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
 
         private void autoCloseApplicationWhenEndsDownloadLabel_set() =>
             autoCloseApplicationWhenEndsDownloadLabel.Image = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
+
+        private void maxDegreeOfParallelismLabel_set() =>
+            maxDegreeOfParallelismLabel.Text = $"max degree of parallelism: {((Settings.Default.MaxDegreeOfParallelism == int.MaxValue) ? "Infinity" : Settings.Default.MaxDegreeOfParallelism.ToString())}";
+
+        private void settingsLabel_set() =>
+            settingsLabel.ToolTipText = $"settings =>\r\n Attempt request count by part: {Settings.Default.AttemptRequestCountByPart}\r\n Request timeout by part: {Settings.Default.RequestTimeoutByPart}";
         #endregion
 
         private Uri TryGet_m3u8FileUrl( out Exception error )
@@ -303,7 +317,7 @@ namespace m3u8.downloader
 
             try
             {
-                BeginOpAction( 1 );
+                BeginOpAction( attemptRequestCountByPart: 1 );
 
                 try
                 {
@@ -501,7 +515,16 @@ namespace m3u8.downloader
                         }
                         else
                         {
-                            Append2ResultTextBox( ex );
+                            var mex = ex as m3u8_Exception;
+                            if ( mex != null )
+                            {
+                                Extensions.DeleteFile_NoThrow( _OutputFileName );
+                                Append2ResultTextBox( mex );
+                            }
+                            else
+                            {
+                                Append2ResultTextBox( ex );
+                            }
                         }
 
                         FinishOpAction( m3u8FileResultTextBox );
@@ -520,12 +543,13 @@ namespace m3u8.downloader
             }
         }
 
-        private void BeginOpAction( int attemptRequestCountByPart = ATTEMPT_REQUEST_COUNT_BY_PART )
+        private void BeginOpAction( int? attemptRequestCountByPart = null )
         {
             SetEnabledUI( false );
             UnsetResultTextBox();
 
-            _Mc  = m3u8_client.CreateDefault( attemptRequestCountByPart );
+            _Mc  = m3u8_client.Create( attemptRequestCountByPart.GetValueOrDefault( Settings.Default.AttemptRequestCountByPart),
+                                       Settings.Default.RequestTimeoutByPart );
             _Cts = new CancellationTokenSource();
             _Wb  = WaitBannerUC.Create( this, _Cts );
         }
@@ -586,15 +610,18 @@ namespace m3u8.downloader
             m3u8FileTextContentLoadButton .Enabled = enabled;
             m3u8FileWholeLoadAndSaveButton.Enabled = enabled;
             outputFileNameClearButton     .Enabled = enabled;
-
-            maxDegreeOfParallelismLabel.Enabled = enabled;
+            
             excludesWordsLabel         .Enabled = enabled;
+            maxDegreeOfParallelismLabel.Enabled = enabled;
+            settingsLabel              .Enabled = enabled;
         }
 
         private void Output2ResultTextBox( m3u8_file_t m3u8File )
         {
             m3u8FileResultTextBox.ForeColor = Color.FromKnownColor( KnownColor.WindowText );
-            m3u8FileResultTextBox.Lines     = m3u8File.RawText?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+            m3u8FileResultTextBox.Lines     = m3u8File.RawText?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
+                                                              ?.Where( l => !l.IsNullOrWhiteSpace() )
+                                                              ?.ToArray();
             m3u8FileResultTextBox.AppendText( $"\r\n\r\n patrs count: {m3u8File.Parts.Count}\r\n" );
         }
         private void Output2ResultTextBox( Exception ex )
@@ -620,15 +647,14 @@ namespace m3u8.downloader
             m3u8FileResultTextBox.ForeColor = Color.Red;
             m3u8FileResultTextBox.AppendEmptyLine();
             m3u8FileResultTextBox.AppendEmptyLine();
-            var mex = ex as m3u8_Exception;
-            if ( mex != null )
-            {
-                m3u8FileResultTextBox.AppendText( mex.Message );
-            }
-            else
-            {
-                m3u8FileResultTextBox.AppendException( ex );
-            }
+            m3u8FileResultTextBox.AppendException( ex );
+        }
+        private void Append2ResultTextBox( m3u8_Exception ex )
+        {
+            m3u8FileResultTextBox.ForeColor = Color.Red;
+            m3u8FileResultTextBox.AppendEmptyLine();
+            m3u8FileResultTextBox.AppendEmptyLine();
+            m3u8FileResultTextBox.AppendText( ex.Message );
         }
 
         #region [.ChangeOutputFileForm.]
