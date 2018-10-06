@@ -70,11 +70,11 @@
     <Compile Include="UI\ChangeOutputFileForm.Designer.cs">
       <DependentUpon>ChangeOutputFileForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\MaxDegreeOfParallelismForm.cs">
+    <Compile Include="UI\ParallelismForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\MaxDegreeOfParallelismForm.Designer.cs">
-      <DependentUpon>MaxDegreeOfParallelismForm.cs</DependentUpon>
+    <Compile Include="UI\ParallelismForm.Designer.cs">
+      <DependentUpon>ParallelismForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\ButtonWithFocusCues.cs">
       <SubType>Component</SubType>

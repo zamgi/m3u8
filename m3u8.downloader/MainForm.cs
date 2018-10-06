@@ -38,7 +38,7 @@ namespace m3u8.downloader
             m3u8FileUrlTextBox_TextChanged( this, EventArgs.Empty );
             autoMinimizeWindowWhenStartsDownloadLabel_set();
             autoCloseApplicationWhenEndsDownloadLabel_set();
-            maxDegreeOfParallelismLabel_set();
+            parallelismLabel_set();
             settingsLabel_set();
 
             NameCleaner.ResetExcludesWords( Settings.Default.NameCleanerExcludesWords?.Cast< string >() );
@@ -194,18 +194,27 @@ namespace m3u8.downloader
         }
 
 
-        private void maxDegreeOfParallelismLabel_Click( object sender, EventArgs e )
+        private void parallelismLabel_Click( object sender, EventArgs e )
         {
-            using ( var f = new MaxDegreeOfParallelismForm() )
+            using ( var f = new ParallelismForm() )
             {
                 f.MaxDegreeOfParallelism = Settings.Default.MaxDegreeOfParallelism;
                 f.IsInfinity             = (Settings.Default.MaxDegreeOfParallelism == int.MaxValue);
+                f.UseCrossAppInstanceDegreeOfParallelism = Settings.Default.UseCrossAppInstanceDegreeOfParallelism;
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
-                    Settings.Default.MaxDegreeOfParallelism = f.MaxDegreeOfParallelism;
+                    Settings.Default.MaxDegreeOfParallelism                 = f.MaxDegreeOfParallelism;
+                    Settings.Default.UseCrossAppInstanceDegreeOfParallelism = f.UseCrossAppInstanceDegreeOfParallelism;
                     Settings.Default.Save();
-                    maxDegreeOfParallelismLabel_set();
+                    parallelismLabel_set();
                 }
+            }
+        }
+        private void parallelismLabel_EnabledChanged( object sender, EventArgs e )
+        {
+            if ( Settings.Default.UseCrossAppInstanceDegreeOfParallelism )
+            {
+                parallelismLabel.BackColor = parallelismLabel.Enabled ? Color.DimGray : Color.FromKnownColor( KnownColor.Control );
             }
         }
         private void excludesWordsLabel_Click( object sender, EventArgs e )
@@ -276,33 +285,20 @@ namespace m3u8.downloader
         private void autoCloseApplicationWhenEndsDownloadLabel_set() =>
             autoCloseApplicationWhenEndsDownloadLabel.Image = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
 
-        private void maxDegreeOfParallelismLabel_set() =>
-            maxDegreeOfParallelismLabel.Text = $"max degree of parallelism: {((Settings.Default.MaxDegreeOfParallelism == int.MaxValue) ? "Infinity" : Settings.Default.MaxDegreeOfParallelism.ToString())}";
-
-        private void settingsLabel_set() =>
-            settingsLabel.ToolTipText = $"settings =>\r\n Attempt request count by part: {Settings.Default.AttemptRequestCountByPart}\r\n Request timeout by part: {Settings.Default.RequestTimeoutByPart}";
-        #endregion
-
-        private Uri TryGet_m3u8FileUrl( out Exception error )
+        private void parallelismLabel_set()
         {
-            try
-            {
-                var m3u8FileUrlText = m3u8FileUrlTextBox.Text.Trim();
-                var m3u8FileUrl     = new Uri( m3u8FileUrlText );
-                if ( (m3u8FileUrl.Scheme != Uri.UriSchemeHttp) && (m3u8FileUrl.Scheme != Uri.UriSchemeHttps) )
-                {
-                    throw (new ArgumentException( $"Only '{Uri.UriSchemeHttp}' and '{Uri.UriSchemeHttps}' schemes are allowed.", nameof(m3u8FileUrl) ));
-                }
-                error = null;
-                return (m3u8FileUrl);
-            }
-            catch ( Exception ex )
-            {
-                error = ex;
-                return (null);
-            }
+            parallelismLabel.Text        = $"max degree of parallelism: {((Settings.Default.MaxDegreeOfParallelism == int.MaxValue) ? "Infinity" : Settings.Default.MaxDegreeOfParallelism.ToString())}";
+            parallelismLabel.ToolTipText = $"use cross app-instance parallelism: {Settings.Default.UseCrossAppInstanceDegreeOfParallelism.ToString().ToLower()}";
+
+            parallelismLabel.ForeColor   = Settings.Default.UseCrossAppInstanceDegreeOfParallelism ? Color.White   : Color.FromKnownColor( KnownColor.ControlText );
+            parallelismLabel.BackColor   = Settings.Default.UseCrossAppInstanceDegreeOfParallelism ? Color.DimGray : Color.FromKnownColor( KnownColor.Control );
         }
 
+        private void settingsLabel_set() =>
+            settingsLabel.ToolTipText = $"settings =>\r\n attempt request count by part: {Settings.Default.AttemptRequestCountByPart}\r\n request timeout by part: {Settings.Default.RequestTimeoutByPart}";
+        #endregion
+
+        #region [.m3u8FileTextContentLoadButton_Click.]
         private async void m3u8FileTextContentLoadButton_Click( object sender, EventArgs e )
         {
             #region [.url.]
@@ -337,7 +333,9 @@ namespace m3u8.downloader
                 FinishOpAction_With_MessageBox_ShowError( outerEx, m3u8FileTextContentLoadButton );
             }
         }
+        #endregion
 
+        #region [.m3u8FileWholeLoadAndSaveButton_Click.]
         private async void m3u8FileWholeLoadAndSaveButton_Click( object sender, EventArgs e )
         {
             #region [.url.]
@@ -454,7 +452,8 @@ namespace m3u8.downloader
                                 Cts                    = _Cts,
                                 MaxDegreeOfParallelism = Settings.Default.MaxDegreeOfParallelism,
                                 RequestStepAction      = requestStepAction,
-                                ResponseStepAction     = responseStepAction,         
+                                ResponseStepAction     = responseStepAction,
+                                UseCrossAppInstanceDegreeOfParallelism = Settings.Default.UseCrossAppInstanceDegreeOfParallelism,
                             };
                             //sw_download.Start();
                             var result = m3u8_processor.DownloadPartsAndSave( ip );
@@ -542,6 +541,28 @@ namespace m3u8.downloader
                 FinishOpAction_With_MessageBox_ShowError( outerEx, m3u8FileResultTextBox );
             }
         }
+        #endregion
+
+        #region [.all other method's.]
+        private Uri TryGet_m3u8FileUrl( out Exception error )
+        {
+            try
+            {
+                var m3u8FileUrlText = m3u8FileUrlTextBox.Text.Trim();
+                var m3u8FileUrl     = new Uri( m3u8FileUrlText );
+                if ( (m3u8FileUrl.Scheme != Uri.UriSchemeHttp) && (m3u8FileUrl.Scheme != Uri.UriSchemeHttps) )
+                {
+                    throw (new ArgumentException( $"Only '{Uri.UriSchemeHttp}' and '{Uri.UriSchemeHttps}' schemes are allowed.", nameof(m3u8FileUrl) ));
+                }
+                error = null;
+                return (m3u8FileUrl);
+            }
+            catch ( Exception ex )
+            {
+                error = ex;
+                return (null);
+            }
+        }
 
         private void BeginOpAction( int? attemptRequestCountByPart = null )
         {
@@ -611,9 +632,9 @@ namespace m3u8.downloader
             m3u8FileWholeLoadAndSaveButton.Enabled = enabled;
             outputFileNameClearButton     .Enabled = enabled;
             
-            excludesWordsLabel         .Enabled = enabled;
-            maxDegreeOfParallelismLabel.Enabled = enabled;
-            settingsLabel              .Enabled = enabled;
+            excludesWordsLabel.Enabled = enabled;
+            parallelismLabel  .Enabled = enabled;
+            settingsLabel     .Enabled = enabled;
         }
 
         private void Output2ResultTextBox( m3u8_file_t m3u8File )
@@ -656,6 +677,7 @@ namespace m3u8.downloader
             m3u8FileResultTextBox.AppendEmptyLine();
             m3u8FileResultTextBox.AppendText( ex.Message );
         }
+        #endregion
 
         #region [.ChangeOutputFileForm.]
         private ChangeOutputFileForm _ChangeOutputFileForm;

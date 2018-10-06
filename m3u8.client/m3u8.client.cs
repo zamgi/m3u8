@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -344,6 +345,75 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
+        private struct semaphore_decorator_t : IDisposable
+        {
+            private SemaphoreSlim _SemaphoreSlim;
+            private Semaphore     _Semaphore;
+            private bool          _IsSemaphoreOwner;
+
+            public semaphore_decorator_t( bool useCrossAppInstanceDegreeOfParallelism, int maxDegreeOfParallelism )
+            {
+                if ( useCrossAppInstanceDegreeOfParallelism )
+                {
+                    _SemaphoreSlim = null;
+                    using ( var p = Process.GetCurrentProcess() )
+                    {
+                        _Semaphore = new Semaphore( maxDegreeOfParallelism, maxDegreeOfParallelism,
+                                                    p.MainModule.FileName.Replace( '\\', '/' ) //need for escape-replace '\'
+                                                    , out _IsSemaphoreOwner );
+                    }
+                }
+                else
+                {
+                    _SemaphoreSlim    = new SemaphoreSlim( maxDegreeOfParallelism );
+                    _Semaphore        = null;
+                    _IsSemaphoreOwner = false;
+                }
+            }
+            public void Dispose()
+            {
+                if ( _SemaphoreSlim != null )
+                {
+                    _SemaphoreSlim.Dispose();
+                    _SemaphoreSlim = null;
+                }
+                if ( _Semaphore != null )
+                {
+                    if ( _IsSemaphoreOwner )
+                    {
+                        _Semaphore.Dispose();
+                    }
+                    _Semaphore = null;
+                }
+            }
+
+            public bool UseCrossAppInstanceDegreeOfParallelism { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => (_Semaphore != null); }
+
+            public void Wait( CancellationToken ct )
+            {
+                if ( UseCrossAppInstanceDegreeOfParallelism )
+                {
+                    var idx = WaitHandle.WaitAny( new[] { _Semaphore /*0*/, ct.WaitHandle /*1*/, } );
+                    if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
+                    {
+                        ct.ThrowIfCancellationRequested();
+                    }
+                    /*if ( idx != 0 ) //[_Semaphore := 0]
+                    {
+                        //WHAT TODO IN HERE?!
+                    }*/
+                }
+                else
+                {
+                    _SemaphoreSlim.Wait( ct );
+                }
+            }
+            public int Release() => (UseCrossAppInstanceDegreeOfParallelism ? _Semaphore.Release() : _SemaphoreSlim.Release());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         private struct download_m3u8File_parts_parallel_params_t
         {
             public download_m3u8File_parts_parallel_params_t( m3u8_client _mc, m3u8_file_t _m3u8File, DownloadFileAndSaveInputParams ip ) : this()
@@ -354,6 +424,7 @@ namespace m3u8
                 requestStepAction      = ip.RequestStepAction;
                 responseStepAction     = ip.ResponseStepAction;
                 maxDegreeOfParallelism = ip.MaxDegreeOfParallelism;
+                useCrossAppInstanceDegreeOfParallelism = ip.UseCrossAppInstanceDegreeOfParallelism;
             }
             public download_m3u8File_parts_parallel_params_t( DownloadPartsAndSaveInputParams ip ) : this()
             {
@@ -363,15 +434,17 @@ namespace m3u8
                 requestStepAction      = ip.RequestStepAction;
                 responseStepAction     = ip.ResponseStepAction;
                 maxDegreeOfParallelism = ip.MaxDegreeOfParallelism;
+                useCrossAppInstanceDegreeOfParallelism = ip.UseCrossAppInstanceDegreeOfParallelism;
             }
         
             public m3u8_client mc       { get; set; }
             public m3u8_file_t m3u8File { get; set; }
 
-            public CancellationTokenSource    cts { get; set; }
-            public RequestStepActionDelegate  requestStepAction { get; set; }
-            public ResponseStepActionDelegate responseStepAction { get; set; }
+            public CancellationTokenSource    cts                    { get; set; }
+            public RequestStepActionDelegate  requestStepAction      { get; set; }
+            public ResponseStepActionDelegate responseStepAction     { get; set; }
             public int                        maxDegreeOfParallelism { get; set; }
+            public bool                       useCrossAppInstanceDegreeOfParallelism { get; set; }
         }
 
         private static IEnumerable< m3u8_part_ts > download_m3u8File_parts_parallel( download_m3u8File_parts_parallel_params_t ip )
@@ -393,7 +466,7 @@ namespace m3u8
             using ( var innerCts  = new CancellationTokenSource() )
             using ( var joinedCts = CancellationTokenSource.CreateLinkedTokenSource( ct, innerCts.Token ) )
             using ( var canExtractPartEvent = new AutoResetEvent( false ) )
-            using ( var semaphore = new SemaphoreSlim( ip.maxDegreeOfParallelism ) )
+            using ( var semaphore = new semaphore_decorator_t( ip.useCrossAppInstanceDegreeOfParallelism, ip.maxDegreeOfParallelism ) )
             {
                 //-1-//
                 var task_download = Task.Run( () =>
@@ -560,9 +633,10 @@ namespace m3u8
             public string m3u8FileUrl    { get; set; }
             public string OutputFileName { get; set; }
 
-            public CancellationTokenSource    Cts { get; set; }
-            public RequestStepActionDelegate  RequestStepAction { get; set; }
+            public CancellationTokenSource    Cts                { get; set; }
+            public RequestStepActionDelegate  RequestStepAction  { get; set; }
             public ResponseStepActionDelegate ResponseStepAction { get; set; }
+            public bool UseCrossAppInstanceDegreeOfParallelism   { get; set; }
 
             private int? _MaxDegreeOfParallelism;
             public int MaxDegreeOfParallelism
@@ -671,10 +745,11 @@ namespace m3u8
             public m3u8_file_t m3u8File       { get; set; }
             public string      OutputFileName { get; set; }
 
-            public CancellationTokenSource    Cts { get; set; }
-            public RequestStepActionDelegate  RequestStepAction { get; set; }
-            public ResponseStepActionDelegate ResponseStepAction { get; set; }
+            public CancellationTokenSource    Cts                    { get; set; }
+            public RequestStepActionDelegate  RequestStepAction      { get; set; }
+            public ResponseStepActionDelegate ResponseStepAction     { get; set; }
             public int                        MaxDegreeOfParallelism { get; set; }
+            public bool                       UseCrossAppInstanceDegreeOfParallelism { get; set; }
         }
         /// <summary>
         /// 

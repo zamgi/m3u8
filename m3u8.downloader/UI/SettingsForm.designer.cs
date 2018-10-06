@@ -85,7 +85,7 @@
             this.l1.Location = new System.Drawing.Point(12, 9);
             this.l1.Size = new System.Drawing.Size(149, 13);
             this.l1.TabIndex = 4;
-            this.l1.Text = "Attempt request count by part:";
+            this.l1.Text = "attempt request count by part:";
             // 
             // l2
             // 
@@ -93,7 +93,7 @@
             this.l2.Location = new System.Drawing.Point(39, 42);
             this.l2.Size = new System.Drawing.Size(122, 13);
             this.l2.TabIndex = 5;
-            this.l2.Text = "Request timeout by part:";
+            this.l2.Text = "request timeout by part:";
             // 
             // requestTimeoutByPartDTP
             // 

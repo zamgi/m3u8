@@ -41,7 +41,7 @@
             this.autoCloseApplicationWhenEndsDownloadLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.autoMinimizeWindowWhenStartsDownloadLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.excludesWordsLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.maxDegreeOfParallelismLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.parallelismLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.settingsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.m3u8FileWholeLoadAndSaveButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.m3u8FileTextContentLoadButton = new System.Windows.Forms.ButtonWithFocusCues();
@@ -137,7 +137,7 @@
             this.autoCloseApplicationWhenEndsDownloadLabel,
             this.autoMinimizeWindowWhenStartsDownloadLabel,
             this.excludesWordsLabel,
-            this.maxDegreeOfParallelismLabel,
+            this.parallelismLabel,
             this.settingsLabel} );
             this.statusBar.Location = new System.Drawing.Point(0, 557);
             this.statusBar.ShowItemToolTips = true;
@@ -183,16 +183,17 @@
             this.excludesWordsLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
             this.excludesWordsLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
             // 
-            // maxDegreeOfParallelismLabel
+            // parallelismLabel
             // 
-            this.maxDegreeOfParallelismLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
-            this.maxDegreeOfParallelismLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.maxDegreeOfParallelismLabel.Size = new System.Drawing.Size(16, 17);
-            this.maxDegreeOfParallelismLabel.Text = "?";
-            this.maxDegreeOfParallelismLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.maxDegreeOfParallelismLabel.Click += new System.EventHandler(this.maxDegreeOfParallelismLabel_Click);
-            this.maxDegreeOfParallelismLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
-            this.maxDegreeOfParallelismLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
+            this.parallelismLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.parallelismLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.parallelismLabel.Size = new System.Drawing.Size(16, 17);
+            this.parallelismLabel.Text = "?";
+            this.parallelismLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.parallelismLabel.Click += new System.EventHandler(this.parallelismLabel_Click);
+            this.parallelismLabel.EnabledChanged += new System.EventHandler(this.parallelismLabel_EnabledChanged);
+            this.parallelismLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
+            this.parallelismLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
             // 
             // settingsLabel
             // 
@@ -300,7 +301,7 @@
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.ButtonWithFocusCues outputFileNameClearButton;
         private System.Windows.Forms.StatusStrip statusBar;
-        private System.Windows.Forms.ToolStripStatusLabel maxDegreeOfParallelismLabel;
+        private System.Windows.Forms.ToolStripStatusLabel parallelismLabel;
         private System.Windows.Forms.ToolStripStatusLabel responseStepActionLabel;
         private System.Windows.Forms.ToolStripStatusLabel excludesWordsLabel;
         private System.Windows.Forms.ToolStripStatusLabel autoMinimizeWindowWhenStartsDownloadLabel;

@@ -6,18 +6,22 @@ namespace m3u8.downloader
     /// <summary>
     /// 
     /// </summary>
-    internal sealed partial class MaxDegreeOfParallelismForm : Form
+    internal sealed partial class ParallelismForm : Form
     {
-        public MaxDegreeOfParallelismForm()
+        public ParallelismForm()
         {
             InitializeComponent();
 
             numericUpDown.Maximum = int.MaxValue;
         }
 
-        private void infinityCheckBox_CheckedChanged( object sender, EventArgs e ) => numericUpDown.Enabled = !infinityCheckBox.Checked;
+        private void infinityCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            numericUpDown.Enabled = !infinityCheckBox.Checked;
+            useCrossAppInstanceDegreeOfParallelismCheckBox.Enabled = !infinityCheckBox.Checked;
+        }
 
-        public int MaxDegreeOfParallelism
+        public int  MaxDegreeOfParallelism
         {
             get => (IsInfinity ? int.MaxValue : Convert.ToInt32( numericUpDown.Value ));
             set
@@ -35,6 +39,11 @@ namespace m3u8.downloader
                 infinityCheckBox.Checked = value;
                 numericUpDown   .Enabled = !value;
             }
+        }
+        public bool UseCrossAppInstanceDegreeOfParallelism
+        {
+            get => !infinityCheckBox.Checked && useCrossAppInstanceDegreeOfParallelismCheckBox.Checked;
+            set => useCrossAppInstanceDegreeOfParallelismCheckBox.Checked = value;
         }
     }
 }

@@ -73,6 +73,18 @@ namespace m3u8.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseCrossAppInstanceDegreeOfParallelism {
+            get {
+                return ((bool)(this["UseCrossAppInstanceDegreeOfParallelism"]));
+            }
+            set {
+                this["UseCrossAppInstanceDegreeOfParallelism"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AutoMinimizeWindowWhenStartsDownload {
             get {
