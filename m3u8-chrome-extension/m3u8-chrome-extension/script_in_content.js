@@ -47,4 +47,4 @@ window.popupObj.prototype = {
         // send count of m3u8_urls_count
         this.port.postMessage({ method: 'm3u8_urls_count', data: { tab_id: this.tab_id } });
     }
-}
+};

@@ -43,3 +43,11 @@ a {
         text-decoration: underline;
         color: black;
     }
+
+    a.auto_start_download > img {
+        border: 1px solid transparent;
+        border-radius: 2px;
+    }
+        a.auto_start_download > img:hover {
+            border-color: silver;
+        }

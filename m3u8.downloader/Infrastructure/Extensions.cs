@@ -44,6 +44,9 @@ namespace m3u8.downloader
         public static void MessageBox_ShowError( this IWin32Window owner, string text, string caption ) => MessageBox.Show( owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Error );
         public static void MessageBox_ShowError( this Exception ex, string caption ) => MessageBox.Show( ex.ToString(), caption, MessageBoxButtons.OK, MessageBoxIcon.Error );
         public static void MessageBox_ShowError( string text, string caption ) => MessageBox.Show( text, caption, MessageBoxButtons.OK, MessageBoxIcon.Error );
+        public static DialogResult MessageBox_ShowQuestion( this IWin32Window owner, string text, string caption
+            , MessageBoxButtons buttons = MessageBoxButtons.YesNo, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1 ) 
+            => MessageBox.Show( owner, text, caption, buttons, MessageBoxIcon.Question, defaultButton );
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void AppendException( this TextBox textBox, Exception ex )

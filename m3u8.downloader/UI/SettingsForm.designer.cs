@@ -41,19 +41,11 @@
             this.attemptRequestCountByPartNUD.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.attemptRequestCountByPartNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.attemptRequestCountByPartNUD.Location = new System.Drawing.Point(167, 10);
-            this.attemptRequestCountByPartNUD.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.attemptRequestCountByPartNUD.Minimum = new decimal( new int[] { 1, 0, 0, 0 } );
             this.attemptRequestCountByPartNUD.Size = new System.Drawing.Size(89, 16);
             this.attemptRequestCountByPartNUD.TabIndex = 0;
             this.attemptRequestCountByPartNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.attemptRequestCountByPartNUD.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.attemptRequestCountByPartNUD.Value = new decimal( new int[] { 1, 0, 0, 0 } );
             // 
             // okButton
             // 

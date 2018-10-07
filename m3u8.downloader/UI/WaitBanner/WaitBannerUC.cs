@@ -30,8 +30,8 @@ namespace m3u8.downloader
         {
             InitializeComponent();
 
-            _StartDateTime = DateTime.Now;
-            _FirstAppForm  = Application.OpenForms.Cast< Form >().First();
+            _StartDateTime    = DateTime.Now;
+            _FirstAppForm     = Application.OpenForms.Cast< Form >().First();
             _FirstAppFormText = _FirstAppForm.Text;
         }
         
@@ -56,36 +56,35 @@ namespace m3u8.downloader
         }
         private void fuskingTimer_Tick( object sender, EventArgs e )
         {
-            const string HH_MM_SS = "hh\\:mm\\:ss" /*---/ "hh\\:mm\\:ss\\.f" /---*/;
+            const string HH_MM_SS = "hh\\:mm\\:ss"; // "hh\\:mm\\:ss\\.f";
             const string MM_SS    = "mm\\:ss";
 
             fuskingTimer.Interval = 200;
 
             var ts = DateTime.Now - _StartDateTime;
 
-            captionLabel .Text = $"{_CaptionText}{_PercentSteps}%";
-            progressLabel.Text = $"{_CurrentSteps} of {_TotalSteps}";            
-            elapsedLabel .Text = '(' + ts.ToString( HH_MM_SS ) + ')';
-            if ( !_SpeedText.IsNullOrEmpty() )
-            {
-                speedLabel.Text    = '[' + _SpeedText + ']';
-                speedLabel.Visible = true;
-            }
-            else
-            {
-                speedLabel.Text    = null;
-                speedLabel.Visible = false;
-            }
+            captionLabel .Text    = (_IsInWaitingForOtherAppInstanceFinished ? "...waiting for other app-instance finished..." : $"{_CaptionText}{_PercentSteps}%");
+            progressLabel.Text    = $"{_CurrentSteps} of {_TotalSteps}";            
+            elapsedLabel .Text    = '(' + ts.ToString( HH_MM_SS ) + ')';
+            speedLabel   .Text    = (_SpeedText.IsNullOrEmpty() ? null : ('[' + _SpeedText + ']'));
+            speedLabel   .Visible = !_SpeedText.IsNullOrEmpty();
 
             indicatorPictureBox.Image   = BitmapHolder.IndicatorI.Next();
             indicatorPictureBox.Visible = true;
 
             //----------------------------------------------------------------------//
-            _FirstAppForm.Text = (_FirstAppForm.WindowState == FormWindowState.Minimized)
-                                ? ($"{_PercentSteps}%, ({((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )))})" +
-                                    (!_SpeedText.IsNullOrEmpty() ? $", {_SpeedText}" : null)
-                                  )
-                                : _FirstAppFormText;
+            //if ( _FirstAppForm.WindowState == FormWindowState.Minimized )
+            //{
+                var elapsed = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
+
+                _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished 
+                                      ? $"(wait), ({elapsed})" 
+                                      : $"{_PercentSteps}%, ({elapsed}){(_SpeedText.IsNullOrEmpty() ? null : $", {_SpeedText}")}");
+            //}
+            //else
+            //{
+            //    _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished ? "(wait) " : null) + _FirstAppFormText;
+            //}
         }
 
         public void SetTotalSteps( int totalSteps ) => _TotalSteps = totalSteps;
@@ -94,8 +93,12 @@ namespace m3u8.downloader
             _CurrentSteps++;
             _PercentSteps = Convert.ToByte( (100.0 * _CurrentSteps) / _TotalSteps );
             _SpeedText    = speedText;
+
+            _IsInWaitingForOtherAppInstanceFinished = false;
         }
 
+        private bool _IsInWaitingForOtherAppInstanceFinished;
+        public void WaitingForOtherAppInstanceFinished() => _IsInWaitingForOtherAppInstanceFinished = true;
 
         public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, string captionText = CAPTION_TEXT )
         {

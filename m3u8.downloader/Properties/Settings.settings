@@ -17,6 +17,9 @@
     <Setting Name="UseCrossAppInstanceDegreeOfParallelism" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="MaxDownloadAppInstance" Type="System.Nullable&lt;System.Int32&gt;" Scope="User">
+      <Value Profile="(Default)">4</Value>
+    </Setting>    
     <Setting Name="AutoMinimizeWindowWhenStartsDownload" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>

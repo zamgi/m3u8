@@ -83,7 +83,8 @@ namespace m3u8.downloader
             Application.SetUnhandledExceptionMode( UnhandledExceptionMode.Automatic, true );
 
             #region [.parse if opened from 'chrome-extension'.]
-            var m3u8FileUrl = default(string);
+            var m3u8FileUrl       = default(string);
+            var autoStartDownload = default(bool);
             if ( args.Any( a => a.StartsWith( "chrome-extension://", StringComparison.InvariantCultureIgnoreCase ) ) )
             {
                 var text = ReadStandardInputFromChrome();
@@ -92,7 +93,8 @@ namespace m3u8.downloader
                     var p = text.ToChromeExtensionParams_NoThrow();
                     if ( p.HasValue )
                     {
-                        m3u8FileUrl = p.Value.m3u8FileUrl;
+                        m3u8FileUrl       = p.Value.m3u8FileUrl;
+                        autoStartDownload = p.Value.autoStartDownload;
                     }
                 }
             }
@@ -110,7 +112,7 @@ namespace m3u8.downloader
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
-            Application.Run( new MainForm( m3u8FileUrl ) );
+            Application.Run( new MainForm( m3u8FileUrl, autoStartDownload ) );
         }
 
         private static void Application_ThreadException( object sender, ThreadExceptionEventArgs e ) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );

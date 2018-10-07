@@ -188,6 +188,15 @@ namespace m3u8
             var message = ex.Unwrap4DialogMessage( out var isCanceledException );
             return ((isCanceledException && ignoreCanceledException) ? null : message);
         }
+
+        internal static string TrimFromBegin( this string s, int maxLength )
+        {
+            if ( maxLength < s.Length )
+            {
+                return (s.Substring( s.Length - maxLength ));
+            }
+            return (s);
+        }
     }
 
     /// <summary>
@@ -345,13 +354,13 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
-        private struct semaphore_decorator_t : IDisposable
+        private struct semaphore_download_threads_t : IDisposable
         {
             private SemaphoreSlim _SemaphoreSlim;
             private Semaphore     _Semaphore;
             private bool          _IsSemaphoreOwner;
 
-            public semaphore_decorator_t( bool useCrossAppInstanceDegreeOfParallelism, int maxDegreeOfParallelism )
+            public semaphore_download_threads_t( bool useCrossAppInstanceDegreeOfParallelism, int maxDegreeOfParallelism )
             {
                 if ( useCrossAppInstanceDegreeOfParallelism )
                 {
@@ -400,7 +409,7 @@ namespace m3u8
                     }
                     /*if ( idx != 0 ) //[_Semaphore := 0]
                     {
-                        //WHAT TODO IN HERE?!
+                        //WHAT TODO HERE?!
                     }*/
                 }
                 else
@@ -409,6 +418,87 @@ namespace m3u8
                 }
             }
             public int Release() => (UseCrossAppInstanceDegreeOfParallelism ? _Semaphore.Release() : _SemaphoreSlim.Release());
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        private struct semaphore_app_instance_t : IDisposable
+        {
+            private Semaphore _Semaphore;
+            private bool      _IsSemaphoreOwner;
+
+            private semaphore_app_instance_t( int maxDownloadAppInstance )
+            {                
+                using ( var p = Process.GetCurrentProcess() )
+                {
+                    _Semaphore = new Semaphore( maxDownloadAppInstance, maxDownloadAppInstance,
+                                                $"{p.MainModule.FileName.Replace( '\\', '/' )}--app-instance".TrimFromBegin( 255 ) //need for escape-replace '\'
+                                                , out _IsSemaphoreOwner );
+                }
+            }
+            public void Dispose()
+            {
+                if ( _Semaphore != null )
+                {
+                    _Semaphore.Release();
+
+                    if ( _IsSemaphoreOwner )
+                    {
+                        _Semaphore.Dispose();
+                    }
+                    _Semaphore = null;
+                }
+            }
+
+            private void Wait( CancellationToken ct )
+            {
+                var idx = WaitHandle.WaitAny( new[] { _Semaphore /*0*/, ct.WaitHandle /*1*/, } );
+                if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
+                {
+                    ct.ThrowIfCancellationRequested();
+                }
+                /*if ( idx != 0 ) //[_Semaphore := 0]
+                {
+                    //WHAT TODO HERE?!
+                }*/
+            }
+
+            /// <summary>
+            /// 
+            /// </summary>
+            private struct dummy_disposable : IDisposable
+            {
+                void IDisposable.Dispose() { }
+            }
+
+            public static IDisposable WaitForOtherAppInstance( int? maxDownloadAppInstance, CancellationToken ct, Action waitingForOtherAppInstanceFinished, int delayTimeout )
+            {
+                if ( maxDownloadAppInstance.HasValue )
+                {
+                    using ( var delayTaskCts = new CancellationTokenSource() )
+                    using ( var joinedCts    = CancellationTokenSource.CreateLinkedTokenSource( ct, delayTaskCts.Token ) )
+                    {
+                        var delayTask = Task.Delay( delayTimeout, joinedCts.Token );
+                        delayTask.ContinueWith( t => waitingForOtherAppInstanceFinished?.Invoke(), joinedCts.Token );
+
+                        var semaphore_app_instance = new semaphore_app_instance_t( maxDownloadAppInstance.Value );
+                        try
+                        {
+                            semaphore_app_instance.Wait( ct );
+                            delayTaskCts.Cancel();
+
+                            return (semaphore_app_instance);
+                        }
+                        catch ( Exception ex )
+                        {
+                            Debug.WriteLine( ex );
+
+                            semaphore_app_instance.Dispose();
+                        }                                               
+                    }
+                }
+                return (default(dummy_disposable));
+            }
         }
 
         /// <summary>
@@ -466,7 +556,7 @@ namespace m3u8
             using ( var innerCts  = new CancellationTokenSource() )
             using ( var joinedCts = CancellationTokenSource.CreateLinkedTokenSource( ct, innerCts.Token ) )
             using ( var canExtractPartEvent = new AutoResetEvent( false ) )
-            using ( var semaphore = new semaphore_decorator_t( ip.useCrossAppInstanceDegreeOfParallelism, ip.maxDegreeOfParallelism ) )
+            using ( var semaphore = new semaphore_download_threads_t( ip.useCrossAppInstanceDegreeOfParallelism, ip.maxDegreeOfParallelism ) )
             {
                 //-1-//
                 var task_download = Task.Run( () =>
@@ -529,7 +619,7 @@ namespace m3u8
                 for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.maxDegreeOfParallelism ) );
                         expectedPartNumber <= maxPartNumber; )
                 {
-                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/,joinedCts.Token.WaitHandle /*1*/, } );
+                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/, joinedCts.Token.WaitHandle /*1*/, } );
                     if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
                         break;
                     if ( idx != 0 ) //[canExtractPartEvent := 0]
@@ -750,6 +840,9 @@ namespace m3u8
             public ResponseStepActionDelegate ResponseStepAction     { get; set; }
             public int                        MaxDegreeOfParallelism { get; set; }
             public bool                       UseCrossAppInstanceDegreeOfParallelism { get; set; }
+
+            public int?   MaxDownloadAppInstance             { get; set; }
+            public Action WaitingForOtherAppInstanceFinished { get; set; }
         }
         /// <summary>
         /// 
@@ -780,27 +873,33 @@ namespace m3u8
             //-1-//
             var res = new DownloadPartsAndSaveResult( ip.OutputFileName );
 
-            //-2-//
-            var tp = new download_m3u8File_parts_parallel_params_t( ip );
-            var downloadParts = download_m3u8File_parts_parallel( tp );            
-
-            //-3-//
-            using ( var fs = File.OpenWrite( ip.OutputFileName ) )
+            using ( var semaphore_app_instance = semaphore_app_instance_t.WaitForOtherAppInstance( ip.MaxDownloadAppInstance, 
+                                                                                                   ip.Cts.Token,
+                                                                                                   ip.WaitingForOtherAppInstanceFinished,
+                                                                                                   delayTimeout: 1000 ) )
             {
-                fs.SetLength( 0 );
+                //-2-//
+                var tp = new download_m3u8File_parts_parallel_params_t( ip );
+                var downloadParts = download_m3u8File_parts_parallel( tp );
 
-                foreach ( var downloadPart in downloadParts )
+                //-3-//
+                using ( var fs = File.OpenWrite( ip.OutputFileName ) )
                 {
-                    if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )
-                    {
-                        res.PartsErrorCount++;
-                        continue;
-                    }
-                    var bytes = downloadPart.Bytes;
-                    fs.Write( bytes, 0, bytes.Length );
+                    fs.SetLength( 0 );
 
-                    res.PartsSuccessCount++;
-                    res.TotalBytes += (uint) bytes.Length;
+                    foreach ( var downloadPart in downloadParts )
+                    {
+                        if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )
+                        {
+                            res.PartsErrorCount++;
+                            continue;
+                        }
+                        var bytes = downloadPart.Bytes;
+                        fs.Write( bytes, 0, bytes.Length );
+
+                        res.PartsSuccessCount++;
+                        res.TotalBytes += (uint) bytes.Length;
+                    }
                 }
             }
 

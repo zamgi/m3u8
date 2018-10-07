@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-chrome-extension", "m3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-chrome-extension", "m3u8-chrome-extension", "{AF119145-1B98-4FE0-843F-0D159804A683}"
 	ProjectSection(SolutionItems) = preProject
+		m3u8-chrome-extension\m3u8-chrome-extension\auto_start_download.png = m3u8-chrome-extension\m3u8-chrome-extension\auto_start_download.png
 		m3u8-chrome-extension\m3u8-chrome-extension\background.html = m3u8-chrome-extension\m3u8-chrome-extension\background.html
 		m3u8-chrome-extension\m3u8-chrome-extension\background.js = m3u8-chrome-extension\m3u8-chrome-extension\background.js
 		m3u8-chrome-extension\m3u8-chrome-extension\m3u8.css = m3u8-chrome-extension\m3u8-chrome-extension\m3u8.css

@@ -12,22 +12,22 @@ namespace m3u8.downloader
         {
             InitializeComponent();
 
-            numericUpDown.Maximum = int.MaxValue;
+            maxDegreeOfParallelismNUD.Maximum = int.MaxValue;
         }
 
         private void infinityCheckBox_CheckedChanged( object sender, EventArgs e )
         {
-            numericUpDown.Enabled = !infinityCheckBox.Checked;
+            maxDegreeOfParallelismNUD.Enabled = !infinityCheckBox.Checked;
             useCrossAppInstanceDegreeOfParallelismCheckBox.Enabled = !infinityCheckBox.Checked;
         }
 
         public int  MaxDegreeOfParallelism
         {
-            get => (IsInfinity ? int.MaxValue : Convert.ToInt32( numericUpDown.Value ));
+            get => (IsInfinity ? int.MaxValue : Convert.ToInt32( maxDegreeOfParallelismNUD.Value ));
             set
             {
-                numericUpDown   .Value   = value;
-                numericUpDown   .Enabled = (value != int.MaxValue);
+                maxDegreeOfParallelismNUD   .Value   = value;
+                maxDegreeOfParallelismNUD   .Enabled = (value != int.MaxValue);
                 infinityCheckBox.Checked = (value == int.MaxValue);
             }
         }
@@ -37,13 +37,28 @@ namespace m3u8.downloader
             set
             {
                 infinityCheckBox.Checked = value;
-                numericUpDown   .Enabled = !value;
+                maxDegreeOfParallelismNUD   .Enabled = !value;
             }
         }
         public bool UseCrossAppInstanceDegreeOfParallelism
         {
             get => !infinityCheckBox.Checked && useCrossAppInstanceDegreeOfParallelismCheckBox.Checked;
             set => useCrossAppInstanceDegreeOfParallelismCheckBox.Checked = value;
+        }
+
+        private void maxDownloadAppInstanceCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            maxDownloadAppInstanceLabel.Enabled = maxDownloadAppInstanceCheckBox.Checked;
+            maxDownloadAppInstanceNUD  .Enabled = maxDownloadAppInstanceCheckBox.Checked;
+        }
+        public int? MaxDownloadAppInstance
+        {
+            get => (maxDownloadAppInstanceCheckBox.Checked ? Convert.ToInt32( maxDownloadAppInstanceNUD.Value ) : ((int?) null));
+            set
+            {
+                maxDownloadAppInstanceNUD.Value = value.GetValueOrDefault( 4 );
+                maxDownloadAppInstanceCheckBox.Checked = value.HasValue;
+            }
         }
     }
 }

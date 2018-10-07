@@ -18,30 +18,40 @@ function render_m3u8_urls(m3u8_urls) {
     var trs = [];
     for (var i = 0, cnt = m3u8_urls.length; i < cnt; i++) {
         var m3u8_url = m3u8_urls[i];
-        trs.push('<tr><td class="content" title="' + m3u8_url + '"><a href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>' );
+        trs.push('<tr><td class="content" title="' + m3u8_url + '"><a class="x" href="' + m3u8_url + '">' + m3u8_url + '</a></td>' +
+                     '<td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="auto_start_download.png" style="height: 16px"/></a></td></tr>');
     }
     content.innerHTML = '<h5 class="found">m3u8 urls: ' + m3u8_urls.length + '</h5>' +
                         '<table class="content">' + trs.join('') + '</table>';
 
-    var aa = content.querySelectorAll('a');
-    for (var i = 0; i < aa.length; i++) {
+    var aa = content.querySelectorAll('a.x');
+    for (i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (event) {
             connect2host(this.href);
             event.preventDefault();
             return (false);
         });
     }
-};
+
+    aa = content.querySelectorAll('a.auto_start_download');
+    for (i = 0; i < aa.length; i++) {
+        aa[i].addEventListener('click', function (event) {
+            connect2host(this.href, true);
+            event.preventDefault();
+            return (false);
+        });
+    }
+}
 
 function connect2host(m3u8_url, auto_start_download) {
     var hostName = "m3u8.downloader.host";
 
     chrome.runtime.sendNativeMessage(hostName,
         {
-            m3u8_url: m3u8_url
-            /*, auto_start_download: !!auto_start_download*/
+            m3u8_url: m3u8_url,
+            auto_start_download: !!auto_start_download
         },
         function (response) {
             console.log("received: " + response);
         });
-};
+}

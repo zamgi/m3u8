@@ -84,12 +84,11 @@
             // 
             // Caption
             // 
-            this.captionLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.captionLabel.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.captionLabel.AutoEllipsis = true;
             this.captionLabel.BackColor = System.Drawing.Color.Silver;
-            this.captionLabel.Location = new System.Drawing.Point(82, 17);
-            this.captionLabel.Size = new System.Drawing.Size(102, 13);
+            this.captionLabel.Location = new System.Drawing.Point(25, 17);
+            this.captionLabel.Size = new System.Drawing.Size(215, 13);
             this.captionLabel.TabIndex = 2;
             this.captionLabel.Text = "...executing...";
             this.captionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;

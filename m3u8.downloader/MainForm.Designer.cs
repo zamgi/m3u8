@@ -73,9 +73,7 @@
             // 
             // m3u8FileUrlTextBox
             // 
-            this.m3u8FileUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.m3u8FileUrlTextBox.Anchor = ((System.Windows.Forms.AnchorStyles) ((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.m3u8FileUrlTextBox.Location = new System.Drawing.Point(6, 20);
             this.m3u8FileUrlTextBox.Multiline = true;
             this.m3u8FileUrlTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -132,13 +130,14 @@
             // 
             // statusBar
             // 
-            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.responseStepActionLabel,
-            this.autoCloseApplicationWhenEndsDownloadLabel,
-            this.autoMinimizeWindowWhenStartsDownloadLabel,
-            this.excludesWordsLabel,
-            this.parallelismLabel,
-            this.settingsLabel} );
+            this.statusBar.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
+                this.responseStepActionLabel,
+                this.autoCloseApplicationWhenEndsDownloadLabel,
+                this.autoMinimizeWindowWhenStartsDownloadLabel,
+                this.excludesWordsLabel,
+                this.parallelismLabel,
+                this.settingsLabel
+            } );
             this.statusBar.Location = new System.Drawing.Point(0, 557);
             this.statusBar.ShowItemToolTips = true;
             this.statusBar.Size = new System.Drawing.Size(1015, 22);
@@ -159,8 +158,8 @@
             this.autoCloseApplicationWhenEndsDownloadLabel.Text = "auto close";
             this.autoCloseApplicationWhenEndsDownloadLabel.ToolTipText = "auto close application when ends download";
             this.autoCloseApplicationWhenEndsDownloadLabel.Click += new System.EventHandler(this.autoCloseApplicationWhenEndsDownloadLabel_Click);
+            this.autoCloseApplicationWhenEndsDownloadLabel.MouseEnter += new System.EventHandler(this.statusBarLabel_MouseEnter);
             this.autoCloseApplicationWhenEndsDownloadLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
-            this.autoCloseApplicationWhenEndsDownloadLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
             // 
             // autoMinimizeWindowWhenStartsDownloadLabel
             // 
@@ -169,8 +168,8 @@
             this.autoMinimizeWindowWhenStartsDownloadLabel.Text = "auto minimize";
             this.autoMinimizeWindowWhenStartsDownloadLabel.ToolTipText = "auto minimize window when starts download";
             this.autoMinimizeWindowWhenStartsDownloadLabel.Click += new System.EventHandler(this.autoMinimizeWindowWhenStartsDownloadLabel_Click);
-            this.autoMinimizeWindowWhenStartsDownloadLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
-            this.autoMinimizeWindowWhenStartsDownloadLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
+            this.autoMinimizeWindowWhenStartsDownloadLabel.MouseEnter += new System.EventHandler(this.statusBarLabel_MouseEnter);
+            this.autoMinimizeWindowWhenStartsDownloadLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);            
             // 
             // excludesWordsLabel
             // 
@@ -180,8 +179,8 @@
             this.excludesWordsLabel.Text = "file name excludes words editor...";
             this.excludesWordsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.excludesWordsLabel.Click += new System.EventHandler(this.excludesWordsLabel_Click);
+            this.excludesWordsLabel.MouseEnter += new System.EventHandler(this.statusBarLabel_MouseEnter);
             this.excludesWordsLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
-            this.excludesWordsLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
             // 
             // parallelismLabel
             // 
@@ -192,8 +191,8 @@
             this.parallelismLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.parallelismLabel.Click += new System.EventHandler(this.parallelismLabel_Click);
             this.parallelismLabel.EnabledChanged += new System.EventHandler(this.parallelismLabel_EnabledChanged);
-            this.parallelismLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
-            this.parallelismLabel.MouseHover += new System.EventHandler(this.statusBarLabel_MouseHover);
+            this.parallelismLabel.MouseEnter += new System.EventHandler(this.statusBarLabel_MouseEnter);
+            this.parallelismLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);            
             // 
             // settingsLabel
             // 
@@ -201,9 +200,9 @@
             this.settingsLabel.Size = new System.Drawing.Size( 60, 17 );
             this.settingsLabel.Image = m3u8.Properties.Resources.settings_16.ToBitmap();
             this.settingsLabel.ToolTipText = "settings";
-            this.settingsLabel.Click += new System.EventHandler( this.settingsLabel_Click );
-            this.settingsLabel.MouseLeave += new System.EventHandler( this.statusBarLabel_MouseLeave );
-            this.settingsLabel.MouseHover += new System.EventHandler( this.statusBarLabel_MouseHover );
+            this.settingsLabel.Click += new System.EventHandler(this.settingsLabel_Click);
+            this.settingsLabel.MouseEnter += new System.EventHandler(this.statusBarLabel_MouseEnter);
+            this.settingsLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
             // 
             // m3u8FileWholeLoadAndSaveButton
             // 
@@ -276,7 +275,7 @@
             this.Icon = global::m3u8.Properties.Resources.m3u8_32x36;
             this.KeyPreview = true;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = ".m3u8 file downloader";
+            this.Text = APP_TITLE;
             this.topPanel.ResumeLayout(false);
             this.topPanel.PerformLayout();
             this.statusBar.ResumeLayout(false);

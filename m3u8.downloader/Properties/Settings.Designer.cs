@@ -85,6 +85,18 @@ namespace m3u8.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        public global::System.Nullable<System.Int32> MaxDownloadAppInstance {
+            get {
+                return ((global::System.Nullable<System.Int32>)(this["MaxDownloadAppInstance"]));
+            }
+            set {
+                this["MaxDownloadAppInstance"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool AutoMinimizeWindowWhenStartsDownload {
             get {
