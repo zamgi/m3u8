@@ -25,9 +25,13 @@ td.content {
 }
 h5.found {
     text-align: left;
+    vertical-align: central;
     margin: 3px 0 3px 7px;
     color: forestgreen;
 }
+    h5.found a.download_all {
+        color: forestgreen;
+    }
 h5.not-found {
     color: maroon;
     white-space: nowrap;
@@ -44,10 +48,15 @@ a {
         color: black;
     }
 
-    a.auto_start_download > img {
+    a.auto_start_download > img,
+    a.auto_start_download_all > img {
         border: 1px solid transparent;
         border-radius: 2px;
     }
-        a.auto_start_download > img:hover {
+        a.auto_start_download > img:hover,
+        a.auto_start_download_all > img:hover {
             border-color: silver;
         }
+    a.auto_start_download_all {
+        margin-left: 5px;
+    }

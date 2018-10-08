@@ -18,13 +18,15 @@ function render_m3u8_urls(m3u8_urls) {
     var trs = [];
     for (var i = 0, cnt = m3u8_urls.length; i < cnt; i++) {
         var m3u8_url = m3u8_urls[i];
-        trs.push('<tr><td class="content" title="' + m3u8_url + '"><a class="x" href="' + m3u8_url + '">' + m3u8_url + '</a></td>' +
-                     '<td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="auto_start_download.png" style="height: 16px"/></a></td></tr>');
+        trs.push('<tr><td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="auto_start_download.png" style="height: 16px"/></a></td>' + 
+            '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>');
     }
-    content.innerHTML = '<h5 class="found">m3u8 urls: ' + m3u8_urls.length + '</h5>' +
+    var download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + m3u8_urls.length + '</a></h5>'; //'<h5 class="found">m3u8 urls: ' + m3u8_urls.length + '</h5>';
+    var auto_start_download_all = ((1 < m3u8_urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="auto_start_download.png" style="height: 16px"/></a>' : '');
+    content.innerHTML = '<table><tr><td>' + download_all + '</td><td>' + auto_start_download_all + '</td></tr></table>' +
                         '<table class="content">' + trs.join('') + '</table>';
 
-    var aa = content.querySelectorAll('a.x');
+    var aa = content.querySelectorAll('a.download');
     for (i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (event) {
             connect2host(this.href);
@@ -37,6 +39,30 @@ function render_m3u8_urls(m3u8_urls) {
     for (i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (event) {
             connect2host(this.href, true);
+            event.preventDefault();
+            return (false);
+        });
+    }
+
+    aa = content.querySelectorAll('a.download_all');
+    if (0 < aa.length) {
+        aa[0].addEventListener('click', function (event) {
+            var bb = content.querySelectorAll('a.download');
+            for (var j = 0; j < bb.length; j++) {
+                connect2host(bb[j].href, false);
+            }
+            event.preventDefault();
+            return (false);
+        });
+    }
+
+    aa = content.querySelectorAll('a.auto_start_download_all');
+    if (0 < aa.length) {
+        aa[0].addEventListener('click', function (event) {
+            var bb = content.querySelectorAll('a.auto_start_download');
+            for (var j = 0; j < bb.length; j++) {
+                connect2host(bb[j].href, true);
+            }
             event.preventDefault();
             return (false);
         });
