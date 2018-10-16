@@ -9,7 +9,7 @@ namespace m3u8.downloader
     /// <summary>
     /// 
     /// </summary>
-    internal sealed partial class WaitBannerUC : UserControl, IWaitBannerMarker
+    internal sealed partial class WaitBannerUC : UserControl
     {
         private const string CAPTION_TEXT = "...executing...";
 
@@ -73,18 +73,11 @@ namespace m3u8.downloader
             indicatorPictureBox.Visible = true;
 
             //----------------------------------------------------------------------//
-            //if ( _FirstAppForm.WindowState == FormWindowState.Minimized )
-            //{
-                var elapsed = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
+            var elapsed = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
 
-                _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished 
-                                      ? $"(wait), ({elapsed})" 
-                                      : $"{_PercentSteps}%, ({elapsed}){(_SpeedText.IsNullOrEmpty() ? null : $", {_SpeedText}")}");
-            //}
-            //else
-            //{
-            //    _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished ? "(wait) " : null) + _FirstAppFormText;
-            //}
+            _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished 
+                                 ? $"(wait), ({elapsed})" 
+                                 : $"{_PercentSteps}%, ({elapsed}){(_SpeedText.IsNullOrEmpty() ? null : $", {_SpeedText}")}");
         }
 
         public void SetTotalSteps( int totalSteps ) => _TotalSteps = totalSteps;

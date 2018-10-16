@@ -54,7 +54,6 @@
     <Compile Include="..\m3u8.client\m3u8.client.cs">
       <Link>[-= m3u8.client =-]\m3u8.client.cs</Link>
     </Compile>
-    <Compile Include="Infrastructure\DefaultConnectionLimitSaver.cs" />
     <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Infrastructure\NameCleaner.cs" />
     <Compile Include="Infrastructure\WinApi.cs" />
@@ -70,6 +69,21 @@
     <Compile Include="UI\ChangeOutputFileForm.Designer.cs">
       <DependentUpon>ChangeOutputFileForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultDGV.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultDGV.Designer.cs">
+      <DependentUpon>M3u8FileResultDGV.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultTextBox.Designer.cs">
+      <DependentUpon>M3u8FileResultTextBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultUCBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="UI\ParallelismForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -79,7 +93,6 @@
     <Compile Include="UI\ButtonWithFocusCues.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\IWaitBannerMarker.cs" />
     <Compile Include="UI\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -101,7 +114,7 @@
     <Compile Include="Infrastructure\PathnameCleaner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\IconHolder.cs" />
+    <Compile Include="UI\BitmapHolder.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

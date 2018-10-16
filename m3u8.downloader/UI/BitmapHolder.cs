@@ -2,6 +2,8 @@
 using System.Drawing;
 using System.Linq;
 
+using m3u8.Properties;
+
 namespace m3u8.downloader
 {
     /// <summary>
@@ -51,14 +53,14 @@ namespace m3u8.downloader
                         (
                             new[]
                             {
-                                Properties.Resources.i1,
-                                Properties.Resources.i2,
-                                Properties.Resources.i3,
-                                Properties.Resources.i4,
-                                Properties.Resources.i5,
-                                Properties.Resources.i6,
-                                Properties.Resources.i7,
-                                Properties.Resources.i8,
+                                Resources.i1,
+                                Resources.i2,
+                                Resources.i3,
+                                Resources.i4,
+                                Resources.i5,
+                                Resources.i6,
+                                Resources.i7,
+                                Resources.i8,
                             }
                         );
                     }

@@ -8,12 +8,7 @@ namespace m3u8.downloader
     /// </summary>
     internal sealed partial class SettingsForm : Form
     {
-        private SettingsForm() => InitializeComponent();
-        public SettingsForm( int attemptRequestCountByPart, TimeSpan requestTimeoutByPart ) : this()
-        {
-            AttemptRequestCountByPart = attemptRequestCountByPart;
-            RequestTimeoutByPart      = requestTimeoutByPart;
-        }
+        public SettingsForm() => InitializeComponent();
 
         public int AttemptRequestCountByPart
         {
@@ -22,8 +17,36 @@ namespace m3u8.downloader
         }
         public TimeSpan RequestTimeoutByPart
         {
-            get => requestTimeoutByPartDTP.Value.TimeOfDay; // TimeSpan.FromTicks( (requestTimeoutByPartDTP.Value.TimeOfDay - requestTimeoutByPartDTP.MinDate.Date).Ticks );
+            get => requestTimeoutByPartDTP.Value.TimeOfDay;
             set => requestTimeoutByPartDTP.Value = requestTimeoutByPartDTP.MinDate.Date + value;
         }
+        public DownloadLogUITypeEnum DownloadLogUIType
+        {
+            get => (logUITextBoxCheckBox.Checked ? DownloadLogUITypeEnum.TextBoxUIType : DownloadLogUITypeEnum.GridViewUIType);
+            set
+            {
+                logUIGridViewCheckBox.CheckedChanged -= logUIGridViewCheckBox_CheckedChanged;
+                logUITextBoxCheckBox .CheckedChanged -= logUITextBoxCheckBox_CheckedChanged;
+
+                switch ( value )
+                {
+                    case DownloadLogUITypeEnum.TextBoxUIType:
+                        logUITextBoxCheckBox .Checked = true;
+                        logUIGridViewCheckBox.Checked = false;
+                    break;
+
+                    case DownloadLogUITypeEnum.GridViewUIType:
+                        logUITextBoxCheckBox .Checked = false;
+                        logUIGridViewCheckBox.Checked = true;
+                    break;
+                }
+
+                logUIGridViewCheckBox.CheckedChanged += logUIGridViewCheckBox_CheckedChanged;
+                logUITextBoxCheckBox .CheckedChanged += logUITextBoxCheckBox_CheckedChanged;
+            }
+        }
+
+        private void logUITextBoxCheckBox_CheckedChanged ( object sender, EventArgs e ) => this.DownloadLogUIType = DownloadLogUITypeEnum.TextBoxUIType;
+        private void logUIGridViewCheckBox_CheckedChanged( object sender, EventArgs e ) => this.DownloadLogUIType = DownloadLogUITypeEnum.GridViewUIType;
     }
 }
