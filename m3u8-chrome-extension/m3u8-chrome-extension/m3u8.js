@@ -21,9 +21,9 @@ function render_m3u8_urls(m3u8_urls) {
         trs.push('<tr><td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="auto_start_download.png" style="height: 16px"/></a></td>' + 
             '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>');
     }
-    var download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + m3u8_urls.length + '</a></h5>'; //'<h5 class="found">m3u8 urls: ' + m3u8_urls.length + '</h5>';
+    var download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + m3u8_urls.length + '</a></h5>';
     var auto_start_download_all = ((1 < m3u8_urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="auto_start_download.png" style="height: 16px"/></a>' : '');
-    content.innerHTML = '<table><tr><td>' + download_all + '</td><td>' + auto_start_download_all + '</td></tr></table>' +
+    content.innerHTML = '<table><tr><td>' + auto_start_download_all + '</td><td>' + download_all + '</td></tr></table>' +
                         '<table class="content">' + trs.join('') + '</table>';
 
     var aa = content.querySelectorAll('a.download');
