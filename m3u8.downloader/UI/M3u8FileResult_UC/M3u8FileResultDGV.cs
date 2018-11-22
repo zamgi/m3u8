@@ -124,6 +124,11 @@ namespace m3u8.downloader
         }
         private void DGV_Resize( object sender, EventArgs e )
         {
+            if ( this.FindForm()?.WindowState == FormWindowState.Minimized )
+            {
+                return;
+            }
+
             DGV.ColumnWidthChanged -= DGV_ColumnWidthChanged;
             {
                 var w  = 1.0 * (DGV.Width - GetColumnsResizeDiff());

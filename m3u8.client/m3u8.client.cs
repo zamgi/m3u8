@@ -278,11 +278,11 @@ namespace m3u8
                         return (m3u8File);
                     }
                 }
-                catch ( Exception ex )
+                catch ( Exception /*ex*/ )
                 {
                     if ( (attemptRequestCount == 1) || ct.IsCancellationRequested )
                     {
-                        throw (ex);
+                        throw;
                     }
                 }
             }

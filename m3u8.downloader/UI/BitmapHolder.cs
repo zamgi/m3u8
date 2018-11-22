@@ -40,7 +40,7 @@ namespace m3u8.downloader
         }
 
         #region [.Singletons.]
-        private static BitmapHolder _IndicatorI;
+        private static volatile BitmapHolder _IndicatorI;
         public static BitmapHolder IndicatorI
         {
             get
