@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using m3u8.Properties;
 using CellStyle = System.Windows.Forms.DataGridViewCellStyle;
 
 namespace m3u8.downloader
@@ -37,6 +40,9 @@ namespace m3u8.downloader
         private CellStyle _Rsp_ErrorCellStyle;
         private CellStyle _Rsp_ErrorCellStyleSmallFont_1;
         private CellStyle _Rsp_ErrorCellStyleSmallFont_2;
+
+        private bool _ShowOnlyRequestRowsWithErrors;
+        private ContextMenuStrip _ContextMenu;
         #endregion
 
         #region [.ctor().]
@@ -50,7 +56,7 @@ namespace m3u8.downloader
             _Req_ErrorCellStyle    = new CellStyle() { WrapMode = DataGridViewTriState.True, ForeColor = Color.Red, BackColor = Color.Yellow };
             _Rsp_ErrorCellStyle    = new CellStyle() { WrapMode = DataGridViewTriState.True, ForeColor = Color.Red, BackColor = Color.Yellow };
 
-            var smallFont_1 = new Font( DGV.Font.FontFamily, DGV.Font.Size * 4 / 5 );
+            var smallFont_1 = new Font( DGV.Font.FontFamily   , DGV.Font.Size * 4 / 5 );
             var smallFont_2 = new Font( smallFont_1.FontFamily, smallFont_1.Size * 4 / 5 );
 
             _Req_ErrorCellStyleSmallFont_1 = new CellStyle() { WrapMode = DataGridViewTriState.True, Font = smallFont_1, ForeColor = Color.Red, BackColor = Color.Yellow };
@@ -61,6 +67,10 @@ namespace m3u8.downloader
             _Rsp_CellStyleSmallFont_1      = new CellStyle() { WrapMode = DataGridViewTriState.True, Font = smallFont_1 };
             _Req_CellStyleSmallFont_2      = new CellStyle() { WrapMode = DataGridViewTriState.True, Font = smallFont_2 };
             _Rsp_CellStyleSmallFont_2      = new CellStyle() { WrapMode = DataGridViewTriState.True, Font = smallFont_2 };
+
+            _ShowOnlyRequestRowsWithErrors = Settings.Default.ShowOnlyRequestRowsWithErrors;
+            _ContextMenu = new ContextMenuStrip();
+            _ContextMenu.Items.Add( new ToolStripMenuItem( "Show only request rows with errors", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = _ShowOnlyRequestRowsWithErrors } );
         }
 
         protected override void OnLoad( EventArgs e )
@@ -90,6 +100,72 @@ namespace m3u8.downloader
         private int GetColumnsResizeDiff() => (DGV.RowHeadersVisible ? DGV.RowHeadersWidth : 0) + 
                                               (IsVerticalScrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0) + //3 + 
                                               ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : 0);
+
+        private enum RequestRowTypeEnum { None, Success, Error };
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] private static bool TryGetRequestRowType( DataGridViewRow row, out RequestRowTypeEnum rt )
+        {
+            if ( row.Tag == null )
+            {
+                rt = RequestRowTypeEnum.None;
+                return (false);
+            }
+            rt = (RequestRowTypeEnum) row.Tag;
+            return (true);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] private static void MarkAsRequestRow( DataGridViewRow row ) => row.Tag = RequestRowTypeEnum.Success;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] private static void MarkAsRequestRowWithError( DataGridViewRow row ) => row.Tag = RequestRowTypeEnum.Error;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] private static DataGridViewRow CreateRow( RequestRowTypeEnum rt = RequestRowTypeEnum.None )
+        {
+            var row = new DataGridViewRow();
+            switch ( rt )
+            {
+                case RequestRowTypeEnum.Error  : MarkAsRequestRowWithError( row ); break;
+                case RequestRowTypeEnum.Success: MarkAsRequestRow         ( row ); break;
+            }
+            return (row);
+        }
+
+        private void SetRowsVisiblity()
+        {
+            DGV.SuspendDrawing();
+            try
+            {
+                if ( _ShowOnlyRequestRowsWithErrors )
+                {
+                    foreach ( var row in DGV.Rows.Cast< DataGridViewRow >() )
+                    {
+                        if ( TryGetRequestRowType( row, out var rt ) )
+                        {
+                            row.Visible = (rt == RequestRowTypeEnum.Error);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach ( var row in DGV.Rows.Cast< DataGridViewRow >() )
+                    {
+                        if ( TryGetRequestRowType( row, out var _ ) )
+                        {
+                            row.Visible = true;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                DGV.ResumeDrawing();
+            }
+        }
+        private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e )
+        {
+            _ShowOnlyRequestRowsWithErrors = !_ShowOnlyRequestRowsWithErrors;
+            SetRowsVisiblity();
+
+            ((ToolStripMenuItem) sender).Checked = _ShowOnlyRequestRowsWithErrors;
+            Settings.Default.ShowOnlyRequestRowsWithErrors = _ShowOnlyRequestRowsWithErrors;
+            Settings.Default.Save();
+        }
+
         private void DGV_ColumnWidthChanged( object sender, DataGridViewColumnEventArgs e )
         {
             DGV.ColumnWidthChanged -= DGV_ColumnWidthChanged;
@@ -149,6 +225,11 @@ namespace m3u8.downloader
             if ( (hti.RowIndex < 0) || (hti.ColumnIndex < 0) )
             {
                 ClearSelection();
+            }
+
+            if ( e.Button == MouseButtons.Right )
+            {
+                _ContextMenu.Show( DGV, e.Location );
             }
         }
         #endregion
@@ -216,12 +297,12 @@ namespace m3u8.downloader
             DGV.ResumeDrawing();
         }
 
-        public override void AppendEmptyLine() => DGV.FirstDisplayedScrollingRowIndex = AddRow( new DataGridViewRow() );
+        public override void AppendEmptyLine() => DGV.FirstDisplayedScrollingRowIndex = AddRow( CreateRow() );
         public override IRowHolder AppendRequestText( string requestText, bool ensureVisible = true )
         {
             var t = Get_4_RequestColumn( requestText );
 
-            var row = new DataGridViewRow();
+            var row = CreateRow();
             row.Cells.Add( new DataGridViewTextBoxCell() { Value = t.text, Style = t.cellStyle } );
 
             var rowIndex = AddRow( row );
@@ -237,7 +318,7 @@ namespace m3u8.downloader
         public override void AppendRequestErrorText( string errorText ) => _AppendRequestErrorText( GetError_4_RequestColumn( errorText ) );
         private void _AppendRequestErrorText( (string errorText, CellStyle errorCellStyle) x )
         {
-            var row = new DataGridViewRow();
+            var row = CreateRow( RequestRowTypeEnum.Error );
             row.Cells.Add( new DataGridViewTextBoxCell() { Value = x.errorText, Style = x.errorCellStyle } );
 
             var rowIndex = AddRow( row );
@@ -249,7 +330,7 @@ namespace m3u8.downloader
             var t = Get_4_RequestColumn      ( requestText );
             var x = GetError_4_ResponseColumn( responseError );
 
-            var row = new DataGridViewRow();
+            var row = CreateRow( RequestRowTypeEnum.Error );
             row.Cells.Add( new DataGridViewTextBoxCell() { Value = t.text     , Style = t.cellStyle      } );
             row.Cells.Add( new DataGridViewTextBoxCell() { Value = x.errorText, Style = x.errorCellStyle } );
 
@@ -262,12 +343,28 @@ namespace m3u8.downloader
         {
             var x = GetError_4_ResponseColumn( ex );
             var row = ((RowHolder) holder).Row;
+            MarkAsRequestRowWithError( row );
+            row.Visible = true;
             row.Cells[ 1 ] = new DataGridViewTextBoxCell() { Value = x.errorText, Style = x.errorCellStyle };
             DGV.AutoResizeRow( row.Index, DataGridViewAutoSizeRowMode.AllCells );
         }
+
+        private static Action< DataGridViewRow > _SetRowInvisibleAction = new Action< DataGridViewRow >( row =>
+        {
+            try
+            {
+                row.Visible = false;
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+        });
         public override void SetResponseReceivedText( IRowHolder holder, string receivedText )
         {
             var row = ((RowHolder) holder).Row;
+            MarkAsRequestRow( row );
+            //---row.Visible = !_ShowOnlyRequestRowsWithErrors;
             var cell_1 = row.Cells[ 0 ];
             var cs = (cell_1.Style ?? DGV.Columns[ 0 ].DefaultCellStyle);
             cell_1.Style = (cs != null) 
@@ -275,6 +372,11 @@ namespace m3u8.downloader
                            : _Req_ReceivedCellStyle;
             row.Cells[ 1 ] = new DataGridViewTextBoxCell() { Value = receivedText, Style = _Rsp_ReceivedCellStyle };
             DGV.AutoResizeRow( row.Index, DataGridViewAutoSizeRowMode.AllCells );
+
+            if ( _ShowOnlyRequestRowsWithErrors )
+            {
+                Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _SetRowInvisibleAction, row ) );
+            }
         }
     }
 }
