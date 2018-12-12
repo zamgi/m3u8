@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using m3u8.Properties;
+
 namespace m3u8.downloader
 {
     /// <summary>
@@ -23,6 +25,26 @@ namespace m3u8.downloader
     /// </summary>
     internal abstract class M3u8FileResultUCBase : UserControl
     {
+        protected M3u8FileResultUCBase() => _ShowOnlyRequestRowsWithErrors = Settings.Default.ShowOnlyRequestRowsWithErrors;
+
+        private bool _ShowOnlyRequestRowsWithErrors;
+        public bool ShowOnlyRequestRowsWithErrors
+        {
+            get => _ShowOnlyRequestRowsWithErrors;
+            set
+            {
+                if ( _ShowOnlyRequestRowsWithErrors != value )
+                {
+                    _ShowOnlyRequestRowsWithErrors = value;
+                    Settings.Default.ShowOnlyRequestRowsWithErrors = value;
+                    Settings.Default.Save();
+
+                    ShowOnlyRequestRowsWithErrors_OnChanged();
+                }
+            }
+        }
+        protected virtual void ShowOnlyRequestRowsWithErrors_OnChanged() { }
+
         public abstract bool IsVerticalScrollBarVisible { get; }
         public abstract void Clear();
         public abstract void SetFocus();

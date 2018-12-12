@@ -34,6 +34,7 @@
             this.l2 = new System.Windows.Forms.Label();
             this.requestTimeoutByPartDTP = new System.Windows.Forms.DateTimePicker();
             this.gb1 = new System.Windows.Forms.GroupBox();
+            this.showOnlyRequestRowsWithErrorsCheckBox = new System.Windows.Forms.CheckBox();
             this.logUIGridViewCheckBox = new System.Windows.Forms.CheckBox();
             this.logUITextBoxCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.attemptRequestCountByPartNUD)).BeginInit();
@@ -44,11 +45,19 @@
             // 
             this.attemptRequestCountByPartNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.attemptRequestCountByPartNUD.Location = new System.Drawing.Point(167, 10);
-            this.attemptRequestCountByPartNUD.Minimum = new decimal( new int[] { 1, 0, 0, 0 } );
+            this.attemptRequestCountByPartNUD.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.attemptRequestCountByPartNUD.Size = new System.Drawing.Size(89, 16);
-            this.attemptRequestCountByPartNUD.TabIndex = 0;
+            this.attemptRequestCountByPartNUD.TabIndex = 1;
             this.attemptRequestCountByPartNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.attemptRequestCountByPartNUD.Value = new decimal( new int[] { 1, 0, 0, 0 } );
+            this.attemptRequestCountByPartNUD.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
             // okButton
             // 
@@ -56,9 +65,9 @@
             this.okButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.okButton.Location = new System.Drawing.Point(58, 169);
+            this.okButton.Location = new System.Drawing.Point(65, 205);
             this.okButton.Size = new System.Drawing.Size(75, 23);
-            this.okButton.TabIndex = 2;
+            this.okButton.TabIndex = 5;
             this.okButton.Text = "Ok";
             this.okButton.UseVisualStyleBackColor = true;
             // 
@@ -68,9 +77,9 @@
             this.cancelButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cancelButton.Location = new System.Drawing.Point(139, 169);
+            this.cancelButton.Location = new System.Drawing.Point(146, 205);
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 3;
+            this.cancelButton.TabIndex = 6;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
@@ -79,7 +88,7 @@
             this.l1.AutoSize = true;
             this.l1.Location = new System.Drawing.Point(12, 9);
             this.l1.Size = new System.Drawing.Size(148, 13);
-            this.l1.TabIndex = 4;
+            this.l1.TabIndex = 0;
             this.l1.Text = "attempt request count by part:";
             // 
             // l2
@@ -87,7 +96,7 @@
             this.l2.AutoSize = true;
             this.l2.Location = new System.Drawing.Point(43, 42);
             this.l2.Size = new System.Drawing.Size(117, 13);
-            this.l2.TabIndex = 5;
+            this.l2.TabIndex = 3;
             this.l2.Text = "request timeout by part:";
             // 
             // requestTimeoutByPartDTP
@@ -96,29 +105,44 @@
             this.requestTimeoutByPartDTP.Location = new System.Drawing.Point(167, 36);
             this.requestTimeoutByPartDTP.ShowUpDown = true;
             this.requestTimeoutByPartDTP.Size = new System.Drawing.Size(91, 20);
-            this.requestTimeoutByPartDTP.TabIndex = 1;
+            this.requestTimeoutByPartDTP.TabIndex = 2;
             // 
             // gb1
             // 
+            this.gb1.Controls.Add(this.showOnlyRequestRowsWithErrorsCheckBox);
             this.gb1.Controls.Add(this.logUIGridViewCheckBox);
             this.gb1.Controls.Add(this.logUITextBoxCheckBox);
             this.gb1.Location = new System.Drawing.Point(13, 73);
-            this.gb1.Size = new System.Drawing.Size(246, 84);
-            this.gb1.TabIndex = 7;
+            this.gb1.Size = new System.Drawing.Size(261, 116);
+            this.gb1.TabIndex = 4;
             this.gb1.TabStop = false;
             this.gb1.Text = "download log UI type";
+            // 
+            // showOnlyRequestRowsWithErrorsCheckBox
+            // 
+            this.showOnlyRequestRowsWithErrorsCheckBox.AutoSize = true;
+            this.showOnlyRequestRowsWithErrorsCheckBox.Checked = true;
+            this.showOnlyRequestRowsWithErrorsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.showOnlyRequestRowsWithErrorsCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.showOnlyRequestRowsWithErrorsCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.showOnlyRequestRowsWithErrorsCheckBox.Location = new System.Drawing.Point(50, 77);
+            this.showOnlyRequestRowsWithErrorsCheckBox.Size = new System.Drawing.Size(185, 17);
+            this.showOnlyRequestRowsWithErrorsCheckBox.TabIndex = 2;
+            this.showOnlyRequestRowsWithErrorsCheckBox.Text = "show only request rows with errors";
+            this.showOnlyRequestRowsWithErrorsCheckBox.UseVisualStyleBackColor = true;
             // 
             // logUIGridViewCheckBox
             // 
             this.logUIGridViewCheckBox.AutoSize = true;
+            this.logUIGridViewCheckBox.Checked = true;
+            this.logUIGridViewCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.logUIGridViewCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.logUIGridViewCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.logUIGridViewCheckBox.Location = new System.Drawing.Point(33, 50);
             this.logUIGridViewCheckBox.Size = new System.Drawing.Size(169, 17);
-            this.logUIGridViewCheckBox.TabIndex = 7;
+            this.logUIGridViewCheckBox.TabIndex = 1;
             this.logUIGridViewCheckBox.Text = "grid-view download log UI type";
             this.logUIGridViewCheckBox.UseVisualStyleBackColor = true;
-            this.logUIGridViewCheckBox.Checked = true;
             // 
             // logUITextBoxCheckBox
             // 
@@ -127,7 +151,7 @@
             this.logUITextBoxCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.logUITextBoxCheckBox.Location = new System.Drawing.Point(33, 23);
             this.logUITextBoxCheckBox.Size = new System.Drawing.Size(164, 17);
-            this.logUITextBoxCheckBox.TabIndex = 6;
+            this.logUITextBoxCheckBox.TabIndex = 0;
             this.logUITextBoxCheckBox.Text = "text-box download log UI type";
             this.logUITextBoxCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -136,7 +160,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(273, 204);
+            this.ClientSize = new System.Drawing.Size(286, 240);
             this.Controls.Add(this.gb1);
             this.Controls.Add(this.requestTimeoutByPartDTP);
             this.Controls.Add(this.l2);
@@ -168,5 +192,6 @@
         private System.Windows.Forms.GroupBox gb1;
         private System.Windows.Forms.CheckBox logUIGridViewCheckBox;
         private System.Windows.Forms.CheckBox logUITextBoxCheckBox;
+        private System.Windows.Forms.CheckBox showOnlyRequestRowsWithErrorsCheckBox;
     }
 }

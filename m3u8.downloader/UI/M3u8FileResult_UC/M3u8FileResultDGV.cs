@@ -41,8 +41,8 @@ namespace m3u8.downloader
         private CellStyle _Rsp_ErrorCellStyleSmallFont_1;
         private CellStyle _Rsp_ErrorCellStyleSmallFont_2;
 
-        private bool _ShowOnlyRequestRowsWithErrors;
-        private ContextMenuStrip _ContextMenu;
+        private ContextMenuStrip  _ContextMenu;
+        private ToolStripMenuItem _ShowOnlyRequestRowsWithErrorsMenuItem;
         #endregion
 
         #region [.ctor().]
@@ -68,9 +68,9 @@ namespace m3u8.downloader
             _Req_CellStyleSmallFont_2      = new CellStyle() { WrapMode = DataGridViewTriState.True, Font = smallFont_2 };
             _Rsp_CellStyleSmallFont_2      = new CellStyle() { WrapMode = DataGridViewTriState.True, Font = smallFont_2 };
 
-            _ShowOnlyRequestRowsWithErrors = Settings.Default.ShowOnlyRequestRowsWithErrors;
+            _ShowOnlyRequestRowsWithErrorsMenuItem = new ToolStripMenuItem( "Show only request rows with errors", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = base.ShowOnlyRequestRowsWithErrors };
             _ContextMenu = new ContextMenuStrip();
-            _ContextMenu.Items.Add( new ToolStripMenuItem( "Show only request rows with errors", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = _ShowOnlyRequestRowsWithErrors } );
+            _ContextMenu.Items.Add( _ShowOnlyRequestRowsWithErrorsMenuItem );
         }
 
         protected override void OnLoad( EventArgs e )
@@ -130,7 +130,7 @@ namespace m3u8.downloader
             DGV.SuspendDrawing();
             try
             {
-                if ( _ShowOnlyRequestRowsWithErrors )
+                if ( base.ShowOnlyRequestRowsWithErrors )
                 {
                     foreach ( var row in DGV.Rows.Cast< DataGridViewRow >() )
                     {
@@ -156,15 +156,7 @@ namespace m3u8.downloader
                 DGV.ResumeDrawing();
             }
         }
-        private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e )
-        {
-            _ShowOnlyRequestRowsWithErrors = !_ShowOnlyRequestRowsWithErrors;
-            SetRowsVisiblity();
-
-            ((ToolStripMenuItem) sender).Checked = _ShowOnlyRequestRowsWithErrors;
-            Settings.Default.ShowOnlyRequestRowsWithErrors = _ShowOnlyRequestRowsWithErrors;
-            Settings.Default.Save();
-        }
+        private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;
 
         private void DGV_ColumnWidthChanged( object sender, DataGridViewColumnEventArgs e )
         {
@@ -260,6 +252,11 @@ namespace m3u8.downloader
         private (string errorText, CellStyle errorCellStyle) GetError_4_ResponseColumn( Exception ex ) => GetError_4_ResponseColumn( ex.ToString() );
         #endregion
 
+        protected override void ShowOnlyRequestRowsWithErrors_OnChanged()
+        {
+            _ShowOnlyRequestRowsWithErrorsMenuItem.Checked = this.ShowOnlyRequestRowsWithErrors;
+            SetRowsVisiblity();
+        }
         public override bool IsVerticalScrollBarVisible => DGV.Controls.OfType< VScrollBar >().First().Visible;
         public override void AdjustColumnsWidthSprain() => DGV_Resize( null, null );
         public override void AdjustRowsHeight()
@@ -364,7 +361,7 @@ namespace m3u8.downloader
         {
             var row = ((RowHolder) holder).Row;
             MarkAsRequestRow( row );
-            //---row.Visible = !_ShowOnlyRequestRowsWithErrors;
+            //---row.Visible = !base.ShowOnlyRequestRowsWithErrors;
             var cell_1 = row.Cells[ 0 ];
             var cs = (cell_1.Style ?? DGV.Columns[ 0 ].DefaultCellStyle);
             cell_1.Style = (cs != null) 
@@ -373,7 +370,7 @@ namespace m3u8.downloader
             row.Cells[ 1 ] = new DataGridViewTextBoxCell() { Value = receivedText, Style = _Rsp_ReceivedCellStyle };
             DGV.AutoResizeRow( row.Index, DataGridViewAutoSizeRowMode.AllCells );
 
-            if ( _ShowOnlyRequestRowsWithErrors )
+            if ( base.ShowOnlyRequestRowsWithErrors )
             {
                 Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _SetRowInvisibleAction, row ) );
             }

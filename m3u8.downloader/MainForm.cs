@@ -328,15 +328,17 @@ namespace m3u8.downloader
         {
             using ( var f = new SettingsForm() )
             {
-                f.AttemptRequestCountByPart = Settings.Default.AttemptRequestCountByPart;
-                f.RequestTimeoutByPart      = Settings.Default.RequestTimeoutByPart;
-                f.DownloadLogUIType         = this.DownloadLogUIType;
+                f.AttemptRequestCountByPart     = Settings.Default.AttemptRequestCountByPart;
+                f.RequestTimeoutByPart          = Settings.Default.RequestTimeoutByPart;
+                f.DownloadLogUIType             = this.DownloadLogUIType;
+                f.ShowOnlyRequestRowsWithErrors = _m3U8FileResultUC.ShowOnlyRequestRowsWithErrors;
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
-                    Settings.Default.AttemptRequestCountByPart = f.AttemptRequestCountByPart;
-                    Settings.Default.RequestTimeoutByPart      = f.RequestTimeoutByPart;
-                    this.DownloadLogUIType                     = f.DownloadLogUIType;
+                    Settings.Default.AttemptRequestCountByPart      = f.AttemptRequestCountByPart;
+                    Settings.Default.RequestTimeoutByPart           = f.RequestTimeoutByPart;
+                    this.DownloadLogUIType                          = f.DownloadLogUIType;
+                    _m3U8FileResultUC.ShowOnlyRequestRowsWithErrors = f.ShowOnlyRequestRowsWithErrors;
                     Settings.Default.Save();
                     settingsLabel_set();
                 }

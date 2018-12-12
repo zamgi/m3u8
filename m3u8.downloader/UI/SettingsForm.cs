@@ -17,7 +17,7 @@ namespace m3u8.downloader
         }
         public TimeSpan RequestTimeoutByPart
         {
-            get => requestTimeoutByPartDTP.Value.TimeOfDay;
+            get => requestTimeoutByPartDTP.Value.TimeOfDay; // TimeSpan.FromTicks( (requestTimeoutByPartDTP.Value.TimeOfDay - requestTimeoutByPartDTP.MinDate.Date).Ticks );
             set => requestTimeoutByPartDTP.Value = requestTimeoutByPartDTP.MinDate.Date + value;
         }
         public DownloadLogUITypeEnum DownloadLogUIType
@@ -33,17 +33,24 @@ namespace m3u8.downloader
                     case DownloadLogUITypeEnum.TextBoxUIType:
                         logUITextBoxCheckBox .Checked = true;
                         logUIGridViewCheckBox.Checked = false;
+                        showOnlyRequestRowsWithErrorsCheckBox.Enabled = false;
                     break;
 
                     case DownloadLogUITypeEnum.GridViewUIType:
                         logUITextBoxCheckBox .Checked = false;
                         logUIGridViewCheckBox.Checked = true;
+                        showOnlyRequestRowsWithErrorsCheckBox.Enabled = true;
                     break;
                 }
 
                 logUIGridViewCheckBox.CheckedChanged += logUIGridViewCheckBox_CheckedChanged;
                 logUITextBoxCheckBox .CheckedChanged += logUITextBoxCheckBox_CheckedChanged;
             }
+        }
+        public bool ShowOnlyRequestRowsWithErrors
+        {
+            get => showOnlyRequestRowsWithErrorsCheckBox.Checked;
+            set => showOnlyRequestRowsWithErrorsCheckBox.Checked = value;
         }
 
         private void logUITextBoxCheckBox_CheckedChanged ( object sender, EventArgs e ) => this.DownloadLogUIType = DownloadLogUITypeEnum.TextBoxUIType;
