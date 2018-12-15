@@ -279,7 +279,7 @@ namespace m3u8.downloader
                     Settings.Default.MaxDegreeOfParallelism                 = f.MaxDegreeOfParallelism;
                     Settings.Default.UseCrossAppInstanceDegreeOfParallelism = f.UseCrossAppInstanceDegreeOfParallelism;
                     Settings.Default.MaxDownloadAppInstance                 = f.MaxDownloadAppInstance;
-                    Settings.Default.Save();
+                    Settings.Default.SaveNoThrow();
                     parallelismLabel_set();
                 }
             }
@@ -308,20 +308,20 @@ namespace m3u8.downloader
                         Settings.Default.NameCleanerExcludesWords.Clear();
                     }                    
                     Settings.Default.NameCleanerExcludesWords.AddRange( NameCleaner.ExcludesWords.ToArray() );
-                    Settings.Default.Save();
+                    Settings.Default.SaveNoThrow();
                 }
             }
         }
         private void autoMinimizeWindowWhenStartsDownloadLabel_Click( object sender, EventArgs e )
         {
             Settings.Default.AutoMinimizeWindowWhenStartsDownload = !Settings.Default.AutoMinimizeWindowWhenStartsDownload;
-            Settings.Default.Save();
+            Settings.Default.SaveNoThrow();
             autoMinimizeWindowWhenStartsDownloadLabel_set();
         }
         private void autoCloseApplicationWhenEndsDownloadLabel_Click( object sender, EventArgs e )
         {
             Settings.Default.AutoCloseApplicationWhenEndsDownload = !Settings.Default.AutoCloseApplicationWhenEndsDownload;
-            Settings.Default.Save();
+            Settings.Default.SaveNoThrow();
             autoCloseApplicationWhenEndsDownloadLabel_set();
         }
         private void settingsLabel_Click( object sender, EventArgs e )
@@ -339,7 +339,7 @@ namespace m3u8.downloader
                     Settings.Default.RequestTimeoutByPart           = f.RequestTimeoutByPart;
                     this.DownloadLogUIType                          = f.DownloadLogUIType;
                     _m3U8FileResultUC.ShowOnlyRequestRowsWithErrors = f.ShowOnlyRequestRowsWithErrors;
-                    Settings.Default.Save();
+                    Settings.Default.SaveNoThrow();
                     settingsLabel_set();
                 }
             }
@@ -448,7 +448,7 @@ namespace m3u8.downloader
 
                     _OutputFileName = sfd.FileName;
                     Settings.Default.OutputFileDirectory = Path.GetDirectoryName( _OutputFileName );
-                    Settings.Default.Save();
+                    Settings.Default.SaveNoThrow();
                     outputFileNameTextBox_Text = Path.GetFileName( _OutputFileName );
                     _m3U8FileResultUC.SetFocus();
                 }

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using m3u8.Properties;
 using CellStyle = System.Windows.Forms.DataGridViewCellStyle;
+using M = System.Runtime.CompilerServices.MethodImplAttribute;
+using O = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.downloader
 {
@@ -82,12 +82,12 @@ namespace m3u8.downloader
         #endregion
 
         #region [.DGV.]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] private void ClearSelection()
+        [M(O.AggressiveInlining)] private void ClearSelection()
         {
             DGV.ClearSelection();
             DGV.CurrentCell = null;
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] private int AddRow( DataGridViewRow row )
+        [M(O.AggressiveInlining)] private int AddRow( DataGridViewRow row )
         {
             var hasSelection = (DGV.CurrentCell != null);
             var rowIndex = DGV.Rows.Add( row );
@@ -102,7 +102,7 @@ namespace m3u8.downloader
                                               ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : 0);
 
         private enum RequestRowTypeEnum { None, Success, Error };
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] private static bool TryGetRequestRowType( DataGridViewRow row, out RequestRowTypeEnum rt )
+        [M(O.AggressiveInlining)] private static bool TryGetRequestRowType( DataGridViewRow row, out RequestRowTypeEnum rt )
         {
             if ( row.Tag == null )
             {
@@ -112,9 +112,9 @@ namespace m3u8.downloader
             rt = (RequestRowTypeEnum) row.Tag;
             return (true);
         }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] private static void MarkAsRequestRow( DataGridViewRow row ) => row.Tag = RequestRowTypeEnum.Success;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] private static void MarkAsRequestRowWithError( DataGridViewRow row ) => row.Tag = RequestRowTypeEnum.Error;
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] private static DataGridViewRow CreateRow( RequestRowTypeEnum rt = RequestRowTypeEnum.None )
+        [M(O.AggressiveInlining)] private static void MarkAsRequestRow( DataGridViewRow row ) => row.Tag = RequestRowTypeEnum.Success;
+        [M(O.AggressiveInlining)] private static void MarkAsRequestRowWithError( DataGridViewRow row ) => row.Tag = RequestRowTypeEnum.Error;
+        [M(O.AggressiveInlining)] private static DataGridViewRow CreateRow( RequestRowTypeEnum rt = RequestRowTypeEnum.None )
         {
             var row = new DataGridViewRow();
             switch ( rt )

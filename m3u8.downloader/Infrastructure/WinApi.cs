@@ -10,8 +10,7 @@ namespace m3u8.downloader
     /// </summary>
     internal static class WinApi
     {
-        [DllImport("user32.dll")]
-        public static extern bool SetForegroundWindow( IntPtr hWnd );
+        [DllImport("user32.dll")] public static extern bool SetForegroundWindow( IntPtr hWnd );
 
         /// <summary>
         /// 

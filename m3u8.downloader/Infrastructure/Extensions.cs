@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+
+using m3u8.Properties;
+using M = System.Runtime.CompilerServices.MethodImplAttribute;
+using O = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.downloader
 {
@@ -13,20 +16,11 @@ namespace m3u8.downloader
     /// </summary>
     internal static class Extensions
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool HasFirstCharNotDot( this string s ) => ((0 < (s?.Length).GetValueOrDefault()) && (s[ 0 ] != '.'));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : (T?) null);
+        [M(O.AggressiveInlining)] public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
+        [M(O.AggressiveInlining)] public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
+        [M(O.AggressiveInlining)] public static bool HasFirstCharNotDot( this string s ) => ((0 < (s?.Length).GetValueOrDefault()) && (s[ 0 ] != '.'));
+        [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
+        [M(O.AggressiveInlining)] public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : (T?) null);
 
         public static void DeleteFile_NoThrow( string fileName )
         {
@@ -48,7 +42,18 @@ namespace m3u8.downloader
             , MessageBoxButtons buttons = MessageBoxButtons.YesNo, MessageBoxDefaultButton defaultButton = MessageBoxDefaultButton.Button1 )
             => MessageBox.Show( owner, text, caption, buttons, MessageBoxIcon.Question, defaultButton );
 
-        [MethodImpl( MethodImplOptions.AggressiveInlining )]
-        public static string TrimIfLongest( this string s, int maxLength ) => ((maxLength < s.Length) ? (s.Substring( 0, maxLength ) + "..." ) : s);
+        [M(O.AggressiveInlining)] public static string TrimIfLongest( this string s, int maxLength ) => ((maxLength < s.Length) ? (s.Substring( 0, maxLength ) + "..." ) : s);
+
+        [M(O.AggressiveInlining)] public static void SaveNoThrow( this Settings settings )
+        {
+            try
+            {
+                settings.Save();
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+        }
     }
 }

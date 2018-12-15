@@ -106,7 +106,7 @@ namespace m3u8.downloader
             {
                 Settings.Default.Upgrade();
                 Settings.Default._IsUpgradedInThisVersion = true;
-                Settings.Default.Save();
+                Settings.Default.SaveNoThrow();
             }
             #endregion
 

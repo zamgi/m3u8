@@ -5,9 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+
+using M = System.Runtime.CompilerServices.MethodImplAttribute;
+using O = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.ext
 {
@@ -16,20 +18,11 @@ namespace m3u8.ext
     /// </summary>
     internal static class Extensions
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string AsPartExceptionMessage( this string responseText ) => (responseText.IsNullOrWhiteSpace() ? string.Empty : ($", '{responseText}'"));
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string CreateExceptionMessage( this HttpResponseMessage response, string responseText ) => ($"{(int) response.StatusCode}, {response.ReasonPhrase}{responseText.AsPartExceptionMessage()}");
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
+        [M(O.AggressiveInlining)] public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
+        [M(O.AggressiveInlining)] public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
+        [M(O.AggressiveInlining)] public static string AsPartExceptionMessage( this string responseText ) => (responseText.IsNullOrWhiteSpace() ? string.Empty : ($", '{responseText}'"));
+        [M(O.AggressiveInlining)] public static string CreateExceptionMessage( this HttpResponseMessage response, string responseText ) => ($"{(int) response.StatusCode}, {response.ReasonPhrase}{responseText.AsPartExceptionMessage()}");
+        [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
 
         public static string ReadAsStringAsyncEx( this HttpContent content, CancellationToken ct )
         {
@@ -182,7 +175,7 @@ namespace m3u8
             return (ex.ToString());
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [M(O.AggressiveInlining)]
         public static string Unwrap4DialogMessage( this Exception ex, bool ignoreCanceledException = true )
         {
             var message = ex.Unwrap4DialogMessage( out var isCanceledException );
@@ -396,7 +389,7 @@ namespace m3u8
                 }
             }
 
-            public bool UseCrossAppInstanceDegreeOfParallelism { [MethodImpl(MethodImplOptions.AggressiveInlining)] get => (_Semaphore != null); }
+            public bool UseCrossAppInstanceDegreeOfParallelism { [M(O.AggressiveInlining)] get => (_Semaphore != null); }
 
             public void Wait( CancellationToken ct )
             {

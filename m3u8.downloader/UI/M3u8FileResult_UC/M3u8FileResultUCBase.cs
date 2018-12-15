@@ -37,7 +37,7 @@ namespace m3u8.downloader
                 {
                     _ShowOnlyRequestRowsWithErrors = value;
                     Settings.Default.ShowOnlyRequestRowsWithErrors = value;
-                    Settings.Default.Save();
+                    Settings.Default.SaveNoThrow();
 
                     ShowOnlyRequestRowsWithErrors_OnChanged();
                 }
