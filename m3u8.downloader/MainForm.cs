@@ -490,6 +490,7 @@ namespace m3u8.downloader
                     //-3-//
                     try
                     {
+                        var anyErrorHappend = false;
                         var res = await Task.Run( () =>
                         {
                             var rows_Dict = new Dictionary< int, IRowHolder >( m3u8File.Parts.Count );
@@ -510,9 +511,10 @@ namespace m3u8.downloader
                                 }
                                 else
                                 {
+                                    anyErrorHappend = true;
                                     _m3U8FileResultUC.AppendRequestAndResponseErrorText( requestText, p.Error );
                                 }
-                            } );
+                            });
                             var requestStepAction = new m3u8_processor.RequestStepActionDelegate( p => this.BeginInvoke( requestStepAction_UI, p ) );
 
                             var sw_download = new Stopwatch();
@@ -530,6 +532,7 @@ namespace m3u8.downloader
                                     rows_Dict.Remove( p.Part.OrderNumber );
                                     if ( p.Part.Error != null )
                                     {
+                                        anyErrorHappend = true;
                                         _m3U8FileResultUC.SetResponseErrorText( row, p.Part.Error );
                                     }
                                     else
@@ -538,6 +541,7 @@ namespace m3u8.downloader
                                     }
                                 }
 
+                                #region [.speed.]
                                 totalBytesLength += p.BytesLength;
                                 var speedText = default(string);
                                 if ( !sw_download.IsRunning )
@@ -558,7 +562,8 @@ namespace m3u8.downloader
                                 }
 
                                 _Wb.IncreaseSteps( speedText );
-                            } );
+                                #endregion
+                            });
                             var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( p => this.BeginInvoke( responseStepAction_UI, p ) );
 
                             var ip = new m3u8_processor.DownloadPartsAndSaveInputParams()
@@ -573,12 +578,11 @@ namespace m3u8.downloader
                                 UseCrossAppInstanceDegreeOfParallelism = Settings.Default.UseCrossAppInstanceDegreeOfParallelism,
                                 MaxDownloadAppInstance                 = Settings.Default.MaxDownloadAppInstance,
                                 WaitingForOtherAppInstanceFinished     = () => this.BeginInvoke( new Action( () => _Wb.WaitingForOtherAppInstanceFinished() ) ),
-                            };
-                            //sw_download.Start();
+                            };                            
                             var result = m3u8_processor.DownloadPartsAndSave( ip );
                             if ( sw_download.IsRunning ) sw_download.Stop();
                             return (result);
-                        } );
+                        });
 
                         //-4-//
                         sw.Stop();
@@ -621,7 +625,7 @@ namespace m3u8.downloader
                         this.MessageBox_ShowInformation( $"SUCCESS.\r\n\r\nelapsed: {sw.Elapsed}\r\n       file: '{res.OutputFileName}'\r\n      size: {(res.TotalBytes >> 20).ToString( "0,0" )} mb.", this.Text );
 
                         #region [.auto close application when ends download.]
-                        if ( Settings.Default.AutoCloseApplicationWhenEndsDownload )
+                        if ( Settings.Default.AutoCloseApplicationWhenEndsDownload && !anyErrorHappend && (renameOutputFileException == null) )
                         {
                             this.Close();
                         }
