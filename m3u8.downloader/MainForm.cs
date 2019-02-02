@@ -69,8 +69,11 @@ namespace m3u8.downloader
 
             try
             {
-                var text = Clipboard.GetText( TextDataFormat.Text | TextDataFormat.UnicodeText )?.Trim();
-                if ( text.IsNullOrEmpty() ) return;
+                var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
+                if ( text.IsNullOrEmpty() )
+                    text = Clipboard.GetText( TextDataFormat.UnicodeText )?.Trim();
+                if ( text.IsNullOrEmpty() )
+                    return;
                 if ( text.EndsWith( M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) )
                 {
                     m3u8FileUrlTextBox.Text = text;
@@ -98,6 +101,7 @@ namespace m3u8.downloader
                     case Keys.W:
                     {
                         e.SuppressKeyPress = true;
+                        //base.OnKeyDown( e );
                         this.Close();
                     }
                     return;
@@ -159,6 +163,26 @@ namespace m3u8.downloader
                 Extensions.DeleteFile_NoThrow( _OutputFileName );
             }
         }
+
+        #region comm
+        /*private const int WM_SYSCOMMAND = 0x0112;
+        private const int SC_MINIMIZE   = 0xF020;
+
+        protected override void WndProc( ref Message m )
+        {
+            switch ( m.Msg )
+            {
+                case WM_SYSCOMMAND:
+                    int cmd = m.WParam.ToInt32() & 0xfff0;
+                    if ( cmd == SC_MINIMIZE )
+                    {
+
+                    }
+                break;
+            }
+            base.WndProc( ref m );
+        }*/
+        #endregion
         #endregion
 
         #region [.DownloadLogUITypeEnum.]
@@ -182,6 +206,7 @@ namespace m3u8.downloader
                     m3u8FileResultPanel.Controls.Add( _m3U8FileResultUC );
 
                     Settings.Default.DownloadLogUIType = value.ToString();
+                    Settings.Default.SaveNoThrow();
                 }
             }
         }
@@ -264,6 +289,16 @@ namespace m3u8.downloader
         {
             outputFileNameTextBox_Text = null;
             outputFileNameTextBox.Focus();
+
+/*
+//m3u8FileResultLV.RootRows.Clear();
+for ( var i = 0; i < 100; i++ )
+{
+    m3u8FileResultLV.AppendText( $"qweqweqweqweqweqweqe-{(m3u8FileResultLV.RootRowsCount + 1)}", false );
+}
+m3u8FileResultLV.EnsureVisible( m3u8FileResultLV.RootRows.Last() );
+m3u8FileResultLV.Invalidate();
+*/
         }
 
         private void parallelismLabel_Click( object sender, EventArgs e )
@@ -561,7 +596,7 @@ namespace m3u8.downloader
                                     }
                                 }
 
-                                _Wb.IncreaseSteps( speedText );
+                                _Wb.IncreaseSteps( speedText );                                
                                 #endregion
                             });
                             var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( p => this.BeginInvoke( responseStepAction_UI, p ) );
@@ -763,7 +798,7 @@ namespace m3u8.downloader
         private void Output2ResultUC( m3u8_file_t m3u8File )
         {
             var lines = m3u8File.RawText?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
-                                .Where( l => !l.IsNullOrWhiteSpace() );
+                                .Where( line => !line.IsNullOrWhiteSpace() );
 
             _m3U8FileResultUC.Output( m3u8File, lines );
         }

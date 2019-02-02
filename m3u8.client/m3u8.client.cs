@@ -36,6 +36,19 @@ namespace m3u8.ext
             t.Wait( ct );
             return (t.Result);
         }
+        /*public static Task< T > WithCancellation< T >( this Task< T > task, CancellationToken ct )
+        {
+            if ( task.IsCompleted )
+            {
+                return (task);
+            }
+
+            var continuetask = task.ContinueWith( completedTask => completedTask.GetAwaiter().GetResult(),
+                                                  ct,
+                                                  TaskContinuationOptions.ExecuteSynchronously,
+                                                  TaskScheduler.Default );
+            return (continuetask);
+        }*/
     }
 
     /// <summary>
@@ -70,7 +83,7 @@ namespace m3u8
         }
 
         public string RelativeUrlName { get; private set; }
-        public int OrderNumber { get; private set; }
+        public int    OrderNumber     { get; private set; }
 
         public byte[] Bytes { get; private set; }
         public void SetBytes( byte[] bytes ) => Bytes = bytes;
@@ -103,6 +116,7 @@ namespace m3u8
         public static m3u8_file_t Parse( string content, Uri baseAddress )
         {
             var lines = from row in content.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
+//---.Take( 50 )
                         let line = row.Trim()
                         where (!line.IsNullOrEmpty() && !line.StartsWith( "#" ))
                         select line
@@ -198,6 +212,9 @@ namespace m3u8
     public sealed class m3u8_ArgumentException : ArgumentNullException
     {
         public m3u8_ArgumentException( string paramName ) : base( paramName ) { }
+        //public m3u8_ArgumentException() : base() { }
+        //public m3u8_ArgumentException( string message, Exception innerException ) : base( message, innerException ) { }
+        //public m3u8_ArgumentException( string paramName, string message ) : base( paramName, message ) { }
     }
     /// <summary>
     /// 
@@ -205,6 +222,8 @@ namespace m3u8
     public sealed class m3u8_Exception : HttpRequestException
     {        
         public m3u8_Exception( string message ) : base( message ) { }
+        //public m3u8_Exception() : base() { }
+        //public m3u8_Exception( string message, Exception inner ) : base( message, inner ) { }
     }
 
     /// <summary>
@@ -236,7 +255,7 @@ namespace m3u8
             if ( ip.Timeout.HasValue )
             {
                 _HttpClient.Timeout = ip.Timeout.Value;
-            };
+            }
         }
 
         public void Dispose() => _HttpClient.Dispose();
@@ -252,7 +271,7 @@ namespace m3u8
 
             var ct = cancellationToken.GetValueOrDefault( CancellationToken.None );
             var attemptRequestCountByPart = InitParams.AttemptRequestCount.GetValueOrDefault( 1 );
-
+//Task.Delay( 5000 ).Wait( ct );
             for ( var attemptRequestCount = attemptRequestCountByPart; 0 < attemptRequestCount; attemptRequestCount-- )
             {
                 try
@@ -308,7 +327,7 @@ namespace m3u8
                             throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
                         }
 
-                        var bytes = content.ReadAsByteArrayAsyncEx( ct );
+                        var bytes = content.ReadAsByteArrayAsyncEx( ct ); //---var bytes = await content.ReadAsByteArrayAsync();
                         part.SetBytes( bytes );
                         return (part);
                     }
@@ -344,73 +363,99 @@ namespace m3u8
     /// </summary>
     public static class m3u8_processor
     {
+        private const int MAX_SEMAPHORE_NAME_LENGTH = 255;
+
         /// <summary>
         /// 
         /// </summary>
         private struct semaphore_download_threads_t : IDisposable
         {
-            private SemaphoreSlim _SemaphoreSlim;
-            private Semaphore     _Semaphore;
-            private bool          _IsSemaphoreOwner;
+            private SemaphoreSlim _SelfAppSemaphore;
+            private Semaphore     _CrossAppSemaphore;
+            private bool          _IsCrossAppSemaphoreOwner;
+            private bool          _IsCrossAppSemaphoreWasAcquired;
 
             public semaphore_download_threads_t( bool useCrossAppInstanceDegreeOfParallelism, int maxDegreeOfParallelism )
             {
                 if ( useCrossAppInstanceDegreeOfParallelism )
                 {
-                    _SemaphoreSlim = null;
+                    _SelfAppSemaphore = null;
                     using ( var p = Process.GetCurrentProcess() )
                     {
-                        _Semaphore = new Semaphore( maxDegreeOfParallelism, maxDegreeOfParallelism,
-                                                    p.MainModule.FileName.Replace( '\\', '/' ) //need for escape-replace '\'
-                                                    , out _IsSemaphoreOwner );
+                        _CrossAppSemaphore = new Semaphore( maxDegreeOfParallelism, maxDegreeOfParallelism,
+                                                    p.MainModule.FileName.Replace( '\\', '/' ).TrimFromBegin( MAX_SEMAPHORE_NAME_LENGTH ) //need for escape-replace '\'
+                                                    , out _IsCrossAppSemaphoreOwner );
                     }
                 }
                 else
                 {
-                    _SemaphoreSlim    = new SemaphoreSlim( maxDegreeOfParallelism );
-                    _Semaphore        = null;
-                    _IsSemaphoreOwner = false;
+                    _SelfAppSemaphore         = new SemaphoreSlim( maxDegreeOfParallelism );
+                    _CrossAppSemaphore        = null;
+                    _IsCrossAppSemaphoreOwner = false;
                 }
+                _IsCrossAppSemaphoreWasAcquired = false;
             }
             public void Dispose()
             {
-                if ( _SemaphoreSlim != null )
+                if ( _SelfAppSemaphore != null )
                 {
-                    _SemaphoreSlim.Dispose();
-                    _SemaphoreSlim = null;
+                    _SelfAppSemaphore.Dispose();
+                    _SelfAppSemaphore = null;
                 }
-                if ( _Semaphore != null )
+
+                if ( _CrossAppSemaphore != null )
                 {
-                    if ( _IsSemaphoreOwner )
+                    if ( _IsCrossAppSemaphoreWasAcquired )
                     {
-                        _Semaphore.Dispose();
+                        _CrossAppSemaphore.Release();
                     }
-                    _Semaphore = null;
+                    //if ( _IsCrossAppSemaphoreOwner )
+                    //{
+                        _CrossAppSemaphore.Dispose();
+                    //}
+                    _CrossAppSemaphore = null;
                 }
             }
 
-            public bool UseCrossAppInstanceDegreeOfParallelism { [M(O.AggressiveInlining)] get => (_Semaphore != null); }
+            public bool UseCrossAppInstanceDegreeOfParallelism { [M(O.AggressiveInlining)] get => (_CrossAppSemaphore != null); }
 
             public void Wait( CancellationToken ct )
             {
                 if ( UseCrossAppInstanceDegreeOfParallelism )
                 {
-                    var idx = WaitHandle.WaitAny( new[] { _Semaphore /*0*/, ct.WaitHandle /*1*/, } );
-                    if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
+                    _IsCrossAppSemaphoreWasAcquired = false;
+
+                    var idx = WaitHandle.WaitAny( new[] { _CrossAppSemaphore /*0*/, /*ct*/ ct.WaitHandle /*1*/, } );
+                    switch ( idx )
                     {
-                        ct.ThrowIfCancellationRequested();
+                        case 0: //[_Semaphore := 0]
+                            _IsCrossAppSemaphoreWasAcquired = true;
+                        break; 
+
+                        case 1: //[ct.IsCancellationRequested := 1]
+                            ct.ThrowIfCancellationRequested();
+                        break; 
+
+                        //default: //WHAT TODO HERE?!
                     }
-                    /*if ( idx != 0 ) //[_Semaphore := 0]
-                    {
-                        //WHAT TODO HERE?!
-                    }*/
                 }
                 else
                 {
-                    _SemaphoreSlim.Wait( ct );
+                    _SelfAppSemaphore.Wait( ct );
                 }
             }
-            public int Release() => (UseCrossAppInstanceDegreeOfParallelism ? _Semaphore.Release() : _SemaphoreSlim.Release());
+            public int Release()
+            {
+                if ( UseCrossAppInstanceDegreeOfParallelism )
+                {
+                    _IsCrossAppSemaphoreWasAcquired = false;
+                    return (_CrossAppSemaphore.Release());
+                }
+                else
+                {
+                    return (_SelfAppSemaphore.Release());
+                }                
+            }
         }
         /// <summary>
         /// 
@@ -419,41 +464,51 @@ namespace m3u8
         {
             private Semaphore _Semaphore;
             private bool      _IsSemaphoreOwner;
+            private bool      _IsSemaphoreWasAcquired;
 
             private semaphore_app_instance_t( int maxDownloadAppInstance )
             {                
                 using ( var p = Process.GetCurrentProcess() )
                 {
                     _Semaphore = new Semaphore( maxDownloadAppInstance, maxDownloadAppInstance,
-                                                $"{p.MainModule.FileName.Replace( '\\', '/' )}--app-instance".TrimFromBegin( 255 ) //need for escape-replace '\'
+                                                $"{p.MainModule.FileName.Replace( '\\', '/' )}--app-instance".TrimFromBegin( MAX_SEMAPHORE_NAME_LENGTH ) //need for escape-replace '\'
                                                 , out _IsSemaphoreOwner );
                 }
+                _IsSemaphoreWasAcquired = false;
             }
             public void Dispose()
             {
                 if ( _Semaphore != null )
                 {
-                    _Semaphore.Release();
-
-                    if ( _IsSemaphoreOwner )
+                    if ( _IsSemaphoreWasAcquired )
                     {
-                        _Semaphore.Dispose();
+                        _Semaphore.Release();
                     }
+                    //if ( _IsSemaphoreOwner )
+                    //{
+                        _Semaphore.Dispose();
+                    //}
                     _Semaphore = null;
                 }
             }
 
             private void Wait( CancellationToken ct )
             {
-                var idx = WaitHandle.WaitAny( new[] { _Semaphore /*0*/, ct.WaitHandle /*1*/, } );
-                if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
+                _IsSemaphoreWasAcquired = false;
+
+                var idx = WaitHandle.WaitAny( new[] { _Semaphore /*0*/, /*ct*/ ct.WaitHandle /*1*/, } );
+                switch ( idx )
                 {
-                    ct.ThrowIfCancellationRequested();
+                    case 0: //[_Semaphore := 0]
+                        _IsSemaphoreWasAcquired = true;
+                    break; 
+
+                    case 1: //[ct.IsCancellationRequested := 1]
+                        ct.ThrowIfCancellationRequested();
+                    break; 
+
+                    //default: //WHAT TODO HERE?!
                 }
-                /*if ( idx != 0 ) //[_Semaphore := 0]
-                {
-                    //WHAT TODO HERE?!
-                }*/
             }
 
             /// <summary>
@@ -556,13 +611,13 @@ namespace m3u8
                 {
                     for ( var n = 1; sourceQueue.Count != 0; n++ )
                     {
-                        semaphore.Wait( joinedCts.Token );
+                        semaphore.Wait( /*ct*/ joinedCts.Token );
                         var part = sourceQueue.Dequeue();
 
                         var rq = RequestStepActionParams.CreateSuccess( totalPatrs, n, part );
                         ip.requestStepAction?.Invoke( rq );
 
-                        ip.mc.DownloadPart( part, baseAddress, joinedCts.Token )
+                        ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
                             .ContinueWith( ( continuationTask ) =>
                             {
                                 var rsp = new ResponseStepActionParams( totalPatrs );
@@ -604,15 +659,15 @@ namespace m3u8
                                         canExtractPartEvent.Set();
                                     }
                                 }
-                            }, joinedCts.Token );
+                            }, /*ct*/ joinedCts.Token );
                     }
-                }, joinedCts.Token );
+                }, /*ct*/ joinedCts.Token );
 
                 //-2-//
                 for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.maxDegreeOfParallelism ) );
                         expectedPartNumber <= maxPartNumber; )
                 {
-                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/, joinedCts.Token.WaitHandle /*1*/, } );
+                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, } );
                     if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
                         break;
                     if ( idx != 0 ) //[canExtractPartEvent := 0]
@@ -845,7 +900,7 @@ namespace m3u8
             internal DownloadPartsAndSaveResult( string outputFileName ) : this()
                 => OutputFileName = outputFileName;
 
-            public string OutputFileName   { get; internal set; }
+            public string OutputFileName   { get; private set; }
 
             public int   PartsSuccessCount { get; internal set; }
             public int   PartsErrorCount   { get; internal set; }

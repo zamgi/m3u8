@@ -12,7 +12,6 @@ namespace m3u8.downloader
     {
         private static char[] PUNCTUATION_CHARS;
         private static SortedSet< string > EXCLUDES_WORDS_SET;
-        //private static string[] EXCLUDES_WORDS = { "video", "hls", "WEB", "DL", "1O8Op", "720", "playlist", "m3u8" };
 
         static NameCleaner()
         {

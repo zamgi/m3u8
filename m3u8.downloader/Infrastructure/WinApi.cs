@@ -15,8 +15,7 @@ namespace m3u8.downloader
         /// <summary>
         /// 
         /// </summary>
-        [StructLayout(LayoutKind.Sequential)]
-        public struct WINDOWPLACEMENT
+        [StructLayout(LayoutKind.Sequential)] public struct WINDOWPLACEMENT
         {
             private const int WPF_RESTORETOMAXIMIZED = 2;
 
@@ -28,24 +27,19 @@ namespace m3u8.downloader
             public Rectangle rcNormalPosition;
 
             public bool IsRestoredWindowWillBeMaximized => (flags == WPF_RESTORETOMAXIMIZED);
-            public static WINDOWPLACEMENT Default 
+            public static WINDOWPLACEMENT Create()  
             {
-                get
-                {
-                    var wp = default(WINDOWPLACEMENT);
-                    wp.length = Marshal.SizeOf( wp );
-                    return (wp);
-                }
+                var wp = new WINDOWPLACEMENT();
+                wp.length = Marshal.SizeOf( wp );
+                return (wp);
             }
         }
 
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowPlacement( IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl );
+        [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)] private static extern bool GetWindowPlacement( IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl );
 
         public static WINDOWPLACEMENT? GetWindowPlacement( IntPtr hWnd )
         {
-            var wp = WINDOWPLACEMENT.Default;
+            var wp = WINDOWPLACEMENT.Create();
             if ( GetWindowPlacement( hWnd, ref wp ) )
             {
                 return (wp);
@@ -53,18 +47,12 @@ namespace m3u8.downloader
             return (null);
         }
 
-        public static FormWindowState ToFormWindowState( this WINDOWPLACEMENT? wp )
-        {
-            if ( !wp.HasValue || !wp.Value.IsRestoredWindowWillBeMaximized )
-            {
-                return (FormWindowState.Normal);
-            }
-            return (FormWindowState.Maximized);
-        }
+        public static FormWindowState ToFormWindowState( this WINDOWPLACEMENT? wp ) => ((!wp.HasValue || !wp.Value.IsRestoredWindowWillBeMaximized) ? FormWindowState.Normal : FormWindowState.Maximized);
 
         #region [.Redraw Suspend/Resume.]
         [DllImport("user32.dll", EntryPoint="SendMessageA", ExactSpelling=true, CharSet=CharSet.Ansi, SetLastError=true)]
         private static extern int SendMessage( IntPtr hwnd, int wMsg, int wParam, int lParam );
+
         private const int WM_SETREDRAW = 0xB;
 
         public static void SuspendDrawing( this Control control ) => SendMessage( control.Handle, WM_SETREDRAW, 0 /*FALSE*/, 0 );

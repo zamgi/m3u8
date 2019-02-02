@@ -11,7 +11,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.downloader", "m3u8.dow
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-chrome-extension", "m3u8-chrome-extension", "{A5D3292F-237A-4811-9794-85624A9AEB20}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-chrome-extension", "m3u8-chrome-extension", "{AF119145-1B98-4FE0-843F-0D159804A683}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-downloader-host", "m3u8-downloader-host", "{E1068E24-A5EE-4DAA-AA61-93C5A3D3F75A}"
+	ProjectSection(SolutionItems) = preProject
+		m3u8-chrome-extension\m3u8-downloader-host\install_host.bat = m3u8-chrome-extension\m3u8-downloader-host\install_host.bat
+		m3u8-chrome-extension\m3u8-downloader-host\m3u8.downloader.host.json = m3u8-chrome-extension\m3u8-downloader-host\m3u8.downloader.host.json
+		m3u8-chrome-extension\m3u8-downloader-host\uninstall_host.bat = m3u8-chrome-extension\m3u8-downloader-host\uninstall_host.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-chrome-extension", "m3u8-chrome-extension", "{78EF481F-7DBD-4FA4-9468-FEC43DCD1E51}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-chrome-extension\m3u8-chrome-extension\auto_start_download.png = m3u8-chrome-extension\m3u8-chrome-extension\auto_start_download.png
 		m3u8-chrome-extension\m3u8-chrome-extension\background.html = m3u8-chrome-extension\m3u8-chrome-extension\background.html
@@ -24,13 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-chrome-extension", "m3
 		m3u8-chrome-extension\m3u8-chrome-extension\m3u8_options.html = m3u8-chrome-extension\m3u8-chrome-extension\m3u8_options.html
 		m3u8-chrome-extension\m3u8-chrome-extension\manifest.json = m3u8-chrome-extension\m3u8-chrome-extension\manifest.json
 		m3u8-chrome-extension\m3u8-chrome-extension\script_in_content.js = m3u8-chrome-extension\m3u8-chrome-extension\script_in_content.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-downloader-host", "m3u8-downloader-host", "{E1068E24-A5EE-4DAA-AA61-93C5A3D3F75A}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-chrome-extension\m3u8-downloader-host\install_host.bat = m3u8-chrome-extension\m3u8-downloader-host\install_host.bat
-		m3u8-chrome-extension\m3u8-downloader-host\m3u8.downloader.host.json = m3u8-chrome-extension\m3u8-downloader-host\m3u8.downloader.host.json
-		m3u8-chrome-extension\m3u8-downloader-host\uninstall_host.bat = m3u8-chrome-extension\m3u8-downloader-host\uninstall_host.bat
 	EndProjectSection
 EndProject
 Global
@@ -56,8 +56,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{AF119145-1B98-4FE0-843F-0D159804A683} = {A5D3292F-237A-4811-9794-85624A9AEB20}
 		{E1068E24-A5EE-4DAA-AA61-93C5A3D3F75A} = {A5D3292F-237A-4811-9794-85624A9AEB20}
+		{78EF481F-7DBD-4FA4-9468-FEC43DCD1E51} = {A5D3292F-237A-4811-9794-85624A9AEB20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BBFEF9AD-DE12-4E77-AAF3-F441343E05C6}
