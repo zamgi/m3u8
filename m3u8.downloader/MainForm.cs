@@ -114,10 +114,10 @@ namespace m3u8.downloader
                     }
                     return;
 
-                    case Keys.S:
+                    case Keys.S:                        
                     {
                         e.SuppressKeyPress = true;
-                        m3u8FileWholeLoadAndSaveButton_Click( this, EventArgs.Empty );
+                        m3u8FileWholeLoadAndSave();
                     }
                     return;
 
@@ -137,7 +137,7 @@ namespace m3u8.downloader
         {
             base.OnClosing( e );
 
-            if ( _Cts != null )
+            if ( this.IsDownloading )
             {
                 if ( this.WindowState == FormWindowState.Minimized )
                 {
@@ -157,8 +157,8 @@ namespace m3u8.downloader
         {
             base.OnClosed( e );
 
-            //still dowloading?
-            if ( (_Mc != null) || outputFileNameTextBox.ReadOnly /*(_Cts?.IsCancellationRequested).GetValueOrDefault()*/ )
+            //still downloading?
+            if ( this.IsDownloading || outputFileNameTextBox.ReadOnly /*(_Cts?.IsCancellationRequested).GetValueOrDefault()*/ )
             {
                 Extensions.DeleteFile_NoThrow( _OutputFileName );
             }
@@ -183,6 +183,10 @@ namespace m3u8.downloader
             base.WndProc( ref m );
         }*/
         #endregion
+        #endregion
+
+        #region [.downloading in progress.]
+        private bool IsDownloading => (_Mc != null);
         #endregion
 
         #region [.DownloadLogUITypeEnum.]
@@ -418,8 +422,17 @@ m3u8FileResultLV.Invalidate();
         #endregion
 
         #region [.m3u8FileTextContentLoadButton_Click.]
-        private async void m3u8FileTextContentLoadButton_Click( object sender, EventArgs e )
+        private void m3u8FileTextContentLoadButton_Click( object sender, EventArgs e ) => m3u8FileTextContentLoad();
+
+        private async void m3u8FileTextContentLoad()
         {
+            #region [.still downloading?.]
+            if ( this.IsDownloading )
+            {
+                return;
+            } 
+            #endregion
+
             #region [.url.]
             var m3u8FileUrl = TryGet_m3u8FileUrl( out var error );
             if ( error != null )
@@ -459,6 +472,13 @@ m3u8FileResultLV.Invalidate();
 
         private async void m3u8FileWholeLoadAndSave( string outputFileName = null )
         {
+            #region [.still downloading?.]
+            if ( this.IsDownloading )
+            {
+                return;
+            }
+            #endregion
+
             #region [.url.]
             var m3u8FileUrl = TryGet_m3u8FileUrl( out var error );
             if ( error != null )

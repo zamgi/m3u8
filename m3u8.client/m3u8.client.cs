@@ -36,19 +36,6 @@ namespace m3u8.ext
             t.Wait( ct );
             return (t.Result);
         }
-        /*public static Task< T > WithCancellation< T >( this Task< T > task, CancellationToken ct )
-        {
-            if ( task.IsCompleted )
-            {
-                return (task);
-            }
-
-            var continuetask = task.ContinueWith( completedTask => completedTask.GetAwaiter().GetResult(),
-                                                  ct,
-                                                  TaskContinuationOptions.ExecuteSynchronously,
-                                                  TaskScheduler.Default );
-            return (continuetask);
-        }*/
     }
 
     /// <summary>
@@ -116,7 +103,6 @@ namespace m3u8
         public static m3u8_file_t Parse( string content, Uri baseAddress )
         {
             var lines = from row in content.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
-//---.Take( 50 )
                         let line = row.Trim()
                         where (!line.IsNullOrEmpty() && !line.StartsWith( "#" ))
                         select line
@@ -212,9 +198,6 @@ namespace m3u8
     public sealed class m3u8_ArgumentException : ArgumentNullException
     {
         public m3u8_ArgumentException( string paramName ) : base( paramName ) { }
-        //public m3u8_ArgumentException() : base() { }
-        //public m3u8_ArgumentException( string message, Exception innerException ) : base( message, innerException ) { }
-        //public m3u8_ArgumentException( string paramName, string message ) : base( paramName, message ) { }
     }
     /// <summary>
     /// 
@@ -222,8 +205,6 @@ namespace m3u8
     public sealed class m3u8_Exception : HttpRequestException
     {        
         public m3u8_Exception( string message ) : base( message ) { }
-        //public m3u8_Exception() : base() { }
-        //public m3u8_Exception( string message, Exception inner ) : base( message, inner ) { }
     }
 
     /// <summary>
@@ -271,7 +252,6 @@ namespace m3u8
 
             var ct = cancellationToken.GetValueOrDefault( CancellationToken.None );
             var attemptRequestCountByPart = InitParams.AttemptRequestCount.GetValueOrDefault( 1 );
-//Task.Delay( 5000 ).Wait( ct );
             for ( var attemptRequestCount = attemptRequestCountByPart; 0 < attemptRequestCount; attemptRequestCount-- )
             {
                 try
@@ -373,7 +353,7 @@ namespace m3u8
             private SemaphoreSlim _SelfAppSemaphore;
             private Semaphore     _CrossAppSemaphore;
             private bool          _IsCrossAppSemaphoreOwner;
-            private bool          _IsCrossAppSemaphoreWasAcquired;
+            private int           _CrossAppSemaphoreWaitAcquireCount;
 
             public semaphore_download_threads_t( bool useCrossAppInstanceDegreeOfParallelism, int maxDegreeOfParallelism )
             {
@@ -393,7 +373,7 @@ namespace m3u8
                     _CrossAppSemaphore        = null;
                     _IsCrossAppSemaphoreOwner = false;
                 }
-                _IsCrossAppSemaphoreWasAcquired = false;
+                _CrossAppSemaphoreWaitAcquireCount = 0;
             }
             public void Dispose()
             {
@@ -405,7 +385,7 @@ namespace m3u8
 
                 if ( _CrossAppSemaphore != null )
                 {
-                    if ( _IsCrossAppSemaphoreWasAcquired )
+                    for ( ; 0 < _CrossAppSemaphoreWaitAcquireCount; _CrossAppSemaphoreWaitAcquireCount-- )
                     {
                         _CrossAppSemaphore.Release();
                     }
@@ -423,21 +403,36 @@ namespace m3u8
             {
                 if ( UseCrossAppInstanceDegreeOfParallelism )
                 {
-                    _IsCrossAppSemaphoreWasAcquired = false;
+                    const int SEMAPHORE_millisecondsTimeout = 250;
+                    const int CT_millisecondsTimeout        = 1;
 
-                    var idx = WaitHandle.WaitAny( new[] { _CrossAppSemaphore /*0*/, /*ct*/ ct.WaitHandle /*1*/, } );
-                    switch ( idx )
+                    //--!!!-- required here (because the calling context (task) is interrupted by the ct-CancellationToken --!!!--//
+                    Thread.BeginCriticalRegion();
+                    try
                     {
-                        case 0: //[_Semaphore := 0]
-                            _IsCrossAppSemaphoreWasAcquired = true;
-                        break; 
-
-                        case 1: //[ct.IsCancellationRequested := 1]
-                            ct.ThrowIfCancellationRequested();
-                        break; 
-
-                        //default: //WHAT TODO HERE?!
+                        try { }
+                        finally
+                        {
+                            for ( var i = 0; ; i = SEMAPHORE_millisecondsTimeout )
+                            {
+                                if ( _CrossAppSemaphore.WaitOne( i ) )
+                                {
+                                    Interlocked.Increment( ref _CrossAppSemaphoreWaitAcquireCount );
+                                    break;
+                                }
+                                if ( ct.WaitHandle.WaitOne( CT_millisecondsTimeout ) )
+                                {
+                                    break;
+                                }
+                            }
+                        }
                     }
+                    finally
+                    {
+                        Thread.EndCriticalRegion();
+                    }
+
+                    ct.ThrowIfCancellationRequested();
                 }
                 else
                 {
@@ -448,8 +443,26 @@ namespace m3u8
             {
                 if ( UseCrossAppInstanceDegreeOfParallelism )
                 {
-                    _IsCrossAppSemaphoreWasAcquired = false;
-                    return (_CrossAppSemaphore.Release());
+                    //Interlocked.Decrement( ref _CrossAppSemaphoreWaitAcquireCount );
+                    //return (_CrossAppSemaphore.Release());
+
+                    //--!!!-- non-required here (because calling context not-interrupted) --!!!--//
+                    Thread.BeginCriticalRegion();
+                    try
+                    {
+                        int r;
+                        try { }
+                        finally
+                        {
+                            Interlocked.Decrement( ref _CrossAppSemaphoreWaitAcquireCount );
+                            r = _CrossAppSemaphore.Release();
+                        }
+                        return (r);
+                    }
+                    finally
+                    {
+                        Thread.EndCriticalRegion();
+                    }
                 }
                 else
                 {
@@ -494,20 +507,30 @@ namespace m3u8
 
             private void Wait( CancellationToken ct )
             {
-                _IsSemaphoreWasAcquired = false;
+                const int SEMAPHORE_millisecondsTimeout = 250;
+                const int CT_millisecondsTimeout        = 250;
 
-                var idx = WaitHandle.WaitAny( new[] { _Semaphore /*0*/, /*ct*/ ct.WaitHandle /*1*/, } );
-                switch ( idx )
+                //--!!!-- non-required here (seemingly), (because calling context not-interrupted) --!!!--//
+                Thread.BeginCriticalRegion();
+                try
                 {
-                    case 0: //[_Semaphore := 0]
+                    try { }
+                    finally
+                    {
+                        _IsSemaphoreWasAcquired = false;
+                        while ( !_Semaphore.WaitOne( SEMAPHORE_millisecondsTimeout ) )
+                        {
+                            if ( ct.WaitHandle.WaitOne( CT_millisecondsTimeout ) )
+                            {
+                                ct.ThrowIfCancellationRequested();
+                            }
+                        }
                         _IsSemaphoreWasAcquired = true;
-                    break; 
-
-                    case 1: //[ct.IsCancellationRequested := 1]
-                        ct.ThrowIfCancellationRequested();
-                    break; 
-
-                    //default: //WHAT TODO HERE?!
+                    }
+                }
+                finally
+                {
+                    Thread.EndCriticalRegion();
                 }
             }
 
