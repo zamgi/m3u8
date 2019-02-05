@@ -137,6 +137,7 @@ namespace m3u8.downloader
         {
             base.OnClosing( e );
 
+            //still downloading?
             if ( this.IsDownloading )
             {
                 if ( this.WindowState == FormWindowState.Minimized )
@@ -146,21 +147,20 @@ namespace m3u8.downloader
                 if ( this.MessageBox_ShowQuestion( "Dou you want to _cancel_ downloading and exit ?", APP_TITLE, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes )
                 {
                     _Cts?.Cancel();
+
+                    //waiting for all canceled and becomes finished
+                    do
+                    {
+                        Application.DoEvents();
+                    }
+                    while ( this.IsDownloading );
+
+                    Extensions.DeleteFile_NoThrow( _OutputFileName );
                 }
                 else
                 {
                     e.Cancel = true;
                 }
-            }
-        }
-        protected override void OnClosed( EventArgs e )
-        {
-            base.OnClosed( e );
-
-            //still downloading?
-            if ( this.IsDownloading || outputFileNameTextBox.ReadOnly /*(_Cts?.IsCancellationRequested).GetValueOrDefault()*/ )
-            {
-                Extensions.DeleteFile_NoThrow( _OutputFileName );
             }
         }
 
