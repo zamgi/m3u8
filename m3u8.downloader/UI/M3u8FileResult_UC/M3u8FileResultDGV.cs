@@ -97,6 +97,7 @@ namespace m3u8.downloader
             }
             return (rowIndex);
         }
+        [M(O.AggressiveInlining)] private int AddRow_Fast( DataGridViewRow row ) => DGV.Rows.Add( row );
         private int GetColumnsResizeDiff() => (DGV.RowHeadersVisible ? DGV.RowHeadersWidth : 0) + 
                                               (IsVerticalScrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0) + //3 + 
                                               ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : 0);
@@ -261,16 +262,17 @@ namespace m3u8.downloader
         public override void AdjustColumnsWidthSprain() => DGV_Resize( null, null );
         public override void AdjustRowsHeight()
         {
-            var rowIndex = DGV.RowCount - 1;
-            if ( 0 <= rowIndex )
+            const int DGV_ROWS_COUNT_MAX_THRESHOLD = 10_000 + 10;
+
+            var endRowIndex = DGV.RowCount - 1;
+            if ( (0 <= endRowIndex) && (endRowIndex <= DGV_ROWS_COUNT_MAX_THRESHOLD) )
             {
                 DGV.SuspendDrawing();
+                DGV.SuspendLayout();
                 {
-                    for ( ; 0 <= rowIndex; rowIndex-- )
-                    {
-                        DGV.AutoResizeRow( rowIndex, DataGridViewAutoSizeRowMode.AllCells );
-                    }
+                    DGV.AutoResizeRows( DataGridViewAutoSizeRowsMode.AllCells );
                 }
+                DGV.ResumeLayout( true );
                 DGV.ResumeDrawing();
             }
         }
@@ -280,17 +282,31 @@ namespace m3u8.downloader
         public override void Output( m3u8_file_t m3u8File, IEnumerable< string > lines )
         {
             DGV.SuspendDrawing();
+            DGV.SuspendLayout();
             {
+                const int LINES_COUNT_MIN_THRESHOLD = 2000;
+
                 Clear();
-                foreach ( var line in lines )
+                if ( m3u8File.Parts.Count <= LINES_COUNT_MIN_THRESHOLD )
                 {
-                    AppendRequestText( line, false );
+                    foreach ( var line in lines )
+                    {
+                        AppendRequestText( line, false );
+                    }
+                }
+                else
+                {
+                    foreach ( var line in lines )
+                    {
+                        AppendRequestText_Fast( line );
+                    }
                 }
                 AppendEmptyLine();
                 AppendRequestText( $" patrs count: {m3u8File.Parts.Count}" );
                 ClearSelection();
                 AdjustColumnsWidthSprain();
             }
+            DGV.ResumeLayout( true );
             DGV.ResumeDrawing();
         }
 
@@ -308,6 +324,16 @@ namespace m3u8.downloader
                 DGV.FirstDisplayedScrollingRowIndex = rowIndex;
             }
             DGV.AutoResizeRow( rowIndex, DataGridViewAutoSizeRowMode.AllCells );            
+            return (new RowHolder( row ));
+        }
+        private IRowHolder AppendRequestText_Fast( string requestText )
+        {
+            var t = Get_4_RequestColumn( requestText );
+
+            var row = CreateRow();
+            row.Cells.Add( new DataGridViewTextBoxCell() { Value = t.text, Style = t.cellStyle } );
+
+            AddRow_Fast( row );
             return (new RowHolder( row ));
         }
 
