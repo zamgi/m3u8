@@ -9,8 +9,7 @@ window.onload = function () {
                 try {
                     var t = window.bg.tabs[ details.tabId ];
                     t.port_info.postMessage({ method: 'set_m3u8_urls', data: t.m3u8_urls });
-                }
-                catch (ex) {
+                } catch (ex) {
                     console.log(ex);
                 }
                 window.bg.m3u8_urls_count( { tab_id: details.tabId } );
@@ -25,6 +24,7 @@ window.onload = function () {
     });
 
     // set handler to tabs:  need for seng objects
+    if (chrome.extension.onConnect)
     chrome.extension.onConnect.addListener(function (port) {
         port.onMessage.addListener(methodCaller);
     });

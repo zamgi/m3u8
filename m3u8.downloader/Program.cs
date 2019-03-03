@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
@@ -85,7 +86,7 @@ namespace m3u8.downloader
             #region [.parse if opened from 'chrome-extension'.]
             var m3u8FileUrl       = default(string);
             var autoStartDownload = default(bool);
-            if ( args.Any( a => a.StartsWith( "chrome-extension://", StringComparison.InvariantCultureIgnoreCase ) ) )
+            if ( args.Any( a => a.StartsWith( "chrome-extension://", StringComparison.InvariantCultureIgnoreCase ) ) ) //chrome
             {
                 var text = ReadStandardInputFromChrome();
                 if ( !text.IsNullOrWhiteSpace() )
@@ -97,6 +98,33 @@ namespace m3u8.downloader
                         autoStartDownload = p.Value.autoStartDownload;
                     }
                 }
+            }
+            else
+            if ( args.Any( a => File.Exists( a ) && (Path.GetExtension( a ) == ".json") ) ) //firefox => 'E:\_NET2\[m3u8]\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host.ff.json')
+            {
+                var text = ReadStandardInputFromChrome();
+                if ( !text.IsNullOrWhiteSpace() )
+                {
+                    var p = text.ToChromeExtensionParams_NoThrow();
+                    if ( p.HasValue )
+                    {
+                        m3u8FileUrl       = p.Value.m3u8FileUrl;
+                        autoStartDownload = p.Value.autoStartDownload;
+
+                        var cmdLine = $"\"{Process.GetCurrentProcess().MainModule.FileName}\" {nameof(m3u8FileUrl)}=\"{m3u8FileUrl}\" {nameof(autoStartDownload)}=\"{autoStartDownload}\"";
+                        var succeeds = ProcessCreator.ReCreateCurrentProcess( cmdLine );
+                        if ( !succeeds )
+                        {
+                            MessageBox.Show( "Error while trying run additional native application's process", Process.GetCurrentProcess().MainModule.FileName, MessageBoxButtons.OK, MessageBoxIcon.Error );
+                        }
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                m3u8FileUrl       = args.TryGetCmdArg( nameof(m3u8FileUrl) + '=' );
+                autoStartDownload = args.TryGetCmdArg( nameof(autoStartDownload) + '=' ).Try2Bool();
             }
             #endregion
 
@@ -115,7 +143,84 @@ namespace m3u8.downloader
             Application.Run( new MainForm( m3u8FileUrl, autoStartDownload ) );
         }
 
+        private static string TryGetCmdArg( this string[] args, string argName )
+        {
+            var a1 = args.FirstOrDefault( a => a.StartsWith( argName ) );
+            return (a1?.Substring( argName.Length ));
+        }
+        private static bool Try2Bool( this string s ) => bool.TryParse( s, out var b ) ? b : default;
+
         private static void Application_ThreadException( object sender, ThreadExceptionEventArgs e ) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
         private static void CurrentDomain_UnhandledException( object sender, UnhandledExceptionEventArgs e ) => Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal static class ProcessCreator
+    {
+        public static bool ReCreateCurrentProcess( string cmdLine )
+        {
+            var si = new STARTUPINFO() { cb = Marshal.SizeOf(typeof(STARTUPINFO)) };
+
+            var r = CreateProcess( null,
+                                   cmdLine,
+                                   IntPtr.Zero,
+                                   IntPtr.Zero,
+                                   false, 
+                                   CREATE_BREAKAWAY_FROM_JOB, 
+                                   IntPtr.Zero, 
+                                   null,
+                                   ref si, 
+                                   out var pROCESS_INFORMATION );
+            return (r);
+        }
+
+
+        private const uint CREATE_BREAKAWAY_FROM_JOB = 0x01000000;
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PROCESS_INFORMATION 
+        {
+           public IntPtr hProcess;
+           public IntPtr hThread;
+           public int dwProcessId;
+           public int dwThreadId;
+        }
+
+        [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+        private struct STARTUPINFO
+        {
+             public Int32 cb;
+             public string lpReserved;
+             public string lpDesktop;
+             public string lpTitle;
+             public Int32 dwX;
+             public Int32 dwY;
+             public Int32 dwXSize;
+             public Int32 dwYSize;
+             public Int32 dwXCountChars;
+             public Int32 dwYCountChars;
+             public Int32 dwFillAttribute;
+             public Int32 dwFlags;
+             public Int16 wShowWindow;
+             public Int16 cbReserved2;
+             public IntPtr lpReserved2;
+             public IntPtr hStdInput;
+             public IntPtr hStdOutput;
+             public IntPtr hStdError;
+        }
+
+        [DllImport("kernel32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+        private static extern bool CreateProcess( string lpApplicationName,
+                                                  string lpCommandLine,
+                                                  IntPtr lpProcessAttributes,
+                                                  IntPtr lpThreadAttributes,
+                                                  bool bInheritHandles,
+                                                  uint dwCreationFlags,
+                                                  IntPtr lpEnvironment,
+                                                  string lpCurrentDirectory,
+                                                  [In] ref STARTUPINFO lpStartupInfo,
+                                                  out PROCESS_INFORMATION lpProcessInformation );
     }
 }

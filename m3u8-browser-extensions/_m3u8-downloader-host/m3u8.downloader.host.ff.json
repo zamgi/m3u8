@@ -1,0 +1,7 @@
+{
+  "name": "m3u8.downloader.host",
+  "description": "m3u8 file downloader firefox extension host",
+  "path": "/bin/m3u8.downloader.exe",
+  "type": "stdio",
+  "allowed_extensions": [ "denisov72@mail.ru" ]
+}

@@ -1,7 +1,3 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 {
   "name": "m3u8.downloader.host",
   "description": "m3u8 file downloader chrome extension host",
