@@ -30,4 +30,4 @@ For using firefox-extension need:
 
 -----
 real usage example:
-![alt tag](https://github.com/zamgi/m3u8/blob/master/%5Bm3u8%5D-v2.gif)
+![alt tag](https://github.com/zamgi/m3u8/blob/master/%5Bm3u8%5D.gif)
