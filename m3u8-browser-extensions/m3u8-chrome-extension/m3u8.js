@@ -76,8 +76,14 @@ function connect2host(m3u8_url, auto_start_download) {
         {
             m3u8_url: m3u8_url,
             auto_start_download: !!auto_start_download
-        }/*,
+        },
         function (response) {
-            console.log("received: " + response);
-        }*/);
+            if (response) {
+                console.log("[" + hostName + "] sent the response: '" + JSON.stringify(response) + "'");
+            }
+            else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
+                var content = document.getElementById('content');
+                content.innerHTML = "<div style='color: red'><b>" + chrome.runtime.lastError.message + "</b></div>" + content.innerHTML;
+            }
+        });
 }

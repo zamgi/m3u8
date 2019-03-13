@@ -22,13 +22,36 @@ namespace m3u8.downloader
         /// 
         /// </summary>
         [DataContract]
-        private struct ChromeExtensionParams
+        private struct ChromeExtensionInputParams
         {
             [DataMember(Name="m3u8_url", IsRequired=true)]
             public string m3u8FileUrl { get; set; }
 
             [DataMember(Name="auto_start_download", IsRequired=false)]
             public bool autoStartDownload { get; set; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataContract]
+        private struct ChromeExtensionOutputParams
+        {
+            [DataMember(Name="text", IsRequired=true)]
+            public string Text { get; set; }
+
+            private string ToJson()
+            {
+                using ( var ms = new MemoryStream() )
+                {
+                    var ser = new DataContractJsonSerializer( typeof(ChromeExtensionOutputParams) );
+                    ser.WriteObject( ms, this );
+                    var json = Encoding.UTF8.GetString( ms.ToArray() );
+                    return (json);
+                }
+            }
+
+            public static string CreateAsJson( string text = "success" ) => (new ChromeExtensionOutputParams() { Text = text }).ToJson();
         }
 
         private static string ReadStandardInputFromChrome()
@@ -50,21 +73,34 @@ namespace m3u8.downloader
             var res = new string( buffer );
             return (res);
         }
+        private static void   WriteStandardOutputToChrome( string json )
+        {
+            var stdout = Console.OpenStandardOutput();
 
-        private static ChromeExtensionParams ToChromeExtensionParams( this string json )
+            var lengthBytes = BitConverter.GetBytes( json.Length );
+            stdout.Write( lengthBytes, 0, lengthBytes.Length );
+
+            var buffer = json.ToCharArray();
+            using ( var sw = new StreamWriter( stdout ) )
+            {
+                sw.Write( buffer, 0, buffer.Length );
+            }
+        }
+
+        private static ChromeExtensionInputParams ToChromeExtensionInputParams( this string json )
         {
             using ( var ms = new MemoryStream( Encoding.UTF8.GetBytes( json ) ) )
             {
-                var ser = new DataContractJsonSerializer( typeof(ChromeExtensionParams) );
-                var chromeExtensionParams = (ChromeExtensionParams) ser.ReadObject( ms );
+                var ser = new DataContractJsonSerializer( typeof(ChromeExtensionInputParams) );
+                var chromeExtensionParams = (ChromeExtensionInputParams) ser.ReadObject( ms );
                 return (chromeExtensionParams);
             }
         }
-        private static ChromeExtensionParams? ToChromeExtensionParams_NoThrow( this string json )
+        private static ChromeExtensionInputParams? ToChromeExtensionInputParams_NoThrow( this string json )
         {
             try
             {
-                return (json.ToChromeExtensionParams());
+                return (json.ToChromeExtensionInputParams());
             }
             catch ( Exception ex )
             {
@@ -91,11 +127,13 @@ namespace m3u8.downloader
                 var text = ReadStandardInputFromChrome();
                 if ( !text.IsNullOrWhiteSpace() )
                 {
-                    var p = text.ToChromeExtensionParams_NoThrow();
+                    var p = text.ToChromeExtensionInputParams_NoThrow();
                     if ( p.HasValue )
                     {
                         m3u8FileUrl       = p.Value.m3u8FileUrl;
                         autoStartDownload = p.Value.autoStartDownload;
+
+                        WriteStandardOutputToChrome( ChromeExtensionOutputParams.CreateAsJson() );
                     }
                 }
             }
@@ -105,11 +143,13 @@ namespace m3u8.downloader
                 var text = ReadStandardInputFromChrome();
                 if ( !text.IsNullOrWhiteSpace() )
                 {
-                    var p = text.ToChromeExtensionParams_NoThrow();
+                    var p = text.ToChromeExtensionInputParams_NoThrow();
                     if ( p.HasValue )
                     {
                         m3u8FileUrl       = p.Value.m3u8FileUrl;
                         autoStartDownload = p.Value.autoStartDownload;
+
+                        WriteStandardOutputToChrome( ChromeExtensionOutputParams.CreateAsJson() );
 
                         var cmdLine = $"\"{Process.GetCurrentProcess().MainModule.FileName}\" {nameof(m3u8FileUrl)}=\"{m3u8FileUrl}\" {nameof(autoStartDownload)}=\"{autoStartDownload}\"";
                         var succeeds = ProcessCreator.ReCreateCurrentProcess( cmdLine );
@@ -175,7 +215,6 @@ namespace m3u8.downloader
                                    out var pROCESS_INFORMATION );
             return (r);
         }
-
 
         private const uint CREATE_BREAKAWAY_FROM_JOB = 0x01000000;
 
