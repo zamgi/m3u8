@@ -76,8 +76,8 @@ function connect2host(m3u8_url, auto_start_download) {
         {
             m3u8_url: m3u8_url,
             auto_start_download: !!auto_start_download
-        },
+        }/*,
         function (response) {
             console.log("received: " + response);
-        });
+        }*/);
 }
