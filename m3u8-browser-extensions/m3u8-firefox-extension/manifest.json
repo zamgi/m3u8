@@ -28,6 +28,7 @@
     "webRequest",
     "webRequestBlocking",
     "tabs",
+    "notifications",
     "nativeMessaging",
     "*://*/*",
     "ftp://*/*"

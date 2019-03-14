@@ -27,10 +27,8 @@
     "tabs",
     "webRequest",
     "background",
+    "notifications",
     "nativeMessaging"
-    //,"downloads"
-    //,"downloads.shelf"
-    //"downloads.open"
   ],
 
   "background": {

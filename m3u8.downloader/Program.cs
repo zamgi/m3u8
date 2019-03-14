@@ -51,7 +51,9 @@ namespace m3u8.downloader
                 }
             }
 
-            public static string CreateAsJson( string text = "success" ) => (new ChromeExtensionOutputParams() { Text = text }).ToJson();
+            private const string SUCCESS        = "success";
+            private const string MISSING_PARAMS = "missing_params";
+            public static string CreateAsJson( bool hasParams ) => (new ChromeExtensionOutputParams() { Text = (hasParams ? SUCCESS : MISSING_PARAMS) }).ToJson();
         }
 
         private static string ReadStandardInputFromChrome()
@@ -131,10 +133,10 @@ namespace m3u8.downloader
                     if ( p.HasValue )
                     {
                         m3u8FileUrl       = p.Value.m3u8FileUrl;
-                        autoStartDownload = p.Value.autoStartDownload;
-
-                        WriteStandardOutputToChrome( ChromeExtensionOutputParams.CreateAsJson() );
+                        autoStartDownload = p.Value.autoStartDownload;  
                     }
+
+                    WriteStandardOutputToChrome( ChromeExtensionOutputParams.CreateAsJson( p.HasValue ) );
                 }
             }
             else
@@ -149,7 +151,7 @@ namespace m3u8.downloader
                         m3u8FileUrl       = p.Value.m3u8FileUrl;
                         autoStartDownload = p.Value.autoStartDownload;
 
-                        WriteStandardOutputToChrome( ChromeExtensionOutputParams.CreateAsJson() );
+                        WriteStandardOutputToChrome( ChromeExtensionOutputParams.CreateAsJson( true ) );
 
                         var cmdLine = $"\"{Process.GetCurrentProcess().MainModule.FileName}\" {nameof(m3u8FileUrl)}=\"{m3u8FileUrl}\" {nameof(autoStartDownload)}=\"{autoStartDownload}\"";
                         var succeeds = ProcessCreator.ReCreateCurrentProcess( cmdLine );
@@ -158,6 +160,10 @@ namespace m3u8.downloader
                             MessageBox.Show( "Error while trying run additional native application's process", Process.GetCurrentProcess().MainModule.FileName, MessageBoxButtons.OK, MessageBoxIcon.Error );
                         }
                         return;
+                    }
+                    else
+                    {
+                        WriteStandardOutputToChrome( ChromeExtensionOutputParams.CreateAsJson( false ) );
                     }
                 }
             }
@@ -215,6 +221,7 @@ namespace m3u8.downloader
                                    out var pROCESS_INFORMATION );
             return (r);
         }
+
 
         private const uint CREATE_BREAKAWAY_FROM_JOB = 0x01000000;
 

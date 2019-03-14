@@ -82,8 +82,15 @@ function connect2host(m3u8_url, auto_start_download) {
                 console.log("[" + hostName + "] sent the response: '" + JSON.stringify(response) + "'");
             }
             else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
-                var content = document.getElementById('content');
-                content.innerHTML = "<div style='color: red'><b>" + chrome.runtime.lastError.message + "</b></div>" + content.innerHTML;
+                var notificationOptions = {
+                    type: "basic",
+                    title: "[" + hostName + "] => send-native-message ERROR:",
+                    message: chrome.runtime.lastError.message,
+                    iconUrl: "m3u8_128.png",
+                    priority: 2
+                };
+                chrome.notifications.clear(hostName);
+                chrome.notifications.create(hostName, notificationOptions);
             }
         });
 }
