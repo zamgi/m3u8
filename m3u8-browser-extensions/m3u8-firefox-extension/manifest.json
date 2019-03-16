@@ -1,18 +1,18 @@
 {
   "manifest_version": 2,
   "name": "m3u8 file downloader",
-  "version": "1.0",
+  "version": "1.2",
 
   "description": "m3u8 file downloader firefox extension.",
   "icons": {
     "32": "m3u8.png",
-    "128": "m3u8_148.png"
+    "128": "m3u8_128.png"
   },
 
   "applications": {
     "gecko": {
       "id": "denisov72@mail.ru",
-      "strict_min_version": "45.0"
+      "strict_min_version": "57.0"
     }
   },
 

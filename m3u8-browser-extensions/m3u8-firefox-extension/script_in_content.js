@@ -44,9 +44,11 @@ window.popupObj.prototype = {
 
     /* Function check m3u8 urls count */
     run: function () {
-        // create connection to backgroung.html and send request
-        this.port = chrome.extension.connect();
-        // send count of m3u8_urls_count
-        this.port.postMessage({ method: 'm3u8_urls_count', data: { tab_id: this.tab_id } });
+        if (chrome.extension.connect) {
+            // create connection to backgroung.html and send request
+            this.port = chrome.extension.connect();
+            // send count of m3u8_urls_count
+            this.port.postMessage({ method: 'm3u8_urls_count', data: { tab_id: this.tab_id } });
+        }
     }
 };

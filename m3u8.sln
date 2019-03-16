@@ -46,6 +46,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-firefox-extension", "m
 		m3u8-browser-extensions\m3u8-firefox-extension\m3u8.html = m3u8-browser-extensions\m3u8-firefox-extension\m3u8.html
 		m3u8-browser-extensions\m3u8-firefox-extension\m3u8.js = m3u8-browser-extensions\m3u8-firefox-extension\m3u8.js
 		m3u8-browser-extensions\m3u8-firefox-extension\m3u8.png = m3u8-browser-extensions\m3u8-firefox-extension\m3u8.png
+		m3u8-browser-extensions\m3u8-firefox-extension\m3u8_128.png = m3u8-browser-extensions\m3u8-firefox-extension\m3u8_128.png
 		m3u8-browser-extensions\m3u8-firefox-extension\m3u8_148.png = m3u8-browser-extensions\m3u8-firefox-extension\m3u8_148.png
 		m3u8-browser-extensions\m3u8-firefox-extension\m3u8_options.html = m3u8-browser-extensions\m3u8-firefox-extension\m3u8_options.html
 		m3u8-browser-extensions\m3u8-firefox-extension\manifest.json = m3u8-browser-extensions\m3u8-firefox-extension\manifest.json
@@ -53,9 +54,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-firefox-extension", "m
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xpi", "xpi", "{3C43194B-AA3D-4916-A292-FB9E65955B11}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-firefox-extension\xpi\m3u8_file_downloader-1.0-fx.xpi = m3u8-browser-extensions\m3u8-firefox-extension\xpi\m3u8_file_downloader-1.0-fx.xpi
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

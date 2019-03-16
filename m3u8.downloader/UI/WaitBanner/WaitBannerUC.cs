@@ -99,14 +99,22 @@ namespace m3u8.downloader
             if ( cts    == null ) throw (new ArgumentNullException( nameof(cts) ));
             //------------------------------------------------------------------------//
 
-            var uc = new WaitBannerUC() { _CancellationTokenSource = cts, _CaptionText = captionText };            
-            uc.captionLabel.Text = captionText;
-            parent.Controls.Add( uc );
-            uc.BringToFront();
-            uc.Anchor = AnchorStyles.None;
-            uc.Location = new Point( (parent.ClientSize.Width - uc.Size.Width) >> 1, (parent.ClientSize.Height - uc.Size.Height) >> 1 );
-            Application.DoEvents();
-            return (uc);
+            parent.SuspendDrawing();
+            try
+            {
+                var uc = new WaitBannerUC() { _CancellationTokenSource = cts, _CaptionText = captionText };            
+                uc.captionLabel.Text = captionText;
+                parent.Controls.Add( uc );
+                uc.BringToFront();
+                uc.Anchor = AnchorStyles.None;
+                uc.Location = new Point( (parent.ClientSize.Width - uc.Size.Width) >> 1, (parent.ClientSize.Height - uc.Size.Height) >> 1 );
+                Application.DoEvents();
+                return (uc);
+            }
+            finally
+            {
+                parent.ResumeDrawing();
+            }
         }
     }
 }

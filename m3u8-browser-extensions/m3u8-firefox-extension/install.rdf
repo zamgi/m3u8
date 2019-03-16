@@ -4,20 +4,21 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>denisov72@mail.ru</em:id>
-    <em:version>1.0</em:version>
+    <em:version>1.2</em:version>
     <em:type>2</em:type>
 
     <em:targetApplication>
       <Description>
+        <!-- <em:id>toolkit@mozilla.org</em:id> -->
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>45.0</em:minVersion>
-        <em:maxVersion>100.*</em:maxVersion>
+        <em:minVersion>57.*</em:minVersion>
+        <em:maxVersion>*</em:maxVersion>
       </Description>
     </em:targetApplication>
 
     <em:name>m3u8 file downloader</em:name>
     <em:description>m3u8 file downloader firefox extension</em:description>
-    <em:creator>xz</em:creator>
+    <em:creator>zamgi</em:creator>
     <em:homepageURL>https://github.com/zamgi/m3u8</em:homepageURL>
   </Description>
 </RDF>
