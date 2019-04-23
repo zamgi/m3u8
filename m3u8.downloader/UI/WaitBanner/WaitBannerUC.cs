@@ -43,6 +43,8 @@ namespace m3u8.downloader
             }
             base.Dispose( disposing );
 
+            //---SetMainFormCursor( Cursors.Default );
+            //---Application.DoEvents();
             _FirstAppForm.Text = _FirstAppFormText;
         }
         #endregion
@@ -73,11 +75,18 @@ namespace m3u8.downloader
             indicatorPictureBox.Visible = true;
 
             //----------------------------------------------------------------------//
-            var elapsed = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
+            //if ( _FirstAppForm.WindowState == FormWindowState.Minimized )
+            //{
+                var elapsed = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
 
-            _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished 
-                                 ? $"(wait), ({elapsed})" 
-                                 : $"{_PercentSteps}%, ({elapsed}){(_SpeedText.IsNullOrEmpty() ? null : $", {_SpeedText}")}");
+                _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished 
+                                      ? $"(wait), ({elapsed})" 
+                                      : $"{_PercentSteps}%, ({elapsed}){(_SpeedText.IsNullOrEmpty() ? null : $", {_SpeedText}")}");
+            //}
+            //else
+            //{
+            //    _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished ? "(wait) " : null) + _FirstAppFormText;
+            //}
         }
 
         public void SetTotalSteps( int totalSteps ) => _TotalSteps = totalSteps;
@@ -103,13 +112,13 @@ namespace m3u8.downloader
             try
             {
                 var uc = new WaitBannerUC() { _CancellationTokenSource = cts, _CaptionText = captionText };            
-                uc.captionLabel.Text = captionText;
+                uc.captionLabel.Text = captionText;            
                 parent.Controls.Add( uc );
                 uc.BringToFront();
                 uc.Anchor = AnchorStyles.None;
                 uc.Location = new Point( (parent.ClientSize.Width - uc.Size.Width) >> 1, (parent.ClientSize.Height - uc.Size.Height) >> 1 );
                 Application.DoEvents();
-                return (uc);
+                return (uc);                
             }
             finally
             {

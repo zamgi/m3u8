@@ -85,7 +85,6 @@ namespace m3u8.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4")]
         public global::System.Nullable<System.Int32> MaxDownloadAppInstance {
             get {
                 return ((global::System.Nullable<System.Int32>)(this["MaxDownloadAppInstance"]));

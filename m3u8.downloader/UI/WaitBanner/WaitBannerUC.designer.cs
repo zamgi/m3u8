@@ -31,7 +31,9 @@
             // 
             // panel1
             // 
-            this.p1.Anchor = ((System.Windows.Forms.AnchorStyles) ((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.p1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.p1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.p1.Controls.Add(this.speedLabel);
             this.p1.Controls.Add(this.progressLabel);
@@ -47,7 +49,8 @@
             // 
             // SpeedLabel
             // 
-            this.speedLabel.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.speedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.speedLabel.AutoEllipsis = true;
             this.speedLabel.BackColor = System.Drawing.Color.Silver;
             this.speedLabel.Location = new System.Drawing.Point(10, 79);
@@ -59,7 +62,8 @@
             // 
             // Progress
             // 
-            this.progressLabel.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.progressLabel.AutoEllipsis = true;
             this.progressLabel.BackColor = System.Drawing.Color.Silver;
             this.progressLabel.Location = new System.Drawing.Point(82, 35);
@@ -69,7 +73,8 @@
             // 
             // Elapsed
             // 
-            this.elapsedLabel.Anchor = ((System.Windows.Forms.AnchorStyles) (((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+            this.elapsedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.elapsedLabel.AutoEllipsis = true;
             this.elapsedLabel.BackColor = System.Drawing.Color.Silver;
             this.elapsedLabel.Location = new System.Drawing.Point(82, 53);

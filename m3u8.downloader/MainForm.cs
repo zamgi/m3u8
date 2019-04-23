@@ -309,14 +309,14 @@ m3u8FileResultLV.Invalidate();
         {
             using ( var f = new ParallelismForm() )
             {
+                f.UseCrossAppInstanceDegreeOfParallelism = Settings.Default.UseCrossAppInstanceDegreeOfParallelism;
                 f.MaxDegreeOfParallelism                 = Settings.Default.MaxDegreeOfParallelism;
                 f.IsInfinity                             = (Settings.Default.MaxDegreeOfParallelism == int.MaxValue);
-                f.UseCrossAppInstanceDegreeOfParallelism = Settings.Default.UseCrossAppInstanceDegreeOfParallelism;
                 f.MaxDownloadAppInstance                 = Settings.Default.MaxDownloadAppInstance;
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
-                    Settings.Default.MaxDegreeOfParallelism                 = f.MaxDegreeOfParallelism;
                     Settings.Default.UseCrossAppInstanceDegreeOfParallelism = f.UseCrossAppInstanceDegreeOfParallelism;
+                    Settings.Default.MaxDegreeOfParallelism                 = f.MaxDegreeOfParallelism;
                     Settings.Default.MaxDownloadAppInstance                 = f.MaxDownloadAppInstance;
                     Settings.Default.SaveNoThrow();
                     parallelismLabel_set();
@@ -399,22 +399,30 @@ m3u8FileResultLV.Invalidate();
             }
         }
 
-        private void autoMinimizeWindowWhenStartsDownloadLabel_set() =>
-            autoMinimizeWindowWhenStartsDownloadLabel.Image = (Settings.Default.AutoMinimizeWindowWhenStartsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
+        private void autoMinimizeWindowWhenStartsDownloadLabel_set()
+        {
+            autoMinimizeWindowWhenStartsDownloadLabel.Image     = (Settings.Default.AutoMinimizeWindowWhenStartsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
+            autoMinimizeWindowWhenStartsDownloadLabel.ForeColor = (Settings.Default.AutoMinimizeWindowWhenStartsDownload ? Color.Empty : Color.DimGray);
+        }
 
-        private void autoCloseApplicationWhenEndsDownloadLabel_set() =>
-            autoCloseApplicationWhenEndsDownloadLabel.Image = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
+        private void autoCloseApplicationWhenEndsDownloadLabel_set()
+        {
+            autoCloseApplicationWhenEndsDownloadLabel.Image     = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Resources.check_16 : Resources.uncheck_16).ToBitmap();
+            autoCloseApplicationWhenEndsDownloadLabel.ForeColor = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Color.Empty : Color.DimGray);
+        }
 
         private void parallelismLabel_set()
         {
-            var maxDownloadAppInstance   = (Settings.Default.MaxDownloadAppInstance.HasValue ? $"\r\napp-instance download data:  {Settings.Default.MaxDownloadAppInstance} " : null);
+            var maxDownloadAppInstance   = (Settings.Default.MaxDownloadAppInstance.HasValue ? $"\r\napp-instance download:  {Settings.Default.MaxDownloadAppInstance} " : null);
             parallelismLabel.Text        = $"degree of parallelism:  {((Settings.Default.MaxDegreeOfParallelism == int.MaxValue) ? "Infinity" : Settings.Default.MaxDegreeOfParallelism.ToString())} "
                                            + maxDownloadAppInstance;
-            parallelismLabel.ToolTipText = $"use cross app-instance parallelism:  {Settings.Default.UseCrossAppInstanceDegreeOfParallelism.ToString().ToLower()}"
-                                           ; // + maxDownloadAppInstance;
+            parallelismLabel.ToolTipText = $"use cross app-instance parallelism:  {Settings.Default.UseCrossAppInstanceDegreeOfParallelism.ToString().ToLower()}";
 
             parallelismLabel.ForeColor   = Settings.Default.UseCrossAppInstanceDegreeOfParallelism ? Color.White   : Color.FromKnownColor( KnownColor.ControlText );
             parallelismLabel.BackColor   = Settings.Default.UseCrossAppInstanceDegreeOfParallelism ? Color.DimGray : Color.FromKnownColor( KnownColor.Control );
+            //--------------------------------------------//
+
+            exceptionWordsLabel.Text = (Settings.Default.MaxDownloadAppInstance.HasValue ? "file name exception\r\nword editor" : "file name exceptions");
         }
 
         private void settingsLabel_set() =>
@@ -810,7 +818,7 @@ m3u8FileResultLV.Invalidate();
             m3u8FileWholeLoadAndSaveButton.Enabled = enabled;
             outputFileNameClearButton     .Enabled = enabled;
 
-            excludesWordsLabel.Enabled = enabled;
+            exceptionWordsLabel.Enabled = enabled;
             parallelismLabel  .Enabled = enabled;
             settingsLabel     .Enabled = enabled;
         }

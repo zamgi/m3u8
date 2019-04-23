@@ -15,12 +15,6 @@ namespace m3u8.downloader
             maxDegreeOfParallelismNUD.Maximum = int.MaxValue;
         }
 
-        private void infinityCheckBox_CheckedChanged( object sender, EventArgs e )
-        {
-            maxDegreeOfParallelismNUD.Enabled = !infinityCheckBox.Checked;
-            useCrossAppInstanceDegreeOfParallelismCheckBox.Enabled = !infinityCheckBox.Checked;
-        }
-
         public int  MaxDegreeOfParallelism
         {
             get => (IsInfinity ? int.MaxValue : Convert.ToInt32( maxDegreeOfParallelismNUD.Value ));
@@ -46,19 +40,26 @@ namespace m3u8.downloader
             set => useCrossAppInstanceDegreeOfParallelismCheckBox.Checked = value;
         }
 
-        private void maxDownloadAppInstanceCheckBox_CheckedChanged( object sender, EventArgs e )
-        {
-            maxDownloadAppInstanceLabel.Enabled = maxDownloadAppInstanceCheckBox.Checked;
-            maxDownloadAppInstanceNUD  .Enabled = maxDownloadAppInstanceCheckBox.Checked;
-        }
         public int? MaxDownloadAppInstance
         {
             get => (maxDownloadAppInstanceCheckBox.Checked ? Convert.ToInt32( maxDownloadAppInstanceNUD.Value ) : ((int?) null));
             set
             {
-                maxDownloadAppInstanceNUD.Value = value.GetValueOrDefault( 4 );
+                maxDownloadAppInstanceNUD     .Value   = value.GetValueOrDefault( 4 );
                 maxDownloadAppInstanceCheckBox.Checked = value.HasValue;
+                maxDownloadAppInstanceCheckBox_CheckedChanged( maxDownloadAppInstanceCheckBox, EventArgs.Empty );
             }
+        }
+
+        private void infinityCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            maxDegreeOfParallelismNUD                     .Enabled = !infinityCheckBox.Checked;
+            useCrossAppInstanceDegreeOfParallelismCheckBox.Enabled = !infinityCheckBox.Checked;
+        }
+        private void maxDownloadAppInstanceCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            maxDownloadAppInstanceLabel.Enabled = maxDownloadAppInstanceCheckBox.Checked;
+            maxDownloadAppInstanceNUD  .Enabled = maxDownloadAppInstanceCheckBox.Checked;
         }
     }
 }

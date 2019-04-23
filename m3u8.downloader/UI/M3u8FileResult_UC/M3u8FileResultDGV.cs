@@ -274,6 +274,13 @@ namespace m3u8.downloader
                 }
                 DGV.ResumeLayout( true );
                 DGV.ResumeDrawing();
+
+                /*const int DGV_ROWS_COUNT_MIN_THRESHOLD = 500;
+
+                for ( var startRowIndex = Math.Max( 0, endRowIndex - DGV_ROWS_COUNT_MIN_THRESHOLD ); startRowIndex <= endRowIndex; endRowIndex-- )
+                {
+                    DGV.AutoResizeRow( endRowIndex, DataGridViewAutoSizeRowMode.AllCells );
+                }*/
             }
         }
         public override void SetFocus() => DGV.Focus();
@@ -334,6 +341,8 @@ namespace m3u8.downloader
             row.Cells.Add( new DataGridViewTextBoxCell() { Value = t.text, Style = t.cellStyle } );
 
             AddRow_Fast( row );
+            //---var rowIndex = AddRow( row );
+            //---DGV.AutoResizeRow( rowIndex, DataGridViewAutoSizeRowMode.AllCells );            
             return (new RowHolder( row ));
         }
 

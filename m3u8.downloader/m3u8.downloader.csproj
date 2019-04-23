@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>m3u8</RootNamespace>
     <AssemblyName>m3u8.downloader</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -19,8 +19,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\m3u8-browser-extensions\_m3u8-downloader-host\bin\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <OutputPath>..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -31,7 +31,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\m3u8-browser-extensions\_m3u8-downloader-host\bin\</OutputPath>
+    <OutputPath>..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -56,6 +56,7 @@
     <Compile Include="..\m3u8.client\m3u8.client.cs">
       <Link>[-= m3u8.client =-]\m3u8.client.cs</Link>
     </Compile>
+    <Compile Include="Infrastructure\DefaultConnectionLimitSaver.cs" />
     <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Infrastructure\NameCleaner.cs" />
     <Compile Include="Infrastructure\WinApi.cs" />
@@ -71,11 +72,8 @@
     <Compile Include="UI\ChangeOutputFileForm.Designer.cs">
       <DependentUpon>ChangeOutputFileForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultDGV.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultDGV.Designer.cs">
-      <DependentUpon>M3u8FileResultDGV.cs</DependentUpon>
+    <Compile Include="UI\ButtonWithFocusCues.cs">
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultTextBox.cs">
       <SubType>UserControl</SubType>
@@ -86,14 +84,17 @@
     <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultUCBase.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultDGV.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultDGV.Designer.cs">
+      <DependentUpon>M3u8FileResultDGV.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\ParallelismForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="UI\ParallelismForm.Designer.cs">
       <DependentUpon>ParallelismForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\ButtonWithFocusCues.cs">
-      <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\SettingsForm.cs">
       <SubType>Form</SubType>
@@ -116,7 +117,8 @@
     <Compile Include="Infrastructure\PathnameCleaner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\BitmapHolder.cs" />
+    <Compile Include="UI\WaitBanner\BitmapHolder.cs" />
+    <Compile Include="[-= m3u8.client =-]\m3u8_processor.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -144,7 +146,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\settings.16.ico" />
+    <None Include="Resources\settings.16.ico" />
     <None Include="Resources\uncheck.16.ico" />
     <None Include="Resources\m3u8.png" />
     <None Include="Resources\m3u8_148x166.ico" />
@@ -160,6 +162,7 @@
     <Content Include="Resources\roller\i7.ico" />
     <Content Include="Resources\roller\i8.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

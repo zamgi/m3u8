@@ -19,7 +19,7 @@ function render_m3u8_urls(m3u8_urls) {
     for (var i = 0, cnt = m3u8_urls.length; i < cnt; i++) {
         var m3u8_url = m3u8_urls[i];
         trs.push('<tr><td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="auto_start_download.png" style="height: 16px"/></a></td>' + 
-            '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>');
+                 '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>');
     }
     var download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + m3u8_urls.length + '</a></h5>';
     var auto_start_download_all = ((1 < m3u8_urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="auto_start_download.png" style="height: 16px"/></a>' : '');
@@ -29,7 +29,7 @@ function render_m3u8_urls(m3u8_urls) {
     var aa = content.querySelectorAll('a.download');
     for (i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (event) {                     
-            connect2host(this.href);
+            send2host_single(this.href);
             event.preventDefault();
             return (false);
         });
@@ -38,7 +38,7 @@ function render_m3u8_urls(m3u8_urls) {
     aa = content.querySelectorAll('a.auto_start_download');
     for (i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (event) {            
-            connect2host(this.href, true);
+            send2host_single(this.href, true);
             event.preventDefault();
             return (false);
         });
@@ -48,9 +48,11 @@ function render_m3u8_urls(m3u8_urls) {
     if (0 < aa.length) {
         aa[0].addEventListener('click', function (event) {
             var bb = content.querySelectorAll('a.download');
+            var messageObject = [];
             for (var j = 0; j < bb.length; j++) {
-                connect2host(bb[j].href, false);
+                messageObject.push( create_messageObject(bb[j].href) );
             }
+            send2host_multi(messageObject);
             event.preventDefault();
             return (false);
         });
@@ -60,37 +62,55 @@ function render_m3u8_urls(m3u8_urls) {
     if (0 < aa.length) {
         aa[0].addEventListener('click', function (event) {
             var bb = content.querySelectorAll('a.auto_start_download');
+            var messageObject = [];
             for (var j = 0; j < bb.length; j++) {
-                connect2host(bb[j].href, true);
+                messageObject.push( create_messageObject(bb[j].href, true) );
             }
+            send2host_multi(messageObject);
             event.preventDefault();
             return (false);
         });
     }
 }
 
-function connect2host(m3u8_url, auto_start_download) {
-    var hostName = "m3u8.downloader.host";
-
-    chrome.runtime.sendNativeMessage(hostName,
+function create_messageObject(m3u8_url, auto_start_download) {
+    return ({
+        m3u8_url: m3u8_url,
+        auto_start_download: !!auto_start_download
+    });
+}
+function send2host_single(m3u8_url, auto_start_download) {
+    send2host_multi( [ create_messageObject(m3u8_url, auto_start_download) ] );
+}
+function send2host_multi(messageObject) {
+    var HOST_NAME = "m3u8.downloader.host";
+    
+    chrome.runtime.sendNativeMessage(HOST_NAME, 
         {
-            m3u8_url: m3u8_url,
-            auto_start_download: !!auto_start_download
+            array: messageObject 
         },
         function (response) {
+            var message;
             if (response) {
-                console.log("[" + hostName + "] sent the response: '" + JSON.stringify(response) + "'");
+                if (response.text === "success") {
+                    console.log("[" + HOST_NAME + "] sent the response: '" + JSON.stringify(response) + "'");
+                    return;
+                }
+
+                message = response.text || JSON.stringify(response);
             }
             else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
-                var notificationOptions = {
-                    type: "basic",
-                    title: "[" + hostName + "] => send-native-message ERROR:",
-                    message: chrome.runtime.lastError.message,
-                    iconUrl: "m3u8_128.png",
-                    priority: 2
-                };
-                chrome.notifications.clear(hostName);
-                chrome.notifications.create(hostName, notificationOptions);
+                message = chrome.runtime.lastError.message;
             }
+
+            var notificationOptions = {
+                type: "basic",
+                title: "[" + HOST_NAME + "] => send-native-message ERROR:",
+                message: message || "[NULL]",
+                iconUrl: "m3u8_148.png",
+                priority: 2
+            };
+            chrome.notifications.clear(HOST_NAME);
+            chrome.notifications.create(HOST_NAME, notificationOptions);
         });
 }

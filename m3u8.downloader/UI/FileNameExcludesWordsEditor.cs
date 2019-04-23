@@ -86,7 +86,7 @@ namespace m3u8.downloader
                 var pen = ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected) ? Pens.DarkBlue : Pens.Silver;
                 e.Graphics.DrawRectangle( pen, rect );
 
-                var text = ((DataGridView) sender).Rows[ e.RowIndex ].IsNewRow ? "*" : (e.RowIndex + 1).ToString();
+                var text = (e.RowIndex + 1).ToString(); // DGV.Rows[ e.RowIndex ].IsNewRow ? "*" : (e.RowIndex + 1).ToString();
                 e.Graphics.DrawString( text, this.Font, Brushes.Black, e.CellBounds, _SF );
             }            
         }

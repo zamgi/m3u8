@@ -39,7 +39,7 @@
             this.responseStepActionLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.autoCloseApplicationWhenEndsDownloadLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.autoMinimizeWindowWhenStartsDownloadLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.excludesWordsLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.exceptionWordsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.parallelismLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.settingsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.m3u8FileWholeLoadAndSaveButton = new System.Windows.Forms.ButtonWithFocusCues();
@@ -122,7 +122,7 @@
                 this.responseStepActionLabel,
                 this.autoCloseApplicationWhenEndsDownloadLabel,
                 this.autoMinimizeWindowWhenStartsDownloadLabel,
-                this.excludesWordsLabel,
+                this.exceptionWordsLabel,
                 this.parallelismLabel,
                 this.settingsLabel
             });
@@ -144,7 +144,7 @@
             this.autoCloseApplicationWhenEndsDownloadLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.autoCloseApplicationWhenEndsDownloadLabel.Size = new System.Drawing.Size(60, 17);
             this.autoCloseApplicationWhenEndsDownloadLabel.Text = "auto close";
-            this.autoCloseApplicationWhenEndsDownloadLabel.ToolTipText = "auto close application when ends download";
+            this.autoCloseApplicationWhenEndsDownloadLabel.ToolTipText = "auto close application when finished download";
             this.autoCloseApplicationWhenEndsDownloadLabel.Click += new System.EventHandler(this.autoCloseApplicationWhenEndsDownloadLabel_Click);
             this.autoCloseApplicationWhenEndsDownloadLabel.MouseEnter += new System.EventHandler(this.statusBarLabel_MouseEnter);
             this.autoCloseApplicationWhenEndsDownloadLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
@@ -159,16 +159,18 @@
             this.autoMinimizeWindowWhenStartsDownloadLabel.MouseEnter += new System.EventHandler(this.statusBarLabel_MouseEnter);
             this.autoMinimizeWindowWhenStartsDownloadLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
             // 
-            // excludesWordsLabel
+            // exceptionWordsLabel
             // 
-            this.excludesWordsLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
-            this.excludesWordsLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.excludesWordsLabel.Size = new System.Drawing.Size(174, 17);
-            this.excludesWordsLabel.Text = "file name excludes words editor...";
-            this.excludesWordsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.excludesWordsLabel.Click += new System.EventHandler(this.excludesWordsLabel_Click);
-            this.excludesWordsLabel.MouseEnter += new System.EventHandler(this.statusBarLabel_MouseEnter);
-            this.excludesWordsLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
+            this.exceptionWordsLabel.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.exceptionWordsLabel.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.exceptionWordsLabel.Size = new System.Drawing.Size(174, 17);
+            this.exceptionWordsLabel.ForeColor = System.Drawing.Color.DimGray;
+            this.exceptionWordsLabel.Text = "file name exceptions";
+            this.exceptionWordsLabel.ToolTipText = "file name exception word editor";
+            this.exceptionWordsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.exceptionWordsLabel.Click += new System.EventHandler(this.excludesWordsLabel_Click);
+            this.exceptionWordsLabel.MouseEnter += new System.EventHandler(this.statusBarLabel_MouseEnter);
+            this.exceptionWordsLabel.MouseLeave += new System.EventHandler(this.statusBarLabel_MouseLeave);
             // 
             // maxDegreeOfParallelismLabel
             // 
@@ -285,7 +287,7 @@
         private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel parallelismLabel;
         private System.Windows.Forms.ToolStripStatusLabel responseStepActionLabel;
-        private System.Windows.Forms.ToolStripStatusLabel excludesWordsLabel;
+        private System.Windows.Forms.ToolStripStatusLabel exceptionWordsLabel;
         private System.Windows.Forms.ToolStripStatusLabel autoMinimizeWindowWhenStartsDownloadLabel;
         private System.Windows.Forms.ToolStripStatusLabel autoCloseApplicationWhenEndsDownloadLabel;
         private System.Windows.Forms.ToolStripStatusLabel settingsLabel;
