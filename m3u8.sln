@@ -48,6 +48,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-firefox-extension", "m
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xpi", "xpi", "{3C43194B-AA3D-4916-A292-FB9E65955B11}"
+	ProjectSection(SolutionItems) = preProject
+		m3u8-browser-extensions\m3u8-firefox-extension\xpi\m3u8_file_downloader-1.3-fx.xpi = m3u8-browser-extensions\m3u8-firefox-extension\xpi\m3u8_file_downloader-1.3-fx.xpi
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8.downloader.host", "m3u8.downloader.host", "{4A091DFF-C923-491B-B4C4-2762163EE716}"
 	ProjectSection(SolutionItems) = preProject
