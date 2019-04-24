@@ -10,12 +10,15 @@ namespace m3u8.downloader
     /// </summary>
     internal sealed partial class M3u8FileResultTextBox : M3u8FileResultUCBase
     {
+        #region [.fields.]
         private const string FAILED_TEXT_LINE = "\r\n FAILED-------------------------------------------------------------------------------------------------------------------------FAILED \r\n";
+        #endregion
 
         #region [.ctor().]
         public M3u8FileResultTextBox() => InitializeComponent();
         #endregion
 
+        #region [.public override methods.]
         public override bool IsVerticalScrollBarVisible => true;
         public override void AdjustColumnsWidthSprain() { }
         public override void AdjustRowsHeight() { }
@@ -59,5 +62,6 @@ namespace m3u8.downloader
 
         public override void SetResponseErrorText( IRowHolder holder, Exception ex ) => AppendRequestErrorText( ex );
         public override void SetResponseReceivedText( IRowHolder holder, string receivedText ) { }
+        #endregion
     }
 }

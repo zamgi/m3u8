@@ -8,9 +8,17 @@ namespace m3u8.downloader
     /// </summary>
     internal sealed partial class SettingsForm : Form
     {
+        #region [.ctor().]
         public SettingsForm() => InitializeComponent();
+        #endregion
 
-        public int AttemptRequestCountByPart
+        #region [.private methods.]
+        private void logUITextBoxCheckBox_CheckedChanged ( object sender, EventArgs e ) => this.DownloadLogUIType = DownloadLogUITypeEnum.TextBoxUIType;
+        private void logUIGridViewCheckBox_CheckedChanged( object sender, EventArgs e ) => this.DownloadLogUIType = DownloadLogUITypeEnum.GridViewUIType;
+        #endregion
+
+        #region [.public props.]
+        public int      AttemptRequestCountByPart
         {
             get => Convert.ToInt32( attemptRequestCountByPartNUD.Value );
             set => attemptRequestCountByPartNUD.Value = value;
@@ -47,13 +55,16 @@ namespace m3u8.downloader
                 logUITextBoxCheckBox .CheckedChanged += logUITextBoxCheckBox_CheckedChanged;
             }
         }
-        public bool ShowOnlyRequestRowsWithErrors
+        public bool     ShowOnlyRequestRowsWithErrors
         {
             get => showOnlyRequestRowsWithErrorsCheckBox.Checked;
             set => showOnlyRequestRowsWithErrorsCheckBox.Checked = value;
         }
-
-        private void logUITextBoxCheckBox_CheckedChanged ( object sender, EventArgs e ) => this.DownloadLogUIType = DownloadLogUITypeEnum.TextBoxUIType;
-        private void logUIGridViewCheckBox_CheckedChanged( object sender, EventArgs e ) => this.DownloadLogUIType = DownloadLogUITypeEnum.GridViewUIType;
+        public bool     StoreMainFormPosition
+        {
+            get => storeMainFormPositionCheckBox.Checked;
+            set => storeMainFormPositionCheckBox.Checked = value;
+        }
+        #endregion
     }
 }

@@ -253,6 +253,7 @@ namespace m3u8.downloader
         private (string errorText, CellStyle errorCellStyle) GetError_4_ResponseColumn( Exception ex ) => GetError_4_ResponseColumn( ex.ToString() );
         #endregion
 
+        #region [.public override methods.]
         protected override void ShowOnlyRequestRowsWithErrors_OnChanged()
         {
             _ShowOnlyRequestRowsWithErrorsMenuItem.Checked = this.ShowOnlyRequestRowsWithErrors;
@@ -410,5 +411,6 @@ namespace m3u8.downloader
                 Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _SetRowInvisibleAction, row ) );
             }
         }
+        #endregion
     }
 }

@@ -63,9 +63,19 @@ namespace m3u8.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon check_16 {
+        internal static System.Drawing.Icon _checked {
             get {
-                object obj = ResourceManager.GetObject("check_16", resourceCulture);
+                object obj = ResourceManager.GetObject("checked", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon _unchecked {
+            get {
+                object obj = ResourceManager.GetObject("unchecked", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -163,19 +173,9 @@ namespace m3u8.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon settings_16 {
+        internal static System.Drawing.Icon settings {
             get {
-                object obj = ResourceManager.GetObject("settings_16", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon uncheck_16 {
-            get {
-                object obj = ResourceManager.GetObject("uncheck_16", resourceCulture);
+                object obj = ResourceManager.GetObject("settings", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using m3u8.Properties;
+
 namespace m3u8.downloader
 {
     /// <summary>
@@ -12,8 +14,12 @@ namespace m3u8.downloader
     /// </summary>
     internal sealed partial class FileNameExcludesWordsEditor : Form
     {
+        #region [.fields.]
         private StringFormat _SF;
+        private string       _LastFilterText;
+        #endregion
 
+        #region [.ctor().]
         private FileNameExcludesWordsEditor()
         {
             InitializeComponent();
@@ -31,20 +37,43 @@ namespace m3u8.downloader
             }
         }
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose( bool disposing )
         {
-            if ( disposing && (components != null) )
+            if ( disposing )
             {
-                components.Dispose();
+                components?.Dispose();
                 _SF.Dispose();
             }
             base.Dispose( disposing );
         }
+        #endregion
 
+        #region [.override methods.]
+        protected override void OnLoad( EventArgs e )
+        {
+            base.OnLoad( e );
+
+            if ( !base.DesignMode )
+            {
+                FormPositionStorer.Load( this, Settings.Default.FileNameExcludesWordsEditorPositionJson );
+            }
+        }
+        protected override void OnClosed( EventArgs e )
+        {
+            base.OnClosed( e );
+
+            if ( !base.DesignMode )
+            {
+                Settings.Default.FileNameExcludesWordsEditorPositionJson = FormPositionStorer.Save( this );
+                Settings.Default.SaveNoThrow();
+            }
+        }
+        protected override void OnShown( EventArgs e )
+        {
+            base.OnShown( e );
+
+            DGV_Resize( null, null );
+        }
         protected override bool ProcessCmdKey( ref Message msg, Keys keyData )
         {
             if ( !DGV.IsCurrentCellInEditMode )
@@ -63,13 +92,9 @@ namespace m3u8.downloader
             }
             return (base.ProcessCmdKey( ref msg, keyData ));
         }
-        protected override void OnShown( EventArgs e )
-        {
-            base.OnShown( e );
+        #endregion
 
-            DGV_Resize( null, null );
-        }
-
+        #region [.private methods.]
         private void DGV_Resize( object sender, EventArgs e )
         {
             var vscrollBarVisible = DGV.Controls.OfType< VScrollBar >().First().Visible;
@@ -83,7 +108,7 @@ namespace m3u8.downloader
                 e.Graphics.FillRectangle( Brushes.LightGray, e.CellBounds );
 
                 var rect = e.CellBounds; rect.Height -= 2; rect.Width -= 2;
-                var pen = ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected) ? Pens.DarkBlue : Pens.Silver;
+                var pen  = ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected) ? Pens.DarkBlue : Pens.Silver;
                 e.Graphics.DrawRectangle( pen, rect );
 
                 var text = (e.RowIndex + 1).ToString(); // DGV.Rows[ e.RowIndex ].IsNewRow ? "*" : (e.RowIndex + 1).ToString();
@@ -91,25 +116,8 @@ namespace m3u8.downloader
             }            
         }
 
-
-        public string[] GetFileNameExcludesWords()
-        {
-            var data = new string[ DGV.RowCount - 1 ];
-            var rows = DGV.Rows;
-            for ( int i = DGV.RowCount - 1, j = 0; 0 <= i; i--  )
-            {
-                var row = rows[ i ];
-                if ( !row.IsNewRow )
-                {
-                    data[ j++ ] = row.Cells[ 0 ].Value?.ToString();
-                }
-            }
-            return (data);
-        }
-
         private void clearFilterButton_Click( object sender, EventArgs e ) => filterTextBox.Text = null;
 
-        private string _LastFilterText;
         private async void filterTextBox_TextChanged( object sender, EventArgs e )
         {
             var text = filterTextBox.Text.Trim();
@@ -156,5 +164,23 @@ namespace m3u8.downloader
                 DGV.ResumeDrawing();
             }
         }
+        #endregion
+
+        #region [.public methods.]
+        public string[] GetFileNameExcludesWords()
+        {
+            var data = new string[ DGV.RowCount - 1 ];
+            var rows = DGV.Rows;
+            for ( int i = DGV.RowCount - 1, j = 0; 0 <= i; i--  )
+            {
+                var row = rows[ i ];
+                if ( !row.IsNewRow )
+                {
+                    data[ j++ ] = row.Cells[ 0 ].Value?.ToString();
+                }
+            }
+            return (data);
+        }
+        #endregion
     }
 }

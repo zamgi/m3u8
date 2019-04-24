@@ -25,8 +25,11 @@ namespace m3u8.downloader
     /// </summary>
     internal abstract class M3u8FileResultUCBase : UserControl
     {
+        #region [.ctor().]
         protected M3u8FileResultUCBase() => _ShowOnlyRequestRowsWithErrors = Settings.Default.ShowOnlyRequestRowsWithErrors;
+        #endregion
 
+        #region [.public props.]
         private bool _ShowOnlyRequestRowsWithErrors;
         public bool ShowOnlyRequestRowsWithErrors
         {
@@ -44,7 +47,9 @@ namespace m3u8.downloader
             }
         }
         protected virtual void ShowOnlyRequestRowsWithErrors_OnChanged() { }
+        #endregion
 
+        #region [.abstract methods.]
         public abstract bool IsVerticalScrollBarVisible { get; }
         public abstract void Clear();
         public abstract void SetFocus();
@@ -60,5 +65,6 @@ namespace m3u8.downloader
         public abstract IRowHolder AppendRequestText( string requestText, bool ensureVisible = true );
         public abstract void SetResponseErrorText( IRowHolder holder, Exception ex );
         public abstract void SetResponseReceivedText( IRowHolder holder, string receivedText );
+        #endregion
     }
 }

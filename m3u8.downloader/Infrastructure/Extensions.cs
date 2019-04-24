@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Windows.Forms;
 
 using m3u8.Properties;
@@ -21,24 +23,6 @@ namespace m3u8.downloader
         [M(O.AggressiveInlining)] public static bool HasFirstCharNotDot( this string s ) => ((0 < (s?.Length).GetValueOrDefault()) && (s[ 0 ] != '.'));
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
         [M(O.AggressiveInlining)] public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : (T?) null);
-
-        /*public static Exception ShellExploreAndSelectFile( string filePath )
-        {
-            try
-            {
-                var fileLocation = Path.GetFullPath( filePath );
-                using ( Process.Start( "explorer", $"/e,/select,\"{fileLocation}\"" ) )
-                {
-                    return (null);
-                }
-            }
-            catch ( Exception ex )
-            {
-                return (ex);
-            }
-        }*/
-        /*[M(O.AggressiveInlining)] public static void SetDoubleBuffered( this Control control, bool value = true ) =>
-            typeof(Control).GetProperty( "DoubleBuffered", BindingFlags.NonPublic | BindingFlags.SetProperty | BindingFlags.Instance )?.SetValue( control, value );*/
 
         public static void DeleteFile_NoThrow( string fileName )
         {
@@ -62,6 +46,19 @@ namespace m3u8.downloader
 
         [M(O.AggressiveInlining)] public static string TrimIfLongest( this string s, int maxLength ) => ((maxLength < s.Length) ? (s.Substring( 0, maxLength ) + "..." ) : s);
 
+        /// <summary>
+        /// Copy user settings from previous application version if necessary
+        /// </summary>
+        [M(O.AggressiveInlining)] public static void UpgradeIfNeed( this Settings settings )
+        {
+            // Copy user settings from previous application version if necessary
+            if ( !settings._IsUpgradedInThisVersion )
+            {
+                settings.Upgrade();
+                settings._IsUpgradedInThisVersion = true;
+                settings.SaveNoThrow();
+            }
+        }
         [M(O.AggressiveInlining)] public static void SaveNoThrow( this Settings settings )
         {
             try
@@ -71,6 +68,29 @@ namespace m3u8.downloader
             catch ( Exception ex )
             {
                 Debug.WriteLine( ex );
+            }
+        }
+
+        public static string ToJSON< T >( this T t )
+        {
+            var ser = new DataContractJsonSerializer( typeof(T) );
+
+            using ( var ms = new MemoryStream() )
+            {                
+                ser.WriteObject( ms, t );
+                var json = Encoding.UTF8.GetString( ms.GetBuffer(), 0, (int) ms.Position );
+                //var json = Encoding.UTF8.GetString( ms.ToArray() );
+                return (json);
+            }
+        }
+        public static T FromJSON< T >( string json )
+        {
+            var ser = new DataContractJsonSerializer( typeof(T) );
+
+            using ( var ms = new MemoryStream( Encoding.UTF8.GetBytes( json ) ) )
+            {
+                var t = (T) ser.ReadObject( ms );
+                return (t);
             }
         }
     }

@@ -8,13 +8,29 @@ namespace m3u8.downloader
     /// </summary>
     internal sealed partial class ParallelismForm : Form
     {
+        #region [.ctor().]
         public ParallelismForm()
         {
             InitializeComponent();
 
             maxDegreeOfParallelismNUD.Maximum = int.MaxValue;
         }
+        #endregion
 
+        #region [.private methods.]
+        private void infinityCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            maxDegreeOfParallelismNUD                     .Enabled = !infinityCheckBox.Checked;
+            useCrossAppInstanceDegreeOfParallelismCheckBox.Enabled = !infinityCheckBox.Checked;
+        }
+        private void maxDownloadAppInstanceCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            maxDownloadAppInstanceLabel.Enabled = maxDownloadAppInstanceCheckBox.Checked;
+            maxDownloadAppInstanceNUD  .Enabled = maxDownloadAppInstanceCheckBox.Checked;
+        }
+        #endregion
+
+        #region [.public props.]
         public int  MaxDegreeOfParallelism
         {
             get => (IsInfinity ? int.MaxValue : Convert.ToInt32( maxDegreeOfParallelismNUD.Value ));
@@ -39,7 +55,6 @@ namespace m3u8.downloader
             get => !infinityCheckBox.Checked && useCrossAppInstanceDegreeOfParallelismCheckBox.Checked;
             set => useCrossAppInstanceDegreeOfParallelismCheckBox.Checked = value;
         }
-
         public int? MaxDownloadAppInstance
         {
             get => (maxDownloadAppInstanceCheckBox.Checked ? Convert.ToInt32( maxDownloadAppInstanceNUD.Value ) : ((int?) null));
@@ -50,16 +65,6 @@ namespace m3u8.downloader
                 maxDownloadAppInstanceCheckBox_CheckedChanged( maxDownloadAppInstanceCheckBox, EventArgs.Empty );
             }
         }
-
-        private void infinityCheckBox_CheckedChanged( object sender, EventArgs e )
-        {
-            maxDegreeOfParallelismNUD                     .Enabled = !infinityCheckBox.Checked;
-            useCrossAppInstanceDegreeOfParallelismCheckBox.Enabled = !infinityCheckBox.Checked;
-        }
-        private void maxDownloadAppInstanceCheckBox_CheckedChanged( object sender, EventArgs e )
-        {
-            maxDownloadAppInstanceLabel.Enabled = maxDownloadAppInstanceCheckBox.Checked;
-            maxDownloadAppInstanceNUD  .Enabled = maxDownloadAppInstanceCheckBox.Checked;
-        }
+        #endregion
     }
 }

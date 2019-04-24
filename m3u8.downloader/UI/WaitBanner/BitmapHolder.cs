@@ -11,15 +11,20 @@ namespace m3u8.downloader
     /// </summary>
     internal sealed class BitmapHolder
     {
+        #region [.fields.]
         private Bitmap[] _Bitmaps;
         private int      _CurrentPos;
+        #endregion
 
+        #region [.ctor().]
         public BitmapHolder( IEnumerable< Icon > icons )
         {
             _Bitmaps    = icons.Select( icon => icon.ToBitmap() ).ToArray();
             _CurrentPos = -1;
         }
+        #endregion
 
+        #region [.public props & methods.]
         public void Reset() => _CurrentPos = -1;
         
         public Bitmap Current
@@ -38,6 +43,7 @@ namespace m3u8.downloader
             _CurrentPos++;
             return (this.Current);
         }
+        #endregion
 
         #region [.Singletons.]
         private static volatile BitmapHolder _IndicatorI;

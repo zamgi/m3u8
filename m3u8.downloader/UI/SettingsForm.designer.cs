@@ -35,6 +35,7 @@
             this.requestTimeoutByPartDTP = new System.Windows.Forms.DateTimePicker();
             this.gb1 = new System.Windows.Forms.GroupBox();
             this.showOnlyRequestRowsWithErrorsCheckBox = new System.Windows.Forms.CheckBox();
+            this.storeMainFormPositionCheckBox = new System.Windows.Forms.CheckBox();
             this.logUIGridViewCheckBox = new System.Windows.Forms.CheckBox();
             this.logUITextBoxCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.attemptRequestCountByPartNUD)).BeginInit();
@@ -65,9 +66,9 @@
             this.okButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.okButton.Location = new System.Drawing.Point(65, 205);
+            this.okButton.Location = new System.Drawing.Point(65, 235);
             this.okButton.Size = new System.Drawing.Size(75, 23);
-            this.okButton.TabIndex = 5;
+            this.okButton.TabIndex = 6;
             this.okButton.Text = "Ok";
             this.okButton.UseVisualStyleBackColor = true;
             // 
@@ -77,9 +78,9 @@
             this.cancelButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cancelButton.Location = new System.Drawing.Point(146, 205);
+            this.cancelButton.Location = new System.Drawing.Point(146, 235);
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 6;
+            this.cancelButton.TabIndex = 7;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
@@ -112,17 +113,15 @@
             this.gb1.Controls.Add(this.showOnlyRequestRowsWithErrorsCheckBox);
             this.gb1.Controls.Add(this.logUIGridViewCheckBox);
             this.gb1.Controls.Add(this.logUITextBoxCheckBox);
-            this.gb1.Location = new System.Drawing.Point(13, 73);
+            this.gb1.Location = new System.Drawing.Point(13, 110);
             this.gb1.Size = new System.Drawing.Size(261, 116);
-            this.gb1.TabIndex = 4;
+            this.gb1.TabIndex = 5;
             this.gb1.TabStop = false;
             this.gb1.Text = "download log UI type";
             // 
             // showOnlyRequestRowsWithErrorsCheckBox
             // 
             this.showOnlyRequestRowsWithErrorsCheckBox.AutoSize = true;
-            this.showOnlyRequestRowsWithErrorsCheckBox.Checked = true;
-            this.showOnlyRequestRowsWithErrorsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showOnlyRequestRowsWithErrorsCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.showOnlyRequestRowsWithErrorsCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.showOnlyRequestRowsWithErrorsCheckBox.Location = new System.Drawing.Point(50, 77);
@@ -130,6 +129,17 @@
             this.showOnlyRequestRowsWithErrorsCheckBox.TabIndex = 2;
             this.showOnlyRequestRowsWithErrorsCheckBox.Text = "show only request rows with errors";
             this.showOnlyRequestRowsWithErrorsCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // storeMainFormPositionCheckBox
+            // 
+            this.storeMainFormPositionCheckBox.AutoSize = true;
+            this.storeMainFormPositionCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.storeMainFormPositionCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.storeMainFormPositionCheckBox.Location = new System.Drawing.Point( 50, 77 );
+            this.storeMainFormPositionCheckBox.Size = new System.Drawing.Size( 185, 17 );
+            this.storeMainFormPositionCheckBox.TabIndex = 4;
+            this.storeMainFormPositionCheckBox.Text = "store main window position && size";
+            this.storeMainFormPositionCheckBox.UseVisualStyleBackColor = true;
             // 
             // logUIGridViewCheckBox
             // 
@@ -160,13 +170,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(286, 240);
+            this.ClientSize = new System.Drawing.Size(286, 270);
             this.Controls.Add(this.gb1);
             this.Controls.Add(this.requestTimeoutByPartDTP);
             this.Controls.Add(this.l2);
             this.Controls.Add(this.l1);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
+            this.Controls.Add(this.storeMainFormPositionCheckBox);
             this.Controls.Add(this.attemptRequestCountByPartNUD);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
@@ -193,5 +204,6 @@
         private System.Windows.Forms.CheckBox logUIGridViewCheckBox;
         private System.Windows.Forms.CheckBox logUITextBoxCheckBox;
         private System.Windows.Forms.CheckBox showOnlyRequestRowsWithErrorsCheckBox;
+        private System.Windows.Forms.CheckBox storeMainFormPositionCheckBox;
     }
 }

@@ -11,9 +11,9 @@ namespace m3u8.downloader
     /// </summary>
     internal sealed partial class WaitBannerUC : UserControl
     {
+        #region [.field's.]
         private const string CAPTION_TEXT = "...executing...";
 
-        #region [.field's.]
         private CancellationTokenSource _CancellationTokenSource;
         private string   _CaptionText;
         private DateTime _StartDateTime;
@@ -23,6 +23,7 @@ namespace m3u8.downloader
         private Form     _FirstAppForm;
         private string   _FirstAppFormText;
         private string   _SpeedText;
+        private bool     _IsInWaitingForOtherAppInstanceFinished;
         #endregion
 
         #region [.ctor().]
@@ -43,12 +44,11 @@ namespace m3u8.downloader
             }
             base.Dispose( disposing );
 
-            //---SetMainFormCursor( Cursors.Default );
-            //---Application.DoEvents();
             _FirstAppForm.Text = _FirstAppFormText;
         }
         #endregion
 
+        #region [.private methods.]
         private void WaitBannerUC_Load( object sender, EventArgs e ) => fuskingTimer.Enabled = true;
         private void cancelButton_Click( object sender, EventArgs e )
         {
@@ -75,20 +75,14 @@ namespace m3u8.downloader
             indicatorPictureBox.Visible = true;
 
             //----------------------------------------------------------------------//
-            //if ( _FirstAppForm.WindowState == FormWindowState.Minimized )
-            //{
-                var elapsed = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
+            var elapsed = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
 
-                _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished 
-                                      ? $"(wait), ({elapsed})" 
-                                      : $"{_PercentSteps}%, ({elapsed}){(_SpeedText.IsNullOrEmpty() ? null : $", {_SpeedText}")}");
-            //}
-            //else
-            //{
-            //    _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished ? "(wait) " : null) + _FirstAppFormText;
-            //}
+            _FirstAppForm.Text = (_IsInWaitingForOtherAppInstanceFinished 
+                                 ? $"(wait), ({elapsed})" : $"{_PercentSteps}%, ({elapsed}){(_SpeedText.IsNullOrEmpty() ? null : $", {_SpeedText}")}");
         }
+        #endregion
 
+        #region [.public methods.]
         public void SetTotalSteps( int totalSteps ) => _TotalSteps = totalSteps;
         public void IncreaseSteps( string speedText )
         {            
@@ -99,7 +93,6 @@ namespace m3u8.downloader
             _IsInWaitingForOtherAppInstanceFinished = false;
         }
 
-        private bool _IsInWaitingForOtherAppInstanceFinished;
         public void WaitingForOtherAppInstanceFinished() => _IsInWaitingForOtherAppInstanceFinished = true;
 
         public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, string captionText = CAPTION_TEXT )
@@ -125,5 +118,6 @@ namespace m3u8.downloader
                 parent.ResumeDrawing();
             }
         }
+        #endregion
     }
 }

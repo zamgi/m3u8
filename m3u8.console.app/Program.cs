@@ -35,14 +35,6 @@ namespace m3u8
                     Parallel.ForEach( m3u8_file.Parts, new ParallelOptions() { MaxDegreeOfParallelism = maxDegreeOfParallelism, CancellationToken = ct }, 
                     (part, loopState, idx) =>
                     {
-                        #region comm
-                        //if ( ct.IsCancellationRequested )
-                        //{
-                        //    loopState.Stop();
-                        //    return;
-                        //} 
-                        #endregion
-
                         var n = Interlocked.Increment( ref globalPartNumber );                
                         try
                         { 
@@ -52,55 +44,19 @@ namespace m3u8
                             {
                                 CONSOLE.WriteLineError( $"#{n} of {totalPatrs}). FAILED: {downloadPart.Error}{Environment.NewLine}" );
                             }
-                            #region comm
-                            /*else
-                            {
-                                CONSOLE.WriteLine( $"#{n} of {totalPatrs}). success: {downloadPart.Bytes.Length}{Environment.NewLine}" ); 
-                            }*/ 
-                            #endregion
 
                             lock ( downloadPartsSet )
                             {
                                 downloadPartsSet.Add( downloadPart );
                             }
-
-                            #region commented
-                            /*
-                            var cfn = PathnameCleaner.CleanFilename( exportResult.FileName );
-                            var ext = Path.GetExtension( cfn );
-                            var fn_no_ext = Path.GetFileNameWithoutExtension( cfn );
-                            var fn = (ext.IsNullOrWhiteSpace() || fn_no_ext.IsNullOrWhiteSpace()) 
-                                        ? TrimIfGreatThen( cfn )
-                                        : TrimIfGreatThen( fn_no_ext ) + ext;
-                            fn = fn_no_ext.StartsWith( part.document.name, StringComparison.InvariantCultureIgnoreCase ) ? fn : $"name={TrimIfGreatThen( part.document.name )}, {fn}";
-                            var filename = PathnameCleaner.CleanFilename( $"dId={part.document.id}, {fn}" );
-                            var fullFilename = Path.Combine( part.projectDirectory, filename );
-                            File.WriteAllBytes( fullFilename, exportResult.Bytes );
-                            */ 
-                            #endregion
                         }
                         catch ( Exception ex )
                         {
                             #region [.code.]
                             var aex = ex as AggregateException;
-                            if ( (aex == null) || !aex.InnerExceptions.All( (_ex) => (_ex is OperationCanceledException /*TaskCanceledException*/) ) )
+                            if ( (aex == null) || !aex.InnerExceptions.All( e => (e is OperationCanceledException) ) )
                             {
                                 CONSOLE.WriteLineError( "ERROR: " + ex );
-
-                                #region commented
-                                /*
-                                try
-                                {
-                                    var filename = PathnameCleaner.CleanFilename( $"error, part={part.RelativeUrlName}.error.txt" );
-                                    var fullFilename = Path.Combine( part.projectDirectory, filename );
-                                    File.WriteAllText( fullFilename, ex.ToString() );
-                                }
-                                catch ( Exception exx )
-                                {
-                                    Debug.WriteLine( exx );
-                                }
-                                */ 
-                                #endregion
                             }
                             #endregion
                         }
@@ -125,14 +81,6 @@ namespace m3u8
 
                         //-1-//
                         CONSOLE.WriteLine( $"download m3u8-file: '{M3U8_FILE_URL}'..." );
-                        #region commented
-                        /*
-                        var baseAddress = new Uri( "http://hls.kinokrad.co/hls/terminator-4-da-pridet-spasitel-2009_HDRip/" );
-                        var m3u8FileName = @"E:\[.m3u8]\playlist.m3u8--.txt";
-                        var content = File.ReadAllText( m3u8FileName );
-                        var m3u8File = m3u8_file_t.Parse( content, baseAddress );
-                        */ 
-                        #endregion
                         var m3u8FileUrl = new Uri( M3U8_FILE_URL );
                         var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts.Token );
                         CONSOLE.WriteLine( $"success. parts count: {m3u8File.Parts.Count}\r\n" );
@@ -141,7 +89,6 @@ namespace m3u8
                         var downloadParts = download_m3u8File_parallel( mc, m3u8File, cts );
 
                         //-3-//
-                        //---var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.Segments.Last() ) + OUTPUT_FILE_EXT );
                         var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.AbsolutePath ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
                         using ( var fs = File.OpenWrite( outputFileName ) )
                         {
@@ -149,7 +96,7 @@ namespace m3u8
 
                             foreach ( var downloadPart in downloadParts )
                             {
-                                if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )
+                                if ( downloadPart.Error != null )
                                 {
                                     continue;
                                 }
@@ -163,14 +110,14 @@ namespace m3u8
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadParts.Count( p => p.Error == null )} of {downloadParts.Count}\r\n" + 
                                            $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {(totalBytes >> 20).ToString( "0,0" )} mb)\r\n" );
 
-                    }/*, cts.Token*/ )
-                    .ContinueWith( (continuationTask) =>
+                    } )
+                    .ContinueWith( t =>
                     {
-                        if ( continuationTask.IsFaulted )
+                        if ( t.IsFaulted )
                         {
-                            CONSOLE.WriteLineError( "ERROR: " + continuationTask.Exception );
+                            CONSOLE.WriteLineError( "ERROR: " + t.Exception );
                         }
-                    } );
+                    });
 
                     #region [.wait for keyboard break.]
                     task.WaitForTaskEndsOrKeyboardBreak( cts );
@@ -192,11 +139,11 @@ namespace m3u8
                 var totalPatrs  = m3u8_file.Parts.Count;
                 var successPartNumber = 0;
 
-                var __parts__ = m3u8_file.Parts;//.Take( 15 ).ToArray();
+                var parts = m3u8_file.Parts;
 
-                var expectedPartNumber = __parts__.FirstOrDefault().OrderNumber;
-                var maxPartNumber      = __parts__.LastOrDefault ().OrderNumber;
-                var sourceQueue = new Queue< m3u8_part_ts >( __parts__ );
+                var expectedPartNumber = parts.FirstOrDefault().OrderNumber;
+                var maxPartNumber      = parts.LastOrDefault ().OrderNumber;
+                var sourceQueue = new Queue< m3u8_part_ts >( parts );
                 var downloadPartsSet = new SortedSet< m3u8_part_ts >( default(m3u8_part_ts_comparer) );
                 var downloadPartsResult = new LinkedList< m3u8_part_ts >();
 
@@ -214,19 +161,19 @@ namespace m3u8
                             CONSOLE.WriteLine( $"start download part: {part}..." );
 
                             mc.DownloadPart( part, baseAddress, ct )
-                              .ContinueWith( (continuationTask) =>
+                              .ContinueWith( t =>
                               {
-                                  if ( continuationTask.IsFaulted )
+                                  if ( t.IsFaulted )
                                   {
                                       Interlocked.Increment( ref expectedPartNumber );
 
-                                      CONSOLE.WriteLine( $"'{continuationTask.Exception.GetType().Name}': '{continuationTask.Exception.Message}'.", ConsoleColor.Red );
+                                      CONSOLE.WriteLine( $"'{t.Exception.GetType().Name}': '{t.Exception.Message}'.", ConsoleColor.Red );
                                   }
-                                  else if ( !continuationTask.IsCanceled )
+                                  else if ( !t.IsCanceled )
                                   {
                                       Interlocked.Increment( ref successPartNumber );
 
-                                      var downloadPart = continuationTask.Result;
+                                      var downloadPart = t.Result;
 
                                       CONSOLE.WriteLine( $"end download part: {downloadPart}." );
 
@@ -236,7 +183,7 @@ namespace m3u8
                                           canExtractPartEvent.Set();
                                       }
                                   }
-                              } );
+                              });
                         }
                     }, ct );
 
@@ -311,7 +258,7 @@ namespace m3u8
 
                             foreach ( var downloadPart in downloadParts )
                             {
-                                if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )
+                                if ( downloadPart.Error != null )
                                 {
                                     continue;
                                 }
@@ -325,14 +272,14 @@ namespace m3u8
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadParts.Count( p => p.Error == null )} of {downloadParts.Count}\r\n" + 
                                            $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {(totalBytes >> 20).ToString( "0,0" )} mb)\r\n" );
 
-                    }/*, cts.Token*/ )
-                    .ContinueWith( (continuationTask) =>
+                    })
+                    .ContinueWith( t =>
                     {
-                        if ( continuationTask.IsFaulted )
+                        if ( t.IsFaulted )
                         {
-                            CONSOLE.WriteLineError( "ERROR: " + continuationTask.Exception );
+                            CONSOLE.WriteLineError( "ERROR: " + t.Exception );
                         }
-                    } );
+                    });
 
                     #region [.wait for keyboard break.]
                     task.WaitForTaskEndsOrKeyboardBreak( cts );
@@ -368,19 +315,19 @@ namespace m3u8
                             CONSOLE.WriteLine( $"start download part: {part}..." ); 
 #endif
                             mc.DownloadPart( part, baseAddress, ct )
-                              .ContinueWith( (continuationTask) =>
+                              .ContinueWith( t =>
                               {
-                                  if ( continuationTask.IsFaulted )
+                                  if ( t.IsFaulted )
                                   {
                                       Interlocked.Increment( ref expectedPartNumber );
 
-                                      CONSOLE.WriteLine( $"'{continuationTask.Exception.GetType().Name}': '{continuationTask.Exception.Message}'.", ConsoleColor.Red );
+                                      CONSOLE.WriteLine( $"'{t.Exception.GetType().Name}': '{t.Exception.Message}'.", ConsoleColor.Red );
                                   }
-                                  else if ( !continuationTask.IsCanceled )
+                                  else if ( !t.IsCanceled )
                                   {
                                       Interlocked.Increment( ref successPartNumber );
 
-                                      var downloadPart = continuationTask.Result;
+                                      var downloadPart = t.Result;
 #if DEBUG
                                       CONSOLE.WriteLine( $"end download part: {downloadPart}." ); 
 #endif
@@ -390,7 +337,7 @@ namespace m3u8
                                           canExtractPartEvent.Set();
                                       }
                                   }
-                              } );
+                              });
                         }
                     }, ct );
 
@@ -454,7 +401,6 @@ namespace m3u8
                         var downloadPartsSuccessCount = 0;
                         var downloadPartsErrorCount   = 0;
                         var totalBytes = 0;
-                        //var dpn = -1;
 
                         var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.AbsolutePath ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
                         using ( var fs = File.OpenWrite( outputFileName ) )
@@ -463,18 +409,7 @@ namespace m3u8
 
                             foreach ( var downloadPart in downloadParts )
                             {
-                                #region comm
-                                //if ( dpn < downloadPart.OrderNumber )
-                                //{
-                                //    dpn = downloadPart.OrderNumber;
-                                //}
-                                //else
-                                //{
-                                //    Debugger.Break();
-                                //} 
-                                #endregion
-
-                                if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )
+                                if ( downloadPart.Error != null )
                                 {
                                     downloadPartsErrorCount++;
                                     continue;
@@ -491,14 +426,14 @@ namespace m3u8
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadPartsSuccessCount} of {(downloadPartsErrorCount + downloadPartsSuccessCount)}\r\n" + 
                                            $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {(totalBytes >> 20).ToString( "0,0" )} mb)\r\n" );
 
-                    }/*, cts.Token*/ )
-                    .ContinueWith( (continuationTask) =>
+                    })
+                    .ContinueWith( t =>
                     {
-                        if ( continuationTask.IsFaulted )
+                        if ( t.IsFaulted )
                         {
-                            CONSOLE.WriteLineError( "ERROR: " + continuationTask.Exception );
+                            CONSOLE.WriteLineError( "ERROR: " + t.Exception );
                         }
-                    } );
+                    });
 
                     #region [.wait for keyboard break.]
                     task.WaitForTaskEndsOrKeyboardBreak( cts );
@@ -520,18 +455,8 @@ namespace m3u8
                     m3u8FileUrl        = m3u8FileUrl,
                     OutputFileName     = outputFileName,
                     ResponseStepAction = new m3u8_processor.ResponseStepActionDelegate( t =>
-                    {
-                        var msg = $"{t.Part.OrderNumber} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'";
-                        CONSOLE.WriteLine( msg );
-                        //if ( t.Error != null )
-                        //{
-                        //    CONSOLE.WriteLine( msg + $" => {t.Error.Message}", ConsoleColor.Red );
-                        //}
-                        //else
-                        //{
-                        //    CONSOLE.WriteLine( msg ); 
-                        //}
-                    }),
+                        CONSOLE.WriteLine( $"{t.Part.OrderNumber} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" )
+                    ),
                 };
 
                 await m3u8_processor.DownloadFileAndSave_Async( p );
@@ -652,7 +577,7 @@ namespace m3u8
     {
         public static void WriteLine( string text, ConsoleColor? foregroundColor = null )
         {
-            lock (typeof(CONSOLE))
+            lock ( typeof(CONSOLE) )
             {
                 if ( foregroundColor.HasValue )
                 {
@@ -669,7 +594,7 @@ namespace m3u8
         }
         public static void WriteLineError( string text )
         {
-            lock (typeof(CONSOLE))
+            lock ( typeof(CONSOLE) )
             {
                 var fc = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -678,10 +603,7 @@ namespace m3u8
             }
         }
 
-        public static string ReadLine()
-        {
-            return (Console.ReadLine());
-        }
+        public static string ReadLine() => Console.ReadLine();
     }
 
     /// <summary>
@@ -704,19 +626,10 @@ namespace m3u8
     /// </summary>
     internal static class _Extensions
     {
-        public static bool IsNullOrEmpty( this string s )
-        {
-            return (string.IsNullOrEmpty( s ));
-        }
-        public static bool IsNullOrWhiteSpace( this string s )
-        {
-            return (string.IsNullOrWhiteSpace( s ));
-        }
+        public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
+        public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
 
-        public static bool AnyEx< T >( this IEnumerable< T > seq )
-        {
-            return (seq != null && seq.Any());
-        }
+        public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
 
         public static void WaitForTaskEndsOrKeyboardBreak( this Task task, CancellationTokenSource cts )
         {

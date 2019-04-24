@@ -176,5 +176,53 @@ namespace m3u8.Properties {
                 this["ShowOnlyRequestRowsWithErrors"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool StoreMainFormPosition {
+            get {
+                return ((bool)(this["StoreMainFormPosition"]));
+            }
+            set {
+                this["StoreMainFormPosition"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MainFormPositionJson {
+            get {
+                return ((string)(this["MainFormPositionJson"]));
+            }
+            set {
+                this["MainFormPositionJson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ChangeOutputFileFormPositionJson {
+            get {
+                return ((string)(this["ChangeOutputFileFormPositionJson"]));
+            }
+            set {
+                this["ChangeOutputFileFormPositionJson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FileNameExcludesWordsEditorPositionJson {
+            get {
+                return ((string)(this["FileNameExcludesWordsEditorPositionJson"]));
+            }
+            set {
+                this["FileNameExcludesWordsEditorPositionJson"] = value;
+            }
+        }
     }
 }

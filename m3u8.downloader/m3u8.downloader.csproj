@@ -58,6 +58,7 @@
     </Compile>
     <Compile Include="Infrastructure\DefaultConnectionLimitSaver.cs" />
     <Compile Include="Infrastructure\Extensions.cs" />
+    <Compile Include="Infrastructure\FormPositionStorer.cs" />
     <Compile Include="Infrastructure\NameCleaner.cs" />
     <Compile Include="Infrastructure\WinApi.cs" />
     <Compile Include="UI\FileNameExcludesWordsEditor.cs">
@@ -146,12 +147,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\settings.16.ico" />
-    <None Include="Resources\uncheck.16.ico" />
+    <None Include="Resources\settings.ico" />
+    <None Include="Resources\unchecked.ico" />
     <None Include="Resources\m3u8.png" />
     <None Include="Resources\m3u8_148x166.ico" />
     <None Include="Resources\m3u8_32x36.ico" />
-    <None Include="Resources\check.16.ico" />
+    <None Include="Resources\checked.ico" />
     <Content Include="Resources\m3u.jpg" />
     <Content Include="Resources\roller\i1.ico" />
     <Content Include="Resources\roller\i2.ico" />
