@@ -26,6 +26,8 @@
             this.uniqueUrlsOnlyCheckBox = new System.Windows.Forms.CheckBox();
             this.only4NotRunLabel1 = new System.Windows.Forms.Label();
             this.only4NotRunLabel2 = new System.Windows.Forms.Label();
+            this.outputFileExtensionLabel = new System.Windows.Forms.Label();
+            this.outputFileExtensionTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.attemptRequestCountByPartNUD)).BeginInit();
             this.gb1.SuspendLayout();
             this.SuspendLayout();
@@ -46,9 +48,9 @@
             this.okButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.okButton.Location = new System.Drawing.Point(65, 245);
+            this.okButton.Location = new System.Drawing.Point(65, 275);
             this.okButton.Size = new System.Drawing.Size(75, 23);
-            this.okButton.TabIndex = 5;
+            this.okButton.TabIndex = 8;
             this.okButton.Text = "Ok";
             this.okButton.UseVisualStyleBackColor = true;
             // 
@@ -58,9 +60,9 @@
             this.cancelButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cancelButton.Location = new System.Drawing.Point(146, 245);
+            this.cancelButton.Location = new System.Drawing.Point(146, 275);
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 6;
+            this.cancelButton.TabIndex = 9;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
@@ -94,7 +96,7 @@
             this.uniqueUrlsOnlyCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.uniqueUrlsOnlyCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.uniqueUrlsOnlyCheckBox.Location = new System.Drawing.Point(43, 90);
-            this.uniqueUrlsOnlyCheckBox.TabIndex = 3;
+            this.uniqueUrlsOnlyCheckBox.TabIndex = 4;
             this.uniqueUrlsOnlyCheckBox.Text = "use unique urls only";
             this.uniqueUrlsOnlyCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -102,9 +104,9 @@
             // 
             this.gb1.Controls.Add(this.showOnlyRequestRowsWithErrorsCheckBox);
             this.gb1.Controls.Add(this.showDownloadStatisticsInMainFormTitleCheckBox);            
-            this.gb1.Location = new System.Drawing.Point(13, 125);
+            this.gb1.Location = new System.Drawing.Point(13, 155);
             this.gb1.Size = new System.Drawing.Size(261, 110);
-            this.gb1.TabIndex = 4;
+            this.gb1.TabIndex = 7;
             this.gb1.TabStop = false;
             this.gb1.Text = "UI / download log UI";
             // 
@@ -115,7 +117,7 @@
             this.showOnlyRequestRowsWithErrorsCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.showOnlyRequestRowsWithErrorsCheckBox.Location = new System.Drawing.Point(30, 30);
             this.showOnlyRequestRowsWithErrorsCheckBox.Size = new System.Drawing.Size(185, 17);
-            this.showOnlyRequestRowsWithErrorsCheckBox.TabIndex = 2;
+            this.showOnlyRequestRowsWithErrorsCheckBox.TabIndex = 0;
             this.showOnlyRequestRowsWithErrorsCheckBox.Text = "show only request rows with errors";
             this.showOnlyRequestRowsWithErrorsCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -126,7 +128,7 @@
             this.showDownloadStatisticsInMainFormTitleCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.showDownloadStatisticsInMainFormTitleCheckBox.Location = new System.Drawing.Point(30, 60);
             this.showDownloadStatisticsInMainFormTitleCheckBox.Size = new System.Drawing.Size(185, 17);
-            this.showDownloadStatisticsInMainFormTitleCheckBox.TabIndex = 3;
+            this.showDownloadStatisticsInMainFormTitleCheckBox.TabIndex = 1;
             this.showDownloadStatisticsInMainFormTitleCheckBox.Text = "show download statistics in main\r\nwindow title";
             this.showDownloadStatisticsInMainFormTitleCheckBox.UseVisualStyleBackColor = true;
             // 
@@ -136,7 +138,7 @@
             this.only4NotRunLabel1.ForeColor = System.Drawing.Color.DarkGoldenrod;
             this.only4NotRunLabel1.Location = new System.Drawing.Point(7, 29);
             this.only4NotRunLabel1.Size = new System.Drawing.Size(119, 13);
-            this.only4NotRunLabel1.TabIndex = 7;
+            this.only4NotRunLabel1.TabIndex = 10;
             this.only4NotRunLabel1.Text = "(only for not-running downloads)";
             this.only4NotRunLabel1.Visible = false;
             // 
@@ -146,16 +148,37 @@
             this.only4NotRunLabel2.ForeColor = System.Drawing.Color.DarkGoldenrod;
             this.only4NotRunLabel2.Location = new System.Drawing.Point(7, 71);
             this.only4NotRunLabel2.Size = new System.Drawing.Size(119, 13);
-            this.only4NotRunLabel2.TabIndex = 8;
+            this.only4NotRunLabel2.TabIndex = 11;
             this.only4NotRunLabel2.Text = "(only for not-running downloads)";
             this.only4NotRunLabel2.Visible = false;
+            // 
+            // outputFileExtensionLabel
+            // 
+            this.outputFileExtensionLabel.AutoSize = true;
+            this.outputFileExtensionLabel.Location = new System.Drawing.Point(20, 120);
+            this.outputFileExtensionLabel.Size = new System.Drawing.Size(117, 13);
+            this.outputFileExtensionLabel.TabIndex = 5;
+            this.outputFileExtensionLabel.Text = "default output file extension:";
+            // 
+            // outputFileExtensionTextBox
+            // 
+            this.outputFileExtensionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.outputFileExtensionTextBox.Location = new System.Drawing.Point(167, 120);
+            this.outputFileExtensionTextBox.Size = new System.Drawing.Size(89, 18);
+            this.outputFileExtensionTextBox.TabIndex = 6;
+            this.outputFileExtensionTextBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 11.5F );
+            this.outputFileExtensionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.outputFileExtensionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.outputFileExtensionTextBox.WordWrap = false;
             // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(286, 280);
+            this.ClientSize = new System.Drawing.Size(286, 310);
+            this.Controls.Add(this.outputFileExtensionLabel);
+            this.Controls.Add(this.outputFileExtensionTextBox);
             this.Controls.Add(this.only4NotRunLabel2);
             this.Controls.Add(this.only4NotRunLabel1);
             this.Controls.Add(this.gb1);
@@ -193,5 +216,7 @@
         private System.Windows.Forms.CheckBox uniqueUrlsOnlyCheckBox;
         private System.Windows.Forms.Label only4NotRunLabel1;
         private System.Windows.Forms.Label only4NotRunLabel2;
+        private System.Windows.Forms.Label outputFileExtensionLabel;
+        private System.Windows.Forms.TextBox outputFileExtensionTextBox;
     }
 }

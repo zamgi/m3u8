@@ -37,6 +37,7 @@ namespace m3u8.download.manager
             {
                 settings.Upgrade();
                 settings._IsUpgradedInThisVersion = true;
+                settings.MaxCrossDownloadInstance = settings.MaxCrossDownloadInstanceSaved;
                 settings.SaveNoThrow();
             }
         }

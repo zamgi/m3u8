@@ -607,67 +607,6 @@ namespace m3u8.download.manager.ui
             return (task);
         }
 
-        private static string AddOutputFileExtensionIfMissing( string outputFileName )
-        {
-            var st = Settings.Default;
-            if ( !outputFileName.IsNullOrEmpty() && !outputFileName.EndsWith( st.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
-            {
-                if ( st.OutputFileExtension.HasFirstCharNotDot() )
-                {
-                    outputFileName += '.';
-                }
-                outputFileName += st.OutputFileExtension;
-            }
-            return (outputFileName);
-        }
-        private static bool TryGetOutputFileNameByUrl( string m3u8FileUrlText, out string outputFileName )
-        {
-            try
-            {
-                var m3u8FileUrl = new Uri( m3u8FileUrlText );
-
-                var fn = PathnameCleaner.CleanPathnameAndFilename( Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath ) ).TrimStart( '-' );
-                if ( !fn.IsNullOrEmpty() )
-                {
-                    fn = NameCleaner.Clean( fn );
-                    fn = AddOutputFileExtensionIfMissing( fn );
-
-                    outputFileName = fn;
-                    return (!outputFileName.IsNullOrEmpty());
-                }
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
-
-            outputFileName = default;
-            return (false);
-        }
-        private static bool TryGetOutputFileName( string inputOutputFileName, out string outputFileName )
-        {
-            var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName ).TrimStart( '-' );
-            if ( !fn.IsNullOrWhiteSpace() )
-            {
-                fn = Path.GetFileName( fn );
-                var ext = Path.GetExtension( fn );
-                if ( ext.IsNullOrEmpty() )
-                {
-                    fn = AddOutputFileExtensionIfMissing( Path.GetFileNameWithoutExtension( fn ) );
-                }
-                #region comm
-                //if ( !ext.Equals( Settings.Default.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
-                //{
-                //    fn += Settings.Default.OutputFileExtension;
-                //} 
-                #endregion
-                outputFileName = fn;
-                return (!outputFileName.IsNullOrEmpty());
-            }
-            outputFileName = default;
-            return (false);
-        }
-
         #region [.allowed Command by current status.]
         [M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Created)  ||
                                                                                                           (status == DownloadStatus.Paused)   ||
@@ -718,7 +657,7 @@ namespace m3u8.download.manager.ui
         private void AddNewDownload( in (string m3u8FileUrl, bool autoStartDownload) p, string additionalTitle4AddNewDownloadForm = null )
         {
             if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() &&
-                 TryGetOutputFileNameByUrl( p.m3u8FileUrl, out var outputFileName ) 
+                 FileNameCleaner.TryGetOutputFileNameByUrl( p.m3u8FileUrl, out var outputFileName ) 
                )
             {
                 if ( _SettingsController.UniqueUrlsOnly && !_DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
@@ -734,7 +673,7 @@ namespace m3u8.download.manager.ui
             {
                 if ( f.ShowDialog( this ) == DialogResult.OK )
                 {
-                    var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, AddOutputFileExtensionIfMissing( f.OutputFileName ), f.OutputDirectory) );
+                    var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory()) );
                     downloadListUC.SelectDownloadRow( row );
                     if ( f.AutoStartDownload )
                     {
@@ -954,7 +893,7 @@ namespace m3u8.download.manager.ui
         private void _ChangeOutputFileForm_FormClosed( object sender, FormClosedEventArgs e )
         {
             if ( (e.CloseReason == CloseReason.UserClosing) && (_ChangeOutputFileForm.DialogResult == DialogResult.OK) &&
-                 TryGetOutputFileName( _ChangeOutputFileForm.OutputFileName, out var outputFileName )
+                 FileNameCleaner.TryGetOutputFileName( _ChangeOutputFileForm.OutputFileName, out var outputFileName )
                )
             {
                 _ChangeOutputFileForm_Row?.SetOutputFileName( outputFileName );

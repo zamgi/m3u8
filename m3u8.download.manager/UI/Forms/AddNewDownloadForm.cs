@@ -125,13 +125,13 @@ namespace m3u8.download.manager.ui
                     m3u8FileUrlTextBox.FocusAndBlinkBackColor();
                 }
                 else
-                if ( this.OutputFileName.IsNullOrWhiteSpace() )
+                if ( this.GetOutputFileName().IsNullOrWhiteSpace() )
                 {
                     e.Cancel = true;
                     outputFileNameTextBox.FocusAndBlinkBackColor();
                 }
                 else
-                if ( this.OutputDirectory.IsNullOrWhiteSpace() )
+                if ( this.GetOutputDirectory().IsNullOrWhiteSpace() )
                 {
                     e.Cancel = true;
                     outputDirectoryTextBox.FocusAndBlinkBackColor();
@@ -172,7 +172,7 @@ namespace m3u8.download.manager.ui
 
         #region [.public methods.]
         public bool   AutoStartDownload => !_DownloadLater;
-        public string M3u8FileUrl
+        public  string M3u8FileUrl
         {
             get => m3u8FileUrlTextBox.Text.Trim();
             private set
@@ -184,10 +184,12 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public string OutputFileName
+        public  string GetOutputFileName() => FileNameCleaner.GetOutputFileName( this.OutputFileName );
+        public  string GetOutputDirectory() => this.OutputDirectory;
+        private string OutputFileName
         {
             get => outputFileNameTextBox.Text.Trim();
-            private set
+            set
             {
                 value = value?.Trim();
                 if ( outputFileNameTextBox.Text.Trim() != value )
@@ -198,10 +200,10 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public string OutputDirectory
+        private string OutputDirectory
         {
             get => outputDirectoryTextBox.Text.Trim();
-            private set
+            set
             {
                 value = value?.Trim();
                 if ( outputDirectoryTextBox.Text.Trim() != value )
@@ -210,15 +212,15 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public string GetOutputFullFileName() => Path.Combine( this.OutputDirectory, this.OutputFileName );
         #endregion
 
         #region [.text-boxes.]
+        private const int TEXTBOX_MILLISECONDS_DELAY = 150;
         private string _Last_m3u8FileUrlText;
+        private string _LastManualInputed_outputFileNameText;
+
         private async void m3u8FileUrlTextBox_TextChanged( object sender, EventArgs e )
         {
-            const int MILLISECONDS_DELAY = 150;
-
             var m3u8FileUrlText = this.M3u8FileUrl;
             if ( (_Last_m3u8FileUrlText == m3u8FileUrlText) && !this.OutputFileName.IsNullOrWhiteSpace() )
             {
@@ -229,53 +231,13 @@ namespace m3u8.download.manager.ui
                 return;
             }
             _Last_m3u8FileUrlText = m3u8FileUrlText;
-            
-            this.OutputFileName = null;
-            try
-            {                
-                var m3u8FileUrl = new Uri( m3u8FileUrlText );
 
-                var outputFileName = PathnameCleaner.CleanPathnameAndFilename( Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath ) ).TrimStart( '-' );
-                if ( outputFileName.IsNullOrEmpty() ) return;
-                this.OutputFileName = outputFileName;
-
-                await Task.Delay( MILLISECONDS_DELAY ); //(_autoStartDownload ? 0 : MILLISECONDS_DELAY)
-                outputFileName = NameCleaner.Clean( outputFileName );
-                this.OutputFileName = outputFileName;
-
-                await Task.Delay( MILLISECONDS_DELAY ); //(_autoStartDownload ? 0 : MILLISECONDS_DELAY)
-                if ( !outputFileName.EndsWith( _Settings.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
-                {
-                    if ( _Settings.OutputFileExtension.HasFirstCharNotDot() )
-                    {
-                        outputFileName += '.';
-                    }
-                    outputFileName += _Settings.OutputFileExtension;
-                }
-                this.OutputFileName = outputFileName;
-
-                #region comm
-                //#region [.check 'autoStartDownload'.]
-                //if ( _autoStartDownload )
-                //{
-                //    _autoStartDownload = false;
-                //    if ( !outputFileName.IsNullOrWhiteSpace() )
-                //    {
-                //        var fullOutputFileName = Path.Combine( _Settings.OutputFileDirectory, outputFileName );
-                //        m3u8FileWholeLoadAndSave( fullOutputFileName );
-                //    }
-                //}
-                //#endregion 
-                #endregion
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
+            await FileNameCleaner.SetOutputFileNameByUrl_Async( m3u8FileUrlText, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
         }
 
-        private string _LastManualInputed_outputFileNameText;
-        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e ) => _LastManualInputed_outputFileNameText = this.OutputFileName;
+        private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;
+        private async void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
+            => _LastManualInputed_outputFileNameText = await FileNameCleaner.SetOutputFileName_Async( this.OutputFileName, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
 
         private void outputFileNameClearButton_Click( object sender, EventArgs e )
         {
@@ -288,7 +250,7 @@ namespace m3u8.download.manager.ui
                                                      DefaultExt       = _Settings.OutputFileExtension,
                                                      AddExtension     = true, } )
             {
-                sfd.FileName = PathnameCleaner.CleanPathnameAndFilename( this.OutputFileName ).TrimStart( '-' );
+                sfd.FileName = FileNameCleaner.GetOutputFileName( this.OutputFileName );
                 if ( sfd.ShowDialog( this ) == DialogResult.OK )
                 {
                     var outputFullFileName = sfd.FileName;

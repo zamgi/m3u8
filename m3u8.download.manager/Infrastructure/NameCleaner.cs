@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
+using m3u8.download.manager.Properties;
 
 namespace m3u8.download.manager.infrastructure
 {
@@ -117,7 +120,8 @@ namespace m3u8.download.manager.infrastructure
 
         public static string CleanPathnameAndFilename( string pathnameAndFilename
             , string replacedPathChar = "--"
-            , char   replacedNameChar = '-' )
+            , char   replacedNameChar = '-'
+            , bool   trimStartDashes  = true )
         {            
             if ( pathnameAndFilename != null )
             {
@@ -149,8 +153,135 @@ namespace m3u8.download.manager.infrastructure
                     }
                 }
                 pathnameAndFilename = sb.ToString();
+                if ( trimStartDashes )
+                {
+                    pathnameAndFilename = pathnameAndFilename.TrimStart( '-' );
+                }
             }
             return (pathnameAndFilename);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal static class FileNameCleaner
+    {
+        private static Settings _Settings;
+
+        static FileNameCleaner() => _Settings = Settings.Default;
+
+        private static string AddOutputFileExtensionIfMissing( this string outputFileName )
+        {
+            if ( !outputFileName.IsNullOrEmpty() )
+            {
+                if ( !outputFileName.EndsWith( _Settings.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
+                {
+                    if ( _Settings.OutputFileExtension.HasFirstCharNotDot() )
+                    {
+                        outputFileName += '.';
+                    }
+                    outputFileName += _Settings.OutputFileExtension;
+                }
+            }
+            return (outputFileName);
+        }
+        private static string GetFileName_NoThrow( this string path )
+        {
+            try
+            {
+                return (Path.GetFileName( path ));
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+            return (null);
+        }
+
+        public static bool TryGetOutputFileNameByUrl( string m3u8FileUrlText, out string outputFileName )
+        {
+            try
+            {
+                var m3u8FileUrl = new Uri( m3u8FileUrlText );
+                var inputOutputFileName = Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath );
+
+                var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
+                if ( !fn.IsNullOrWhiteSpace() )
+                {
+                    outputFileName = NameCleaner.Clean( fn )
+                                                .AddOutputFileExtensionIfMissing();
+                    return (!outputFileName.IsNullOrWhiteSpace());
+                }
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+
+            outputFileName = default;
+            return (false);
+        }
+        public static async Task< string > SetOutputFileNameByUrl_Async( string m3u8FileUrlText, Action< string > setOutputFileNameAction, int millisecondsDelay )
+        {
+            setOutputFileNameAction( null );
+            try
+            {                
+                var m3u8FileUrl = new Uri( m3u8FileUrlText );
+                var inputOutputFileName = Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath );
+
+                var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
+                if ( !fn.IsNullOrWhiteSpace() )
+                {
+                    setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
+
+                    fn = NameCleaner.Clean( fn );
+                    setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
+
+                    fn = AddOutputFileExtensionIfMissing( fn );
+                    setOutputFileNameAction( fn );
+
+                    return (fn);
+                }
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+            return (null);
+        }
+
+        public static string GetOutputFileName( string inputOutputFileName ) => (TryGetOutputFileName( inputOutputFileName, out string outputFileName ) ? outputFileName : null);
+        public static bool TryGetOutputFileName( string inputOutputFileName, out string outputFileName )
+        {
+            var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
+            if ( !fn.IsNullOrWhiteSpace() )
+            {
+                outputFileName = fn.GetFileName_NoThrow()
+                                   .AddOutputFileExtensionIfMissing();
+                return (!outputFileName.IsNullOrWhiteSpace());
+            }
+            outputFileName = default;
+            return (false);
+        }
+        public static async Task< string > SetOutputFileName_Async( string inputOutputFileName, Action< string > setOutputFileNameAction, int millisecondsDelay )
+        {
+            setOutputFileNameAction( null );
+
+            var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
+            if ( !fn.IsNullOrWhiteSpace() )
+            {
+                setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
+
+                fn = fn.GetFileName_NoThrow();
+                setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
+
+                fn = AddOutputFileExtensionIfMissing( fn );
+                setOutputFileNameAction( fn );
+
+                return (fn);
+            }
+            return (null);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -19,10 +20,10 @@ namespace m3u8.download.manager.ui
         public SettingsForm( DownloadController dc ) : this()
         {
             _DownloadController = dc ?? throw (new ArgumentNullException( nameof(dc) ));
-            _DownloadController.IsDownloadingChanged -= _DownloadController_IsDownloadingChanged;
-            _DownloadController.IsDownloadingChanged += _DownloadController_IsDownloadingChanged;
+            _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
+            _DownloadController.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
 
-            _DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
+            DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
         }
 
         protected override void Dispose( bool disposing )
@@ -30,13 +31,24 @@ namespace m3u8.download.manager.ui
             if ( disposing )
             {
                 components?.Dispose();
-                _DownloadController.IsDownloadingChanged -= _DownloadController_IsDownloadingChanged;
+                _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
             }
             base.Dispose( disposing );
         }
         #endregion
 
-        #region [.public.]
+        protected override void OnClosing( CancelEventArgs e )
+        {
+            base.OnClosing( e );
+
+            if ( (DialogResult == DialogResult.OK) && this.OutputFileExtension.IsNullOrEmpty() )
+            {
+                e.Cancel = true;
+                outputFileExtensionTextBox.FocusAndBlinkBackColor();
+            }
+        }
+
+        #region [.public props.]
         public int      AttemptRequestCountByPart
         {
             get => Convert.ToInt32( attemptRequestCountByPartNUD.Value );
@@ -62,10 +74,25 @@ namespace m3u8.download.manager.ui
             get => uniqueUrlsOnlyCheckBox.Checked;
             set => uniqueUrlsOnlyCheckBox.Checked = value;
         }
+        public string   OutputFileExtension
+        {
+            get => CorrectOutputFileExtension( outputFileExtensionTextBox.Text );
+            set => outputFileExtensionTextBox.Text = CorrectOutputFileExtension( value );
+        }
         #endregion
 
         #region [.private methods.]
-        private void _DownloadController_IsDownloadingChanged( bool isDownloading )
+        private static string CorrectOutputFileExtension( string ext )
+        {
+            ext = ext?.Trim();
+            if ( !ext.IsNullOrEmpty() && ext.HasFirstCharNotDot() )
+            {
+                ext = '.' + ext;
+            }
+            return (ext);
+        }
+
+        private void DownloadController_IsDownloadingChanged( bool isDownloading )
         {
             only4NotRunLabel1.Visible =
                 only4NotRunLabel2.Visible = isDownloading;

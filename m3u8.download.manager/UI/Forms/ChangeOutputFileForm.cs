@@ -1,7 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 
@@ -22,11 +25,24 @@ namespace m3u8.download.manager.ui
             get => outputFileNameTextBox.Text.Trim();
             set
             {
+                value = value?.Trim();
                 if ( outputFileNameTextBox.Text.Trim() != value )
                 {
+                    outputFileNameTextBox.TextChanged -= outputFileNameTextBox_TextChanged;
                     outputFileNameTextBox.Text = value;
+                    outputFileNameTextBox.TextChanged += outputFileNameTextBox_TextChanged;
                 }
             }
+        }
+
+        protected override void Dispose( bool disposing )
+        {
+            if ( disposing )
+            {
+                components?.Dispose();
+                CancelAndDispose_Cts_outputFileNameTextBox_TextChanged();
+            }
+            base.Dispose( disposing );
         }
         #endregion
 
@@ -56,10 +72,10 @@ namespace m3u8.download.manager.ui
 
             if ( DialogResult == DialogResult.OK )
             {
-                var outputFileName = OutputFileName;
-                e.Cancel = (outputFileName.IsNullOrWhiteSpace() || (Path.GetExtension( outputFileName ) == outputFileName));
-                if ( e.Cancel )
+                var fn = FileNameCleaner.GetOutputFileName( this.OutputFileName );
+                if ( fn.IsNullOrWhiteSpace() || (Path.GetExtension( fn ) == fn) )
                 {
+                    e.Cancel = true;
                     outputFileNameTextBox.FocusAndBlinkBackColor();
                 }
             }
@@ -91,8 +107,35 @@ namespace m3u8.download.manager.ui
 
         private void outputFileNameClearButton_Click( object sender, EventArgs e )
         {
-            OutputFileName = null;
+            this.OutputFileName = null;
             outputFileNameTextBox.Focus();
+        }
+        
+        private CancellationTokenSource _Cts_outputFileNameTextBox_TextChanged;
+        private void CancelAndDispose_Cts_outputFileNameTextBox_TextChanged()
+        {
+            if ( _Cts_outputFileNameTextBox_TextChanged != null )
+            {
+                _Cts_outputFileNameTextBox_TextChanged.Cancel();
+                _Cts_outputFileNameTextBox_TextChanged.Dispose();
+                _Cts_outputFileNameTextBox_TextChanged = null;
+            }
+        }
+        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
+        {
+            CancelAndDispose_Cts_outputFileNameTextBox_TextChanged();
+
+            _Cts_outputFileNameTextBox_TextChanged = new CancellationTokenSource();
+            Task.Delay( 1_000, _Cts_outputFileNameTextBox_TextChanged.Token )
+                .ContinueWith( async t =>
+                {
+                    if ( t.IsCanceled )
+                        return;
+
+                    await FileNameCleaner.SetOutputFileName_Async( this.OutputFileName,
+                                                                   outputFileName => this.OutputFileName = outputFileName,
+                                                                   millisecondsDelay: 150 );
+                }, TaskScheduler.FromCurrentSynchronizationContext() );
         }
         #endregion
     }

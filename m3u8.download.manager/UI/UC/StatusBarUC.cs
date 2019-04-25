@@ -168,6 +168,7 @@ namespace m3u8.download.manager.ui
                 f.ShowOnlyRequestRowsWithErrors         = _Settings.ShowOnlyRequestRowsWithErrors;
                 f.UniqueUrlsOnly                        = _Settings.UniqueUrlsOnly;
                 f.ShowDownloadStatisticsInMainFormTitle = _Settings.ShowDownloadStatisticsInMainFormTitle;
+                f.OutputFileExtension                   = _Settings.OutputFileExtension;
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
@@ -176,6 +177,7 @@ namespace m3u8.download.manager.ui
                     _Settings.ShowOnlyRequestRowsWithErrors         = f.ShowOnlyRequestRowsWithErrors;
                     _Settings.UniqueUrlsOnly                        = f.UniqueUrlsOnly;
                     _Settings.ShowDownloadStatisticsInMainFormTitle = f.ShowDownloadStatisticsInMainFormTitle;
+                    _Settings.OutputFileExtension                   = f.OutputFileExtension;
                     _Settings.SaveNoThrow();
                     if ( _SettingsController == null )
                     {
