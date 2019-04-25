@@ -1,0 +1,321 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using m3u8.ext;
+using M = System.Runtime.CompilerServices.MethodImplAttribute;
+using O = System.Runtime.CompilerServices.MethodImplOptions;
+
+namespace m3u8
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    internal interface I_download_threads_semaphore : IDisposable
+    {
+        bool UseCrossDownloadInstanceParallelism { get; }
+
+        void Wait( CancellationToken ct );
+        void Release();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal interface I_cross_download_instance_semaphore : IDisposable
+    {
+        bool IsNeedReacquire { get; }
+        void WaitForReacquire( CancellationToken ct, Action waitingForOtherDownloadInstanceFinished, int delayTimeout );
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    internal interface I_cross_download_instance_factory
+    {
+        I_cross_download_instance_semaphore CreateWithWait( CancellationToken ct, Action waitingForOtherDownloadInstanceFinished, int delayTimeout );
+    }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal static class m3u8_processor_v2
+    {
+        private static IEnumerable< m3u8_part_ts > download_m3u8File_parts_parallel( DownloadPartsAndSaveInputParams ip
+            , I_cross_download_instance_semaphore crossDownloadInstanceSemaphore )
+        {
+            var ct = (ip.Cts?.Token).GetValueOrDefault( CancellationToken.None );
+            var m3u8File    = ip.m3u8File;
+            var baseAddress = m3u8File.BaseAddress;
+            var totalPatrs  = m3u8File.Parts.Count;
+            var successReceivedPartCount = 0;
+            var failedReceivedPartCount  = 0;
+
+            ip.ResponseStepAction?.Invoke( new ResponseStepActionParams( totalPatrs ) );
+
+            var expectedPartNumber = m3u8File.Parts.FirstOrDefault().OrderNumber;
+            var maxPartNumber      = m3u8File.Parts.LastOrDefault ().OrderNumber;
+            var sourceQueue        = new Queue< m3u8_part_ts >( m3u8File.Parts );
+            var downloadPartsSet   = new SortedSet< m3u8_part_ts >( default(m3u8_part_ts_comparer) );
+            
+            using ( var innerCts  = new CancellationTokenSource() )
+            using ( var joinedCts = CancellationTokenSource.CreateLinkedTokenSource( ct, innerCts.Token ) )
+            using ( var canExtractPartEvent = new AutoResetEvent( false ) )
+            {
+                //-1-//
+                var task_download = Task.Run( () =>
+                {
+                    for ( var n = 1; sourceQueue.Count != 0; n++ )
+                    {
+                        #region [.check 'waitIfPausedEvent'.]
+                        if ( !ip.WaitIfPausedEvent.IsSet )
+                        {
+                            ip.WaitingIfPaused?.Invoke();
+                            ip.WaitIfPausedEvent.Wait( joinedCts.Token );
+                        }
+                        #endregion
+
+                        #region [.check 'crossDownloadInstanceSemaphore'.]
+                        if ( crossDownloadInstanceSemaphore.IsNeedReacquire )
+                        {
+                            crossDownloadInstanceSemaphore.WaitForReacquire(
+                                joinedCts.Token, ip.WaitingForOtherDownloadInstanceFinished, delayTimeout: 1_000 );
+                        }
+                        #endregion
+
+                        ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
+                        var part = sourceQueue.Dequeue();
+
+                        var rq = RequestStepActionParams.CreateSuccess( totalPatrs, n, part );
+                        ip.RequestStepAction?.Invoke( rq );
+
+                        ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
+                            .ContinueWith( continuationTask =>
+                            {
+                                var rsp = new ResponseStepActionParams( totalPatrs );
+
+                                if ( continuationTask.IsFaulted )
+                                {
+                                    Interlocked.Increment( ref expectedPartNumber );
+
+                                    part.SetError( continuationTask.Exception );
+
+                                    rsp.SuccessReceivedPartCount = successReceivedPartCount;
+                                    rsp.FailedReceivedPartCount = Interlocked.Increment( ref failedReceivedPartCount );
+                                    rsp.Part = part;
+
+                                    ip.ResponseStepAction?.Invoke( rsp );
+
+                                    innerCts.Cancel();
+                                }
+                                else if ( !continuationTask.IsCanceled )
+                                {
+                                    var downloadPart = continuationTask.Result;
+                                    if ( downloadPart.Error != null )
+                                    {
+                                        rsp.SuccessReceivedPartCount = successReceivedPartCount;
+                                        rsp.FailedReceivedPartCount = Interlocked.Increment( ref failedReceivedPartCount );
+                                    }
+                                    else
+                                    {
+                                        rsp.SuccessReceivedPartCount = Interlocked.Increment( ref successReceivedPartCount );
+                                        rsp.FailedReceivedPartCount = failedReceivedPartCount;
+                                        rsp.BytesLength = downloadPart.Bytes.Length;
+                                    }
+                                    rsp.Part = downloadPart;
+                                    ip.ResponseStepAction?.Invoke( rsp );
+
+                                    lock ( downloadPartsSet )
+                                    {
+                                        downloadPartsSet.Add( downloadPart );
+                                        canExtractPartEvent.Set();
+                                    }
+                                }
+                            }, /*ct*/ joinedCts.Token );
+                    }
+                }, /*ct*/ joinedCts.Token );
+
+                //-2-//
+                for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.MaxDegreeOfParallelism ) );
+                          expectedPartNumber <= maxPartNumber; )
+                {
+                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, } );
+                    if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
+                        break;
+                    if ( idx != 0 ) //[canExtractPartEvent := 0]
+                        continue;
+
+                    lock ( downloadPartsSet )
+                    {
+                        for ( ; downloadPartsSet.Count != 0; )
+                        {
+                            var min_part = downloadPartsSet.Min;
+                            if ( expectedPartNumber == min_part.OrderNumber )
+                            {
+                                downloadPartsSet.Remove( min_part );
+
+                                Interlocked.Increment( ref expectedPartNumber );
+
+                                ip.DownloadThreadsSemaphore.Release();
+
+                                localReadyParts.Enqueue( min_part );
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    for ( ; localReadyParts.Count != 0; )
+                    {
+                        var part = localReadyParts.Dequeue();
+                        yield return (part);
+                    }
+                }
+
+                //-3.0-//
+                if ( innerCts.IsCancellationRequested )
+                {
+                    throw (new m3u8_Exception( "Canceled after part download error" ));
+                }
+
+                //-3-//
+                task_download.Wait();
+            }
+
+            //-4-//
+            ct.ThrowIfCancellationRequested();
+        }
+        //-----------------------------------------------------------------------------//
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct RequestStepActionParams
+        {
+            public int          TotalPartCount  { get; private set; }
+            public int          PartOrderNumber { get; private set; }
+            public m3u8_part_ts Part            { get; private set; }
+            public Exception    Error           { get; private set; }
+            public bool         Success         => (Error == null);
+
+            internal RequestStepActionParams SetError( Exception error )
+            {
+                Error = error;
+                return (this);
+            }
+
+            internal static RequestStepActionParams CreateSuccess( int totalPartCount, int partOrderNumber, m3u8_part_ts part ) 
+                => new RequestStepActionParams() { TotalPartCount = totalPartCount, PartOrderNumber = partOrderNumber, Part = part };
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void RequestStepActionDelegate( RequestStepActionParams p );
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct ResponseStepActionParams
+        {
+            internal ResponseStepActionParams( int totalPartCount ) : this()
+                => TotalPartCount = totalPartCount;
+
+            public int TotalPartCount           { get; private  set; }
+            public int SuccessReceivedPartCount { get; internal set; }
+            public int FailedReceivedPartCount  { get; internal set; }
+            public int BytesLength              { get; internal set; }
+            public m3u8_part_ts Part            { get; internal set; }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void ResponseStepActionDelegate( ResponseStepActionParams p );
+        //-----------------------------------------------------------------------------//
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct DownloadPartsAndSaveInputParams
+        {
+            public m3u8_client                       mc                                      { [M(O.AggressiveInlining)] get; set; }
+            public m3u8_file_t                       m3u8File                                { [M(O.AggressiveInlining)] get; set; }
+            public string                            OutputFileName                          { [M(O.AggressiveInlining)] get; set; }
+            public CancellationTokenSource           Cts                                     { [M(O.AggressiveInlining)] get; set; }
+            public RequestStepActionDelegate         RequestStepAction                       { [M(O.AggressiveInlining)] get; set; }
+            public ResponseStepActionDelegate        ResponseStepAction                      { [M(O.AggressiveInlining)] get; set; }
+            public int                               MaxDegreeOfParallelism                  { [M(O.AggressiveInlining)] get; set; }
+            public I_download_threads_semaphore      DownloadThreadsSemaphore                { [M(O.AggressiveInlining)] get; set; }
+            public ManualResetEventSlim              WaitIfPausedEvent                       { [M(O.AggressiveInlining)] get; set; }
+            public Action                            WaitingIfPaused                         { [M(O.AggressiveInlining)] get; set; }
+            public I_cross_download_instance_factory CrossDownloadInstanceFactory            { [M(O.AggressiveInlining)] get; set; }
+            public Action                            WaitingForOtherDownloadInstanceFinished { [M(O.AggressiveInlining)] get; set; }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct DownloadPartsAndSaveResult
+        {
+            internal DownloadPartsAndSaveResult( string outputFileName ) : this()
+                => OutputFileName = outputFileName;
+
+            public string OutputFileName   { get; private set; }
+
+            public int   PartsSuccessCount { get; internal set; }
+            public int   PartsErrorCount   { get; internal set; }
+            public ulong TotalBytes        { get; internal set; }
+
+            public int  TotalParts => (PartsSuccessCount + PartsErrorCount);
+            public void ResetOutputFileName( string outputFileName ) => OutputFileName = outputFileName;
+            public bool IsEmpty() => ((OutputFileName == null) && (PartsSuccessCount == 0) && (PartsErrorCount == 0) && (TotalBytes == 0UL));
+        }
+
+        public static DownloadPartsAndSaveResult DownloadPartsAndSave( in DownloadPartsAndSaveInputParams ip )
+        {            
+            if ( ip.mc == null )                           throw (new m3u8_ArgumentException( nameof(ip.mc) ));
+            if ( !ip.m3u8File.Parts.AnyEx() )              throw (new m3u8_ArgumentException( nameof(ip.m3u8File) ));
+            if ( ip.OutputFileName.IsNullOrWhiteSpace() )  throw (new m3u8_ArgumentException( nameof(ip.OutputFileName) ));
+            if ( ip.DownloadThreadsSemaphore     == null ) throw (new m3u8_ArgumentException( nameof(ip.DownloadThreadsSemaphore) ));
+            if ( ip.WaitIfPausedEvent            == null ) throw (new m3u8_ArgumentException( nameof(ip.WaitIfPausedEvent) ));
+            if ( ip.CrossDownloadInstanceFactory == null ) throw (new m3u8_ArgumentException( nameof(ip.CrossDownloadInstanceFactory) ));
+            //---------------------------------------------------------------------------------------------------------//
+
+            //-1-//
+            var res = new DownloadPartsAndSaveResult( ip.OutputFileName );
+
+            using ( var cross_download_instance_semaphore = ip.CrossDownloadInstanceFactory.CreateWithWait(
+                            ip.Cts.Token, ip.WaitingForOtherDownloadInstanceFinished, delayTimeout: 1000 )
+                  )
+            {
+                //-2-//
+                var downloadParts = download_m3u8File_parts_parallel( ip, cross_download_instance_semaphore );
+
+                //-3-//
+                using ( var fs = File.OpenWrite( ip.OutputFileName ) )
+                {
+                    fs.SetLength( 0 );
+
+                    foreach ( var downloadPart in downloadParts )
+                    {
+                        if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )
+                        {
+                            res.PartsErrorCount++;
+                            continue;
+                        }
+                        var bytes = downloadPart.Bytes;
+                        fs.Write( bytes, 0, bytes.Length );
+
+                        res.PartsSuccessCount++;
+                        res.TotalBytes += (uint) bytes.Length;
+                    }
+                }
+            }
+
+            return (res);
+        }
+        //-----------------------------------------------------------------------------//
+    }
+}
