@@ -15,8 +15,19 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed partial class ChangeOutputFileForm : Form
     {
+        #region [.field's.]
+        private FileNameCleaner.Processor _FNCP; 
+        #endregion
+
         #region [.ctor().]
-        public ChangeOutputFileForm() => InitializeComponent();
+        public ChangeOutputFileForm()
+        {
+            InitializeComponent();
+
+            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, 
+                                                   () => this.OutputFileName, 
+                                                   outputFileName => this.OutputFileName = outputFileName );
+        }
         #endregion
 
         #region [.public.]
@@ -40,7 +51,7 @@ namespace m3u8.download.manager.ui
             if ( disposing )
             {
                 components?.Dispose();
-                CancelAndDispose_Cts_outputFileNameTextBox_TextChanged();
+                _FNCP.Dispose(); //CancelAndDispose_Cts_outputFileNameTextBox_TextChanged();
             }
             base.Dispose( disposing );
         }
@@ -110,33 +121,7 @@ namespace m3u8.download.manager.ui
             this.OutputFileName = null;
             outputFileNameTextBox.Focus();
         }
-        
-        private CancellationTokenSource _Cts_outputFileNameTextBox_TextChanged;
-        private void CancelAndDispose_Cts_outputFileNameTextBox_TextChanged()
-        {
-            if ( _Cts_outputFileNameTextBox_TextChanged != null )
-            {
-                _Cts_outputFileNameTextBox_TextChanged.Cancel();
-                _Cts_outputFileNameTextBox_TextChanged.Dispose();
-                _Cts_outputFileNameTextBox_TextChanged = null;
-            }
-        }
-        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
-        {
-            CancelAndDispose_Cts_outputFileNameTextBox_TextChanged();
-
-            _Cts_outputFileNameTextBox_TextChanged = new CancellationTokenSource();
-            Task.Delay( 1_000, _Cts_outputFileNameTextBox_TextChanged.Token )
-                .ContinueWith( async t =>
-                {
-                    if ( t.IsCanceled )
-                        return;
-
-                    await FileNameCleaner.SetOutputFileName_Async( this.OutputFileName,
-                                                                   outputFileName => this.OutputFileName = outputFileName,
-                                                                   millisecondsDelay: 150 );
-                }, TaskScheduler.FromCurrentSynchronizationContext() );
-        }
+        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e ) => _FNCP.FileNameTextBox_TextChanged();
         #endregion
     }
 }

@@ -4,7 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+
 using m3u8.download.manager.Properties;
 
 namespace m3u8.download.manager.infrastructure
@@ -264,7 +267,7 @@ namespace m3u8.download.manager.infrastructure
             outputFileName = default;
             return (false);
         }
-        public static async Task< string > SetOutputFileName_Async( string inputOutputFileName, Action< string > setOutputFileNameAction, int millisecondsDelay )
+        /*public static async Task< string > SetOutputFileName_Async( string inputOutputFileName, Action< string > setOutputFileNameAction, int millisecondsDelay )
         {
             setOutputFileNameAction( null );
 
@@ -282,6 +285,112 @@ namespace m3u8.download.manager.infrastructure
                 return (fn);
             }
             return (null);
+        }*/
+        /*public static async Task< string > SetOutputFileName_Async(
+            TextBox textBox, string inputOutputFileName, Action< string > setOutputFileNameAction, int millisecondsDelay )
+        {
+            var selectionStart = textBox.SelectionStart;
+            setOutputFileNameAction( null );
+
+            var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
+            if ( !fn.IsNullOrWhiteSpace() )
+            {
+                setOutputFileNameAction( fn );
+                    textBox.SelectionStart = Math.Min( selectionStart, fn.Length );
+                    selectionStart = textBox.SelectionStart;
+                await Task.Delay( millisecondsDelay );
+
+                fn = fn.GetFileName_NoThrow();
+                setOutputFileNameAction( fn ); 
+                    textBox.SelectionStart = Math.Min( selectionStart, fn.Length );
+                    selectionStart = textBox.SelectionStart;
+                await Task.Delay( millisecondsDelay );
+
+                fn = AddOutputFileExtensionIfMissing( fn );
+                setOutputFileNameAction( fn );
+                    textBox.SelectionStart = Math.Min( selectionStart, fn.Length );
+
+                return (fn);
+            }
+            return (null);
+        }*/
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public sealed class Processor : IDisposable
+        {
+            private TextBox _FileNameTextBox;
+            private Func< string >   _GetFileNameAction;
+            private Action< string > _SetFileNameAction;
+
+            public Processor( TextBox fileNameTextBox
+                , Func< string >   getFileNameAction
+                , Action< string > setFileNameAction )
+            {
+                _FileNameTextBox   = fileNameTextBox;
+                _GetFileNameAction = getFileNameAction;
+                _SetFileNameAction = setFileNameAction;
+            }
+            public void Dispose() => CancelAndDispose_Cts_FileNameTextBox_TextChanged();
+
+            private CancellationTokenSource _Cts_FileNameTextBox_TextChanged;
+            private void CancelAndDispose_Cts_FileNameTextBox_TextChanged()
+            {
+                if ( _Cts_FileNameTextBox_TextChanged != null )
+                {
+                    _Cts_FileNameTextBox_TextChanged.Cancel();
+                    _Cts_FileNameTextBox_TextChanged.Dispose();
+                    _Cts_FileNameTextBox_TextChanged = null;
+                }
+            }
+
+            public void FileNameTextBox_TextChanged( Action< string > setFileNameFinishAction = null )
+            {
+                CancelAndDispose_Cts_FileNameTextBox_TextChanged();
+
+                _Cts_FileNameTextBox_TextChanged = new CancellationTokenSource();
+                Task.Delay( 1_500, _Cts_FileNameTextBox_TextChanged.Token )
+                    .ContinueWith( async t =>
+                    {
+                        if ( t.IsCanceled )
+                            return;
+
+                        var fn = await SetFileName_Async( millisecondsDelay: 150 );
+                        setFileNameFinishAction?.Invoke( fn );
+
+                    }, TaskScheduler.FromCurrentSynchronizationContext() );
+            }
+
+            private async Task< string > SetFileName_Async( int millisecondsDelay )
+            {
+                var inputOutputFileName = _GetFileNameAction();
+                var selectionStart = _FileNameTextBox.SelectionStart;
+
+                _SetFileNameAction( null );
+                
+                var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
+                if ( !fn.IsNullOrWhiteSpace() )
+                {
+                    _SetFileNameAction( fn );
+                        _FileNameTextBox.SelectionStart = Math.Min( selectionStart, fn.Length );
+                        selectionStart = _FileNameTextBox.SelectionStart;
+                    await Task.Delay( millisecondsDelay );
+
+                    fn = fn.GetFileName_NoThrow();
+                    _SetFileNameAction( fn ); 
+                        _FileNameTextBox.SelectionStart = Math.Min( selectionStart, fn.Length );
+                        selectionStart = _FileNameTextBox.SelectionStart;
+                    await Task.Delay( millisecondsDelay );
+
+                    fn = AddOutputFileExtensionIfMissing( fn );
+                    _SetFileNameAction( fn );
+                        _FileNameTextBox.SelectionStart = Math.Min( selectionStart, fn.Length );
+
+                    return (fn);
+                }
+                return (null);
+            }
         }
     }
 }

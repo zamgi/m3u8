@@ -24,6 +24,7 @@ namespace m3u8.download.manager.ui
         private bool              _DownloadLater;
         private Settings          _Settings;
         private DownloadListModel _DownloadListModel;
+        private FileNameCleaner.Processor _FNCP;
         #endregion
 
         #region [.ctor().]
@@ -35,6 +36,10 @@ namespace m3u8.download.manager.ui
             //---statusBarUC.IsVisibleParallelismLabel = false;
             logPanel.Visible = false;
             logPanel.VisibleChanged += logPanel_VisibleChanged;
+
+            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, 
+                                                   () => this.OutputFileName,
+                                                   setOutputFileName );
         }
         public AddNewDownloadForm( DownloadController dc, SettingsPropertyChangeController sc, string m3u8FileUrl, string additionalTitle = null ) : this()
         {
@@ -51,6 +56,16 @@ namespace m3u8.download.manager.ui
             statusBarUC.SetSettingsController( sc );
 
             this.Text += additionalTitle;
+        }
+
+        protected override void Dispose( bool disposing )
+        {
+            if ( disposing )
+            {
+                components?.Dispose();
+                _FNCP.Dispose();
+            }
+            base.Dispose( disposing );
         }
         #endregion
 
@@ -171,7 +186,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public methods.]
-        public bool   AutoStartDownload => !_DownloadLater;
+        public  bool   AutoStartDownload => !_DownloadLater;
         public  string M3u8FileUrl
         {
             get => m3u8FileUrlTextBox.Text.Trim();
@@ -236,8 +251,8 @@ namespace m3u8.download.manager.ui
         }
 
         private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;
-        private async void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
-            => _LastManualInputed_outputFileNameText = await FileNameCleaner.SetOutputFileName_Async( this.OutputFileName, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
+        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
+            => _FNCP.FileNameTextBox_TextChanged( outputFileName => _LastManualInputed_outputFileNameText = outputFileName );
 
         private void outputFileNameClearButton_Click( object sender, EventArgs e )
         {
