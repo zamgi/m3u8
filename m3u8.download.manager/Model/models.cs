@@ -140,6 +140,30 @@ namespace m3u8.download.manager.models
             }
         }
 
+        public void ChangeRowPosition( T row, int newIndex )
+        {
+            if ( row == null )                                 throw (new ArgumentNullException( nameof(row) ));
+            if ( (newIndex < 0) || (_Rows.Count <= newIndex) ) throw (new ArgumentException( nameof(newIndex) ));
+
+            var oldIndex = row.GetVisibleIndex();
+            if ( oldIndex == -1 ) throw (new ArgumentException( nameof(row.GetVisibleIndex) ));
+
+            if ( oldIndex != newIndex )
+            {
+                _Rows.RemoveAt( oldIndex );
+                _Rows.Insert( newIndex, row );
+
+                #region [.re-calculate '_RowsVisibleIndexes'.]
+                ReCalculateRowsVisibleIndexes();
+                #endregion
+
+                if ( !_UpdtTup.InUpdate )
+                {
+                    CollectionChanged?.Invoke( CollectionChangedTypeEnum.Sort );
+                }
+            }
+        }
+
         [M(O.AggressiveInlining)] public int GetVisibleIndex( RowBase< T > row ) => (_RowsVisibleIndexes.TryGetValue( row.Id, out var visibleIndex ) ? visibleIndex : -1);
         [M(O.AggressiveInlining)] private void ReCalculateRowsVisibleIndexes()
         {

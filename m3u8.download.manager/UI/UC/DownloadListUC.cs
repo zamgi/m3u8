@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -46,7 +47,6 @@ namespace m3u8.download.manager.ui
         public event MouseClickRightButtonEventHandler MouseClickRightButton;
 
         private DownloadListModel _Model;
-        //private CellStyle _DefaultCellStyle;
         private CellStyle         _ErrorCellStyle;
         private CellStyle         _CanceledCellStyle;
         private CellStyle         _FinishedCellStyle;
@@ -75,21 +75,13 @@ namespace m3u8.download.manager.ui
             _ErrorCellStyle    = new CellStyle( DGV.DefaultCellStyle )
             {
                 ForeColor          = Color.Red,
-                //BackColor          = Color.Red,
                 SelectionForeColor = Color.White,
                 SelectionBackColor = Color.Red,
-                //Font = new Font( DGV.Font, FontStyle.Bold )
             };
             _CanceledCellStyle = new CellStyle( DGV.DefaultCellStyle )
             {
                 ForeColor          = Color.DimGray,
                 SelectionForeColor = Color.WhiteSmoke,
-                //Font               = new Font( DGV.Font, FontStyle.Strikeout )
-
-                //ForeColor          = Color.Red,
-                //BackColor          = Color.Yellow,
-                //SelectionForeColor = Color.Yellow,
-                //SelectionBackColor = Color.Red,
             };
             _FinishedCellStyle = new CellStyle( DGV.DefaultCellStyle ) { Font = new Font( DGV.Font, FontStyle.Bold ) };
 
@@ -252,6 +244,8 @@ namespace m3u8.download.manager.ui
                         Debug.WriteLine( ex );
                     }
                     #endregion
+
+                    DGV.Invalidate();
                 }
                 break;
             }
@@ -417,14 +411,6 @@ namespace m3u8.download.manager.ui
         private void DGV_CellValueNeeded( object sender, DataGridViewCellValueEventArgs e )
         {
             var row = _Model[ e.RowIndex ];
-            #region comm
-            //var idx = e.ColumnIndex;
-            //     if ( idx == URL_COLUMNINDEX             ) e.Value = row.Url;
-            //else if ( idx == OUTPUTFILENAME_COLUMNINDEX  ) e.Value = row.OutputFileName;
-            //else if ( idx == OUTPUTDIRECTORY_COLUMNINDEX ) e.Value = row.OutputDirectory;
-            //else if ( idx == STATUS_COLUMNINDEX          ) e.Value = row.Status;
-            //else if ( idx == DOWNLOADINFO_COLUMNINDEX    ) e.Value = GetDownloadInfoText( row ); 
-            #endregion
 
             switch ( e.ColumnIndex )
             {
@@ -464,10 +450,9 @@ namespace m3u8.download.manager.ui
 
             if ( (selectedDownloadRow != null) && !selectedDownloadRow.IsFinished() )
             {
-                var pt = Control.MousePosition;
-                pt = DGV.PointToClient( pt );
-                var hti = DGV.HitTest( pt.X, pt.Y );
-                if ( hti.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX )
+                var pt = DGV.PointToClient( Control.MousePosition );
+                var ht = DGV.HitTest( pt.X, pt.Y );
+                if ( ht.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX )
                 {
                     DGV.SetHandCursorIfNonHand();
                 }
@@ -560,7 +545,6 @@ namespace m3u8.download.manager.ui
                 {
                     case MouseButtons.Left:
                         DGV.ClearSelection();
-                        //DGV.CurrentCell = null;
                     break;
 
                     case MouseButtons.Right:
@@ -584,6 +568,148 @@ namespace m3u8.download.manager.ui
                 _Settings.LastSortInfoJson = _LastSortInfo.ToJson();
                 _Settings.SaveNoThrow();
             }
+        }
+
+        private void DGV_MouseMove( object sender, MouseEventArgs e )
+        {
+            if ( e.Button != MouseButtons.Left ) return;
+            //---if ( DGV.RowCount < 2 ) return;
+            var row = GetSelectedDownloadRow();
+            if ( row == null ) return;
+
+
+            _DragOver_RowIndex = null;
+            DGV.AllowDrop = true;
+            DGV.DragOver += DGV_DragOver;
+            DGV.DragDrop += DGV_DragDrop;
+            DGV.CellPainting += DGV_DragDrop_CellPainting;
+            try
+            {
+                var dragDropEffect = DGV.DoDragDrop( row, DragDropEffects.Move );
+                if ( dragDropEffect == DragDropEffects.Move )
+                {
+                    SelectDownloadRow( row );
+                }
+                else
+                {
+                    DGV.Invalidate();
+                }
+            }
+            finally
+            {
+                DGV.DragOver -= DGV_DragOver;
+                DGV.DragDrop -= DGV_DragDrop;
+                DGV.CellPainting -= DGV_DragDrop_CellPainting;
+                DGV.AllowDrop = false;
+            }
+        }
+        private void DGV_DragDrop( object sender, DragEventArgs e )
+        {
+            var row = e.Data.GetData( typeof(DownloadRow) ) as DownloadRow;
+            if ( row != null )
+            {
+                var pt = DGV.PointToClient( new Point( e.X, e.Y ) );
+                var ht = DGV.HitTest( pt.X, pt.Y );
+                if ( (0 <= ht.RowIndex) && (row.GetVisibleIndex() != ht.RowIndex) )
+                {
+                    _Model.ChangeRowPosition( row, ht.RowIndex );                    
+                    e.Effect = e.AllowedEffect;
+                    return;
+                }
+            }
+            e.Effect = DragDropEffects.None;
+        }
+
+        private int? _DragOver_RowIndex;
+        private void DGV_DragDrop_CellPainting( object sender, DataGridViewCellPaintingEventArgs e )
+        {
+            if ( e.RowIndex == _DragOver_RowIndex )
+            {
+                e.Handled = true;
+
+                var rc = DGV.GetRowDisplayRectangle( e.RowIndex, true );
+                rc.Width = DGV.RowHeadersWidth + DGV.Columns.Cast< DataGridViewColumn >().Where( c => c.Visible ).Sum( c => c.Width );
+
+                var color = Color.FromArgb( 75, DGV.DefaultCellStyle.SelectionBackColor );
+                using ( var br = new HatchBrush( HatchStyle.ForwardDiagonal, color, Color.Transparent ) )
+                {
+                    e.Graphics.FillRectangle( br, rc );
+                }
+                using ( var pen = new Pen( color, 2.0f ) )
+                {
+                    rc.Inflate( -1, -1 );
+                    e.Graphics.DrawRectangle( pen, rc );
+                }
+            }
+        }
+        private void DGV_DragOver( object sender, DragEventArgs e )
+        {
+            var pt = DGV.PointToClient( new Point( e.X, e.Y ) );
+            var ht = DGV.HitTest( pt.X, pt.Y );
+
+            if ( 0 <= ht.RowIndex )
+            {
+                var row = e.Data.GetData( typeof(DownloadRow) ) as DownloadRow;
+                if ( (row != null) && (row.GetVisibleIndex() != ht.RowIndex) )
+                {
+                    e.Effect = e.AllowedEffect;
+
+                    if ( _DragOver_RowIndex != ht.RowIndex )
+                    {
+                        _DragOver_RowIndex = ht.RowIndex;
+                        DGV.Invalidate();
+                    }
+                    ScrollIfNeed( in pt );
+                    return;
+                }
+            }            
+
+            e.Effect = DragDropEffects.None;
+            if ( _DragOver_RowIndex.HasValue )
+            {
+                _DragOver_RowIndex = null;
+                DGV.Invalidate();
+            }
+            ScrollIfNeed( in pt );
+        }
+
+        private DateTime _LastScrollDateTime;
+        private void ScrollIfNeed( in Point pt )
+        {
+            const int SCROLL_DELAY_IN_MILLISECONDS = 200;
+
+            if ( ShouldScrollUp( in pt ) )
+            {
+                if ( (0 < DGV.FirstDisplayedScrollingRowIndex) && (TimeSpan.FromMilliseconds( SCROLL_DELAY_IN_MILLISECONDS ) < (DateTime.Now - _LastScrollDateTime)) )
+                {
+                    DGV.FirstDisplayedScrollingRowIndex--;
+                    _LastScrollDateTime = DateTime.Now;
+                }
+            }
+            else
+            if ( ShouldScrollDown( in pt ) )
+            {
+                if ( (DGV.FirstDisplayedScrollingRowIndex < (DGV.RowCount - 1)) && (TimeSpan.FromMilliseconds( SCROLL_DELAY_IN_MILLISECONDS ) < (DateTime.Now - _LastScrollDateTime)) )
+                {
+                    DGV.FirstDisplayedScrollingRowIndex++;
+                    _LastScrollDateTime = DateTime.Now;
+                }
+            }
+        }
+        [M(O.AggressiveInlining)] private bool ShouldScrollUp( in Point pt )
+        {
+            return pt.Y > DGV.ColumnHeadersHeight
+                && pt.Y < DGV.ColumnHeadersHeight + 15
+                && pt.X >= 0
+                && pt.X <= DGV.Bounds.Width;
+        }
+        [M(O.AggressiveInlining)] private bool ShouldScrollDown( in Point pt )
+        {
+            var bounds = DGV.Bounds;
+            return pt.Y > bounds.Height - 15
+                && pt.Y < bounds.Height
+                && pt.X >= 0
+                && pt.X <= bounds.Width;
         }
         #endregion
     }
