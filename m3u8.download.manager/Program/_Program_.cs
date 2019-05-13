@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
 using System.Windows.Forms;
 
 using m3u8.download.manager.ipc;
@@ -94,6 +95,10 @@ namespace m3u8.download.manager
                     #region [.check for upgrade user-settings for new version.]
                     // Copy user settings from previous application version if necessary
                     Settings.Default.UpgradeIfNeed();
+                    #endregion
+
+                    #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
+                    ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3);
                     #endregion
 
                     Application.EnableVisualStyles();

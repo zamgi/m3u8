@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Windows.Forms;
@@ -193,6 +194,10 @@ namespace m3u8.downloader
 
             #region [.check for upgrade user-settings for new version & copy user-settings from previous application version if necessary.]
             Settings.Default.UpgradeIfNeed();
+            #endregion
+
+            #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3);
             #endregion
 
             #region [.goto to tu-tu.]
