@@ -71,6 +71,9 @@ namespace m3u8.download.manager.ui
             PipeIPC.NamedPipeServer__in.ReceivedInputParamsArray += NamedPipeServer__in_ReceivedInputParamsArray;
 
             NameCleaner.ResetExcludesWords( _SettingsController.NameCleanerExcludesWords );
+
+            showLogToolButton.Checked = Settings.Default.ShowLog;
+            showLogToolButton_Click( showLogToolButton, EventArgs.Empty );
         }
         public MainForm( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
         #endregion
@@ -693,6 +696,7 @@ namespace m3u8.download.manager.ui
         private void showLogToolButton_Click( object sender, EventArgs e )
         {
             var showLog = showLogToolButton.Checked;
+            Settings.Default.ShowLog = showLog;
             mainSplitContainer.Panel2Collapsed = !showLog; //m3u8FileResultUC.Visible = showLog;
             logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
         }

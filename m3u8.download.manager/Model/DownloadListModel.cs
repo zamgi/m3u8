@@ -121,6 +121,13 @@ namespace m3u8.download.manager.models
                         CreatedDateTime = DateTime.Now;
                     break;
 
+                    case DownloadStatus.Running:
+                        if ( Status == DownloadStatus.Wait )
+                        {
+                            CreatedDateTime = DateTime.Now;
+                        }
+                    break;
+
                     case DownloadStatus.Canceled:
                     case DownloadStatus.Error:
                     case DownloadStatus.Finished:

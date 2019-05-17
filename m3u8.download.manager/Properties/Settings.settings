@@ -27,7 +27,7 @@
     </Setting>
     <Setting Name="MaxCrossDownloadInstanceSaved" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">4</Value>
-    </Setting>    
+    </Setting>
     <Setting Name="NameCleanerExcludesWords" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
@@ -63,6 +63,9 @@
     </Setting>
     <Setting Name="LastSortInfoJson" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
-    </Setting>    
+    </Setting>
+    <Setting Name="ShowLog" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
