@@ -640,12 +640,14 @@ namespace m3u8.download.manager.controllers
         public static void StatusError( this DownloadRow row, Exception ex ) => row.StatusError( ex.ToString() );
         public static void StatusError( this DownloadRow row, string errorText, bool addEmptyRow = false )
         {
-            row.SetStatus( DownloadStatus.Error );
+            //---row.SetStatus( DownloadStatus.Error );
             if ( addEmptyRow )
             {
                 row.Log.AddEmptyRow();
             }
             row.Log.AddRequestErrorRow( errorText );
+
+            row.SetStatus( DownloadStatus.Error );
         }
         public static void StatusErrorWithNoLog( this DownloadRow row ) => row.SetStatus( DownloadStatus.Error );
         public static void StatusCanceled( this DownloadRow row )

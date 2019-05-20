@@ -60,7 +60,7 @@ namespace m3u8.download.manager.ui.infrastructure
             {
                 if ( !skipNonResizableColumns || (column.Resizable != DataGridViewTriState.False) )
                 {
-                    var name = (!string.IsNullOrEmpty( column.Name )) ? column.Name : column.HeaderText;
+                    var name = (!string.IsNullOrEmpty( column.Name ) ? column.Name : column.HeaderText);
                     if ( dict.TryGetValue( name, out var dgvcw ) )
                     {
                         column.Width = dgvcw.Width;

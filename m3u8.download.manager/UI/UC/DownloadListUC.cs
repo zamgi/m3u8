@@ -222,7 +222,7 @@ namespace m3u8.download.manager.ui
                         _CommonUpdateTimer.Enabled = hasRows;
                         if ( hasRows )
                         {
-                            var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), DGV.RowCount - 1 ); // ((0 <= selectedVisibleIndex) && (selectedVisibleIndex < DGV.RowCount)) ? selectedVisibleIndex : (DGV.RowCount - 1); //0;
+                            var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), DGV.RowCount - 1 );
                             var dtrow = DGV.Rows[ visibleIndex ];
                             if ( dtrow.Selected )
                             {
@@ -266,7 +266,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.private methods.]
-        [M(O.AggressiveInlining)] private static string GetDownloadInfoText( DownloadRow row )
+        [M(O.AggressiveInlining)] public static string GetDownloadInfoText( DownloadRow row )
         {
             const string HH_MM_SS = "hh\\:mm\\:ss";
             const string MM_SS    = "mm\\:ss";
@@ -577,6 +577,9 @@ namespace m3u8.download.manager.ui
             var row = GetSelectedDownloadRow();
             if ( row == null ) return;
 
+            var ht = DGV.HitTest( e.X, e.Y );
+            if ( (ht.RowIndex < 0) || (ht.ColumnIndex < 0) ) return;
+            //-----------------------------------------------------//
 
             _DragOver_RowIndex = null;
             DGV.AllowDrop = true;

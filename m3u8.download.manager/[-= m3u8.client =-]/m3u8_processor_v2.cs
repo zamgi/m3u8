@@ -293,7 +293,13 @@ namespace m3u8
                 //-2-//
                 var downloadParts = download_m3u8File_parts_parallel( ip, cross_download_instance_semaphore );
 
-                //-3-//
+                //-3.1-//
+                var directoryName = Path.GetDirectoryName( ip.OutputFileName );
+                if ( !Directory.Exists( directoryName ) )
+                {
+                    Directory.CreateDirectory( directoryName );
+                }
+                //-3.2-//
                 using ( var fs = File.OpenWrite( ip.OutputFileName ) )
                 {
                     fs.SetLength( 0 );

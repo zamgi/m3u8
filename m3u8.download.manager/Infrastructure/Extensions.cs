@@ -308,5 +308,6 @@ namespace m3u8.download.manager
 
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadRow    row    ) => (row.Status == DownloadStatus.Finished);
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadStatus status ) => (status == DownloadStatus.Finished);
+        [M(O.AggressiveInlining)] public static bool IsError   ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Error);
     }
 }

@@ -269,6 +269,20 @@ namespace m3u8.download.manager.ui
         {
             if ( _ShowDownloadStatistics && (0 < _DownloadListModel.RowsCount) )
             {
+                #region comm. when single downloads.
+                /*if ( _DownloadListModel.RowsCount == 1 )
+                {
+                    var row = _DownloadListModel[ 0 ];
+                    var dit = DownloadListUC.GetDownloadInfoText( row );
+                    this.Text = $"{dit},  [{Resources.APP_TITLE}]";
+                    return;
+                }
+                else
+                {
+
+                }*/
+                #endregion
+
                 var stats = _DownloadListModel.GetStatisticsByAllStatus();
 
                 var finishedCount = stats[ DownloadStatus.Finished ];
@@ -334,6 +348,11 @@ namespace m3u8.download.manager.ui
                 if ( downloadListUC.GetSelectedDownloadRow() == row )
                 {
                     SetDownloadToolButtonsStatus( row );
+
+                    if ( row.IsError() )
+                    {
+                        logUC.AdjustRowsHeightAndColumnsWidthSprain();
+                    }
                 }
                 else
                 {
@@ -345,9 +364,21 @@ namespace m3u8.download.manager.ui
 
         private void downloadListUC_SelectionChanged( DownloadRow row )
         {
-            if ( !mainSplitContainer.Panel2Collapsed ) // if ( m3u8FileResultUC.Visible )
+            if ( !mainSplitContainer.Panel2Collapsed )
             {
-                logUC.SetModel( row?.Log );
+                if ( row == null )
+                {
+                    logUC.SetModel( null );
+                }
+                else
+                {
+                    logUC.SetModel( row.Log );
+
+                    if ( !_LogRowsHeightStorer.ContainsModel( row.Log ) )
+                    {
+                        logUC.AdjustRowsHeightAndColumnsWidthSprain();
+                    }
+                }
             }
 
             SetDownloadToolButtonsStatus( row );

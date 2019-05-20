@@ -35,6 +35,7 @@ namespace m3u8.download.manager.ui
             dict = null;
             return (false);
         }
+        public bool ContainsModel( LogListModel model ) => _Dict.ContainsKey( model );
 
         public void LeaveOnly( IEnumerable< LogListModel > models )
         {

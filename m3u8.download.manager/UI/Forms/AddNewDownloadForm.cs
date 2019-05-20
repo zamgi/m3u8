@@ -36,6 +36,7 @@ namespace m3u8.download.manager.ui
             //---statusBarUC.IsVisibleParallelismLabel = false;
             logPanel.Visible = false;
             logPanel.VisibleChanged += logPanel_VisibleChanged;
+            logUC.ShowResponseColumn = false;
 
             _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, 
                                                    () => this.OutputFileName,
@@ -299,8 +300,7 @@ namespace m3u8.download.manager.ui
             {
                 _Model.AddRequestErrorRow( x.error.ToString() );
                 logUC.ClearSelection();
-                logUC.AdjustRowsHeight();
-                logUC.AdjustColumnsWidthSprain();
+                logUC.AdjustRowsHeightAndColumnsWidthSprain();
                 return;
             }
             #endregion
@@ -326,8 +326,7 @@ namespace m3u8.download.manager.ui
                 }
 
                 logUC.ClearSelection();
-                logUC.AdjustRowsHeight();
-                logUC.AdjustColumnsWidthSprain();
+                logUC.AdjustRowsHeightAndColumnsWidthSprain();
             }
 
             this.SetEnabledAllChildControls( true );
