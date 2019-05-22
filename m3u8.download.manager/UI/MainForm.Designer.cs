@@ -93,6 +93,7 @@
             this.downloadListUC.TabIndex = 0;
             this.downloadListUC.SelectionChanged += new m3u8.download.manager.ui.DownloadListUC.SelectionChangedEventHandler(this.downloadListUC_SelectionChanged);
             this.downloadListUC.OutputFileNameClick += new m3u8.download.manager.ui.DownloadListUC.OutputFileNameClickEventHandler(this.downloadListUC_OutputFileNameClick);
+            this.downloadListUC.OutputDirectoryClick += new m3u8.download.manager.ui.DownloadListUC.OutputDirectoryClickEventHandler(this.downloadListUC_OutputDirectoryClick);
             // 
             // mainToolStrip
             // 

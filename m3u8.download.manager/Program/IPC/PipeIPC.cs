@@ -65,7 +65,7 @@ namespace m3u8.download.manager.ipc
         /// </summary>
         internal static class NamedPipeClient__out
         {
-            public static void Send( string pipeName, in (string m3u8FileUrl, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 1_500 )
+            public static void Send( string pipeName, in (string m3u8FileUrl, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 5_000 )
             {
                 using ( var pipeClient = new NamedPipeClientStream( ".", pipeName, PipeDirection.Out, PipeOptions.None, TokenImpersonationLevel.None, HandleInheritability.Inheritable ) )
                 {

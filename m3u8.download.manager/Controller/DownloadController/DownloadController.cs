@@ -309,7 +309,10 @@ namespace m3u8.download.manager.controllers
                     {
                         try
                         {
-                            Extensions.DeleteFile_NoThrow( desiredOutputFullFileName );
+                            if ( !dpsr.OutputFileName.EqualIgnoreCase( desiredOutputFullFileName ) )
+                            {
+                                Extensions.DeleteFile_NoThrow( desiredOutputFullFileName );
+                            }
                             File.Move( dpsr.OutputFileName, desiredOutputFullFileName );
                             dpsr.ResetOutputFileName( desiredOutputFullFileName );
                         }

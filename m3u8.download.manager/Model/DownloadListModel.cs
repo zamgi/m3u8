@@ -201,5 +201,21 @@ namespace m3u8.download.manager.models
             }
             return (dict);
         }
+        public bool TryGetSingleRunning( out DownloadRow singleRunningRow )
+        {
+            singleRunningRow = default;
+            foreach ( var row in GetRows() )
+            {
+                if ( row.Status == DownloadStatus.Running )
+                {
+                    if ( singleRunningRow != null )
+                    {
+                        return (false); //not single running row
+                    }
+                    singleRunningRow = row;
+                }
+            }
+            return (singleRunningRow != null);
+        }
     }
 }

@@ -31,7 +31,15 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
+        public delegate void OutputDirectoryClickEventHandler( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void MouseClickRightButtonEventHandler( MouseEventArgs e, DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void UpdatedSingleRunningRowEventHandler( DownloadRow row );
 
         #region [.column index's.]
         private int URL_COLUMNINDEX             { [M(O.AggressiveInlining)] get => DGV_urlColumn.DisplayIndex;             }
@@ -42,9 +50,11 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.field's.]
-        public event SelectionChangedEventHandler      SelectionChanged;
-        public event OutputFileNameClickEventHandler   OutputFileNameClick;
-        public event MouseClickRightButtonEventHandler MouseClickRightButton;
+        public event SelectionChangedEventHandler        SelectionChanged;
+        public event OutputFileNameClickEventHandler     OutputFileNameClick;
+        public event OutputDirectoryClickEventHandler    OutputDirectoryClick;
+        public event MouseClickRightButtonEventHandler   MouseClickRightButton;
+        public event UpdatedSingleRunningRowEventHandler UpdatedSingleRunningRow;
 
         private DownloadListModel _Model;
         private CellStyle         _ErrorCellStyle;
@@ -404,14 +414,22 @@ namespace m3u8.download.manager.ui
             await Task.Delay( 1 );
             SelectDownloadRowInternal( row, true );
         }
-        private void CommonUpdateTimer_Tick( object sender, EventArgs e ) => DGV.Refresh();
+        private void CommonUpdateTimer_Tick( object sender, EventArgs e )
+        {
+            DGV.Refresh();
+            //---------------------------------------------//
+
+            if ( _Model.TryGetSingleRunning( out var singleRunningRow ) )
+            {
+                UpdatedSingleRunningRow?.Invoke( singleRunningRow );
+            }
+        }
         #endregion
 
         #region [.DGV.]
         private void DGV_CellValueNeeded( object sender, DataGridViewCellValueEventArgs e )
         {
             var row = _Model[ e.RowIndex ];
-
             switch ( e.ColumnIndex )
             {
                 case 0: e.Value = row.Url;                    break;
@@ -452,7 +470,7 @@ namespace m3u8.download.manager.ui
             {
                 var pt = DGV.PointToClient( Control.MousePosition );
                 var ht = DGV.HitTest( pt.X, pt.Y );
-                if ( ht.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX )
+                if ( (ht.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX) || (ht.ColumnIndex == OUTPUTDIRECTORY_COLUMNINDEX) )
                 {
                     DGV.SetHandCursorIfNonHand();
                 }
@@ -460,7 +478,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_CellMouseEnter( object sender, DataGridViewCellEventArgs e )
         {
-            if ( (0 <= e.RowIndex) && (e.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX) && 
+            if ( (0 <= e.RowIndex) && ((e.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX) || (e.ColumnIndex == OUTPUTDIRECTORY_COLUMNINDEX)) && 
                  DGV.Rows[ e.RowIndex ].Selected && !_Model[ e.RowIndex ].IsFinished() )
             {
                 DGV.SetHandCursorIfNonHand();
@@ -473,12 +491,23 @@ namespace m3u8.download.manager.ui
         private void DGV_CellMouseLeave( object sender, DataGridViewCellEventArgs e ) => DGV.SetDefaultCursorIfHand();
         private void DGV_CellClick( object sender, DataGridViewCellEventArgs e )
         {
-            if ( !_UserMade_DGV_SelectionChanged && (0 <= e.RowIndex) && (e.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX) )
+            if ( !_UserMade_DGV_SelectionChanged && (0 <= e.RowIndex) )
             {
-                var row = _Model[ e.RowIndex ];
-                if ( !row.IsFinished() )
+                if ( e.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX )
                 {
-                    OutputFileNameClick?.Invoke( row );
+                    var row = _Model[ e.RowIndex ];
+                    if ( !row.IsFinished() )
+                    {
+                        OutputFileNameClick?.Invoke( row );
+                    }
+                }
+                else if ( e.ColumnIndex == OUTPUTDIRECTORY_COLUMNINDEX )
+                {
+                    var row = _Model[ e.RowIndex ];
+                    if ( !row.IsFinished() )
+                    {
+                        OutputDirectoryClick?.Invoke( row );
+                    }
                 }
             }
             _UserMade_DGV_SelectionChanged = false;
@@ -570,15 +599,27 @@ namespace m3u8.download.manager.ui
             }
         }
 
+        private Point _DGV_MouseDown_Location;
+        private void DGV_MouseDown( object sender, MouseEventArgs e )
+        {
+            if ( e.Button == MouseButtons.Left )
+            {
+                _DGV_MouseDown_Location = e.Location;
+            }
+        }
         private void DGV_MouseMove( object sender, MouseEventArgs e )
         {
             if ( e.Button != MouseButtons.Left ) return;
             //---if ( DGV.RowCount < 2 ) return;
             var row = GetSelectedDownloadRow();
             if ( row == null ) return;
-
+            
             var ht = DGV.HitTest( e.X, e.Y );
             if ( (ht.RowIndex < 0) || (ht.ColumnIndex < 0) ) return;
+
+            const int MOVE_DELTA = 5;
+            if ( Math.Abs( _DGV_MouseDown_Location.X - e.X ) < MOVE_DELTA &&
+                 Math.Abs( _DGV_MouseDown_Location.Y - e.Y ) < MOVE_DELTA ) return;
             //-----------------------------------------------------//
 
             _DragOver_RowIndex = null;

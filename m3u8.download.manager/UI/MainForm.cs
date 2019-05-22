@@ -63,7 +63,8 @@ namespace m3u8.download.manager.ui
 
             downloadListUC.SetModel( _DownloadListModel );
             downloadListUC.KeyDown += (s, e) => this.OnKeyDown( e );
-            downloadListUC.MouseClickRightButton += downloadListUC_MouseClickRightButton;
+            downloadListUC.MouseClickRightButton   += downloadListUC_MouseClickRightButton;
+            downloadListUC.UpdatedSingleRunningRow += downloadListUC_UpdatedSingleRunningRow;
             statusBarUC.SetDownloadController( _DownloadController );
             statusBarUC.SetSettingsController( _SettingsController );
 
@@ -269,18 +270,12 @@ namespace m3u8.download.manager.ui
         {
             if ( _ShowDownloadStatistics && (0 < _DownloadListModel.RowsCount) )
             {
-                #region comm. when single downloads.
-                /*if ( _DownloadListModel.RowsCount == 1 )
+                #region [.if single downloads running.]
+                if ( _DownloadListModel.TryGetSingleRunning( out var singleRunningRow ) )
                 {
-                    var row = _DownloadListModel[ 0 ];
-                    var dit = DownloadListUC.GetDownloadInfoText( row );
-                    this.Text = $"{dit},  [{Resources.APP_TITLE}]";
+                    downloadListUC_UpdatedSingleRunningRow( singleRunningRow );
                     return;
                 }
-                else
-                {
-
-                }*/
                 #endregion
 
                 var stats = _DownloadListModel.GetStatisticsByAllStatus();
@@ -315,6 +310,18 @@ namespace m3u8.download.manager.ui
             {
                 this.Text = Resources.APP_TITLE;
             }
+        }
+
+        private void downloadListUC_UpdatedSingleRunningRow( DownloadRow row )
+        {
+            if ( _ShowDownloadStatistics )
+            {
+                this.Text = $"{DownloadListUC.GetDownloadInfoText( row )},  [{Resources.APP_TITLE}]";
+            }
+            //else if ( this.Text != Resources.APP_TITLE )
+            //{
+            //    this.Text = Resources.APP_TITLE;
+            //}
         }
         private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
         {
@@ -936,6 +943,21 @@ namespace m3u8.download.manager.ui
             }
             _ChangeOutputFileForm.FormClosed -= _ChangeOutputFileForm_FormClosed;
             _ChangeOutputFileForm = null;
+        }
+
+
+        private void downloadListUC_OutputDirectoryClick( DownloadRow row )
+        {
+            using ( var d = new FolderBrowserDialog() { SelectedPath        = row.OutputDirectory,
+                                                        Description         = $"Select output directory: '{row.OutputFileName}'",
+                                                        ShowNewFolderButton = true } )
+            {
+                if ( d.ShowDialog( this ) == DialogResult.OK )
+                {
+                    row.SetOutputDirectory( d.SelectedPath );
+                    downloadListUC.Invalidate( true );
+                }
+            }
         }
         #endregion
     }
