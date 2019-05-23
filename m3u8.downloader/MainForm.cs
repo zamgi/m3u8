@@ -646,7 +646,10 @@ namespace m3u8.downloader
                             _OutputFileName = Path.Combine( Path.GetDirectoryName( res.OutputFileName ), outputFileNameTextBox_Text );
                             try
                             {
-                                Extensions.DeleteFile_NoThrow( _OutputFileName );
+                                if ( string.Compare( res.OutputFileName, _OutputFileName, true ) != 0 )
+                                {
+                                    Extensions.DeleteFile_NoThrow( _OutputFileName );
+                                }
                                 File.Move( res.OutputFileName, _OutputFileName );
                                 res.ResetOutputFileName( _OutputFileName );
                             }
