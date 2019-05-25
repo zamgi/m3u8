@@ -15,7 +15,7 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__in.ReceivedInputParamsArrayEventHandler;
-using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -318,10 +318,6 @@ namespace m3u8.download.manager.ui
             {
                 this.Text = $"{DownloadListUC.GetDownloadInfoText( row )},  [{Resources.APP_TITLE}]";
             }
-            //else if ( this.Text != Resources.APP_TITLE )
-            //{
-            //    this.Text = Resources.APP_TITLE;
-            //}
         }
         private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
         {
@@ -419,29 +415,6 @@ namespace m3u8.download.manager.ui
                     break;
 
                     case DownloadCommandEnum.Delete:
-                        #region comm. with waiting
-                        /*
-                        using ( var cts = new CancellationTokenSource() )
-                        using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1500 ) )
-                        {
-                            try
-                            {
-                                await _DownloadController.CancelWithWait( row, cts.Token );
-                                _DownloadListModel.RemoveRow( row );
-                            }
-                            catch ( Exception ex )
-                            {
-                                if ( !cts.IsCancellationRequested )
-                                {
-                                    Debug.WriteLine( ex );
-                                    this.MessageBox_ShowError( ex.ToString(), this.Text );
-                                    //---throw;
-                                }
-                            }
-                        }
-                        //*/
-                        #endregion
-
                         _DownloadController.Cancel   ( row );
                         _DownloadListModel .RemoveRow( row );
                         row = downloadListUC.GetSelectedDownloadRow();
@@ -589,27 +562,6 @@ namespace m3u8.download.manager.ui
             return (false);
         }
 
-        /*private static bool TryDeleteFile( string fullFileName, int attemptCount = 20, int millisecondsDelay = 100 )
-        {
-            for ( var n = 0; (n < attemptCount); n++ )
-            {
-                try
-                {
-                    if ( File.Exists( fullFileName ) )
-                    {
-                        File.Delete( fullFileName );
-                    }
-                    return (true);
-                }
-                catch ( Exception ex )
-                {
-                    Debug.WriteLine( ex );
-                    Task.Delay( millisecondsDelay ).Wait();
-                }
-            }
-            var success = !File.Exists( fullFileName );
-            return (success);
-        }*/
         private static Task< bool > TryDeleteFiles_Async( string[] fullFileNames, CancellationToken ct, int millisecondsDelay = 100 )
         {
             if ( !fullFileNames.AnyEx() )
@@ -641,25 +593,23 @@ namespace m3u8.download.manager.ui
                     }
                 });
 
-                //var success = !Extensions.AnyFileExists( hs );
-                //return (success);
                 return (true);
             }, ct );
             return (task);
         }
 
         #region [.allowed Command by current status.]
-        [M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Created)  ||
-                                                                                                          (status == DownloadStatus.Paused)   ||
-                                                                                                          (status == DownloadStatus.Canceled) ||
-                                                                                                          (status == DownloadStatus.Finished) ||
-                                                                                                          (status == DownloadStatus.Error);
-        [M(O.AggressiveInlining)] private static bool CancelDownload_IsAllowed( DownloadStatus status ) => (status == DownloadStatus.Started) ||
-                                                                                                           (status == DownloadStatus.Running) ||
-                                                                                                           (status == DownloadStatus.Wait) ||
-                                                                                                           (status == DownloadStatus.Paused);
-        [M(O.AggressiveInlining)] private static bool PauseDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Started) ||
-                                                                                                          (status == DownloadStatus.Running);
+        [M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Created ) ||
+                                                                                                           (status == DownloadStatus.Paused  ) ||
+                                                                                                           (status == DownloadStatus.Canceled) ||
+                                                                                                           (status == DownloadStatus.Finished) ||
+                                                                                                           (status == DownloadStatus.Error   );
+        [M(O.AggressiveInlining)] private static bool CancelDownload_IsAllowed( DownloadStatus status ) => (status == DownloadStatus.Started ) ||
+                                                                                                           (status == DownloadStatus.Running ) ||
+                                                                                                           (status == DownloadStatus.Wait    ) ||
+                                                                                                           (status == DownloadStatus.Paused  );
+        [M(O.AggressiveInlining)] private static bool PauseDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Started ) ||
+                                                                                                           (status == DownloadStatus.Running );
         #endregion
 
         private void AddNewDownloads( (string m3u8FileUrl, bool autoStartDownload)[] array )
@@ -668,7 +618,7 @@ namespace m3u8.download.manager.ui
                      autoStartDownload: array.FirstOrDefault().autoStartDownload);
             AddNewDownloads( p );
         }
-        private void AddNewDownloads( in (IReadOnlyCollection< string > m3u8FileUrls, bool autoStartDownload) p ) //, bool forceShowEmptyDialog )
+        private void AddNewDownloads( in (IReadOnlyCollection< string > m3u8FileUrls, bool autoStartDownload) p )
         {
             if ( p.m3u8FileUrls.AnyEx() )
             {
@@ -690,7 +640,7 @@ namespace m3u8.download.manager.ui
                     }
                 }
             }
-            else //if ( forceShowEmptyDialog )
+            else
             {
                 AddNewDownload( ((string) null, false) );
             }
@@ -735,7 +685,7 @@ namespace m3u8.download.manager.ui
         {
             var showLog = showLogToolButton.Checked;
             Settings.Default.ShowLog = showLog;
-            mainSplitContainer.Panel2Collapsed = !showLog; //m3u8FileResultUC.Visible = showLog;
+            mainSplitContainer.Panel2Collapsed = !showLog;
             logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
         }
         private void copyToolButton_Click( object sender, EventArgs e )
@@ -764,13 +714,10 @@ namespace m3u8.download.manager.ui
         private void aboutToolButton_Click( object sender, EventArgs e )
         {
             var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\"" + Environment.NewLine +
-                       //AssemblyInfoHelper.AssemblyProduct + Environment.NewLine +
                        AssemblyInfoHelper.AssemblyCopyright + Environment.NewLine +
-                       //AssemblyInfoHelper.AssemblyCompany + Environment.NewLine +
-                       //AssemblyInfoHelper.AssemblyDescription + Environment.NewLine +
                        Environment.NewLine +
                        $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})";
-            this.MessageBox_ShowInformation( text, "about" ); //$"'{this.Text}' version: {Assembly.GetExecutingAssembly().GetName().Version}", this.Text );
+            this.MessageBox_ShowInformation( text, "about" );
         }
 
         private void startDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Start  );
@@ -898,7 +845,6 @@ namespace m3u8.download.manager.ui
             foreach ( var row in rows )
             {
                 _DownloadController.Cancel( row );
-                //_DownloadListModel .RemoveRow( row );
             }
             _DownloadListModel.RemoveAll( rows );
 

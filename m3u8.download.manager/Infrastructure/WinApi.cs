@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -10,44 +9,9 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal static class WinApi
     {
+        #region [.SetForegroundWindow.]
         [DllImport("user32.dll")] public static extern bool SetForegroundWindow( IntPtr hWnd );
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential)] public struct WINDOWPLACEMENT
-        {
-            private const int WPF_RESTORETOMAXIMIZED = 2;
-
-            public int       length;
-            public int       flags;
-            public int       showCmd;
-            public Point     ptMinPosition;
-            public Point     ptMaxPosition;
-            public Rectangle rcNormalPosition;
-
-            public bool IsRestoredWindowWillBeMaximized => (flags == WPF_RESTORETOMAXIMIZED);
-            public static WINDOWPLACEMENT Create()  
-            {
-                var wp = new WINDOWPLACEMENT();
-                wp.length = Marshal.SizeOf( wp );
-                return (wp);
-            }
-        }
-
-        [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)] private static extern bool GetWindowPlacement( IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl );
-
-        public static WINDOWPLACEMENT? GetWindowPlacement( IntPtr hWnd )
-        {
-            var wp = WINDOWPLACEMENT.Create();
-            if ( GetWindowPlacement( hWnd, ref wp ) )
-            {
-                return (wp);
-            }
-            return (null);
-        }
-
-        public static FormWindowState ToFormWindowState( this WINDOWPLACEMENT? wp ) => ((!wp.HasValue || !wp.Value.IsRestoredWindowWillBeMaximized) ? FormWindowState.Normal : FormWindowState.Maximized);
+        #endregion
 
         #region [.Redraw Suspend/Resume.]
         [DllImport("user32.dll", EntryPoint="SendMessageA", ExactSpelling=true, CharSet=CharSet.Ansi, SetLastError=true)]

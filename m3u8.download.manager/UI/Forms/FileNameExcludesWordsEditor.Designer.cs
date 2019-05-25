@@ -69,13 +69,12 @@
             this.DGV.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.DGV.Size = new System.Drawing.Size(302, 384);
             this.DGV.TabIndex = 0;
-            //---this.DGV.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DGV_CellPainting);
             this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
             this.DGV.BorderStyle = System.Windows.Forms.BorderStyle.None;
             // 
             // DGV_excludesWordsColumn
             // 
-            this.DGV_excludesWordsColumn.HeaderText = "exclude word";
+            this.DGV_excludesWordsColumn.HeaderText = "Exclude word";
             this.DGV_excludesWordsColumn.Width = 210;
             // 
             // l1
@@ -84,6 +83,7 @@
             this.l1.Location = new System.Drawing.Point(12, 3);
             this.l1.Size = new System.Drawing.Size(29, 13);
             this.l1.TabIndex = 1;
+            this.l1.ForeColor = System.Drawing.Color.Silver; //.DimGray;
             this.l1.Text = "filter:";
             // 
             // filterTextBox
@@ -102,7 +102,7 @@
             this.clearFilterButton.Anchor = System.Windows.Forms.AnchorStyles.Right | System.Windows.Forms.AnchorStyles.Top;
             this.clearFilterButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.clearFilterButton.Enabled = false;
+            this.clearFilterButton.Visible = false;
             this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.clearFilterButton.Location = new System.Drawing.Point(270, 2);
             this.clearFilterButton.Size = new System.Drawing.Size(16, 18);

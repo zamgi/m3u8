@@ -23,7 +23,7 @@ namespace m3u8.download.manager.ui
         {
             InitializeComponent();
 
-            _RPN = RowNumbersPainter.Create( DGV );
+            _RPN = RowNumbersPainter.Create( DGV, useSelectedBackColor: false );
         }
         public FileNameExcludesWordsEditor( IEnumerable< string > excludesWords ) : this()
         {
@@ -134,7 +134,7 @@ namespace m3u8.download.manager.ui
 
             var isEmpty = text.IsNullOrEmpty();
 
-            clearFilterButton.Enabled = !isEmpty;
+            clearFilterButton.Visible = !isEmpty;
 
             //var cm = BindingContext[ DGV.DataSource ] as CurrencyManager;
             //cm?.SuspendBinding();

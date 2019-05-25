@@ -25,27 +25,9 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal interface I_cross_download_instance_semaphore : IDisposable
-    {
-        bool IsNeedReacquire { get; }
-        void WaitForReacquire( CancellationToken ct, Action waitingForOtherDownloadInstanceFinished, int delayTimeout );
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    internal interface I_cross_download_instance_factory
-    {
-        I_cross_download_instance_semaphore CreateWithWait( CancellationToken ct, Action waitingForOtherDownloadInstanceFinished, int delayTimeout );
-    }
-
-
-    /// <summary>
-    /// 
-    /// </summary>
     internal static class m3u8_processor_v2
     {
-        private static IEnumerable< m3u8_part_ts > download_m3u8File_parts_parallel( DownloadPartsAndSaveInputParams ip
-            , I_cross_download_instance_semaphore crossDownloadInstanceSemaphore )
+        private static IEnumerable< m3u8_part_ts > download_m3u8File_parts_parallel( DownloadPartsAndSaveInputParams ip )
         {
             var ct = (ip.Cts?.Token).GetValueOrDefault( CancellationToken.None );
             var m3u8File    = ip.m3u8File;
@@ -75,14 +57,6 @@ namespace m3u8
                         {
                             ip.WaitingIfPaused?.Invoke();
                             ip.WaitIfPausedEvent.Wait( joinedCts.Token );
-                        }
-                        #endregion
-
-                        #region [.check 'crossDownloadInstanceSemaphore'.]
-                        if ( crossDownloadInstanceSemaphore.IsNeedReacquire )
-                        {
-                            crossDownloadInstanceSemaphore.WaitForReacquire(
-                                joinedCts.Token, ip.WaitingForOtherDownloadInstanceFinished, delayTimeout: 1_000 );
                         }
                         #endregion
 
@@ -241,18 +215,16 @@ namespace m3u8
         /// </summary>
         public struct DownloadPartsAndSaveInputParams
         {
-            public m3u8_client                       mc                                      { [M(O.AggressiveInlining)] get; set; }
-            public m3u8_file_t                       m3u8File                                { [M(O.AggressiveInlining)] get; set; }
-            public string                            OutputFileName                          { [M(O.AggressiveInlining)] get; set; }
-            public CancellationTokenSource           Cts                                     { [M(O.AggressiveInlining)] get; set; }
-            public RequestStepActionDelegate         RequestStepAction                       { [M(O.AggressiveInlining)] get; set; }
-            public ResponseStepActionDelegate        ResponseStepAction                      { [M(O.AggressiveInlining)] get; set; }
-            public int                               MaxDegreeOfParallelism                  { [M(O.AggressiveInlining)] get; set; }
-            public I_download_threads_semaphore      DownloadThreadsSemaphore                { [M(O.AggressiveInlining)] get; set; }
-            public ManualResetEventSlim              WaitIfPausedEvent                       { [M(O.AggressiveInlining)] get; set; }
-            public Action                            WaitingIfPaused                         { [M(O.AggressiveInlining)] get; set; }
-            public I_cross_download_instance_factory CrossDownloadInstanceFactory            { [M(O.AggressiveInlining)] get; set; }
-            public Action                            WaitingForOtherDownloadInstanceFinished { [M(O.AggressiveInlining)] get; set; }
+            public m3u8_client                  mc                       { [M(O.AggressiveInlining)] get; set; }
+            public m3u8_file_t                  m3u8File                 { [M(O.AggressiveInlining)] get; set; }
+            public string                       OutputFileName           { [M(O.AggressiveInlining)] get; set; }
+            public CancellationTokenSource      Cts                      { [M(O.AggressiveInlining)] get; set; }
+            public RequestStepActionDelegate    RequestStepAction        { [M(O.AggressiveInlining)] get; set; }
+            public ResponseStepActionDelegate   ResponseStepAction       { [M(O.AggressiveInlining)] get; set; }
+            public int                          MaxDegreeOfParallelism   { [M(O.AggressiveInlining)] get; set; }
+            public I_download_threads_semaphore DownloadThreadsSemaphore { [M(O.AggressiveInlining)] get; set; }
+            public ManualResetEventSlim         WaitIfPausedEvent        { [M(O.AggressiveInlining)] get; set; }
+            public Action                       WaitingIfPaused          { [M(O.AggressiveInlining)] get; set; }
         }
         /// <summary>
         /// 
@@ -280,43 +252,37 @@ namespace m3u8
             if ( ip.OutputFileName.IsNullOrWhiteSpace() )  throw (new m3u8_ArgumentException( nameof(ip.OutputFileName) ));
             if ( ip.DownloadThreadsSemaphore     == null ) throw (new m3u8_ArgumentException( nameof(ip.DownloadThreadsSemaphore) ));
             if ( ip.WaitIfPausedEvent            == null ) throw (new m3u8_ArgumentException( nameof(ip.WaitIfPausedEvent) ));
-            if ( ip.CrossDownloadInstanceFactory == null ) throw (new m3u8_ArgumentException( nameof(ip.CrossDownloadInstanceFactory) ));
             //---------------------------------------------------------------------------------------------------------//
 
             //-1-//
             var res = new DownloadPartsAndSaveResult( ip.OutputFileName );
 
-            using ( var cross_download_instance_semaphore = ip.CrossDownloadInstanceFactory.CreateWithWait(
-                            ip.Cts.Token, ip.WaitingForOtherDownloadInstanceFinished, delayTimeout: 1000 )
-                  )
+            //-2-//
+            var downloadParts = download_m3u8File_parts_parallel( ip );
+
+            //-3.1-//
+            var directoryName = Path.GetDirectoryName( ip.OutputFileName );
+            if ( !Directory.Exists( directoryName ) )
             {
-                //-2-//
-                var downloadParts = download_m3u8File_parts_parallel( ip, cross_download_instance_semaphore );
+                Directory.CreateDirectory( directoryName );
+            }
+            //-3.2-//
+            using ( var fs = File.OpenWrite( ip.OutputFileName ) )
+            {
+                fs.SetLength( 0 );
 
-                //-3.1-//
-                var directoryName = Path.GetDirectoryName( ip.OutputFileName );
-                if ( !Directory.Exists( directoryName ) )
+                foreach ( var downloadPart in downloadParts )
                 {
-                    Directory.CreateDirectory( directoryName );
-                }
-                //-3.2-//
-                using ( var fs = File.OpenWrite( ip.OutputFileName ) )
-                {
-                    fs.SetLength( 0 );
-
-                    foreach ( var downloadPart in downloadParts )
+                    if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )
                     {
-                        if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )
-                        {
-                            res.PartsErrorCount++;
-                            continue;
-                        }
-                        var bytes = downloadPart.Bytes;
-                        fs.Write( bytes, 0, bytes.Length );
-
-                        res.PartsSuccessCount++;
-                        res.TotalBytes += (uint) bytes.Length;
+                        res.PartsErrorCount++;
+                        continue;
                     }
+                    var bytes = downloadPart.Bytes;
+                    fs.Write( bytes, 0, bytes.Length );
+
+                    res.PartsSuccessCount++;
+                    res.TotalBytes += (uint) bytes.Length;
                 }
             }
 

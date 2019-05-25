@@ -8,6 +8,9 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using M = System.Runtime.CompilerServices.MethodImplAttribute;
+using O = System.Runtime.CompilerServices.MethodImplOptions;
+
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -17,22 +20,44 @@ namespace m3u8.download.manager.ui
     {
         private DataGridView _DGV;
         private StringFormat _SF_RowNumbers;
+        private Brush _SelBackBrush;
+        private Brush _SelTextBrush;
+        private Pen   _SelBorderPen;
+
         private Brush _BackBrush;
-        private Pen   _RectPen;
         private Brush _TextBrush;
+        private Color _TextColor;
+        private Pen   _BorderPen;
 
-        public static RowNumbersPainter Create( DataGridView dgv, bool useSelectedBackColor = false ) => new RowNumbersPainter( dgv, useSelectedBackColor );
+        private bool  _UseColumnsHoverHighlight;
+        private Brush _BackBrushColumnHover;
+        private Brush _BackBrushColumnHoverPushed;
 
-        private RowNumbersPainter( DataGridView dgv, bool useSelectedBackColor )
+        public static RowNumbersPainter Create( DataGridView dgv, bool useSelectedBackColor = true, bool useColumnsHoverHighlight = true )
+            => new RowNumbersPainter( dgv, useSelectedBackColor, useColumnsHoverHighlight );
+
+        private RowNumbersPainter( DataGridView dgv, bool useSelectedBackColor, bool useColumnsHoverHighlight )
         {
             _SF_RowNumbers = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+
+            _BackBrush = Brushes.LightGray;
+            _TextBrush = Brushes.DimGray;
+            _TextColor = Color.DimGray;
+            _BorderPen = Pens.Silver;
+            
+            if ( useColumnsHoverHighlight )
+            {
+                _UseColumnsHoverHighlight = true;
+                _BackBrushColumnHover       = new SolidBrush( Color.FromArgb( 224, 224, 224 ) ); // Brushes.Gainsboro;
+                _BackBrushColumnHoverPushed = new SolidBrush( Color.FromArgb( 235, 235, 235 ) ); // Brushes.WhiteSmoke;
+            }
 
             _DGV = dgv;
             if ( useSelectedBackColor )
             {
-                _BackBrush = new SolidBrush( _DGV.DefaultCellStyle.SelectionBackColor );
-                _RectPen   = new Pen       ( _DGV.DefaultCellStyle.SelectionForeColor );
-                _TextBrush = new SolidBrush( _DGV.DefaultCellStyle.SelectionForeColor );
+                _SelBackBrush = new SolidBrush( _DGV.DefaultCellStyle.SelectionBackColor );
+                _SelBorderPen = new Pen       ( _DGV.DefaultCellStyle.SelectionForeColor );
+                _SelTextBrush = new SolidBrush( _DGV.DefaultCellStyle.SelectionForeColor );
                 _DGV.CellPainting += DGV_CellPaintingRowNumbers_useSelectedBackColor;
             }
             else
@@ -44,62 +69,98 @@ namespace m3u8.download.manager.ui
         {
             _DGV.CellPainting -= DGV_CellPaintingRowNumbers_useSelectedBackColor;
             _DGV.CellPainting -= DGV_CellPaintingRowNumbers;
+
             _SF_RowNumbers.Dispose();
 
-            _BackBrush?.Dispose();
-            _RectPen  ?.Dispose();
-            _TextBrush?.Dispose();
+            _BackBrushColumnHover      ?.Dispose();
+            _BackBrushColumnHoverPushed?.Dispose();
+
+            _SelBackBrush?.Dispose();
+            _SelBorderPen?.Dispose();
+            _SelTextBrush?.Dispose();
         }
 
         private void DGV_CellPaintingRowNumbers_useSelectedBackColor( object sender, DataGridViewCellPaintingEventArgs e )
         {
-            if ( (0 <= e.RowIndex) && (e.ColumnIndex < 0) ) //row numbers
+            if ( 0 <= e.RowIndex ) //row numbers
             {
-                e.Handled = true;
-                var gr = e.Graphics;
-
-                Brush backBrush;
-                Pen   rectPen;
-                Brush textBrush;
-                if ( e.State.IsSelected() )
+                if ( e.ColumnIndex < 0 ) //row numbers
                 {
-                    //var isFocused = (_DGV.CurrentCell.OwningRow.Index == e.RowIndex); // ((e.PaintParts & DataGridViewPaintParts.Focus) == DataGridViewPaintParts.Focus);
+                    e.Handled = true;
+                    var gr = e.Graphics;
 
-                    backBrush = _BackBrush; // Brushes.SkyBlue;
-                    rectPen   = _RectPen;   // Pens.DeepSkyBlue;
-                    textBrush = _TextBrush; // Brushes.WhiteSmoke;
-                }
-                else
-                {
-                    backBrush = Brushes.LightGray;
-                    rectPen   = Pens.Silver;
-                    textBrush = Brushes.DimGray;
-                }
+                    Brush backBrush;
+                    Pen borderPen;
+                    Brush textBrush;
+                    if ( e.State.IsSelected() )
+                    {
+                        backBrush = _SelBackBrush;
+                        borderPen = _SelBorderPen;
+                        textBrush = _SelTextBrush;
+                    }
+                    else
+                    {
+                        backBrush = _BackBrush;
+                        borderPen = _BorderPen;
+                        textBrush = _TextBrush;
+                    }
 
-                gr.FillRectangle( backBrush, e.CellBounds );
+                    gr.FillRectangle( backBrush, e.CellBounds );
 
-                var rc = e.CellBounds;
+                    var rc = e.CellBounds;
                     rc.Y++; rc.Height -= 3;
                     rc.Width -= 2;
-                gr.DrawRectangle( rectPen, rc );
+                    gr.DrawRectangle( borderPen, rc );
 
-                gr.DrawString( (e.RowIndex + 1).ToString(), _DGV.Font, textBrush, e.CellBounds, _SF_RowNumbers );
+                    gr.DrawString( (e.RowIndex + 1).ToString(), _DGV.Font, textBrush, e.CellBounds, _SF_RowNumbers );
+                }
+            }
+            else //columns headers
+            {
+                DrawColumnsHeaders( e );
             }
         }
         private void DGV_CellPaintingRowNumbers( object sender, DataGridViewCellPaintingEventArgs e )
         {
-            if ( (0 <= e.RowIndex) && (e.ColumnIndex < 0) ) //row numbers
+            if ( 0 <= e.RowIndex ) //row numbers
             {
-                e.Handled = true;
-                var gr = e.Graphics;
-                gr.FillRectangle( Brushes.LightGray, e.CellBounds );
+                if ( e.ColumnIndex < 0 ) //row numbers
+                {
+                    e.Handled = true;
+                    var gr   = e.Graphics;
+                    var font = _DGV.Font;
 
-                var rc  = e.CellBounds; rc.Height -= 2; rc.Width -= 2;
-                var pen = e.State.IsSelected() ? Pens.DarkBlue : Pens.Silver;
-                gr.DrawRectangle( pen, rc );
+                    gr.FillRectangle( _BackBrush, e.CellBounds );
 
-                gr.DrawString( (e.RowIndex + 1).ToString(), _DGV.Font, Brushes.DimGray, e.CellBounds, _SF_RowNumbers );
-            } 
+                    var rc  = e.CellBounds; rc.Height -= 2; rc.Width -= 2;
+                    var pen = (e.State.IsSelected() ? Pens.DarkBlue : _BorderPen);
+                    gr.DrawRectangle( pen, rc );
+
+                    gr.DrawString( (e.RowIndex + 1).ToString(), font, _TextBrush, e.CellBounds, _SF_RowNumbers );
+                }
+            }
+            else //columns headers
+            {
+                DrawColumnsHeaders( e );
+            }
+        }
+
+        [M(O.AggressiveInlining)] private void DrawColumnsHeaders( DataGridViewCellPaintingEventArgs e )
+        {
+            e.Handled = true;
+            var gr   = e.Graphics;
+            var font = _DGV.Font;
+
+            var br = (_UseColumnsHoverHighlight && e.CellBounds.Contains( _DGV.PointToClient( Control.MousePosition ) )) 
+                            ? ((Control.MouseButtons == MouseButtons.Left) ? _BackBrushColumnHoverPushed
+                                                                           : _BackBrushColumnHover) 
+                            : _BackBrush;
+            gr.FillRectangle( br, e.CellBounds );
+
+            var rc = e.CellBounds; rc.Height -= 2; rc.Width -= 2;
+            gr.DrawRectangle( _BorderPen, rc );
+
+            e.PaintContent( e.CellBounds );
         }
     }
 

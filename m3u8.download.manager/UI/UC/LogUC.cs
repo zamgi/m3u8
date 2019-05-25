@@ -21,7 +21,8 @@ namespace m3u8.download.manager.ui
     internal sealed partial class LogUC : UserControl
     {
         #region [.field's.]
-        private StringFormat _SF;
+        private RowNumbersPainter _RNP;
+        private StringFormat      _SF;
         private CellStyle _Req_ReceivedCellStyle;
         private CellStyle _Req_CellStyleSmallFont_1;
         private CellStyle _Req_CellStyleSmallFont_2;
@@ -61,8 +62,8 @@ namespace m3u8.download.manager.ui
             _Model_CollectionChangedAction = new Action< _CollectionChangedTypeEnum_ >( Model_CollectionChanged );
 
             //----------------------------------------------//
-            _SF = new StringFormat( StringFormatFlags.LineLimit ) // StringFormatFlags.MeasureTrailingSpaces | //| StringFormatFlags.NoWrap )
-                { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
+            _RNP = RowNumbersPainter.Create( DGV, useSelectedBackColor: true, useColumnsHoverHighlight: false );
+            _SF  = new StringFormat( StringFormatFlags.LineLimit ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
 
             //----------------------------------------------//
             var font   = DGV.Font;
@@ -107,6 +108,7 @@ namespace m3u8.download.manager.ui
             if ( disposing )
             {
                 components?.Dispose();
+                _RNP.Dispose();
                 _SF.Dispose();
                 DetachSettingsController();
                 DetachLogRowsHeightStorer();
@@ -211,10 +213,6 @@ namespace m3u8.download.manager.ui
                 _Model.RowPropertiesChanged += Model_RowPropertiesChanged;
                 Model_CollectionChanged( _CollectionChangedTypeEnum_.Add );
                 SetRowsVisiblity( true );
-                /*if ( this.ShowOnlyRequestRowsWithErrors )
-                {
-                    SetRowsVisiblity();
-                }*/
                 this.Visible = true;
             }
             else
@@ -320,30 +318,7 @@ namespace m3u8.download.manager.ui
         private const int MAX_TEXT_LENGTH = 2048;
         private const int TEXT_LENGTH_250 = 250;
         private const int TEXT_LENGTH_500 = 500;
-        /*private StringBuilder _Buffer = new StringBuilder();
 
-        [M(O.AggressiveInlining)] private string    Get_4_RequestColumn__text     ( string text, int maxLength = MAX_TEXT_LENGTH )
-        {
-            const int  STEP_SIZE = 75;
-            const char SPACE     = ' ';
-
-            if ( text.Length <= STEP_SIZE )
-            {
-                return (text);
-            }
-
-            _Buffer.Clear();
-
-            for ( int i = 0, len = Math.Min( maxLength, text.Length ); i < len; )
-            {
-                var count = Math.Min( STEP_SIZE, len - i );
-                _Buffer.Append( text, i, count ).Append( SPACE );
-                i += count;
-            }
-            return (_Buffer.ToString( 0, Math.Max( 0, _Buffer.Length - 1 ) ) );
-
-            //return (text.TrimIfLongest( maxLength ));
-        }*/
         [M(O.AggressiveInlining)] private static string Get_4_RequestColumn__text( string errorText, int maxLength = MAX_TEXT_LENGTH ) => errorText.TrimIfLongest( maxLength );
         [M(O.AggressiveInlining)] private CellStyle     Get_4_RequestColumn__cellStyle( string text, int maxLength = MAX_TEXT_LENGTH )
         {
@@ -395,7 +370,6 @@ namespace m3u8.download.manager.ui
             }
 
             DGV.SuspendDrawing();
-            //DGV.SuspendLayout();
             try
             {
                 if ( _ShowOnlyRequestRowsWithErrors )
@@ -444,7 +418,6 @@ namespace m3u8.download.manager.ui
             }
             finally
             {
-                //DGV.ResumeLayout(true);
                 DGV.ResumeDrawing();
             }
         }
@@ -479,7 +452,7 @@ namespace m3u8.download.manager.ui
                     else
                     {
                         col_2.Width = col_2.MinimumWidth;
-                        col_1.Width = w - col_2.Width; // DGV_responseColumn.Width;
+                        col_1.Width = w - col_2.Width;
                     }
                 }
                 else
@@ -628,19 +601,21 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_CellPainting( object sender, DataGridViewCellPaintingEventArgs e )
         {
-            e.Handled = true;
-            
-            var isSelected = ((e.State & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected);
+            if ( 0 <= e.RowIndex )
+            { 
+                e.Handled = true;
+                var isSelected = e.State.IsSelected();
 
-            e.PaintBackground( e.CellBounds, isSelected );
+                e.PaintBackground( e.CellBounds, isSelected );
 
-            var cs   = e.CellStyle;
-            var text = e.Value?.ToString();
-            using ( var br = new SolidBrush( (isSelected ? cs.SelectionForeColor : cs.ForeColor) ) )
-            {
-                var rc = e.CellBounds;
-                    rc.Inflate( -2, -2 );
-                e.Graphics.DrawString( text, cs.Font, br, rc, _SF );
+                var cs   = e.CellStyle;
+                var text = e.Value?.ToString();
+                using ( var br = new SolidBrush( (isSelected ? cs.SelectionForeColor : cs.ForeColor) ) )
+                {
+                    var rc = e.CellBounds;
+                        rc.Inflate( -2, -2 );
+                    e.Graphics.DrawString( text, cs.Font, br, rc, _SF );
+                }
             }
         }        
         private void DGV_RowDividerDoubleClick( object sender, DataGridViewRowDividerDoubleClickEventArgs e )
@@ -665,26 +640,6 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        /*private void DGV_RowHeightInfoNeeded( object sender, DataGridViewRowHeightInfoNeededEventArgs e )
-        {
-            var row = DGV.Rows[ e.RowIndex ];
-
-            using ( var gr = Graphics.FromHwnd( DGV.Handle ) )
-            {
-                MeasureCellText( gr, row, 0, e.RowIndex, out var sz_0 );
-
-                if ( this.ShowResponseColumn )
-                {
-                    MeasureCellText( gr, row, 1, e.RowIndex, out var sz_1 );
-
-                    e.Height = (int) Math.Max( sz_0.Height, sz_1.Height );
-                }
-                else
-                {
-                    e.Height = (int) sz_0.Height;
-                }
-            }
-        }*/
 
         [M(O.AggressiveInlining)] private void MeasureCellText( Graphics gr, DataGridViewRow row, int columnIndex, int rowIndex, out SizeF sz )
         {
