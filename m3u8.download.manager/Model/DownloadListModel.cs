@@ -29,7 +29,7 @@ namespace m3u8.download.manager.models
     /// </summary>
     internal sealed class DownloadRow : RowBase< DownloadRow >
     {
-        private TimeSpan               _Elapsed;
+        private TimeSpan               _FinitaElapsed;
         private _RowPropertiesChanged_ _RowPropertiesChanged;
 
         internal DownloadRow( in (string Url, string OutputFileName, string OutputDirectory) t, DownloadListModel model 
@@ -111,30 +111,25 @@ namespace m3u8.download.manager.models
             }
         }
 
-        [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus status )
+        [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
         {
-            if ( Status != status )
+            if ( Status != newStatus )
             {
-                switch ( status )
+                switch ( newStatus )
                 {
                     case DownloadStatus.Started:
-                        CreatedDateTime = DateTime.Now;
-                    break;
-
                     case DownloadStatus.Running:
-                        if ( Status == DownloadStatus.Wait )
-                        {
-                            CreatedDateTime = DateTime.Now;
-                        }
+                        CreatedDateTime = DateTime.Now;
                     break;
 
                     case DownloadStatus.Canceled:
                     case DownloadStatus.Error:
                     case DownloadStatus.Finished:
-                        _Elapsed = (DateTime.Now - CreatedDateTime);
+                        _FinitaElapsed = (DateTime.Now - CreatedDateTime);
                     break;
                 }
-                Status = status;
+
+                Status = newStatus;
                 _RowPropertiesChanged?.Invoke( this, nameof(Status) );
             }
         }
@@ -146,7 +141,7 @@ namespace m3u8.download.manager.models
                 case DownloadStatus.Canceled:
                 case DownloadStatus.Error:
                 case DownloadStatus.Finished:
-                    return (_Elapsed);
+                    return (_FinitaElapsed);
 
                 default:
                     return (DateTime.Now - CreatedDateTime);

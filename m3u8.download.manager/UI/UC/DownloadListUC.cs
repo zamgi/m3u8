@@ -283,7 +283,8 @@ namespace m3u8.download.manager.ui
             const string HH_MM_SS = "hh\\:mm\\:ss";
             const string MM_SS    = "mm\\:ss";
 
-            switch ( row.Status )
+            var st = row.Status;
+            switch ( st )
             {
                 case DownloadStatus.Created: return ($"[created]: {row.CreatedDateTime.ToString( "HH:mm:ss  (yyyy.MM.dd)" )}");
                 case DownloadStatus.Started: return ($"{row.GetElapsed().ToString( HH_MM_SS )}");
@@ -291,22 +292,25 @@ namespace m3u8.download.manager.ui
             }
 
             var ts           = row.GetElapsed();
-            var percent      = ((0 < row.TotalParts) ? Convert.ToByte( (100.0 * row.SuccessDownloadParts) / row.TotalParts ).ToString() : "-");
             var elapsed      = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
+            var percent      = ((0 < row.TotalParts) ? Convert.ToByte( (100.0 * row.SuccessDownloadParts) / row.TotalParts ).ToString() : "-");
             var failedParts  = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
             var downloadInfo = (shorty ? null : $"{row.SuccessDownloadParts} of {row.TotalParts}{failedParts}, ")
                                + $"{percent}%, ({elapsed})";
             
             #region [.speed.]
-            var elapsedSeconds = ts.TotalSeconds;
-            if ( (1_000 < row.DownloadBytesLength) && (2.5 <= elapsedSeconds) )
+            if ( !st.IsPaused() )
             {
-                var speedText = default(string);
-                //if ( row.DownloadBytesLength < 1_000   ) speedText = (row.DownloadBytesLength / elapsedSeconds).ToString("N2") + " bit/s";
-                if ( row.DownloadBytesLength < 100_000 ) speedText = ((row.DownloadBytesLength / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
-                else                                     speedText = ((row.DownloadBytesLength / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
+                var elapsedSeconds = ts.TotalSeconds;
+                if ( (1_000 < row.DownloadBytesLength) && (2.5 <= elapsedSeconds) )
+                {
+                    var speedText = default(string);
+                    //if ( row.DownloadBytesLength < 1_000   ) speedText = (row.DownloadBytesLength / elapsedSeconds).ToString("N2") + " bit/s";
+                    if ( row.DownloadBytesLength < 100_000 ) speedText = ((row.DownloadBytesLength / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
+                    else                                     speedText = ((row.DownloadBytesLength / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
 
-                downloadInfo += $", [{(shorty ? null : "speed: ")}{speedText}]";
+                    downloadInfo += $", [{(shorty ? null : "speed: ")}{speedText}]";
+                }
             }
             #endregion
 

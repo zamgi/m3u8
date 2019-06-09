@@ -13,9 +13,9 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose( bool disposing )
         {
-            if ( disposing && (components != null) )
+            if ( disposing )
             {
-                components.Dispose();
+                components?.Dispose();
             }
             base.Dispose( disposing );
         }
@@ -53,18 +53,19 @@
             s3 = new System.Windows.Forms.ToolStripSeparator();
             s4 = new System.Windows.Forms.ToolStripSeparator();
             s5 = new System.Windows.Forms.ToolStripSeparator();
-
             System.Windows.Forms.ToolStripSeparator s6;
             System.Windows.Forms.ToolStripSeparator s7;
             System.Windows.Forms.ToolStripSeparator s8;
             System.Windows.Forms.ToolStripSeparator s9;
+            System.Windows.Forms.ToolStripSeparator s10;
             this.mainContextMenu = new System.Windows.Forms.ContextMenuStrip( this.components );
             this.startDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cancelDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteWithOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            //---this.allDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.browseOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllFinishedDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -75,8 +76,8 @@
             s7 = new System.Windows.Forms.ToolStripSeparator();
             s8 = new System.Windows.Forms.ToolStripSeparator();
             s9 = new System.Windows.Forms.ToolStripSeparator();
+            s10 = new System.Windows.Forms.ToolStripSeparator();
             this.mainContextMenu.SuspendLayout();
-
             this.mainToolStrip.SuspendLayout();
             ( (System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
@@ -253,7 +254,6 @@
             this.statusBarUC.Location = new System.Drawing.Point( 0, 270 );
             this.statusBarUC.Size = new System.Drawing.Size( 803, 35 );
             this.statusBarUC.TabIndex = 4;
-
             // 
             // mainContextMenu
             // 
@@ -265,16 +265,18 @@
                 this.deleteDownloadMenuItem,
                 this.deleteWithOutputFileMenuItem,
                 s7,
-                this.deleteAllFinishedDownloadMenuItem,
+                this.browseOutputFileMenuItem,
+                this.openOutputFileMenuItem,
                 s8,
-                //---this.allDownloadsMenuItem
+                this.deleteAllFinishedDownloadMenuItem,
+                s9,
                 this.startAllDownloadsMenuItem,
                 this.pauseAllDownloadsMenuItem,
                 this.cancelAllDownloadsMenuItem,
-                s9,
+                s10,
                 this.deleteAllDownloadsMenuItem,
                 this.deleteAllWithOutputFilesMenuItem
-            } );
+            });
             this.mainContextMenu.Size = new System.Drawing.Size( 183, 176 );
             // 
             // startDownloadMenuItem
@@ -310,21 +312,18 @@
             this.deleteWithOutputFileMenuItem.Text = "Delete with Output file";
             this.deleteWithOutputFileMenuItem.ShortcutKeyDisplayString = "(Shift + Del)";
             this.deleteWithOutputFileMenuItem.Click += new System.EventHandler( this.deleteWithOutputFileMenuItem_Click );
-            /*
             // 
-            // allDownloadsMenuItem
+            // browseOutputFileMenuItem
             // 
-            this.allDownloadsMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
-                this.startAllDownloadsMenuItem,
-                this.pauseAllDownloadsMenuItem,
-                this.cancelAllDownloadsMenuItem,
-                s9,
-                this.deleteAllDownloadsMenuItem,
-                this.deleteAllWithOutputFilesMenuItem
-            } );
-            this.allDownloadsMenuItem.Text = "All";
-            this.allDownloadsMenuItem.DropDownOpening += new System.EventHandler(this.allDownloadsMenuItem_DropDownOpening);
-            */
+            this.browseOutputFileMenuItem.Text = "    Browse Output file";
+            this.browseOutputFileMenuItem.ShortcutKeyDisplayString = "(Ctrl + B)";
+            this.browseOutputFileMenuItem.Click += new System.EventHandler( this.browseOutputFileMenuItem_Click );
+            // 
+            // openOutputFileMenuItem
+            // 
+            this.openOutputFileMenuItem.Text = "    Open Output file";
+            this.openOutputFileMenuItem.ShortcutKeyDisplayString = "(Ctrl + O), (Enter)";
+            this.openOutputFileMenuItem.Click += new System.EventHandler( this.openOutputFileMenuItem_Click );
             // 
             // deleteAllFinishedDownloadMenuItem
             // 
@@ -360,7 +359,6 @@
             // 
             this.deleteAllWithOutputFilesMenuItem.Text = "      Delete all with Output files...";
             this.deleteAllWithOutputFilesMenuItem.Click += new System.EventHandler(this.deleteAllWithOutputFilesMenuItem_Click);
-
             // 
             // MainForm
             // 
@@ -402,15 +400,15 @@
         private DownloadListUC downloadListUC;
         private LogUC logUC;
         private StatusBarUC statusBarUC;
-
         private System.Windows.Forms.ContextMenuStrip mainContextMenu;
         private System.Windows.Forms.ToolStripMenuItem startDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cancelDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteWithOutputFileMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem browseOutputFileMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteAllFinishedDownloadMenuItem;
-        //---private System.Windows.Forms.ToolStripMenuItem allDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cancelAllDownloadsMenuItem;

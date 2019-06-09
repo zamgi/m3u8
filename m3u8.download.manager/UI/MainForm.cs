@@ -204,6 +204,19 @@ namespace m3u8.download.manager.ui
                     case Keys.D: //Minimized window
                         this.WindowState = FormWindowState.Minimized;
                     break;
+
+                    case Keys.B: //Browse output file
+                        if ( downloadListUC.HasFocus )
+                        {
+                            browseOutputFileMenuItem_Click( this, EventArgs.Empty );
+                        }
+                    break;
+                    case Keys.O: //Open output file
+                        if ( downloadListUC.HasFocus )
+                        {
+                            openOutputFileMenuItem_Click( this, EventArgs.Empty );
+                        }
+                    break;
                 }
             }
             else
@@ -716,7 +729,23 @@ namespace m3u8.download.manager.ui
             var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\"" + Environment.NewLine +
                        AssemblyInfoHelper.AssemblyCopyright + Environment.NewLine +
                        Environment.NewLine +
-                       $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})";
+                       $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})" +
+                       Environment.NewLine +
+                       Environment.NewLine +
+                       "Shortcut's:" + Environment.NewLine +
+                       "  Ctrl+C:\t Copy selected download url to clipboard" + Environment.NewLine +
+                       "  Ctrl+B:\t Browse output file (if exists)" + Environment.NewLine +
+                       "  Ctrl+D:\t Minimized application window" + Environment.NewLine +
+                       "  Ctrl+O:\t Open output file (if exists)" + Environment.NewLine +
+                       "  Ctrl+P:\t Pause selected download" + Environment.NewLine +
+                       "  Ctrl+S:\t Start selected download" + Environment.NewLine +
+                       "  Ctrl+V:\t Paste download url from clipboard" + Environment.NewLine +
+                       "  Ctrl+W:\t Exit application" + Environment.NewLine +
+                       "  Ctrl+Z:\t Cancel selected download" + Environment.NewLine +
+                       "  Insert:\t Open add new download dialog" + Environment.NewLine +
+                       "  Delete:\t Delete download (with or without output file)" + Environment.NewLine +
+                       "  Enter:\t Open rename output file dialog" + Environment.NewLine +
+                       "  F1:\t About dialog" + Environment.NewLine;
             this.MessageBox_ShowInformation( text, "about" );
         }
 
@@ -744,6 +773,8 @@ namespace m3u8.download.manager.ui
                 pauseDownloadMenuItem            .Enabled = pauseDownloadToolButton .Enabled;
                 deleteDownloadMenuItem           .Enabled = deleteDownloadToolButton.Enabled;
                 deleteWithOutputFileMenuItem     .Enabled = deleteDownloadToolButton.Enabled && Extensions.AnyFileExists( row?.GetOutputFullFileNames() );
+                browseOutputFileMenuItem         .Visible = deleteWithOutputFileMenuItem.Enabled;
+                openOutputFileMenuItem           .Visible = deleteWithOutputFileMenuItem.Enabled;
                 deleteAllFinishedDownloadMenuItem.Enabled = deleteAllFinishedDownloadToolButton.Enabled;
 
                 var allowedAll = (row == null) || (1 < _DownloadListModel.RowsCount);
@@ -806,6 +837,29 @@ namespace m3u8.download.manager.ui
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
         private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownload( downloadListUC.GetSelectedDownloadRow() );
+
+        private void browseOutputFileMenuItem_Click( object sender, EventArgs e )
+        {
+            var row = downloadListUC.GetSelectedDownloadRow();
+            if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
+            {
+                using ( Process.Start( "explorer", "/e,/select," + outputFileName ) )
+                {
+                    ;
+                }
+            }
+        }
+        private void openOutputFileMenuItem_Click( object sender, EventArgs e )
+        {
+            var row = downloadListUC.GetSelectedDownloadRow();
+            if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
+            {
+                using ( Process.Start( outputFileName ) )
+                {
+                    ;
+                }
+            }
+        }
 
         private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {

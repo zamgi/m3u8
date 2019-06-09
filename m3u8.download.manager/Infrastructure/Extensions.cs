@@ -74,7 +74,7 @@ namespace m3u8.download.manager
                 Debug.WriteLine( ex );
             }
         }
-        public static bool AnyFileExists( ICollection< string > fileNames )
+        public static bool TryGetFirstFileExists( ICollection< string > fileNames, out string existsFileName )
         {
             if ( fileNames.AnyEx() )
             {
@@ -82,12 +82,15 @@ namespace m3u8.download.manager
                 {
                     if ( (fileName != null) && File.Exists( fileName ) )
                     {
+                        existsFileName = fileName;
                         return (true);
                     }
                 }
             }
+            existsFileName = null;
             return (false);
         }
+        public static bool AnyFileExists( ICollection< string > fileNames ) => TryGetFirstFileExists( fileNames, out var _ );
 
         public static void MessageBox_ShowInformation( this IWin32Window owner, string text, string caption ) => MessageBox.Show( owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Information );
         public static void MessageBox_ShowError( this IWin32Window owner, string text, string caption ) => MessageBox.Show( owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Error );
@@ -306,10 +309,11 @@ namespace m3u8.download.manager
         }
 
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadRow    row    ) => (row.Status == DownloadStatus.Finished);
-        [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadStatus status ) => (status == DownloadStatus.Finished);
+        [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadStatus status ) => (status     == DownloadStatus.Finished);
         [M(O.AggressiveInlining)] public static bool IsError   ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Error);
         [M(O.AggressiveInlining)] public static bool IsRunning ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Running);
         [M(O.AggressiveInlining)] public static bool IsWait    ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Wait);
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Paused);
+        [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadStatus status ) => (status     == DownloadStatus.Paused);
     }
 }
