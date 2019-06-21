@@ -748,8 +748,9 @@ namespace m3u8.downloader
             SetEnabledUI( false );
             UnsetResultUC();
 
-            _Mc  = m3u8_client.Create( attemptRequestCountByPart.GetValueOrDefault( Settings.Default.AttemptRequestCountByPart ),
-                                       Settings.Default.RequestTimeoutByPart );
+            _Mc  = m3u8_client_factory.Create( Settings.Default.RequestTimeoutByPart, 
+                                               attemptRequestCountByPart.GetValueOrDefault( Settings.Default.AttemptRequestCountByPart )
+                                             );
             _Cts = new CancellationTokenSource();
             _Wb  = WaitBannerUC.Create( this, _Cts );
         }
@@ -761,7 +762,7 @@ namespace m3u8.downloader
                 _m3U8FileResultUC.AppendRequestErrorText( ".....Canceled by User....." );
             }
 
-            _Mc? .Dispose(); _Mc  = null;
+            /*_Mc? .Dispose();*/ _Mc  = null;
             _Cts?.Dispose(); _Cts = null;
             _Wb? .Dispose(); _Wb  = null;
 

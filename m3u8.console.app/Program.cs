@@ -72,7 +72,7 @@ namespace m3u8
 
             public static void run( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
-                using ( var mc = m3u8_client.Create() )
+                var mc = m3u8_client_factory.Create();
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var task = Task.Run( async () =>
@@ -110,7 +110,7 @@ namespace m3u8
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadParts.Count( p => p.Error == null )} of {downloadParts.Count}\r\n" + 
                                            $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {(totalBytes >> 20).ToString( "0,0" )} mb)\r\n" );
 
-                    } )
+                    })
                     .ContinueWith( t =>
                     {
                         if ( t.IsFaulted )
@@ -234,7 +234,7 @@ namespace m3u8
 
             public static void run__v1( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
-                using ( var mc = m3u8_client.Create() )
+                var mc = m3u8_client_factory.Create();
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var task = Task.Run( async () =>
@@ -381,7 +381,7 @@ namespace m3u8
 
             public static void run__v2( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
-                using ( var mc = m3u8_client.Create() )
+                var mc = m3u8_client_factory.Create();
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var task = Task.Run( async () =>

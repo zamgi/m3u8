@@ -539,8 +539,10 @@ namespace m3u8
             //---------------------------------------------------------------------------------------------------------//
 
             var m3u8FileUrl = new Uri( ip.m3u8FileUrl );
-
-            using ( var mc = new m3u8_client( ip.NetParams ) )
+            
+            var hc = HttpClientFactory.Get();
+            var np = ip.NetParams;
+            var mc = new m3u8_client( hc, new m3u8_client.init_params() { ConnectionClose = np.ConnectionClose, AttemptRequestCount = np.AttemptRequestCount } );
             {
                 var ct = (ip.Cts?.Token).GetValueOrDefault( CancellationToken.None );
                 var res = new DownloadFileAndSaveResult( ip );

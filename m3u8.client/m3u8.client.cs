@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -202,16 +203,15 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    public sealed class m3u8_client : IDisposable
+    public sealed class m3u8_client
     {
         /// <summary>
         /// 
         /// </summary>
         public struct init_params
         {
-            public int?      AttemptRequestCount { get; set; }
-            public TimeSpan? Timeout             { get; set; }
-            public bool?     ConnectionClose     { get; set; }
+            public int?  AttemptRequestCount { get; set; }
+            public bool? ConnectionClose     { get; set; }
         }
 
         #region [.field's.]
@@ -219,22 +219,14 @@ namespace m3u8
         #endregion
 
         #region [.ctor().]
-        public m3u8_client( init_params ip )
+        public m3u8_client( HttpClient httpClient, in init_params ip )
         {
-            InitParams = ip;
-
-            _HttpClient = new HttpClient();
-            _HttpClient.DefaultRequestHeaders.ConnectionClose = ip.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
-            if ( ip.Timeout.HasValue )
-            {
-                _HttpClient.Timeout = ip.Timeout.Value;
-            }
+            _HttpClient = httpClient ?? throw (new ArgumentNullException( nameof(httpClient) ));
+            InitParams  = ip;            
         }
-
-        public void Dispose() => _HttpClient.Dispose();
         #endregion
 
-        public init_params InitParams { get; private set; }
+        public init_params InitParams { get; }
 
         public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken? cancellationToken = null )
         {
@@ -248,19 +240,24 @@ namespace m3u8
             {
                 try
                 {
-                    using ( HttpResponseMessage response = await _HttpClient.GetAsync( url, ct ) )
-                    using ( HttpContent content = response.Content )
+                    using ( var requestMsg = new HttpRequestMessage( HttpMethod.Get, url ) )
                     {
-                        if ( !response.IsSuccessStatusCode )
-                        {
-                            var responseText = content.ReadAsStringAsyncEx( ct );
-                            throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
-                        }
+                        requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
 
-                        var text = content.ReadAsStringAsyncEx( ct );
-                        var m3u8File = m3u8_file_t.Parse( text, url );
-                        return (m3u8File);
-                    }
+                        using ( HttpResponseMessage response = await _HttpClient.SendAsync( requestMsg, ct ) )
+                        using ( HttpContent content = response.Content )
+                        {
+                            if ( !response.IsSuccessStatusCode )
+                            {
+                                var responseText = content.ReadAsStringAsyncEx( ct );
+                                throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
+                            }
+
+                            var text = content.ReadAsStringAsyncEx( ct );
+                            var m3u8File = m3u8_file_t.Parse( text, url );
+                            return (m3u8File);
+                        }
+                    }                    
                 }
                 catch ( Exception /*ex*/ )
                 {
@@ -287,18 +284,23 @@ namespace m3u8
             {
                 try
                 {
-                    using ( HttpResponseMessage response = await _HttpClient.GetAsync( url, ct ) )
-                    using ( HttpContent content = response.Content )
+                    using ( var requestMsg = new HttpRequestMessage( HttpMethod.Get, url ) )
                     {
-                        if ( !response.IsSuccessStatusCode )
-                        {
-                            var responseText = content.ReadAsStringAsyncEx( ct );
-                            throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
-                        }
+                        requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
 
-                        var bytes = content.ReadAsByteArrayAsyncEx( ct ); //---var bytes = await content.ReadAsByteArrayAsync();
-                        part.SetBytes( bytes );
-                        return (part);
+                        using ( HttpResponseMessage response = await _HttpClient.SendAsync( requestMsg, ct ) )
+                        using ( HttpContent content = response.Content )
+                        {
+                            if ( !response.IsSuccessStatusCode )
+                            {
+                                var responseText = content.ReadAsStringAsyncEx( ct );
+                                throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
+                            }
+
+                            var bytes = content.ReadAsByteArrayAsyncEx( ct ); //---var bytes = await content.ReadAsByteArrayAsync();
+                            part.SetBytes( bytes );
+                            return (part);
+                        }
                     }
                 }
                 catch ( Exception ex )
@@ -313,18 +315,89 @@ namespace m3u8
 
             throw (new m3u8_Exception( $"No content found while {attemptRequestCountByPart} attempt requests" ));
         }
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public static class m3u8_client_factory
+    {
+        public static m3u8_client Create() => Create( HttpClientFactory.Get( TimeSpan.Zero ) );
+        public static m3u8_client Create( in (TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.timeout, t.attemptRequestCountByPart );
+        public static m3u8_client Create( TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory.Get( timeout ), attemptRequestCountByPart );
+        public static m3u8_client Create( in (HttpClient httpClient, int attemptRequestCountByPart) t ) => Create( t.httpClient, t.attemptRequestCountByPart );
+        public static m3u8_client Create( HttpClient httpClient, int attemptRequestCountByPart = 10 )
+            => new m3u8_client( httpClient, new m3u8_client.init_params()
+                                            {
+                                                AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 )
+                                            }
+                              );
+        public static bool DisposeBy( TimeSpan? timeout ) => HttpClientFactory.DisposeBy( timeout );
+        public static void ClearAndDisposeAll() => HttpClientFactory.ClearAndDisposeAll();
+    }
 
-        public static m3u8_client Create( in (int attemptRequestCountByPart, TimeSpan timeout) t )
-            => Create( t.attemptRequestCountByPart, t.timeout );
-        public static m3u8_client Create( int attemptRequestCountByPart = 10, TimeSpan? timeout = null )
+    /// <summary>
+    /// 
+    /// </summary>
+    public static class HttpClientFactory
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct init_params
         {
-            var ip = new init_params()
+            public TimeSpan? Timeout { get; set; }
+        }
+
+        private static ConcurrentDictionary< TimeSpan, HttpClient > _HttpClientsByTimeout;
+
+        static HttpClientFactory() => _HttpClientsByTimeout = new ConcurrentDictionary< TimeSpan, HttpClient >();
+
+        public static HttpClient Get( TimeSpan? timeout = null ) => Get( new init_params() { Timeout = timeout } );
+        public static HttpClient Get( in init_params ip )
+        {
+            var key = ip.Timeout.GetValueOrDefault( TimeSpan.Zero );
+            if ( _HttpClientsByTimeout.TryGetValue( key, out var hc ) )
             {
-                Timeout             = timeout,
-                AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ),
-            };
-            var mc = new m3u8_client( ip );
-            return (mc);
+                return (hc);
+            }
+
+            lock ( _HttpClientsByTimeout )
+            {
+                if ( !_HttpClientsByTimeout.TryGetValue( key, out hc ) )
+                {
+                    hc = new HttpClient();
+                    if ( ip.Timeout.HasValue )
+                    {
+                        hc.Timeout = ip.Timeout.Value;
+                    }
+                    _HttpClientsByTimeout.TryAdd( key, hc );
+                }
+                return (hc);
+            }
+        }
+        public static bool DisposeBy( TimeSpan? timeout )
+        {
+            var key = timeout.GetValueOrDefault( TimeSpan.Zero );
+            lock ( _HttpClientsByTimeout )
+            {
+                if ( _HttpClientsByTimeout.TryRemove( key, out var hc ) )
+                {
+                    hc.Dispose();
+                    return (true);
+                }
+            }
+            return (false);
+        }
+        public static void ClearAndDisposeAll()
+        {
+            lock ( _HttpClientsByTimeout )
+            {
+                foreach ( var hc in _HttpClientsByTimeout.Values )
+                {
+                    hc.Dispose();
+                }
+                _HttpClientsByTimeout.Clear();
+            }
         }
     }
 }

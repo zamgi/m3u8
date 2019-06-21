@@ -78,9 +78,15 @@ namespace m3u8.download.manager.controllers
 
         public void Dispose()
         {
-            _DefaultConnectionLimitSaver.Dispose();
-            _DownloadThreadsSemaphoreFactory?.Dispose(); _DownloadThreadsSemaphoreFactory = null;
+            m3u8_client_factory.ClearAndDisposeAll();
 
+            _DefaultConnectionLimitSaver.Dispose();
+
+            if ( _DownloadThreadsSemaphoreFactory != null )
+            {
+                _DownloadThreadsSemaphoreFactory.Dispose();
+                _DownloadThreadsSemaphoreFactory = null;
+            }
             if ( _SettingsController != null )
             {
                 _SettingsController.SettingsPropertyChanged -= SettingsController_PropertyChanged;
@@ -103,18 +109,16 @@ namespace m3u8.download.manager.controllers
         }
         public static async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( Uri m3u8FileUrl, CancellationTokenSource cts = null )
         {
-            using ( var mc = m3u8_client.Create( attemptRequestCountByPart: 1, SettingsPropertyChangeController.SettingsDefault.RequestTimeoutByPart ) )
+            var mc = m3u8_client_factory.Create( SettingsPropertyChangeController.SettingsDefault.RequestTimeoutByPart, attemptRequestCountByPart: 1 );
+            try
             {
-                try
-                {
-                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts?.Token );
+                var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts?.Token );
 
-                    return (m3u8File, null);
-                }
-                catch ( Exception ex )
-                {
-                    return (default, ex);
-                }
+                return (m3u8File, null);
+            }
+            catch ( Exception ex )
+            {
+                return (default, ex);
             }
         }
         #endregion
@@ -165,7 +169,7 @@ namespace m3u8.download.manager.controllers
 #endif
             try { t.cts.Cancel();                       } catch ( Exception ex ) { Debug.WriteLine( ex ); }
             try { t.cts.Dispose();                      } catch ( Exception ex ) { Debug.WriteLine( ex ); }
-            try { t.mc .Dispose();                      } catch ( Exception ex ) { Debug.WriteLine( ex ); }
+            //try { t.mc .Dispose();                      } catch ( Exception ex ) { Debug.WriteLine( ex ); }
             try { t.waitIfPausedEvent.Set();            } catch ( Exception ex ) { Debug.WriteLine( ex ); }
             try { t.waitIfPausedEvent.Dispose();        } catch ( Exception ex ) { Debug.WriteLine( ex ); }
             try { t.downloadThreadsSemaphore.Dispose(); } catch ( Exception ex ) { Debug.WriteLine( ex ); }
@@ -370,7 +374,7 @@ namespace m3u8.download.manager.controllers
 
             Interlocked.Increment( ref _RealRunningCount );
 
-            using ( var mc                       = m3u8_client.Create( _SettingsController.GetCreateM3u8ClientParams() ) )
+            var mc = m3u8_client_factory.Create( _SettingsController.GetCreateM3u8ClientParams() );
             using ( var cts                      = new CancellationTokenSource() )
             using ( var waitIfPausedEvent        = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore = _DownloadThreadsSemaphoreFactory.Get() )

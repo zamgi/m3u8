@@ -46,7 +46,7 @@ namespace m3u8.download.manager.controllers
         public _Settings_ Settings { [M(O.AggressiveInlining)] get; }
 
         [M(O.AggressiveInlining)] public void SaveNoThrow() => Settings.SaveNoThrow();
-        public (int attemptRequestCountByPart, TimeSpan timeout) GetCreateM3u8ClientParams() => (Settings.AttemptRequestCountByPart, Settings.RequestTimeoutByPart);
+        public (TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams() => (Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
 
         public IEnumerable< string > NameCleanerExcludesWords { [M(O.AggressiveInlining)] get => Settings.NameCleanerExcludesWords?.Cast< string >(); }
         public bool   ShowOnlyRequestRowsWithErrors { [M(O.AggressiveInlining)] get => Settings.ShowOnlyRequestRowsWithErrors; }
