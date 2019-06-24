@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -56,6 +56,185 @@ namespace m3u8.ext
     }
 }
 
+namespace System.Collections.Generic
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    internal sealed class ICollectionDebugView< T >
+    {
+        private ICollection< T > _Collection;
+
+        public ICollectionDebugView( ICollection< T > collection ) => _Collection = collection ?? throw new ArgumentNullException( nameof(collection) );
+
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        public T[] Items
+        {
+            get
+            {
+                var items = new T[ _Collection.Count ];
+                _Collection.CopyTo( items, 0 );
+                return (items);
+            }
+        }
+    }
+
+    /// <summary>
+    /// LRU (least recently used) cache
+    /// </summary>
+    internal interface ILRUCache< T > : ICollection< T >, IReadOnlyCollection< T >
+    {
+        int Limit { get; set; }
+        int Count_ { get; }
+        bool TryGetValue( T equalValue, out T actualValue );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [DebuggerTypeProxy( typeof(ICollectionDebugView<>) )]
+    [DebuggerDisplay( "Count = {Count}" )]
+    internal sealed class LRUCache< T > : ILRUCache< T >, ICollection< T >, IReadOnlyCollection< T >
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        private sealed class LinkedListNode_EqualityComparer : IEqualityComparer< LinkedListNode< T > >
+        {
+            private IEqualityComparer< T > _Comparer;
+            public LinkedListNode_EqualityComparer( IEqualityComparer< T > comparer ) => _Comparer = comparer ?? EqualityComparer< T >.Default;
+
+            public bool Equals( LinkedListNode< T > x, LinkedListNode< T > y ) => _Comparer.Equals( x.Value, y.Value );
+            public int GetHashCode( LinkedListNode< T > obj ) => _Comparer.GetHashCode( obj.Value );
+        }
+
+        #region [.fields.]
+        private HashSet< LinkedListNode< T > > _HashSet;
+        private LinkedList< T >                _LinkedList;
+        private int                            _Limit;
+        #endregion
+
+        #region [.ctor().]
+        public LRUCache( int limit, IEqualityComparer< T > comparer = null )
+        {
+            this.Limit  = limit;
+            _HashSet    = new HashSet< LinkedListNode< T > >( limit, new LinkedListNode_EqualityComparer( comparer ) );
+            _LinkedList = new LinkedList< T >();
+        }
+
+        private LRUCache() { }
+        public static LRUCache< T > CreateWithLimitMaxValue( int capacity, IEqualityComparer< T > comparer = null )
+        {
+            var o = new LRUCache< T >();
+            o.Limit       = int.MaxValue;
+            o._HashSet    = new HashSet< LinkedListNode< T > >( capacity, new LinkedListNode_EqualityComparer( comparer ) );
+            o._LinkedList = new LinkedList< T >();
+            return (o);
+        }
+        #endregion
+
+        public int Limit
+        {
+            get => _Limit;
+            set
+            {
+                if ( value <= 0 ) throw (new ArgumentException( nameof(Limit) ));
+
+                _Limit = value;
+            }
+        }
+        public bool TryGetValue( T equalValue, out T actualValue )
+        {
+            if ( _HashSet.TryGetValue( ToNode( equalValue ), out var node ) )
+            {
+                MoveToFirst( node );
+
+                actualValue = node.Value;
+                return (true);
+            }
+            actualValue = default;
+            return (false);
+        }
+
+        [M(O.AggressiveInlining)] private static LinkedListNode< T > ToNode( T item ) => new LinkedListNode< T >( item );
+        [M(O.AggressiveInlining)] private void AddFirst( LinkedListNode< T > node )
+        {
+            _LinkedList.AddFirst( node );
+            _HashSet   .Add( node );
+        }
+        [M(O.AggressiveInlining)] private void Remove( LinkedListNode< T > node )
+        {
+            _LinkedList.Remove( node );
+            _HashSet   .Remove( node );
+        }
+        [M(O.AggressiveInlining)] private void MoveToFirst( LinkedListNode< T > node )
+        {
+            _LinkedList.Remove  ( node );
+            _LinkedList.AddFirst( node );
+        }
+
+        public int Count => _LinkedList.Count;
+        public int Count_ => _LinkedList.Count;
+        public bool IsReadOnly => false;
+
+        public void Add( T item )
+        {
+            var temp = ToNode( item );
+            
+            if ( _HashSet.TryGetValue( temp, out var existsNode ) )
+            {
+                Remove( existsNode );
+                AddFirst( temp );
+            }
+            else
+            {
+                AddFirst( temp );
+
+                if ( _Limit < _HashSet.Count )
+                {
+                    Remove( _LinkedList.Last );
+                }
+            }
+        }
+        public bool Remove( T item )
+        {
+            var temp = ToNode( item );
+            if ( _HashSet.TryGetValue( temp, out var existsNode ) )
+            {
+                Remove( existsNode );
+                return (true);
+            }
+            return (false);
+        }
+        public bool Contains( T item ) => _HashSet.Contains( ToNode( item ) );
+        public void Clear()
+        {
+            _HashSet   .Clear();
+            _LinkedList.Clear();
+        }
+
+        public IEnumerator< T > GetEnumerator()
+        {
+            foreach ( var t in _LinkedList )
+            {
+                yield return (t);
+            }
+        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public void CopyTo( T[] array, int arrayIndex )
+        {
+            foreach ( var t in _LinkedList )
+            {
+                array[ arrayIndex++ ] = t;
+            }
+        }
+#if DEBUG
+        public override string ToString() => $"Count: {Count}";
+#endif
+    }
+}
+
 namespace m3u8
 {
     using m3u8.ext;
@@ -105,7 +284,6 @@ namespace m3u8
         public static m3u8_file_t Parse( string content, Uri baseAddress )
         {
             var lines = from row in content.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
-//---.Take( 50 )
                         let line = row.Trim()
                         where (!line.IsNullOrEmpty() && !line.StartsWith( "#" ))
                         select line
@@ -203,7 +381,7 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    public sealed class m3u8_client
+    public sealed class m3u8_client : IDisposable
     {
         /// <summary>
         /// 
@@ -215,7 +393,8 @@ namespace m3u8
         }
 
         #region [.field's.]
-        private HttpClient _HttpClient; 
+        private HttpClient  _HttpClient;
+        private IDisposable _DisposableObj;
         #endregion
 
         #region [.ctor().]
@@ -223,6 +402,19 @@ namespace m3u8
         {
             _HttpClient = httpClient ?? throw (new ArgumentNullException( nameof(httpClient) ));
             InitParams  = ip;            
+        }
+        internal m3u8_client( in (HttpClient httpClient, IDisposable disposableObj) t, in init_params ip ) : this( t.httpClient, in ip )
+        {
+            _DisposableObj = t.disposableObj;
+        }
+
+        public void Dispose()
+        {
+            if ( _DisposableObj != null )
+            {
+                _DisposableObj.Dispose();
+                _DisposableObj = null;
+            }
         }
         #endregion
 
@@ -235,7 +427,7 @@ namespace m3u8
 
             var ct = cancellationToken.GetValueOrDefault( CancellationToken.None );
             var attemptRequestCountByPart = InitParams.AttemptRequestCount.GetValueOrDefault( 1 );
-//Task.Delay( 5000 ).Wait( ct );
+
             for ( var attemptRequestCount = attemptRequestCountByPart; 0 < attemptRequestCount; attemptRequestCount-- )
             {
                 try
@@ -320,25 +512,27 @@ namespace m3u8
     /// 
     /// </summary>
     public static class m3u8_client_factory
-    {
-        public static m3u8_client Create() => Create( HttpClientFactory.Get( TimeSpan.Zero ) );
+    { 
+        public static m3u8_client Create() => Create( HttpClientFactory_WithRefCount.Get() );
         public static m3u8_client Create( in (TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.timeout, t.attemptRequestCountByPart );
-        public static m3u8_client Create( TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory.Get( timeout ), attemptRequestCountByPart );
-        public static m3u8_client Create( in (HttpClient httpClient, int attemptRequestCountByPart) t ) => Create( t.httpClient, t.attemptRequestCountByPart );
-        public static m3u8_client Create( HttpClient httpClient, int attemptRequestCountByPart = 10 )
-            => new m3u8_client( httpClient, new m3u8_client.init_params()
-                                            {
-                                                AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 )
-                                            }
-                              );
-        public static bool DisposeBy( TimeSpan? timeout ) => HttpClientFactory.DisposeBy( timeout );
-        public static void ClearAndDisposeAll() => HttpClientFactory.ClearAndDisposeAll();
+        public static m3u8_client Create( TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( timeout ), attemptRequestCountByPart );
+        public static m3u8_client Create( in m3u8_client.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get(), in ip );
+
+        public static void ForceClearAndDisposeAll() => HttpClientFactory_WithRefCount.ForceClearAndDisposeAll();
+
+        private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, int attemptRequestCountByPart = 10 )
+            => Create( in t, new m3u8_client.init_params()
+                             {
+                                AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 )
+                             }
+                     );
+        private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, in m3u8_client.init_params ip ) => new m3u8_client( in t, in ip );
     }
 
     /// <summary>
     /// 
     /// </summary>
-    public static class HttpClientFactory
+    internal static class HttpClientFactory_WithRefCount
     {
         /// <summary>
         /// 
@@ -348,55 +542,115 @@ namespace m3u8
             public TimeSpan? Timeout { get; set; }
         }
 
-        private static ConcurrentDictionary< TimeSpan, HttpClient > _HttpClientsByTimeout;
-
-        static HttpClientFactory() => _HttpClientsByTimeout = new ConcurrentDictionary< TimeSpan, HttpClient >();
-
-        public static HttpClient Get( TimeSpan? timeout = null ) => Get( new init_params() { Timeout = timeout } );
-        public static HttpClient Get( in init_params ip )
+        /// <summary>
+        /// 
+        /// </summary>
+        private sealed class tuple
         {
-            var key = ip.Timeout.GetValueOrDefault( TimeSpan.Zero );
-            if ( _HttpClientsByTimeout.TryGetValue( key, out var hc ) )
+            /// <summary>
+            /// 
+            /// </summary>
+            public struct EqualityComparer : IEqualityComparer< tuple >
             {
-                return (hc);
+                public bool Equals( tuple x, tuple y ) => (x.Timeout == y.Timeout);
+                public int GetHashCode( tuple obj ) => obj.Timeout.GetHashCode();
             }
 
-            lock ( _HttpClientsByTimeout )
+            private tuple( TimeSpan timeout ) => Timeout = timeout;
+            public tuple( TimeSpan timeout, HttpClient httpClient ) => (Timeout, HttpClient, RefCount) = (timeout, httpClient, 0);
+
+            public TimeSpan   Timeout    { get; }
+            public HttpClient HttpClient { get; }
+            public int        RefCount   { get; private set; }
+
+            public int IncrementRefCount() => ++RefCount;
+            public int DecrementRefCount() => --RefCount;
+
+            public static tuple key( TimeSpan? timeout ) => new tuple( timeout.GetValueOrDefault( TimeSpan.Zero ) );
+#if DEBUG
+            public override string ToString() => $"{Timeout}, (ref: {RefCount})";
+#endif
+        }
+
+        private static ILRUCache< tuple > _LRUCache;
+
+        static HttpClientFactory_WithRefCount() => _LRUCache = LRUCache< tuple >.CreateWithLimitMaxValue( 0x10, new tuple.EqualityComparer() );
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private struct free_tuple : IDisposable
+        {
+            private tuple _tuple;
+            public free_tuple( tuple t ) => _tuple = t ?? throw (new ArgumentNullException( nameof(t) ));
+
+            public void Dispose()
             {
-                if ( !_HttpClientsByTimeout.TryGetValue( key, out hc ) )
+                if ( _tuple != null )
                 {
-                    hc = new HttpClient();
-                    if ( ip.Timeout.HasValue )
+                    HttpClientFactory_WithRefCount.Release( _tuple );
+                    _tuple = null;
+                }
+            }
+        }
+
+        public static (HttpClient, IDisposable) Get( in init_params ip ) => Get( ip.Timeout );
+        public static (HttpClient, IDisposable) Get( TimeSpan? timeout = null )
+        {
+            var key = tuple.key( timeout );
+            lock ( _LRUCache )
+            {
+                if ( !_LRUCache.TryGetValue( key, out var t ) )
+                {
+                    t = new tuple( key.Timeout, new HttpClient() );
+                    if ( timeout.HasValue )
                     {
-                        hc.Timeout = ip.Timeout.Value;
+                        t.HttpClient.Timeout = timeout.Value;
                     }
-                    _HttpClientsByTimeout.TryAdd( key, hc );
+                    _LRUCache.Add( t );
                 }
-                return (hc);
+                t.IncrementRefCount();
+                //-----------------------------------------------//
+                var removed = (from et in _LRUCache.Skip( 1 )
+                               where (et.RefCount <= 0)
+                               select et
+                              ).ToArray();
+                foreach ( var et in removed )
+                {
+                    _LRUCache.Remove( et );
+                    et.HttpClient.Dispose();
+                }
+                //-----------------------------------------------//
+                return (t.HttpClient, new free_tuple( t ));
             }
         }
-        public static bool DisposeBy( TimeSpan? timeout )
+
+        private static void Release( tuple t )
         {
-            var key = timeout.GetValueOrDefault( TimeSpan.Zero );
-            lock ( _HttpClientsByTimeout )
+            lock ( _LRUCache )
             {
-                if ( _HttpClientsByTimeout.TryRemove( key, out var hc ) )
+                var refCount = t.DecrementRefCount();
+                if ( (refCount <= 0) && (1 < _LRUCache.Count_) )
                 {
-                    hc.Dispose();
-                    return (true);
+                    var first_t = _LRUCache.First();
+                    if ( t != first_t )
+                    {
+                        _LRUCache.Remove( t );
+                        t.HttpClient.Dispose();
+                    }
                 }
             }
-            return (false);
         }
-        public static void ClearAndDisposeAll()
+
+        public static void ForceClearAndDisposeAll()
         {
-            lock ( _HttpClientsByTimeout )
+            lock ( _LRUCache )
             {
-                foreach ( var hc in _HttpClientsByTimeout.Values )
+                foreach ( var t in _LRUCache )
                 {
-                    hc.Dispose();
+                    t.HttpClient.Dispose();
                 }
-                _HttpClientsByTimeout.Clear();
+                _LRUCache.Clear();
             }
         }
     }

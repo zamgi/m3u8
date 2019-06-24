@@ -540,9 +540,7 @@ namespace m3u8
 
             var m3u8FileUrl = new Uri( ip.m3u8FileUrl );
             
-            var hc = HttpClientFactory.Get();
-            var np = ip.NetParams;
-            var mc = new m3u8_client( hc, new m3u8_client.init_params() { ConnectionClose = np.ConnectionClose, AttemptRequestCount = np.AttemptRequestCount } );
+            using ( var mc = m3u8_client_factory.Create( ip.NetParams ) )
             {
                 var ct = (ip.Cts?.Token).GetValueOrDefault( CancellationToken.None );
                 var res = new DownloadFileAndSaveResult( ip );
@@ -553,7 +551,7 @@ namespace m3u8
                     var m3u8File = await mc.DownloadFile( m3u8FileUrl, ct );
 
                     //-2-//
-                    var tp = new download_m3u8File_parts_parallel_params_t( mc, m3u8File, ip );                    
+                    var tp = new download_m3u8File_parts_parallel_params_t( mc, m3u8File, ip );
                     var downloadParts = download_m3u8File_parts_parallel( tp );
 
                     //-3-//                    

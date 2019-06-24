@@ -619,13 +619,13 @@ namespace m3u8.downloader
 
                             var ip = new m3u8_processor.DownloadPartsAndSaveInputParams()
                             {
-                                mc                     = _Mc,
-                                m3u8File               = m3u8File,
-                                OutputFileName         = _OutputFileName,
-                                Cts                    = _Cts,
-                                MaxDegreeOfParallelism = Settings.Default.MaxDegreeOfParallelism,
-                                RequestStepAction      = requestStepAction,
-                                ResponseStepAction     = responseStepAction,
+                                mc                                     = _Mc,
+                                m3u8File                               = m3u8File,
+                                OutputFileName                         = _OutputFileName,
+                                Cts                                    = _Cts,
+                                MaxDegreeOfParallelism                 = Settings.Default.MaxDegreeOfParallelism,
+                                RequestStepAction                      = requestStepAction,
+                                ResponseStepAction                     = responseStepAction,
                                 UseCrossAppInstanceDegreeOfParallelism = Settings.Default.UseCrossAppInstanceDegreeOfParallelism,
                                 MaxDownloadAppInstance                 = Settings.Default.MaxDownloadAppInstance,
                                 WaitingForOtherAppInstanceFinished     = () => this.BeginInvoke( new Action( () => _Wb.WaitingForOtherAppInstanceFinished() ) ),
@@ -762,7 +762,7 @@ namespace m3u8.downloader
                 _m3U8FileResultUC.AppendRequestErrorText( ".....Canceled by User....." );
             }
 
-            /*_Mc? .Dispose();*/ _Mc  = null;
+            _Mc? .Dispose(); _Mc  = null;
             _Cts?.Dispose(); _Cts = null;
             _Wb? .Dispose(); _Wb  = null;
 

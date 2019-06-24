@@ -72,7 +72,7 @@ namespace m3u8
 
             public static void run( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
-                var mc = m3u8_client_factory.Create();
+                using ( var mc  = m3u8_client_factory.Create() )
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var task = Task.Run( async () =>
@@ -234,7 +234,7 @@ namespace m3u8
 
             public static void run__v1( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
-                var mc = m3u8_client_factory.Create();
+                using ( var mc  = m3u8_client_factory.Create() )
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var task = Task.Run( async () =>
@@ -381,7 +381,7 @@ namespace m3u8
 
             public static void run__v2( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
-                var mc = m3u8_client_factory.Create();
+                using ( var mc  = m3u8_client_factory.Create() )
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var task = Task.Run( async () =>
