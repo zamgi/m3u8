@@ -41,10 +41,10 @@ namespace m3u8
             var expectedPartNumber = m3u8File.Parts.FirstOrDefault().OrderNumber;
             var maxPartNumber      = m3u8File.Parts.LastOrDefault ().OrderNumber;
             var sourceQueue        = new Queue< m3u8_part_ts >( m3u8File.Parts );
-            var downloadPartsSet   = new SortedSet< m3u8_part_ts >( default(m3u8_part_ts_comparer) );
+            var downloadPartsSet   = new SortedSet< m3u8_part_ts >( default(m3u8_part_ts.comparer) );
             
-            using ( var innerCts  = new CancellationTokenSource() )
-            using ( var joinedCts = CancellationTokenSource.CreateLinkedTokenSource( ct, innerCts.Token ) )
+            using ( var innerCts            = new CancellationTokenSource() )
+            using ( var joinedCts           = CancellationTokenSource.CreateLinkedTokenSource( ct, innerCts.Token ) )
             using ( var canExtractPartEvent = new AutoResetEvent( false ) )
             {
                 //-1-//
