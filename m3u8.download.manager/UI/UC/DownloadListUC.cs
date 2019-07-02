@@ -286,7 +286,7 @@ namespace m3u8.download.manager.ui
             var st = row.Status;
             switch ( st )
             {
-                case DownloadStatus.Created: return ($"[created]: {row.CreatedDateTime.ToString( "HH:mm:ss  (yyyy.MM.dd)" )}");
+                case DownloadStatus.Created: return ($"[created]: {row.CreatedOrStartedDateTime.ToString( "HH:mm:ss  (yyyy.MM.dd)" )}");
                 case DownloadStatus.Started: return ($"{row.GetElapsed().ToString( HH_MM_SS )}");
                 case DownloadStatus.Wait   : return ($"(wait), ({row.GetElapsed().ToString( HH_MM_SS )})");
             }
@@ -295,19 +295,20 @@ namespace m3u8.download.manager.ui
             var elapsed      = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
             var percent      = ((0 < row.TotalParts) ? Convert.ToByte( (100.0 * row.SuccessDownloadParts) / row.TotalParts ).ToString() : "-");
             var failedParts  = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
-            var downloadInfo = (shorty ? null : $"{row.SuccessDownloadParts} of {row.TotalParts}{failedParts}, ")
-                               + $"{percent}%, ({elapsed})";
+            var downloadInfo = (shorty ? null : $"{row.SuccessDownloadParts} of {row.TotalParts}{failedParts}, ") + 
+                               ($"{percent}%, ({elapsed})");
             
             #region [.speed.]
             if ( !st.IsPaused() )
             {
-                var elapsedSeconds = ts.TotalSeconds;
-                if ( (1_000 < row.DownloadBytesLength) && (2.5 <= elapsedSeconds) )
+                var elapsedSeconds      = ts.TotalSeconds;
+                var downloadBytesLength = row.GetDownloadBytesLengthAfterLastRun();
+                if ( (1_000 < downloadBytesLength) && (2.5 <= elapsedSeconds) )
                 {
                     var speedText = default(string);
-                    //if ( row.DownloadBytesLength < 1_000   ) speedText = (row.DownloadBytesLength / elapsedSeconds).ToString("N2") + " bit/s";
-                    if ( row.DownloadBytesLength < 100_000 ) speedText = ((row.DownloadBytesLength / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
-                    else                                     speedText = ((row.DownloadBytesLength / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
+                    //if ( downloadBytesLength < 1_000   ) speedText = (downloadBytesLength / elapsedSeconds).ToString("N2") + " bit/s";
+                    if ( downloadBytesLength < 100_000 ) speedText = ((downloadBytesLength / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
+                    else                                 speedText = ((downloadBytesLength / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
 
                     downloadInfo += $", [{(shorty ? null : "speed: ")}{speedText}]";
                 }
@@ -330,7 +331,7 @@ namespace m3u8.download.manager.ui
                 var d = _Comparison( x, y );
                 if ( d == 0 )
                 {
-                    d = x.CreatedDateTime.CompareTo( y.CreatedDateTime );
+                    d = x.CreatedOrStartedDateTime.CompareTo( y.CreatedOrStartedDateTime );
                 }
                 else
                 {
@@ -346,7 +347,7 @@ namespace m3u8.download.manager.ui
             }
             public static Comparison< DownloadRow > CreateDefaultComparison()
             {
-                var sh = new SortHelper() { _Comparison = (x, y) => x.CreatedDateTime.CompareTo( y.CreatedDateTime ) };
+                var sh = new SortHelper() { _Comparison = (x, y) => x.CreatedOrStartedDateTime.CompareTo( y.CreatedOrStartedDateTime ) };
                 return (sh.Comparison);
             }
 

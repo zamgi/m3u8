@@ -132,13 +132,7 @@ namespace m3u8.download.manager.controllers
             {
                 case nameof(Settings.MaxDegreeOfParallelism):
                 {
-                    var maxDegreeOfParallelism = _SettingsController.MaxDegreeOfParallelism;
-                    _DefaultConnectionLimitSaver.Reset( maxDegreeOfParallelism );
-
-                    var tuples = await PausedAll_Started_Running_and_GetThem( CancellationToken.None );
-                    await _DownloadThreadsSemaphoreFactory.ResetMaxDegreeOfParallelism( maxDegreeOfParallelism );
-                    ResetMaxDegreeOfParallelism_For_NonUseCrossDownloadInstanceParallelism_DownloadThreadsSemaphore( maxDegreeOfParallelism );
-                    ContinueAll_Paused( tuples );
+                    await ProcessChangedMaxDegreeOfParallelism( _SettingsController.MaxDegreeOfParallelism );
                 }
                 break;
 
@@ -178,7 +172,22 @@ namespace m3u8.download.manager.controllers
         }
         [M(O.AggressiveInlining)] private void Fire_IsDownloadingChanged() => IsDownloadingChanged?.Invoke( (_Dict.Count != 0) );
 
+        #region [.Process of a Changed 'MaxDegreeOfParallelism' props.]
+        private async Task ProcessChangedMaxDegreeOfParallelism( int maxDegreeOfParallelism )
+        {
+            _DefaultConnectionLimitSaver.Reset( maxDegreeOfParallelism );
 
+            var ph = new PausedHelper( _Dict, CancellationToken.None );
+            var tuples = await ph.PausedAll_Started_Running_and_GetThem();
+
+            await _DownloadThreadsSemaphoreFactory.ResetMaxDegreeOfParallelism( maxDegreeOfParallelism );
+
+            ph.ResetMaxDegreeOfParallelism_For_NonUseCrossDownloadInstanceParallelism_DownloadThreadsSemaphore( maxDegreeOfParallelism );
+            ph.ContinueAll_Paused( tuples );
+        }
+        #endregion
+
+        #region [.Process 'CrossDownloadInstanceRestriction'.]
         [M(O.AggressiveInlining)] private bool CanStartOrSetWaitCrossDownloadInstanceRestriction( DownloadRow row )
         {
             var maxCrossDownloadInstance = _CrossDownloadInstanceRestriction.GetMaxCrossDownloadInstance();
@@ -295,7 +304,6 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-
         private async Task PauseWithWait( DownloadRow row, CancellationToken ct, int millisecondsDelay = 10, int? totalMillisecondsTimeout = null )
         {
             if ( (row != null) && _Dict.TryGetValue( row, out var t ) )
@@ -329,6 +337,7 @@ namespace m3u8.download.manager.controllers
                 }, TaskContinuationOptions.ExecuteSynchronously );
             }
         }
+        #endregion
         #endregion
 
         #region [.public props.]
@@ -568,21 +577,39 @@ namespace m3u8.download.manager.controllers
         }
         #endregion
 
-        #region [.helpers.]
-        private static class helpers
+        #region [.PausedHelper.]
+        private struct PausedHelper
         {
             /// <summary>
             /// 
             /// </summary>
-            public struct PausedResult
+            public struct Tuple
             {
-                public IList< (DownloadRow row, int order) > tuples;
-                public HashSet< DownloadStatus >             statuses;
+                internal DownloadRow row;
+                internal int         order;
+            }
+            /// <summary>
+            /// 
+            /// </summary>
+            private struct Result
+            {
+                public IReadOnlyList< Tuple >    tuples;
+                public HashSet< DownloadStatus > statuses;
             }
 
-            public static PausedResult PausedAll_ByStatus_GetThem( ConcurrentDictionary< DownloadRow, tuple > dict, params DownloadStatus[] statuses )
+            #region [.field's.]
+            private ConcurrentDictionary< DownloadRow, tuple > _Dict;
+            private CancellationToken _Ct;
+            #endregion
+
+            #region [.ctor().]
+            public PausedHelper( ConcurrentDictionary< DownloadRow, tuple > dict, CancellationToken ct ) => (_Dict, _Ct) = (dict, ct);
+            #endregion
+
+            #region [.method's.]
+            private static Result PausedAll_ByStatus_GetThem( ConcurrentDictionary< DownloadRow, tuple > dict, params DownloadStatus[] statuses )
             {
-                var tuples = new List< (DownloadRow row, int order) >( dict.Count );
+                var tuples = new List< Tuple >( dict.Count );
 
                 var hs = statuses.ToHashSet();
                 foreach ( var p in dict )
@@ -593,17 +620,16 @@ namespace m3u8.download.manager.controllers
                         var t = p.Value;
                         if ( t.waitIfPausedEvent.Reset_NoThrow() )
                         {
-                            tuples.Add( (row, t.startOrderNumber) );
+                            tuples.Add( new Tuple() { row = row, order = t.startOrderNumber } );
                         }
                     }
                 }
 
-                return (new PausedResult() { tuples = tuples, statuses = hs });
+                return (new Result() { tuples = tuples, statuses = hs });
             }
-
-            public static async Task WaitAll_For_NotHas_Status( PausedResult pr, CancellationToken ct, int millisecondsDelay, int? totalMillisecondsTimeout )
+            private static async Task WaitAll_For_NotHas_Status( Result pr, CancellationToken ct, int millisecondsDelay, int? totalMillisecondsTimeout )
             {
-                await Task.Run( () =>
+                await Task.Run( /*async*/ () =>
                 {
                     var remainedDelayCount = (totalMillisecondsTimeout.HasValue ? (totalMillisecondsTimeout.Value / Math.Max( 1, millisecondsDelay )) : int.MaxValue);
                     for ( int i = pr.tuples.Count - 1; (0 <= i) && (0 <= remainedDelayCount) && !ct.IsCancellationRequested; )
@@ -612,53 +638,56 @@ namespace m3u8.download.manager.controllers
                         {
                             remainedDelayCount--;
                             Task.Delay( millisecondsDelay, ct ).Wait( ct );
+                            //await Task.Delay( millisecondsDelay, ct );
                         }
                         else
                         {
                             i--;
                         }
                     }
-                }, ct ).ContinueWith( task => {
+                }, ct )
+                .ContinueWith( task => 
+                {
                     if ( !task.IsCanceled && task.IsFaulted ) // suppress cancel exception
                     {
                         throw (task.Exception);
                     }
                 }, TaskContinuationOptions.ExecuteSynchronously );
             }
-        }
 
-        private async Task< IList< (DownloadRow row, int order) > > PausedAll_Started_Running_and_GetThem( CancellationToken ct, int millisecondsDelay = 10 )
-        {
-            //-1-//
-            var pr = helpers.PausedAll_ByStatus_GetThem( _Dict, DownloadStatus.Started, DownloadStatus.Running );
-
-            //-2-//
-            await helpers.WaitAll_For_NotHas_Status( pr, ct, millisecondsDelay, totalMillisecondsTimeout: null );
-
-            return (pr.tuples);
-        }
-        private void ResetMaxDegreeOfParallelism_For_NonUseCrossDownloadInstanceParallelism_DownloadThreadsSemaphore( int maxDegreeOfParallelism )
-        {
-            foreach ( var t in _Dict.Values )
+            public async Task< IReadOnlyList< Tuple > > PausedAll_Started_Running_and_GetThem( int millisecondsDelay = 10, int? totalMillisecondsTimeout = null )
             {
-                if ( !t.downloadThreadsSemaphore.UseCrossDownloadInstanceParallelism )
-                {
-                    t.downloadThreadsSemaphore.ResetSemaphore( maxDegreeOfParallelism );
-                }
+                //-1-//
+                var pr = PausedAll_ByStatus_GetThem( _Dict, DownloadStatus.Started, DownloadStatus.Running );
+
+                //-2-//
+                await WaitAll_For_NotHas_Status( pr, _Ct, millisecondsDelay, totalMillisecondsTimeout );
+
+                return (pr.tuples);
             }
-        }
-        private void ContinueAll_Paused( IList< (DownloadRow row, int order) > tuples )
-        {
-            foreach ( var row in (from t in tuples orderby t.order select t.row) )
+
+            public void ContinueAll_Paused( IReadOnlyList< Tuple > tuples )
             {
-                if ( _Dict.TryGetValue( row, out var t ) )
+                foreach ( var row in (from t in tuples orderby t.order select t.row) )
                 {
-                    if ( row.IsPaused() )
-                    {
+                    if ( row.IsPaused() && _Dict.TryGetValue( row, out var t ) )
+                    {                        
                         t.waitIfPausedEvent.Set_NoThrow();
                     }
                 }
             }
+
+            public void ResetMaxDegreeOfParallelism_For_NonUseCrossDownloadInstanceParallelism_DownloadThreadsSemaphore( int maxDegreeOfParallelism )
+            {
+                foreach ( var t in _Dict.Values )
+                {
+                    if ( !t.downloadThreadsSemaphore.UseCrossDownloadInstanceParallelism )
+                    {
+                        t.downloadThreadsSemaphore.ResetSemaphore( maxDegreeOfParallelism );
+                    }
+                }
+            }
+            #endregion
         }
         #endregion
     }

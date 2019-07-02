@@ -30,6 +30,7 @@ namespace m3u8.download.manager.models
     internal sealed class DownloadRow : RowBase< DownloadRow >
     {
         private TimeSpan               _FinitaElapsed;
+        private long                   _DownloadBytesLength_BeforeRunning;
         private _RowPropertiesChanged_ _RowPropertiesChanged;
 
         internal DownloadRow( in (string Url, string OutputFileName, string OutputDirectory) t, DownloadListModel model 
@@ -37,31 +38,31 @@ namespace m3u8.download.manager.models
         {
             _RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));
 
-            Status          = DownloadStatus.Created;
-            CreatedDateTime = DateTime.Now;
-            Url             = t.Url;
-            OutputFileName  = t.OutputFileName;
-            OutputDirectory = t.OutputDirectory;
+            Status                   = DownloadStatus.Created;
+            CreatedOrStartedDateTime = DateTime.Now;
+            Url                      = t.Url;
+            OutputFileName           = t.OutputFileName;
+            OutputDirectory          = t.OutputDirectory;
 
             Log = new LogListModel();
         }
         internal void _Remove_RowPropertiesChangedEventHandler() => _RowPropertiesChanged = null;
 
-        public DateTime CreatedDateTime      { [M(O.AggressiveInlining)] get; private set; }
-        public string   Url                  { [M(O.AggressiveInlining)] get; private set; }
-        public string   OutputFileName       { [M(O.AggressiveInlining)] get; private set; }
-        public string   OutputDirectory      { [M(O.AggressiveInlining)] get; private set; }
-        public string   VeryFirstOutputFullFileName { [M(O.AggressiveInlining)] get; private set; }
+        public DateTime       CreatedOrStartedDateTime    { [M(O.AggressiveInlining)] get; private set; }
+        public string         Url                         { [M(O.AggressiveInlining)] get; private set; }
+        public string         OutputFileName              { [M(O.AggressiveInlining)] get; private set; }
+        public string         OutputDirectory             { [M(O.AggressiveInlining)] get; private set; }
+        public string         VeryFirstOutputFullFileName { [M(O.AggressiveInlining)] get; private set; }
 
-        public int      TotalParts           { [M(O.AggressiveInlining)] get; private set; }
-        public int      SuccessDownloadParts { [M(O.AggressiveInlining)] get; private set; }
-        public int      FailedDownloadParts  { [M(O.AggressiveInlining)] get; private set; }
-        public long     DownloadBytesLength  { [M(O.AggressiveInlining)] get; private set; }
-        public DownloadStatus Status         { [M(O.AggressiveInlining)] get; private set; }
+        public int            TotalParts                  { [M(O.AggressiveInlining)] get; private set; }
+        public int            SuccessDownloadParts        { [M(O.AggressiveInlining)] get; private set; }
+        public int            FailedDownloadParts         { [M(O.AggressiveInlining)] get; private set; }
+        public long           DownloadBytesLength         { [M(O.AggressiveInlining)] get; private set; }
+        public DownloadStatus Status                      { [M(O.AggressiveInlining)] get; private set; }
 
         public LogListModel Log { [M(O.AggressiveInlining)] get; }
 
-        public string GetOutputFullFileName() => Path.Combine( OutputDirectory, OutputFileName );
+        public string   GetOutputFullFileName() => Path.Combine( OutputDirectory, OutputFileName );
         public string[] GetOutputFullFileNames()
         {
             var outputFullFileName = GetOutputFullFileName();
@@ -71,9 +72,9 @@ namespace m3u8.download.manager.models
             }
             return (new[] { outputFullFileName });
         }
-        public void SaveVeryFirstOutputFullFileName( string outputFullFileName ) => VeryFirstOutputFullFileName = outputFullFileName;
+        public void     SaveVeryFirstOutputFullFileName( string outputFullFileName ) => VeryFirstOutputFullFileName = outputFullFileName;
 
-        public void SetOutputFileName( string outputFileName )
+        public void SetOutputFileName ( string outputFileName )
         {
             if ( OutputFileName != outputFileName )
             {
@@ -97,7 +98,9 @@ namespace m3u8.download.manager.models
                 _RowPropertiesChanged?.Invoke( this, nameof(TotalParts) );
             }
         }
-        [M(O.AggressiveInlining)] public void SetDownloadResponseStepParams( in m3u8_processor_v2.ResponseStepActionParams p )
+
+        [M(O.AggressiveInlining)]
+        public void SetDownloadResponseStepParams( in m3u8_processor_v2.ResponseStepActionParams p )
         {
             var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount);
             var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount );
@@ -111,21 +114,27 @@ namespace m3u8.download.manager.models
             }
         }
 
-        [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
+        [M(O.AggressiveInlining)]
+        public void SetStatus( DownloadStatus newStatus )
         {
             if ( Status != newStatus )
             {
                 switch ( newStatus )
                 {
                     case DownloadStatus.Started:
+                        _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength = 0;
+                        CreatedOrStartedDateTime = DateTime.Now;
+                    break;
+
                     case DownloadStatus.Running:
-                        CreatedDateTime = DateTime.Now;
+                        _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
+                        CreatedOrStartedDateTime           = DateTime.Now;
                     break;
 
                     case DownloadStatus.Canceled:
                     case DownloadStatus.Error:
                     case DownloadStatus.Finished:
-                        _FinitaElapsed = (DateTime.Now - CreatedDateTime);
+                        _FinitaElapsed = (DateTime.Now - CreatedOrStartedDateTime);
                     break;
                 }
 
@@ -134,7 +143,8 @@ namespace m3u8.download.manager.models
             }
         }
 
-        [M(O.AggressiveInlining)] public TimeSpan GetElapsed()
+        [M(O.AggressiveInlining)]
+        public TimeSpan GetElapsed()
         {
             switch ( Status )
             {
@@ -144,9 +154,12 @@ namespace m3u8.download.manager.models
                     return (_FinitaElapsed);
 
                 default:
-                    return (DateTime.Now - CreatedDateTime);
+                    return (DateTime.Now - CreatedOrStartedDateTime);
             }
         }
+
+        [M(O.AggressiveInlining)] 
+        public long GetDownloadBytesLengthAfterLastRun() => this.DownloadBytesLength - _DownloadBytesLength_BeforeRunning;
 #if DEBUG
         public override string ToString() => Status.ToString();
 #endif
