@@ -3,6 +3,9 @@ rd ".vs" /S /Q
 rd "m3u8.client\bin" /S /Q
 rd "m3u8.client\obj" /S /Q
 
+rd "m3u8.client.tests\bin" /S /Q
+rd "m3u8.client.tests\obj" /S /Q
+
 rd "m3u8.console.app\bin" /S /Q
 rd "m3u8.console.app\obj" /S /Q
 
