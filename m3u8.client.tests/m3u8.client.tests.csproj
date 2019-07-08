@@ -10,11 +10,20 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;M3U8_CLIENT_TESTS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;M3U8_CLIENT_TESTS</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />
+    <Compile Include="..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
+    <Compile Include="..\m3u8.download.manager\[-= m3u8.client =-]\m3u8_processor_v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_v2.cs" />
+    <Compile Include="..\m3u8.downloader\[-= m3u8.client =-]\m3u8_processor.cs" Link="[-= m3u8.client =-]\m3u8_processor.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
@@ -28,13 +37,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\m3u8.client\m3u8.client.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="[-= m3u8.client =-]\" />
   </ItemGroup>
 
 </Project>

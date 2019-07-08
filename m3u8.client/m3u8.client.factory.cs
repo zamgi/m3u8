@@ -311,6 +311,14 @@ namespace m3u8.infrastructure
                 _LRUCache.Clear();
             }
         }
+#if M3U8_CLIENT_TESTS
+        public static bool Any() => _LRUCache.Any();
+        public static (TimeSpan timeout, HttpClient hc, int refCount) GetTop()
+        {
+            var t = _LRUCache.First();
+            return (t.Timeout, t.HttpClient, t.RefCount);
+        }
+#endif
     }
 }
 

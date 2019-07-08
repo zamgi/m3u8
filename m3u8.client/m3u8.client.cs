@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -239,7 +240,9 @@ namespace m3u8
         #endregion
 
         public init_params InitParams { get; }
-
+#if M3U8_CLIENT_TESTS
+        public HttpClient HttpClient => _HttpClient;
+#endif
         public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken? cancellationToken = null )
         {
             if ( url == null ) throw (new m3u8_ArgumentException( nameof(url) ));
@@ -261,7 +264,16 @@ namespace m3u8
                         {
                             if ( !response.IsSuccessStatusCode )
                             {
-                                var responseText = content.ReadAsStringAsyncEx( ct );
+                                var responseText = default(string);
+                                try
+                                {
+                                    responseText = content.ReadAsStringAsyncEx( ct );
+                                }
+                                catch ( Exception ex )
+                                {
+                                    Debug.WriteLine( ex );
+                                    response.EnsureSuccessStatusCode();
+                                }
                                 throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
                             }
 
@@ -305,7 +317,16 @@ namespace m3u8
                         {
                             if ( !response.IsSuccessStatusCode )
                             {
-                                var responseText = content.ReadAsStringAsyncEx( ct );
+                                var responseText = default(string);
+                                try
+                                {
+                                    responseText = content.ReadAsStringAsyncEx( ct );
+                                }
+                                catch ( Exception ex )
+                                {
+                                    Debug.WriteLine( ex );
+                                    response.EnsureSuccessStatusCode();
+                                }
                                 throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
                             }
 
