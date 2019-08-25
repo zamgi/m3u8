@@ -259,7 +259,7 @@ namespace m3u8
                     {
                         requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
 
-                        using ( HttpResponseMessage response = await _HttpClient.SendAsync( requestMsg, ct ) )
+                        using ( HttpResponseMessage response = await _HttpClient.SendAsync( requestMsg, ct ).ConfigureAwait( false ) )
                         using ( HttpContent content = response.Content )
                         {
                             if ( !response.IsSuccessStatusCode )
@@ -312,7 +312,7 @@ namespace m3u8
                     {
                         requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
 
-                        using ( HttpResponseMessage response = await _HttpClient.SendAsync( requestMsg, ct ) )
+                        using ( HttpResponseMessage response = await _HttpClient.SendAsync( requestMsg, ct ).ConfigureAwait( false ) )
                         using ( HttpContent content = response.Content )
                         {
                             if ( !response.IsSuccessStatusCode )
@@ -330,7 +330,7 @@ namespace m3u8
                                 throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
                             }
 
-                            var bytes = content.ReadAsByteArrayAsyncEx( ct ); //---var bytes = await content.ReadAsByteArrayAsync();
+                            var bytes = await content.ReadAsByteArrayAsync().ConfigureAwait( false ); //---var bytes = content.ReadAsByteArrayAsyncEx( ct ); //---
                             part.SetBytes( bytes );
                             return (part);
                         }

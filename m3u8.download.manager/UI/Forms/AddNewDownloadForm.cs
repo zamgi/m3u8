@@ -1,7 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
+using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -25,6 +26,7 @@ namespace m3u8.download.manager.ui
         private Settings          _Settings;
         private DownloadListModel _DownloadListModel;
         private FileNameCleaner.Processor _FNCP;
+        private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         #endregion
 
         #region [.ctor().]
@@ -49,6 +51,7 @@ namespace m3u8.download.manager.ui
 
             this.M3u8FileUrl     = m3u8FileUrl;
             this.OutputDirectory = _Settings.OutputFileDirectory;
+            _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
@@ -67,6 +70,24 @@ namespace m3u8.download.manager.ui
                 _FNCP.Dispose();
             }
             base.Dispose( disposing );
+        }
+        #endregion
+
+        #region [.TryGetOtherOpenedForm.]
+        public static bool TryGetOpenedForm( out AddNewDownloadForm openedForm )
+        {
+            openedForm = Application.OpenForms.OfType< AddNewDownloadForm >().LastOrDefault();
+            return (openedForm != null);
+        }
+        private bool TryGetOtherOpenedForm( out AddNewDownloadForm otherForm )
+        {
+            otherForm = Application.OpenForms.OfType< AddNewDownloadForm >().Where( f => f != this ).LastOrDefault();
+            return (otherForm != null);
+        }
+        public void ActivateAfterCloseOther()
+        {
+            this.Activate();
+            setFocus2outputFileNameTextBox();
         }
         #endregion
 
@@ -91,6 +112,11 @@ namespace m3u8.download.manager.ui
             {
                 var json = (logPanel.Visible ? _Settings.AddNewDownloadFormPositionLogVisibleJson : _Settings.AddNewDownloadFormPositionJson);
                 FormPositionStorer.Load( this, json );
+
+                if ( TryGetOtherOpenedForm( out var otherForm ) )
+                {
+                    this.Location = new Point( otherForm.Left + 10, otherForm.Top + 10 ); 
+                }
             }
         }
         protected override void OnClosed( EventArgs e )
@@ -121,6 +147,7 @@ namespace m3u8.download.manager.ui
 
             this.Activate();
             WinApi.SetForegroundWindow( this.Handle );
+            WinApi.SetForceForegroundWindow( this.Handle );
         }
         protected override void OnClosing( CancelEventArgs e )
         {
@@ -235,6 +262,13 @@ namespace m3u8.download.manager.ui
         private string _Last_m3u8FileUrlText;
         private string _LastManualInputed_outputFileNameText;
 
+        private void setFocus2outputFileNameTextBox()
+        {
+            if ( !_WasFocusSet2outputFileNameTextBoxAfterFirstChanges )
+            {
+                _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = outputFileNameTextBox.Focus();
+            }
+        }
         private async void m3u8FileUrlTextBox_TextChanged( object sender, EventArgs e )
         {
             var m3u8FileUrlText = this.M3u8FileUrl;
@@ -249,6 +283,8 @@ namespace m3u8.download.manager.ui
             _Last_m3u8FileUrlText = m3u8FileUrlText;
 
             await FileNameCleaner.SetOutputFileNameByUrl_Async( m3u8FileUrlText, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
+
+            setFocus2outputFileNameTextBox();
         }
 
         private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;

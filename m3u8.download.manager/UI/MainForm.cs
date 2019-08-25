@@ -685,6 +685,11 @@ namespace m3u8.download.manager.ui
                     }
                 }
             }
+
+            if ( AddNewDownloadForm.TryGetOpenedForm( out var openedForm ) )
+            {
+                openedForm.ActivateAfterCloseOther();
+            }
         }
         #endregion
 

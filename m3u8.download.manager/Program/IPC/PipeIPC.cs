@@ -37,12 +37,12 @@ namespace m3u8.download.manager.ipc
 
                             try
                             {
-                                await pipeServer.WaitForConnectionAsync( ct );
+                                await pipeServer.WaitForConnectionAsync( ct ).ConfigureAwait( false );
 
                                 // Read user input and send that to the client process.
                                 using ( var sr = new StreamReader( pipeServer ) )
                                 {
-                                    var line = await sr.ReadLineAsync();
+                                    var line = await sr.ReadLineAsync().ConfigureAwait( false );
                                     Debug.WriteLine( $"[SERVER] Read from [CLIENT]: {line}" );
                                     if ( BrowserIPC.CommandLine.TryParse4PipeIPC_Multi( line, out var array ) )
                                     {
