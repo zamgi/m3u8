@@ -641,15 +641,15 @@ namespace m3u8.download.manager.ui
                 }
                 else
                 {
-                    var action = new Action< (string m3u8FileUrl, bool autoStartDownload), string >( 
-                        ((string m3u8FileUrl, bool autoStartDownload) tp, string additionalTitle) => AddNewDownload( in tp, additionalTitle ) );
+                    var action = new Action< (string m3u8FileUrl, bool autoStartDownload), (int n, int total) >( 
+                        ((string m3u8FileUrl, bool autoStartDownload) tp, (int n, int total) seriesInfo ) => AddNewDownload( in tp, seriesInfo ) );
 
                     var n     = p.m3u8FileUrls.Count;
                     var count = n;
                     foreach ( var m3u8FileUrl in p.m3u8FileUrls.Reverse() )
                     {
-                        var additionalTitle = $" ({n--} of {count})";
-                        this.BeginInvoke( action, (m3u8FileUrl, p.autoStartDownload), additionalTitle );
+                        var seriesInfo = (n--, count);
+                        this.BeginInvoke( action, (m3u8FileUrl, p.autoStartDownload), seriesInfo );
                     }
                 }
             }
@@ -658,7 +658,7 @@ namespace m3u8.download.manager.ui
                 AddNewDownload( ((string) null, false) );
             }
         }
-        private void AddNewDownload( in (string m3u8FileUrl, bool autoStartDownload) p, string additionalTitle4AddNewDownloadForm = null )
+        private void AddNewDownload( in (string m3u8FileUrl, bool autoStartDownload) p, (int n, int total)? seriesInfo = null )
         {
             if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() &&
                  FileNameCleaner.TryGetOutputFileNameByUrl( p.m3u8FileUrl, out var outputFileName ) 
@@ -673,7 +673,7 @@ namespace m3u8.download.manager.ui
                 return;
             }
 
-            using ( var f = new AddNewDownloadForm( _DownloadController, _SettingsController, p.m3u8FileUrl, additionalTitle4AddNewDownloadForm ) )
+            using ( var f = new AddNewDownloadForm( _DownloadController, _SettingsController, p.m3u8FileUrl, seriesInfo ) )
             {
                 if ( f.ShowDialog( this ) == DialogResult.OK )
                 {

@@ -27,6 +27,7 @@ namespace m3u8.download.manager.ui
         private DownloadListModel _DownloadListModel;
         private FileNameCleaner.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
+        private (int n, int total) _SeriesInfo;
         #endregion
 
         #region [.ctor().]
@@ -44,7 +45,7 @@ namespace m3u8.download.manager.ui
                                                    () => this.OutputFileName,
                                                    setOutputFileName );
         }
-        public AddNewDownloadForm( DownloadController dc, SettingsPropertyChangeController sc, string m3u8FileUrl, string additionalTitle = null ) : this()
+        public AddNewDownloadForm( DownloadController dc, SettingsPropertyChangeController sc, string m3u8FileUrl, (int n, int total)? seriesInfo = null ) : this()
         {
             _Settings = sc.Settings;
             _DownloadListModel = dc?.Model;
@@ -58,8 +59,13 @@ namespace m3u8.download.manager.ui
             logUC.SetSettingsController( sc );
             statusBarUC.SetDownloadController( dc );
             statusBarUC.SetSettingsController( sc );
-
-            this.Text += additionalTitle;
+            
+            if ( seriesInfo.HasValue )
+            {
+                var x = seriesInfo.Value;
+                this.Text += $" ({x.n} of {x.total})";
+            }
+            _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
         }
 
         protected override void Dispose( bool disposing )
@@ -115,7 +121,22 @@ namespace m3u8.download.manager.ui
 
                 if ( TryGetOtherOpenedForm( out var otherForm ) )
                 {
-                    this.Location = new Point( otherForm.Left + 10, otherForm.Top + 10 ); 
+                    if ( _SeriesInfo.n == _SeriesInfo.total )
+                    {
+                        this.Location = new Point( otherForm.Left + 10, otherForm.Top + 10 );
+                    }
+                    else if ( 1 < _SeriesInfo.total )
+                    {
+                        this.Location = otherForm.Location;
+                    }
+
+                    var rc = Screen.GetWorkingArea( this );
+                    var x = this.Right  - rc.Width;
+                    var y = this.Bottom - rc.Height;
+                    if ( (0 < x) || (0 < y) )
+                    {
+                        this.Location = new Point( this.Left - Math.Max( 0, x ), otherForm.Top - Math.Max( 0, y ) );
+                    }
                 }
             }
         }
@@ -144,7 +165,7 @@ namespace m3u8.download.manager.ui
         protected override void OnShown( EventArgs e )
         {
             base.OnShown( e );
-
+           
             this.Activate();
             WinApi.SetForegroundWindow( this.Handle );
             WinApi.SetForceForegroundWindow( this.Handle );
