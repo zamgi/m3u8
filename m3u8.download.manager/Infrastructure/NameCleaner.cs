@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.Properties;
+using M = System.Runtime.CompilerServices.MethodImplAttribute;
+using O = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.download.manager.infrastructure
 {
@@ -59,27 +61,100 @@ namespace m3u8.download.manager.infrastructure
 
         public static string Clean( string name, char wordsSeparator = '.' )
         {
-            if ( name.IsNullOrEmpty() || !EXCLUDES_WORDS_SET.Any() )
+            if ( name.IsNullOrEmpty() )
             {
                 return (name);
             }
 
             var array = name.Split( PUNCTUATION_CHARS, StringSplitOptions.RemoveEmptyEntries );
-            var sb = new StringBuilder( name.Length );
+
+            #region [.phase #1.]
+            var firstWholeNumbersWord = default(string);
+            var words = new List< (string word, bool isOnlyLetters) >( array.Length );
             foreach ( var s in array )
             {
-                if ( !EXCLUDES_WORDS_SET.Contains( s ) )
+                if ( EXCLUDES_WORDS_SET.Contains( s ) )
                 {
-                    sb.Append( s ).Append( wordsSeparator );
+                    continue;
                 }
+                if ( int.TryParse( s, out var _ ) )
+                {
+                    if ( firstWholeNumbersWord == null )
+                    {
+                        firstWholeNumbersWord = s;
+                    }
+                    continue;
+                }
+
+                words.Add( (s, s.IsOnlyLetters()) );
             }
-            if ( sb.Length != 0 )
+            if ( !words.Any() )
             {
-                sb.Remove( sb.Length - 1, 1 );
+                var s = (firstWholeNumbersWord ?? "---");
+                words.Add( (s, s.IsOnlyLetters()) );
             }
+            #endregion
+
+            #region [.phase #2.]
+            const char SPACE = ' ';
+
+            var sb = new StringBuilder( name.Length );
+            var prev_word_isOnlyLetters = true;
+            foreach ( var t in words )
+            {
+                if ( t.word.TryParseSE( out var se ) )
+                {
+                    if ( !sb.IsEmpty() )
+                    {
+                        sb.ReplaceLastCharIfNotEqual( wordsSeparator );
+                    }
+                    sb.Append( se ).Append( wordsSeparator );
+                    break;
+                }
+
+                if ( prev_word_isOnlyLetters ) //&& t.isOnlyLetters )
+                {
+                    sb.AppendFirstCharToUpper( t.word ).Append( (t.isOnlyLetters ? SPACE : wordsSeparator) );
+                }
+                else
+                {
+                    sb.Append( t.word ).Append( wordsSeparator );
+                }
+                prev_word_isOnlyLetters = t.isOnlyLetters;
+            }
+            sb.RemoveLastChar();
+            #endregion
 
             return (sb.ToString());
         }
+
+        [M(O.AggressiveInlining)] private static bool IsEmpty( this StringBuilder sb ) => (sb.Length == 0);
+        [M(O.AggressiveInlining)] private static StringBuilder RemoveLastChar( this StringBuilder sb ) => sb.Remove( sb.Length - 1, 1 );
+        [M(O.AggressiveInlining)] private static void ReplaceLastCharIfNotEqual( this StringBuilder sb, char ch )
+        {
+            if ( sb[ sb.Length - 1 ] != ch )
+            {
+                sb.RemoveLastChar().Append( ch );
+            }
+        }
+        [M(O.AggressiveInlining)] private static StringBuilder AppendFirstCharToUpper( this StringBuilder sb, string s )
+            => sb.Append( char.ToUpperInvariant( s[ 0 ] ) ).Append( s, 1, s.Length - 1 );
+        [M(O.AggressiveInlining)] private static bool TryParseSE( this string v, out string se )
+        {
+            const int SE_LENGTH = 6; // => "s01e01"
+
+            if ( (v.Length == SE_LENGTH) && 
+                 (char.ToLowerInvariant( v[ 0 ] ) == 's') && char.IsDigit( v, 1 ) && char.IsDigit( v, 2 ) &&
+                 (char.ToLowerInvariant( v[ 3 ] ) == 'e') && char.IsDigit( v, 4 ) && char.IsDigit( v, 5 )
+               )
+            {
+                se = 's' + v.Substring( 1, 2 ) + "-e" + v.Substring( 4 );
+                return (true);
+            }
+            se = v;
+            return (false);
+        }
+        [M(O.AggressiveInlining)] private static bool IsOnlyLetters( this string s ) => s.All( ch => char.IsLetter( ch ) );
     }
 
     /// <summary>
