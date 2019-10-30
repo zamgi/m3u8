@@ -21,7 +21,12 @@
             this.DGV_outputFileNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_outputDirectoryColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_statusColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGV_downloadInfoColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_downloadProgressColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_downloadTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_downloadSpeedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_downloadBytesColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_approxRemainedBytesColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_approxTotalBytesColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -40,11 +45,16 @@
             this.DGV.ColumnHeadersDefaultCellStyle = cs1;
             this.DGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-                this.DGV_urlColumn,
                 this.DGV_outputFileNameColumn,
                 this.DGV_outputDirectoryColumn,
                 this.DGV_statusColumn,
-                this.DGV_downloadInfoColumn
+                this.DGV_downloadProgressColumn,
+                this.DGV_downloadTimeColumn,
+                this.DGV_downloadSpeedColumn,
+                this.DGV_downloadBytesColumn,
+                this.DGV_approxRemainedBytesColumn,
+                this.DGV_approxTotalBytesColumn,
+                this.DGV_urlColumn
             });
             cs2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             cs2.BackColor = System.Drawing.SystemColors.Window;
@@ -79,24 +89,26 @@
             // 
             // DGV_urlColumn
             // 
-            this.DGV_urlColumn.FillWeight = 300F;
+            this.DGV_urlColumn.FillWeight = 120F;
+            this.DGV_urlColumn.Width = 120;
             this.DGV_urlColumn.HeaderText = "Url";
             this.DGV_urlColumn.Name = "DGV_urlColumn";
             this.DGV_urlColumn.ReadOnly = true;
-            this.DGV_urlColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.DGV_urlColumn.Width = 300;
+            this.DGV_urlColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;            
             // 
             // DGV_outputFileNameColumn
             // 
-            this.DGV_outputFileNameColumn.FillWeight = 200F;
+            this.DGV_outputFileNameColumn.FillWeight = 180F;
+            this.DGV_outputFileNameColumn.Width = 180;
             this.DGV_outputFileNameColumn.HeaderText = "Output file name";
             this.DGV_outputFileNameColumn.Name = "DGV_outputFileNameColumn";
             this.DGV_outputFileNameColumn.ReadOnly = true;
             this.DGV_outputFileNameColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.DGV_outputFileNameColumn.Width = 200;
             // 
             // DGV_outputDirectoryColumn
             // 
+            this.DGV_outputDirectoryColumn.FillWeight = 90F;
+            this.DGV_outputDirectoryColumn.Width = 90;
             this.DGV_outputDirectoryColumn.HeaderText = "Output directory";
             this.DGV_outputDirectoryColumn.Name = "DGV_outputDirectoryColumn";
             this.DGV_outputDirectoryColumn.ReadOnly = true;
@@ -109,14 +121,60 @@
             this.DGV_statusColumn.ReadOnly = true;
             this.DGV_statusColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
-            // DGV_downloadInfoColumn
+            // DGV_downloadProgressColumn
             // 
-            this.DGV_downloadInfoColumn.FillWeight = 200F;
-            this.DGV_downloadInfoColumn.HeaderText = "Download info";
-            this.DGV_downloadInfoColumn.Name = "DGV_downloadInfoColumn";
-            this.DGV_downloadInfoColumn.ReadOnly = true;
-            this.DGV_downloadInfoColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.DGV_downloadInfoColumn.Width = 200;
+            this.DGV_downloadProgressColumn.FillWeight = 125F;
+            this.DGV_downloadProgressColumn.Width = 125;
+            this.DGV_downloadProgressColumn.HeaderText = "Progress";
+            this.DGV_downloadProgressColumn.Name = "DGV_downloadProgress";
+            this.DGV_downloadProgressColumn.ReadOnly = true;
+            this.DGV_downloadProgressColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // DGV_downloadTimeColumn
+            // 
+            this.DGV_downloadTimeColumn.FillWeight = 80F;
+            this.DGV_downloadTimeColumn.Width = 80;
+            this.DGV_downloadTimeColumn.HeaderText = "Time";
+            this.DGV_downloadTimeColumn.Name = "DGV_downloadTimeColumn";
+            this.DGV_downloadTimeColumn.ReadOnly = true;
+            this.DGV_downloadTimeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // DGV_downloadSpeedColumn
+            // 
+            this.DGV_downloadSpeedColumn.FillWeight = 80F;
+            this.DGV_downloadSpeedColumn.Width = 80;
+            this.DGV_downloadSpeedColumn.HeaderText = "Speed";
+            this.DGV_downloadSpeedColumn.Name = "DGV_downloadSpeedColumn";
+            this.DGV_downloadSpeedColumn.ReadOnly = true;
+            this.DGV_downloadSpeedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
+            // DGV_downloadBytesColumn
+            // 
+            this.DGV_downloadBytesColumn.FillWeight = 80F;
+            this.DGV_downloadBytesColumn.Width = 80;
+            this.DGV_downloadBytesColumn.HeaderText = "Received";
+            this.DGV_downloadBytesColumn.Name = "DGV_downloadBytesColumn";
+            this.DGV_downloadBytesColumn.ReadOnly = true;
+            this.DGV_downloadBytesColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // DGV_approxRemainedBytesColumn
+            // 
+            this.DGV_approxRemainedBytesColumn.FillWeight = 80F;
+            this.DGV_approxRemainedBytesColumn.Width = 80;
+            this.DGV_approxRemainedBytesColumn.HeaderText = "Remained ~";
+            this.DGV_approxRemainedBytesColumn.Name = "DGV_approxRemainedBytesColumn";
+            this.DGV_approxRemainedBytesColumn.ReadOnly = true;
+            this.DGV_approxRemainedBytesColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
+            // DGV_approxTotalBytesColumn
+            // 
+            this.DGV_approxTotalBytesColumn.FillWeight = 80F;
+            this.DGV_approxTotalBytesColumn.Width = 80;
+            this.DGV_approxTotalBytesColumn.HeaderText = "Total ~";
+            this.DGV_approxTotalBytesColumn.Name = "DGV_approxTotalBytesColumn";
+            this.DGV_approxTotalBytesColumn.ReadOnly = true;
+            this.DGV_approxTotalBytesColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+
             // 
             // DownloadListUC
             // 
@@ -124,7 +182,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.DGV);
             this.Name = "DownloadListUC";
-            this.Size = new System.Drawing.Size(948, 201);
+            this.Size = new System.Drawing.Size(1200, 201);
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).EndInit();
             this.ResumeLayout(false);
         }
@@ -135,6 +193,12 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_outputFileNameColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_outputDirectoryColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_statusColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_downloadInfoColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_downloadProgressColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_downloadTimeColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_downloadSpeedColumn;
+
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_downloadBytesColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_approxRemainedBytesColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_approxTotalBytesColumn;
     }
 }

@@ -329,7 +329,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _ShowDownloadStatistics )
             {
-                this.Text = $"{DownloadListUC.GetDownloadInfoTextShorty( row )},  [{Resources.APP_TITLE}]";
+                this.Text = $"{DownloadListUC.GetDownloadInfoText( row )},  [{Resources.APP_TITLE}]";
             }
         }
         private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )

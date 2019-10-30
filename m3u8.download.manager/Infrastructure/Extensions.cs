@@ -315,5 +315,49 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool IsWait    ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Wait);
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Paused);
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadStatus status ) => (status     == DownloadStatus.Paused);
+
+        [M(O.AggressiveInlining)] public static bool IsColumnSortable( this DataGridView dgv, int columnIndex)
+            => /*(0 <= columnIndex) && */ (columnIndex < 0) || (dgv.Columns[ columnIndex ].SortMode != DataGridViewColumnSortMode.NotSortable);
+
+        [M(O.AggressiveInlining)] public static long? GetApproxRemainedBytes( this DownloadRow row )
+        {
+            var processedParts = (row.SuccessDownloadParts + row.FailedDownloadParts);
+            if ( processedParts != 0 )
+            {
+                var d                    = row.DownloadBytesLength;
+                var singlePartApproxSize = (1.0 * d / processedParts);
+                var approxTotalBytes     = singlePartApproxSize * row.TotalParts;
+                var approxRemainedBytes  = Convert.ToInt64( approxTotalBytes - d );
+                return (approxRemainedBytes);
+            }
+            return (null);
+        }
+        [M(O.AggressiveInlining)] public static long? GetApproxTotalBytes( this DownloadRow row )
+        {
+            var processedParts = (row.SuccessDownloadParts + row.FailedDownloadParts);
+            if ( processedParts != 0 )
+            {
+                var singlePartApproxSize = (1.0 * row.DownloadBytesLength / processedParts);
+                var approxTotalBytes     = Convert.ToInt64( singlePartApproxSize * row.TotalParts );
+                return (approxTotalBytes);
+            }
+            return (null);
+        }
+        [M(O.AggressiveInlining)] public static int CompareTo< T >( in this T? x, in T? y ) where T : struct, IComparable< T >
+        {
+            if ( x.HasValue )
+            {
+                if ( y.HasValue )
+                {
+                    return (x.Value.CompareTo( y.Value ));
+                }
+                return (1);
+            }
+            else if ( y.HasValue )
+            {
+                return (-1);
+            }
+            return (0);            
+        }
     }
 }

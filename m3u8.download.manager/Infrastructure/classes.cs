@@ -151,7 +151,8 @@ namespace m3u8.download.manager.ui
             var gr   = e.Graphics;
             var font = _DGV.Font;
 
-            var br = (_UseColumnsHoverHighlight && e.CellBounds.Contains( _DGV.PointToClient( Control.MousePosition ) )) 
+            var br = (_UseColumnsHoverHighlight && e.CellBounds.Contains( _DGV.PointToClient( Control.MousePosition ) )
+                                                && _DGV.IsColumnSortable( e.ColumnIndex )) 
                             ? ((Control.MouseButtons == MouseButtons.Left) ? _BackBrushColumnHoverPushed
                                                                            : _BackBrushColumnHover) 
                             : _BackBrush;

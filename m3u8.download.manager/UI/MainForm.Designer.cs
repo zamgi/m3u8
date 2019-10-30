@@ -364,7 +364,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1015, 579);
+            this.ClientSize = new System.Drawing.Size(1050, 579);
             this.Controls.Add(this.mainSplitContainer);
             this.Controls.Add(this.statusBarUC);
             this.Controls.Add(this.mainToolStrip);
