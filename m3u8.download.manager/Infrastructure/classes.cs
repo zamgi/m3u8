@@ -247,7 +247,6 @@ namespace m3u8.download.manager.ui
                 await Task.Delay( 330 );
                 control.BackColor = bc;
                 _BlinkedControls.Remove( control );
-                //Task.Delay( 330 ).ContinueWith( _ => control.BackColor = bc, TaskScheduler.FromCurrentSynchronizationContext() );
             }
         }
         public static void FocusAndBlinkBackColor( this Control control ) => control.FocusAndBlinkBackColor( Color.HotPink );

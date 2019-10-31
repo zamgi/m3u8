@@ -63,7 +63,6 @@ namespace m3u8.download.manager.ui
         public event UpdatedSingleRunningRowEventHandler UpdatedSingleRunningRow;
 
         private DownloadListModel _Model;
-        //private CellStyle _DefaultCellStyle;
         private CellStyle         _ErrorCellStyle;
         private CellStyle         _CanceledCellStyle;
         private CellStyle         _FinishedCellStyle;
@@ -93,21 +92,13 @@ namespace m3u8.download.manager.ui
             _ErrorCellStyle    = new CellStyle( DGV.DefaultCellStyle )
             {
                 ForeColor          = Color.Red,
-                //BackColor          = Color.Red,
                 SelectionForeColor = Color.White,
                 SelectionBackColor = Color.Red,
-                //Font = new Font( DGV.Font, FontStyle.Bold )
             };
             _CanceledCellStyle = new CellStyle( DGV.DefaultCellStyle )
             {
                 ForeColor          = Color.DimGray,
                 SelectionForeColor = Color.WhiteSmoke,
-                //Font               = new Font( DGV.Font, FontStyle.Strikeout )
-
-                //ForeColor          = Color.Red,
-                //BackColor          = Color.Yellow,
-                //SelectionForeColor = Color.Yellow,
-                //SelectionBackColor = Color.Red,
             };
             _FinishedCellStyle = new CellStyle( DGV.DefaultCellStyle ) { Font = new Font( DGV.Font, FontStyle.Bold ) };
 
@@ -250,7 +241,7 @@ namespace m3u8.download.manager.ui
                         _CommonUpdateTimer.Enabled = hasRows;
                         if ( hasRows )
                         {
-                            var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), DGV.RowCount - 1 ); // ((0 <= selectedVisibleIndex) && (selectedVisibleIndex < DGV.RowCount)) ? selectedVisibleIndex : (DGV.RowCount - 1); //0;
+                            var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), DGV.RowCount - 1 );
                             var dtrow = DGV.Rows[ visibleIndex ];
                             if ( dtrow.Selected )
                             {
@@ -294,15 +285,16 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.private methods.]
-        private const string HH_MM_SS = "hh\\:mm\\:ss";
-        private const string MM_SS    = "mm\\:ss";
+        private const string CREATED_DT = "HH:mm:ss  (yyyy.MM.dd)";
+        private const string HH_MM_SS   = "hh\\:mm\\:ss";
+        private const string MM_SS      = "mm\\:ss";
 
         [M(O.AggressiveInlining)] public  static string GetDownloadInfoText( DownloadRow row )
         {
             var st = row.Status;
             switch ( st )
             {
-                case DownloadStatus.Created: return ($"[created]: {row.CreatedOrStartedDateTime.ToString("HH:mm:ss  (yyyy.MM.dd)")}");
+                case DownloadStatus.Created: return ($"[created]: {row.CreatedOrStartedDateTime.ToString( CREATED_DT )}");
                 case DownloadStatus.Started: return ($"{row.GetElapsed().ToString( HH_MM_SS )}");
                 case DownloadStatus.Wait   : return ($"(wait), ({row.GetElapsed().ToString( HH_MM_SS )})");
             }
@@ -332,16 +324,16 @@ namespace m3u8.download.manager.ui
 
             return (downloadInfo);
         }
-        [M(O.AggressiveInlining)] private static bool TryGetDownloadProgress( DownloadRow row, out double part, out string text )
+        [M(O.AggressiveInlining)] private static bool TryGetDownloadProgress( DownloadRow row, out double part, out string progressText )
         {
             var st = row.Status;
             switch ( st )
             {
-                case DownloadStatus.Created: //return ($"[created]: {row.CreatedOrStartedDateTime.ToString("HH:mm:ss  (yyyy.MM.dd)")}");
-                case DownloadStatus.Started: //return ($"{row.GetElapsed().ToString( HH_MM_SS )}");
-                case DownloadStatus.Wait   : //return ($"(wait), ({row.GetElapsed().ToString( HH_MM_SS )})");
-                    part = default;
-                    text    = null;
+                case DownloadStatus.Created:
+                case DownloadStatus.Started:
+                case DownloadStatus.Wait   :
+                    part         = default;
+                    progressText = null;
                     return (false);
 
                 default:
@@ -352,33 +344,30 @@ namespace m3u8.download.manager.ui
                         var percent = Convert.ToByte( 100 * part );
                         percentText = percent.ToString();
                     }
+                    else if ( st == DownloadStatus.Canceled ) //not-started
+                    {
+                        part         = default;
+                        progressText = null;
+                        return (false);
+                    }
                     else
                     {
                         part        = 0;
                         percentText = "-";
                     }
-                    var failedParts = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
-                    var progress    = $"{percentText}%  ({row.SuccessDownloadParts} of {row.TotalParts}{failedParts})"; //(shorty ? null : $"{row.SuccessDownloadParts} of {row.TotalParts}{failedParts}, ") + $"{percent}%";
 
-                    text = progress;
+                    var failedParts = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
+                    progressText = $"{percentText}%  ({row.SuccessDownloadParts} of {row.TotalParts}{failedParts})";
                     return (true);
             }
         }
         [M(O.AggressiveInlining)] private static string GetDownloadTimeText( DownloadRow row )
         {
-            var st = row.Status;
-            switch ( st )
+            if ( row.Status == DownloadStatus.Created )
             {
-                case DownloadStatus.Created: return ($"{row.CreatedOrStartedDateTime.ToString("HH:mm:ss  (yyyy.MM.dd)")}, [created]"); //return ($"[created]: {row.CreatedOrStartedDateTime.ToString("HH:mm:ss  (yyyy.MM.dd)")}");
-                case DownloadStatus.Started: return ($"{row.GetElapsed().ToString( HH_MM_SS )}");
-                case DownloadStatus.Wait   : return ($"({row.GetElapsed().ToString( HH_MM_SS )}), (wait)"); //return ($"(wait), ({row.GetElapsed().ToString( HH_MM_SS )})");
-
-                default:
-                    var ts      = row.GetElapsed();
-                    var elapsed = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
-
-                    return (elapsed);
+                return (row.CreatedOrStartedDateTime.ToString( CREATED_DT ));
             }
+            return (row.GetElapsed().ToString( HH_MM_SS ));
         }
         [M(O.AggressiveInlining)] private static string GetDownloadSpeedText( DownloadRow row )
         {
@@ -396,7 +385,7 @@ namespace m3u8.download.manager.ui
                     return (speedText);
                 }
             }
-            return (null);
+            return (string.Empty);
         }
         [M(O.AggressiveInlining)] private static string GetDisplaySizeText( long size )
         {
@@ -530,12 +519,10 @@ namespace m3u8.download.manager.ui
             }
             else if ( columnIndex == DOWNLOAD_TIME_COLUMNINDEX )
             {
-                //---comparison = (x, y) => x..CompareTo( y. );
                 return;
             }
             else if ( columnIndex == DOWNLOAD_SPEED_COLUMNINDEX )
             {
-                //---comparison = (x, y) => x..CompareTo( y. );
                 return;
             }
             else
@@ -574,8 +561,8 @@ namespace m3u8.download.manager.ui
             {
                 case 0: e.Value = row.OutputFileName;                                    break; /*OUTPUTFILENAME_COLUMNINDEX*/
                 case 1: e.Value = row.OutputDirectory;                                   break; /*OUTPUTDIRECTORY_COLUMNINDEX*/
-                case 2: e.Value = string.Empty; /*row.Status.ToString();*/               break; /*STATUS_COLUMNINDEX*/
-                case 3: e.Value = string.Empty; /*GetDownloadProgressText( row );*/      break; /*DOWNLOAD_PROGRESS_COLUMNINDEX*/
+                case 2: e.Value = string.Empty;                                          break; /*STATUS_COLUMNINDEX*/
+                case 3: e.Value = string.Empty;                                          break; /*DOWNLOAD_PROGRESS_COLUMNINDEX*/
                 case 4: e.Value = GetDownloadTimeText       ( row );                     break; /*DOWNLOAD_TIME_COLUMNINDEX*/
                 case 5: e.Value = GetDownloadSpeedText      ( row );                     break; /*DOWNLOAD_SPEED_COLUMNINDEX*/
                 case 6: e.Value = GetDisplaySizeText        ( row.DownloadBytesLength ); break; /*DOWNLOAD_BYTES_COLUMNINDEX*/
@@ -684,27 +671,6 @@ namespace m3u8.download.manager.ui
 
             if ( e.ColumnIndex == STATUS_COLUMNINDEX )
             {
-                #region comm.
-                /*
-                e.Handled = true;
-                var gr = e.Graphics;
-
-                //-1- bottom & right lines -//
-                var rc = e.CellBounds; rc.Width--; rc.Height--;
-                gr.DrawLines( Pens.DimGray, new[] { new Point( rc.X    , rc.Bottom ), new Point( rc.Right, rc.Bottom ),
-                                                    new Point( rc.Right, rc.Y      ), new Point( rc.Right, rc.Bottom ), } );
-                //-2- fill background -//
-                var backColor = (e.State.IsSelected() ? e.CellStyle.SelectionBackColor : e.CellStyle.BackColor);
-                using ( var br = new SolidBrush( backColor ) )
-                {
-                    gr.FillRectangle( br, rc );
-                }
-
-                //-3- fill background -//
-                rc.Inflate( -1, -1 );
-                gr.FillRectangle( Brushes.White, rc );
-                */
-                #endregion
                 CellPaintRoutine( e );
 
                 //-4- status image -//
@@ -748,7 +714,6 @@ namespace m3u8.download.manager.ui
                 StringFormat sf;
                 if ( has )
                 {
-                    //rc.Inflate( -22, 0 );
                     sf = _SF_Center;
                     if ( 0 < part )
                     {
@@ -825,7 +790,6 @@ namespace m3u8.download.manager.ui
                         if ( _DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.None )
                         {
                             DGV.ClearSelection();
-                            //DGV.CurrentCell = null;
                         }
                     break;
 
@@ -839,7 +803,6 @@ namespace m3u8.download.manager.ui
         private void DGV_MouseMove( object sender, MouseEventArgs e )
         {
             if ( e.Button != MouseButtons.Left ) return;
-            //---if ( DGV.RowCount < 2 ) return;
             var row = GetSelectedDownloadRow();
             if ( row == null ) return;
 
@@ -904,7 +867,7 @@ namespace m3u8.download.manager.ui
                 var rc = DGV.GetRowDisplayRectangle( e.RowIndex, true );
                 rc.Width = DGV.RowHeadersWidth + DGV.Columns.Cast< DataGridViewColumn >().Where( c => c.Visible ).Sum( c => c.Width );
 
-                var color = Color.FromArgb( 75, DGV.DefaultCellStyle.SelectionBackColor ); // Color.Blue );
+                var color = Color.FromArgb( 75, DGV.DefaultCellStyle.SelectionBackColor );
                 using ( var br = new HatchBrush( HatchStyle.ForwardDiagonal, color, Color.Transparent ) )
                 {
                     e.Graphics.FillRectangle( br, rc );
@@ -914,18 +877,6 @@ namespace m3u8.download.manager.ui
                     rc.Inflate( -1, -1 );
                     e.Graphics.DrawRectangle( pen, rc );
                 }
-
-                #region comm. other draw methods
-                //using ( var pen = new Pen( Color.OrangeRed, 2.0f ) )
-                //{
-                //    e.Graphics.DrawRectangle( pen, rc );
-                //}
-
-                //using ( var br = new SolidBrush( Color.FromArgb( 90, Color.Black ) ) )
-                //{
-                //    e.Graphics.FillRectangle( br, rc );
-                //} 
-                #endregion
             }
         }
         private void DGV_DragOver( object sender, DragEventArgs e )
@@ -954,6 +905,8 @@ namespace m3u8.download.manager.ui
             }
             ScrollIfNeed( in pt );
         }
+        private void DGV_DataError( object sender, DataGridViewDataErrorEventArgs e )
+            => Debug.WriteLine( $"{nameof(DGV_DataError)}::'{e.Context}'; [row={e.RowIndex}:col={e.ColumnIndex}] => '{e.Exception}'" );
 
         private DateTime _LastScrollDateTime;
         private void ScrollIfNeed( in Point pt )

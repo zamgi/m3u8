@@ -85,7 +85,8 @@
             this.DGV.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DGV_ColumnHeaderMouseClick);
             this.DGV.MouseDown +=new System.Windows.Forms.MouseEventHandler(this.DGV_MouseDown);
             this.DGV.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseClick);
-            this.DGV.MouseMove +=new System.Windows.Forms.MouseEventHandler(this.DGV_MouseMove);
+            this.DGV.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseMove);
+            this.DGV.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DGV_DataError);
             // 
             // DGV_urlColumn
             // 
