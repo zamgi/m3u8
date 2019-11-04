@@ -23,6 +23,7 @@
             this.DGV_statusColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_downloadProgressColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_downloadTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_approxRemainedTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_downloadSpeedColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_downloadBytesColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_approxRemainedBytesColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -34,6 +35,7 @@
             // 
             this.DGV.AllowUserToAddRows = false;
             this.DGV.AllowUserToDeleteRows = false;
+            this.DGV.AllowUserToOrderColumns = true;
             this.DGV.BackgroundColor = System.Drawing.Color.White;
             cs1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             cs1.BackColor = System.Drawing.SystemColors.Control;
@@ -50,6 +52,7 @@
                 this.DGV_statusColumn,
                 this.DGV_downloadProgressColumn,
                 this.DGV_downloadTimeColumn,
+                this.DGV_approxRemainedTimeColumn,
                 this.DGV_downloadSpeedColumn,
                 this.DGV_downloadBytesColumn,
                 this.DGV_approxRemainedBytesColumn,
@@ -140,6 +143,15 @@
             this.DGV_downloadTimeColumn.ReadOnly = true;
             this.DGV_downloadTimeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
+            // DGV_approxRemainedTimeColumn
+            // 
+            this.DGV_approxRemainedTimeColumn.FillWeight = 80F;
+            this.DGV_approxRemainedTimeColumn.Width = 80;
+            this.DGV_approxRemainedTimeColumn.HeaderText = "Time Remained ~";
+            this.DGV_approxRemainedTimeColumn.Name = "DGV_approxRemainedTimeColumn";
+            this.DGV_approxRemainedTimeColumn.ReadOnly = true;
+            this.DGV_approxRemainedTimeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            // 
             // DGV_downloadSpeedColumn
             // 
             this.DGV_downloadSpeedColumn.FillWeight = 80F;
@@ -153,7 +165,7 @@
             // 
             this.DGV_downloadBytesColumn.FillWeight = 80F;
             this.DGV_downloadBytesColumn.Width = 80;
-            this.DGV_downloadBytesColumn.HeaderText = "Received";
+            this.DGV_downloadBytesColumn.HeaderText = "Received (Size)";
             this.DGV_downloadBytesColumn.Name = "DGV_downloadBytesColumn";
             this.DGV_downloadBytesColumn.ReadOnly = true;
             this.DGV_downloadBytesColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
@@ -162,7 +174,7 @@
             // 
             this.DGV_approxRemainedBytesColumn.FillWeight = 80F;
             this.DGV_approxRemainedBytesColumn.Width = 80;
-            this.DGV_approxRemainedBytesColumn.HeaderText = "Remained ~";
+            this.DGV_approxRemainedBytesColumn.HeaderText = "Remained ~ (Size)";
             this.DGV_approxRemainedBytesColumn.Name = "DGV_approxRemainedBytesColumn";
             this.DGV_approxRemainedBytesColumn.ReadOnly = true;
             this.DGV_approxRemainedBytesColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
@@ -171,7 +183,7 @@
             // 
             this.DGV_approxTotalBytesColumn.FillWeight = 80F;
             this.DGV_approxTotalBytesColumn.Width = 80;
-            this.DGV_approxTotalBytesColumn.HeaderText = "Total ~";
+            this.DGV_approxTotalBytesColumn.HeaderText = "Total ~ (Size)";
             this.DGV_approxTotalBytesColumn.Name = "DGV_approxTotalBytesColumn";
             this.DGV_approxTotalBytesColumn.ReadOnly = true;
             this.DGV_approxTotalBytesColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
@@ -186,7 +198,7 @@
             this.Size = new System.Drawing.Size(1200, 201);
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).EndInit();
             this.ResumeLayout(false);
-        }
+        }        
         #endregion
 
         private System.Windows.Forms.DataGridView DGV;
@@ -196,6 +208,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_statusColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_downloadProgressColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_downloadTimeColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_approxRemainedTimeColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_downloadSpeedColumn;
 
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_downloadBytesColumn;

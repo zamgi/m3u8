@@ -17,14 +17,18 @@ namespace m3u8.download.manager.ui.infrastructure
     [DataContract]
     internal sealed class DGVColumnWidth
     {
-        [DataMember(Name="t")]  public string Text { get; set; }
-        [DataMember(Name="w")]  public int    Width { get; set; }
+        [DataMember(Name="t")]  public string Text         { get; set; }
+        [DataMember(Name="w")]  public int    Width        { get; set; }
+        [DataMember(Name="di")] public int    DisplayIndex { get; set; }
+        [DataMember(Name="v")]  public bool   Visible      { get; set; }
 
-        public DGVColumnWidth() { }
+        public DGVColumnWidth() => Visible = true;
         public DGVColumnWidth( DataGridViewColumn column )
         {
-            Text  = ((!string.IsNullOrEmpty( column.Name )) ? column.Name : column.HeaderText);
-            Width = column.Width;
+            Text         = ((!string.IsNullOrEmpty( column.Name )) ? column.Name : column.HeaderText);
+            Width        = column.Width;
+            DisplayIndex = column.DisplayIndex;
+            Visible      = column.Visible;
         }
     }
     /// <summary>
@@ -54,6 +58,7 @@ namespace m3u8.download.manager.ui.infrastructure
 
         public void RestoreInDGV( DataGridView dgv, bool skipNonResizableColumns = true )
         {
+            var hasAllDisplayIndex = (ColumnWidths.Select( o => o.DisplayIndex ).Distinct().Count() == dgv.Columns.Count);
             var dict = ColumnWidths.GroupBy( o => o.Text ).ToDictionary( g => g.Key, g => g.First() );
             
             foreach ( DataGridViewColumn column in dgv.Columns )
@@ -61,69 +66,14 @@ namespace m3u8.download.manager.ui.infrastructure
                 if ( !skipNonResizableColumns || (column.Resizable != DataGridViewTriState.False) )
                 {
                     var name = (!string.IsNullOrEmpty( column.Name ) ? column.Name : column.HeaderText);
-                    if ( dict.TryGetValue( name, out var dgvcw ) )
+                    if ( dict.TryGetValue( name, out var x ) )
                     {
-                        column.Width = dgvcw.Width;
-                    }
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [DataContract]
-    internal sealed class LVColumnWidth
-    {
-        [DataMember(Name="t")]  public string Text { get; set; }
-        [DataMember(Name="w")]  public int    Width { get; set; }
-        [DataMember(Name="v")]  public bool   Visible { get; set; }
-        [DataMember(Name="di")] public int    DisplayIndex { get; set; }
-
-        public LVColumnWidth() => Visible = true;
-        internal LVColumnWidth( ColumnHeader column )
-        {
-            Text         = ((!string.IsNullOrEmpty( column.Name )) ? column.Name : column.Text);
-            Width        = column.Width;
-            DisplayIndex = column.DisplayIndex;
-            Visible      = true;
-        }
-    }
-    /// <summary>
-    /// 
-    /// </summary>
-    [DataContract]
-    internal sealed class LVColumnWidths
-    {
-        [DataMember(Name="n")]   public string Name { get; set; }
-        [DataMember(Name="cws")] public List< LVColumnWidth > ColumnWidths { get; set; }
-
-        public LVColumnWidths() => ColumnWidths = new List< LVColumnWidth >();
-        internal LVColumnWidths( ListView lv )
-        {
-            Name = lv.Name;
-            ColumnWidths = new List< LVColumnWidth >( lv.Columns.Count );
-            foreach ( ColumnHeader column in lv.Columns )
-            {
-                ColumnWidths.Add( new LVColumnWidth( column ) );
-            }
-        }
-
-        internal void RestoreInLV( ListView lv )
-        {
-            var hasAllDisplayIndex = (ColumnWidths.Select( woc => woc.DisplayIndex ).Distinct().Count() == lv.Columns.Count);
-            var dict = ColumnWidths.ToDictionary( woc => woc.Text );
-            
-            foreach ( ColumnHeader columnHeader in lv.Columns )
-            {
-                var name = (!string.IsNullOrEmpty( columnHeader.Name )) ? columnHeader.Name : columnHeader.Text;
-                if ( dict.TryGetValue( name, out var x ) )
-                {
-                    columnHeader.Width = x.Width;
-                    if ( hasAllDisplayIndex )
-                    {
-                        columnHeader.DisplayIndex = x.DisplayIndex;
+                        column.Width = x.Width;
+                        if ( hasAllDisplayIndex )
+                        {
+                            column.DisplayIndex = x.DisplayIndex;
+                            column.Visible      = x.Visible;
+                        }
                     }
                 }
             }
@@ -156,14 +106,12 @@ namespace m3u8.download.manager.ui.infrastructure
         [DataMember(Name="r")]  public Rectangle       Rect        { get; set; }
         [DataMember(Name="ws")] public FormWindowState WindowState { get; set; }
 
-        [DataMember(Name="lvcws")]  public List< LVColumnWidths  > LVColumnsWidths { get; set; }
         [DataMember(Name="sds")]    public List< SplitDistance   > SplitDistances  { get; set; }
         [DataMember(Name="dgvcws")] public List< DGVColumnWidths > DGVColumnWidths { get; set; }
 
         /// <summary>
         /// https://www.newtonsoft.com/json/help/html/ConditionalProperties.htm
         /// </summary>
-        public bool ShouldSerializeLVColumnsWidths() => (0 < LVColumnsWidths.Count);
         public bool ShouldSerializeSplitDistances()  => (0 < SplitDistances.Count);
         public bool ShouldSerializeDGVColumnWidths() => (0 < DGVColumnWidths.Count);
 
@@ -171,7 +119,6 @@ namespace m3u8.download.manager.ui.infrastructure
         {
             Rect            = default;
             WindowState     = FormWindowState.Normal;
-            LVColumnsWidths = new List< LVColumnWidths >();
             SplitDistances  = new List< SplitDistance  >();
             DGVColumnWidths = new List< DGVColumnWidths >();
         }
@@ -206,19 +153,7 @@ namespace m3u8.download.manager.ui.infrastructure
             return (_sds_Dict.TryGetValue( name, out var sd ) ? sd : null);
         }
 
-        [IgnoreDataMember] private Dictionary< string, LVColumnWidths > _lvcws_Dict;
-        [M(O.AggressiveInlining)] public LVColumnWidths TryGetLVColumnWidths( string name )
-        {
-            if ( (name == null) || (LVColumnsWidths.Count == 0) ) return (null);
-
-            if ( _lvcws_Dict == null )
-            {
-                _lvcws_Dict = LVColumnsWidths.GroupBy( o => o.Name ).ToDictionary( g => g.Key, g => g.First() );
-            }
-            return (_lvcws_Dict.TryGetValue( name, out var lvcws ) ? lvcws : null);
-        }
-
-        [M(O.AggressiveInlining)] public bool IsEmptyLists() => ((0 == LVColumnsWidths.Count) && (0 == SplitDistances.Count) && (0 == DGVColumnWidths.Count));
+        [M(O.AggressiveInlining)] public bool IsEmptyLists() => ((0 == SplitDistances.Count) && (0 == DGVColumnWidths.Count));
     }
 
     /// <summary>
@@ -268,16 +203,7 @@ namespace m3u8.download.manager.ui.infrastructure
 
         private static void save_Recurrent( this Control parent, FormData d )
         {
-            #region [.LV //-1-//.]
-            var lv = parent as ListView;
-            if ( lv != null )
-            {
-                d.LVColumnsWidths.Add( new LVColumnWidths( lv ) );
-                goto NEXT;
-            }
-            #endregion
-
-            #region [.DGV //-2-//.]
+            #region [.DGV //-1-//.]
             var dgv = parent as DataGridView;
             if ( dgv != null )
             {
@@ -286,7 +212,7 @@ namespace m3u8.download.manager.ui.infrastructure
             }
             #endregion
 
-            #region [.SplitContainer //-3-//.]
+            #region [.SplitContainer //-2-//.]
             var sc = parent as SplitContainer;
             if ( sc != null )
             {
@@ -303,20 +229,7 @@ namespace m3u8.download.manager.ui.infrastructure
         }
         private static void load_Recurrent( this Control parent, FormData d )
         {
-            #region [.LV //-1-//.]
-            var lv = parent as ListView;
-            if ( lv != null )
-            {
-                var lvcws = d.TryGetLVColumnWidths( lv.Name );
-                if ( lvcws != null )
-                {
-                    lvcws.RestoreInLV( lv );
-                    goto NEXT;
-                }
-            }
-            #endregion
-
-            #region [.DGV //-2-//.]
+            #region [.DGV //-1-//.]
             var dgv = parent as DataGridView;
             if ( dgv != null )
             {
@@ -329,7 +242,7 @@ namespace m3u8.download.manager.ui.infrastructure
             }
             #endregion
 
-            #region [.SplitContainer //-3-//.]
+            #region [.SplitContainer //-2-//.]
             var sc = parent as SplitContainer;
             if ( sc != null )
             {
@@ -348,7 +261,6 @@ namespace m3u8.download.manager.ui.infrastructure
                 c.load_Recurrent( d );
             }
         }
-
 
         public static void LoadOnlyHeight( Form form, string formPositionJson )
         {

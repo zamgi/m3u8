@@ -43,16 +43,17 @@ namespace m3u8.download.manager.ui
         public delegate void UpdatedSingleRunningRowEventHandler( DownloadRow row );
 
         #region [.column index's.]
-        private int OUTPUTFILENAME_COLUMNINDEX        { [M(O.AggressiveInlining)] get => DGV_outputFileNameColumn     .DisplayIndex; }
-        private int OUTPUTDIRECTORY_COLUMNINDEX       { [M(O.AggressiveInlining)] get => DGV_outputDirectoryColumn    .DisplayIndex; }
-        private int STATUS_COLUMNINDEX                { [M(O.AggressiveInlining)] get => DGV_statusColumn             .DisplayIndex; }
-        private int DOWNLOAD_PROGRESS_COLUMNINDEX     { [M(O.AggressiveInlining)] get => DGV_downloadProgressColumn   .DisplayIndex; }
-        private int DOWNLOAD_TIME_COLUMNINDEX         { [M(O.AggressiveInlining)] get => DGV_downloadTimeColumn       .DisplayIndex; }
-        private int DOWNLOAD_SPEED_COLUMNINDEX        { [M(O.AggressiveInlining)] get => DGV_downloadSpeedColumn      .DisplayIndex; }
-        private int DOWNLOAD_BYTES_COLUMNINDEX        { [M(O.AggressiveInlining)] get => DGV_downloadBytesColumn      .DisplayIndex; }
-        private int APPROX_REMAINED_BYTES_COLUMNINDEX { [M(O.AggressiveInlining)] get => DGV_approxRemainedBytesColumn.DisplayIndex; }
-        private int APPROX_TOTAL_BYTES_COLUMNINDEX    { [M(O.AggressiveInlining)] get => DGV_approxTotalBytesColumn   .DisplayIndex; }
-        private int URL_COLUMNINDEX                   { [M(O.AggressiveInlining)] get => DGV_urlColumn                .DisplayIndex; }
+        private const int OUTPUTFILENAME_COLUMN_INDEX        = 0;
+        private const int OUTPUTDIRECTORY_COLUMN_INDEX       = 1;
+        private const int STATUS_COLUMN_INDEX                = 2;
+        private const int DOWNLOAD_PROGRESS_COLUMN_INDEX     = 3;
+        private const int DOWNLOAD_TIME_COLUMN_INDEX         = 4;
+        private const int APPROX_REMAINED_TIME_COLUMN_INDEX  = 5;
+        private const int DOWNLOAD_SPEED_COLUMN_INDEX        = 6;
+        private const int DOWNLOAD_BYTES_COLUMN_INDEX        = 7;
+        private const int APPROX_REMAINED_BYTES_COLUMN_INDEX = 8;
+        private const int APPROX_TOTAL_BYTES_COLUMN_INDEX    = 9;
+        private const int URL_COLUMN_INDEX                   = 10;
         #endregion
 
         #region [.field's.]
@@ -63,6 +64,7 @@ namespace m3u8.download.manager.ui
         public event UpdatedSingleRunningRowEventHandler UpdatedSingleRunningRow;
 
         private DownloadListModel _Model;
+        //private CellStyle _DefaultCellStyle;
         private CellStyle         _ErrorCellStyle;
         private CellStyle         _CanceledCellStyle;
         private CellStyle         _FinishedCellStyle;
@@ -74,6 +76,7 @@ namespace m3u8.download.manager.ui
         private Action            _RestoreSortIfNeedAction;
         private Timer             _CommonUpdateTimer;
         private Settings          _Settings;
+        private ContextMenuStrip  _ColumnsContextMenu;
         #endregion
 
         #region [.ctor().]
@@ -105,6 +108,50 @@ namespace m3u8.download.manager.ui
             _RNP = RowNumbersPainter.Create( DGV );
             _SF_Left   = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Near  , LineAlignment = StringAlignment.Center };
             _SF_Center = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            //----------------------------------------//
+
+            CreateColumnsContextMenu();
+        }
+        private void CreateColumnsContextMenu()
+        {
+            _ColumnsContextMenu = new ContextMenuStrip();
+            EventHandler menuItemClick = (s, e) =>
+            {
+                var item = (ToolStripMenuItem) s;
+                ((DataGridViewColumn) item.Tag).Visible = item.Checked;
+            };
+            foreach ( var col in DGV.Columns.Cast< DataGridViewColumn >() )
+            {
+                _ColumnsContextMenu.Items.Add( new ToolStripMenuItem( col.HeaderText, null, menuItemClick ) { CheckOnClick = true, Tag = col, Enabled = (col.Index != OUTPUTFILENAME_COLUMN_INDEX) } );
+            }
+            //-------------------------------------------------//
+
+            _ColumnsContextMenu.Items.Add( new ToolStripSeparator() );
+            EventHandler resetMenuItemClick = (s, e) =>
+            {
+                foreach ( var item in _ColumnsContextMenu.Items.OfType< ToolStripMenuItem >() )
+                {
+                    if ( item.Tag is DataGridViewColumn col )
+                    {
+                        col.Visible      = true;
+                        col.DisplayIndex = col.Index;
+                        col.Width        = Convert.ToInt32( col.FillWeight );                        
+                    }
+                }
+            };
+            _ColumnsContextMenu.Items.Add( new ToolStripMenuItem( "Reset all columns", null, resetMenuItemClick ) );
+            //-------------------------------------------------//
+
+            _ColumnsContextMenu.Opening += (s, e) =>
+            {
+                foreach ( var item in _ColumnsContextMenu.Items.OfType< ToolStripMenuItem >() )
+                {
+                    if ( item.Tag is DataGridViewColumn col )
+                    {
+                        item.Checked = col.Visible;
+                    }
+                }
+            };
         }
 
         protected override void Dispose( bool disposing )
@@ -308,14 +355,13 @@ namespace m3u8.download.manager.ui
             #region [.speed.]
             if ( !st.IsPaused() )
             {                
-                var elapsedSeconds      = ts.TotalSeconds;
-                var downloadBytesLength = row.GetDownloadBytesLengthAfterLastRun();
-                if ( (1_000 < downloadBytesLength) && (2.5 <= elapsedSeconds) )
+                var elapsedSeconds = ts.TotalSeconds;
+                var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
+                if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
                     var speedText = default(string);
-                    //if ( totalBytesLength < 1_000   ) speedText = (downloadBytesLength / elapsedSeconds).ToString("N2") + " bit/s";
-                    if ( downloadBytesLength < 100_000 ) speedText = ((downloadBytesLength / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
-                    else                                 speedText = ((downloadBytesLength / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
+                    if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
+                    else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
 
                     downloadInfo += $", [{speedText}]";
                 }
@@ -324,6 +370,7 @@ namespace m3u8.download.manager.ui
 
             return (downloadInfo);
         }
+
         [M(O.AggressiveInlining)] private static bool TryGetDownloadProgress( DownloadRow row, out double part, out string progressText )
         {
             var st = row.Status;
@@ -369,19 +416,35 @@ namespace m3u8.download.manager.ui
             }
             return (row.GetElapsed().ToString( HH_MM_SS ));
         }
+        [M(O.AggressiveInlining)] private static string GetApproxRemainedTimeText( DownloadRow row )
+        {
+            if ( row.Status == DownloadStatus.Running)
+            {
+                var totalBytes = row.GetApproxTotalBytes();
+                if ( totalBytes.HasValue )
+                {
+                    var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
+                    var elapsedSeconds = row.GetElapsed().TotalSeconds;
+                    if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
+                    {
+                        var remainedTime = TimeSpan.FromSeconds( (totalBytes.Value - downloadBytes) * (elapsedSeconds / downloadBytes) );
+                        return (remainedTime.ToString( HH_MM_SS ));
+                    }
+                }
+            }
+            return (string.Empty);
+        }
         [M(O.AggressiveInlining)] private static string GetDownloadSpeedText( DownloadRow row )
         {
             if ( !row.Status.IsPaused() )
             {                
-                var elapsedSeconds      = row.GetElapsed().TotalSeconds;
-                var downloadBytesLength = row.GetDownloadBytesLengthAfterLastRun();
-                if ( (1_000 < downloadBytesLength) && (2.5 <= elapsedSeconds) )
+                var elapsedSeconds = row.GetElapsed().TotalSeconds;
+                var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
+                if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
                     var speedText = default(string);
-                    //if ( totalBytesLength < 1_000   ) speedText = (downloadBytesLength / elapsedSeconds).ToString("N2") + " bit/s";
-                    if ( downloadBytesLength < 100_000 ) speedText = ((downloadBytesLength / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
-                    else                                 speedText = ((downloadBytesLength / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
-
+                    if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
+                    else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
                     return (speedText);
                 }
             }
@@ -485,50 +548,49 @@ namespace m3u8.download.manager.ui
 
             #region [.get comparison routine.]
             var comparison = default(Comparison< DownloadRow >);
-                 if ( columnIndex == OUTPUTFILENAME_COLUMNINDEX )
+            switch ( columnIndex )
             {
-                comparison = (x, y) => string.Compare( x.OutputFileName, y.OutputFileName, true );
-            }
-            else if ( columnIndex == OUTPUTDIRECTORY_COLUMNINDEX )
-            {
-                comparison = (x, y) => string.Compare( x.OutputDirectory, y.OutputDirectory, true );
-            }
-            else if ( columnIndex == STATUS_COLUMNINDEX )
-            {
-                comparison = (x, y) => SortHelper.ToInt32( x.Status ).CompareTo( SortHelper.ToInt32( y.Status ) );
-            }
-            else if ( columnIndex == DOWNLOAD_PROGRESS_COLUMNINDEX )
-            {
-                comparison = (x, y) => x.SuccessDownloadParts.CompareTo( y.SuccessDownloadParts );
-            }
-            else if ( columnIndex == DOWNLOAD_BYTES_COLUMNINDEX )
-            {
-                comparison = (x, y) => x.DownloadBytesLength.CompareTo( y.DownloadBytesLength );
-            }
-            else if ( columnIndex == APPROX_REMAINED_BYTES_COLUMNINDEX )
-            {
-                comparison = (x, y) => x.GetApproxRemainedBytes().CompareTo( y.GetApproxRemainedBytes() );
-            }
-            else if ( columnIndex == APPROX_TOTAL_BYTES_COLUMNINDEX )
-            {
-                comparison = (x, y) => x.GetApproxTotalBytes().CompareTo( y.GetApproxTotalBytes() );
-            }
-            else if ( columnIndex == URL_COLUMNINDEX )
-            {
-                comparison = (x, y) => string.Compare( x.Url, y.Url, true );
-            }
-            else if ( columnIndex == DOWNLOAD_TIME_COLUMNINDEX )
-            {
-                return;
-            }
-            else if ( columnIndex == DOWNLOAD_SPEED_COLUMNINDEX )
-            {
-                return;
-            }
-            else
-            {
-                DGV.ClearHeaderSortGlyphDirection();
-                throw (new NotImplementedException( $"columnIndex: {columnIndex}" ));
+                case OUTPUTFILENAME_COLUMN_INDEX:
+                    comparison = (x, y) => string.Compare( x.OutputFileName, y.OutputFileName, true );
+                break;
+
+                case OUTPUTDIRECTORY_COLUMN_INDEX:
+                    comparison = (x, y) => string.Compare( x.OutputDirectory, y.OutputDirectory, true );
+                break;
+
+                case STATUS_COLUMN_INDEX:
+                    comparison = (x, y) => SortHelper.ToInt32( x.Status ).CompareTo( SortHelper.ToInt32( y.Status ) );
+                break;
+
+                case DOWNLOAD_PROGRESS_COLUMN_INDEX:
+                    comparison = (x, y) => x.SuccessDownloadParts.CompareTo( y.SuccessDownloadParts );
+                break;
+
+                case DOWNLOAD_BYTES_COLUMN_INDEX:
+                    comparison = (x, y) => x.DownloadBytesLength.CompareTo( y.DownloadBytesLength );
+                break;
+
+                case APPROX_REMAINED_BYTES_COLUMN_INDEX:
+                    comparison = (x, y) => x.GetApproxRemainedBytes().CompareTo( y.GetApproxRemainedBytes() );
+                break;
+
+                case APPROX_TOTAL_BYTES_COLUMN_INDEX:
+                    comparison = (x, y) => x.GetApproxTotalBytes().CompareTo( y.GetApproxTotalBytes() );
+                break;
+
+                case URL_COLUMN_INDEX:
+                    comparison = (x, y) => string.Compare( x.Url, y.Url, true );
+                break;
+
+                case DOWNLOAD_TIME_COLUMN_INDEX:
+                case APPROX_REMAINED_TIME_COLUMN_INDEX:
+                case DOWNLOAD_SPEED_COLUMN_INDEX:
+                    //---comparison = (x, y) => x..CompareTo( y. );
+                    return;
+               
+                default:
+                    DGV.ClearHeaderSortGlyphDirection();
+                    throw (new NotImplementedException( $"columnIndex: {columnIndex}" ));
             }
             #endregion
 
@@ -559,16 +621,17 @@ namespace m3u8.download.manager.ui
             var row = _Model[ e.RowIndex ];
             switch ( e.ColumnIndex )
             {
-                case 0: e.Value = row.OutputFileName;                                    break; /*OUTPUTFILENAME_COLUMNINDEX*/
-                case 1: e.Value = row.OutputDirectory;                                   break; /*OUTPUTDIRECTORY_COLUMNINDEX*/
-                case 2: e.Value = string.Empty;                                          break; /*STATUS_COLUMNINDEX*/
-                case 3: e.Value = string.Empty;                                          break; /*DOWNLOAD_PROGRESS_COLUMNINDEX*/
-                case 4: e.Value = GetDownloadTimeText       ( row );                     break; /*DOWNLOAD_TIME_COLUMNINDEX*/
-                case 5: e.Value = GetDownloadSpeedText      ( row );                     break; /*DOWNLOAD_SPEED_COLUMNINDEX*/
-                case 6: e.Value = GetDisplaySizeText        ( row.DownloadBytesLength ); break; /*DOWNLOAD_BYTES_COLUMNINDEX*/
-                case 7: e.Value = GetApproxRemainedBytesText( row );                     break; /*APPROX_REMAINED_BYTES_COLUMNINDEX*/
-                case 8: e.Value = GetApproxTotalBytesText   ( row );                     break; /*APPROX_TOTAL_BYTES_COLUMNINDEX*/
-                case 9: e.Value = row.Url;                                               break; /*URL_COLUMNINDEX*/
+                case OUTPUTFILENAME_COLUMN_INDEX       : e.Value = row.OutputFileName;                                    break;
+                case OUTPUTDIRECTORY_COLUMN_INDEX      : e.Value = row.OutputDirectory;                                   break;
+                case STATUS_COLUMN_INDEX               : e.Value = $"               {row.Status}";                        break;
+                case DOWNLOAD_PROGRESS_COLUMN_INDEX    : e.Value = new string( ' ', 30 );                                 break;
+                case DOWNLOAD_TIME_COLUMN_INDEX        : e.Value = GetDownloadTimeText       ( row );                     break;
+                case APPROX_REMAINED_TIME_COLUMN_INDEX : e.Value = GetApproxRemainedTimeText ( row );                     break;
+                case DOWNLOAD_SPEED_COLUMN_INDEX       : e.Value = GetDownloadSpeedText      ( row );                     break;
+                case DOWNLOAD_BYTES_COLUMN_INDEX       : e.Value = GetDisplaySizeText        ( row.DownloadBytesLength ); break;
+                case APPROX_REMAINED_BYTES_COLUMN_INDEX: e.Value = GetApproxRemainedBytesText( row );                     break;
+                case APPROX_TOTAL_BYTES_COLUMN_INDEX   : e.Value = GetApproxTotalBytesText   ( row );                     break;
+                case URL_COLUMN_INDEX                  : e.Value = row.Url;                                               break;
             }
         }
         private void DGV_CellFormatting( object sender, DataGridViewCellFormattingEventArgs e )
@@ -602,15 +665,18 @@ namespace m3u8.download.manager.ui
             {
                 var pt = DGV.PointToClient( Control.MousePosition );
                 var ht = DGV.HitTest( pt.X, pt.Y );
-                if ( (ht.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX) || (ht.ColumnIndex == OUTPUTDIRECTORY_COLUMNINDEX) )
+                switch ( ht.ColumnIndex )
                 {
-                    DGV.SetHandCursorIfNonHand();
+                    case OUTPUTFILENAME_COLUMN_INDEX:
+                    case OUTPUTDIRECTORY_COLUMN_INDEX:
+                        DGV.SetHandCursorIfNonHand();
+                    break;
                 }
             }
         }
         private void DGV_CellMouseEnter( object sender, DataGridViewCellEventArgs e )
         {
-            if ( (0 <= e.RowIndex) && ((e.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX) || (e.ColumnIndex == OUTPUTDIRECTORY_COLUMNINDEX)) && 
+            if ( (0 <= e.RowIndex) && ((e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX) || (e.ColumnIndex == OUTPUTDIRECTORY_COLUMN_INDEX)) && 
                  DGV.Rows[ e.RowIndex ].Selected && !_Model[ e.RowIndex ].IsFinished() )
             {
                 DGV.SetHandCursorIfNonHand();
@@ -625,21 +691,26 @@ namespace m3u8.download.manager.ui
         {
             if ( !_UserMade_DGV_SelectionChanged && (0 <= e.RowIndex) )
             {
-                if ( e.ColumnIndex == OUTPUTFILENAME_COLUMNINDEX )
+                switch ( e.ColumnIndex )
                 {
-                    var row = _Model[ e.RowIndex ];
-                    if ( !row.IsFinished() )
-                    {
-                        OutputFileNameClick?.Invoke( row );
+                    case OUTPUTFILENAME_COLUMN_INDEX:
+                    {    var row = _Model[ e.RowIndex ];
+                        if ( !row.IsFinished() )
+                        {
+                            OutputFileNameClick?.Invoke( row );
+                        }
                     }
-                }
-                else if ( e.ColumnIndex == OUTPUTDIRECTORY_COLUMNINDEX )
-                {
-                    var row = _Model[ e.RowIndex ];
-                    if ( !row.IsFinished() )
+                    break;
+
+                    case OUTPUTDIRECTORY_COLUMN_INDEX:
                     {
-                        OutputDirectoryClick?.Invoke( row );
+                        var row = _Model[ e.RowIndex ];
+                        if ( !row.IsFinished() )
+                        {
+                            OutputDirectoryClick?.Invoke( row );
+                        }
                     }
+                    break;
                 }
             }
             _UserMade_DGV_SelectionChanged = false;
@@ -669,7 +740,7 @@ namespace m3u8.download.manager.ui
         {
             if ( e.RowIndex < 0 ) return;
 
-            if ( e.ColumnIndex == STATUS_COLUMNINDEX )
+            if ( e.ColumnIndex == STATUS_COLUMN_INDEX )
             {
                 CellPaintRoutine( e );
 
@@ -701,13 +772,13 @@ namespace m3u8.download.manager.ui
                 rc = e.CellBounds; rc.Inflate( -22, 0 );
                 gr.DrawString( row.Status.ToString(), DGV.Font, Brushes.Black, rc, _SF_Left );
             }
-            else if ( e.ColumnIndex == DOWNLOAD_PROGRESS_COLUMNINDEX )
+            else if ( e.ColumnIndex == DOWNLOAD_PROGRESS_COLUMN_INDEX )
             {
                 CellPaintRoutine( e );
 
                 //-1- progress-text -//
                 var row  = _Model[ e.RowIndex ];
-                var has  = TryGetDownloadProgress( row, out var part, out var text );
+                var has  = TryGetDownloadProgress( row, out var part, out var progressText );
 
                 var gr = e.Graphics;
                 var rc = e.CellBounds;
@@ -730,10 +801,10 @@ namespace m3u8.download.manager.ui
                 else
                 {
                     rc.Inflate( -10, 0 );
-                    sf   = _SF_Left;
-                    text = "-";
+                    sf           = _SF_Left;
+                    progressText = "-";
                 }
-                gr.DrawString( text, DGV.Font, Brushes.Black, rc, sf );
+                gr.DrawString( progressText, DGV.Font, Brushes.Black, rc, sf );
             }
         }
         private void DGV_ColumnHeaderMouseClick( object sender, DataGridViewCellMouseEventArgs e )
@@ -750,6 +821,12 @@ namespace m3u8.download.manager.ui
 
                 _Settings.LastSortInfoJson = _LastSortInfo.ToJson();
                 _Settings.SaveNoThrow();
+            }
+            else if ( e.Button == MouseButtons.Right )
+            {
+                var widthBefore = DGV.Columns.Cast< DataGridViewColumn >().Where( c => c.Visible && c.Index < e.ColumnIndex ).Sum( c => c.Width );
+                var pt = new Point( widthBefore + e.X, e.Y );                
+                _ColumnsContextMenu.Show( DGV, pt );
             }
         }
 

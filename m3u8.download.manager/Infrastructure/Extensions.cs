@@ -137,7 +137,7 @@ namespace m3u8.download.manager
         {
             foreach ( var c in DGV.Columns.Cast< DataGridViewColumn >() )
             {
-                c.HeaderCell.SortGlyphDirection = ((c.DisplayIndex == columnIndex) ? sortOrder : SortOrder.None);
+                c.HeaderCell.SortGlyphDirection = ((c.Index == columnIndex) ? sortOrder : SortOrder.None);
             }
         }
         [M(O.AggressiveInlining)] public static void FirstDisplayedScrollingRowIndex( this DataGridView DGV, int rowIndex )
