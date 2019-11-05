@@ -316,7 +316,7 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Paused);
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadStatus status ) => (status     == DownloadStatus.Paused);
 
-        [M(O.AggressiveInlining)] public static bool IsColumnSortable( this DataGridView dgv, int columnIndex)
+        [M(O.AggressiveInlining)] public static bool IsColumnSortable( this DataGridView dgv, int columnIndex )
             => /*(0 <= columnIndex) && */ (columnIndex < 0) || (dgv.Columns[ columnIndex ].SortMode != DataGridViewColumnSortMode.NotSortable);
 
         [M(O.AggressiveInlining)] public static long? GetApproxRemainedBytes( this DownloadRow row )

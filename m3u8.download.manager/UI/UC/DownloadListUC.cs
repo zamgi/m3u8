@@ -809,7 +809,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_ColumnHeaderMouseClick( object sender, DataGridViewCellMouseEventArgs e )
         {
-            if ( (e.Button == MouseButtons.Left) && (DGV.Columns[ e.ColumnIndex ].SortMode != DataGridViewColumnSortMode.NotSortable) )
+            if ( (e.Button == MouseButtons.Left) && DGV.IsColumnSortable( e.ColumnIndex ) )
             {
                 _LastSortInfo.SetSortOrderAndSaveCurrent( e.ColumnIndex );
                 if ( !_LastSortInfo.HasSorting )
@@ -824,7 +824,8 @@ namespace m3u8.download.manager.ui
             }
             else if ( e.Button == MouseButtons.Right )
             {
-                var widthBefore = DGV.Columns.Cast< DataGridViewColumn >().Where( c => c.Visible && c.Index < e.ColumnIndex ).Sum( c => c.Width );
+                var displayIndex = DGV.Columns[ e.ColumnIndex ].DisplayIndex;
+                var widthBefore  = DGV.Columns.Cast< DataGridViewColumn >().Where( c => c.Visible && c.DisplayIndex < displayIndex ).Sum( c => c.Width );
                 var pt = new Point( widthBefore + e.X, e.Y );                
                 _ColumnsContextMenu.Show( DGV, pt );
             }
