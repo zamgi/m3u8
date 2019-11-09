@@ -423,11 +423,12 @@ namespace m3u8.download.manager.ui
                 var totalBytes = row.GetApproxTotalBytes();
                 if ( totalBytes.HasValue )
                 {
-                    var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                     var elapsedSeconds = row.GetElapsed().TotalSeconds;
+                    var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();                    
                     if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
                     {
-                        var remainedTime = TimeSpan.FromSeconds( (totalBytes.Value - downloadBytes) * (elapsedSeconds / downloadBytes) );
+                        var remainedBytes = totalBytes.Value - (row.DownloadBytesLength - downloadBytes);
+                        var remainedTime  = TimeSpan.FromSeconds( (remainedBytes - downloadBytes) * (elapsedSeconds / downloadBytes) );
                         return (remainedTime.ToString( HH_MM_SS ));
                     }
                 }
