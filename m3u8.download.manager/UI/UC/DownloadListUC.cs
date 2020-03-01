@@ -827,7 +827,7 @@ namespace m3u8.download.manager.ui
             {
                 var displayIndex = DGV.Columns[ e.ColumnIndex ].DisplayIndex;
                 var widthBefore  = DGV.Columns.Cast< DataGridViewColumn >().Where( c => c.Visible && c.DisplayIndex < displayIndex ).Sum( c => c.Width );
-                var pt = new Point( widthBefore + e.X, e.Y );                
+                var pt = new Point( widthBefore + e.X - DGV.HorizontalScrollingOffset, e.Y );
                 _ColumnsContextMenu.Show( DGV, pt );
             }
         }
