@@ -16,12 +16,12 @@
         {
             System.Windows.Forms.GroupBox gb1;
             System.Windows.Forms.GroupBox gb2;
-            this.maxDegreeOfParallelismNUD = new System.Windows.Forms.NumericUpDown();
+            this.maxDegreeOfParallelismNUD = new System.Windows.Forms.NumericUpDownEx();
             //---this.infinityMaxDegreeOfParallelismCheckBox = new System.Windows.Forms.CheckBox();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.useCrossDownloadInstanceParallelismCheckBox = new System.Windows.Forms.CheckBox();
-            this.maxCrossDownloadInstanceNUD = new System.Windows.Forms.NumericUpDown();
+            this.maxCrossDownloadInstanceNUD = new System.Windows.Forms.NumericUpDownEx();
             this.useMaxCrossDownloadInstanceCheckBox = new System.Windows.Forms.CheckBox();
             this.maxDegreeOfParallelismLabel = new System.Windows.Forms.Label();
             gb1 = new System.Windows.Forms.GroupBox();
@@ -177,14 +177,14 @@
         }
         #endregion
 
-        private System.Windows.Forms.NumericUpDown maxDegreeOfParallelismNUD;
+        private System.Windows.Forms.NumericUpDownEx maxDegreeOfParallelismNUD;
         private System.Windows.Forms.Label maxDegreeOfParallelismLabel;
         //---private System.Windows.Forms.CheckBox infinityMaxDegreeOfParallelismCheckBox;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.CheckBox useCrossDownloadInstanceParallelismCheckBox;
         private System.Windows.Forms.Label maxCrossDownloadInstanceLabel;
-        private System.Windows.Forms.NumericUpDown maxCrossDownloadInstanceNUD;
+        private System.Windows.Forms.NumericUpDownEx maxCrossDownloadInstanceNUD;
         private System.Windows.Forms.CheckBox useMaxCrossDownloadInstanceCheckBox;
     }
 }

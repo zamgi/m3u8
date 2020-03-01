@@ -68,6 +68,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="UI\LogRowsHeightStorer.cs" />
+    <Compile Include="UI\UC\DownloadInstanceToolButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\UC\NumericUpDownEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="[-= m3u8.client =-]\m3u8_processor_v2.cs" />
     <Compile Include="Controller\SettingsPropertyChangeController.cs" />
     <Compile Include="Controller\DownloadController\DownloadController.cs" />
@@ -177,6 +183,8 @@
     <Content Include="Resources\contextMenu\pause.png" />
     <Content Include="Resources\contextMenu\start_all.png" />
     <Content Include="Resources\contextMenu\start.png" />
+    <Content Include="Resources\dop_16.ico" />
+    <Content Include="Resources\downloadInstance.ico" />
     <Content Include="Resources\statuses\canceled.png" />
     <None Include="Resources\settings.ico" />
     <None Include="Resources\unchecked.ico" />

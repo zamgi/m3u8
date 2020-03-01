@@ -28,12 +28,18 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             System.Windows.Forms.ToolStripSeparator s1;
             System.Windows.Forms.ToolStripSeparator s2;
             System.Windows.Forms.ToolStripSeparator s3;
             System.Windows.Forms.ToolStripSeparator s4;
             System.Windows.Forms.ToolStripSeparator s5;
-            this.downloadListUC = new m3u8.download.manager.ui.DownloadListUC();
+            s1 = new System.Windows.Forms.ToolStripSeparator();
+            s2 = new System.Windows.Forms.ToolStripSeparator();
+            s3 = new System.Windows.Forms.ToolStripSeparator();
+            s4 = new System.Windows.Forms.ToolStripSeparator();
+            s5 = new System.Windows.Forms.ToolStripSeparator();
+            //---var s6 = new System.Windows.Forms.ToolStripSeparator();
             this.mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.addNewDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.startDownloadToolButton = new System.Windows.Forms.ToolStripButton();
@@ -45,20 +51,17 @@
             this.copyToolButton = new System.Windows.Forms.ToolStripButton();
             this.pasteToolButton = new System.Windows.Forms.ToolStripButton();
             this.aboutToolButton = new System.Windows.Forms.ToolStripButton();
+            this.degreeOfParallelismToolButton = new System.Windows.Forms.DegreeOfParallelismToolButton();
+            this.downloadInstanceToolButton = new System.Windows.Forms.DownloadInstanceToolButton();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
+            this.downloadListUC = new m3u8.download.manager.ui.DownloadListUC();
             this.logUC = new m3u8.download.manager.ui.LogUC();
-            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC();
-            s1 = new System.Windows.Forms.ToolStripSeparator();
-            s2 = new System.Windows.Forms.ToolStripSeparator();
-            s3 = new System.Windows.Forms.ToolStripSeparator();
-            s4 = new System.Windows.Forms.ToolStripSeparator();
-            s5 = new System.Windows.Forms.ToolStripSeparator();
-            System.Windows.Forms.ToolStripSeparator s6;
-            System.Windows.Forms.ToolStripSeparator s7;
-            System.Windows.Forms.ToolStripSeparator s8;
-            System.Windows.Forms.ToolStripSeparator s9;
-            System.Windows.Forms.ToolStripSeparator s10;
-            this.mainContextMenu = new System.Windows.Forms.ContextMenuStrip( this.components );
+            var s7 = new System.Windows.Forms.ToolStripSeparator();
+            var s8 = new System.Windows.Forms.ToolStripSeparator();
+            var s9 = new System.Windows.Forms.ToolStripSeparator();
+            var s10 = new System.Windows.Forms.ToolStripSeparator();
+            var s11 = new System.Windows.Forms.ToolStripSeparator();
+            this.mainContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.startDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cancelDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,29 +75,14 @@
             this.cancelAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllWithOutputFilesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            s6 = new System.Windows.Forms.ToolStripSeparator();
-            s7 = new System.Windows.Forms.ToolStripSeparator();
-            s8 = new System.Windows.Forms.ToolStripSeparator();
-            s9 = new System.Windows.Forms.ToolStripSeparator();
-            s10 = new System.Windows.Forms.ToolStripSeparator();
-            this.mainContextMenu.SuspendLayout();
+            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC();
             this.mainToolStrip.SuspendLayout();
-            ( (System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
             this.mainSplitContainer.SuspendLayout();
+            this.mainContextMenu.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // downloadListUC
-            // 
-            this.downloadListUC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.downloadListUC.Location = new System.Drawing.Point(0, 0);
-            this.downloadListUC.Name = "downloadListUC";
-            this.downloadListUC.Size = new System.Drawing.Size(1015, 249);
-            this.downloadListUC.TabIndex = 0;
-            this.downloadListUC.SelectionChanged += new m3u8.download.manager.ui.DownloadListUC.SelectionChangedEventHandler(this.downloadListUC_SelectionChanged);
-            this.downloadListUC.OutputFileNameClick += new m3u8.download.manager.ui.DownloadListUC.OutputFileNameClickEventHandler(this.downloadListUC_OutputFileNameClick);
-            this.downloadListUC.OutputDirectoryClick += new m3u8.download.manager.ui.DownloadListUC.OutputDirectoryClickEventHandler(this.downloadListUC_OutputDirectoryClick);
             // 
             // mainToolStrip
             // 
@@ -115,10 +103,11 @@
                 this.copyToolButton,
                 this.pasteToolButton,
                 s5,
+                this.degreeOfParallelismToolButton,
+                this.downloadInstanceToolButton,
+                //---s6,
                 this.aboutToolButton
             });
-            this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
-            this.mainToolStrip.Size = new System.Drawing.Size(1015, 39);
             this.mainToolStrip.TabIndex = 0;
             // 
             // addNewDownloadToolButton
@@ -126,7 +115,6 @@
             this.addNewDownloadToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.addNewDownloadToolButton.Image = global::m3u8.download.manager.Properties.Resources.plus;
             this.addNewDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.addNewDownloadToolButton.Size = new System.Drawing.Size(36, 36);
             this.addNewDownloadToolButton.ToolTipText = "Add new download  (Insert)";
             this.addNewDownloadToolButton.Click += new System.EventHandler(this.addNewDownloadToolButton_Click);
             // 
@@ -136,7 +124,6 @@
             this.startDownloadToolButton.Enabled = false;
             this.startDownloadToolButton.Image = global::m3u8.download.manager.Properties.Resources.control_start;
             this.startDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.startDownloadToolButton.Size = new System.Drawing.Size(36, 36);
             this.startDownloadToolButton.ToolTipText = "Start download  (Ctrl + S)";
             this.startDownloadToolButton.Click += new System.EventHandler(this.startDownloadToolButton_Click);
             // 
@@ -146,7 +133,6 @@
             this.pauseDownloadToolButton.Enabled = false;
             this.pauseDownloadToolButton.Image = global::m3u8.download.manager.Properties.Resources.control_pause;
             this.pauseDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.pauseDownloadToolButton.Size = new System.Drawing.Size(36, 36);
             this.pauseDownloadToolButton.ToolTipText = "Pause download  (Ctrl + P)";
             this.pauseDownloadToolButton.Click += new System.EventHandler(this.pauseDownloadToolButton_Click);
             // 
@@ -156,7 +142,6 @@
             this.cancelDownloadToolButton.Enabled = false;
             this.cancelDownloadToolButton.Image = global::m3u8.download.manager.Properties.Resources.control_cancel;
             this.cancelDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cancelDownloadToolButton.Size = new System.Drawing.Size(36, 36);
             this.cancelDownloadToolButton.ToolTipText = "Cancel download  (Ctrl + Z)";
             this.cancelDownloadToolButton.Click += new System.EventHandler(this.cancelDownloadToolButton_Click);
             // 
@@ -166,7 +151,6 @@
             this.deleteDownloadToolButton.Enabled = false;
             this.deleteDownloadToolButton.Image = global::m3u8.download.manager.Properties.Resources.control_delete;
             this.deleteDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.deleteDownloadToolButton.Size = new System.Drawing.Size(36, 36);
             this.deleteDownloadToolButton.ToolTipText = "Delete download  (Del)\r\nWith output file  (Shift + Del)";
             this.deleteDownloadToolButton.Click += new System.EventHandler(this.deleteDownloadToolButton_Click);
             // 
@@ -176,7 +160,6 @@
             this.deleteAllFinishedDownloadToolButton.Enabled = false;
             this.deleteAllFinishedDownloadToolButton.Image = global::m3u8.download.manager.Properties.Resources.control_delete_all_finished;
             this.deleteAllFinishedDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.deleteAllFinishedDownloadToolButton.Size = new System.Drawing.Size(36, 36);
             this.deleteAllFinishedDownloadToolButton.ToolTipText = "Delete all finished downloads";
             this.deleteAllFinishedDownloadToolButton.Click += new System.EventHandler(this.deleteAllFinishedDownloadToolButton_Click);
             // 
@@ -188,7 +171,6 @@
             this.showLogToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.showLogToolButton.Image = global::m3u8.download.manager.Properties.Resources.log;
             this.showLogToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.showLogToolButton.Size = new System.Drawing.Size(36, 36);
             this.showLogToolButton.ToolTipText = "Show/Hide download log";
             this.showLogToolButton.Click += new System.EventHandler(this.showLogToolButton_Click);
             // 
@@ -197,7 +179,6 @@
             this.copyToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.copyToolButton.Image = global::m3u8.download.manager.Properties.Resources.copy;
             this.copyToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.copyToolButton.Size = new System.Drawing.Size(36, 36);
             this.copyToolButton.ToolTipText = "Copy  (Ctrl + C)";
             this.copyToolButton.Click += new System.EventHandler(this.copyToolButton_Click);
             // 
@@ -206,25 +187,30 @@
             this.pasteToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.pasteToolButton.Image = global::m3u8.download.manager.Properties.Resources.paste;
             this.pasteToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.pasteToolButton.Size = new System.Drawing.Size(36, 36);
             this.pasteToolButton.ToolTipText = "Paste  (Ctrl + V)";
             this.pasteToolButton.Click += new System.EventHandler(this.pasteToolButton_Click);
             // 
             // aboutToolButton
             // 
+            this.aboutToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.aboutToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.aboutToolButton.Image = global::m3u8.download.manager.Properties.Resources.help;
             this.aboutToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.aboutToolButton.Size = new System.Drawing.Size(36, 36);
             this.aboutToolButton.ToolTipText = "About";
             this.aboutToolButton.Click += new System.EventHandler(this.aboutToolButton_Click);
+            // 
+            // degreeOfParallelismToolButton
+            // 
+            this.degreeOfParallelismToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx.ValueChangedEventHandler(this.degreeOfParallelismToolButton_ValueChanged);
+            // 
+            // downloadInstanceToolButton
+            //             
+            this.downloadInstanceToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx.ValueChangedEventHandler(this.downloadInstanceToolButton_ValueChanged);
             // 
             // mainSplitContainer
             // 
             this.mainSplitContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.mainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainSplitContainer.Location = new System.Drawing.Point(0, 39);
-            this.mainSplitContainer.Name = "mainSplitContainer";
             this.mainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // mainSplitContainer.Panel1
@@ -236,94 +222,91 @@
             // 
             this.mainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.mainSplitContainer.Panel2.Controls.Add(this.logUC);
-            this.mainSplitContainer.Size = new System.Drawing.Size(1015, 540);
-            this.mainSplitContainer.SplitterDistance = 249;
+            this.mainSplitContainer.SplitterDistance = 230;
             this.mainSplitContainer.TabIndex = 1;
+            // 
+            // downloadListUC
+            // 
+            this.downloadListUC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.downloadListUC.TabIndex = 0;
+            this.downloadListUC.SelectionChanged += new m3u8.download.manager.ui.DownloadListUC.SelectionChangedEventHandler(this.downloadListUC_SelectionChanged);
+            this.downloadListUC.OutputFileNameClick += new m3u8.download.manager.ui.DownloadListUC.OutputFileNameClickEventHandler(this.downloadListUC_OutputFileNameClick);
+            this.downloadListUC.OutputDirectoryClick += new m3u8.download.manager.ui.DownloadListUC.OutputDirectoryClickEventHandler(this.downloadListUC_OutputDirectoryClick);
             // 
             // logUC
             // 
             this.logUC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.logUC.Location = new System.Drawing.Point(0, 0);
-            this.logUC.Name = "logUC";
-            this.logUC.Size = new System.Drawing.Size(1015, 287);
-            this.logUC.TabIndex = 0;
-            // 
-            // statusBarUC
-            // 
-            this.statusBarUC.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.statusBarUC.Location = new System.Drawing.Point( 0, 270 );
-            this.statusBarUC.Size = new System.Drawing.Size( 803, 35 );
-            this.statusBarUC.TabIndex = 4;
+            this.logUC.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
+            this.logUC.TabIndex = 0;            
             // 
             // mainContextMenu
             // 
-            this.mainContextMenu.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.mainContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                 this.startDownloadMenuItem,
                 this.pauseDownloadMenuItem,
                 this.cancelDownloadMenuItem,
-                s6,
+                s7,
                 this.deleteDownloadMenuItem,
                 this.deleteWithOutputFileMenuItem,
-                s7,
+                s8,
                 this.browseOutputFileMenuItem,
                 this.openOutputFileMenuItem,
-                s8,
-                this.deleteAllFinishedDownloadMenuItem,
                 s9,
+                this.deleteAllFinishedDownloadMenuItem,
+                s10,
                 this.startAllDownloadsMenuItem,
                 this.pauseAllDownloadsMenuItem,
                 this.cancelAllDownloadsMenuItem,
-                s10,
+                s11,
                 this.deleteAllDownloadsMenuItem,
                 this.deleteAllWithOutputFilesMenuItem
             });
-            this.mainContextMenu.Size = new System.Drawing.Size( 183, 176 );
             // 
             // startDownloadMenuItem
             // 
             this.startDownloadMenuItem.Image = global::m3u8.download.manager.Properties.Resources.running;
-            this.startDownloadMenuItem.Text = "Start";
             this.startDownloadMenuItem.ShortcutKeyDisplayString = "(Ctrl + S)";
-            this.startDownloadMenuItem.Click += new System.EventHandler( this.startDownloadMenuItem_Click );
+            this.startDownloadMenuItem.Text = "Start";
+            this.startDownloadMenuItem.Click += new System.EventHandler(this.startDownloadMenuItem_Click);
             // 
             // pauseDownloadMenuItem
             // 
             this.pauseDownloadMenuItem.Image = global::m3u8.download.manager.Properties.Resources.paused;
-            this.pauseDownloadMenuItem.Text = "Pause";
             this.pauseDownloadMenuItem.ShortcutKeyDisplayString = "(Ctrl + P)";
-            this.pauseDownloadMenuItem.Click += new System.EventHandler( this.pauseDownloadMenuItem_Click );
+            this.pauseDownloadMenuItem.Text = "Pause";
+            this.pauseDownloadMenuItem.Click += new System.EventHandler(this.pauseDownloadMenuItem_Click);
             // 
             // cancelDownloadMenuItem
             // 
             this.cancelDownloadMenuItem.Image = global::m3u8.download.manager.Properties.Resources.cancel;
-            this.cancelDownloadMenuItem.Text = "Cancel";
             this.cancelDownloadMenuItem.ShortcutKeyDisplayString = "(Ctrl + Z)";
-            this.cancelDownloadMenuItem.Click += new System.EventHandler( this.cancelDownloadMenuItem_Click );
+            this.cancelDownloadMenuItem.Text = "Cancel";
+            this.cancelDownloadMenuItem.Click += new System.EventHandler(this.cancelDownloadMenuItem_Click);
             // 
             // deleteDownloadMenuItem
             // 
             this.deleteDownloadMenuItem.Image = global::m3u8.download.manager.Properties.Resources.delete;
-            this.deleteDownloadMenuItem.Text = "Delete";
             this.deleteDownloadMenuItem.ShortcutKeyDisplayString = "(Del)";
-            this.deleteDownloadMenuItem.Click += new System.EventHandler( this.deleteDownloadMenuItem_Click );
+            this.deleteDownloadMenuItem.Text = "Delete";
+            this.deleteDownloadMenuItem.Click += new System.EventHandler(this.deleteDownloadMenuItem_Click);
             // 
             // deleteWithOutputFileMenuItem
             // 
-            this.deleteWithOutputFileMenuItem.Text = "Delete with Output file";
             this.deleteWithOutputFileMenuItem.ShortcutKeyDisplayString = "(Shift + Del)";
-            this.deleteWithOutputFileMenuItem.Click += new System.EventHandler( this.deleteWithOutputFileMenuItem_Click );
+            this.deleteWithOutputFileMenuItem.Text = "Delete with Output file";
+            this.deleteWithOutputFileMenuItem.Click += new System.EventHandler(this.deleteWithOutputFileMenuItem_Click);
             // 
             // browseOutputFileMenuItem
             // 
-            this.browseOutputFileMenuItem.Text = "    Browse Output file";
             this.browseOutputFileMenuItem.ShortcutKeyDisplayString = "(Ctrl + B)";
-            this.browseOutputFileMenuItem.Click += new System.EventHandler( this.browseOutputFileMenuItem_Click );
+            this.browseOutputFileMenuItem.Text = "    Browse Output file";
+            this.browseOutputFileMenuItem.Click += new System.EventHandler(this.browseOutputFileMenuItem_Click);
             // 
             // openOutputFileMenuItem
             // 
-            this.openOutputFileMenuItem.Text = "    Open Output file";
             this.openOutputFileMenuItem.ShortcutKeyDisplayString = "(Ctrl + O), (Enter)";
-            this.openOutputFileMenuItem.Click += new System.EventHandler( this.openOutputFileMenuItem_Click );
+            this.openOutputFileMenuItem.Text = "    Open Output file";
+            this.openOutputFileMenuItem.Click += new System.EventHandler(this.openOutputFileMenuItem_Click);
             // 
             // deleteAllFinishedDownloadMenuItem
             // 
@@ -360,6 +343,19 @@
             this.deleteAllWithOutputFilesMenuItem.Text = "      Delete all with Output files...";
             this.deleteAllWithOutputFilesMenuItem.Click += new System.EventHandler(this.deleteAllWithOutputFilesMenuItem_Click);
             // 
+            // statusBarUC
+            // 
+            this.statusBarUC.AutoSize = true;
+            this.statusBarUC.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.statusBarUC.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.statusBarUC.IsVisibleExcludesWordsLabel = true;
+            this.statusBarUC.IsVisibleParallelismLabel = true;
+            this.statusBarUC.IsVisibleSettingsLabel = true;
+            this.statusBarUC.LeftSideTextLabelText = null;
+            this.statusBarUC.Location = new System.Drawing.Point(0, 540);
+            this.statusBarUC.Margin = new System.Windows.Forms.Padding(0);
+            this.statusBarUC.TabIndex = 4;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -370,16 +366,15 @@
             this.Controls.Add(this.mainToolStrip);
             this.Icon = global::m3u8.download.manager.Properties.Resources.m3u8_32x36;
             this.KeyPreview = true;
-            this.Name = "MainForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.mainContextMenu.ResumeLayout(false);
             this.mainToolStrip.ResumeLayout(false);
             this.mainToolStrip.PerformLayout();
             this.mainSplitContainer.Panel1.ResumeLayout(false);
             this.mainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).EndInit();
             this.mainSplitContainer.ResumeLayout(false);
+            this.mainContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -400,6 +395,7 @@
         private DownloadListUC downloadListUC;
         private LogUC logUC;
         private StatusBarUC statusBarUC;
+
         private System.Windows.Forms.ContextMenuStrip mainContextMenu;
         private System.Windows.Forms.ToolStripMenuItem startDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseDownloadMenuItem;
@@ -409,10 +405,13 @@
         private System.Windows.Forms.ToolStripMenuItem browseOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteAllFinishedDownloadMenuItem;
+        //---private System.Windows.Forms.ToolStripMenuItem allDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cancelAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteAllWithOutputFilesMenuItem;
+        private System.Windows.Forms.DegreeOfParallelismToolButton degreeOfParallelismToolButton;
+        private System.Windows.Forms.DownloadInstanceToolButton downloadInstanceToolButton;
     }
 }

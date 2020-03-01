@@ -75,6 +75,14 @@ namespace m3u8.download.manager.ui
 
             showLogToolButton.Checked = Settings.Default.ShowLog;
             showLogToolButton_Click( showLogToolButton, EventArgs.Empty );
+
+            downloadInstanceToolButton.Visible = _SettingsController.MaxCrossDownloadInstance.HasValue;
+            if ( _SettingsController.MaxCrossDownloadInstance.HasValue )
+            {
+                downloadInstanceToolButton.Value = _SettingsController.MaxCrossDownloadInstance.Value;
+            }
+            //degreeOfParallelismToolButton.Visible = ;
+            degreeOfParallelismToolButton.Value = _SettingsController.MaxDegreeOfParallelism;
         }
         public MainForm( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
         #endregion
@@ -245,13 +253,20 @@ namespace m3u8.download.manager.ui
                         aboutToolButton_Click( this, EventArgs.Empty );
                     break;
 
-                    case Keys.Enter: //change output-file dialog
+                    case Keys.Enter: //change output-file dialog || Open output file
                         if ( downloadListUC.HasFocus )
                         {
                             var row = downloadListUC.GetSelectedDownloadRow();
                             if ( row != null )
                             {
-                                downloadListUC_OutputFileNameClick( row );
+                                if ( row.IsFinished() )
+                                {
+                                    openOutputFileMenuItem_Click( this, EventArgs.Empty );
+                                }
+                                else
+                                {
+                                    downloadListUC_OutputFileNameClick( row );
+                                }
                             }
                         }
                     break;
@@ -267,16 +282,30 @@ namespace m3u8.download.manager.ui
 
         private void SettingsController_PropertyChanged( Settings settings, string propertyName )
         {
-            if ( propertyName == nameof(Settings.ShowDownloadStatisticsInMainFormTitle) )
+            switch ( propertyName )
             {
-                _ShowDownloadStatistics = settings.ShowDownloadStatisticsInMainFormTitle;
+                case nameof(Settings.ShowDownloadStatisticsInMainFormTitle):
+                    _ShowDownloadStatistics = settings.ShowDownloadStatisticsInMainFormTitle;
                 
-                _DownloadListModel.CollectionChanged -= DownloadListModel_CollectionChanged;
-                if ( _ShowDownloadStatistics )
-                {
-                    _DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
-                }
-                ShowDownloadStatisticsInTitle(); 
+                    _DownloadListModel.CollectionChanged -= DownloadListModel_CollectionChanged;
+                    if ( _ShowDownloadStatistics )
+                    {
+                        _DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
+                    }
+                    ShowDownloadStatisticsInTitle();
+                break;
+
+                case nameof(Settings.MaxCrossDownloadInstance): // nameof(Settings.UseCrossDownloadInstanceParallelism):
+                    downloadInstanceToolButton.Visible = settings.MaxCrossDownloadInstance.HasValue;
+                    if ( settings.MaxCrossDownloadInstance.HasValue )
+                    {
+                        downloadInstanceToolButton.Value = settings.MaxCrossDownloadInstance.Value;
+                    }
+                break;
+
+                case nameof(Settings.MaxDegreeOfParallelism):
+                    degreeOfParallelismToolButton.Value = settings.MaxDegreeOfParallelism;
+                break;
             }
         }
         private void ShowDownloadStatisticsInTitle()
@@ -331,6 +360,10 @@ namespace m3u8.download.manager.ui
             {
                 this.Text = $"{DownloadListUC.GetDownloadInfoText( row )},  [{Resources.APP_TITLE}]";
             }
+            //else if ( this.Text != Resources.APP_TITLE )
+            //{
+            //    this.Text = Resources.APP_TITLE;
+            //}
         }
         private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
         {
@@ -428,6 +461,29 @@ namespace m3u8.download.manager.ui
                     break;
 
                     case DownloadCommandEnum.Delete:
+                        #region comm. with waiting
+                        /*
+                        using ( var cts = new CancellationTokenSource() )
+                        using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1500 ) )
+                        {
+                            try
+                            {
+                                await _DownloadController.CancelWithWait( row, cts.Token );
+                                _DownloadListModel.RemoveRow( row );
+                            }
+                            catch ( Exception ex )
+                            {
+                                if ( !cts.IsCancellationRequested )
+                                {
+                                    Debug.WriteLine( ex );
+                                    this.MessageBox_ShowError( ex.ToString(), this.Text );
+                                    //---throw;
+                                }
+                            }
+                        }
+                        //*/
+                        #endregion
+
                         _DownloadController.Cancel   ( row );
                         _DownloadListModel .RemoveRow( row );
                         row = downloadListUC.GetSelectedDownloadRow();
@@ -575,6 +631,27 @@ namespace m3u8.download.manager.ui
             return (false);
         }
 
+        /*private static bool TryDeleteFile( string fullFileName, int attemptCount = 20, int millisecondsDelay = 100 )
+        {
+            for ( var n = 0; (n < attemptCount); n++ )
+            {
+                try
+                {
+                    if ( File.Exists( fullFileName ) )
+                    {
+                        File.Delete( fullFileName );
+                    }
+                    return (true);
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                    Task.Delay( millisecondsDelay ).Wait();
+                }
+            }
+            var success = !File.Exists( fullFileName );
+            return (success);
+        }*/
         private static Task< bool > TryDeleteFiles_Async( string[] fullFileNames, CancellationToken ct, int millisecondsDelay = 100 )
         {
             if ( !fullFileNames.AnyEx() )
@@ -606,6 +683,8 @@ namespace m3u8.download.manager.ui
                     }
                 });
 
+                //var success = !Extensions.AnyFileExists( hs );
+                //return (success);
                 return (true);
             }, ct );
             return (task);
@@ -631,7 +710,7 @@ namespace m3u8.download.manager.ui
                      autoStartDownload: array.FirstOrDefault().autoStartDownload);
             AddNewDownloads( p );
         }
-        private void AddNewDownloads( in (IReadOnlyCollection< string > m3u8FileUrls, bool autoStartDownload) p )
+        private void AddNewDownloads( in (IReadOnlyCollection< string > m3u8FileUrls, bool autoStartDownload) p ) //, bool forceShowEmptyDialog )
         {
             if ( p.m3u8FileUrls.AnyEx() )
             {
@@ -653,7 +732,7 @@ namespace m3u8.download.manager.ui
                     }
                 }
             }
-            else
+            else //if ( forceShowEmptyDialog )
             {
                 AddNewDownload( ((string) null, false) );
             }
@@ -703,7 +782,7 @@ namespace m3u8.download.manager.ui
         {
             var showLog = showLogToolButton.Checked;
             Settings.Default.ShowLog = showLog;
-            mainSplitContainer.Panel2Collapsed = !showLog;
+            mainSplitContainer.Panel2Collapsed = !showLog; //m3u8FileResultUC.Visible = showLog;
             logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
         }
         private void copyToolButton_Click( object sender, EventArgs e )
@@ -732,7 +811,10 @@ namespace m3u8.download.manager.ui
         private void aboutToolButton_Click( object sender, EventArgs e )
         {
             var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\"" + Environment.NewLine +
+                       //AssemblyInfoHelper.AssemblyProduct + Environment.NewLine +
                        AssemblyInfoHelper.AssemblyCopyright + Environment.NewLine +
+                       //AssemblyInfoHelper.AssemblyCompany + Environment.NewLine +
+                       //AssemblyInfoHelper.AssemblyDescription + Environment.NewLine +
                        Environment.NewLine +
                        $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})" +
                        Environment.NewLine +
@@ -751,7 +833,7 @@ namespace m3u8.download.manager.ui
                        "  Delete:\t Delete download (with or without output file)" + Environment.NewLine +
                        "  Enter:\t Open rename output file dialog" + Environment.NewLine +
                        "  F1:\t About dialog" + Environment.NewLine;
-            this.MessageBox_ShowInformation( text, "about" );
+            this.MessageBox_ShowInformation( text, "about" ); //$"'{this.Text}' version: {Assembly.GetExecutingAssembly().GetName().Version}", this.Text );
         }
 
         private void startDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Start  );
@@ -766,6 +848,15 @@ namespace m3u8.download.manager.ui
             }
         }
         private void deleteAllFinishedDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.DeleteAllFinished );
+
+        private void downloadInstanceToolButton_ValueChanged( int downloadInstanceValue )
+        {
+            if ( _SettingsController.UseCrossDownloadInstanceParallelism )
+            {
+                _SettingsController.Settings.MaxCrossDownloadInstance = downloadInstanceValue;
+            }
+        }
+        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SettingsController.Settings.MaxDegreeOfParallelism = value;
         #endregion
 
         #region [.context menu.]
@@ -904,6 +995,7 @@ namespace m3u8.download.manager.ui
             foreach ( var row in rows )
             {
                 _DownloadController.Cancel( row );
+                //_DownloadListModel .RemoveRow( row );
             }
             _DownloadListModel.RemoveAll( rows );
 

@@ -14,7 +14,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.attemptRequestCountByPartNUD = new System.Windows.Forms.NumericUpDown();
+            this.attemptRequestCountByPartNUD = new System.Windows.Forms.NumericUpDownEx();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.l1 = new System.Windows.Forms.Label();
@@ -206,7 +206,7 @@
 
         private System.Windows.Forms.Label l1;
         private System.Windows.Forms.Label l2;
-        private System.Windows.Forms.NumericUpDown attemptRequestCountByPartNUD;
+        private System.Windows.Forms.NumericUpDownEx attemptRequestCountByPartNUD;
         private System.Windows.Forms.DateTimePicker requestTimeoutByPartDTP;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
