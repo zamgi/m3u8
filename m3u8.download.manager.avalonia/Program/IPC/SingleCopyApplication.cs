@@ -16,7 +16,7 @@ namespace m3u8.download.manager.ipc
         private SingleCopyApplication()
         {
             this.Mutex     = null;
-            this.MutexName = (Assembly.GetEntryAssembly().Name + ", {B6E9F4FB-A7A6-4B1D-9C3A-456C015FE7A5}"); //(Assembly.GetEntryAssembly().FullName + ", " + this.GetType().Name); //"{B6E9F4FB-A7A6-4B1D-9C3A-456C015FE7A5}"; // 
+            this.MutexName = (Assembly.GetEntryAssembly().GetName().Name + ", {B6E9F4FB-A7A6-4B1D-9C3A-456C015FE7A5}"); //(Assembly.GetEntryAssembly().FullName + ", " + this.GetType().Name); //"{B6E9F4FB-A7A6-4B1D-9C3A-456C015FE7A5}"; // 
 
             this.Mutex = new Mutex( true, this.MutexName, out _OwnedMutex );
             if ( !_OwnedMutex )

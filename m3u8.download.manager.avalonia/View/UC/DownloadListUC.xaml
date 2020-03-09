@@ -44,7 +44,7 @@
   <DataGrid x:Name="DGV"
             SelectionMode="Single"
             CanUserResizeColumns="True"
-            CanUserReorderColumns="True"
+            CanUserReorderColumns="False"
             CanUserSortColumns="False"
             IsReadOnly="True"
             GridLinesVisibility="Vertical"
