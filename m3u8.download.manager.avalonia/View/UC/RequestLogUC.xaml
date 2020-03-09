@@ -1,0 +1,51 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:m3u8.download.manager.ui"
+             mc:Ignorable="d" 
+             x:Class="m3u8.download.manager.ui.RequestLogUC"
+             Background="{DynamicResource ThemeBackgroundBrush}"
+             Foreground="{DynamicResource ThemeForegroundBrush}"             
+             d:DesignWidth="600" d:DesignHeight="350"
+             >
+             <!--
+
+             -->
+  
+  <UserControl.Resources>
+    <local:RequestRowType2Foreground_Converter x:Key="RequestRowType2Foreground" />
+    <!--<SolidColorBrush x:Key="HighlightForegroundBrush" Color="White"></SolidColorBrush>-->
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <Style Selector="DataGridCell.rrt">
+      <!--<Setter Property="FontWeight" Value="Bold" />-->      
+      <Setter Property="Foreground" Value="{Binding Path=RequestRowType, Mode=OneWay, Converter={StaticResource RequestRowType2Foreground}}" />
+    </Style>
+
+    <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="DodgerBlue" />
+    </Style>
+    <Style Selector="DataGridRow:selected TextBlock">
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <!--
+    <Style Selector="DataGridCell > TextBlock">
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    -->
+  </UserControl.Styles>
+  
+  <DataGrid x:Name="DGV"
+            SelectionMode="Single"
+            CanUserResizeColumns="True" 
+            CanUserReorderColumns="False" 
+            CanUserSortColumns="False"
+            IsReadOnly="True"              
+            >
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Request" Binding="{Binding RequestText}" Width="*" CellStyleClasses="rrt" />
+      </DataGrid.Columns>
+    </DataGrid>
+</UserControl>

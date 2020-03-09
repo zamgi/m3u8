@@ -1,0 +1,42 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        x:Class="m3u8.download.manager.ui.WaitBannerForm"
+        d:DesignWidth="261" d:DesignHeight="116"
+        Width="261" Height="116"
+        WindowStartupLocation="CenterOwner"
+        HasSystemDecorations="False"
+        Topmost="True"
+        >
+  <Grid ShowGridLines="False" Background="WhiteSmoke">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="3" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="3" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="3" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="3" />
+    </Grid.ColumnDefinitions>
+
+    <TextBlock x:Name="captionLabel"   Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Margin="3">...executing...</TextBlock>
+    <TextBlock x:Name="progressLabel"  Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" Margin="3"> - <!--%--></TextBlock>
+    <Image     x:Name="indicatorImage" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right"  Width="16" Height="16" Source="/Resources/roller/i1.ico" Margin="0 0 30 0" />
+    <TextBlock x:Name="elapsedLabel"   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Margin="3"> - <!--0:0--></TextBlock>
+
+    <TextBlock x:Name="speedLabel"   Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10 3 3 3"><!--bit/s--></TextBlock>
+    <Button    x:Name="cancelButton" Grid.Row="4" Grid.Column="1" Width="100" HorizontalAlignment="Center" Margin="3" Cursor="Hand">Cancel</Button>
+
+    <Border Name="Top"    Background="Gray" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" />
+    <Border Name="Bottom" Background="Gray" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" />
+    <Border Name="Right"  Background="Gray" Grid.Row="0" Grid.Column="2" Grid.RowSpan="7" />    
+    <Border Name="Left"   Background="Gray" Grid.Row="0" Grid.Column="0" Grid.RowSpan="7" />
+  </Grid>
+</Window>

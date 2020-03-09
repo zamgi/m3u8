@@ -1,0 +1,29 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        x:Class="m3u8.download.manager.ui.GlobalExceptionHandlerWindow"
+        WindowStartupLocation="CenterScreen"
+        Topmost="True"
+        d:DesignWidth="600" d:DesignHeight="350"
+        Width="600" Height="350"
+        Title="Global Exception Handler"
+        Icon="/Resources/m3u8_32x36.ico"
+        Padding="10"
+        >
+  <!-- BorderBrush="LightGray" BorderThickness="1" -->
+  <ScrollViewer Margin="5" 
+                HorizontalScrollBarVisibility="Auto" 
+                VerticalScrollBarVisibility="Auto"
+                >
+    <TextBlock Text="{Binding Exception}"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Top"
+               TextWrapping="Wrap"
+               Foreground="Red"
+               ScrollViewer.HorizontalScrollBarVisibility="Auto"
+               ScrollViewer.VerticalScrollBarVisibility="Auto"
+             />
+  </ScrollViewer>
+</Window>

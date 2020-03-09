@@ -1,0 +1,99 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:m3u8.download.manager.ui"
+        mc:Ignorable="d"
+        d:DesignWidth="1050" d:DesignHeight="579"
+        Width="1050" Height="579"
+        WindowStartupLocation="CenterScreen"
+        x:Class="m3u8.download.manager.ui.MainWindow"
+        Title="m3u8.download.manager.avalonia"
+        Icon="/Resources/m3u8_32x36.ico"
+        >
+  
+  <Grid ColumnDefinitions="*">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="*" MinHeight="70" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="*" MinHeight="70" />
+    </Grid.RowDefinitions>
+    
+    <DockPanel Background="WhiteSmoke">
+      <Menu DockPanel.Dock="Top" Padding="2">
+        <MenuItem Command="{Binding AddCommand}" ToolTip.Tip="Add new download  (Insert)" Padding="0" Margin="0 0 5 0">
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/plus.png" />
+          </MenuItem.Header>
+        </MenuItem>
+
+        <MenuItem x:Name="startDownloadToolButton" ToolTip.Tip="Start download  (Ctrl + S)" Padding="0"> <!-- Command="{Binding StartDownloadCommand}" CommandParameter="{Binding ElementName=downloadListUC, Path=SelectedDownloadRow}" -->
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/control_start.png" />
+          </MenuItem.Header>
+        </MenuItem>
+        <MenuItem x:Name="pauseDownloadToolButton" ToolTip.Tip="Pause download  (Ctrl + P)" Padding="0">
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/control_pause.png" />
+          </MenuItem.Header>
+        </MenuItem>
+        <MenuItem x:Name="cancelDownloadToolButton" ToolTip.Tip="Cancel download  (Ctrl + Z)" Padding="0" Margin="0 0 5 0">
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/control_cancel.png" />
+          </MenuItem.Header>
+        </MenuItem>
+
+        <MenuItem x:Name="deleteDownloadToolButton" Padding="0">
+          <ToolTip.Tip>
+            <StackPanel>
+              <TextBlock>Delete download  (Del)</TextBlock>
+              <TextBlock>With output file  (Shift + Del)</TextBlock>
+            </StackPanel>
+          </ToolTip.Tip>
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/control_delete.png" />
+          </MenuItem.Header>
+        </MenuItem>
+        <MenuItem x:Name="deleteAllFinishedDownloadToolButton" ToolTip.Tip="Delete all finished downloads" Padding="0" Margin="0 0 5 0">
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/control_delete_all_finished.png" />
+          </MenuItem.Header>
+        </MenuItem>
+
+        <!--
+        <MenuItem x:Name="showLogToolButton" ToolTip.Tip="Show/Hide download log" Padding="0" Margin="0 0 5 0">
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/log.png" />
+          </MenuItem.Header>
+        </MenuItem>
+        -->
+
+        <MenuItem x:Name="copyToolButton" ToolTip.Tip="Copy  (Ctrl + C)" Padding="0">
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/copy.png" />
+          </MenuItem.Header>
+        </MenuItem>
+        <MenuItem x:Name="pasteToolButton" ToolTip.Tip="Paste  (Ctrl + V)" Padding="0" Margin="0 0 5 0">
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/paste.png" />
+          </MenuItem.Header>
+        </MenuItem>
+
+        <local:DegreeOfParallelismMenuItem x:Name="degreeOfParallelismToolButton" Padding="0" />
+        <local:DownloadInstanceMenuItem    x:Name="downloadInstanceToolButton"    Padding="0" Margin="0 0 5 0" />
+
+        <MenuItem Command="{Binding AboutCommand}" ToolTip.Tip="About" HotKey="F1" HorizontalAlignment="Right" Padding="0">
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/help.png" />
+          </MenuItem.Header>
+        </MenuItem>
+      </Menu>
+    </DockPanel>
+
+    <local:DownloadListUC x:Name="downloadListUC" Grid.Row="1" />
+    <GridSplitter Grid.Row="2" />
+    <local:LogUC x:Name="logUC" Grid.Row="3" />
+    
+  </Grid>  
+</Window>

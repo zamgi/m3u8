@@ -1,0 +1,475 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using Avalonia.Collections;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
+using m3u8.download.manager.models;
+using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using M = System.Runtime.CompilerServices.MethodImplAttribute;
+using O = System.Runtime.CompilerServices.MethodImplOptions;
+
+namespace m3u8.download.manager.ui
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class DownloadListUC : UserControl
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void SelectionChangedEventHandler( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void OutputFileNameClickEventHandler( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void OutputDirectoryClickEventHandler( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void UpdatedSingleRunningRowEventHandler( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
+        //---public delegate void MouseClickRightButtonEventHandler( MouseEventArgs e, DownloadRow row );
+
+        #region [.field's.]
+        public event SelectionChangedEventHandler        SelectionChanged;
+        public event OutputFileNameClickEventHandler     OutputFileNameClick;
+        public event OutputDirectoryClickEventHandler    OutputDirectoryClick;
+        public event UpdatedSingleRunningRowEventHandler UpdatedSingleRunningRow;
+        //---public event MouseClickRightButtonEventHandler   MouseClickRightButton;
+
+        private DataGrid DGV;
+        private DownloadListModel _Model;
+        //private DataGridCollectionView _DGVCollectionView;
+        #endregion
+
+        #region [.ctor().]
+        public DownloadListUC()
+        {
+            this.InitializeComponent();
+          
+            //---DGV.Items = _DGVCollectionView = new DataGridCollectionView( Enumerable.Empty< DownloadRow >() );
+        }
+        private void InitializeComponent()
+        {
+            AvaloniaXamlLoader.Load( this );
+
+            DGV = this.FindControl< DataGrid >( nameof(DGV) );
+            DGV.SelectionChanged += DGV_SelectionChanged;
+            //DGV.CellPointerPressed += ;
+
+            this.Styles.Add( GlobalStyles.Dark );
+        }       
+        #endregion
+
+        #region [.Model.]
+        private void DGV_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+            var selectedDownloadRow = this.GetSelectedDownloadRow();
+            SelectionChanged?.Invoke( selectedDownloadRow );
+
+            #region comm.
+            //if ( (selectedDownloadRow != null) && !selectedDownloadRow.IsFinished() )
+            //{
+            //    var pt = DGV.PointToClient( Control.MousePosition );
+            //    var ht = DGV.HitTest( pt.X, pt.Y );
+            //    switch ( ht.ColumnIndex )
+            //    {
+            //        case OUTPUTFILENAME_COLUMN_INDEX:
+            //        case OUTPUTDIRECTORY_COLUMN_INDEX:
+            //            DGV.SetHandCursorIfNonHand();
+            //        break;
+            //    }
+            //} 
+            #endregion
+        }
+        private void SetDataGridItems()
+        {
+            if ( _Model == null )
+            {
+                DGV.Items = null;
+            }
+            else
+            {
+                DGV.Items = new DataGridCollectionView( _Model.GetRows() );
+            }
+        }
+
+        internal IEnumerable< (int index, double width) > GetColumnsWidth() => DGV.Columns.Select( (c, i) => (index: i, width: c.ActualWidth) );
+        private void SetColumnsWidth( IList< (int index, double width) > seq )
+        {
+            foreach ( var t in seq )
+            {
+                DGV.Columns[ t.index ].Width = new DataGridLength( t.width );
+            }
+        }
+        internal void SetColumnsWidthFromJson( string json )
+        {
+            if ( !json.IsNullOrEmpty() )
+            {
+                try
+                {
+                    var seq = Extensions.FromJSON< (int index, double width)[] >( json );
+                    SetColumnsWidth( seq );
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
+            }
+        }        
+        
+        internal DownloadRow GetSelectedDownloadRow()
+        {
+            //var idx = DGV.SelectedIndex;
+            //var row   = ((idx != -1) && (idx < _Model.RowsCount)) ? _Model[ idx ] : null;
+            var row = DGV.SelectedItem as DownloadRow;
+            return (row);
+        }
+        internal bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );
+        private bool SelectDownloadRowInternal( DownloadRow row, bool callAfterSort = false )
+        {
+            if ( row != null )
+            {
+                DGV.SelectedItem = row;
+                return (true);
+
+                //var visibleIndex = row.GetVisibleIndex();
+                //if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
+                //{
+                //    var dtrow = DGV.Rows[ visibleIndex ];
+                //    if ( dtrow.Selected )
+                //    {
+                //        SelectionChanged?.Invoke( row );
+                //    }
+                //    else
+                //    {
+                //        dtrow.Selected = true;
+                //    }
+                //    if ( !callAfterSort )
+                //    {
+                //        _UserMade_DGV_SelectionChanged = false;
+                //    }
+                //    return (true);
+                //}
+            }
+            return (false);
+        }
+        internal bool HasFocus => (DGV.IsFocused || this.IsFocused);
+
+        internal void SetModel( DownloadListModel model )
+        {
+            DetachModel();
+
+            _Model = model ?? throw (new ArgumentNullException( nameof(model) ));
+            _Model.CollectionChanged    -= Model_CollectionChanged;
+            _Model.CollectionChanged    += Model_CollectionChanged;
+            //_Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
+            //_Model.RowPropertiesChanged += Model_RowPropertiesChanged;
+
+            //---Model_CollectionChanged( _CollectionChangedTypeEnum_.Add );
+            SetDataGridItems();
+        }
+        private void DetachModel()
+        {
+            if ( _Model != null )
+            {
+                _Model.CollectionChanged -= Model_CollectionChanged;
+                //_Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
+                _Model = null;
+
+                DGV.Items = null;
+
+                #region comm.
+                //DGV.CellValueNeeded -= DGV_CellValueNeeded;
+                //DGV.CellFormatting  -= DGV_CellFormatting;
+                //try
+                //{
+                //    DGV.RowCount = 0;
+                //}
+                //finally
+                //{
+                //    DGV.CellValueNeeded += DGV_CellValueNeeded;
+                //    DGV.CellFormatting  += DGV_CellFormatting;
+                //}
+                #endregion
+            }
+        }
+
+        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
+        {
+            switch ( collectionChangedType )
+            {
+                case _CollectionChangedTypeEnum_.Sort:
+                    DGV.InvalidateVisual();
+                break;
+
+                case _CollectionChangedTypeEnum_.Add:
+                {
+                    SetDataGridItems();
+
+                    #region comm.
+                    //var v = _UserMade_DGV_SelectionChanged;
+                    //DGV.RowCount = _Model.RowsCount;
+                    //RestoreSortIfNeed();
+                    //if ( v != _UserMade_DGV_SelectionChanged )
+                    //{
+                    //    _UserMade_DGV_SelectionChanged = false;
+                    //}
+                    //_CommonUpdateTimer.Enabled = true;
+                    #endregion
+                }
+                break;
+
+                case _CollectionChangedTypeEnum_.Remove:
+                case _CollectionChangedTypeEnum_.Clear:
+                case _CollectionChangedTypeEnum_.BulkUpdate:
+                {
+                    #region [.save selected row.]
+                    var selectedVisibleIndex = DGV.SelectedIndex;
+                    #endregion
+
+                    SetDataGridItems();
+
+                    #region comm.
+                    /*
+                    DGV.CellValueNeeded  -= DGV_CellValueNeeded;
+                    DGV.CellFormatting   -= DGV_CellFormatting;
+                    DGV.SelectionChanged -= DGV_SelectionChanged;
+                    DGV.CellPainting     -= DGV_CellPainting;
+                    try
+                    {
+                        DGV.RowCount = _Model.RowsCount;
+                        RestoreSortIfNeed();
+                    }
+                    finally
+                    {
+                        DGV.CellValueNeeded  += DGV_CellValueNeeded;
+                        DGV.CellFormatting   += DGV_CellFormatting;
+                        DGV.SelectionChanged += DGV_SelectionChanged;
+                        DGV.CellPainting     += DGV_CellPainting;
+                    }
+
+                    #region [.restore selected row.]
+                    try
+                    {
+                        var hasRows = (0 < DGV.RowCount);
+                        _CommonUpdateTimer.Enabled = hasRows;
+                        if ( hasRows )
+                        {
+                            var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), DGV.RowCount - 1 );
+                            var dtrow = DGV.Rows[ visibleIndex ];
+                            if ( dtrow.Selected )
+                            {
+                                var row = _Model[ visibleIndex ];
+                                SelectionChanged?.Invoke( row );
+                            }
+                            else
+                            {
+                                dtrow.Selected = true;
+                            }
+                        }
+                        else
+                        {                            
+                            SelectionChanged?.Invoke( null );
+                        }
+                    }
+                    catch ( Exception ex)
+                    {
+                        Debug.WriteLine( ex );
+                    }
+                    #endregion
+                    */
+                    #endregion
+
+                    DGV.InvalidateVisual();
+                }
+                break;
+            }
+        }
+        //private void Model_RowPropertiesChanged( DownloadRow row, string propertyName )
+        //{
+        //    //---DGV.InvalidateVisual();
+
+        //    #region comm.
+        //    //var visibleIndex = row.GetVisibleIndex();
+        //    //if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
+        //    //{
+        //    //    DGV.InvalidateRow( visibleIndex );
+
+        //    //    if ( propertyName == nameof(DownloadRow.Status) )
+        //    //    {
+        //    //        RestoreSortIfNeed();
+        //    //    }
+        //    //} 
+        //    #endregion
+        //}
+        #endregion
+
+        #region [.private methods.]
+        private const string CREATED_DT = "HH:mm:ss  (yyyy.MM.dd)";
+        private const string HH_MM_SS   = "hh\\:mm\\:ss";
+        private const string MM_SS      = "mm\\:ss";
+
+        [M(O.AggressiveInlining)] internal static string GetDownloadInfoText( DownloadRow row )
+        {
+            var st = row.Status;
+            switch ( st )
+            {
+                case DownloadStatus.Created: return ($"[created]: {row.CreatedOrStartedDateTime.ToString( CREATED_DT )}");
+                case DownloadStatus.Started: return ($"{row.GetElapsed().ToString( HH_MM_SS )}");
+                case DownloadStatus.Wait   : return ($"(wait), ({row.GetElapsed().ToString( HH_MM_SS )})");
+            }
+
+            var ts           = row.GetElapsed();
+            var elapsed      = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
+            var percent      = ((0 < row.TotalParts) ? Convert.ToByte( (100.0 * row.SuccessDownloadParts) / row.TotalParts ).ToString() : "-");
+            var failedParts  = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
+            var downloadInfo = $"{percent}%, ({elapsed})";
+            
+            #region [.speed.]
+            if ( !st.IsPaused() )
+            {                
+                var elapsedSeconds = ts.TotalSeconds;
+                var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
+                if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
+                {
+                    var speedText = default(string);
+                    //if ( downloadBytes < 1_000 ) speedText = (downloadBytes / elapsedSeconds).ToString("N2") + " bit/s";
+                    if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
+                    else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
+
+                    downloadInfo += $", [{speedText}]";
+                }
+            }
+            #endregion
+
+            return (downloadInfo);
+        }
+
+        [M(O.AggressiveInlining)] private static bool TryGetDownloadProgress( DownloadRow row, out double part, out string progressText )
+        {
+            var st = row.Status;
+            switch ( st )
+            {
+                case DownloadStatus.Created:
+                case DownloadStatus.Started:
+                case DownloadStatus.Wait   :
+                    part         = default;
+                    progressText = null;
+                    return (false);
+
+                default:
+                    string percentText;
+                    if ( 0 < row.TotalParts )
+                    {
+                        part        = (1.0 * row.SuccessDownloadParts) / row.TotalParts;
+                        var percent = Convert.ToByte( 100 * part );
+                        percentText = percent.ToString();
+                    }
+                    else if ( st == DownloadStatus.Canceled ) //not-started
+                    {
+                        part         = default;
+                        progressText = null;
+                        return (false);
+                    }
+                    else
+                    {
+                        part        = 0;
+                        percentText = "-";
+                    }
+
+                    var failedParts = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
+                    progressText = $"{percentText}%  ({row.SuccessDownloadParts} of {row.TotalParts}{failedParts})";
+                    return (true);
+            }
+        }
+        [M(O.AggressiveInlining)] internal static string GetProgressText( DownloadRow row )
+        {
+            var has = TryGetDownloadProgress( row, out var part, out var progressText );
+            return (has ? progressText : "-");
+        }
+
+        [M(O.AggressiveInlining)] internal static string GetDownloadTimeText( DownloadRow row )
+        {
+            if ( row.Status == DownloadStatus.Created )
+            {
+                return (row.CreatedOrStartedDateTime.ToString( CREATED_DT ));
+            }
+            return (row.GetElapsed().ToString( HH_MM_SS ));
+        }
+        [M(O.AggressiveInlining)] internal static string GetApproxRemainedTimeText( DownloadRow row )
+        {
+            if ( row.Status == DownloadStatus.Running)
+            {
+                var totalBytes = row.GetApproxTotalBytes();
+                if ( totalBytes.HasValue )
+                {
+                    var elapsedSeconds = row.GetElapsed().TotalSeconds;
+                    var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();                    
+                    if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
+                    {
+                        var remainedBytes = totalBytes.Value - (row.DownloadBytesLength - downloadBytes);
+                        var remainedTime  = TimeSpan.FromSeconds( (remainedBytes - downloadBytes) * (elapsedSeconds / downloadBytes) );
+                        return (remainedTime.ToString( HH_MM_SS ));
+                    }
+                }
+            }
+            return (string.Empty);
+        }
+        [M(O.AggressiveInlining)] internal static string GetDownloadSpeedText( DownloadRow row )
+        {
+            if ( !row.Status.IsPaused() )
+            {                
+                var elapsedSeconds = row.GetElapsed().TotalSeconds;
+                var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
+                if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
+                {
+                    var speedText = default(string);
+                    //if ( downloadBytes < 1_000   ) speedText = (downloadBytes / elapsedSeconds).ToString("N2") + " bit/s";
+                    if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
+                    else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
+                    return (speedText);
+                }
+            }
+            return (string.Empty);
+        }
+        [M(O.AggressiveInlining)] internal static string GetDisplaySizeText( long size )
+        {
+            if ( size == 0 )
+            {
+                return ("-");
+            }
+
+            const float KILOBYTE = 1024;
+            const float MEGABYTE = KILOBYTE * KILOBYTE;
+            const float GIGABYTE = MEGABYTE * KILOBYTE;
+
+            if ( GIGABYTE < size )
+                return ((size / GIGABYTE).ToString("N2") + " GB");
+            if ( MEGABYTE < size )
+                return ((size / MEGABYTE).ToString("N2") + " MB");
+            if ( KILOBYTE < size )
+                return ((size / KILOBYTE).ToString("N2") + " KB");
+            return ((size / KILOBYTE).ToString("N1") + " KB");
+        }
+        [M(O.AggressiveInlining)] internal static string GetApproxRemainedBytesText( DownloadRow row )
+        {
+            var size = row.GetApproxRemainedBytes();
+            return (size.HasValue ? GetDisplaySizeText( size.Value ) : string.Empty);
+        }
+        [M(O.AggressiveInlining)] internal static string GetApproxTotalBytesText( DownloadRow row )
+        {
+            var size = row.GetApproxTotalBytes();
+            return (size.HasValue ? GetDisplaySizeText( size.Value ) : string.Empty);
+        }
+        #endregion
+    }
+}

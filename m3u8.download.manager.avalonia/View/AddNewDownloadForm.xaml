@@ -1,0 +1,67 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local-ui="clr-namespace:m3u8.download.manager.ui"
+        x:Class="m3u8.download.manager.ui.AddNewDownloadForm"
+        mc:Ignorable="d" d:DesignWidth="803" d:DesignHeight="375"
+        Width="803" Height="375"
+        WindowStartupLocation="CenterScreen"
+        Title="add new download"
+        Icon="/Resources/m3u8_32x36.ico"
+        >
+  <!--
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Escape"      Command="{Binding CloseWindowCommand}" />
+    <KeyBinding Gesture="Enter"       Command="{Binding StartDownloadCommand}" />
+    <KeyBinding Gesture="Shift+Enter" Command="{Binding StartDownloadCommand}" CommandParameter="false" />
+  </Window.KeyBindings>
+  -->
+
+  <Grid RowDefinitions="auto,*,auto">
+  <StackPanel Margin="5" Grid.Row="0">
+    <TextBlock Foreground="SteelBlue">.m3u8 file url:</TextBlock>
+    <TextBox x:Name="m3u8FileUrlTextBox" AcceptsReturn="True" TextWrapping="Wrap" Height="75"></TextBox>
+    
+    <Grid Margin="0 5 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto" />
+        <RowDefinition Height="auto" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="auto" />
+      </Grid.ColumnDefinitions>
+    
+      <TextBlock Grid.Row="0" Grid.Column="0" Foreground="SteelBlue" Margin="0 0 5 0">
+        output
+file name:
+      </TextBlock>
+      <TextBox x:Name="outputFileNameTextBox"      Grid.Row="0" Grid.Column="1" Margin="0.5"></TextBox>
+      <Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="2" Width="25" Cursor="Hand" Margin="0.5">x</Button>
+      <Button  x:Name="outputFileNameSelectButton" Grid.Row="0" Grid.Column="3" Width="25" Cursor="Hand" Margin="0.5">=</Button>
+    
+      <TextBlock Grid.Row="1" Grid.Column="0" Foreground="SteelBlue" Margin="0 0 5 0">
+        output 
+directory :
+      </TextBlock>
+      <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="1" Grid.Column="1" IsReadOnly="True" Margin="0.5"></TextBox>    
+      <Button  x:Name="outputDirectorySelectButton" Grid.Row="1" Grid.Column="3" Width="25" Cursor="Hand" Margin="0.5">=</Button>
+      <Button  x:Name="loadM3u8FileContentButton"   Grid.Row="1" Grid.Column="4" Cursor="Hand" Margin="0.5">(load .m3u8 file-content)</Button>    
+    </Grid>
+
+  </StackPanel>
+
+  <local-ui:RequestLogUC x:Name="logUC" Grid.Row="1" 
+                         Margin="5 0" MinHeight="120"
+                         BorderBrush="LightGray" BorderThickness="1"/>
+    
+  <DockPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
+    <Button x:Name="startDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" FontWeight="Bold" Margin="0 0 10 0">Start Download</Button>
+    <Button x:Name="laterDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" Margin="10 0 0 0">Download later</Button>
+  </DockPanel>
+  </Grid>
+</Window>

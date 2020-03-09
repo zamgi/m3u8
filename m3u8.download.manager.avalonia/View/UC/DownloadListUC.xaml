@@ -1,0 +1,192 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:m3u8.download.manager.ui"
+             mc:Ignorable="d"
+             x:Class="m3u8.download.manager.ui.DownloadListUC"
+             d:DesignWidth="1200" d:DesignHeight="350"
+             >
+  <UserControl.Resources>
+    <local:ProgressText_Converter            x:Key="ProgressText" />
+    <local:DownloadTimeText_Converter        x:Key="DownloadTimeText" />
+    <local:ApproxRemainedTimeText_Converter  x:Key="ApproxRemainedTimeText" />
+    <local:DownloadSpeedText_Converter       x:Key="DownloadSpeedText" />
+    <local:DisplaySizeText_Converter         x:Key="DisplaySizeText" />
+    <local:ApproxRemainedBytesText_Converter x:Key="ApproxRemainedBytesText" />
+    <local:ApproxTotalBytesText_Converter    x:Key="ApproxTotalBytesText" />
+    <local:StatusImage_Converter             x:Key="StatusImage" />
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <Style Selector="ToolTip">
+      <Setter Property="Foreground" Value="Gray" />
+      <Setter Property="Background" Value="Ivory" />
+    </Style>
+    <Style Selector="DataGridCell > TextBlock">
+      <Setter Property="Margin" Value="3,7" />
+    </Style>
+
+    <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="CadetBlue" />
+    </Style>
+    <Style Selector="DataGridRow:selected TextBlock">
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="DataGridRow:selected ToolTip TextBlock">
+      <Setter Property="Foreground" Value="Gray" />
+    </Style>  
+  </UserControl.Styles>
+  
+  <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
+                VerticalScrollBarVisibility="Auto"
+                >-->      
+  <DataGrid x:Name="DGV"
+            SelectionMode="Single"
+            CanUserResizeColumns="True"
+            CanUserReorderColumns="True"
+            CanUserSortColumns="False"
+            IsReadOnly="True"
+            GridLinesVisibility="Vertical"
+            VerticalGridLinesBrush="White" HorizontalGridLinesBrush="LightGray"
+            RowBackground="White" AlternatingRowBackground="WhiteSmoke"
+            ClipboardCopyMode="None"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Auto"
+            >
+    <DataGrid.Columns>
+      <DataGridTemplateColumn Width="2.25*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Output file name" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding OutputFileName}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap"  -->
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+
+      <DataGridTemplateColumn Width="1.125*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Output directory" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>        
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding OutputDirectory}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+
+      <DataGridTemplateColumn Width="1.25*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Status" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <DockPanel>
+              <Image Source="{Binding Status, Mode=OneWay, Converter={StaticResource StatusImage}}" Width="16" Height="16" Margin="3 0 0 0" />
+              <TextBlock Text="{Binding Status}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" Margin="5 0 0 0" />
+            </DockPanel>
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+
+      <DataGridTemplateColumn Width="1.5625*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Progress" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ProgressText}}" 
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+
+      <DataGridTemplateColumn Width="*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Time" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource DownloadTimeText}}"
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+
+      <DataGridTemplateColumn Width="*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Time Remained ~" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ApproxRemainedTimeText}}"
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+
+      <DataGridTemplateColumn Width="*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Speed" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource DownloadSpeedText}}"
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+
+      <DataGridTemplateColumn Width="*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Received (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource DisplaySizeText}}" 
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+
+      <DataGridTemplateColumn Width="*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Remained ~ (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ApproxRemainedBytesText}}" 
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>      
+      
+      <DataGridTemplateColumn Width="*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Total ~ (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ApproxTotalBytesText}}" 
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+
+      <DataGridTemplateColumn Width="1.5*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Url" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding Url}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+      
+    </DataGrid.Columns>
+  </DataGrid>
+  <!--</ScrollViewer>-->    
+</UserControl>
