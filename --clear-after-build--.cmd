@@ -15,6 +15,7 @@ del "m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\bin\*.pd
 
 rd "m3u8.download.manager\bin" /S /Q
 rd "m3u8.download.manager\obj" /S /Q
+rd "m3u8.download.manager\.vs" /S /Q
 del "m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\bin\*.pdb" /Q
 
 rem rd "m3u8.download.manager.avalonia\bin" /S /Q
