@@ -28,15 +28,6 @@ namespace m3u8.download.manager.ipc
 
         private const uint CREATE_BREAKAWAY_FROM_JOB = 0x01000000;
 
-        #region comm
-        /*[StructLayout(LayoutKind.Sequential)] private struct SECURITY_ATTRIBUTES
-        {
-            public int nLength;
-            public IntPtr lpSecurityDescriptor;
-            public int bInheritHandle;
-        }*/ 
-        #endregion
-
         [StructLayout(LayoutKind.Sequential)]
         private struct PROCESS_INFORMATION 
         {

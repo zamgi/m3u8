@@ -135,6 +135,10 @@ namespace m3u8.download.manager.ui
 
             this.RestoreBounds( _VM.SettingsController.MainFormPositionJson );
             downloadListUC.SetColumnsWidthFromJson( _VM.SettingsController.DownloadListColumnsWidthJson );
+            downloadListUC.Focus();
+            this.InvalidateArrange();
+            this.InvalidateMeasure();
+            this.InvalidateVisual();
 
             if ( _InputParamsArray.AnyEx() )
             {
@@ -756,7 +760,10 @@ return;
         private async void deleteDownloadToolButton_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: true, deleteOutputFile: false ) )
+            var pi = AvaloniaLocator.Current.GetService< Avalonia.Platform.IRuntimePlatform >().GetRuntimeInfo();
+            var isShift = (pi.OperatingSystem == Avalonia.Platform.OperatingSystemType.WinNT) ? WinApi.IsShiftButtonPushed() :  false;
+            //---var isShift = (KeyboardDevice.Instance is Avalonia.Win32.Input.WindowsKeyboardDevice wkd) ? ((wkd.Modifiers & ) == ) : false;
+            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: true, deleteOutputFile: isShift ) )
             {
                 DeleteDownload( row, deleteOutputFile: false );
             }

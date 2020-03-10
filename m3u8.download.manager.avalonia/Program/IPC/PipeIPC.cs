@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,7 +30,7 @@ namespace m3u8.download.manager.ipc
                 {
                     for ( var ct = (cts?.Token).GetValueOrDefault( CancellationToken.None ); ; )
                     {
-                        using ( var pipeServer = new NamedPipeServerStream( pipeName, PipeDirection.In, 1, PipeTransmissionMode.Message ) )
+                        using ( var pipeServer = new NamedPipeServerStream( pipeName, PipeDirection.In ) )
                         {
                             Debug.WriteLine( $"[SERVER] WaitForConnection... (Current TransmissionMode: '{pipeServer.TransmissionMode}')" );
 
@@ -67,7 +66,7 @@ namespace m3u8.download.manager.ipc
         {
             public static void Send( string pipeName, in (string m3u8FileUrl, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 5_000 )
             {
-                using ( var pipeClient = new NamedPipeClientStream( ".", pipeName, PipeDirection.Out, PipeOptions.None, TokenImpersonationLevel.None, HandleInheritability.Inheritable ) )
+                using ( var pipeClient = new NamedPipeClientStream( ".", pipeName, PipeDirection.Out ) )
                 {
                     pipeClient.ConnectAsync( connectMillisecondsTimeout ).Wait( connectMillisecondsTimeout );
 
@@ -81,11 +80,23 @@ namespace m3u8.download.manager.ipc
                         var line = BrowserIPC.CommandLine.Create4PipeIPC( array ); // $"PID: '{Process.GetCurrentProcess().Id}' ('{Assembly.GetEntryAssembly().FullName}') => DateTime.Now: '{DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss.fff")}'";
                         Debug.WriteLine( $"[CLIENT] Send: {line}" );
                         sw.WriteLine( line );
-                        pipeClient.WaitForPipeDrain();
+                        pipeClient.WaitForPipeDrain_NoThrow();
                     }
                 }
 
                 Debug.WriteLine( "[CLIENT] Client terminating.\r\n" );
+            }
+        }
+
+        private static void WaitForPipeDrain_NoThrow( this NamedPipeClientStream pipeClient )
+        {
+            try
+            {
+                pipeClient.WaitForPipeDrain();
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
             }
         }
     }
