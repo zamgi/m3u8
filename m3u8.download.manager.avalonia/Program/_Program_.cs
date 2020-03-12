@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Logging.Serilog;
-using Avalonia.ReactiveUI;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
@@ -19,31 +16,6 @@ namespace m3u8.download.manager
     /// </summary>
     internal static class Program
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        private sealed class AdvancedEncodingProvider : EncodingProvider
-        {
-            private Dictionary< int   , Encoding > _Dict_1 = new Dictionary< int   , Encoding >();
-            private Dictionary< string, Encoding > _Dict_2 = new Dictionary< string, Encoding >( StringComparer.InvariantCultureIgnoreCase );
-            public AdvancedEncodingProvider( EncodingInfo[] encodingInfos )
-            {
-                foreach ( var ei in encodingInfos )
-                {
-                    var encoding = Encoding.GetEncoding( ei.CodePage );
-                    _Dict_1.Add( ei.CodePage, encoding );
-                    _Dict_2.Add( ei.Name    , encoding );
-                }
-
-                if ( !_Dict_2.ContainsKey( "utf8" ) && _Dict_2.TryGetValue( "utf-8", out var _encoding ) )
-                {
-                    _Dict_2.Add( "utf8", _encoding );
-                }
-            }
-            public override Encoding GetEncoding( string name ) => (_Dict_2.TryGetValue( name, out var encoding ) ? encoding : default);
-            public override Encoding GetEncoding( int codepage ) => (_Dict_1.TryGetValue( codepage, out var encoding ) ? encoding : default);
-        }
-
         /// <summary>
         ///
         /// </summary>
@@ -90,10 +62,11 @@ namespace m3u8.download.manager
 
                                     sca.Release(); //!!!
 
-                                    success = ProcessCreator.CreateAsBreakawayFromJob( cmdLine );
+                                    string errorMsg;
+                                    (success, errorMsg) = ProcessCreator.CreateAsBreakawayFromJob( cmdLine );
                                     if ( !success )
                                     {
-                                        Extensions.MessageBox_ShowError( "Error while trying run additional native application's process", executeFileName ).Wait();
+                                        Extensions.MessageBox_ShowError( $"Error while trying run additional native application's process{(errorMsg.IsNullOrEmpty() ? null : $": '{errorMsg}'")}.", executeFileName ).Wait();
                                     }
                                 }
                             }
@@ -126,8 +99,23 @@ namespace m3u8.download.manager
                     Settings.Default.UpgradeIfNeed();
                     #endregion
 
-                    #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
-                    ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12);// | SecurityProtocolType.Ssl3);
+                    #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Tls13 + Ssl3'.]
+                    void set_SecurityProtocol( SecurityProtocolType securityProtocolType )
+                    {
+                        try
+                        {
+                            ServicePointManager.SecurityProtocol |= securityProtocolType;
+                        }
+                        catch ( Exception ex )
+                        {
+                            Debug.WriteLine( ex );
+                        }
+                    };
+                    set_SecurityProtocol( SecurityProtocolType.Tls   );
+                    set_SecurityProtocol( SecurityProtocolType.Tls11 );
+                    set_SecurityProtocol( SecurityProtocolType.Tls12 );
+                    set_SecurityProtocol( SecurityProtocolType.Tls13 );
+                    //---set_SecurityProtocol( SecurityProtocolType.Ssl3  );
                     #endregion
 
                     #region [.register encoding provider.]
@@ -135,15 +123,9 @@ namespace m3u8.download.manager
                     Encoding.RegisterProvider( new AdvancedEncodingProvider( Encoding.GetEncodings() ) );
                     #endregion
 
-                    //Application.EnableVisualStyles();
-                    //Application.SetCompatibleTextRenderingDefault( false );
-
-                    //var mainform = new MainForm( inputParamsArray );
-
                     App._InputParamsArray = inputParamsArray;
                     PipeIPC.NamedPipeServer__in.RunListener( sca.MutexName );
 
-                    //Application.Run( mainform );
                     try
                     {
                         BuildAvaloniaApp().StartWithClassicDesktopLifetime( args, ShutdownMode.OnLastWindowClose );

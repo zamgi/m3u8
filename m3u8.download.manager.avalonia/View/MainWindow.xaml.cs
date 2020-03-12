@@ -94,6 +94,7 @@ namespace m3u8.download.manager.ui
             downloadListUC.OutputFileNameClick     += downloadListUC_OutputFileNameClick;
             downloadListUC.OutputDirectoryClick    += downloadListUC_OutputDirectoryClick;
             downloadListUC.UpdatedSingleRunningRow += downloadListUC_UpdatedSingleRunningRow;
+            downloadListUC.MouseClickRightButton   += downloadListUC_MouseClickRightButton;
 
             SetDownloadToolButtonsStatus( null );
 
@@ -133,12 +134,14 @@ namespace m3u8.download.manager.ui
         {
             base.OnOpened( e );
 
-            this.RestoreBounds( _VM.SettingsController.MainFormPositionJson );
+            #region [.restore settings.]
+            if ( PlatformHelper.IsWinNT() )
+            {
+                this.RestoreBounds( _VM.SettingsController.MainFormPositionJson );
+            }
             downloadListUC.SetColumnsWidthFromJson( _VM.SettingsController.DownloadListColumnsWidthJson );
             downloadListUC.Focus();
-            this.InvalidateArrange();
-            this.InvalidateMeasure();
-            this.InvalidateVisual();
+            #endregion
 
             if ( _InputParamsArray.AnyEx() )
             {
@@ -158,9 +161,11 @@ namespace m3u8.download.manager.ui
         {
             base.OnClosed( e );
 
+            #region [.save settings.]
             _VM.SettingsController.MainFormPositionJson         = this.GetBounds().ToJSON();
             _VM.SettingsController.DownloadListColumnsWidthJson = downloadListUC.GetColumnsWidth().ToJSON();
             _VM.SettingsController.SaveNoThrow();
+            #endregion
         }
         protected async override void OnClosing( CancelEventArgs e )
         {
@@ -209,7 +214,6 @@ namespace m3u8.download.manager.ui
                         var (success, m3u8FileUrls) = await Extensions.TryGetM3u8FileUrlsFromClipboard();
                         if ( success )
                         {
-                            //---e.SuppressKeyPress = true;
                             e.Handled = true;
                             _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
                             return;
@@ -222,7 +226,6 @@ namespace m3u8.download.manager.ui
                             var row = downloadListUC.GetSelectedDownloadRow();
                             if ( row != null )
                             {
-                                //---e.SuppressKeyPress = true;
                                 e.Handled = true;
                                 await Extensions.CopyM3u8FileUrlToClipboard( row.Url );
                                 return;
@@ -268,7 +271,7 @@ namespace m3u8.download.manager.ui
                     case Key.O: //Open output file
                         if ( downloadListUC.HasFocus )
                         {
-                            //openOutputFileMenuItem_Click( this, EventArgs.Empty );
+                            openOutputFileMenuItem_Click( this, EventArgs.Empty );
                         }
                     break;
                 }
@@ -279,7 +282,6 @@ namespace m3u8.download.manager.ui
                 {
                     case Key.Insert: //add download dialog
                     {
-                        //---e.SuppressKeyPress = true;
                         e.Handled = true;
                         var m3u8FileUrls = await Extensions.TryGetM3u8FileUrlsFromClipboardOrDefault();
                         _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
@@ -290,10 +292,10 @@ namespace m3u8.download.manager.ui
                         if ( downloadListUC.HasFocus )
                         {
                             var row = downloadListUC.GetSelectedDownloadRow();
-                            var shift = ((e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift);
-                            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: false, deleteOutputFile: shift ) )
+                            var shiftPushed = ((e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift);
+                            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: false, deleteOutputFile: shiftPushed ) )
                             {
-                                DeleteDownload( row, deleteOutputFile: shift );
+                                DeleteDownload( row, deleteOutputFile: shiftPushed );
                             }
                         }
                     break;
@@ -310,7 +312,7 @@ namespace m3u8.download.manager.ui
                             {
                                 if ( row.IsFinished() )
                                 {
-                                    //openOutputFileMenuItem_Click( this, EventArgs.Empty );
+                                    openOutputFileMenuItem_Click( this, EventArgs.Empty );
                                 }
                                 else
                                 {
@@ -760,12 +762,11 @@ return;
         private async void deleteDownloadToolButton_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            var pi = AvaloniaLocator.Current.GetService< Avalonia.Platform.IRuntimePlatform >().GetRuntimeInfo();
-            var isShift = (pi.OperatingSystem == Avalonia.Platform.OperatingSystemType.WinNT) ? WinApi.IsShiftButtonPushed() :  false;
-            //---var isShift = (KeyboardDevice.Instance is Avalonia.Win32.Input.WindowsKeyboardDevice wkd) ? ((wkd.Modifiers & ) == ) : false;
-            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: true, deleteOutputFile: isShift ) )
+            var shiftPushed = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
+            //---var shiftPushed = (KeyboardDevice.Instance is Avalonia.Win32.Input.WindowsKeyboardDevice wkd) ? ((wkd.Modifiers & ) == ) : false;
+            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: true, deleteOutputFile: shiftPushed ) )
             {
-                DeleteDownload( row, deleteOutputFile: false );
+                DeleteDownload( row, deleteOutputFile: shiftPushed );
             }
         }
         private void deleteAllFinishedDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.DeleteAllFinished );
@@ -780,12 +781,50 @@ return;
         private void degreeOfParallelismToolButton_ValueChanged( int value ) => _VM.SettingsController.Settings.MaxDegreeOfParallelism = value;
         #endregion
 
+        #region [.context menu.]
+        private async void downloadListUC_MouseClickRightButton( Point pt, DownloadRow row )
+        {
+            if ( (row != null) || (0 < _VM.DownloadListModel.RowsCount) )
+            {
+                await this.MessageBox_ShowInformation( $"'{nameof(downloadListUC_MouseClickRightButton)}' => NOT IMPL", this.Title );
+
+                /*
+                startDownloadMenuItem            .IsEnabled = startDownloadToolButton .IsEnabled;
+                cancelDownloadMenuItem           .IsEnabled = cancelDownloadToolButton.IsEnabled;
+                pauseDownloadMenuItem            .IsEnabled = pauseDownloadToolButton .IsEnabled;
+                deleteDownloadMenuItem           .IsEnabled = deleteDownloadToolButton.IsEnabled;
+                deleteWithOutputFileMenuItem     .IsEnabled = deleteDownloadToolButton.IsEnabled && Extensions.AnyFileExists( row?.GetOutputFullFileNames() );
+                browseOutputFileMenuItem         .IsVisible = deleteWithOutputFileMenuItem.Enabled;
+                openOutputFileMenuItem           .IsVisible = deleteWithOutputFileMenuItem.Enabled;
+                deleteAllFinishedDownloadMenuItem.IsEnabled = deleteAllFinishedDownloadToolButton.IsEnabled;
+
+                var allowedAll = (row == null) || (1 < _VM.DownloadListModel.RowsCount);
+                SetAllDownloadsMenuItemsEnabled( allowedAll );
+
+                mainContextMenu.Show( downloadListUC, pt );
+                */
+            }
+        }
+
+        private void openOutputFileMenuItem_Click( object sender, EventArgs e )
+        {
+            var row = downloadListUC.GetSelectedDownloadRow();
+            if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
+            {
+                using ( Process.Start( outputFileName ) )
+                {
+                    ;
+                }
+            }
+        }
+        #endregion
+
         #region [.ChangeOutputFileForm.]
         //private ChangeOutputFileForm _ChangeOutputFileForm;
         //private DownloadRow          _ChangeOutputFileForm_Row;
         private async void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
-            await this.MessageBox_ShowInformation( "NOT IMPL", this.Title );
+            await this.MessageBox_ShowInformation( $"'{nameof(downloadListUC_OutputFileNameClick)}' => NOT IMPL", this.Title );
 
             //if ( (_ChangeOutputFileForm == null) || _ChangeOutputFileForm.IsDisposed )
             //{

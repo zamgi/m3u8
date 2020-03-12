@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using m3u8.download.manager.models;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -20,56 +24,38 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
-        public delegate void SelectionChangedEventHandler( DownloadRow row );
+        public delegate void DownloadRowEventHandler( DownloadRow row );
         /// <summary>
         /// 
         /// </summary>
-        public delegate void OutputFileNameClickEventHandler( DownloadRow row );
-        /// <summary>
-        /// 
-        /// </summary>
-        public delegate void OutputDirectoryClickEventHandler( DownloadRow row );
-        /// <summary>
-        /// 
-        /// </summary>
-        public delegate void UpdatedSingleRunningRowEventHandler( DownloadRow row );
-        /// <summary>
-        /// 
-        /// </summary>
-        //---public delegate void MouseClickRightButtonEventHandler( MouseEventArgs e, DownloadRow row );
+        public delegate void MouseClickRightButtonEventHandler( Point pt, DownloadRow row );
 
         #region [.field's.]
-        public event SelectionChangedEventHandler        SelectionChanged;
-        public event OutputFileNameClickEventHandler     OutputFileNameClick;
-        public event OutputDirectoryClickEventHandler    OutputDirectoryClick;
-        public event UpdatedSingleRunningRowEventHandler UpdatedSingleRunningRow;
-        //---public event MouseClickRightButtonEventHandler   MouseClickRightButton;
+        public event DownloadRowEventHandler SelectionChanged;
+        public event DownloadRowEventHandler OutputFileNameClick;
+        public event DownloadRowEventHandler OutputDirectoryClick;
+        public event DownloadRowEventHandler UpdatedSingleRunningRow;
+        public event MouseClickRightButtonEventHandler MouseClickRightButton;
 
         private DataGrid DGV;
         private DownloadListModel _Model;
-        //private DataGridCollectionView _DGVCollectionView;
         #endregion
 
         #region [.ctor().]
-        public DownloadListUC()
-        {
-            this.InitializeComponent();
-          
-            //---DGV.Items = _DGVCollectionView = new DataGridCollectionView( Enumerable.Empty< DownloadRow >() );
-        }
+        public DownloadListUC() => this.InitializeComponent();
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load( this );
 
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
-            DGV.SelectionChanged += DGV_SelectionChanged;
-            //DGV.CellPointerPressed += ;
+            DGV.SelectionChanged   += DGV_SelectionChanged;
+            DGV.CellPointerPressed += DGV_CellPointerPressed;
 
             this.Styles.Add( GlobalStyles.Dark );
-        }       
+        }
         #endregion
 
-        #region [.Model.]
+        #region [.DGV events.]
         private void DGV_SelectionChanged( object sender, SelectionChangedEventArgs e )
         {
             var selectedDownloadRow = this.GetSelectedDownloadRow();
@@ -90,18 +76,59 @@ namespace m3u8.download.manager.ui
             //} 
             #endregion
         }
-        private void SetDataGridItems()
+        private void DGV_CellPointerPressed( object sender, DataGridCellPointerPressedEventArgs e )
         {
-            if ( _Model == null )
+            const int OutputFileName_Column_DisplayIndex  = 0;
+            const int OutputDirectory_Column_DisplayIndex = 1;            
+
+            Debug.WriteLine( $"Column: {e.Column.DisplayIndex}, Row: {e.Row.GetIndex()}" );
+
+            var pp = e.PointerPressedEventArgs.GetCurrentPoint( null );
+            switch ( pp.Properties.PointerUpdateKind ) //e.PointerPressedEventArgs.MouseButton )
             {
-                DGV.Items = null;
-            }
-            else
-            {
-                DGV.Items = new DataGridCollectionView( _Model.GetRows() );
+                case PointerUpdateKind.LeftButtonPressed: //MouseButton.Left:
+                    switch ( e.Column.DisplayIndex )
+                    {
+                        case OutputFileName_Column_DisplayIndex:
+                        case OutputDirectory_Column_DisplayIndex:
+                        {
+                            bool is_valid( int rowIndex, DownloadRow selectedDownloadRow ) => ((0 <= rowIndex) && (rowIndex < _Model.RowsCount) && (_Model[ rowIndex ] == selectedDownloadRow));
+
+                            var selectedDownloadRow = this.GetSelectedDownloadRow();
+                            var rowIndex = e.Row.GetIndex();
+                            if ( is_valid( rowIndex, selectedDownloadRow ) )
+                            {
+                                var evnt = (e.Column.DisplayIndex == OutputFileName_Column_DisplayIndex) ? OutputFileNameClick : OutputDirectoryClick;
+                                if ( evnt != null )
+                                {
+                                    e.PointerPressedEventArgs.Pointer.Capture( null );
+                                    e.PointerPressedEventArgs.Handled = true;
+                                    evnt( selectedDownloadRow );
+
+                                    //Dispatcher.UIThread.Post( () => evnt( selectedDownloadRow ) );
+                                }
+                            }
+                        }
+                        break;
+                    }
+                break;
+
+                case PointerUpdateKind.RightButtonPressed: //MouseButton.Right:
+                    {
+                        var evnt = MouseClickRightButton;
+                        if ( evnt != null )
+                        {
+                            e.PointerPressedEventArgs.Pointer.Capture( null );
+                            e.PointerPressedEventArgs.Handled = true;                            
+                            evnt( pp.Position, this.GetSelectedDownloadRow() );
+                        }
+                    }
+                break;
             }
         }
+        #endregion
 
+        #region [.Model.]
         internal IEnumerable< (int index, double width) > GetColumnsWidth() => DGV.Columns.Select( (c, i) => (index: i, width: c.ActualWidth) );
         private void SetColumnsWidth( IList< (int index, double width) > seq )
         {
@@ -124,15 +151,21 @@ namespace m3u8.download.manager.ui
                     Debug.WriteLine( ex );
                 }
             }
-        }        
-        
-        internal DownloadRow GetSelectedDownloadRow()
-        {
-            //var idx = DGV.SelectedIndex;
-            //var row   = ((idx != -1) && (idx < _Model.RowsCount)) ? _Model[ idx ] : null;
-            var row = DGV.SelectedItem as DownloadRow;
-            return (row);
         }
+
+        private void SetDataGridItems()
+        {
+            if ( _Model == null )
+            {
+                DGV.Items = null;
+            }
+            else
+            {
+                DGV.Items = new DataGridCollectionView( _Model.GetRows() );
+            }
+        }
+
+        internal DownloadRow GetSelectedDownloadRow() => (DGV.SelectedItem as DownloadRow);
         internal bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );
         private bool SelectDownloadRowInternal( DownloadRow row, bool callAfterSort = false )
         {
@@ -141,6 +174,7 @@ namespace m3u8.download.manager.ui
                 DGV.SelectedItem = row;
                 return (true);
 
+                #region comm.
                 //var visibleIndex = row.GetVisibleIndex();
                 //if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
                 //{
@@ -158,7 +192,8 @@ namespace m3u8.download.manager.ui
                 //        _UserMade_DGV_SelectionChanged = false;
                 //    }
                 //    return (true);
-                //}
+                //} 
+                #endregion
             }
             return (false);
         }
@@ -313,7 +348,7 @@ namespace m3u8.download.manager.ui
         //}
         #endregion
 
-        #region [.private methods.]
+        #region [.static methods for view.]
         private const string CREATED_DT = "HH:mm:ss  (yyyy.MM.dd)";
         private const string HH_MM_SS   = "hh\\:mm\\:ss";
         private const string MM_SS      = "mm\\:ss";
