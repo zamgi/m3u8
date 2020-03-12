@@ -38,6 +38,21 @@ namespace m3u8.download.manager.ui
         private MenuItem pasteToolButton;
         private DegreeOfParallelismMenuItem degreeOfParallelismToolButton;
         private DownloadInstanceMenuItem    downloadInstanceToolButton;
+
+        private ContextMenu mainContextMenu;
+        private MenuItem    startDownloadMenuItem;
+        private MenuItem    pauseDownloadMenuItem;
+        private MenuItem    cancelDownloadMenuItem;
+        private MenuItem    deleteDownloadMenuItem;
+        private MenuItem    deleteWithOutputFileMenuItem;
+        private MenuItem    browseOutputFileMenuItem;
+        private MenuItem    openOutputFileMenuItem;
+        private MenuItem    deleteAllFinishedDownloadMenuItem;
+        private MenuItem    startAllDownloadsMenuItem;
+        private MenuItem    cancelAllDownloadsMenuItem;
+        private MenuItem    pauseAllDownloadsMenuItem;
+        private MenuItem    deleteAllDownloadsMenuItem;
+        private MenuItem    deleteAllWithOutputFilesMenuItem;
         #endregion
 
         #region [.field's.]
@@ -61,10 +76,13 @@ namespace m3u8.download.manager.ui
             AvaloniaXamlLoader.Load( this );
             //----------------------------------------//
 
+            #region [.user controls.]
             downloadListUC = this.Find< DownloadListUC >( nameof(downloadListUC) );
             logUC          = this.Find< LogUC          >( nameof(logUC) );
+            #endregion
 
-            startDownloadToolButton  = this.Find< MenuItem >( nameof(startDownloadToolButton)  ); startDownloadToolButton .Click += startDownloadToolButton_Click;
+            #region [.menu.]
+            startDownloadToolButton = this.Find< MenuItem >( nameof(startDownloadToolButton)  ); startDownloadToolButton .Click += startDownloadToolButton_Click;
             pauseDownloadToolButton  = this.Find< MenuItem >( nameof(pauseDownloadToolButton)  ); pauseDownloadToolButton .Click += pauseDownloadToolButton_Click;
             cancelDownloadToolButton = this.Find< MenuItem >( nameof(cancelDownloadToolButton) ); cancelDownloadToolButton.Click += cancelDownloadToolButton_Click;
             deleteDownloadToolButton = this.Find< MenuItem >( nameof(deleteDownloadToolButton) ); deleteDownloadToolButton.Click += deleteDownloadToolButton_Click;
@@ -76,16 +94,38 @@ namespace m3u8.download.manager.ui
 
             degreeOfParallelismToolButton = this.Find< DegreeOfParallelismMenuItem >( nameof(degreeOfParallelismToolButton) ); degreeOfParallelismToolButton.ValueChanged += degreeOfParallelismToolButton_ValueChanged;
             downloadInstanceToolButton    = this.Find< DownloadInstanceMenuItem    >( nameof(downloadInstanceToolButton)    ); downloadInstanceToolButton   .ValueChanged += downloadInstanceToolButton_ValueChanged;
+            #endregion
 
+            #region [.context menu.]
+            mainContextMenu = this.Find< ContextMenu >( nameof(mainContextMenu) ); //mainContextMenu.Styles.Add( GlobalStyles.Light );
+            startDownloadMenuItem             = this.Find< MenuItem >( nameof(startDownloadMenuItem)  );            startDownloadMenuItem            .Click += startDownloadMenuItem_Click;
+            pauseDownloadMenuItem             = this.Find< MenuItem >( nameof(pauseDownloadMenuItem)  );            pauseDownloadMenuItem            .Click += pauseDownloadMenuItem_Click;
+            cancelDownloadMenuItem            = this.Find< MenuItem >( nameof(cancelDownloadMenuItem) );            cancelDownloadMenuItem           .Click += cancelDownloadMenuItem_Click;
+            deleteDownloadMenuItem            = this.Find< MenuItem >( nameof(deleteDownloadMenuItem) );            deleteDownloadMenuItem           .Click += deleteDownloadMenuItem_Click;
+            deleteWithOutputFileMenuItem      = this.Find< MenuItem >( nameof(deleteWithOutputFileMenuItem) );      deleteWithOutputFileMenuItem     .Click += deleteWithOutputFileMenuItem_Click;
+            browseOutputFileMenuItem          = this.Find< MenuItem >( nameof(browseOutputFileMenuItem) );          browseOutputFileMenuItem         .Click += browseOutputFileMenuItem_Click;
+            openOutputFileMenuItem            = this.Find< MenuItem >( nameof(openOutputFileMenuItem) );            openOutputFileMenuItem           .Click += openOutputFileMenuItem_Click;
+            deleteAllFinishedDownloadMenuItem = this.Find< MenuItem >( nameof(deleteAllFinishedDownloadMenuItem) ); deleteAllFinishedDownloadMenuItem.Click += deleteAllFinishedDownloadToolButton_Click;
+            startAllDownloadsMenuItem         = this.Find< MenuItem >( nameof(startAllDownloadsMenuItem) );         startAllDownloadsMenuItem        .Click += startAllDownloadsMenuItem_Click;
+            cancelAllDownloadsMenuItem        = this.Find< MenuItem >( nameof(cancelAllDownloadsMenuItem) );        cancelAllDownloadsMenuItem       .Click += cancelAllDownloadsMenuItem_Click;
+            pauseAllDownloadsMenuItem         = this.Find< MenuItem >( nameof(pauseAllDownloadsMenuItem) );         pauseAllDownloadsMenuItem        .Click += pauseAllDownloadsMenuItem_Click;
+            deleteAllDownloadsMenuItem        = this.Find< MenuItem >( nameof(deleteAllDownloadsMenuItem) );        deleteAllDownloadsMenuItem       .Click += deleteAllDownloadsMenuItem_Click;
+            deleteAllWithOutputFilesMenuItem  = this.Find< MenuItem >( nameof(deleteAllWithOutputFilesMenuItem) );  deleteAllWithOutputFilesMenuItem .Click += deleteAllWithOutputFilesMenuItem_Click;
+            #endregion
             //----------------------------------------//
+
+            #region [.-1-.]
             this.Title = _Resources_.APP_TITLE;
             this.DataContext = _VM = new MainVM( this );
 
             _VM.DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
             _VM.SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
             SettingsController_PropertyChanged( _VM.SettingsController.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle) );
+            #endregion
 
             //----------------------------------------//
+
+            #region [.-2-.]
             logUC.SetModel( null );
             logUC.SetSettingsController( _VM.SettingsController );
 
@@ -104,6 +144,7 @@ namespace m3u8.download.manager.ui
                 downloadInstanceToolButton.Value = _VM.SettingsController.MaxCrossDownloadInstance.Value;
             }
             degreeOfParallelismToolButton.Value = _VM.SettingsController.MaxDegreeOfParallelism;
+            #endregion
         }
         #endregion
 
@@ -156,6 +197,12 @@ namespace m3u8.download.manager.ui
                     _VM.AddCommand.AddNewDownload( (m3u8FileUrls.FirstOrDefault(), false) );
                 }
             }
+
+#if DEBUG
+            _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8", "xz-1", Settings.Default.OutputFileDirectory) );
+            _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", "xz-2", Settings.Default.OutputFileDirectory) );
+            _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", "xz-3", Settings.Default.OutputFileDirectory) );
+#endif
         }
         protected override void OnClosed( EventArgs e )
         {
@@ -265,7 +312,7 @@ namespace m3u8.download.manager.ui
                     case Key.B: //Browse output file
                         if ( downloadListUC.HasFocus )
                         {
-                            //browseOutputFileMenuItem_Click( this, EventArgs.Empty );
+                            browseOutputFileMenuItem_Click( this, EventArgs.Empty );
                         }
                     break;
                     case Key.O: //Open output file
@@ -316,7 +363,7 @@ namespace m3u8.download.manager.ui
                                 }
                                 else
                                 {
-                                    //downloadListUC_OutputFileNameClick( row );
+                                    downloadListUC_OutputFileNameClick( row );
                                 }
                             }
                         }
@@ -782,40 +829,178 @@ return;
         #endregion
 
         #region [.context menu.]
-        private async void downloadListUC_MouseClickRightButton( Point pt, DownloadRow row )
+        private void downloadListUC_MouseClickRightButton( Point pt, DownloadRow row )
         {
             if ( (row != null) || (0 < _VM.DownloadListModel.RowsCount) )
             {
-                await this.MessageBox_ShowInformation( $"'{nameof(downloadListUC_MouseClickRightButton)}' => NOT IMPL", this.Title );
-
-                /*
                 startDownloadMenuItem            .IsEnabled = startDownloadToolButton .IsEnabled;
                 cancelDownloadMenuItem           .IsEnabled = cancelDownloadToolButton.IsEnabled;
                 pauseDownloadMenuItem            .IsEnabled = pauseDownloadToolButton .IsEnabled;
                 deleteDownloadMenuItem           .IsEnabled = deleteDownloadToolButton.IsEnabled;
                 deleteWithOutputFileMenuItem     .IsEnabled = deleteDownloadToolButton.IsEnabled && Extensions.AnyFileExists( row?.GetOutputFullFileNames() );
-                browseOutputFileMenuItem         .IsVisible = deleteWithOutputFileMenuItem.Enabled;
-                openOutputFileMenuItem           .IsVisible = deleteWithOutputFileMenuItem.Enabled;
+                browseOutputFileMenuItem         .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
+                openOutputFileMenuItem           .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
                 deleteAllFinishedDownloadMenuItem.IsEnabled = deleteAllFinishedDownloadToolButton.IsEnabled;
 
                 var allowedAll = (row == null) || (1 < _VM.DownloadListModel.RowsCount);
                 SetAllDownloadsMenuItemsEnabled( allowedAll );
 
-                mainContextMenu.Show( downloadListUC, pt );
-                */
+                mainContextMenu.Open( this /*downloadListUC*/ );
+            }
+        }
+        private void SetAllDownloadsMenuItemsEnabled( bool allowedAll )
+        {
+            if ( allowedAll )
+            {
+                int start = 0, cancel = 0, pause = 0, delete = 0, deleteWithFiles = 0;
+                foreach ( var row in _VM.DownloadListModel.GetRows() )
+                {
+                    var status = row.Status;
+                    start  += status.StartDownload_IsAllowed() && !status.IsFinished() ? 1 : 0;
+                    cancel += status.CancelDownload_IsAllowed() ? 1 : 0;
+                    pause  += status.PauseDownload_IsAllowed()  ? 1 : 0;
+                    delete++;
+                    if ( Extensions.AnyFileExists( row.GetOutputFullFileNames() ) )
+                    {
+                        deleteWithFiles++;
+                    }
+                }
+
+                void set_enabled_and_text( MenuItem menuItem, int count )
+                {
+                    menuItem.IsEnabled = (0 < count);
+                    if ( menuItem.Header is string text )
+                    {
+                        if ( menuItem.Tag == null )
+                        {
+                            menuItem.Tag = text;
+                        }
+                        else
+                        {
+                            text = menuItem.Tag?.ToString();
+                        }                        
+                        menuItem.Header = menuItem.Tag?.ToString() + ((0 < count) ? $" ({count})" : null);
+                    }
+                };
+
+                set_enabled_and_text( startAllDownloadsMenuItem       , start  );
+                set_enabled_and_text( cancelAllDownloadsMenuItem      , cancel );
+                set_enabled_and_text( pauseAllDownloadsMenuItem       , pause  );
+                set_enabled_and_text( deleteAllDownloadsMenuItem      , delete );
+                set_enabled_and_text( deleteAllWithOutputFilesMenuItem, deleteWithFiles );
+            }
+            else
+            {
+                startAllDownloadsMenuItem.IsEnabled =
+                    cancelAllDownloadsMenuItem.IsEnabled =
+                        pauseAllDownloadsMenuItem.IsEnabled =
+                            deleteAllDownloadsMenuItem.IsEnabled =
+                                deleteAllWithOutputFilesMenuItem.IsEnabled = false;
             }
         }
 
-        private void openOutputFileMenuItem_Click( object sender, EventArgs e )
+        private void startDownloadMenuItem_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Start  );
+        private void pauseDownloadMenuItem_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Pause  );
+        private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Cancel );
+
+        private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
+        private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownload( downloadListUC.GetSelectedDownloadRow() );
+
+        private async void browseOutputFileMenuItem_Click( object sender, EventArgs e )
+        {
+            if ( PlatformHelper.IsWinNT() )
+            {
+                var row = downloadListUC.GetSelectedDownloadRow();
+                if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
+                {
+                    try
+                    {
+                        using ( Process.Start( "explorer", "/e,/select," + outputFileName ) )
+                        {
+                            ;
+                        }
+                    }
+                    catch ( Exception ex )
+                    {
+                        await this.MessageBox_ShowError( ex.ToString(), this.Title );
+                    }
+                }
+            }
+            else
+            {
+                await this.MessageBox_ShowInformation( $"'{nameof(browseOutputFileMenuItem_Click)}' => NOT IMPL", this.Title );
+            }
+        }
+        private async void openOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
             if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
             {
-                using ( Process.Start( outputFileName ) )
+                try
                 {
-                    ;
+                    using ( Process.Start( outputFileName ) )
+                    {
+                        ;
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    await this.MessageBox_ShowError( ex.ToString(), this.Title );
                 }
             }
+        }
+
+        private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )
+        {
+            foreach ( var row in _VM.DownloadListModel.GetRows() )
+            {
+                var status = row.Status;
+                if (  status.StartDownload_IsAllowed() && !status.IsFinished() )
+                {
+                    _VM.DownloadController.Start( row );
+                }
+            }
+        }
+        private void pauseAllDownloadsMenuItem_Click( object sender, EventArgs e )
+        {
+            foreach ( var row in _VM.DownloadListModel.GetRows() )
+            {
+                if ( row.Status.PauseDownload_IsAllowed() )
+                {
+                    _VM.DownloadController.Pause( row );
+                }
+            }
+        }
+        private void cancelAllDownloadsMenuItem_Click( object sender, EventArgs e )
+        {
+            foreach ( var row in _VM.DownloadListModel.GetRows() )
+            {
+                if ( row.Status.CancelDownload_IsAllowed() )
+                {
+                    _VM.DownloadController.Cancel( row );
+                }
+            }
+        }
+
+        private void deleteAllDownloadsMenuItem_Click( object sender, EventArgs e )
+        {
+            var rows = _VM.DownloadListModel.GetRows().ToArray();
+            foreach ( var row in rows )
+            {
+                _VM.DownloadController.Cancel( row );
+                //_VM.DownloadListModel.RemoveRow( row );
+            }
+            _VM.DownloadListModel.RemoveAll( rows );
+
+            //-2-//
+            SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
+        }
+        private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e )
+        {
+            DeleteDownloadsWithOutputFiles( _VM.DownloadListModel.GetRows().ToArray() );
+
+            //-2-//
+            SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
         }
         #endregion
 

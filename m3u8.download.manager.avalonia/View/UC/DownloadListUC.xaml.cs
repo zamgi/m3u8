@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
+using Avalonia.VisualTree;
 using m3u8.download.manager.models;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -50,6 +49,24 @@ namespace m3u8.download.manager.ui
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
             DGV.SelectionChanged   += DGV_SelectionChanged;
             DGV.CellPointerPressed += DGV_CellPointerPressed;
+            /*DGV.AddHandler(
+                InputElement.PointerPressedEvent,
+                (s, e) =>
+                {
+                    var pp = e.GetCurrentPoint( null );
+                    Debug.WriteLine( $"PointerPressedEvent: {pp.Position}" );
+                    if ( pp.Properties.IsRightButtonPressed )
+                    {
+                        var coll = (e.Source as IControl)?.GetSelfAndVisualAncestors().OfType< DataGridColumnHeader >().FirstOrDefault();
+                        if ( coll != null )
+                        {
+                            e.Pointer.Capture( null );
+                            e.Handled = true;
+                        }
+                    }
+                },
+                handledEventsToo: true );
+            */
 
             this.Styles.Add( GlobalStyles.Dark );
         }
@@ -80,8 +97,6 @@ namespace m3u8.download.manager.ui
         {
             const int OutputFileName_Column_DisplayIndex  = 0;
             const int OutputDirectory_Column_DisplayIndex = 1;            
-
-            Debug.WriteLine( $"Column: {e.Column.DisplayIndex}, Row: {e.Row.GetIndex()}" );
 
             var pp = e.PointerPressedEventArgs.GetCurrentPoint( null );
             switch ( pp.Properties.PointerUpdateKind ) //e.PointerPressedEventArgs.MouseButton )
@@ -114,12 +129,18 @@ namespace m3u8.download.manager.ui
                 break;
 
                 case PointerUpdateKind.RightButtonPressed: //MouseButton.Right:
-                    {
+                    {                        
                         var evnt = MouseClickRightButton;
                         if ( evnt != null )
                         {
+                            var row = (e.PointerPressedEventArgs.Source as IControl)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
+                            if ( row != null )
+                            {
+                                DGV.SelectedIndex = row.GetIndex();
+                            }
+
                             e.PointerPressedEventArgs.Pointer.Capture( null );
-                            e.PointerPressedEventArgs.Handled = true;                            
+                            e.PointerPressedEventArgs.Handled = true;
                             evnt( pp.Position, this.GetSelectedDownloadRow() );
                         }
                     }

@@ -95,5 +95,76 @@
     <GridSplitter Grid.Row="2" />
     <local:LogUC x:Name="logUC" Grid.Row="3" />
     
-  </Grid>  
+  </Grid>
+
+  <Window.Resources>
+    <ResourceDictionary>
+      <ContextMenu x:Key="mainContextMenu" x:Name="mainContextMenu">
+        <ContextMenu.Styles>
+          <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml" />
+        </ContextMenu.Styles>
+
+        <MenuItem x:Name="startDownloadMenuItem" Header="Start       (Ctrl + S)" HotKey="Ctrl + S">
+          <MenuItem.Icon>
+            <Image Source="/Resources/contextMenu/start.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem x:Name="pauseDownloadMenuItem" Header="Pause       (Ctrl + P)" HotKey="Ctrl + P">
+          <MenuItem.Icon>
+            <Image Source="/Resources/contextMenu/pause.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem x:Name="cancelDownloadMenuItem" Header="Cancel      (Ctrl + Z)" HotKey="Ctrl + Z">
+          <MenuItem.Icon>
+            <Image Source="/Resources/contextMenu/cancel.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="-" />
+
+        <MenuItem x:Name="deleteDownloadMenuItem" Header="Delete      (Del)">
+          <MenuItem.Icon>
+            <Image Source="/Resources/contextMenu/delete.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem x:Name="deleteWithOutputFileMenuItem" Header="Delete with Output file  (Shift + Del)" />
+        <MenuItem Header="-" />
+
+        <MenuItem x:Name="browseOutputFileMenuItem" Header="    Browse Output file  (Ctrl + B)" />
+        <MenuItem x:Name="openOutputFileMenuItem" Header="    Open Output file  (Ctrl + O), (Enter)" />
+        <MenuItem Header="-" />
+
+        <MenuItem x:Name="deleteAllFinishedDownloadMenuItem" Header="Delete all finished downloads">
+          <MenuItem.Icon>
+            <Image Source="/Resources/menu/control_delete_all_finished.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="-" />
+
+        <MenuItem x:Name="startAllDownloadsMenuItem" Header="      Start all...">
+          <MenuItem.Icon>
+            <Image Source="/Resources/contextMenu/start_all.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem x:Name="pauseAllDownloadsMenuItem" Header="      Pause all...">
+          <MenuItem.Icon>
+            <Image Source="/Resources/contextMenu/pause_all.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem x:Name="cancelAllDownloadsMenuItem" Header="      Cancel all...">
+          <MenuItem.Icon>
+            <Image Source="/Resources/contextMenu/cancel_all.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="-" />
+
+        <MenuItem x:Name="deleteAllDownloadsMenuItem" Header="      Delete all...">
+          <MenuItem.Icon>
+            <Image Source="/Resources/contextMenu/delete_all.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem x:Name="deleteAllWithOutputFilesMenuItem" Header="      Delete all with Output files..." />
+      </ContextMenu>
+    </ResourceDictionary>
+  </Window.Resources>
+
 </Window>

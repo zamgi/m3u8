@@ -2,7 +2,7 @@
   "profiles": {
     "m3u8.download.manager.avalonia": {
       "commandName": "Project",
-      "commandLineArgs": "m3u8FileUrl=\"http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8\""
+      "commandLineArgs": "_m3u8FileUrl=\"http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8\""
     }
   }
 }
