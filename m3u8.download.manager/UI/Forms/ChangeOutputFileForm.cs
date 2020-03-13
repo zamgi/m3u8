@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.infrastructure;
@@ -24,9 +22,16 @@ namespace m3u8.download.manager.ui
         {
             InitializeComponent();
 
-            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, 
-                                                   () => this.OutputFileName, 
-                                                   outputFileName => this.OutputFileName = outputFileName );
+            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
+        }
+        protected override void Dispose( bool disposing )
+        {
+            if ( disposing )
+            {
+                components?.Dispose();
+                _FNCP.Dispose(); //CancelAndDispose_Cts_outputFileNameTextBox_TextChanged();
+            }
+            base.Dispose( disposing );
         }
         #endregion
 
@@ -44,16 +49,6 @@ namespace m3u8.download.manager.ui
                     outputFileNameTextBox.TextChanged += outputFileNameTextBox_TextChanged;
                 }
             }
-        }
-
-        protected override void Dispose( bool disposing )
-        {
-            if ( disposing )
-            {
-                components?.Dispose();
-                _FNCP.Dispose(); //CancelAndDispose_Cts_outputFileNameTextBox_TextChanged();
-            }
-            base.Dispose( disposing );
         }
         #endregion
 

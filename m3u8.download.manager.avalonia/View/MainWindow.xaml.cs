@@ -6,16 +6,19 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using MessageBox.Avalonia.Enums;
+
+using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
-using _Resources_ = m3u8.download.manager.Properties.Resources;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using _Resources_ = m3u8.download.manager.Properties.Resources;
 
 namespace m3u8.download.manager.ui
 {
@@ -1005,38 +1008,17 @@ return;
         #endregion
 
         #region [.ChangeOutputFileForm.]
-        //private ChangeOutputFileForm _ChangeOutputFileForm;
-        //private DownloadRow          _ChangeOutputFileForm_Row;
         private async void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
-            await this.MessageBox_ShowInformation( $"'{nameof(downloadListUC_OutputFileNameClick)}' => NOT IMPL", this.Title );
-
-            //if ( (_ChangeOutputFileForm == null) || _ChangeOutputFileForm.IsDisposed )
-            //{
-            //    _ChangeOutputFileForm = new ChangeOutputFileForm() { Owner = this };
-            //    _ChangeOutputFileForm.FormClosed += _ChangeOutputFileForm_FormClosed;
-            //}
-            //_ChangeOutputFileForm_Row = row;
-            //_ChangeOutputFileForm.OutputFileName = row.OutputFileName;
-            //if ( !_ChangeOutputFileForm.Visible )
-            //{
-            //    _ChangeOutputFileForm.Show( this );
-            //}
+            var f = new ChangeOutputFileForm( row );
+            {
+                await f.ShowDialog( this );
+                if ( f.Success && FileNameCleaner.TryGetOutputFileName( f.OutputFileName, out var outputFileName ) )
+                {
+                    f.Row.SetOutputFileName( outputFileName );
+                }
+            }
         }
-
-        //private void _ChangeOutputFileForm_FormClosed( object sender, FormClosedEventArgs e )
-        //{
-        //    if ( (e.CloseReason == CloseReason.UserClosing) && (_ChangeOutputFileForm.DialogResult == DialogResult.OK) &&
-        //         FileNameCleaner.TryGetOutputFileName( _ChangeOutputFileForm.OutputFileName, out var outputFileName )
-        //       )
-        //    {
-        //        _ChangeOutputFileForm_Row?.SetOutputFileName( outputFileName );
-        //        downloadListUC.InvalidateVisual();
-        //    }
-        //    _ChangeOutputFileForm.FormClosed -= _ChangeOutputFileForm_FormClosed;
-        //    _ChangeOutputFileForm = null;
-        //}
-
         private async void downloadListUC_OutputDirectoryClick( DownloadRow row )
         {
             var d = new OpenFolderDialog() { Directory = row.OutputDirectory,

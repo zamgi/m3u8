@@ -9,14 +9,17 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Avalonia;
-using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using MessageBox.Avalonia;
+using MessageBox.Avalonia.BaseWindows;
+using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+using m3u8.download.manager.ui;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -262,28 +265,57 @@ namespace m3u8.download.manager
         //----------------------------------------------------------------------------------//
         public static Window GetMainWindow() => ((Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) ? desktop.MainWindow : null);
         public static Window GetTopWindow() => ((Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) ? (desktop.Windows.LastOrDefault() ?? desktop.MainWindow) : null);
+
+        #region [.MessageBox's.]
+        private static MsBoxStandardWindow Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, bool closeByEscape = true )
+            => Create_MsBoxStandardWindow( text, caption, buttons, icon, out var _, closeByEscape );
+        public static MsBoxStandardWindow Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon
+            , out MessageBox.Avalonia.Views.MsBoxStandardWindow window, bool closeByEscape = true )
+        {
+            var p = new MessageBoxStandardParams()
+            {
+                ButtonDefinitions = buttons,
+                Icon              = icon,
+                ContentTitle      = caption,
+                ContentMessage    = text,
+            };
+            var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( p );
+            p.Window.Icon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
+            if ( closeByEscape )
+            {
+                p.Window.KeyDown += (s, e) =>
+                {
+                    if ( e.Key == Key.Escape )
+                    {
+                        ((Window) s).Close();
+                    }
+                };
+            }
+            window = p.Window;
+            return (msgbox);
+        }
+        public static async Task< ButtonResult > ShowEx( this MsBoxStandardWindow msgbox )
+        {
+            var window = GetTopWindow();
+            if ( window != null )
+            {
+                return (await msgbox.ShowDialog( window ));
+            }
+            else
+            {
+                return (await msgbox.Show());
+            }
+        }
+
         public static Task MessageBox_ShowInformation( string text, string caption ) => MessageBox_ShowWithOkButton( text, caption, Icon.Info );
-        public static async Task MessageBox_ShowInformation( this Window window, string text, string caption )
-        {
-            var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( caption, text, ButtonEnum.Ok, Icon.Info );
-            await msgbox.ShowDialog( window );
-        }
-        public static Task MessageBox_ShowError( this Exception ex, string caption ) => MessageBox_ShowError( ex.ToString(), caption );
         public static Task MessageBox_ShowError( string text, string caption ) => MessageBox_ShowWithOkButton( text, caption, Icon.Error );
-        public static async Task MessageBox_ShowError( this Window window, string text, string caption )
-        {
-            var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( caption, text, ButtonEnum.Ok, Icon.Error );
-            await msgbox.ShowDialog( window );
-        }
-        public static async Task< ButtonResult > MessageBox_ShowQuestion( this Window window, string text, string caption, ButtonEnum buttons = ButtonEnum.YesNo )
-        {
-            var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( caption, text, buttons, Icon.Info );
-            var result = await msgbox.ShowDialog( window );
-            return (result);
-        }
+        public static Task MessageBox_ShowError( this Exception ex, string caption ) => MessageBox_ShowError( ex.ToString(), caption );
+        public static Task MessageBox_ShowInformation( this Window window, string text, string caption ) => Create_MsBoxStandardWindow( text, caption, ButtonEnum.Ok, Icon.Info ).ShowDialog( window );
+        public static Task MessageBox_ShowError( this Window window, string text, string caption ) => Create_MsBoxStandardWindow( text, caption, ButtonEnum.Ok, Icon.Error ).ShowDialog( window );
+        public static Task< ButtonResult > MessageBox_ShowQuestion( this Window window, string text, string caption, ButtonEnum buttons = ButtonEnum.YesNo ) => Create_MsBoxStandardWindow( text, caption, buttons, Icon.Info, false ).ShowDialog( window );
         private static async Task MessageBox_ShowWithOkButton( string text, string caption, Icon icon )
         {
-            var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( caption, text, ButtonEnum.Ok, icon );
+            var msgbox = Create_MsBoxStandardWindow( text, caption, ButtonEnum.Ok, icon );
             var window = GetTopWindow();
             if ( window != null )
             {
@@ -293,7 +325,8 @@ namespace m3u8.download.manager
             {
                 await msgbox.Show();
             }
-        }
+        }       
+        #endregion
 
         public static async Task< (bool success, IReadOnlyCollection< string > m3u8FileUrls) > TryGetM3u8FileUrlsFromClipboard()
         {
@@ -337,14 +370,6 @@ namespace m3u8.download.manager
         }
         public static Task CopyM3u8FileUrlToClipboard( string m3u8FileUrl ) => Application.Current.Clipboard.SetTextAsync( m3u8FileUrl );
 
-        public static void Clear( this DataGridCollectionView dataGridCollectionView )
-        {
-            for ( ; 0 < dataGridCollectionView.TotalItemCount; )
-            {
-                dataGridCollectionView.RemoveAt( 0 );
-            }
-        }
-
         #region [.allowed Command by current status.]
         [M(O.AggressiveInlining)] public static bool StartDownload_IsAllowed ( this DownloadStatus status ) => (status == DownloadStatus.Created ) ||
                                                                                                                (status == DownloadStatus.Paused  ) ||
@@ -358,64 +383,5 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool PauseDownload_IsAllowed ( this DownloadStatus status ) => (status == DownloadStatus.Started ) ||
                                                                                                                (status == DownloadStatus.Running );
         #endregion
-
-        /*
-        public static void SetEnabledAllChildControls( this Control parentControl, bool enabled ) => parentControl.Controls.Cast< Control >().ToList().ForEach( c => c.Enabled = enabled );
-
-
-        [M(O.AggressiveInlining)] public static void SetRowInvisible( this DataGridView DGV, int index )
-        {
-#if DEBUG
-            if ( (index < 0) || (DGV.RowCount <= index) )
-            {
-                return;
-            }
-#endif
-            try
-            {
-                DGV.Rows[ index ].Visible = false;
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
-        }
-        [M(O.AggressiveInlining)] public static void ClearHeaderSortGlyphDirection( this DataGridView DGV ) => DGV.SetHeaderSortGlyphDirection( -1, SortOrder.None );
-        [M(O.AggressiveInlining)] public static void SetHeaderSortGlyphDirection( this DataGridView DGV, int columnIndex, SortOrder sortOrder )
-        {
-            foreach ( var c in DGV.Columns.Cast< DataGridViewColumn >() )
-            {
-                c.HeaderCell.SortGlyphDirection = ((c.Index == columnIndex) ? sortOrder : SortOrder.None);
-            }
-        }
-        [M(O.AggressiveInlining)] public static void FirstDisplayedScrollingRowIndex( this DataGridView DGV, int rowIndex )
-        {
-            try
-            {
-                DGV.FirstDisplayedScrollingRowIndex = rowIndex;
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
-        }
-        [M(O.AggressiveInlining)] public static void SetHandCursorIfNonHand( this DataGridView DGV )
-        {
-            if ( DGV.Cursor != Cursors.Hand )
-            {
-                DGV.Cursor = Cursors.Hand;
-            }
-        }
-        [M(O.AggressiveInlining)] public static void SetDefaultCursorIfHand( this DataGridView DGV )
-        {
-            if ( DGV.Cursor == Cursors.Hand )
-            {
-                DGV.Cursor = Cursors.Default;
-            }
-        }
-        [M(O.AggressiveInlining)] public static bool IsSelected( this DataGridViewElementStates state ) => ((state & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected);
-        */
-        //[M(O.AggressiveInlining)] public static bool IsColumnSortable( this DataGridView dgv, int columnIndex )
-          //  => /*(0 <= columnIndex) && */ (columnIndex < 0) || (dgv.Columns[ columnIndex ].SortMode != DataGridViewColumnSortMode.NotSortable);
     }
 }

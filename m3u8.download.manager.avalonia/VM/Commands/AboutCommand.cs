@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Input;
+
+using Avalonia.Media;
+using MessageBox.Avalonia.Enums;
 
 namespace m3u8.download.manager
 {
@@ -15,11 +19,10 @@ namespace m3u8.download.manager
 
         public async void Execute( object parameter )
         {
+            const string CAPTION = "about";
+
             var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\"" + Environment.NewLine +
-                       //AssemblyInfoHelper.AssemblyProduct + Environment.NewLine +
                        AssemblyInfoHelper.AssemblyCopyright + Environment.NewLine +
-                       //AssemblyInfoHelper.AssemblyCompany + Environment.NewLine +
-                       //AssemblyInfoHelper.AssemblyDescription + Environment.NewLine +
                        Environment.NewLine +
                        $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})" +
                        Environment.NewLine +
@@ -38,7 +41,22 @@ namespace m3u8.download.manager
                        "  Delete:     Delete download (with or without output file)" + Environment.NewLine +
                        "  Enter:      Open rename output file dialog" + Environment.NewLine +
                        "  F1:         About dialog" + Environment.NewLine;
-            await Extensions.MessageBox_ShowInformation( text, "about" );
+
+            var fontFamily = (from f in FontFamily.SystemFontFamilies
+                              where (f.Name.EqualIgnoreCase( "Courier New" )) || 
+                                    (f.Name.EqualIgnoreCase( "Consolas" ))
+                              select f
+                             ).FirstOrDefault();
+            if ( fontFamily != null )
+            {
+                var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.Info, out var window );
+                window.FontFamily = fontFamily;
+                await msgbox.ShowEx();
+            }
+            else
+            {
+                await Extensions.MessageBox_ShowInformation( text, CAPTION );
+            }            
         }
     }
 }

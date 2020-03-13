@@ -1,0 +1,22 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        x:Class="m3u8.download.manager.ui.ChangeOutputFileForm"
+        d:DesignWidth="500" d:DesignHeight="150"
+        Width="500" Height="150"
+        Title="change output file-name"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Resources/m3u8_32x36.ico"
+        >
+  <Grid ColumnDefinitions="*,auto" RowDefinitions="auto,*,auto" Margin="25">
+    <TextBox x:Name="outputFileNameTextBox"      Grid.Row="0" Grid.Column="0" Margin="0.5"></TextBox>
+    <Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="1" Width="25" Cursor="Hand" Margin="0.5">x</Button>
+
+    <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+      <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0 0 5 0">Ok</Button>
+      <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5 0 0 0">Cancel</Button>
+    </DockPanel>
+  </Grid>
+</Window>

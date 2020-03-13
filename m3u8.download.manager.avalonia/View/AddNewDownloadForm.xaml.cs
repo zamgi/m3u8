@@ -139,17 +139,6 @@ namespace m3u8.download.manager.ui
                         }
                     }
                 break;
-                //case (Key.Enter | Key.Shift)  : //DownloadLater
-                //case (Key.Enter | Key.Control): //DownloadLater
-                //case (Key.Enter | Key.Alt)    : //DownloadLater
-                //    var button = (this.ActiveControl as Button);
-                //    if ( (button == null) || !button.Focused ) //if ( !m3u8FileTextContentLoadButton.Focused && !outputFileNameClearButton.Focused && !outputFileNameSelectButton.Focused )
-                //    {
-                //        DialogResult = (keyData == Keys.Enter) ? DialogResult.OK : DialogResult.Yes;
-                //        this.Close();
-                //        return (true);
-                //    }
-                //break;
             }
 
             base.OnKeyDown( e );
