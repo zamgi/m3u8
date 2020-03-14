@@ -86,13 +86,13 @@
     </DockPanel>
     <DockPanel Background="WhiteSmoke" Grid.Row="0" Grid.Column="1">      
       <Menu DockPanel.Dock="Top" Padding="2">
-        <MenuItem Command="{Binding ParallelismCommand}" ToolTip.Tip="Parallelism" HorizontalAlignment="Right" Padding="0">
+        <MenuItem Command="{Binding ParallelismCommand}" ToolTip.Tip="Parallelism settings" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
             <Image Source="/Resources/dop_settings_32.ico" />
           </MenuItem.Header>
         </MenuItem>
 
-        <MenuItem Command="{Binding SettingsCommand}" ToolTip.Tip="Settings" HorizontalAlignment="Right" Padding="0">
+        <MenuItem Command="{Binding SettingsCommand}" ToolTip.Tip="Other settings" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
             <Image Source="/Resources/settings.png" />
           </MenuItem.Header>

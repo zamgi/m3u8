@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Input;
-
-using Avalonia.Media;
 using m3u8.download.manager.ui;
-using MessageBox.Avalonia.Enums;
 
 namespace m3u8.download.manager
 {
@@ -39,12 +35,6 @@ namespace m3u8.download.manager
                     settings.MaxCrossDownloadInstance            = f.MaxCrossDownloadInstance;
                     settings.MaxCrossDownloadInstanceSaved       = f.MaxCrossDownloadInstanceSaved;
                     settings.SaveNoThrow();
-                    //if ( _SettingsController == null )
-                    //{
-                    //    parallelismLabel_set();
-                    //}
-
-                    //SettingsChanged?.Invoke( this, EventArgs.Empty );
                 }
             }            
         }

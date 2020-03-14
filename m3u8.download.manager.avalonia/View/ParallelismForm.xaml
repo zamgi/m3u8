@@ -43,6 +43,6 @@
     <DockPanel Grid.Row="6" HorizontalAlignment="Center" VerticalAlignment="Bottom">
       <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
       <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
-    </DockPanel>    
+    </DockPanel>
   </Grid>
 </Window>

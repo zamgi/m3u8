@@ -1,0 +1,26 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:m3u8.download.manager.ui"
+             mc:Ignorable="d" 
+             x:Class="m3u8.download.manager.ui.TimePickerUC"
+             d:DesignWidth="200" d:DesignHeight="50"
+             >
+  <Grid ColumnDefinitions="auto,auto,auto,auto,auto,*">
+    <NumericUpDown x:Name="hoursNUD" Grid.Column="0" Padding="0"
+                   Minimum="0" Maximum="24" FormatString="00"
+                   AllowSpin="True" ShowButtonSpinner="False" ClipValueToMinMax="True"
+                   VerticalAlignment="Center" HorizontalAlignment="Center" />
+    <TextBlock Grid.Column="1" VerticalAlignment="Center"  Margin="2,0">:</TextBlock>
+    <NumericUpDown x:Name="minutesNUD" Grid.Column="2" Padding="0"
+                   Minimum="0" Maximum="60" FormatString="00"
+                   AllowSpin="True" ShowButtonSpinner="False" ClipValueToMinMax="True"
+                   VerticalAlignment="Center" HorizontalAlignment="Center" />
+    <TextBlock Grid.Column="3" VerticalAlignment="Center" Margin="2,0">:</TextBlock>
+    <NumericUpDown x:Name="secondsNUD" Grid.Column="4" Padding="0"
+                   Minimum="0" Maximum="60" FormatString="00"
+                   AllowSpin="True" ShowButtonSpinner="False" ClipValueToMinMax="True"
+                   VerticalAlignment="Center" HorizontalAlignment="Center" />
+  </Grid>
+</UserControl>

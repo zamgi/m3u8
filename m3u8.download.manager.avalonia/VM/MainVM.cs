@@ -18,6 +18,7 @@ namespace m3u8.download.manager
 
             AddCommand         = new AddCommand( this );
             ParallelismCommand = new ParallelismCommand( this );
+            SettingsCommand    = new SettingsCommand( this );
             AboutCommand       = new AboutCommand();
         }
 
@@ -27,6 +28,7 @@ namespace m3u8.download.manager
 
         public AddCommand         AddCommand         { get; }
         public ParallelismCommand ParallelismCommand { get; }
+        public SettingsCommand    SettingsCommand    { get; }
         public AboutCommand       AboutCommand       { get; }
     }
 }

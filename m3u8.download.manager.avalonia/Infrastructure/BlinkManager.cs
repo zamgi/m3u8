@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Media;
 
 namespace m3u8.download.manager.ui
@@ -10,9 +10,9 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal static class BlinkManager
     {
-        private static HashSet< TextBox > _BlinkedControls = new HashSet< TextBox >();
+        private static HashSet< TemplatedControl > _BlinkedControls = new HashSet< TemplatedControl >();
 
-        public static async void FocusAndBlinkBackColor( this TextBox control, IBrush bgColor )
+        public static async void FocusAndBlinkBackColor( this TemplatedControl control, IBrush bgColor )
         {
             control.Focus();
             if ( _BlinkedControls.Add( control ) )
@@ -25,6 +25,6 @@ namespace m3u8.download.manager.ui
                 //Task.Delay( 330 ).ContinueWith( _ => control.BackColor = bc, TaskScheduler.FromCurrentSynchronizationContext() );
             }
         }
-        public static void FocusAndBlinkBackColor( this TextBox control ) => control.FocusAndBlinkBackColor( Brushes.HotPink );
+        public static void FocusAndBlinkBackColor( this TemplatedControl control ) => control.FocusAndBlinkBackColor( Brushes.HotPink );
     }
 }

@@ -2,13 +2,62 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local-ui="clr-namespace:m3u8.download.manager.ui"
         mc:Ignorable="d" 
         x:Class="m3u8.download.manager.ui.SettingsForm"
-        d:DesignWidth="302" d:DesignHeight="349"
-        Width="302" Height="349"
+        d:DesignWidth="350" d:DesignHeight="400"
+        Width="350" Height="400"
         Title="settings"
         WindowStartupLocation="CenterOwner"
         Icon="/Resources/m3u8_32x36.ico"
+        Background="WhiteSmoke"
         >
+  <Grid RowDefinitions="auto,auto,15,auto,auto,15,auto,15,auto,10,auto,auto,*,auto" 
+        ColumnDefinitions="*,auto,auto,*" Margin="15"
+        >
+    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"
+               VerticalAlignment="Center">attempt request count by part:</TextBlock>
+    <NumericUpDown x:Name="attemptRequestCountByPartNUD" Grid.Row="0" Grid.Column="2"
+                   Minimum="1" Maximum="100" Value="1"
+                   AllowSpin="True" ClipValueToMinMax="True"
+                   HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0" />
+    <TextBlock x:Name="only4NotRunLabel1" Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Right"
+               VerticalAlignment="Center" Foreground="DarkGoldenrod">(only for not-running downloads)</TextBlock>
+
+    <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right"
+               VerticalAlignment="Center">request timeout by part:</TextBlock>
+    <local-ui:TimePickerUC x:Name="requestTimeoutByPartDTP" Grid.Row="3" Grid.Column="2" 
+                           HorizontalAlignment="Left" Margin="10,0,0,0" MinWidth="90" 
+                           />
+    <TextBlock x:Name="only4NotRunLabel2" Grid.Row="4" Grid.Column="1"  HorizontalAlignment="Right"
+               VerticalAlignment="Center" Foreground="DarkGoldenrod">(only for not-running downloads)</TextBlock>
+
+    <CheckBox x:Name="uniqueUrlsOnlyCheckBox" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" 
+              Background="White" Cursor="Hand">use unique urls only</CheckBox>
+
+    <TextBlock Grid.Row="8" Grid.Column="1" HorizontalAlignment="Right"
+               VerticalAlignment="Center">default output file extension:</TextBlock>
+    <TextBox x:Name="outputFileExtensionTextBox" Grid.Row="8" Grid.Column="2"
+             HorizontalAlignment="Left" Margin="10,0,0,0"
+             TextAlignment="Center" TextWrapping="NoWrap"
+             MinWidth="90" />
+
+    <TextBlock Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="4" Foreground="DarkGray">UI / download log UI</TextBlock>
+    <Border Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
+      <StackPanel Margin="20,10">
+        <CheckBox x:Name="showOnlyRequestRowsWithErrorsCheckBox" Background="White" Cursor="Hand">show only request rows with errors</CheckBox>
+        <CheckBox x:Name="showDownloadStatisticsInMainFormTitleCheckBox" Background="White" Cursor="Hand">
+          <StackPanel Margin="0, 5">
+            <TextBlock>show download statistics in main</TextBlock>
+            <TextBlock>window title</TextBlock>
+          </StackPanel>
+        </CheckBox>
+      </StackPanel>
+    </Border>
     
+    <DockPanel Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+      <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
+      <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
+    </DockPanel>
+  </Grid>
 </Window>
