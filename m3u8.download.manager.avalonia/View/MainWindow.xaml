@@ -12,7 +12,7 @@
         Icon="/Resources/m3u8_32x36.ico"
         >
   
-  <Grid ColumnDefinitions="*">
+  <Grid ColumnDefinitions="*,auto">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto" />
       <RowDefinition Height="*" MinHeight="70" />
@@ -20,9 +20,9 @@
       <RowDefinition Height="*" MinHeight="70" />
     </Grid.RowDefinitions>
     
-    <DockPanel Background="WhiteSmoke">
+    <DockPanel Background="WhiteSmoke" Grid.Row="0" Grid.Column="0">
       <Menu DockPanel.Dock="Top" Padding="2">
-        <MenuItem Command="{Binding AddCommand}" ToolTip.Tip="Add new download  (Insert)" Padding="0" Margin="0 0 5 0">
+        <MenuItem Command="{Binding AddCommand}" ToolTip.Tip="Add new download  (Insert)" Padding="0" Margin="0,0,5,0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/plus.png" />
           </MenuItem.Header>
@@ -38,7 +38,7 @@
             <Image Source="/Resources/menu/control_pause.png" />
           </MenuItem.Header>
         </MenuItem>
-        <MenuItem x:Name="cancelDownloadToolButton" ToolTip.Tip="Cancel download  (Ctrl + Z)" Padding="0" Margin="0 0 5 0">
+        <MenuItem x:Name="cancelDownloadToolButton" ToolTip.Tip="Cancel download  (Ctrl + Z)" Padding="0" Margin="0,0,5,0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/control_cancel.png" />
           </MenuItem.Header>
@@ -55,14 +55,14 @@
             <Image Source="/Resources/menu/control_delete.png" />
           </MenuItem.Header>
         </MenuItem>
-        <MenuItem x:Name="deleteAllFinishedDownloadToolButton" ToolTip.Tip="Delete all finished downloads" Padding="0" Margin="0 0 5 0">
+        <MenuItem x:Name="deleteAllFinishedDownloadToolButton" ToolTip.Tip="Delete all finished downloads" Padding="0" Margin="0,0,5,0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/control_delete_all_finished.png" />
           </MenuItem.Header>
         </MenuItem>
 
         <!--
-        <MenuItem x:Name="showLogToolButton" ToolTip.Tip="Show/Hide download log" Padding="0" Margin="0 0 5 0">
+        <MenuItem x:Name="showLogToolButton" ToolTip.Tip="Show/Hide download log" Padding="0" Margin="0,0,5,0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/log.png" />
           </MenuItem.Header>
@@ -74,15 +74,30 @@
             <Image Source="/Resources/menu/copy.png" />
           </MenuItem.Header>
         </MenuItem>
-        <MenuItem x:Name="pasteToolButton" ToolTip.Tip="Paste  (Ctrl + V)" Padding="0" Margin="0 0 5 0">
+        <MenuItem x:Name="pasteToolButton" ToolTip.Tip="Paste  (Ctrl + V)" Padding="0" Margin="0,0,5,0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/paste.png" />
           </MenuItem.Header>
         </MenuItem>
 
         <local:DegreeOfParallelismMenuItem x:Name="degreeOfParallelismToolButton" Padding="0" />
-        <local:DownloadInstanceMenuItem    x:Name="downloadInstanceToolButton"    Padding="0" Margin="0 0 5 0" />
+        <local:DownloadInstanceMenuItem    x:Name="downloadInstanceToolButton"    Padding="0" Margin="0,0,5,0" />
+      </Menu>
+    </DockPanel>
+    <DockPanel Background="WhiteSmoke" Grid.Row="0" Grid.Column="1">      
+      <Menu DockPanel.Dock="Top" Padding="2">
+        <MenuItem Command="{Binding ParallelismCommand}" ToolTip.Tip="Parallelism" HorizontalAlignment="Right" Padding="0">
+          <MenuItem.Header>
+            <Image Source="/Resources/dop_settings_32.ico" />
+          </MenuItem.Header>
+        </MenuItem>
 
+        <MenuItem Command="{Binding SettingsCommand}" ToolTip.Tip="Settings" HorizontalAlignment="Right" Padding="0">
+          <MenuItem.Header>
+            <Image Source="/Resources/settings.png" />
+          </MenuItem.Header>
+        </MenuItem>
+        
         <MenuItem Command="{Binding AboutCommand}" ToolTip.Tip="About" HotKey="F1" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/help.png" />
@@ -90,10 +105,10 @@
         </MenuItem>
       </Menu>
     </DockPanel>
-
-    <local:DownloadListUC x:Name="downloadListUC" Grid.Row="1" />
-    <GridSplitter Grid.Row="2" />
-    <local:LogUC x:Name="logUC" Grid.Row="3" />
+    
+    <local:DownloadListUC x:Name="downloadListUC" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
+    <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
+    <local:LogUC x:Name="logUC" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />
     
   </Grid>
 

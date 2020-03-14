@@ -352,10 +352,15 @@ namespace m3u8.download.manager.infrastructure
         /// </summary>
         public sealed class Processor : IDisposable
         {
-            private TextBox _FileNameTextBox;
+            #region [.fields.]
+            private TextBox          _FileNameTextBox;
             private Func< string >   _GetFileNameAction;
             private Action< string > _SetFileNameAction;
 
+            private CancellationTokenSource _Cts_FileNameTextBox_TextChanged;
+            #endregion
+
+            #region [.ctor().]
             public Processor( TextBox fileNameTextBox
                 , Func< string >   getFileNameAction
                 , Action< string > setFileNameAction )
@@ -365,8 +370,8 @@ namespace m3u8.download.manager.infrastructure
                 _SetFileNameAction = setFileNameAction;
             }
             public void Dispose() => CancelAndDispose_Cts_FileNameTextBox_TextChanged();
+            #endregion
 
-            private CancellationTokenSource _Cts_FileNameTextBox_TextChanged;
             private void CancelAndDispose_Cts_FileNameTextBox_TextChanged()
             {
                 if ( _Cts_FileNameTextBox_TextChanged != null )
@@ -383,9 +388,9 @@ namespace m3u8.download.manager.infrastructure
 
                 _Cts_FileNameTextBox_TextChanged = new CancellationTokenSource();
                 Task.Delay( 1_500, _Cts_FileNameTextBox_TextChanged.Token )
-                    .ContinueWith( async t =>
+                    .ContinueWith( async (task) =>
                     {
-                        if ( t.IsCanceled )
+                        if ( task.IsCanceled )
                             return;
 
                         var fn = await SetFileName_Async( millisecondsDelay: 150 );
@@ -397,7 +402,7 @@ namespace m3u8.download.manager.infrastructure
             private async Task< string > SetFileName_Async( int millisecondsDelay )
             {
                 var inputOutputFileName = _GetFileNameAction();
-                var selectionStart = _FileNameTextBox.SelectionStart;
+                var selectionStart      = _FileNameTextBox.SelectionStart;
 
                 _SetFileNameAction( null );
                 

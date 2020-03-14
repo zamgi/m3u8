@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 
@@ -36,13 +37,8 @@ namespace m3u8.download.manager.ui
         {
             (Row, this.OutputFileName) = (row, row.OutputFileName);
 
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                var fn = this.OutputFileName;
-                var idx = fn.IndexOf( '.' );
-                outputFileNameTextBox.SelectionStart =
-                        outputFileNameTextBox.SelectionEnd = (idx != -1) ? idx : (fn?.Length).GetValueOrDefault( 0 );
-            });
+            set_outputFileNameTextBox_Selection_Position( this.OutputFileName );
+            _FNCP.FileNameTextBox_TextChanged( outputFileName => set_outputFileNameTextBox_Selection_Position( outputFileName ) );
         }
         private void InitializeComponent()
         {
@@ -50,8 +46,8 @@ namespace m3u8.download.manager.ui
 
             outputFileNameTextBox = this.Find< TextBox >( nameof(outputFileNameTextBox) );
             this.Find< Button >( "outputFileNameClearButton" ).Click += outputFileNameClearButton_Click;
-            this.Find< Button >( "okButton"                  ).Click += okButton_Click;
-            this.Find< Button >( "cancelButton"              ).Click += cancelButton_Click;
+            this.Find< Button >( "okButton"                  ).Click += (s, e) => OkButtonProcess();
+            this.Find< Button >( "cancelButton"              ).Click += (s, e)  => this.Close();
 
             _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
 
@@ -116,8 +112,6 @@ namespace m3u8.download.manager.ui
             }
             return (false);
         }
-        private void okButton_Click( object sender, EventArgs e ) => OkButtonProcess();
-        private void cancelButton_Click( object sender, EventArgs e ) => this.Close();
 
         private void outputFileNameClearButton_Click( object sender, EventArgs e )
         {
@@ -129,6 +123,16 @@ namespace m3u8.download.manager.ui
             if ( !_IsTurnOff__outputFileNameTextBox_TextChanged )
             {
                 _FNCP.FileNameTextBox_TextChanged();
+            }
+        }
+
+        private void set_outputFileNameTextBox_Selection_Position( string outputFileName )
+        {
+            if ( !outputFileName.IsNullOrEmpty() )
+            {
+                var idx = outputFileName.IndexOf( '.' );
+                outputFileNameTextBox.SelectionStart =
+                        outputFileNameTextBox.SelectionEnd = ((idx != -1) ? idx : outputFileName.Length);
             }
         }
         #endregion

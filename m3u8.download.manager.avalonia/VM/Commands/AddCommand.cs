@@ -84,7 +84,7 @@ namespace m3u8.download.manager
 
             var f = new AddNewDownloadForm( _VM, p.m3u8FileUrl, seriesInfo );
             {
-                await f.ShowDialog( Extensions.GetMainWindow() );
+                await f.ShowDialogEx();
                 if ( f.Success )
                 {
                     var row = _VM.DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory()) );

@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 
 using m3u8.download.manager.infrastructure;
+using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 
@@ -24,6 +25,13 @@ namespace m3u8.download.manager.ui
 
             _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
         }
+        internal ChangeOutputFileForm( DownloadRow row ) : this()
+        {
+            (Row, this.OutputFileName) = (row, row.OutputFileName);
+
+            set_outputFileNameTextBox_Selection_Position( this.OutputFileName );
+            _FNCP.FileNameTextBox_TextChanged( outputFileName => set_outputFileNameTextBox_Selection_Position( outputFileName ) );
+        }
         protected override void Dispose( bool disposing )
         {
             if ( disposing )
@@ -36,6 +44,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public.]
+        public DownloadRow Row { get; }
         public string OutputFileName
         {
             get => outputFileNameTextBox.Text.Trim();
@@ -117,6 +126,16 @@ namespace m3u8.download.manager.ui
             outputFileNameTextBox.Focus();
         }
         private void outputFileNameTextBox_TextChanged( object sender, EventArgs e ) => _FNCP.FileNameTextBox_TextChanged();
+
+        private void set_outputFileNameTextBox_Selection_Position( string outputFileName )
+        {
+            if ( !outputFileName.IsNullOrEmpty() )
+            {
+                var idx = outputFileName.IndexOf( '.' );
+                outputFileNameTextBox.SelectionStart  = ((idx != -1) ? idx : outputFileName.Length);
+                outputFileNameTextBox.SelectionLength = 0;
+            }
+        }
         #endregion
     }
 }

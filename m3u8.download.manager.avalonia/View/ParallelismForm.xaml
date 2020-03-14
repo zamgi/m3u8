@@ -16,7 +16,7 @@
     <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
       <StackPanel>
         <TextBlock>max degree of downloads parallelism:</TextBlock>
-        <NumericUpDown x:Name="maxDegreeOfParallelism" Minimum="1" Maximum="100" Value="1" 
+        <NumericUpDown x:Name="maxDegreeOfParallelismNUD" Minimum="1" Maximum="100" Value="1" 
                        AllowSpin="True" ClipValueToMinMax="True"
                        HorizontalAlignment="Center" Margin="0,5,35,0" Padding="0" />
         <CheckBox x:Name="useCrossDownloadInstanceParallelismCheckBox" Background="White" Cursor="Hand">
@@ -34,7 +34,7 @@
         <CheckBox x:Name="useMaxCrossDownloadInstanceCheckBox" Background="White" Cursor="Hand" Margin="0,0,0,7">use downloads-instance</CheckBox>
         <TextBlock x:Name="maxCrossDownloadInstanceLabel1">max count of downloads-instance for</TextBlock>
         <TextBlock x:Name="maxCrossDownloadInstanceLabel2">simultaneously downloading data:</TextBlock>
-        <NumericUpDown x:Name="maxCrossDownloadInstance" Minimum="1" Maximum="100" Value="1"
+        <NumericUpDown x:Name="maxCrossDownloadInstanceNUD" Minimum="1" Maximum="100" Value="1"
                        AllowSpin="True" ClipValueToMinMax="True"
                        HorizontalAlignment="Center" Margin="0,5,35,0" Padding="0" />
       </StackPanel>

@@ -1012,36 +1012,19 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ChangeOutputFileForm.]
-        private ChangeOutputFileForm _ChangeOutputFileForm;
-        private DownloadRow          _ChangeOutputFileForm_Row;
         private void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
-            if ( (_ChangeOutputFileForm == null) || _ChangeOutputFileForm.IsDisposed )
+            using ( var f = new ChangeOutputFileForm( row ) )
             {
-                _ChangeOutputFileForm = new ChangeOutputFileForm() { Owner = this };
-                _ChangeOutputFileForm.FormClosed += _ChangeOutputFileForm_FormClosed;
-            }
-            _ChangeOutputFileForm_Row = row;
-            _ChangeOutputFileForm.OutputFileName = row.OutputFileName;
-            if ( !_ChangeOutputFileForm.Visible )
-            {
-                _ChangeOutputFileForm.Show( this );
+                if ( (f.ShowDialog( this ) == DialogResult.OK) &&
+                     FileNameCleaner.TryGetOutputFileName( f.OutputFileName, out var outputFileName )
+                   )
+                {
+                    f.Row.SetOutputFileName( outputFileName );
+                    downloadListUC.Invalidate( true );
+                }
             }
         }
-
-        private void _ChangeOutputFileForm_FormClosed( object sender, FormClosedEventArgs e )
-        {
-            if ( (e.CloseReason == CloseReason.UserClosing) && (_ChangeOutputFileForm.DialogResult == DialogResult.OK) &&
-                 FileNameCleaner.TryGetOutputFileName( _ChangeOutputFileForm.OutputFileName, out var outputFileName )
-               )
-            {
-                _ChangeOutputFileForm_Row?.SetOutputFileName( outputFileName );
-                downloadListUC.Invalidate( true );
-            }
-            _ChangeOutputFileForm.FormClosed -= _ChangeOutputFileForm_FormClosed;
-            _ChangeOutputFileForm = null;
-        }
-
 
         private void downloadListUC_OutputDirectoryClick( DownloadRow row )
         {

@@ -266,6 +266,8 @@ namespace m3u8.download.manager
         public static Window GetMainWindow() => ((Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) ? desktop.MainWindow : null);
         public static Window GetTopWindow() => ((Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) ? (desktop.Windows.LastOrDefault() ?? desktop.MainWindow) : null);
 
+        public static Task ShowDialogEx( this Window dialog ) => dialog.ShowDialog( GetMainWindow() );
+
         #region [.MessageBox's.]
         private static MsBoxStandardWindow Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, bool closeByEscape = true )
             => Create_MsBoxStandardWindow( text, caption, buttons, icon, out var _, closeByEscape );

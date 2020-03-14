@@ -69,7 +69,6 @@ namespace m3u8.download.manager.ui
             useMaxCrossDownloadInstanceCheckBox.Enabled =
                 useCrossDownloadInstanceParallelismCheckBox.Enabled = !isDownloading;
         }
-
         private void useMaxCrossDownloadInstanceCheckBox_CheckedChanged( object sender, EventArgs e )
         {
             maxCrossDownloadInstanceLabel.Enabled = useMaxCrossDownloadInstanceCheckBox.Checked;
