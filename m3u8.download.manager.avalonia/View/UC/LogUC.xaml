@@ -41,7 +41,7 @@
             CanUserSortColumns="False"
             IsReadOnly="True"
             GridLinesVisibility="Vertical"
-            VerticalGridLinesBrush="White"            
+            VerticalGridLinesBrush="White"
             >
       <DataGrid.Columns>
         <DataGridTextColumn Header="Request"  Binding="{Binding RequestText}"  Width="3.5*" CellStyleClasses="rrt" />

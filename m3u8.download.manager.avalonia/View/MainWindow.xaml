@@ -86,6 +86,12 @@
     </DockPanel>
     <DockPanel Background="WhiteSmoke" Grid.Row="0" Grid.Column="1">      
       <Menu DockPanel.Dock="Top" Padding="2">
+        <MenuItem Command="{Binding FileNameExcludesWordsEditorCommand}" ToolTip.Tip="file name excludes words editor" HorizontalAlignment="Right" Padding="0">
+          <MenuItem.Header>
+            <Image Source="/Resources/listbullets.png" />
+          </MenuItem.Header>
+        </MenuItem>
+        
         <MenuItem Command="{Binding ParallelismCommand}" ToolTip.Tip="Parallelism settings" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
             <Image Source="/Resources/dop_settings_32.ico" />

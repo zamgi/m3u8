@@ -20,6 +20,7 @@ namespace m3u8.download.manager
             ParallelismCommand = new ParallelismCommand( this );
             SettingsCommand    = new SettingsCommand( this );
             AboutCommand       = new AboutCommand();
+            FileNameExcludesWordsEditorCommand = new FileNameExcludesWordsEditorCommand( this );
         }
 
         public DownloadListModel                DownloadListModel  { get; }
@@ -30,5 +31,6 @@ namespace m3u8.download.manager
         public ParallelismCommand ParallelismCommand { get; }
         public SettingsCommand    SettingsCommand    { get; }
         public AboutCommand       AboutCommand       { get; }
+        public FileNameExcludesWordsEditorCommand FileNameExcludesWordsEditorCommand { get; }
     }
 }

@@ -1,0 +1,52 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        x:Class="m3u8.download.manager.ui.FileNameExcludesWordsEditor"
+        d:DesignWidth="350" d:DesignHeight="550"
+        Width="350" Height="550"        
+        Title="file name excludes words editor"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Resources/m3u8_32x36.ico"
+        Background="WhiteSmoke"
+        >
+  <Window.Styles>
+    <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="DodgerBlue" />
+    </Style>
+    <Style Selector="DataGridRow:selected TextBlock">
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+  </Window.Styles>  
+  
+  <Grid RowDefinitions="auto,*,auto" ColumnDefinitions="auto,*,auto" Margin="15">
+    <TextBlock Grid.Row="0" Grid.Column="0" 
+               VerticalAlignment="Center">filter:</TextBlock>
+    <TextBox x:Name="filterTextBox" Grid.Row="0" Grid.Column="1"
+             Margin="10,0,3,0"
+             TextWrapping="NoWrap"
+             />
+    <Button x:Name="clearFilterButton" Grid.Row="0" Grid.Column="2"
+            Width="25" Cursor="Hand">x</Button>
+
+    <DataGrid x:Name="DGV" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+              SelectionMode="Extended"
+              CanUserResizeColumns="True"
+              CanUserReorderColumns="False"
+              CanUserSortColumns="False"
+              IsReadOnly="False"
+              GridLinesVisibility="Vertical"
+              VerticalGridLinesBrush="White"
+              >
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Exclude word" Binding="{Binding}" Width="*" />
+      </DataGrid.Columns>
+    </DataGrid>
+    
+    <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+      <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
+      <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
+    </DockPanel>
+  </Grid>
+</Window>
