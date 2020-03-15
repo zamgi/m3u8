@@ -140,6 +140,7 @@ namespace m3u8.download.manager.ui
             downloadListUC.MouseClickRightButton   += downloadListUC_MouseClickRightButton;
 
             SetDownloadToolButtonsStatus( null );
+            NameCleaner.ResetExcludesWords( _VM.SettingsController.NameCleanerExcludesWords );
 
             downloadInstanceToolButton.IsVisible = _VM.SettingsController.MaxCrossDownloadInstance.HasValue;
             if ( _VM.SettingsController.MaxCrossDownloadInstance.HasValue )

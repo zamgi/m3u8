@@ -35,7 +35,7 @@
       <Value Profile="(Default)">3</Value>
     </Setting>
     <Setting Name="RequestTimeoutByPart" Type="System.TimeSpan" Scope="User">
-      <Value Profile="(Default)">00:00:15</Value>
+      <Value Profile="(Default)">00:00:45</Value>
     </Setting>
     <Setting Name="ShowOnlyRequestRowsWithErrors" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

@@ -12,12 +12,11 @@ namespace m3u8.download.manager.models
     internal sealed class DownloadListModel : ListModel< DownloadRow >
     {
         private HashSet< string > _Urls;
-
         public DownloadListModel() => _Urls = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
 
         public DownloadRow AddRow( in (string Url, string OutputFileName, string OutputDirectory) t )
         {
-            var row = base.Add( new DownloadRow( in t, this/*, base._Fire_RowPropertiesChangedEventHandler*/ ) );
+            var row = base.Add( new DownloadRow( in t, this ) );
             _Urls.Add( row.Url );
             return (row);
         }
@@ -28,7 +27,6 @@ namespace m3u8.download.manager.models
         [M(O.AggressiveInlining)] public bool ContainsUrl( string url ) => (!url.IsNullOrEmpty() && _Urls.Contains( url ));
         public bool RemoveRow( DownloadRow row )
         {
-            //row?._Remove_RowPropertiesChangedEventHandler();
             var success = base.Remove( row );
             _Urls.Remove( (row?.Url ?? string.Empty) );
             return (success);

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-
-using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -31,23 +28,14 @@ namespace m3u8.download.manager.models
     {
         private TimeSpan _FinitaElapsed;
         private long     _DownloadBytesLength_BeforeRunning;
-        //private _RowPropertiesChanged_ _RowPropertiesChanged;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         [M(O.AggressiveInlining)] private void Fire_PropertyChanged_Events( string propertyName )
+            => PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
+
+        internal DownloadRow( in (string Url, string OutputFileName, string OutputDirectory) t, DownloadListModel model ) : base( model )
         {
-            //_RowPropertiesChanged?.Invoke( this, propertyName );
-            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-
-            Debug.WriteLine( $"PropertyChanged: '{propertyName}'" );
-        }
-
-        internal DownloadRow( in (string Url, string OutputFileName, string OutputDirectory) t, DownloadListModel model 
-                              /*, _RowPropertiesChanged_ rowPropertiesChanged*/ ) : base( model )
-        {
-            //_RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));
-
             Status                   = DownloadStatus.Created;
             CreatedOrStartedDateTime = DateTime.Now;
             Url                      = t.Url;
@@ -56,7 +44,6 @@ namespace m3u8.download.manager.models
 
             Log = new LogListModel();
         }
-        //internal void _Remove_RowPropertiesChangedEventHandler() => _RowPropertiesChanged = null;
 
         public DateTime       CreatedOrStartedDateTime    { [M(O.AggressiveInlining)] get; private set; }
         public string         Url                         { [M(O.AggressiveInlining)] get; private set; }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using _RowPropertiesChanged_ = m3u8.download.manager.models.LogListModel.RowPropertiesChangedEventHandler;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -24,8 +23,6 @@ namespace m3u8.download.manager.models
         {
             _RowPropertiesChanged?.Invoke( this, propertyName );
             PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-
-            Debug.WriteLine( $"PropertyChanged: '{propertyName}'" );
         }
 
         internal LogRow( LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )

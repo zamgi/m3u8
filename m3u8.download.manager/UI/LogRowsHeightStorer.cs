@@ -12,7 +12,6 @@ namespace m3u8.download.manager.ui
     internal sealed class LogRowsHeightStorer
     {
         private Dictionary< LogListModel, Dictionary< int, int > > _Dict;
-
         public LogRowsHeightStorer() => _Dict = new Dictionary< LogListModel, Dictionary< int, int > >();
 
         public void StoreRowHeight( LogListModel model, DataGridViewRow row )

@@ -48,16 +48,16 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public.]
-        public string[] GetFileNameExcludesWords()
+        public IList< string > GetFileNameExcludesWords()
         {
-            var data = new string[ DGV.RowCount - 1 ];
+            var data = new List< string >( DGV.RowCount - 1 );
             var rows = DGV.Rows;
-            for ( int i = DGV.RowCount - 1, j = 0; 0 <= i; i--  )
+            for ( var i = DGV.RowCount - 1; 0 <= i; i--  )
             {
                 var row = rows[ i ];
                 if ( !row.IsNewRow )
                 {
-                    data[ j++ ] = row.Cells[ 0 ].Value?.ToString();
+                    data.Add( row.Cells[ 0 ].Value?.ToString() );
                 }
             }
             return (data);

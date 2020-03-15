@@ -1,0 +1,16 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:m3u8.download.manager.ui"
+             mc:Ignorable="d" 
+             x:Class="m3u8.download.manager.ui.ProgressBarUC"
+             d:DesignWidth="200" d:DesignHeight="50"
+             Padding="0" Margin="0"
+             >
+  <DockPanel x:Name="dockPanel" Margin="0">
+    <Border x:Name="leftBorder" Width="0"
+            BorderThickness="1,1,0,1" BorderBrush="LightBlue" Background="LightBlue" Margin="2,2,0,2" Padding="-2" />
+    <Border BorderThickness="1" BorderBrush="LightBlue" Margin="0,2,2,2" Padding="0" />
+  </DockPanel>
+</UserControl>

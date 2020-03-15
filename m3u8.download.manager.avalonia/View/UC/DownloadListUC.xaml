@@ -9,6 +9,7 @@
              >
   <UserControl.Resources>
     <local:ProgressText_Converter            x:Key="ProgressText" />
+    <local:ProgressPercentValue_Converter    x:Key="ProgressPercentValue" />
     <local:DownloadTimeText_Converter        x:Key="DownloadTimeText" />
     <local:ApproxRemainedTimeText_Converter  x:Key="ApproxRemainedTimeText" />
     <local:DownloadSpeedText_Converter       x:Key="DownloadSpeedText" />
@@ -38,9 +39,6 @@
     </Style>  
   </UserControl.Styles>
   
-  <!--<ScrollViewer HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Auto"
-                >-->      
   <DataGrid x:Name="DGV"
             SelectionMode="Single"
             CanUserResizeColumns="True"
@@ -97,8 +95,15 @@
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
+            <!--
             <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ProgressText}}" 
                        ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+            -->
+            <Grid RowDefinitions="*" ColumnDefinitions="*">              
+              <local:ProgressBarUC Value="{Binding MySelf, Mode=OneWay, Converter={StaticResource ProgressPercentValue}}" />
+              <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ProgressText}}"
+                         ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+            </Grid>
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
@@ -188,5 +193,4 @@
       
     </DataGrid.Columns>
   </DataGrid>
-  <!--</ScrollViewer>-->    
 </UserControl>

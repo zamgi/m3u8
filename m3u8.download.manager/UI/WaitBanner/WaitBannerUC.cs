@@ -35,9 +35,9 @@ namespace m3u8.download.manager.ui
         
         protected override void Dispose( bool disposing )
         {
-            if ( disposing && (components != null) )
+            if ( disposing )
             {  
-                components.Dispose();
+                components?.Dispose();
             }
             base.Dispose( disposing );
 

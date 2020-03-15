@@ -22,7 +22,15 @@ namespace m3u8.download.manager.ui
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
             => ((value is DownloadRow row) ? DownloadListUC.GetProgressText( row ) : value);
-    }
+    }    
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class ProgressPercentValue_Converter : _DownloadRow_ConverterBase
+    {
+        public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
+            => ((value is DownloadRow row) ? DownloadListUC.GetProgressPercentValue( row ) : 0d);
+    }    
 
     /// <summary>
     /// 

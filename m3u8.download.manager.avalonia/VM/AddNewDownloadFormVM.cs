@@ -8,12 +8,8 @@ namespace m3u8.download.manager
     internal sealed class AddNewDownloadFormVM
     {
         public AddNewDownloadFormVM( AddNewDownloadForm window )
-        {
-            //StartDownloadCommand = new StartDownloadCommand();
-            CloseWindowCommand   = new CloseWindowCommand( window );
-        }
+            => CloseWindowCommand = new CloseWindowCommand( window );
 
-        //public StartDownloadCommand StartDownloadCommand { get; }
-        public CloseWindowCommand   CloseWindowCommand   { get; }
+        public CloseWindowCommand CloseWindowCommand { get; }
     }
 }

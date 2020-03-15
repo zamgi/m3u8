@@ -78,8 +78,6 @@ namespace m3u8.download.manager.ui
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
-            //---statusBarUC.SetDownloadController( dc );
-            //---statusBarUC.SetSettingsController( sc );
             
             if ( seriesInfo.HasValue )
             {
