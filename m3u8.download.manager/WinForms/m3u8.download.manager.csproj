@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\bin\</OutputPath>
+    <OutputPath>..\..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,7 +31,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\bin\</OutputPath>
+    <OutputPath>..\..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -53,13 +53,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\m3u8.client\m3u8.client.cs">
+    <Compile Include="..\..\m3u8.client\m3u8.client.cs">
       <Link>[-= m3u8.client =-]\m3u8.client.cs</Link>
     </Compile>
-    <Compile Include="..\m3u8.client\m3u8.client.factory.cs">
+    <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs">
       <Link>[-= m3u8.client =-]\m3u8.client.factory.cs</Link>
     </Compile>
-    <Compile Include="Controller\DownloadController\dc_models.cs" />
+    <Compile Include="..\[Common]\Controller\DownloadController\dc_models.cs">
+      <Link>Controller\DownloadController\dc_models.cs</Link>
+    </Compile>
+    <Compile Include="..\[Common]\Controller\DownloadController\DownloadController.cs">
+      <Link>Controller\DownloadController\DownloadController.cs</Link>
+    </Compile>
+    <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs">
+      <Link>Controller\SettingsPropertyChangeController.cs</Link>
+    </Compile>
+    <Compile Include="..\[Common]\[-= m3u8.client =-]\m3u8_processor_v2.cs">
+      <Link>[-= m3u8.client =-]\m3u8_processor_v2.cs</Link>
+    </Compile>
     <Compile Include="Model\DownloadListModel.cs" />
     <Compile Include="Model\LogListModel.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -74,9 +85,6 @@
     <Compile Include="UI\UC\NumericUpDownEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="[-= m3u8.client =-]\m3u8_processor_v2.cs" />
-    <Compile Include="Controller\SettingsPropertyChangeController.cs" />
-    <Compile Include="Controller\DownloadController\DownloadController.cs" />
     <Compile Include="Infrastructure\FormPositionStorer.cs" />
     <Compile Include="Program\IPC\BrowserIPC.cs" />
     <Compile Include="Program\IPC\SingleCopyApplication.cs" />

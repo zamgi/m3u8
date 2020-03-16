@@ -23,6 +23,7 @@ using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+using m3u8.download.manager.controllers;
 
 namespace m3u8.download.manager
 {
@@ -77,6 +78,8 @@ namespace m3u8.download.manager
             }
             settings.NameCleanerExcludesWords.AddRange( excludesWords.ToArray() );
         }
+        public static string GetDownloadListColumnsWidthJson( this SettingsPropertyChangeController settingsController ) => settingsController.Settings.DownloadListColumnsWidthJson;
+        public static void SetDownloadListColumnsWidthJson( this SettingsPropertyChangeController settingsController, string json ) => settingsController.Settings.DownloadListColumnsWidthJson = json;
 
         public static void DeleteFiles_NoThrow( string[] fileNames )
         {

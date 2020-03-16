@@ -85,7 +85,7 @@ namespace m3u8.download.manager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
         public global::System.Nullable<System.Int32> MaxCrossDownloadInstance {
             get {
                 return ((global::System.Nullable<System.Int32>)(this["MaxCrossDownloadInstance"]));
@@ -97,7 +97,7 @@ namespace m3u8.download.manager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
         public int MaxCrossDownloadInstanceSaved {
             get {
                 return ((int)(this["MaxCrossDownloadInstanceSaved"]));

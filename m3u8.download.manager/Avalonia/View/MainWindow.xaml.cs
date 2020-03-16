@@ -184,7 +184,7 @@ namespace m3u8.download.manager.ui
             {
                 this.RestoreBounds( _VM.SettingsController.MainFormPositionJson );
             }
-            downloadListUC.SetColumnsWidthFromJson( _VM.SettingsController.DownloadListColumnsWidthJson );
+            downloadListUC.SetColumnsWidthFromJson( _VM.SettingsController.GetDownloadListColumnsWidthJson() );
             downloadListUC.Focus();
             #endregion
 
@@ -213,8 +213,8 @@ namespace m3u8.download.manager.ui
             base.OnClosed( e );
 
             #region [.save settings.]
-            _VM.SettingsController.MainFormPositionJson         = this.GetBounds().ToJSON();
-            _VM.SettingsController.DownloadListColumnsWidthJson = downloadListUC.GetColumnsWidth().ToJSON();
+            _VM.SettingsController.MainFormPositionJson = this.GetBounds().ToJSON();
+            _VM.SettingsController.SetDownloadListColumnsWidthJson( downloadListUC.GetColumnsWidth().ToJSON() );
             _VM.SettingsController.SaveNoThrow();
             #endregion
         }

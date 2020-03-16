@@ -18,10 +18,10 @@
       <Value Profile="(Default)">8</Value>
     </Setting>
     <Setting Name="MaxCrossDownloadInstance" Type="System.Nullable&lt;System.Int32&gt;" Scope="User">
-      <Value Profile="(Default)">4</Value>
+      <Value Profile="(Default)">2</Value>
     </Setting>
     <Setting Name="MaxCrossDownloadInstanceSaved" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">4</Value>
+      <Value Profile="(Default)">2</Value>
     </Setting>
     <Setting Name="NameCleanerExcludesWords" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
