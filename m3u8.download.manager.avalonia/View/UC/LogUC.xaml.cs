@@ -155,15 +155,10 @@ namespace m3u8.download.manager.ui
         }
         private void Model_RowPropertiesChanged( LogRow row, string propertyName )
         {
-            //var visibleIndex = row.GetVisibleIndex();
-            //if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
-            //{
-                //DGV.InvalidateRow( visibleIndex );
-                if ( _ShowOnlyRequestRowsWithErrors && (row.RequestRowType == RequestRowTypeEnum.Success) && (propertyName == nameof(LogRow.RequestRowType)) )
-                {
-                    Task.Delay( 250 ).ContinueWith( _ => Dispatcher.UIThread.Post( () => _DGVRows.Remove( row ) ) );
-                }
-            //}
+            if ( _ShowOnlyRequestRowsWithErrors && (row.RequestRowType == RequestRowTypeEnum.Success) && (propertyName == nameof(LogRow.RequestRowType)) )
+            {
+                Task.Delay( 250 ).ContinueWith( _ => Dispatcher.UIThread.Post( () => _DGVRows.Remove( row ) ) );
+            }
         }
         private void SettingsController_PropertyChanged( Settings settings, string propertyName )
         {

@@ -246,7 +246,6 @@ namespace m3u8.download.manager.infrastructure
     internal static class FileNameCleaner
     {
         private static Settings _Settings;
-
         static FileNameCleaner() => _Settings = Settings.Default;
 
         private static string AddOutputFileExtensionIfMissing( this string outputFileName )

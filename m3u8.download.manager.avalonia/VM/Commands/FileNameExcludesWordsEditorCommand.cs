@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Windows.Input;
 using m3u8.download.manager.infrastructure;
+using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
 
 namespace m3u8.download.manager
@@ -12,8 +11,8 @@ namespace m3u8.download.manager
     /// </summary>
     internal sealed class FileNameExcludesWordsEditorCommand : ICommand
     {
-        private MainVM _VM;
-        public FileNameExcludesWordsEditorCommand( MainVM vm ) => _VM = vm;
+        private Settings _Settings;
+        public FileNameExcludesWordsEditorCommand( MainVM vm ) => _Settings = vm.SettingsController.Settings;
 
 #pragma warning disable CS0067
         public event EventHandler CanExecuteChanged;
@@ -28,18 +27,8 @@ namespace m3u8.download.manager
                 if ( f.Success )
                 {
                     NameCleaner.ResetExcludesWords( f.GetFileNameExcludesWords() );
-
-                    var settings = _VM.SettingsController.Settings;
-                    if ( settings.NameCleanerExcludesWords == null )
-                    {
-                        settings.NameCleanerExcludesWords = new StringCollection();
-                    }
-                    else
-                    {
-                        settings.NameCleanerExcludesWords.Clear();
-                    }
-                    settings.NameCleanerExcludesWords.AddRange( NameCleaner.ExcludesWords.ToArray() );
-                    settings.SaveNoThrow();
+                    _Settings.ResetNameCleanerExcludesWords( NameCleaner.ExcludesWords );
+                    _Settings.SaveNoThrow();
                 }
             }            
         }

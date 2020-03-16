@@ -777,7 +777,7 @@ return;
         //private void showLogToolButton_Click( object sender, EventArgs e )
         //{
         //    var showLog = showLogToolButton.Checked;
-        //    Settings.Default.ShowLog = showLog;
+        //    _VM.SettingsController.ShowLog = showLog;
         //    mainSplitContainer.Panel2Collapsed = !showLog; //m3u8FileResultUC.Visible = showLog;
         //    logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
         //}
@@ -826,10 +826,10 @@ return;
         {
             if ( _VM.SettingsController.UseCrossDownloadInstanceParallelism )
             {
-                _VM.SettingsController.Settings.MaxCrossDownloadInstance = downloadInstanceValue;
+                _VM.SettingsController.MaxCrossDownloadInstance = downloadInstanceValue;
             }
         }
-        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _VM.SettingsController.Settings.MaxDegreeOfParallelism = value;
+        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _VM.SettingsController.MaxDegreeOfParallelism = value;
         #endregion
 
         #region [.context menu.]

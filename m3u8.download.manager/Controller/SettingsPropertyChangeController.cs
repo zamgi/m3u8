@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 
 using _Settings_ = m3u8.download.manager.Properties.Settings;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -42,21 +41,23 @@ namespace m3u8.download.manager.controllers
         }
         public void Dispose() => this.Settings.PropertyChanged -= Settings_PropertyChanged;
 
-        public static _Settings_ SettingsDefault { [M(O.AggressiveInlining)] get=> _Settings_.Default; }
+        public static _Settings_ SettingsDefault { [M(O.AggressiveInlining)] get => _Settings_.Default; }
         public _Settings_ Settings { [M(O.AggressiveInlining)] get; }
 
         [M(O.AggressiveInlining)] public void SaveNoThrow() => Settings.SaveNoThrow();
         public (TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams() => (Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
 
-        public IEnumerable< string > NameCleanerExcludesWords { [M(O.AggressiveInlining)] get => Settings.NameCleanerExcludesWords?.Cast< string >(); }
+        public IEnumerable< string > NameCleanerExcludesWords { [M(O.AggressiveInlining)] get => Settings.GetNameCleanerExcludesWords(); }
         public bool   ShowOnlyRequestRowsWithErrors { [M(O.AggressiveInlining)] get => Settings.ShowOnlyRequestRowsWithErrors; }
         public string OutputFileDirectory           { [M(O.AggressiveInlining)] get => Settings.OutputFileDirectory; }
         public bool   UniqueUrlsOnly                { [M(O.AggressiveInlining)] get => Settings.UniqueUrlsOnly; }
         public string MainFormPositionJson          { [M(O.AggressiveInlining)] get => Settings.MainFormPositionJson; [M(O.AggressiveInlining)] set => Settings.MainFormPositionJson = value; }
        
         public bool UseCrossDownloadInstanceParallelism { [M(O.AggressiveInlining)] get => Settings.UseCrossDownloadInstanceParallelism; }
-        public int  MaxDegreeOfParallelism              { [M(O.AggressiveInlining)] get => Settings.MaxDegreeOfParallelism; }
-        public int? MaxCrossDownloadInstance            { [M(O.AggressiveInlining)] get => Settings.MaxCrossDownloadInstance; }
+        public int  MaxDegreeOfParallelism              { [M(O.AggressiveInlining)] get => Settings.MaxDegreeOfParallelism; [M(O.AggressiveInlining)] set => Settings.MaxDegreeOfParallelism = value; }
+        public int? MaxCrossDownloadInstance            { [M(O.AggressiveInlining)] get => Settings.MaxCrossDownloadInstance; [M(O.AggressiveInlining)] set => Settings.MaxCrossDownloadInstance = value; }
+
+        public bool ShowLog { [M(O.AggressiveInlining)] get => Settings.ShowLog; [M(O.AggressiveInlining)] set => Settings.ShowLog = value; }
 
         private void APV< T >( string propertyName, T value ) where T : struct => _PD[ propertyName ] = value;
         private void APV< T >( string propertyName, T? value ) where T : struct => _PD[ propertyName ] = value;

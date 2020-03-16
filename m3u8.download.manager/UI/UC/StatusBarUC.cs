@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Specialized;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -145,16 +143,7 @@ namespace m3u8.download.manager.ui
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
                     NameCleaner.ResetExcludesWords( f.GetFileNameExcludesWords() );
-
-                    if ( _Settings.NameCleanerExcludesWords == null )
-                    {
-                        _Settings.NameCleanerExcludesWords = new StringCollection();
-                    }
-                    else
-                    {
-                        _Settings.NameCleanerExcludesWords.Clear();
-                    }
-                    _Settings.NameCleanerExcludesWords.AddRange( NameCleaner.ExcludesWords.ToArray() );
+                    _Settings.ResetNameCleanerExcludesWords( NameCleaner.ExcludesWords );
                     _Settings.SaveNoThrow();
                 }
             }

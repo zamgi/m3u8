@@ -28,23 +28,30 @@
              TextWrapping="NoWrap"
              />
     <Button x:Name="clearFilterButton" Grid.Row="0" Grid.Column="2"
-            Width="25" Cursor="Hand">x</Button>
+            Width="25" Cursor="Hand" IsVisible="False">x</Button>
 
     <DataGrid x:Name="DGV" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
               SelectionMode="Extended"
-              CanUserResizeColumns="True"
+              CanUserResizeColumns="False"
               CanUserReorderColumns="False"
-              CanUserSortColumns="False"
+              CanUserSortColumns="True"
               IsReadOnly="False"
-              GridLinesVisibility="Vertical"
-              VerticalGridLinesBrush="White"
+              GridLinesVisibility="Vertical" 
+              VerticalGridLinesBrush="White" HorizontalGridLinesBrush="Black"
+              BorderBrush="LightGray" BorderThickness="1"
               >
+              <!--
+              HeadersVisibility="All"
+              RowHeaderWidth="40"              
+              -->
       <DataGrid.Columns>
-        <DataGridTextColumn Header="Exclude word" Binding="{Binding}" Width="*" />
+        <DataGridTextColumn Header="#" Binding="{Binding ViewIndex, Mode=OneWay}" Width="auto" IsReadOnly="True" />
+        <DataGridTextColumn Header="Exclude word" Binding="{Binding Text, Mode=TwoWay}" Width="*" />
       </DataGrid.Columns>
     </DataGrid>
     
-    <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+    <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" 
+               HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,0">
       <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
       <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
     </DockPanel>

@@ -47,10 +47,10 @@ namespace m3u8.download.manager.ui
 
             _DownloadListModel_RowPropertiesChangedAction = new Action< DownloadRow, string >( DownloadListModel_RowPropertiesChanged );
 
-            _SettingsController = new SettingsPropertyChangeController();
+            _SettingsController  = new SettingsPropertyChangeController();
             _LogRowsHeightStorer = new LogRowsHeightStorer();
 
-            _DownloadListModel  = new DownloadListModel();
+            _DownloadListModel = new DownloadListModel();
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;            
             _DownloadController = new DownloadController( _DownloadListModel , _SettingsController );
 
@@ -73,7 +73,7 @@ namespace m3u8.download.manager.ui
 
             NameCleaner.ResetExcludesWords( _SettingsController.NameCleanerExcludesWords );
 
-            showLogToolButton.Checked = Settings.Default.ShowLog;
+            showLogToolButton.Checked = _SettingsController.ShowLog;
             showLogToolButton_Click( showLogToolButton, EventArgs.Empty );
 
             downloadInstanceToolButton.Visible = _SettingsController.MaxCrossDownloadInstance.HasValue;
@@ -781,7 +781,7 @@ namespace m3u8.download.manager.ui
         private void showLogToolButton_Click( object sender, EventArgs e )
         {
             var showLog = showLogToolButton.Checked;
-            Settings.Default.ShowLog = showLog;
+            _SettingsController.ShowLog = showLog;
             mainSplitContainer.Panel2Collapsed = !showLog; //m3u8FileResultUC.Visible = showLog;
             logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
         }
@@ -811,10 +811,7 @@ namespace m3u8.download.manager.ui
         private void aboutToolButton_Click( object sender, EventArgs e )
         {
             var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\"" + Environment.NewLine +
-                       //AssemblyInfoHelper.AssemblyProduct + Environment.NewLine +
                        AssemblyInfoHelper.AssemblyCopyright + Environment.NewLine +
-                       //AssemblyInfoHelper.AssemblyCompany + Environment.NewLine +
-                       //AssemblyInfoHelper.AssemblyDescription + Environment.NewLine +
                        Environment.NewLine +
                        $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})" +
                        Environment.NewLine +
@@ -833,7 +830,7 @@ namespace m3u8.download.manager.ui
                        "  Delete:\t Delete download (with or without output file)" + Environment.NewLine +
                        "  Enter:\t Open rename output file dialog" + Environment.NewLine +
                        "  F1:\t About dialog" + Environment.NewLine;
-            this.MessageBox_ShowInformation( text, "about" ); //$"'{this.Text}' version: {Assembly.GetExecutingAssembly().GetName().Version}", this.Text );
+            this.MessageBox_ShowInformation( text, "about" );
         }
 
         private void startDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Start  );
@@ -853,10 +850,10 @@ namespace m3u8.download.manager.ui
         {
             if ( _SettingsController.UseCrossDownloadInstanceParallelism )
             {
-                _SettingsController.Settings.MaxCrossDownloadInstance = downloadInstanceValue;
+                _SettingsController.MaxCrossDownloadInstance = downloadInstanceValue;
             }
         }
-        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SettingsController.Settings.MaxDegreeOfParallelism = value;
+        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SettingsController.MaxDegreeOfParallelism = value;
         #endregion
 
         #region [.context menu.]

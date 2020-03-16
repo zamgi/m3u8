@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -61,6 +62,19 @@ namespace m3u8.download.manager
             {
                 Debug.WriteLine( ex );
             }
+        }
+        public static IEnumerable< string > GetNameCleanerExcludesWords( this Settings settings ) => settings.NameCleanerExcludesWords?.Cast< string >();
+        public static void ResetNameCleanerExcludesWords( this Settings settings, IReadOnlyCollection< string > excludesWords )
+        {
+            if ( settings.NameCleanerExcludesWords == null )
+            {
+                settings.NameCleanerExcludesWords = new StringCollection();
+            }
+            else
+            {
+                settings.NameCleanerExcludesWords.Clear();
+            }
+            settings.NameCleanerExcludesWords.AddRange( excludesWords.ToArray() );
         }
 
         public static void DeleteFiles_NoThrow( string[] fileNames )
