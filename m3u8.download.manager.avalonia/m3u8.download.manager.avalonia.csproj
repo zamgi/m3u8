@@ -34,12 +34,7 @@
     <AvaloniaResource Include="Resources\statuses\*" />
     <AvaloniaResource Include="Resources\contextMenu\*" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <AvaloniaResource Remove="Resources\dop.ico" />
-    <AvaloniaResource Remove="Resources\dop_settings.ico" />
-  </ItemGroup>
-  
+   
   <ItemGroup>
     <None Remove="Resources\m3u.jpg" />
     <None Remove="Resources\m3u8.png" />
