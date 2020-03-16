@@ -1,22 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
-using Avalonia.Threading;
-using m3u8.download.manager.controllers;
-using SETTINGS = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using ReactiveUI;
 
 namespace m3u8.download.manager.ui
 {
@@ -28,24 +22,28 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
-        private sealed class Fake_t : INotifyPropertyChanged
+        private sealed class WordItem : ReactiveObject
         {
-            public event PropertyChangedEventHandler PropertyChanged;
+            public WordItem() { }
+            public WordItem( string text ) => Text = text;
 
             private int _ViewIndex;
-            public int    ViewIndex 
+            public int ViewOrderNumber
             { 
                 get => _ViewIndex; 
-                set
-                {
-                    if ( _ViewIndex != value )
-                    {
-                        _ViewIndex = value;
-                        PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( nameof(ViewIndex) ) );
-                    }
-                }
+                set => this.RaiseAndSetIfChanged( ref _ViewIndex, value );
             }
+
             public string Text { get; set; }
+            #region comm.
+            //private string _Text;
+            //public string Text
+            //{
+            //    get => _Text;
+            //    set => this.RaiseAndSetIfChanged( ref _Text, value );
+            //} 
+            #endregion
+
             public override string ToString() => Text;
         }
 
@@ -54,6 +52,7 @@ namespace m3u8.download.manager.ui
         private TextBox  filterTextBox;
         private Button   clearFilterButton;
         private DataGridCollectionView _DGVRows;
+        private bool _HasChanges;
 
         private IDisposable filterTextBox_SubscribeDisposable;
         #endregion
@@ -68,11 +67,10 @@ namespace m3u8.download.manager.ui
         }
         internal FileNameExcludesWordsEditor( IReadOnlyCollection< string > excludesWords ) : this() 
         {
-            var items = (from s in excludesWords select new Fake_t() { Text = s }).ToList();
+            var items = (from s in excludesWords select new WordItem( s )).ToList();
             DGV.Items = _DGVRows = new DataGridCollectionView( items );
-            _DGVRows.AddNew();
-            _DGVRows.CommitNew();
-            //_DGVRows.CollectionChanged += _DGVRows_CollectionChanged;
+            _DGVRows.CollectionChanged += (s, e) => SetHasChanges();
+            _DGVRows.PropertyChanged   += (s, e) => SetHasChanges( (e.PropertyName == nameof(_DGVRows.IsEditingItem) && !_DGVRows.IsEditingItem) );
         }
         private void InitializeComponent()
         {
@@ -85,8 +83,9 @@ namespace m3u8.download.manager.ui
             filterTextBox     = this.Find< TextBox >( nameof(filterTextBox) );
             clearFilterButton = this.Find< Button  >( nameof(clearFilterButton) ); clearFilterButton.Click += clearFilterButton_Click;
 
-            this.Find< Button >( "okButton"     ).Click += (s, e) => OkButtonProcess();
-            this.Find< Button >( "cancelButton" ).Click += (s, e) => this.Close();
+            this.Find< Button >( "addNewRowButton" ).Click += addNewRowToDGV;
+            this.Find< Button >( "okButton"        ).Click += (s, e) => OkButtonProcess();
+            this.Find< Button >( "cancelButton"    ).Click += (s, e) => this.Close();
 
             filterTextBox_SubscribeDisposable = filterTextBox.GetObservable( TextBox.TextProperty ).Subscribe( filterTextBox_TextChanged );
         }
@@ -102,8 +101,11 @@ namespace m3u8.download.manager.ui
             switch ( e.Key )
             {
                 case Key.Escape:
-                    e.Handled = true;
-                    this.Close(); 
+                    if ( !_HasChanges )
+                    { 
+                        e.Handled = true;
+                        this.Close(); 
+                    }
                 return;
 
                 case Key.Enter: //Ok
@@ -112,6 +114,10 @@ namespace m3u8.download.manager.ui
                         e.Handled = true;
                         return;
                     }
+                break;
+
+                case Key.Delete:
+                    e.Handled = TryDeleteSelectedItemsFromDGV();
                 break;
             }
 
@@ -124,7 +130,7 @@ namespace m3u8.download.manager.ui
         public ICollection< string > GetFileNameExcludesWords()
         {
             var lst = new List< string >( _DGVRows.TotalItemCount );
-            foreach ( var t in _DGVRows.SourceCollection.Cast< Fake_t >() )
+            foreach ( var t in _DGVRows.SourceCollection.Cast< WordItem >() )
             {
                 if ( !t.Text.IsNullOrWhiteSpace() )
                 {
@@ -142,63 +148,82 @@ namespace m3u8.download.manager.ui
             this.Close();
             return (true);
         }
-
-        private void _DGVRows_CollectionChanged( object sender, NotifyCollectionChangedEventArgs e )
+        private bool TryDeleteSelectedItemsFromDGV()
         {
-            //if ( e.Action == NotifyCollectionChangedAction. )
+            if ( _DGVRows.IsAddingNew || _DGVRows.IsEditingItem )
+            {
+                return (false);
+            }
+
+            object[] to_array( IList selectedItems )
+            {
+                var count = selectedItems.Count;
+                if ( 0 < count )
+                {
+                    var array = new object[ count ];
+                    for ( count--; 0 <= count; count-- )
+                    {
+                        array[ count ] = selectedItems[ count ];
+                    }
+                    return (array);
+                }
+                return (null);
+            };
+
+            var array = to_array( DGV.SelectedItems );
+            var has = array.AnyEx();
+            if ( has )
+            {
+                foreach ( var t in array )
+                {
+                    _DGVRows.Remove( t );
+                }
+                var i = 0;
+                foreach ( var t in _DGVRows )
+                {
+                    ((WordItem) t).ViewOrderNumber = ++i;
+                }
+            }
+            return (has);
+        }
+        private void SetHasChanges( bool hasChanges = true )
+        {
+            _HasChanges |= hasChanges;
+            if ( hasChanges && (this.Title.LastOrDefault() != '*') )
+            {
+                this.Title += " *";
+            }
+        }
+
+        private void addNewRowToDGV( object sender, RoutedEventArgs e )
+        {
+            if ( !_DGVRows.IsAddingNew && !_DGVRows.IsEditingItem )
+            {
+                var t = _DGVRows.AddNew();
+                _DGVRows.CommitNew();
+                try
+                {
+                    DGV.ScrollIntoView( t, DGV.Columns[ 1 ] );
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
+            }
         }
         private void DGV_LoadingRow( object sender, DataGridRowEventArgs e )
         {
             var index = e.Row.GetIndex();
 
-            var t = (Fake_t) _DGVRows[ index ];
-            t.ViewIndex = index + 1;
-
-            #region comm.
-            //Debug.WriteLine( $"index: {index}" );
-
-            //----e.Row.BeginInit();
-
-            //bool isVisible;
-            //if ( _LastFilterText.IsNullOrEmpty() )
-            //{
-            //    isVisible = true;
-            //}
-            //else
-            //{
-            //    var value = _ExcludesWords[ index ];
-            //    isVisible = (value.IndexOf( _LastFilterText, StringComparison.InvariantCultureIgnoreCase ) != -1);
-
-            //}
-            //if ( e.Row.IsVisible )
-            //{
-            /*
-            e.Row.Header = new DataGridRowHeader()
-            {
-                Content = new DataGridCell()
-                {
-                    Content = new TextBlock() { Text = $"{(index + 1)}.", Foreground = Brushes.Red, Background = Brushes.LightGray },
-                },
-            };
-            */
-            //}
-            //e.Row.IsVisible = isVisible;
-
-            //e.Row.InvalidateArrange();
-            //e.Row.InvalidateMeasure();
-            //e.Row.InvalidateVisual();
-            //e.Row.EndInit();
-            #endregion
+            var t = (WordItem) _DGVRows[ index ];
+            t.ViewOrderNumber = index + 1;
         }
 
-        private void clearFilterButton_Click( object sender, RoutedEventArgs e ) => filterTextBox.Text = null;
 
         private string _LastFilterText;
         private async void filterTextBox_TextChanged( string value )
         {
             var text = value?.Trim();
-            Debug.WriteLine( $"filterTextBox_TextChanged: '{text}'" );
-
             if ( _LastFilterText != text )
             {
                 await Task.Delay( 250 );
@@ -207,33 +232,25 @@ namespace m3u8.download.manager.ui
                 return;
             }
 
-            await Dispatcher.UIThread.InvokeAsync( () => processFilter( text ) );
-        }
-        private void processFilter( string filterText )
-        {
-            Debug.WriteLine( $"processFilter: '{filterText}'" );
-            var isEmpty = filterText.IsNullOrEmpty();
+            #region [.main routine.]
+            var isEmpty = text.IsNullOrEmpty();
 
             clearFilterButton.IsVisible = !isEmpty;
 
-            //if ( _DGVRows.IsAddingNew || _DGVRows.IsEditingItem )
-            //{
-            //    return;
-            //}
-
-            if ( isEmpty )
+            if ( _DGVRows != null )
             {
-                _DGVRows.Filter = null;
-            }
-            else
-            {
-                _DGVRows.Filter = ( t ) =>
+                if ( isEmpty )
                 {
-                    var s = t.ToString();
-                    return ((s != null) && (s.IndexOf( filterText, StringComparison.InvariantCultureIgnoreCase ) != -1));
-                };
+                    _DGVRows.Filter = null;
+                }
+                else
+                {
+                    _DGVRows.Filter = (t) => t.ToString().ContainsIgnoreCase( text );
+                }
             }
+            #endregion            
         }
+        private void clearFilterButton_Click( object sender, RoutedEventArgs e ) => filterTextBox.Text = null;
         #endregion
     }
 }

@@ -23,20 +23,9 @@
     <TextBlock Foreground="SteelBlue">.m3u8 file url:</TextBlock>
     <TextBox x:Name="m3u8FileUrlTextBox" AcceptsReturn="True" TextWrapping="Wrap" Height="75"></TextBox>
     
-    <Grid Margin="0 5 0 0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="auto" />
-        <RowDefinition Height="auto" />
-      </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="auto" />
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="auto" />
-        <ColumnDefinition Width="auto" />
-        <ColumnDefinition Width="auto" />
-      </Grid.ColumnDefinitions>
-    
-      <TextBlock Grid.Row="0" Grid.Column="0" Foreground="SteelBlue" Margin="0 0 5 0">
+    <Grid RowDefinitions="auto,auto" ColumnDefinitions="auto,*,auto,auto,auto"
+          Margin="0,5,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">      
+      <TextBlock Grid.Row="0" Grid.Column="0" Foreground="SteelBlue" Margin="0,0,5,0">
         output
 file name:
       </TextBlock>
@@ -44,7 +33,7 @@ file name:
       <Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="2" Width="25" Cursor="Hand" Margin="0.5">x</Button>
       <Button  x:Name="outputFileNameSelectButton" Grid.Row="0" Grid.Column="3" Width="25" Cursor="Hand" Margin="0.5">=</Button>
     
-      <TextBlock Grid.Row="1" Grid.Column="0" Foreground="SteelBlue" Margin="0 0 5 0">
+      <TextBlock Grid.Row="1" Grid.Column="0" Foreground="SteelBlue" Margin="0,0,5,0">
         output 
 directory :
       </TextBlock>
@@ -52,16 +41,15 @@ directory :
       <Button  x:Name="outputDirectorySelectButton" Grid.Row="1" Grid.Column="3" Width="25" Cursor="Hand" Margin="0.5">=</Button>
       <Button  x:Name="loadM3u8FileContentButton"   Grid.Row="1" Grid.Column="4" Cursor="Hand" Margin="0.5">(load .m3u8 file-content)</Button>    
     </Grid>
-
   </StackPanel>
 
   <local-ui:RequestLogUC x:Name="logUC" Grid.Row="1" 
-                         Margin="5 0" MinHeight="120"
+                         Margin="5,0" MinHeight="120"
                          BorderBrush="LightGray" BorderThickness="1"/>
     
   <DockPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
-    <Button x:Name="startDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" FontWeight="Bold" Margin="0 0 10 0">Start Download</Button>
-    <Button x:Name="laterDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" Margin="10 0 0 0">Download later</Button>
+    <Button x:Name="startDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" FontWeight="Bold" Margin="0,0,10,0">Start Download</Button>
+    <Button x:Name="laterDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" Margin="10,0,0,0">Download later</Button>
   </DockPanel>
   </Grid>
 </Window>

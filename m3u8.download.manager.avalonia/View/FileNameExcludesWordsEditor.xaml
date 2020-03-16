@@ -11,14 +11,21 @@
         Icon="/Resources/m3u8_32x36.ico"
         Background="WhiteSmoke"
         >
-  <Window.Styles>
+  <Window.Styles>    
     <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
       <Setter Property="Fill" Value="DodgerBlue" />
     </Style>
     <Style Selector="DataGridRow:selected TextBlock">
       <Setter Property="Foreground" Value="White" />
     </Style>
-  </Window.Styles>  
+
+    <Style Selector="DataGridCell.order_number">
+      <Setter Property="Foreground" Value="Silver" />
+    </Style>
+    <Style Selector="DataGridRow:selected DataGridCell.order_number TextBlock">
+      <Setter Property="Foreground" Value="Silver" />
+    </Style>
+  </Window.Styles>
   
   <Grid RowDefinitions="auto,*,auto" ColumnDefinitions="auto,*,auto" Margin="15">
     <TextBlock Grid.Row="0" Grid.Column="0" 
@@ -39,14 +46,29 @@
               GridLinesVisibility="Vertical" 
               VerticalGridLinesBrush="White" HorizontalGridLinesBrush="Black"
               BorderBrush="LightGray" BorderThickness="1"
+              ClipboardCopyMode="None"
               >
-              <!--
-              HeadersVisibility="All"
-              RowHeaderWidth="40"              
-              -->
       <DataGrid.Columns>
-        <DataGridTextColumn Header="#" Binding="{Binding ViewIndex, Mode=OneWay}" Width="auto" IsReadOnly="True" />
-        <DataGridTextColumn Header="Exclude word" Binding="{Binding Text, Mode=TwoWay}" Width="*" />
+        <DataGridTextColumn Header="#" Binding="{Binding ViewOrderNumber, Mode=OneWay}" 
+                            Width="auto" IsReadOnly="True"
+                            CellStyleClasses="order_number" />
+        <!--
+        <DataGridTextColumn Header="Exclude word" Binding="{Binding Text, Mode=TwoWay}" 
+                            Width="*" CanUserSort="True" SortMemberPath="Text" />
+        -->
+        <DataGridTextColumn Binding="{Binding Text, Mode=TwoWay}"
+                            Width="*" CanUserSort="True" SortMemberPath="Text">
+          <DataGridTextColumn.Header>
+            <DockPanel>
+              <TextBlock Grid.Column="0" Text="Exclude word" VerticalAlignment="Center"
+                         Margin="0,0,10,0" />
+              <Button x:Name="addNewRowButton" Cursor="Hand" ToolTip.Tip="append new row"
+                      Background="Gray" Padding="5,2"
+                      >+</Button>
+            </DockPanel>
+          </DataGridTextColumn.Header>
+        </DataGridTextColumn>
+        
       </DataGrid.Columns>
     </DataGrid>
     

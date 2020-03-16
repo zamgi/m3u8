@@ -94,7 +94,7 @@
         
         <MenuItem Command="{Binding ParallelismCommand}" ToolTip.Tip="Parallelism settings" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
-            <Image Source="/Resources/dop_settings_32.ico" />
+            <Image Source="/Resources/dop_settings.ico" />
           </MenuItem.Header>
         </MenuItem>
 

@@ -141,7 +141,7 @@ namespace m3u8.download.manager.ui
         public DegreeOfParallelismMenuItem() { }
 
         protected override string  MainToolTipText    => "degree of parallelism";
-        protected override IBitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/dop_16.ico" ) );
+        protected override IBitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/dop.ico" ) );
         protected override IBrush  MainForeground     => Brushes.Green;
         protected override IBrush  SelectedBackground => Brushes.LightGreen;
 

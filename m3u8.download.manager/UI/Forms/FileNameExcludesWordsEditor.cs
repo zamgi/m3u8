@@ -123,11 +123,10 @@ namespace m3u8.download.manager.ui
         private async void filterTextBox_TextChanged( object sender, EventArgs e )
         {
             var text = filterTextBox.Text.Trim();
-
             if ( _LastFilterText != text )
             {
-                _LastFilterText = text;
                 await Task.Delay( 250 );
+                _LastFilterText = text;
                 filterTextBox_TextChanged( sender, e );
                 return;
             }
@@ -136,8 +135,6 @@ namespace m3u8.download.manager.ui
 
             clearFilterButton.Visible = !isEmpty;
 
-            //var cm = BindingContext[ DGV.DataSource ] as CurrencyManager;
-            //cm?.SuspendBinding();
             DGV.SuspendDrawing();
             try
             {
@@ -154,15 +151,13 @@ namespace m3u8.download.manager.ui
                     {
                         if ( !row.IsNewRow )
                         {
-                            var value = row.Cells[ 0 ].Value?.ToString();
-                            row.Visible = ((value != null) && (value.IndexOf( text, StringComparison.InvariantCultureIgnoreCase ) != -1));
+                            row.Visible = (row.Cells[ 0 ].Value?.ToString()).ContainsIgnoreCase( text );
                         }
                     }
                 }
             }
             finally
             {
-                //cm?.ResumeBinding();
                 DGV.ResumeDrawing();
             }
         }

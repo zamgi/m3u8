@@ -183,15 +183,11 @@
     <Content Include="Resources\contextMenu\pause.png" />
     <Content Include="Resources\contextMenu\start_all.png" />
     <Content Include="Resources\contextMenu\start.png" />
-    <Content Include="Resources\dop_16.ico" />
+    <Content Include="Resources\dop.ico" />
     <Content Include="Resources\downloadInstance.ico" />
     <Content Include="Resources\statuses\canceled.png" />
     <None Include="Resources\settings.ico" />
-    <None Include="Resources\unchecked.ico" />
-    <None Include="Resources\m3u8.png" />
-    <None Include="Resources\m3u8_148x166.ico" />
     <None Include="Resources\m3u8_32x36.ico" />
-    <None Include="Resources\checked.ico" />
     <Content Include="Resources\menu\control_delete.png" />
     <Content Include="Resources\menu\control_delete_all_finished.png" />
     <Content Include="Resources\menu\control_pause.png" />
@@ -199,7 +195,6 @@
     <Content Include="Resources\menu\control_cancel.png" />
     <Content Include="Resources\menu\help.png" />
     <Content Include="Resources\menu\log.png" />
-    <Content Include="Resources\m3u.jpg" />
     <Content Include="Resources\menu\copy.png" />
     <Content Include="Resources\menu\paste.png" />
     <Content Include="Resources\menu\plus.png" />

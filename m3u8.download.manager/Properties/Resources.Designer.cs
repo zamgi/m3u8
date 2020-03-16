@@ -19,7 +19,7 @@ namespace m3u8.download.manager.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -57,26 +57,6 @@ namespace m3u8.download.manager.Properties {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon _checked {
-            get {
-                object obj = ResourceManager.GetObject("checked", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon _unchecked {
-            get {
-                object obj = ResourceManager.GetObject("unchecked", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
             }
         }
         
@@ -212,9 +192,9 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon dop_16 {
+        internal static System.Drawing.Icon dop {
             get {
-                object obj = ResourceManager.GetObject("dop_16", resourceCulture);
+                object obj = ResourceManager.GetObject("dop", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
