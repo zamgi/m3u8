@@ -23,19 +23,6 @@ namespace m3u8.ext
         [M(O.AggressiveInlining)] public static string AsPartExceptionMessage( this string responseText ) => (responseText.IsNullOrWhiteSpace() ? string.Empty : ($", '{responseText}'"));
         [M(O.AggressiveInlining)] public static string CreateExceptionMessage( this HttpResponseMessage response, string responseText ) => ($"{(int) response.StatusCode}, {response.ReasonPhrase}{responseText.AsPartExceptionMessage()}");
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
-
-        public static string ReadAsStringAsyncEx( this HttpContent content, CancellationToken ct )
-        {
-            var t = content.ReadAsStringAsync();
-            t.Wait( ct );
-            return (t.Result);
-        }
-        public static byte[] ReadAsByteArrayAsyncEx( this HttpContent content, CancellationToken ct )
-        {
-            var t = content.ReadAsByteArrayAsync();
-            t.Wait( ct );
-            return (t.Result);
-        }
     }
 
     /// <summary>
@@ -46,13 +33,32 @@ namespace m3u8.ext
         private int _DefaultConnectionLimit;
         private DefaultConnectionLimitSaver( int connectionLimit )
         {
-            _DefaultConnectionLimit = ServicePointManager.DefaultConnectionLimit;
-            ServicePointManager.DefaultConnectionLimit = connectionLimit;
+            if ( ServicePointManager.DefaultConnectionLimit < connectionLimit )
+            {
+                _DefaultConnectionLimit = ServicePointManager.DefaultConnectionLimit;
+                ServicePointManager.DefaultConnectionLimit = connectionLimit;
+            }
+            else
+            {
+                _DefaultConnectionLimit = -1;
+            }
         }
         public static DefaultConnectionLimitSaver Create( int connectionLimit ) => new DefaultConnectionLimitSaver( connectionLimit );
-        public void Dispose() => ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
+        public void Dispose()
+        {
+            if ( 0 < _DefaultConnectionLimit )
+            {
+                ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
+            }
+        }
 
-        public void Reset( int connectionLimit ) => ServicePointManager.DefaultConnectionLimit = connectionLimit;
+        public void Reset( int connectionLimit )
+        {
+            if ( ServicePointManager.DefaultConnectionLimit < connectionLimit )
+            {
+                ServicePointManager.DefaultConnectionLimit = connectionLimit;
+            }
+        }
     }
 }
 
@@ -73,11 +79,7 @@ namespace m3u8
             public int Compare( m3u8_part_ts x, m3u8_part_ts y ) => (x.OrderNumber - y.OrderNumber);
         }
 
-        public m3u8_part_ts( string relativeUrlName, int orderNumber ) : this()
-        {
-            RelativeUrlName = relativeUrlName;
-            OrderNumber     = orderNumber;
-        }
+        public m3u8_part_ts( string relativeUrlName, int orderNumber ) : this() => (RelativeUrlName, OrderNumber) = (relativeUrlName, orderNumber);
 
         public string RelativeUrlName { get; private set; }
         public int    OrderNumber     { get; private set; }
@@ -259,25 +261,25 @@ namespace m3u8
                     {
                         requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
 
-                        using ( HttpResponseMessage response = await _HttpClient.SendAsync( requestMsg, ct ).ConfigureAwait( false ) )
-                        using ( HttpContent content = response.Content )
+                        using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, ct ).ConfigureAwait( false ) )
+                        using ( var content     = responseMsg.Content )
                         {
-                            if ( !response.IsSuccessStatusCode )
+                            if ( !responseMsg.IsSuccessStatusCode )
                             {
                                 var responseText = default(string);
                                 try
                                 {
-                                    responseText = content.ReadAsStringAsyncEx( ct );
+                                    responseText = await content.ReadAsStringAsync().ConfigureAwait( false );
                                 }
                                 catch ( Exception ex )
                                 {
                                     Debug.WriteLine( ex );
-                                    response.EnsureSuccessStatusCode();
+                                    responseMsg.EnsureSuccessStatusCode();
                                 }
-                                throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
+                                throw (new m3u8_Exception( responseMsg.CreateExceptionMessage( responseText ) ));
                             }
 
-                            var text = content.ReadAsStringAsyncEx( ct );
+                            var text = await content.ReadAsStringAsync().ConfigureAwait( false );
                             var m3u8File = m3u8_file_t.Parse( text, url );
                             return (m3u8File);
                         }
@@ -312,25 +314,25 @@ namespace m3u8
                     {
                         requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
 
-                        using ( HttpResponseMessage response = await _HttpClient.SendAsync( requestMsg, ct ).ConfigureAwait( false ) )
-                        using ( HttpContent content = response.Content )
+                        using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, ct ).ConfigureAwait( false ) )
+                        using ( var content     = responseMsg.Content )
                         {
-                            if ( !response.IsSuccessStatusCode )
+                            if ( !responseMsg.IsSuccessStatusCode )
                             {
                                 var responseText = default(string);
                                 try
                                 {
-                                    responseText = content.ReadAsStringAsyncEx( ct );
+                                    responseText = await content.ReadAsStringAsync().ConfigureAwait( false );
                                 }
                                 catch ( Exception ex )
                                 {
                                     Debug.WriteLine( ex );
-                                    response.EnsureSuccessStatusCode();
+                                    responseMsg.EnsureSuccessStatusCode();
                                 }
-                                throw (new m3u8_Exception( response.CreateExceptionMessage( responseText ) ));
+                                throw (new m3u8_Exception( responseMsg.CreateExceptionMessage( responseText ) ));
                             }
 
-                            var bytes = await content.ReadAsByteArrayAsync().ConfigureAwait( false ); //---var bytes = content.ReadAsByteArrayAsyncEx( ct ); //---
+                            var bytes = await content.ReadAsByteArrayAsync().ConfigureAwait( false );
                             part.SetBytes( bytes );
                             return (part);
                         }
