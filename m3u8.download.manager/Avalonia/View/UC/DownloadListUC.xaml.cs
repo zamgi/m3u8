@@ -107,7 +107,7 @@ namespace m3u8.download.manager.ui
                         case OutputFileName_Column_DisplayIndex:
                         case OutputDirectory_Column_DisplayIndex:
                         {
-                            bool is_valid( int rowIndex, DownloadRow selectedDownloadRow ) => ((0 <= rowIndex) && (rowIndex < _Model.RowsCount) && (_Model[ rowIndex ] == selectedDownloadRow));
+                            bool is_valid( int _rowIndex, DownloadRow _selectedDownloadRow ) => ((0 <= _rowIndex) && (_rowIndex < _Model.RowsCount) && (_Model[ _rowIndex ] == _selectedDownloadRow));
 
                             var selectedDownloadRow = this.GetSelectedDownloadRow();
                             var rowIndex = e.Row.GetIndex();

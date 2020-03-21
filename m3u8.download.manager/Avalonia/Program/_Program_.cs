@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Net;
-using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Logging.Serilog;
@@ -99,7 +98,8 @@ namespace m3u8.download.manager
                     Settings.Default.UpgradeIfNeed();
                     #endregion
 
-                    #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Tls13 + Ssl3'.]
+                    #region comm. [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Tls13 + Ssl3'.]
+                    /*
                     void set_SecurityProtocol( SecurityProtocolType securityProtocolType )
                     {
                         try
@@ -115,12 +115,12 @@ namespace m3u8.download.manager
                     set_SecurityProtocol( SecurityProtocolType.Tls11 );
                     set_SecurityProtocol( SecurityProtocolType.Tls12 );
                     set_SecurityProtocol( SecurityProtocolType.Tls13 );
-                    //---set_SecurityProtocol( SecurityProtocolType.Ssl3  );
+                    //---set_SecurityProtocol( SecurityProtocolType.Ssl3 );
+                    */
                     #endregion
 
                     #region [.register encoding provider.]
-                    Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
-                    Encoding.RegisterProvider( new AdvancedEncodingProvider( Encoding.GetEncodings() ) );
+                    AdvancedEncodingProvider.Init();
                     #endregion
 
                     App._InputParamsArray = inputParamsArray;

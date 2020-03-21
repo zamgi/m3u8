@@ -27,5 +27,11 @@ namespace m3u8.download.manager
         }
         public override Encoding GetEncoding( string name ) => (_Dict_2.TryGetValue( name, out var encoding ) ? encoding : default);
         public override Encoding GetEncoding( int codepage ) => (_Dict_1.TryGetValue( codepage, out var encoding ) ? encoding : default);
+
+        public static void Init()
+        {
+            Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
+            Encoding.RegisterProvider( new AdvancedEncodingProvider( Encoding.GetEncodings() ) );
+        }
     }
 }

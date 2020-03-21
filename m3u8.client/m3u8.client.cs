@@ -30,7 +30,7 @@ namespace m3u8.ext
     /// </summary>
     internal struct DefaultConnectionLimitSaver : IDisposable
     {
-        private int _DefaultConnectionLimit;
+        private readonly int _DefaultConnectionLimit;
         private DefaultConnectionLimitSaver( int connectionLimit )
         {
             if ( ServicePointManager.DefaultConnectionLimit < connectionLimit )
@@ -42,8 +42,7 @@ namespace m3u8.ext
             {
                 _DefaultConnectionLimit = -1;
             }
-        }
-        public static DefaultConnectionLimitSaver Create( int connectionLimit ) => new DefaultConnectionLimitSaver( connectionLimit );
+        }        
         public void Dispose()
         {
             if ( 0 < _DefaultConnectionLimit )
@@ -59,6 +58,8 @@ namespace m3u8.ext
                 ServicePointManager.DefaultConnectionLimit = connectionLimit;
             }
         }
+
+        public static DefaultConnectionLimitSaver Create( int connectionLimit ) => new DefaultConnectionLimitSaver( connectionLimit );
     }
 }
 

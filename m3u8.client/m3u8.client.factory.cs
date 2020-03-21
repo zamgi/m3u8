@@ -5,6 +5,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 
+#if NETCOREAPP
+using System.Net.Security;
+using System.Security.Authentication;
+#endif
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -76,13 +81,12 @@ namespace m3u8.infrastructure
 
         private LRUCache() { }
         public static LRUCache< T > CreateWithLimitMaxValue( int capacity, IEqualityComparer< T > comparer = null )
-        {
-            var o = new LRUCache< T >();
-            o.Limit       = int.MaxValue;
-            o._HashSet    = new HashSet< LinkedListNode< T > >( capacity, new LinkedListNode_EqualityComparer( comparer ) );
-            o._LinkedList = new LinkedList< T >();
-            return (o);
-        }
+            => new LRUCache<T>()
+            {
+                Limit       = int.MaxValue,
+                _HashSet    = new HashSet< LinkedListNode< T > >( capacity, new LinkedListNode_EqualityComparer( comparer ) ),
+                _LinkedList = new LinkedList< T >()
+            };
         #endregion
 
         public int Limit
@@ -252,19 +256,60 @@ namespace m3u8.infrastructure
             }
         }
 
+        private static HttpClient CreateHttpClient( in TimeSpan? timeout )
+        {
+#if NETCOREAPP
+            SocketsHttpHandler CreateSocketsHttpHandler( in TimeSpan? _timeout )
+            {
+                void set_Protocol( SslClientAuthenticationOptions sslOptions, SslProtocols protocol )
+                {
+                    try
+                    {
+                        sslOptions.EnabledSslProtocols |= protocol;
+                    }
+                    catch ( Exception ex )
+                    {
+                        Debug.WriteLine( ex );
+                    }
+                };
+
+                var h = new SocketsHttpHandler();
+                    h.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                    set_Protocol( h.SslOptions, SslProtocols.Tls   );
+                    set_Protocol( h.SslOptions, SslProtocols.Tls11 );
+                    set_Protocol( h.SslOptions, SslProtocols.Tls12 );
+                #pragma warning disable CS0618
+                    set_Protocol( h.SslOptions, SslProtocols.Ssl2  );
+                    set_Protocol( h.SslOptions, SslProtocols.Ssl3  );
+                #pragma warning restore CS0618
+                if ( _timeout.HasValue )
+                {
+                    h.ConnectTimeout = _timeout.Value;
+                }
+                return (h);
+            };
+            
+            var handler = CreateSocketsHttpHandler( in timeout );
+            var httpClient = new HttpClient( handler, true );
+#else
+            var httpClient = new HttpClient();
+#endif            
+            if ( timeout.HasValue )
+            {
+                httpClient.Timeout = timeout.Value;
+            }
+            return (httpClient);
+        }
+
         public static (HttpClient, IDisposable) Get( in init_params ip ) => Get( ip.Timeout );
-        public static (HttpClient, IDisposable) Get( TimeSpan? timeout = null )
+        public static (HttpClient, IDisposable) Get( in TimeSpan? timeout = null )
         {
             var key = tuple.key( timeout );
             lock ( _LRUCache )
             {
                 if ( !_LRUCache.TryGetValue( key, out var t ) )
                 {
-                    t = new tuple( key.Timeout, new HttpClient() );
-                    if ( timeout.HasValue )
-                    {
-                        t.HttpClient.Timeout = timeout.Value;
-                    }
+                    t = new tuple( key.Timeout, CreateHttpClient( in timeout ) );
                     _LRUCache.Add( t );
                 }
                 t.IncrementRefCount();
@@ -333,17 +378,17 @@ namespace m3u8
     { 
         public static m3u8_client Create() => Create( HttpClientFactory_WithRefCount.Get() );
         public static m3u8_client Create( in (TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.timeout, t.attemptRequestCountByPart );
-        public static m3u8_client Create( TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( timeout ), attemptRequestCountByPart );
+        public static m3u8_client Create( in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( timeout ), attemptRequestCountByPart );
         public static m3u8_client Create( in m3u8_client.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get(), in ip );
 
-        public static void ForceClearAndDisposeAll() => HttpClientFactory_WithRefCount.ForceClearAndDisposeAll();
-
+        private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, in m3u8_client.init_params ip ) => new m3u8_client( in t, in ip );
         private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, int attemptRequestCountByPart = 10 )
             => Create( in t, new m3u8_client.init_params()
                              {
                                 AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 )
                              }
                      );
-        private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, in m3u8_client.init_params ip ) => new m3u8_client( in t, in ip );
+
+        public static void ForceClearAndDisposeAll() => HttpClientFactory_WithRefCount.ForceClearAndDisposeAll();
     }
 }

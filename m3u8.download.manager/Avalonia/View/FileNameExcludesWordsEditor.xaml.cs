@@ -160,12 +160,12 @@ namespace m3u8.download.manager.ui
                 var count = selectedItems.Count;
                 if ( 0 < count )
                 {
-                    var array = new object[ count ];
+                    var _array = new object[ count ];
                     for ( count--; 0 <= count; count-- )
                     {
-                        array[ count ] = selectedItems[ count ];
+                        _array[ count ] = selectedItems[ count ];
                     }
-                    return (array);
+                    return (_array);
                 }
                 return (null);
             };
