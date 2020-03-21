@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;netcoreapp2.2</TargetFrameworks>
     <RootNamespace>m3u8.download.manager</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
