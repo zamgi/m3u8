@@ -98,7 +98,7 @@ namespace m3u8.download.manager
                     #endregion
 
                     #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
-                    ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3);
+                    ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13 | SecurityProtocolType.Ssl3);
                     #endregion
 
                     Application.EnableVisualStyles();

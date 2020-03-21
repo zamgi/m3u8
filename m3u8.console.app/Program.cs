@@ -232,7 +232,7 @@ namespace m3u8
                 return (downloadPartsResult);
             }
 
-            public static void run__v1( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
+            public static void run__1( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
                 using ( var mc  = m3u8_client_factory.Create() )
                 using ( var cts = new CancellationTokenSource() )
@@ -379,7 +379,7 @@ namespace m3u8
                 CONSOLE.WriteLine( $"\r\n total parts processed: {successPartNumber} of {totalPatrs}" );
             }
 
-            public static void run__v2( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
+            public static void run__2( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
                 using ( var mc  = m3u8_client_factory.Create() )
                 using ( var cts = new CancellationTokenSource() )
@@ -469,16 +469,16 @@ namespace m3u8
             try
             {
                 #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
-                ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Ssl3);
+                ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13 | SecurityProtocolType.Ssl3);
                 #endregion
 
                 var M3U8_FILE_URL   = ConfigurationManager.AppSettings[ "M3U8_FILE_URL"   ]; if ( M3U8_FILE_URL  .IsNullOrWhiteSpace() ) throw (new ArgumentNullException( nameof(M3U8_FILE_URL) ));
                 var OUTPUT_FILE_DIR = ConfigurationManager.AppSettings[ "OUTPUT_FILE_DIR" ]; if ( OUTPUT_FILE_DIR.IsNullOrWhiteSpace() ) OUTPUT_FILE_DIR = @"E:\\";
                 var OUTPUT_FILE_EXT = ConfigurationManager.AppSettings[ "OUTPUT_FILE_EXT" ]; if ( OUTPUT_FILE_EXT.IsNullOrWhiteSpace() ) OUTPUT_FILE_EXT = ".avi";
 
-                //---v1.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
-                //v2.run__v1( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
-                //v2.run__v2( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
+                //v1.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
+                //v2.run__1( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
+                //v2.run__2( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
 
                 using ( var cts = new CancellationTokenSource() )
                 {
@@ -615,14 +615,28 @@ namespace m3u8
     /// </summary>
     internal struct DefaultConnectionLimitSaver : IDisposable
     {
-        private int _DefaultConnectionLimit;
+        private readonly int _DefaultConnectionLimit;
         private DefaultConnectionLimitSaver( int connectionLimit )
         {
-            _DefaultConnectionLimit = ServicePointManager.DefaultConnectionLimit;
-            ServicePointManager.DefaultConnectionLimit = connectionLimit;
+            if ( ServicePointManager.DefaultConnectionLimit < connectionLimit )
+            {
+                _DefaultConnectionLimit = ServicePointManager.DefaultConnectionLimit;
+                ServicePointManager.DefaultConnectionLimit = connectionLimit;
+            }
+            else
+            {
+                _DefaultConnectionLimit = -1;
+            }
+        }        
+        public void Dispose()
+        {
+            if ( 0 < _DefaultConnectionLimit )
+            {
+                ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
+            }
         }
+
         public static DefaultConnectionLimitSaver Create( int connectionLimit ) => new DefaultConnectionLimitSaver( connectionLimit );
-        public void Dispose() => ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
     }
 
     /// <summary>
