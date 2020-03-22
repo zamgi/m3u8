@@ -43,8 +43,10 @@ namespace m3u8.download.manager
                        "  F1:         About dialog" + Environment.NewLine;
 
             var fontFamily = (from f in FontFamily.SystemFontFamilies
-                              where (f.Name.EqualIgnoreCase( "Courier New" )) || 
-                                    (f.Name.EqualIgnoreCase( "Consolas" ))
+                              where (f.Name.EqualIgnoreCase( "Courier New" )) || //Windows
+                                    (f.Name.EqualIgnoreCase( "Consolas"    )) || //Windows
+                                    (f.Name.EqualIgnoreCase( "Book"        )) || //Linux
+                                    (f.Name.EqualIgnoreCase( "DejaVu Sans Mono" )) //Linux
                               select f
                              ).FirstOrDefault();
             if ( fontFamily != null )
