@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Platform;
@@ -10,15 +12,26 @@ namespace m3u8.download.manager.ipc
     /// </summary>
     internal static class ProcessCreator
     {
-        public static (bool success, string errorMsg) CreateAsBreakawayFromJob( string commandLine )
+        public static (bool success, string errorMsg) CreateAsBreakawayFromJob( string executeFileName, string commandLine )
         {
-            var pi = AvaloniaLocator.Current.GetService< IRuntimePlatform >().GetRuntimeInfo();
-            switch ( pi.OperatingSystem )
+            switch ( PlatformHelper.GetOperatingSystemType() )
             {
                 case OperatingSystemType.WinNT: return (WinNT.CreateAsBreakawayFromJob( commandLine ), null);
 
                 default:
-                    return (false, $"Not implemented for OS '{pi.OperatingSystem}'");
+                    return (ProcessStart( executeFileName ), null);
+                    //return (false, $"Not implemented for OS '{pi.OperatingSystem}'");
+            }
+        }
+
+        private static bool ProcessStart( string fileName )
+        {
+            using ( var p = new Process() )
+            {
+                p.StartInfo.FileName         = fileName;
+                p.StartInfo.UseShellExecute  = false;
+                p.StartInfo.WorkingDirectory = Path.GetDirectoryName( fileName );
+                return (p.Start());
             }
         }
 

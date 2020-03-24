@@ -34,7 +34,7 @@ namespace m3u8.download.manager
                 var browserType = BrowserIPC.CommandLine.GetBrowserType( args );
                 switch ( browserType )
                 {
-                    case BrowserIPC.BrowserTypeEnum.Chrome:
+                    /*case BrowserIPC.BrowserTypeEnum.Chrome:
                     {
                         var text = BrowserIPC.ReadFromStandardInput();
                         if ( !text.IsNullOrWhiteSpace() )
@@ -43,8 +43,9 @@ namespace m3u8.download.manager
                         }
                         BrowserIPC.WriteToStandardOutput( success );
                     }
-                    break;
+                    break;*/
 
+                    case BrowserIPC.BrowserTypeEnum.Chrome:
                     case BrowserIPC.BrowserTypeEnum.Firefox:
                     {
                         var text = BrowserIPC.ReadFromStandardInput();
@@ -62,10 +63,10 @@ namespace m3u8.download.manager
                                     sca.Release(); //!!!
 
                                     string errorMsg;
-                                    (success, errorMsg) = ProcessCreator.CreateAsBreakawayFromJob( cmdLine );
+                                    (success, errorMsg) = ProcessCreator.CreateAsBreakawayFromJob( executeFileName, cmdLine );
                                     if ( !success )
                                     {
-                                        Extensions.MessageBox_ShowError( $"Error while trying run additional native application's process{(errorMsg.IsNullOrEmpty() ? null : $": '{errorMsg}'")}.", executeFileName ).Wait();
+                                        PlatformHelper.TryMessageBox_ShowError( $"Error while trying run additional native application's process{(errorMsg.IsNullOrEmpty() ? null : $": '{errorMsg}'")}.", executeFileName );
                                     }
                                 }
                             }

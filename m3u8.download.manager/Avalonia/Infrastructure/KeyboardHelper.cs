@@ -11,8 +11,7 @@ namespace m3u8.download.manager
     {
         public static bool? IsShiftButtonPushed()
         {
-            var pi = AvaloniaLocator.Current.GetService< IRuntimePlatform >().GetRuntimeInfo();
-            switch ( pi.OperatingSystem )
+            switch ( PlatformHelper.GetOperatingSystemType() )
             {
                 case OperatingSystemType.WinNT: return (WinNT.IsShiftButtonPushed());
 
