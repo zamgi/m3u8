@@ -34,6 +34,7 @@ namespace m3u8.download.manager
                 var browserType = BrowserIPC.CommandLine.GetBrowserType( args );
                 switch ( browserType )
                 {
+                    #region comm.
                     /*case BrowserIPC.BrowserTypeEnum.Chrome:
                     {
                         var text = BrowserIPC.ReadFromStandardInput();
@@ -44,6 +45,7 @@ namespace m3u8.download.manager
                         BrowserIPC.WriteToStandardOutput( success );
                     }
                     break;*/
+                    #endregion
 
                     case BrowserIPC.BrowserTypeEnum.Chrome:
                     case BrowserIPC.BrowserTypeEnum.Firefox:
@@ -139,7 +141,7 @@ namespace m3u8.download.manager
                 }
                 else if ( success )
                 {
-                    PipeIPC.NamedPipeClient__out.Send( sca.MutexName, inputParamsArray );
+                    PipeIPC.NamedPipeClient__out.Send_TryFewTimes( sca.MutexName, inputParamsArray );
                 }
                 #endregion
             }
