@@ -141,7 +141,7 @@ namespace m3u8.download.manager
                 }
                 else if ( success )
                 {
-                    PipeIPC.NamedPipeClient__out.Send_TryFewTimes( sca.MutexName, inputParamsArray );
+                    PipeIPC.NamedPipeClient__out.Send( sca.MutexName, inputParamsArray );
                 }
                 #endregion
             }
