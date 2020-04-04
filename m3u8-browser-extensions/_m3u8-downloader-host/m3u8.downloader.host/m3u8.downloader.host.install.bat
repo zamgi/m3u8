@@ -5,5 +5,5 @@
 :: Change HKCU to HKLM if you want to install globally.
 :: %~dp0 is the directory containing this bat script and ends with a backslash.
 
-REG ADD "HKCU\Software\Google\Chrome\NativeMessagingHosts\m3u8.downloader.host" /ve /t REG_SZ /d "%~dp0m3u8.downloader.host.json" /f
-REG ADD "HKCU\Software\Mozilla\NativeMessagingHosts\m3u8.downloader.host" /ve /t REG_SZ /d "%~dp0m3u8.downloader.host.ff.json" /f
+REG ADD "HKCU\Software\Google\Chrome\NativeMessagingHosts\m3u8.downloader.host" /ve /t REG_SZ /d "%~dp0m3u8.downloader.host.google-chrome.json" /f
+REG ADD "HKCU\Software\Mozilla\NativeMessagingHosts\m3u8.downloader.host" /ve /t REG_SZ /d "%~dp0m3u8.downloader.host.firefox.json" /f
