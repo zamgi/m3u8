@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2024
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.client", "m3u8.client\m3u8.client.csproj", "{46961224-7B51-4115-BA59-53F8537CF7C4}"
 EndProject
@@ -54,18 +54,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xpi", "xpi", "{3C43194B-AA3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8.downloader.host", "m3u8.downloader.host", "{4A091DFF-C923-491B-B4C4-2762163EE716}"
 	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\_install_m3u8.downloader.host.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\_install_m3u8.downloader.host.bat
-		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\_uninstall_m3u8.downloader.host.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\_uninstall_m3u8.downloader.host.bat
-		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.ff.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.ff.json
-		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.json
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.firefox.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.firefox.json
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.google-chrome.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.google-chrome.json
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.install.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.install.bat
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.uninstall.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.downloader.host\m3u8.downloader.host.uninstall.bat
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8.download.manager.host", "m3u8.download.manager.host", "{3E37E8AD-C2A1-4981-B316-F4D4B06AC253}"
 	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\_install_m3u8.download.manager.host.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\_install_m3u8.download.manager.host.bat
-		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\_uninstall_m3u8.download.manager.host.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\_uninstall_m3u8.download.manager.host.bat
-		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.ff.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.ff.json
-		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.json
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.firefox.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.firefox.json
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.google-chrome.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.google-chrome.json
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.install.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.install.bat
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.uninstall.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.uninstall.bat
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.download.manager", "m3u8.download.manager\WinForms\m3u8.download.manager.csproj", "{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}"
@@ -79,6 +79,28 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{46B5F521-C239-4F29-9C6A-F674B7385F51}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.download.manager.avalonia", "m3u8.download.manager\Avalonia\m3u8.download.manager.avalonia.csproj", "{A2B632E6-8000-4B07-91D2-24B017C31232}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8.download.manager.avalonia.host", "m3u8.download.manager.avalonia.host", "{272F6ACB-DD20-476A-821D-8F30B88F728F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "firefox", "firefox", "{55A1DC66-91D7-44F2-A1FB-E66157FDE368}"
+	ProjectSection(SolutionItems) = preProject
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.firefox.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.firefox.json
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.install.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.install.bat
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.install.sh = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.install.sh
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.uninstall.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.uninstall.bat
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.uninstall.sh = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.download.manager.avalonia.host.uninstall.sh
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.downloader.host.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\firefox\m3u8.downloader.host.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "google-chrome", "google-chrome", "{A9507421-E719-4ECB-90F6-8095FC672A2E}"
+	ProjectSection(SolutionItems) = preProject
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.google-chrome.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.google-chrome.json
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.install.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.install.bat
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.install.sh = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.install.sh
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.uninstall.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.uninstall.bat
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.uninstall.sh = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.download.manager.avalonia.host.uninstall.sh
+		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.downloader.host.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.downloader.host.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -125,6 +147,9 @@ Global
 		{FB9BF7F1-2D48-429E-81CE-369C7D48E076} = {63AC3FAC-138F-4E04-ACF9-D0C877D7C341}
 		{46B5F521-C239-4F29-9C6A-F674B7385F51} = {63AC3FAC-138F-4E04-ACF9-D0C877D7C341}
 		{A2B632E6-8000-4B07-91D2-24B017C31232} = {46B5F521-C239-4F29-9C6A-F674B7385F51}
+		{272F6ACB-DD20-476A-821D-8F30B88F728F} = {1894D434-5969-44B7-B51A-87F123427C6D}
+		{55A1DC66-91D7-44F2-A1FB-E66157FDE368} = {272F6ACB-DD20-476A-821D-8F30B88F728F}
+		{A9507421-E719-4ECB-90F6-8095FC672A2E} = {272F6ACB-DD20-476A-821D-8F30B88F728F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BBFEF9AD-DE12-4E77-AAF3-F441343E05C6}

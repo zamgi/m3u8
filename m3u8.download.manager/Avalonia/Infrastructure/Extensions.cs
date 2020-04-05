@@ -18,12 +18,12 @@ using MessageBox.Avalonia.BaseWindows;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 
+using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
-using m3u8.download.manager.controllers;
 
 namespace m3u8.download.manager
 {
@@ -287,9 +287,9 @@ namespace m3u8.download.manager
         public static Task ShowDialogEx( this Window dialog ) => dialog.ShowDialog( GetMainWindow() );
 
         #region [.MessageBox's.]
-        private static MsBoxStandardWindow Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, bool closeByEscape = true )
+        private static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, bool closeByEscape = true )
             => Create_MsBoxStandardWindow( text, caption, buttons, icon, out var _, closeByEscape );
-        public static MsBoxStandardWindow Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon
+        public static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon
             , out MessageBox.Avalonia.Views.MsBoxStandardWindow window, bool closeByEscape = true )
         {
             var p = new MessageBoxStandardParams()
@@ -314,7 +314,7 @@ namespace m3u8.download.manager
             window = p.Window;
             return (msgbox);
         }
-        public static async Task< ButtonResult > ShowEx( this MsBoxStandardWindow msgbox )
+        public static async Task< ButtonResult > ShowEx( this IMsBoxWindow< ButtonResult > msgbox )
         {
             var window = GetTopWindow();
             if ( window != null )
