@@ -27,8 +27,8 @@ For using chrome-extension/addOn need:
    - build in directory 'm3u8/m3u8-browser-extensions/_m3u8-downloader-host/m3u8.download.manager.avalonia.host' execute file named '**m3u8.download.manager.avalonia.exe**'
 - for Linux:   
    - run 'm3u8/m3u8-browser-extensions/_m3u8-downloader-host/m3u8.download.manager.avalonia.host/google-chrome/**m3u8.download.manager.avalonia.host.install.sh**'
-   - build or unzip ('m3u8.download.manager.avalonia.zip') in directory 'm3u8/m3u8-browser-extensions/_m3u8-downloader-host/m3u8.download.manager.avalonia.host' single execute file named '**m3u8.download.manager.avalonia**' and put him execute rights 
-for register host application for chrome.
+   - build or unzip ('m3u8.download.manager.avalonia.zip') in directory 'm3u8/m3u8-browser-extensions/_m3u8-downloader-host/m3u8.download.manager.avalonia.host' single execute file named '**m3u8.download.manager.avalonia**' and put him execute rights    
+for register host application for google-chrome.
 3) create in chrome extension directly by path 'm3u8/m3u8-browser-extensions/m3u8-chrome-extension/' <strike>or create '.crx'-file and register him</strike>.
 
 FireFox-Extension/AddOn
