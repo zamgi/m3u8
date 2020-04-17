@@ -410,43 +410,6 @@ namespace m3u8.download.manager.ui
             return (downloadInfo);
         }
 
-        /*[M(O.AggressiveInlining)] private static bool TryGetDownloadProgress( DownloadRow row, out double part, out string progressText )
-        {
-            var st = row.Status;
-            switch ( st )
-            {
-                case DownloadStatus.Created:
-                case DownloadStatus.Started:
-                case DownloadStatus.Wait   :
-                    part         = default;
-                    progressText = null;
-                    return (false);
-
-                default:
-                    string percentText;
-                    if ( 0 < row.TotalParts )
-                    {
-                        part        = (1.0 * row.SuccessDownloadParts) / row.TotalParts;
-                        var percent = Convert.ToByte( 100 * part );
-                        percentText = percent.ToString();
-                    }
-                    else if ( st == DownloadStatus.Canceled ) //not-started
-                    {
-                        part         = default;
-                        progressText = null;
-                        return (false);
-                    }
-                    else
-                    {
-                        part        = 0;
-                        percentText = "-";
-                    }
-
-                    var failedParts = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
-                    progressText = $"{percentText}%  ({row.SuccessDownloadParts} of {row.TotalParts}{failedParts})";
-                    return (true);
-            }
-        }*/
         [M(O.AggressiveInlining)] private static bool TryGetDownloadProgressText( DownloadRow row, out string progressText )
         {
             var st = row.Status;
