@@ -426,7 +426,7 @@ namespace m3u8.download.manager.ui
                     if ( 0 < row.TotalParts )
                     {
                         var part    = (1.0 * row.SuccessDownloadParts) / row.TotalParts;
-                        var percent = Convert.ToByte( 100 * part );
+                        var percent = (row.TotalParts <= (row.SuccessDownloadParts + row.FailedDownloadParts)) ? 100 : Extensions.Min( (byte) (100 * part), 99 );
                         percentText = percent.ToString();
                     }
                     else if ( st == DownloadStatus.Canceled ) //not-started
@@ -444,7 +444,7 @@ namespace m3u8.download.manager.ui
                     return (true);
             }
         }
-        [M(O.AggressiveInlining)] private static bool TryGetDownloadProgressPercentValue( DownloadRow row, out double part )
+        [M(O.AggressiveInlining)] private static bool TryGetDownloadProgressPartValue( DownloadRow row, out double part )
         {
             var st = row.Status;
             switch ( st )
@@ -473,7 +473,7 @@ namespace m3u8.download.manager.ui
             }
         }
         [M(O.AggressiveInlining)] internal static string GetProgressText( DownloadRow row ) => (TryGetDownloadProgressText( row, out var progressText ) ? progressText : "-");
-        [M(O.AggressiveInlining)] internal static double GetProgressPercentValue( DownloadRow row )=> (TryGetDownloadProgressPercentValue( row, out var part ) ? part : 0d);
+        [M(O.AggressiveInlining)] internal static double GetProgressPartValue( DownloadRow row )=> (TryGetDownloadProgressPartValue( row, out var part ) ? part : 0d);
 
         [M(O.AggressiveInlining)] internal static string GetDownloadTimeText( DownloadRow row )
         {

@@ -374,5 +374,6 @@ namespace m3u8.download.manager
             }
             return (0);            
         }
+        [M(O.AggressiveInlining)] public static byte Min( byte b1, byte b2 ) => ((b1 < b2) ? b1 : b2);
     }
 }

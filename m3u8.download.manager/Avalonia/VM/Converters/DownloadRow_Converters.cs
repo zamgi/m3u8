@@ -26,10 +26,10 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class ProgressPercentValue_Converter : _DownloadRow_ConverterBase
+    public sealed class ProgressPartValue_Converter : _DownloadRow_ConverterBase
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
-            => ((value is DownloadRow row) ? DownloadListUC.GetProgressPercentValue( row ) : 0d);
+            => ((value is DownloadRow row) ? DownloadListUC.GetProgressPartValue( row ) : 0d);
     }    
 
     /// <summary>

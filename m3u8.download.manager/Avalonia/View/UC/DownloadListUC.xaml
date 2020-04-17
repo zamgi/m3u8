@@ -9,7 +9,7 @@
              >
   <UserControl.Resources>
     <local:ProgressText_Converter            x:Key="ProgressText" />
-    <local:ProgressPercentValue_Converter    x:Key="ProgressPercentValue" />
+    <local:ProgressPartValue_Converter       x:Key="ProgressPartValue" />
     <local:DownloadTimeText_Converter        x:Key="DownloadTimeText" />
     <local:ApproxRemainedTimeText_Converter  x:Key="ApproxRemainedTimeText" />
     <local:DownloadSpeedText_Converter       x:Key="DownloadSpeedText" />
@@ -100,7 +100,7 @@
                        ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
             -->
             <Grid RowDefinitions="*" ColumnDefinitions="*">              
-              <local:ProgressBarUC Value="{Binding MySelf, Mode=OneWay, Converter={StaticResource ProgressPercentValue}}" />
+              <local:ProgressBarUC Value="{Binding MySelf, Mode=OneWay, Converter={StaticResource ProgressPartValue}}" />
               <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ProgressText}}"
                          ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" HorizontalAlignment="Center" />
             </Grid>

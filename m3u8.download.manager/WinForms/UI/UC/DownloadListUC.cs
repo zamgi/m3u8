@@ -388,7 +388,7 @@ namespace m3u8.download.manager.ui
                     if ( 0 < row.TotalParts )
                     {
                         part        = (1.0 * row.SuccessDownloadParts) / row.TotalParts;
-                        var percent = Convert.ToByte( 100 * part );
+                        var percent = (row.TotalParts <= (row.SuccessDownloadParts + row.FailedDownloadParts)) ? 100 : Extensions.Min( (byte) (100 * part), 99 );
                         percentText = percent.ToString();
                     }
                     else if ( st == DownloadStatus.Canceled ) //not-started
