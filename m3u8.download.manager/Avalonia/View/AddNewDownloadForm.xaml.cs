@@ -60,7 +60,6 @@ namespace m3u8.download.manager.ui
 
             m3u8FileUrlTextBox_SubscribeDisposable    = m3u8FileUrlTextBox   .GetObservable( TextBox.TextProperty ).Subscribe( m3u8FileUrlTextBox_TextChanged    );
             outputFileNameTextBox_SubscribeDisposable = outputFileNameTextBox.GetObservable( TextBox.TextProperty ).Subscribe( outputFileNameTextBox_TextChanged );
-
 #if DEBUG
             this.AttachDevTools();
 #endif
@@ -69,7 +68,7 @@ namespace m3u8.download.manager.ui
         {
             this.DataContext = new AddNewDownloadFormVM( this );
 
-            _Settings = vm.SettingsController.Settings;
+            _Settings          = vm.SettingsController.Settings;
             _DownloadListModel = vm.DownloadController?.Model;
             
             this.M3u8FileUrl     = m3u8FileUrl;
@@ -87,7 +86,7 @@ namespace m3u8.download.manager.ui
             _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
         }
 
-        protected override void OnOpened( EventArgs e )
+        protected async override void OnOpened( EventArgs e )
         {
             base.OnOpened( e );
 
@@ -99,6 +98,11 @@ namespace m3u8.download.manager.ui
             {
                 outputFileNameTextBox.Focus();
             }
+
+            //STRANGE BUG (?) (IN AVALONIA) AFTER UPGRADE FROM v0.9.9 TO v0.9.10
+            this.Width++;
+            await Task.Delay( 1 );
+            this.Width--;
         }
         protected override void OnClosed( EventArgs e )
         {
