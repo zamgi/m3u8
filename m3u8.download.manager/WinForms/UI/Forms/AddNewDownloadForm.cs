@@ -332,6 +332,18 @@ namespace m3u8.download.manager.ui
         }
         private void outputDirectorySelectButton_Click( object sender, EventArgs e )
         {
+            using ( var d = new SHBrowser() { SelectedPath        = this.OutputDirectory,
+                                              Description         = "Select Output directory",
+                                              ShowNewFolderButton = true } )
+            {
+                if ( d.ShowDialog( this ) == DialogResult.OK )
+                {
+                    this.OutputDirectory = d.SelectedPath;
+                }
+            }
+
+            #region comm. prev.
+            /*
             using ( var d = new FolderBrowserDialog() { SelectedPath        = this.OutputDirectory,
                                                         Description         = "Select Output directory",
                                                         ShowNewFolderButton = true } )
@@ -341,6 +353,8 @@ namespace m3u8.download.manager.ui
                     this.OutputDirectory = d.SelectedPath;
                 }
             }
+            */
+            #endregion
         }
         #endregion
 

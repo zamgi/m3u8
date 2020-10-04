@@ -1025,6 +1025,19 @@ namespace m3u8.download.manager.ui
 
         private void downloadListUC_OutputDirectoryClick( DownloadRow row )
         {
+            using ( var d = new SHBrowser() { SelectedPath        = row.OutputDirectory,
+                                              Description         = $"Select output directory: '{row.OutputFileName}'",
+                                              ShowNewFolderButton = true } )
+            {
+                if ( d.ShowDialog( this ) == DialogResult.OK )
+                {
+                    row.SetOutputDirectory( d.SelectedPath );
+                    downloadListUC.Invalidate( true );
+                }
+            }
+
+            #region comm. prev.
+            /*
             using ( var d = new FolderBrowserDialog() { SelectedPath        = row.OutputDirectory,
                                                         Description         = $"Select output directory: '{row.OutputFileName}'",
                                                         ShowNewFolderButton = true } )
@@ -1035,6 +1048,8 @@ namespace m3u8.download.manager.ui
                     downloadListUC.Invalidate( true );
                 }
             }
+            */
+            #endregion
         }
         #endregion
     }
