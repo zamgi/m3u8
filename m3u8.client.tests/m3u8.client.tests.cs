@@ -66,8 +66,7 @@ namespace m3u8.client.tests
             Assert.True   ( 0 < m3u8_part.Bytes.Length );
         }
 
-        [Fact]
-        public async Task DownloadFile()
+        [Fact] public async Task DownloadFile()
         {
             using ( var mc = new m3u8_client( _HttpClient, default ) )
             {
@@ -77,8 +76,7 @@ namespace m3u8.client.tests
             }
         }
 
-        [Fact]
-        public async Task DownloadPart()
+        [Fact] public async Task DownloadPart()
         {
             using ( var mc = new m3u8_client( _HttpClient, default ) )
             {
@@ -93,8 +91,7 @@ namespace m3u8.client.tests
             }
         }
 
-        [Fact]
-        public void ClientFactory()
+        [Fact] public void ClientFactory()
         {
             Assert.True( !HttpClientFactory_WithRefCount.Any() );
 
