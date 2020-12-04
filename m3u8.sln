@@ -102,6 +102,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "google-chrome", "google-chr
 		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.downloader.host.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.downloader.host.json
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WinForms.NET50", "WinForms.NET50", "{32CC348A-C048-4F62-87A5-45CA7EDFAB3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.download.manager", "m3u8.download.manager\WinForms.NET50\m3u8.download.manager.csproj", "{9E0D0A4D-CA31-436A-A6F2-609860775AC6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -132,6 +136,10 @@ Global
 		{A2B632E6-8000-4B07-91D2-24B017C31232}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2B632E6-8000-4B07-91D2-24B017C31232}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2B632E6-8000-4B07-91D2-24B017C31232}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E0D0A4D-CA31-436A-A6F2-609860775AC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E0D0A4D-CA31-436A-A6F2-609860775AC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E0D0A4D-CA31-436A-A6F2-609860775AC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E0D0A4D-CA31-436A-A6F2-609860775AC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -150,6 +158,8 @@ Global
 		{272F6ACB-DD20-476A-821D-8F30B88F728F} = {1894D434-5969-44B7-B51A-87F123427C6D}
 		{55A1DC66-91D7-44F2-A1FB-E66157FDE368} = {272F6ACB-DD20-476A-821D-8F30B88F728F}
 		{A9507421-E719-4ECB-90F6-8095FC672A2E} = {272F6ACB-DD20-476A-821D-8F30B88F728F}
+		{32CC348A-C048-4F62-87A5-45CA7EDFAB3D} = {63AC3FAC-138F-4E04-ACF9-D0C877D7C341}
+		{9E0D0A4D-CA31-436A-A6F2-609860775AC6} = {32CC348A-C048-4F62-87A5-45CA7EDFAB3D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BBFEF9AD-DE12-4E77-AAF3-F441343E05C6}

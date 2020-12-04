@@ -70,6 +70,15 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to .m3u8 file download manager (NET 5.0).
+        /// </summary>
+        internal static string APP_TITLE__NET50 {
+            get {
+                return ResourceManager.GetString("APP_TITLE__NET50", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap cancel {

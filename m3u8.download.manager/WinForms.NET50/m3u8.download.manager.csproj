@@ -1,0 +1,138 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <StartupObject>m3u8.download.manager.Program</StartupObject>
+    <ApplicationIcon>Resources\m3u8_32x36.ico</ApplicationIcon>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />
+    <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
+    <Compile Include="..\WinForms\Infrastructure\classes.cs" Link="Infrastructure\classes.cs" />
+    <Compile Include="..\WinForms\Infrastructure\Extensions.cs" Link="Infrastructure\Extensions.cs" />
+    <Compile Include="..\WinForms\Infrastructure\FormPositionStorer.cs" Link="Infrastructure\FormPositionStorer.cs" />
+    <Compile Include="..\WinForms\Infrastructure\NameCleaner.cs" Link="Infrastructure\NameCleaner.cs" />
+    <Compile Include="..\WinForms\Infrastructure\WinApi.cs" Link="Infrastructure\WinApi.cs" />
+    <Compile Include="..\WinForms\Model\DownloadListModel.cs" Link="Model\DownloadListModel.cs" />
+    <Compile Include="..\WinForms\Model\LogListModel.cs" Link="Model\LogListModel.cs" />
+    <Compile Include="..\WinForms\Model\models.cs" Link="Model\models.cs" />
+    <Compile Include="..\WinForms\Program\IPC\BrowserIPC.cs" Link="Program\IPC\BrowserIPC.cs" />
+    <Compile Include="..\WinForms\Program\IPC\PipeIPC.cs" Link="Program\IPC\PipeIPC.cs" />
+    <Compile Include="..\WinForms\Program\IPC\ProcessCreator.cs" Link="Program\IPC\ProcessCreator.cs" />
+    <Compile Include="..\WinForms\Program\IPC\SingleCopyApplication.cs" Link="Program\IPC\SingleCopyApplication.cs" />
+    <Compile Include="..\WinForms\Program\_Program_.cs" Link="Program\_Program_.cs" />
+    <Compile Include="..\WinForms\Properties\Resources.Designer.cs" Link="Properties\Resources.Designer.cs" />
+    <Compile Include="..\WinForms\Properties\Settings.Designer.cs" Link="Properties\Settings.Designer.cs" />
+    <Compile Include="..\WinForms\UI\BrowseForForlder\SHBrowser.cs" Link="UI\BrowseForForlder\SHBrowser.cs" />
+    <Compile Include="..\WinForms\UI\Forms\AddNewDownloadForm.cs" Link="UI\Forms\AddNewDownloadForm.cs" />
+    <Compile Include="..\WinForms\UI\Forms\AddNewDownloadForm.Designer.cs" Link="UI\Forms\AddNewDownloadForm.Designer.cs" />
+    <Compile Include="..\WinForms\UI\Forms\ChangeOutputFileForm.cs" Link="UI\Forms\ChangeOutputFileForm.cs" />
+    <Compile Include="..\WinForms\UI\Forms\ChangeOutputFileForm.Designer.cs" Link="UI\Forms\ChangeOutputFileForm.Designer.cs" />
+    <Compile Include="..\WinForms\UI\Forms\FileNameExcludesWordsEditor.cs" Link="UI\Forms\FileNameExcludesWordsEditor.cs" />
+    <Compile Include="..\WinForms\UI\Forms\FileNameExcludesWordsEditor.Designer.cs" Link="UI\Forms\FileNameExcludesWordsEditor.Designer.cs" />
+    <Compile Include="..\WinForms\UI\Forms\ParallelismForm.cs" Link="UI\Forms\ParallelismForm.cs" />
+    <Compile Include="..\WinForms\UI\Forms\ParallelismForm.Designer.cs" Link="UI\Forms\ParallelismForm.Designer.cs" />
+    <Compile Include="..\WinForms\UI\Forms\SettingsForm.cs" Link="UI\Forms\SettingsForm.cs" />
+    <Compile Include="..\WinForms\UI\Forms\SettingsForm.designer.cs" Link="UI\Forms\SettingsForm.designer.cs" />
+    <Compile Include="..\WinForms\UI\LogRowsHeightStorer.cs" Link="UI\LogRowsHeightStorer.cs" />
+    <Compile Include="..\WinForms\UI\MainForm.cs" Link="UI\MainForm.cs" />
+    <Compile Include="..\WinForms\UI\MainForm.Designer.cs" Link="UI\MainForm.Designer.cs" />
+    <Compile Include="..\WinForms\UI\UC\ButtonWithFocusCues.cs" Link="UI\UC\ButtonWithFocusCues.cs" />
+    <Compile Include="..\WinForms\UI\UC\DownloadInstanceToolButton.cs" Link="UI\UC\DownloadInstanceToolButton.cs" />
+    <Compile Include="..\WinForms\UI\UC\DownloadListUC.cs" Link="UI\UC\DownloadListUC.cs" />
+    <Compile Include="..\WinForms\UI\UC\DownloadListUC.Designer.cs" Link="UI\UC\DownloadListUC.Designer.cs" />
+    <Compile Include="..\WinForms\UI\UC\LogUC.cs" Link="UI\UC\LogUC.cs" />
+    <Compile Include="..\WinForms\UI\UC\LogUC.Designer.cs" Link="UI\UC\LogUC.Designer.cs" />
+    <Compile Include="..\WinForms\UI\UC\NumericUpDownEx.cs" Link="UI\UC\NumericUpDownEx.cs" />
+    <Compile Include="..\WinForms\UI\UC\StatusBarUC.cs" Link="UI\UC\StatusBarUC.cs" />
+    <Compile Include="..\WinForms\UI\UC\StatusBarUC.Designer.cs" Link="UI\UC\StatusBarUC.Designer.cs" />
+    <Compile Include="..\WinForms\UI\WaitBanner\BitmapHolder.cs" Link="UI\WaitBanner\BitmapHolder.cs" />
+    <Compile Include="..\WinForms\UI\WaitBanner\WaitBannerUC.cs" Link="UI\WaitBanner\WaitBannerUC.cs" />
+    <Compile Include="..\WinForms\UI\WaitBanner\WaitBannerUC.designer.cs" Link="UI\WaitBanner\WaitBannerUC.designer.cs" />
+    <Compile Include="..\[Common]\Controller\DownloadController\dc_models.cs" Link="Controller\DownloadController\dc_models.cs" />
+    <Compile Include="..\[Common]\Controller\DownloadController\DownloadController.cs" Link="Controller\DownloadController\DownloadController.cs" />
+    <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
+    <Compile Include="..\[Common]\[-= m3u8.client =-]\m3u8_processor_v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_v2.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\WinForms\Resources\contextMenu\cancel.png" Link="Resources\contextMenu\cancel.png" />
+    <Content Include="..\WinForms\Resources\contextMenu\cancel_all.png" Link="Resources\contextMenu\cancel_all.png" />
+    <Content Include="..\WinForms\Resources\contextMenu\delete.png" Link="Resources\contextMenu\delete.png" />
+    <Content Include="..\WinForms\Resources\contextMenu\delete_all.png" Link="Resources\contextMenu\delete_all.png" />
+    <Content Include="..\WinForms\Resources\contextMenu\pause.png" Link="Resources\contextMenu\pause.png" />
+    <Content Include="..\WinForms\Resources\contextMenu\pause_all.png" Link="Resources\contextMenu\pause_all.png" />
+    <Content Include="..\WinForms\Resources\contextMenu\start.png" Link="Resources\contextMenu\start.png" />
+    <Content Include="..\WinForms\Resources\contextMenu\start_all.png" Link="Resources\contextMenu\start_all.png" />
+    <Content Include="..\WinForms\Resources\dop.ico" Link="Resources\dop.ico" />
+    <Content Include="..\WinForms\Resources\downloadInstance.ico" Link="Resources\downloadInstance.ico" />
+    <Content Include="..\WinForms\Resources\menu\control_cancel.png" Link="Resources\menu\control_cancel.png" />
+    <Content Include="..\WinForms\Resources\menu\control_delete.png" Link="Resources\menu\control_delete.png" />
+    <Content Include="..\WinForms\Resources\menu\control_delete_all_finished.png" Link="Resources\menu\control_delete_all_finished.png" />
+    <Content Include="..\WinForms\Resources\menu\control_pause.png" Link="Resources\menu\control_pause.png" />
+    <Content Include="..\WinForms\Resources\menu\control_start.png" Link="Resources\menu\control_start.png" />
+    <Content Include="..\WinForms\Resources\menu\copy.png" Link="Resources\menu\copy.png" />
+    <Content Include="..\WinForms\Resources\menu\help.png" Link="Resources\menu\help.png" />
+    <Content Include="..\WinForms\Resources\menu\log.png" Link="Resources\menu\log.png" />
+    <Content Include="..\WinForms\Resources\menu\paste.png" Link="Resources\menu\paste.png" />
+    <Content Include="..\WinForms\Resources\menu\plus.png" Link="Resources\menu\plus.png" />
+    <Content Include="..\WinForms\Resources\roller\i1.ico" Link="Resources\roller\i1.ico" />
+    <Content Include="..\WinForms\Resources\roller\i2.ico" Link="Resources\roller\i2.ico" />
+    <Content Include="..\WinForms\Resources\roller\i3.ico" Link="Resources\roller\i3.ico" />
+    <Content Include="..\WinForms\Resources\roller\i4.ico" Link="Resources\roller\i4.ico" />
+    <Content Include="..\WinForms\Resources\roller\i5.ico" Link="Resources\roller\i5.ico" />
+    <Content Include="..\WinForms\Resources\roller\i6.ico" Link="Resources\roller\i6.ico" />
+    <Content Include="..\WinForms\Resources\roller\i7.ico" Link="Resources\roller\i7.ico" />
+    <Content Include="..\WinForms\Resources\roller\i8.ico" Link="Resources\roller\i8.ico" />
+    <Content Include="..\WinForms\Resources\settings.ico" Link="Resources\settings.ico" />
+    <Content Include="..\WinForms\Resources\statuses\canceled.png" Link="Resources\statuses\canceled.png" />
+    <Content Include="..\WinForms\Resources\statuses\created.png" Link="Resources\statuses\created.png" />
+    <Content Include="..\WinForms\Resources\statuses\error.png" Link="Resources\statuses\error.png" />
+    <Content Include="..\WinForms\Resources\statuses\finished.png" Link="Resources\statuses\finished.png" />
+    <Content Include="..\WinForms\Resources\statuses\paused.png" Link="Resources\statuses\paused.png" />
+    <Content Include="..\WinForms\Resources\statuses\running.png" Link="Resources\statuses\running.png" />
+    <Content Include="..\WinForms\Resources\statuses\wait.png" Link="Resources\statuses\wait.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\WinForms\Properties\Resources.resx" Link="Properties\Resources.resx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controller\DownloadController\" />
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Model\" />
+    <Folder Include="Program\IPC\" />
+    <Folder Include="Resources\contextMenu\" />
+    <Folder Include="Resources\menu\" />
+    <Folder Include="Resources\roller\" />
+    <Folder Include="Resources\statuses\" />
+    <Folder Include="UI\BrowseForForlder\" />
+    <Folder Include="UI\Forms\" />
+    <Folder Include="UI\UC\" />
+    <Folder Include="UI\WaitBanner\" />
+    <Folder Include="[-= m3u8.client =-]\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\WinForms\Properties\Settings.settings" Link="Properties\Settings.settings" />
+  </ItemGroup>
+
+</Project>

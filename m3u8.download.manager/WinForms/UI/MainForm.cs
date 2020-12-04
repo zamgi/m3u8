@@ -36,13 +36,19 @@ namespace m3u8.download.manager.ui
         private LogRowsHeightStorer              _LogRowsHeightStorer;
         private Action< DownloadRow, string >    _DownloadListModel_RowPropertiesChangedAction;
         private bool                             _ShowDownloadStatistics;
+
+#if NET5_0
+        private static string _APP_TITLE_ => Resources.APP_TITLE__NET50;
+#else
+        private static string _APP_TITLE_ => Resources.APP_TITLE;
+#endif        
         #endregion
 
         #region [.ctor().]
         private MainForm()
         {
             InitializeComponent();
-            this.Text = Resources.APP_TITLE;
+            this.Text = _APP_TITLE_;
             //----------------------------------------//
 
             _DownloadListModel_RowPropertiesChangedAction = new Action< DownloadRow, string >( DownloadListModel_RowPropertiesChanged );
@@ -133,7 +139,7 @@ namespace m3u8.download.manager.ui
                 {
                     this.WindowState = FormWindowState.Normal;
                 }
-                if ( this.MessageBox_ShowQuestion( "Dou you want to _cancel_ all downloading and exit ?", Resources.APP_TITLE, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes )
+                if ( this.MessageBox_ShowQuestion( "Dou you want to _cancel_ all downloading and exit ?", _APP_TITLE_, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes )
                 {
                     const int WAIT_Milliseconds = 10_000;
 
@@ -335,7 +341,7 @@ namespace m3u8.download.manager.ui
                 {
                     var waitText = ((0 < waitCount) ? $", wait: {waitCount}" : null);
 
-                    this.Text = $"run: {runningCount}{waitText}{finishedText}{errorText},  [{Resources.APP_TITLE}]";
+                    this.Text = $"run: {runningCount}{waitText}{finishedText}{errorText},  [{_APP_TITLE_}]";
                 }
                 else
                 {
@@ -345,12 +351,12 @@ namespace m3u8.download.manager.ui
 
                     var pauseText    = ((0 < pausedCount  ) ? $", pause: {pausedCount}"    : null);
                     var canceledText = ((0 < canceledCount) ? $", cancel: {canceledCount}" : null);
-                    this.Text = $"new: {createdCount}{pauseText}{canceledText}{finishedText}{errorText},  [{Resources.APP_TITLE}]";
+                    this.Text = $"new: {createdCount}{pauseText}{canceledText}{finishedText}{errorText},  [{_APP_TITLE_}]";
                 }
             }
             else
             {
-                this.Text = Resources.APP_TITLE;
+                this.Text = _APP_TITLE_;
             }
         }
 
@@ -358,11 +364,11 @@ namespace m3u8.download.manager.ui
         {
             if ( _ShowDownloadStatistics )
             {
-                this.Text = $"{DownloadListUC.GetDownloadInfoText( row )},  [{Resources.APP_TITLE}]";
+                this.Text = $"{DownloadListUC.GetDownloadInfoText( row )},  [{_APP_TITLE_}]";
             }
-            //else if ( this.Text != Resources.APP_TITLE )
+            //else if ( this.Text != _APP_TITLE_ )
             //{
-            //    this.Text = Resources.APP_TITLE;
+            //    this.Text = _APP_TITLE_;
             //}
         }
         private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
