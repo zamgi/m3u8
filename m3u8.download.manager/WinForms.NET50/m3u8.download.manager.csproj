@@ -10,7 +10,7 @@
   <PropertyGroup>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <StartupObject>m3u8.download.manager.Program</StartupObject>
-    <ApplicationIcon>Resources\m3u8_32x36.ico</ApplicationIcon>
+    <ApplicationIcon>..\WinForms\Resources\m3u8_32x36.ico</ApplicationIcon>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -83,6 +83,7 @@
     <Content Include="..\WinForms\Resources\contextMenu\start_all.png" Link="Resources\contextMenu\start_all.png" />
     <Content Include="..\WinForms\Resources\dop.ico" Link="Resources\dop.ico" />
     <Content Include="..\WinForms\Resources\downloadInstance.ico" Link="Resources\downloadInstance.ico" />
+    <Content Include="..\WinForms\Resources\m3u8_32x36.ico" Link="Resources\m3u8_32x36.ico" />
     <Content Include="..\WinForms\Resources\menu\control_cancel.png" Link="Resources\menu\control_cancel.png" />
     <Content Include="..\WinForms\Resources\menu\control_delete.png" Link="Resources\menu\control_delete.png" />
     <Content Include="..\WinForms\Resources\menu\control_delete_all_finished.png" Link="Resources\menu\control_delete_all_finished.png" />
@@ -133,6 +134,10 @@
 
   <ItemGroup>
     <None Include="..\WinForms\Properties\Settings.settings" Link="Properties\Settings.settings" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_DeploymentManifestIconFile Remove="..\WinForms\Resources\m3u8_32x36.ico" />
   </ItemGroup>
 
 </Project>

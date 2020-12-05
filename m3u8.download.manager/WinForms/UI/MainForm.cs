@@ -71,6 +71,7 @@ namespace m3u8.download.manager.ui
             downloadListUC.KeyDown += (s, e) => this.OnKeyDown( e );
             downloadListUC.MouseClickRightButton   += downloadListUC_MouseClickRightButton;
             downloadListUC.UpdatedSingleRunningRow += downloadListUC_UpdatedSingleRunningRow;
+            downloadListUC.DoubleClickEx           += openOutputFileMenuItem_Click;
             statusBarUC.SetDownloadController( _DownloadController );
             statusBarUC.SetSettingsController( _SettingsController );
 
@@ -951,12 +952,19 @@ namespace m3u8.download.manager.ui
         private void openOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( (row != null) && row.IsFinished() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
             {
+#if NET5_0
+                using ( Process.Start( new ProcessStartInfo( outputFileName ) { UseShellExecute = true } ) )
+                {
+                    ;
+                }
+#else
                 using ( Process.Start( outputFileName ) )
                 {
                     ;
                 }
+#endif
             }
         }
 

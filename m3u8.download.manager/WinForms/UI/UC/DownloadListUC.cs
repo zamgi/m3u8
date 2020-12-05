@@ -62,6 +62,7 @@ namespace m3u8.download.manager.ui
         public event OutputDirectoryClickEventHandler    OutputDirectoryClick;
         public event MouseClickRightButtonEventHandler   MouseClickRightButton;
         public event UpdatedSingleRunningRowEventHandler UpdatedSingleRunningRow;
+        public event EventHandler                        DoubleClickEx;
 
         private DownloadListModel _Model;
         //private CellStyle _DefaultCellStyle;
@@ -349,7 +350,7 @@ namespace m3u8.download.manager.ui
             var ts           = row.GetElapsed();
             var elapsed      = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
             var percent      = ((0 < row.TotalParts) ? Convert.ToByte( (100.0 * row.SuccessDownloadParts) / row.TotalParts ).ToString() : "-");
-            var failedParts  = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
+            //var failedParts  = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
             var downloadInfo = $"{percent}%, ({elapsed})";
             
             #region [.speed.]
@@ -359,7 +360,7 @@ namespace m3u8.download.manager.ui
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
-                    var speedText = default(string);
+                    string speedText;
                     if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
                     else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
 
@@ -878,6 +879,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        private void DGV_DoubleClick( object sender, EventArgs e ) => DoubleClickEx?.Invoke( sender, e );
 
         private void DGV_MouseMove( object sender, MouseEventArgs e )
         {
