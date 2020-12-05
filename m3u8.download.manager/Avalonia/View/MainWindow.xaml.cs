@@ -138,6 +138,8 @@ namespace m3u8.download.manager.ui
             downloadListUC.OutputDirectoryClick    += downloadListUC_OutputDirectoryClick;
             downloadListUC.UpdatedSingleRunningRow += downloadListUC_UpdatedSingleRunningRow;
             downloadListUC.MouseClickRightButton   += downloadListUC_MouseClickRightButton;
+            downloadListUC.DoubleClickEx           += openOutputFileMenuItem_Click;
+            //---downloadListUC.EnterKeyDown            += downloadListUC_EnterKeyDown;
 
             SetDownloadToolButtonsStatus( null );
             NameCleaner.ResetExcludesWords( _VM.SettingsController.NameCleanerExcludesWords );
@@ -938,11 +940,11 @@ return;
         private async void openOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( (row != null) && row.IsFinished() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
             {
                 try
                 {
-                    using ( Process.Start( outputFileName ) )
+                    using ( Process.Start( new ProcessStartInfo( outputFileName ) { UseShellExecute = true } ) )
                     {
                         ;
                     }
@@ -953,6 +955,21 @@ return;
                 }
             }
         }
+        /*private void downloadListUC_EnterKeyDown( object sender, EventArgs e )
+        {
+            var row = downloadListUC.GetSelectedDownloadRow();
+            if ( row != null )
+            {
+                if ( row.IsFinished() )
+                {
+                    openOutputFileMenuItem_Click( this, e );
+                }
+                else
+                {
+                    downloadListUC_OutputFileNameClick( row );
+                }
+            }
+        }*/
 
         private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {

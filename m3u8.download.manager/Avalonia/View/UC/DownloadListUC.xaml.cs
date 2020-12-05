@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
+
 using m3u8.download.manager.models;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -35,6 +37,8 @@ namespace m3u8.download.manager.ui
         public event DownloadRowEventHandler OutputDirectoryClick;
         public event DownloadRowEventHandler UpdatedSingleRunningRow;
         public event MouseClickRightButtonEventHandler MouseClickRightButton;
+        public event EventHandler            DoubleClickEx;
+        //---public event EventHandler            EnterKeyDown;
 
         private DataGrid DGV;
         private DownloadListModel _Model;
@@ -49,6 +53,10 @@ namespace m3u8.download.manager.ui
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
             DGV.SelectionChanged   += DGV_SelectionChanged;
             DGV.CellPointerPressed += DGV_CellPointerPressed;
+            DGV.DoubleTapped       += (s, e) => DoubleClickEx?.Invoke( s, e );
+            //---DGV.KeyDown            += DGV_KeyDown;
+
+            #region comm.
             /*DGV.AddHandler(
                 InputElement.PointerPressedEvent,
                 (s, e) =>
@@ -67,6 +75,7 @@ namespace m3u8.download.manager.ui
                 },
                 handledEventsToo: true );
             */
+            #endregion
 
             this.Styles.Add( GlobalStyles.Dark );
         }
@@ -147,6 +156,19 @@ namespace m3u8.download.manager.ui
                 break;
             }
         }
+        /*--NOT WORKING--
+        private void DGV_KeyDown( object sender, KeyEventArgs e )
+        {
+            if ( (e.Key == Key.Enter) && (e.KeyModifiers == KeyModifiers.None) )
+            {
+                var ev = EnterKeyDown;
+                if ( ev != null )
+                {
+                    e.Handled = true;
+                    ev( sender, e );
+                }
+            }
+        }*/
         #endregion
 
         #region [.Model.]
