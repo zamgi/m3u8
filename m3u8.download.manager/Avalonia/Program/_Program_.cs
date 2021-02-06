@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Net;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Logging; //using Avalonia.Logging.Serilog;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
@@ -150,7 +148,7 @@ namespace m3u8.download.manager
         // Avalonia configuration, don't remove; also used by visual designer.
         private static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure< App >()
                                                                   .UsePlatformDetect()
-                                                                  .LogToDebug()
+                                                                  .LogToTrace()
                                                                   //.UseSkia()
                                                                   //.UseReactiveUI()
                                                                   ;
