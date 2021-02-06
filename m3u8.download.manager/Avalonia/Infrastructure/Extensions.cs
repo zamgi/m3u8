@@ -13,10 +13,12 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using Avalonia.Media;
 using MessageBox.Avalonia;
 using MessageBox.Avalonia.BaseWindows;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
+using MessageBox.Avalonia.BaseWindows.Base;
 
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
@@ -288,31 +290,63 @@ namespace m3u8.download.manager
         public static Task ShowDialogEx( this Window dialog ) => dialog.ShowDialog( GetMainWindow() );
 
         #region [.MessageBox's.]
+        //private static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, bool closeByEscape = true )
+        //    => Create_MsBoxStandardWindow( text, caption, buttons, icon, out var _, closeByEscape );
         private static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, bool closeByEscape = true )
-            => Create_MsBoxStandardWindow( text, caption, buttons, icon, out var _, closeByEscape );
-        public static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon
-            , out MessageBox.Avalonia.Views.MsBoxStandardWindow window, bool closeByEscape = true )
+            => Create_MsBoxStandardWindow_2( text, caption, buttons, icon, /*out var window,*/ closeByEscape );
+
+        public static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow_2( string text, string caption, ButtonEnum buttons, Icon icon
+            , /*out MessageBox.Avalonia.Views.MsBoxStandardWindow window,*/ bool closeByEscape = true )
         {
             var p = new MessageBoxStandardParams()
             {
                 ButtonDefinitions = buttons,
-                Icon              = icon,
-                ContentTitle      = caption,
-                ContentMessage    = text,
+                Icon = icon,
+                ContentTitle = caption,
+                ContentMessage = text,
             };
             var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( p );
-            p.Window.Icon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
-            if ( closeByEscape )
+            p.WindowIcon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
+            //---p.Window.Icon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
+            //if ( closeByEscape )
+            //{
+            //    p.Window.KeyDown += (s, e) =>
+            //    {
+            //        if ( e.Key == Key.Escape )
+            //        {
+            //            ((Window) s).Close();
+            //        }
+            //    };
+            //}
+            //window = p.Window;
+            return (msgbox);
+        }
+        public static IMsBoxWindow<ButtonResult> Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon
+            , FontFamily fontFamily, bool closeByEscape = true )
+        {
+            var p = new MessageBoxStandardParams()
             {
-                p.Window.KeyDown += (s, e) =>
-                {
-                    if ( e.Key == Key.Escape )
-                    {
-                        ((Window) s).Close();
-                    }
-                };
-            }
-            window = p.Window;
+                ButtonDefinitions = buttons,
+                Icon = icon,
+                ContentTitle = caption,
+                ContentMessage = text,
+                FontFamily = fontFamily,
+            };
+            var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( p );
+            p.WindowIcon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
+            p.Icon       = Icon.None;
+            //---p.Window.Icon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
+            //if ( closeByEscape )
+            //{
+            //    p.Window.KeyDown += ( s, e ) =>
+            //    {
+            //        if ( e.Key == Key.Escape )
+            //        {
+            //            ((Window) s).Close();
+            //        }
+            //    };
+            //}
+            //window = p.Window;
             return (msgbox);
         }
         public static async Task< ButtonResult > ShowEx( this IMsBoxWindow< ButtonResult > msgbox )

@@ -78,7 +78,7 @@ namespace m3u8.download.manager.ui
 
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
             DGV.LoadingRow += DGV_LoadingRow;
-            DGV.Styles.Add( GlobalStyles.Dark );
+            //---DGV.Styles.Add( GlobalStyles.Dark );
 
             filterTextBox     = this.Find< TextBox >( nameof(filterTextBox) );
             clearFilterButton = this.Find< Button  >( nameof(clearFilterButton) ); clearFilterButton.Click += clearFilterButton_Click;

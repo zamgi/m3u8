@@ -59,31 +59,31 @@
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding OutputFileName}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap"  -->
+            <TextBlock Text="{Binding OutputFileName}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" --> <!-- TextWrapping="Wrap"  -->
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
       <DataGridTemplateColumn Width="1.125*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Output directory" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Output directory" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>        
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding OutputDirectory}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding OutputDirectory}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
       <DataGridTemplateColumn Width="1.25*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Status" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Status" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <DockPanel>
               <Image Source="{Binding Status, Mode=OneWay, Converter={StaticResource StatusImage}}" Width="16" Height="16" Margin="3 0 0 0" />
-              <TextBlock Text="{Binding Status}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" Margin="5 0 0 0" />
+              <TextBlock Text="{Binding Status}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" Margin="5 0 0 0" /> <!-- TextWrapping="Wrap" -->
             </DockPanel>
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
@@ -91,7 +91,7 @@
 
       <DataGridTemplateColumn Width="1.5625*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Progress" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Progress" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
@@ -102,7 +102,7 @@
             <Grid RowDefinitions="*" ColumnDefinitions="*">              
               <local:ProgressBarUC Value="{Binding MySelf, Mode=OneWay, Converter={StaticResource ProgressPartValue}}" />
               <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ProgressText}}"
-                         ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                         ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" HorizontalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
             </Grid>
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
@@ -110,83 +110,83 @@
 
       <DataGridTemplateColumn Width="*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Time" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Time" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource DownloadTimeText}}"
-                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
       <DataGridTemplateColumn Width="*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Time Remained ~" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Time Remained ~" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ApproxRemainedTimeText}}"
-                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
       <DataGridTemplateColumn Width="*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Speed" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Speed" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource DownloadSpeedText}}"
-                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
       <DataGridTemplateColumn Width="*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Received (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Received (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource DisplaySizeText}}" 
-                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
       <DataGridTemplateColumn Width="*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Remained ~ (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Remained ~ (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ApproxRemainedBytesText}}" 
-                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>      
       
       <DataGridTemplateColumn Width="*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Total ~ (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Total ~ (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ApproxTotalBytesText}}" 
-                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
       <DataGridTemplateColumn Width="1.5*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Url" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+          <TextBlock Text="Url" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding Url}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
+            <TextBlock Text="{Binding Url}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" /> <!-- TextWrapping="Wrap" -->
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>

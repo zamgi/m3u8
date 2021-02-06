@@ -31,7 +31,7 @@ namespace m3u8.download.manager.ui
             Type IStyleable.StyleKey => typeof(MenuItem);
 
             public int Value { get; }
-            public IBitmap Image
+            public IImage Image
             {
                 get => _InnerImage.Source;
                 set => _InnerImage.Source = value;

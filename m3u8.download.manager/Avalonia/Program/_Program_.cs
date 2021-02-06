@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Net;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Logging.Serilog;
+using Avalonia.Logging; //using Avalonia.Logging.Serilog;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
