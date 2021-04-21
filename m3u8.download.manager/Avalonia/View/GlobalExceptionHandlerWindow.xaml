@@ -11,6 +11,7 @@
         Title="Global Exception Handler"
         Icon="/Resources/m3u8_32x36.ico"
         Padding="10"
+        ShowInTaskbar="False"
         >
   <!-- BorderBrush="LightGray" BorderThickness="1" -->
   <ScrollViewer Margin="5" 

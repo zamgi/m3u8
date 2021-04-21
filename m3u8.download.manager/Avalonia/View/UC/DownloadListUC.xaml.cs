@@ -54,7 +54,7 @@ namespace m3u8.download.manager.ui
             DGV.SelectionChanged   += DGV_SelectionChanged;
             DGV.CellPointerPressed += DGV_CellPointerPressed;
             DGV.DoubleTapped       += (s, e) => DoubleClickEx?.Invoke( s, e );
-            //---DGV.KeyDown            += DGV_KeyDown;
+            //---DGV.KeyDown            += DGV_KeyDown;            
 
             #region comm.
             /*DGV.AddHandler(
@@ -205,8 +205,28 @@ namespace m3u8.download.manager.ui
             else
             {
                 DGV.Items = new DataGridCollectionView( _Model.GetRows() );
+
+                //--------------------------------------------------//
+                //foreach ( var row in _Model.GetRows() )
+                //{
+                //    var ctrl = DGV.Columns[ 0 ].GetCellContent( row );
+                //}
+
+                //var _ = DGV.Columns[ 0 ].GetValue( DataGrid.RowHeightProperty );
+
+                //var tbs = DGV.GetVisualDescendants().OfType< TextBlock >().Skip( DGV.Columns.Count ).ToArray();
+                //foreach ( var tb in tbs )
+                //{
+                //    tb.PropertyChanged -= Tb_PropertyChanged;
+                //    tb.PropertyChanged += Tb_PropertyChanged;
+                //}
             }
         }
+
+        //private void Tb_PropertyChanged( object sender, AvaloniaPropertyChangedEventArgs e )
+        //{
+        //    Debug.WriteLine( e.Property.ToString() );
+        //}
 
         internal DownloadRow GetSelectedDownloadRow() => (DGV.SelectedItem as DownloadRow);
         internal bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );

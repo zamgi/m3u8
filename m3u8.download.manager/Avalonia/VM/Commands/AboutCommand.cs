@@ -28,46 +28,38 @@ namespace m3u8.download.manager
                        Environment.NewLine +
                        Environment.NewLine +
                        "Shortcut's:" + Environment.NewLine +
-                       "  Ctrl+C:     Copy selected download url to clipboard" + Environment.NewLine +
-                       "  Ctrl+B:     Browse output file (if exists)" + Environment.NewLine +
-                       "  Ctrl+D:     Minimized application window" + Environment.NewLine +
-                       "  Ctrl+O:     Open output file (if exists)" + Environment.NewLine +
-                       "  Ctrl+P:     Pause selected download" + Environment.NewLine +
-                       "  Ctrl+S:     Start selected download" + Environment.NewLine +
-                       "  Ctrl+V:     Paste download url from clipboard" + Environment.NewLine +
-                       "  Ctrl+W:     Exit application" + Environment.NewLine +
-                       "  Ctrl+Z:     Cancel selected download" + Environment.NewLine +
-                       "  Insert:     Open add new download dialog" + Environment.NewLine +
-                       "  Delete:     Delete download (with or without output file)" + Environment.NewLine +
-                       "  Enter:      Open rename output file dialog" + Environment.NewLine +
-                       "  F1:         About dialog" + Environment.NewLine;
+                       " Ctrl+C: Copy selected download url to clipboard" + Environment.NewLine +
+                       " Ctrl+B: Browse output file (if exists)" + Environment.NewLine +
+                       " Ctrl+D: Minimized application window" + Environment.NewLine +
+                       " Ctrl+O: Open output file (if exists)" + Environment.NewLine +
+                       " Ctrl+P: Pause selected download" + Environment.NewLine +
+                       " Ctrl+S: Start selected download" + Environment.NewLine +
+                       " Ctrl+V: Paste download url from clipboard" + Environment.NewLine +
+                       " Ctrl+W: Exit application" + Environment.NewLine +
+                       " Ctrl+Z: Cancel selected download" + Environment.NewLine +
+                       " Insert: Open add new download dialog" + Environment.NewLine +
+                       " Delete: Delete download (with or without output file)" + Environment.NewLine +
+                       " Enter:  Open rename output file dialog" + Environment.NewLine +
+                       " F1:     About dialog" + Environment.NewLine;
 
             var fontFamilies = (from fn in FontManager.Current.GetInstalledFontFamilyNames()
                                 select new FontFamily( fn )
                               ).ToArray();
 
-            var fontFamily = (from f in fontFamilies //---Enumerable.Repeat( FontFamily.Default, 1 )
-                              where (f.Name.EqualIgnoreCase( "Courier New" )) || //Windows
-                                    (f.Name.EqualIgnoreCase( "Consolas" )) || //Windows
-                                    (f.Name.EqualIgnoreCase( "Book" )) || //Linux
-                                    (f.Name.EqualIgnoreCase( "DejaVu Sans Mono" )) //Linux
+            var fontFamily = (from f in fontFamilies
+                              where (f.Name.EqualIgnoreCase( "Courier New"      )) || //Windows
+                                    (f.Name.EqualIgnoreCase( "Consolas"         )) || //Windows
+                                    (f.Name.EqualIgnoreCase( "Book"             )) || //Linux
+                                    (f.Name.EqualIgnoreCase( "DejaVu Sans Mono" ))    //Linux
                               select f
                              ).FirstOrDefault();
-            //var fontFamily = (from f in FontFamily.SystemFontFamilies
-            //                  where (f.Name.EqualIgnoreCase( "Courier New" )) || //Windows
-            //                        (f.Name.EqualIgnoreCase( "Consolas"    )) || //Windows
-            //                        (f.Name.EqualIgnoreCase( "Book"        )) || //Linux
-            //                        (f.Name.EqualIgnoreCase( "DejaVu Sans Mono" )) //Linux
-            //                  select f
-            //                 ).FirstOrDefault();
             if ( fontFamily == null )
             {
                 fontFamily = FontFamily.Default;
             }
             if ( fontFamily != null )
             {
-                var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.Info, fontFamily );//---out var window );
-                //---window.FontFamily = fontFamily;
+                var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.Info, fontFamily );
                 await msgbox.ShowEx();
             }
             else

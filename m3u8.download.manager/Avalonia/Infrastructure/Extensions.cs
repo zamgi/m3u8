@@ -12,10 +12,8 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Input;
 using Avalonia.Media;
 using MessageBox.Avalonia;
-using MessageBox.Avalonia.BaseWindows;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia.BaseWindows.Base;
@@ -290,63 +288,23 @@ namespace m3u8.download.manager
         public static Task ShowDialogEx( this Window dialog ) => dialog.ShowDialog( GetMainWindow() );
 
         #region [.MessageBox's.]
-        //private static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, bool closeByEscape = true )
-        //    => Create_MsBoxStandardWindow( text, caption, buttons, icon, out var _, closeByEscape );
-        private static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, bool closeByEscape = true )
-            => Create_MsBoxStandardWindow_2( text, caption, buttons, icon, /*out var window,*/ closeByEscape );
-
-        public static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow_2( string text, string caption, ButtonEnum buttons, Icon icon
-            , /*out MessageBox.Avalonia.Views.MsBoxStandardWindow window,*/ bool closeByEscape = true )
+        public static IMsBoxWindow< ButtonResult > Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, FontFamily fontFamily = null )
         {
             var p = new MessageBoxStandardParams()
-            {
-                ButtonDefinitions = buttons,
-                Icon = icon,
-                ContentTitle = caption,
-                ContentMessage = text,
+            { 
+                ButtonDefinitions     = buttons,
+                Icon                  = icon,
+                ContentTitle          = caption,
+                ContentMessage        = text,
+                CanResize             = true,
+                WindowIcon            = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) ),
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
             };
-            var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( p );
-            p.WindowIcon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
-            //---p.Window.Icon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
-            //if ( closeByEscape )
-            //{
-            //    p.Window.KeyDown += (s, e) =>
-            //    {
-            //        if ( e.Key == Key.Escape )
-            //        {
-            //            ((Window) s).Close();
-            //        }
-            //    };
-            //}
-            //window = p.Window;
-            return (msgbox);
-        }
-        public static IMsBoxWindow<ButtonResult> Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon
-            , FontFamily fontFamily, bool closeByEscape = true )
-        {
-            var p = new MessageBoxStandardParams()
+            if ( fontFamily != null )
             {
-                ButtonDefinitions = buttons,
-                Icon = icon,
-                ContentTitle = caption,
-                ContentMessage = text,
-                FontFamily = fontFamily,
-            };
+                p.FontFamily = fontFamily;
+            }
             var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( p );
-            p.WindowIcon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
-            p.Icon       = Icon.None;
-            //---p.Window.Icon = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) );
-            //if ( closeByEscape )
-            //{
-            //    p.Window.KeyDown += ( s, e ) =>
-            //    {
-            //        if ( e.Key == Key.Escape )
-            //        {
-            //            ((Window) s).Close();
-            //        }
-            //    };
-            //}
-            //window = p.Window;
             return (msgbox);
         }
         public static async Task< ButtonResult > ShowEx( this IMsBoxWindow< ButtonResult > msgbox )
@@ -367,7 +325,7 @@ namespace m3u8.download.manager
         public static Task MessageBox_ShowError( this Exception ex, string caption ) => MessageBox_ShowError( ex.ToString(), caption );
         public static Task MessageBox_ShowInformation( this Window window, string text, string caption ) => Create_MsBoxStandardWindow( text, caption, ButtonEnum.Ok, Icon.Info ).ShowDialog( window );
         public static Task MessageBox_ShowError( this Window window, string text, string caption ) => Create_MsBoxStandardWindow( text, caption, ButtonEnum.Ok, Icon.Error ).ShowDialog( window );
-        public static Task< ButtonResult > MessageBox_ShowQuestion( this Window window, string text, string caption, ButtonEnum buttons = ButtonEnum.YesNo ) => Create_MsBoxStandardWindow( text, caption, buttons, Icon.Info, false ).ShowDialog( window );
+        public static Task< ButtonResult > MessageBox_ShowQuestion( this Window window, string text, string caption, ButtonEnum buttons = ButtonEnum.YesNo ) => Create_MsBoxStandardWindow( text, caption, buttons, Icon.Info ).ShowDialog( window );
         private static async Task MessageBox_ShowWithOkButton( string text, string caption, Icon icon )
         {
             var msgbox = Create_MsBoxStandardWindow( text, caption, ButtonEnum.Ok, icon );

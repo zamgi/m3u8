@@ -9,6 +9,7 @@
         WindowStartupLocation="CenterScreen"
         Title="add new download"
         Icon="/Resources/m3u8_32x36.ico"
+        ShowInTaskbar="False"
         >
   <!--
   <Window.KeyBindings>

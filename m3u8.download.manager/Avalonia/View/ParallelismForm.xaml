@@ -10,6 +10,7 @@
         WindowStartupLocation="CenterOwner"
         Icon="/Resources/m3u8_32x36.ico"
         Background="WhiteSmoke"
+        ShowInTaskbar="False"
         >
   <Grid RowDefinitions="auto,auto,10,auto,auto,*,auto" Margin="15">
     <TextBlock Grid.Row="0" Foreground="DarkGray">download threads</TextBlock>
