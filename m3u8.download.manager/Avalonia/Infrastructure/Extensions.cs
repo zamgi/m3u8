@@ -305,6 +305,22 @@ namespace m3u8.download.manager
                 p.FontFamily = fontFamily;
             }
             var msgbox = MessageBoxManager.GetMessageBoxStandardWindow( p );
+
+            #region [.adjustment of the created window (through reflection).]
+            var window_field = msgbox.GetType().GetField( "_window", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic );
+            if ( (window_field != null) && (window_field.GetValue( msgbox ) is Window window) )
+            {
+                window.ShowInTaskbar = false;
+                window.Opened += async (s, e) =>
+                {
+                    var w = window.Width;
+                    window.Width = w - 1;
+                    await Task.Delay( 1 );
+                    window.Width = w;
+                };
+            }
+            #endregion
+
             return (msgbox);
         }
         public static async Task< ButtonResult > ShowEx( this IMsBoxWindow< ButtonResult > msgbox )
