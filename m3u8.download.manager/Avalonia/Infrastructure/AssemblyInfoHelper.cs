@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 
 namespace m3u8.download.manager
@@ -12,41 +14,24 @@ namespace m3u8.download.manager
         {
             get
             {
-                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof(AssemblyTitleAttribute), false );
-                if ( 0 < attributes.Length )
+                try
                 {
-                    var titleAttribute = (AssemblyTitleAttribute) attributes[ 0 ];
-                    if ( !string.IsNullOrEmpty( titleAttribute.Title ) )
+                    var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof(AssemblyTitleAttribute), false );
+                    if ( 0 < attributes.Length )
                     {
-                        return (titleAttribute.Title);
+                        var titleAttribute = (AssemblyTitleAttribute) attributes[ 0 ];
+                        if ( !string.IsNullOrEmpty( titleAttribute.Title ) )
+                        {
+                            return (titleAttribute.Title);
+                        }
                     }
+                    return (Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().Location )); 
                 }
-                return (Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().CodeBase )); 
-            }
-        }
-        public static string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
-        public static string AssemblyDescription
-        {
-            get
-            {
-                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof(AssemblyDescriptionAttribute), false );
-                if ( 0 < attributes.Length )
+                catch ( Exception ex )
                 {
-                    return ((AssemblyDescriptionAttribute) attributes[ 0 ]).Description; 
+                    Debug.WriteLine( ex );
+                    return (null);
                 }
-                return (string.Empty);
-            }
-        }
-        public static string AssemblyProduct
-        {
-            get
-            {
-                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof(AssemblyProductAttribute), false );
-                if ( 0 < attributes.Length )
-                {
-                    return ((AssemblyProductAttribute) attributes[ 0 ]).Product;
-                }
-                return (string.Empty); 
             }
         }
         public static string AssemblyCopyright
@@ -58,7 +43,23 @@ namespace m3u8.download.manager
                 {
                     return ((AssemblyCopyrightAttribute) attributes[ 0 ]).Copyright;
                 }
-                return (string.Empty); 
+                return (null); 
+            }
+        }
+        public static string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+        public static string AssemblyLastWriteTime
+        {
+            get
+            {
+                try
+                {
+                    return (File.GetLastWriteTime( Assembly.GetExecutingAssembly().Location ).ToString( "dd.MM.yyyy HH:mm" ));
+                }
+                catch (Exception ex )
+                {
+                    Debug.WriteLine(ex );
+                    return (null);
+                }
             }
         }
         public static string AssemblyCompany
@@ -70,9 +71,32 @@ namespace m3u8.download.manager
                 {
                     return ((AssemblyCompanyAttribute) attributes[ 0 ]).Company;
                 }
-                return (string.Empty); 
+                return (null); 
             }
         }
-        public static string AssemblyLastWriteTime => File.GetLastWriteTime( Assembly.GetExecutingAssembly().Location ).ToString( "dd.MM.yyyy HH:mm" );
+        public static string AssemblyDescription
+        {
+            get
+            {
+                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof(AssemblyDescriptionAttribute), false );
+                if ( 0 < attributes.Length )
+                {
+                    return ((AssemblyDescriptionAttribute) attributes[ 0 ]).Description; 
+                }
+                return (null);
+            }
+        }
+        public static string AssemblyProduct
+        {
+            get
+            {
+                var attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof(AssemblyProductAttribute), false );
+                if ( 0 < attributes.Length )
+                {
+                    return ((AssemblyProductAttribute) attributes[ 0 ]).Product;
+                }
+                return (null); 
+            }
+        }
     }
 }

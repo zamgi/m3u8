@@ -21,10 +21,10 @@ namespace m3u8.download.manager
         {
             const string CAPTION = "about";
 
-            var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\"" + Environment.NewLine +
-                       AssemblyInfoHelper.AssemblyCopyright + Environment.NewLine +
+            var text = $"\"{(AssemblyInfoHelper.AssemblyTitle ?? "-")}\"" + Environment.NewLine +
+                       (AssemblyInfoHelper.AssemblyCopyright ?? "-") + Environment.NewLine +
                        Environment.NewLine +
-                       $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})" +
+                       $"Version {(AssemblyInfoHelper.AssemblyVersion ?? "-")}, ({(AssemblyInfoHelper.AssemblyLastWriteTime ?? "-")})" +
                        Environment.NewLine +
                        Environment.NewLine +
                        "Shortcut's:" + Environment.NewLine +
