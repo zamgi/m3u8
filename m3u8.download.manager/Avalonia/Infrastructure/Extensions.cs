@@ -311,6 +311,8 @@ namespace m3u8.download.manager
             if ( (window_field != null) && (window_field.GetValue( msgbox ) is Window window) )
             {
                 window.ShowInTaskbar = false;
+                #region comm.
+                /*
                 window.Opened += async (s, e) =>
                 {
                     var w = window.Width;
@@ -318,6 +320,8 @@ namespace m3u8.download.manager
                     await Task.Delay( 1 );
                     window.Width = w;
                 };
+                //*/
+                #endregion
             }
             #endregion
 

@@ -62,6 +62,8 @@ namespace m3u8.download.manager
                 }
             }
         }
+        #region comm.
+        /*
         public static string AssemblyCompany
         {
             get
@@ -98,5 +100,7 @@ namespace m3u8.download.manager
                 return (null); 
             }
         }
+        //*/
+        #endregion
     }
 }
