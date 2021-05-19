@@ -22,9 +22,10 @@
                HorizontalAlignment="Center"
                VerticalAlignment="Top"
                TextWrapping="Wrap"
+               TextTrimming="CharacterEllipsis"
                Foreground="Red"
                ScrollViewer.HorizontalScrollBarVisibility="Auto"
-               ScrollViewer.VerticalScrollBarVisibility="Auto"
+               ScrollViewer.VerticalScrollBarVisibility="Auto"               
              />
   </ScrollViewer>
 </Window>

@@ -25,7 +25,7 @@ namespace m3u8.download.manager.ui
                 Value = value;
 
                 this.Icon   = _InnerImage = new Image();
-                this.Header = new TextBlock() { Text = value.ToString() };
+                this.Header = new TextBlock() { Text = value.ToString(), TextTrimming = TextTrimming.CharacterEllipsis };
             }
 
             Type IStyleable.StyleKey => typeof(MenuItem);
@@ -60,7 +60,7 @@ namespace m3u8.download.manager.ui
             this.FontWeight = FontWeight.Bold;
             this.Foreground = MainForeground;
             var sp = new StackPanel();
-            _InnerTextBlock = new TextBlock() { Text = "-", HorizontalAlignment = HorizontalAlignment.Center };
+            _InnerTextBlock = new TextBlock() { Text = "-", HorizontalAlignment = HorizontalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
             _InnerTextBlock.SetValue( ToolTip.TipProperty, MainToolTipText );
             sp.Children.Add( _InnerTextBlock );
             _InnerImage = new Image() { Source = MainImage };

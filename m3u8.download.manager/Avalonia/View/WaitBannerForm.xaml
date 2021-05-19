@@ -27,12 +27,12 @@
       <ColumnDefinition Width="3" />
     </Grid.ColumnDefinitions>
 
-    <TextBlock x:Name="captionLabel"   Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Margin="3">...executing...</TextBlock>
-    <TextBlock x:Name="progressLabel"  Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" Margin="3"> - <!--%--></TextBlock>
+    <TextBlock x:Name="captionLabel"   Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Margin="3" TextTrimming="CharacterEllipsis">...executing...</TextBlock>
+    <TextBlock x:Name="progressLabel"  Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" Margin="3" TextTrimming="CharacterEllipsis"> - <!--%--></TextBlock>
     <Image     x:Name="indicatorImage" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right"  Width="16" Height="16" Source="/Resources/roller/i1.ico" Margin="0 0 30 0" />
-    <TextBlock x:Name="elapsedLabel"   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Margin="3"> - <!--0:0--></TextBlock>
+    <TextBlock x:Name="elapsedLabel"   Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Margin="3" TextTrimming="CharacterEllipsis"> - <!--0:0--></TextBlock>
 
-    <TextBlock x:Name="speedLabel"   Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10 3 3 3"><!--bit/s--></TextBlock>
+    <TextBlock x:Name="speedLabel"   Grid.Row="4" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10 3 3 3" TextTrimming="CharacterEllipsis"><!--bit/s--></TextBlock>
     <Button    x:Name="cancelButton" Grid.Row="4" Grid.Column="1" Width="100" HorizontalAlignment="Center" Margin="3" Cursor="Hand">Cancel</Button>
 
     <Border Name="Top"    Background="Gray" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" />
