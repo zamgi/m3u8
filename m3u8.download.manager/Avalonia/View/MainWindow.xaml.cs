@@ -25,7 +25,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class MainWindow : Window
+    public sealed class MainWindow : Window, IDisposable
     {
         #region [.markup fields.]
         private DownloadListUC downloadListUC;
@@ -73,7 +73,7 @@ namespace m3u8.download.manager.ui
 #endif            
         }
         public MainWindow( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
-
+        public void Dispose() => _VM.Dispose_NoThrow();
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load( this );
@@ -163,7 +163,7 @@ namespace m3u8.download.manager.ui
                 try
                 {
                     var (x, y, width, height) = Extensions.FromJSON< (int x, int y, double width, double height) >( json );
-                    if ( (width != default) && (height != default) )
+                    if ( (double.Epsilon < Math.Abs( width )) && (double.Epsilon < Math.Abs( height )) ) //---if ( (width != default) && (height != default) )
                     {
                         this.Position   = new PixelPoint( x, y );
                         this.ClientSize = new Size( width, height );
@@ -880,12 +880,8 @@ return;
                         if ( menuItem.Tag == null )
                         {
                             menuItem.Tag = text;
-                        }
-                        else
-                        {
-                            text = menuItem.Tag?.ToString();
-                        }                        
-                        menuItem.Header = menuItem.Tag?.ToString() + ((0 < count) ? $" ({count})" : null);
+                        }                      
+                        menuItem.Header = menuItem.Tag.ToString() + ((0 < count) ? $" ({count})" : null);
                     }
                 };
 
@@ -1028,7 +1024,7 @@ return;
         #region [.ChangeOutputFileForm.]
         private async void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
-            var f = new ChangeOutputFileForm( row );
+            using var f = new ChangeOutputFileForm( row );
             {
                 await f.ShowDialog( this );
                 if ( f.Success && FileNameCleaner.TryGetOutputFileName( f.OutputFileName, out var outputFileName ) )

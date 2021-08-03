@@ -394,7 +394,10 @@ namespace m3u8.download.manager.infrastructure
                             return;
 
                         var fn = await SetFileName_Async( millisecondsDelay: 150 );
-                        setFileNameFinishAction?.Invoke( fn );
+                        if ( fn != null )
+                        {
+                            setFileNameFinishAction?.Invoke( fn );
+                        }
 
                     }, TaskScheduler.FromCurrentSynchronizationContext() );
             }
@@ -415,16 +418,19 @@ namespace m3u8.download.manager.infrastructure
                     await Task.Delay( millisecondsDelay );
 
                     fn = fn.GetFileName_NoThrow();
-                    _SetFileNameAction( fn ); 
-                        _FileNameTextBox.SelectionStart = Math.Min( selectionStart, fn.Length );
-                        selectionStart = _FileNameTextBox.SelectionStart;
-                    await Task.Delay( millisecondsDelay );
+                    if ( fn != null )
+                    {
+                        _SetFileNameAction( fn ); 
+                            _FileNameTextBox.SelectionStart = Math.Min( selectionStart, fn.Length );
+                            selectionStart = _FileNameTextBox.SelectionStart;
+                        await Task.Delay( millisecondsDelay );
 
-                    fn = AddOutputFileExtensionIfMissing( fn );
-                    _SetFileNameAction( fn );
-                        _FileNameTextBox.SelectionStart = Math.Min( selectionStart, fn.Length );
+                        fn = AddOutputFileExtensionIfMissing( fn );
+                        _SetFileNameAction( fn );
+                            _FileNameTextBox.SelectionStart = Math.Min( selectionStart, fn.Length );
 
-                    return (fn);
+                        return (fn);
+                    }
                 }
                 return (null);
             }

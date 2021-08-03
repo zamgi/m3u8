@@ -17,7 +17,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class AddNewDownloadForm : Window
+    public sealed class AddNewDownloadForm : Window, IDisposable
     {
         #region [.markup fields.]
         private TextBox m3u8FileUrlTextBox;
@@ -84,6 +84,12 @@ namespace m3u8.download.manager.ui
                 this.Title += $" ({x.n} of {x.total})";
             }
             _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
+        }
+        public void Dispose()
+        {
+            _FNCP.Dispose_NoThrow();
+            m3u8FileUrlTextBox_SubscribeDisposable.Dispose_NoThrow();
+            outputFileNameTextBox_SubscribeDisposable.Dispose_NoThrow();
         }
 
         protected async override void OnOpened( EventArgs e )
@@ -326,7 +332,7 @@ namespace m3u8.download.manager.ui
         }
         public  string GetOutputFileName() => FileNameCleaner.GetOutputFileName( this.OutputFileName );
         public  string GetOutputDirectory() => this.OutputDirectory;
-        
+
         private string OutputFileName
         {
             get => outputFileNameTextBox?.Text?.Trim();

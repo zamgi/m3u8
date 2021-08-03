@@ -21,7 +21,7 @@ namespace m3u8.download.manager
 
         public async void Execute( object parameter )
         {
-            var f = new FileNameExcludesWordsEditor( NameCleaner.ExcludesWords );
+            using var f = new FileNameExcludesWordsEditor( NameCleaner.ExcludesWords );
             {
                 await f.ShowDialogEx();
                 if ( f.Success )

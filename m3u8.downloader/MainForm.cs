@@ -51,6 +51,17 @@ namespace m3u8.downloader
             NameCleaner.ResetExcludesWords( Settings.Default.NameCleanerExcludesWords?.Cast< string >() );
         }
         public MainForm( in (string m3u8FileUrl, bool autoStartDownload) inputParams ) : this() => _InputParams = inputParams;
+
+        protected override void Dispose( bool disposing )
+        {
+            if ( disposing )
+            {
+                components?.Dispose();
+
+                _Mc?.Dispose();
+            }
+            base.Dispose( disposing );
+        }
         #endregion
 
         #region [.override methods.]

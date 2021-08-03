@@ -4,7 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
-using Avalonia.Threading;
+
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 
@@ -13,7 +13,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class ChangeOutputFileForm : Window
+    public sealed class ChangeOutputFileForm : Window, IDisposable
     {
         #region [.markup fields.]
         private TextBox outputFileNameTextBox;
@@ -40,6 +40,7 @@ namespace m3u8.download.manager.ui
             set_outputFileNameTextBox_Selection_Position( this.OutputFileName );
             _FNCP.FileNameTextBox_TextChanged( outputFileName => set_outputFileNameTextBox_Selection_Position( outputFileName ) );
         }
+        public void Dispose() => _FNCP.Dispose_NoThrow();
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load( this );

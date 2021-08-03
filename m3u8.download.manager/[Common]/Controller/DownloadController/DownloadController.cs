@@ -701,18 +701,20 @@ namespace m3u8.download.manager.controllers
         {
             var lines = m3u8File.RawText?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
                                 .Where( line => !line.IsNullOrWhiteSpace() );
-
-            log.BeginUpdate();
+            if ( lines.AnyEx() )
             {
-                log.Clear();
-                foreach ( var line in lines )
+                log.BeginUpdate();
                 {
-                    log.AddRequestRow( line );
+                    log.Clear();
+                    foreach ( var line in lines )
+                    {
+                        log.AddRequestRow( line );
+                    }
+                    log.AddEmptyRow();
+                    log.AddRequestRow( $" patrs count: {m3u8File.Parts.Count}" );
                 }
-                log.AddEmptyRow();
-                log.AddRequestRow( $" patrs count: {m3u8File.Parts.Count}" );
+                log.EndUpdate();
             }
-            log.EndUpdate();
         }
         public static void StatusStarted( this DownloadRow row )
         {

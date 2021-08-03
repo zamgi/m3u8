@@ -24,7 +24,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    internal sealed partial class MainForm : Form
+    internal sealed partial class MainForm : Form, IDisposable
     {
         #region [.fields.]
         private (string m3u8FileUrl, bool autoStartDownload)[] _InputParamsArray;
@@ -92,6 +92,18 @@ namespace m3u8.download.manager.ui
             degreeOfParallelismToolButton.Value = _SettingsController.MaxDegreeOfParallelism;
         }
         public MainForm( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
+
+        protected override void Dispose( bool disposing )
+        {
+            if ( disposing )
+            {
+                components?.Dispose();
+
+                _DownloadController.Dispose();
+                _SettingsController.Dispose();
+            }
+            base.Dispose( disposing );
+        }
         #endregion
 
         #region [.override methods.]

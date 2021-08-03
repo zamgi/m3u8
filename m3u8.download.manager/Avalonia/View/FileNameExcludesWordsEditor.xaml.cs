@@ -17,7 +17,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class FileNameExcludesWordsEditor : Window
+    public sealed class FileNameExcludesWordsEditor : Window, IDisposable
     {
         /// <summary>
         /// 
@@ -72,6 +72,7 @@ namespace m3u8.download.manager.ui
             _DGVRows.CollectionChanged += (s, e) => SetHasChanges();
             _DGVRows.PropertyChanged   += (s, e) => SetHasChanges( (e.PropertyName == nameof(_DGVRows.IsEditingItem) && !_DGVRows.IsEditingItem) );
         }
+        public void Dispose() => filterTextBox_SubscribeDisposable.Dispose_NoThrow();
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load( this );
