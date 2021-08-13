@@ -555,10 +555,8 @@ namespace m3u8
                     var downloadParts = download_m3u8File_parts_parallel( tp );
 
                     //-3-//                    
-                    using ( var fs = File.OpenWrite( ip.OutputFileName ) )
+                    using ( var fs = Extensions.File_Open4Write( ip.OutputFileName ) )
                     {
-                        fs.SetLength( 0 );
-
                         foreach ( var downloadPart in downloadParts )
                         {
                             if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )
@@ -640,10 +638,8 @@ namespace m3u8
                 var downloadParts = download_m3u8File_parts_parallel( tp );
 
                 //-3-//
-                using ( var fs = File.OpenWrite( ip.OutputFileName ) )
+                using ( var fs = Extensions.File_Open4Write( ip.OutputFileName ) )
                 {
-                    fs.SetLength( 0 );
-
                     foreach ( var downloadPart in downloadParts )
                     {
                         if ( downloadPart.Error != null ) //|| downloadPart.Bytes == null )

@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("m3u8.client")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("xz")]
+[assembly: AssemblyCompany("zamgi")]
 [assembly: AssemblyProduct("m3u8.client")]
-[assembly: AssemblyCopyright("Copyright © xz 2018")]
+[assembly: AssemblyCopyright("Copyright © zamgi 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

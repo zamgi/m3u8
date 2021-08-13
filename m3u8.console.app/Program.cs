@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using m3u8.ext;
+
 namespace m3u8
 {
     /// <summary>
@@ -90,10 +92,8 @@ namespace m3u8
 
                         //-3-//
                         var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.AbsolutePath ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                        using ( var fs = File.OpenWrite( outputFileName ) )
+                        using ( var fs = Extensions.File_Open4Write( outputFileName ) )
                         {
-                            fs.SetLength( 0 );
-
                             foreach ( var downloadPart in downloadParts )
                             {
                                 if ( downloadPart.Error != null )
@@ -252,10 +252,8 @@ namespace m3u8
 
                         //-3-//
                         var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.AbsolutePath ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                        using ( var fs = File.OpenWrite( outputFileName ) )
+                        using ( var fs = Extensions.File_Open4Write( outputFileName ) )
                         {
-                            fs.SetLength( 0 );
-
                             foreach ( var downloadPart in downloadParts )
                             {
                                 if ( downloadPart.Error != null )
@@ -403,10 +401,8 @@ namespace m3u8
                         var totalBytes = 0;
 
                         var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.AbsolutePath ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                        using ( var fs = File.OpenWrite( outputFileName ) )
+                        using ( var fs = Extensions.File_Open4Write( outputFileName ) )
                         {
-                            fs.SetLength( 0 );
-
                             foreach ( var downloadPart in downloadParts )
                             {
                                 if ( downloadPart.Error != null )
