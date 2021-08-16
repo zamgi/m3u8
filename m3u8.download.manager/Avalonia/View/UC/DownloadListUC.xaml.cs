@@ -175,9 +175,9 @@ namespace m3u8.download.manager.ui
         internal IEnumerable< (int index, double width) > GetColumnsWidth() => DGV.Columns.Select( (c, i) => (index: i, width: c.ActualWidth) );
         private void SetColumnsWidth( IList< (int index, double width) > seq )
         {
-            foreach ( var t in seq )
+            foreach ( var (index, width) in seq )
             {
-                DGV.Columns[ t.index ].Width = new DataGridLength( t.width );
+                DGV.Columns[ index ].Width = new DataGridLength( width );
             }
         }
         internal void SetColumnsWidthFromJson( string json )
@@ -434,12 +434,12 @@ namespace m3u8.download.manager.ui
             
             #region [.speed.]
             if ( !st.IsPaused() )
-            {                
+            {
                 var elapsedSeconds = ts.TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
-                    var speedText = default(string);
+                    string speedText;
                     //if ( downloadBytes < 1_000 ) speedText = (downloadBytes / elapsedSeconds).ToString("N2") + " bit/s";
                     if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
                     else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";

@@ -270,7 +270,7 @@ namespace m3u8.download.manager.ui
                         return (titleAttribute.Title);
                     }
                 }
-                return (Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().CodeBase )); 
+                return (Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().Location/*.CodeBase*/ )); 
             }
         }
         public static string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
