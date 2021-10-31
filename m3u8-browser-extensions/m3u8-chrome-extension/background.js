@@ -2,6 +2,16 @@ window.onload = function () {
     // work object
     window.bg = new bgObj();
 
+    /*
+    chrome.webRequest.onHeadersReceived.addListener(function (details) {
+        if (details.type === 'media') {
+            console.log('onHeadersReceived: \'' + details.type + '\', url: \'' + details.url + '\'');
+        }        
+    }, {
+        urls: ["<all_urls>"]
+    });
+    */
+
     chrome.webRequest.onCompleted.addListener(function (details) {
             var extension = details.url.split('?')[ 0 ].split('.').pop();
             if ((extension || '').toLowerCase() === 'm3u8') {

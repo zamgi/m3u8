@@ -1,10 +1,15 @@
 window.onload = function () {
-    // get m3u8 urls for current active tab
-    window.bg_wnd = chrome.extension.getBackgroundPage();
-    var m3u8_urls = window.bg_wnd.bg.get_m3u8_urls();
+    try {
+        // get m3u8 urls for current active tab
+        window.bg_wnd = chrome.extension.getBackgroundPage();
+        var m3u8_urls = window.bg_wnd.bg.get_m3u8_urls();
 
-    // function render m3u8 urls list
-    render_m3u8_urls(m3u8_urls);
+        // function render m3u8 urls list
+        render_m3u8_urls(m3u8_urls);
+    } catch (ex) {
+        console.error("m3u8 => " + ex);
+        render_m3u8_urls();
+    }
 };
 
 function render_m3u8_urls(m3u8_urls) {
