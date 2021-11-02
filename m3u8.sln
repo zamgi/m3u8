@@ -106,6 +106,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WinForms.NET50", "WinForms.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.download.manager", "m3u8.download.manager\WinForms.NET50\m3u8.download.manager.csproj", "{9E0D0A4D-CA31-436A-A6F2-609860775AC6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.console.app_2", "m3u8.console.app_2\m3u8.console.app_2.csproj", "{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -140,6 +142,10 @@ Global
 		{9E0D0A4D-CA31-436A-A6F2-609860775AC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E0D0A4D-CA31-436A-A6F2-609860775AC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E0D0A4D-CA31-436A-A6F2-609860775AC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

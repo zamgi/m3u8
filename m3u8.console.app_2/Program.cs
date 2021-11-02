@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -450,20 +450,20 @@ namespace m3u8
                     Cts                = cts,
                     m3u8FileUrl        = m3u8FileUrl,
                     OutputFileName     = outputFileName,
-                    ResponseStepAction = new m3u8_processor.ResponseStepActionDelegate( t =>
-                        CONSOLE.WriteLine( $"{t.Part.OrderNumber} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" )
-                    ),
+                    NetParams          = new m3u8_client.init_params() { AttemptRequestCount = 1, },
+                    ResponseStepAction = new m3u8_processor.ResponseStepActionDelegate( t => CONSOLE.WriteLine( $"{t.Part.OrderNumber} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),                    
                 };
 
                 await m3u8_processor.DownloadFileAndSave_Async( p );
             }
         }
 
-        [STAThread]
-        private static void Main( string[] args )
+        [STAThread] private static async Task Main( string[] args )
         {
             try
             {
+                Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
+
                 #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
 #if NET5_0
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13);
@@ -483,7 +483,7 @@ namespace m3u8
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( M3U8_FILE_URL ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                    v3.run( M3U8_FILE_URL, outputFileName, cts ).WaitForTaskEndsOrKeyboardBreak( cts );
+                    await v3.run( M3U8_FILE_URL, outputFileName, cts ).ConfigureAwait( false ); //.WaitForTaskEndsOrKeyboardBreak( cts );
                 }                    
             }
             catch ( Exception ex )
