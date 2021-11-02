@@ -197,7 +197,11 @@ namespace m3u8.downloader
             #endregion
 
             #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
+#if NET5_0
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13);
+#else
             ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13 | SecurityProtocolType.Ssl3);
+#endif
             #endregion
 
             #region [.goto to tu-tu.]
