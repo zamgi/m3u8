@@ -29,4 +29,8 @@ rd "m3u8.download.manager\WinForms.NET50\bin" /S /Q
 rd "m3u8.download.manager\WinForms.NET50\obj" /S /Q
 rd "m3u8.download.manager\WinForms.NET50\.vs" /S /Q
 
+rd "m3u8_live_stream_downloader\bin" /S /Q
+rd "m3u8_live_stream_downloader\obj" /S /Q
+rd "m3u8_live_stream_downloader\.vs" /S /Q
+
 rem pause
