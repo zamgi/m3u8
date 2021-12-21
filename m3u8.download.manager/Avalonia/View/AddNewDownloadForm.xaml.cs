@@ -243,7 +243,7 @@ namespace m3u8.download.manager.ui
             else
             if ( _Settings.UniqueUrlsOnly && ( _DownloadListModel?.ContainsUrl( this.M3u8FileUrl )).GetValueOrDefault() )
             {
-                await Extensions.MessageBox_ShowError( $"Url already exists in list:\n '{this.M3u8FileUrl}'", this.Title );
+                await Extensions.MessageBox_ShowError( $"Url already exists in list:\n '{this.M3u8FileUrl}'\n", this.Title );
                 m3u8FileUrlTextBox.FocusAndBlinkBackColor();
                 return (false);
             }

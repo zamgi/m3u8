@@ -100,7 +100,7 @@ namespace m3u8.download.manager.ui
             #endregion
 
             #region [.context menu.]
-            mainContextMenu = this.Find< ContextMenu >( nameof(mainContextMenu) ); //mainContextMenu.Styles.Add( GlobalStyles.Light );
+            mainContextMenu                   = this.Find< ContextMenu >( nameof(mainContextMenu) ); //mainContextMenu.Styles.Add( GlobalStyles.Light );
             startDownloadMenuItem             = this.Find< MenuItem >( nameof(startDownloadMenuItem)  );            startDownloadMenuItem            .Click += startDownloadMenuItem_Click;
             pauseDownloadMenuItem             = this.Find< MenuItem >( nameof(pauseDownloadMenuItem)  );            pauseDownloadMenuItem            .Click += pauseDownloadMenuItem_Click;
             cancelDownloadMenuItem            = this.Find< MenuItem >( nameof(cancelDownloadMenuItem) );            cancelDownloadMenuItem           .Click += cancelDownloadMenuItem_Click;
@@ -851,7 +851,14 @@ return;
                 var allowedAll = (row == null) || (1 < _VM.DownloadListModel.RowsCount);
                 SetAllDownloadsMenuItemsEnabled( allowedAll );
 
-                mainContextMenu.Open( this /*downloadListUC*/ );
+                var is_zero = (new Random().Next( 0, 2 ) == 0);
+                var ctrl = is_zero ? (Control) this : downloadListUC;
+                pt = is_zero ? pt : this.TranslatePoint( pt, downloadListUC ).GetValueOrDefault( pt );
+
+                mainContextMenu.HorizontalOffset = pt.X;
+                mainContextMenu.VerticalOffset   = pt.Y;
+                mainContextMenu.PlacementMode = PlacementMode.Left;
+                mainContextMenu.Open( ctrl );
             }
         }
         private void SetAllDownloadsMenuItemsEnabled( bool allowedAll )
