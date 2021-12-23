@@ -91,7 +91,7 @@ namespace System.Windows.Forms
             {
                 #region [.1.]
                 var selectedRows = new SortedSet< DataGridViewRow >( DataGridViewRow_Comparer.Inst );
-                for ( int i = this.FirstDisplayedScrollingRowIndex, len = this.RowCount, disp_i = 0, disp_count = this.DisplayedRowCount( true ); i < len; i++ )
+                for ( int i = Math.Max( 0, this.FirstDisplayedScrollingRowIndex ), len = this.RowCount, disp_i = 0, disp_count = this.DisplayedRowCount( true ); i < len; i++ )
                 {
                     var row = this.Rows[ i ];
                     if ( row.Displayed )
