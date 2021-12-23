@@ -52,6 +52,7 @@ namespace m3u8.download.manager.controllers
         public string OutputFileDirectory           { [M(O.AggressiveInlining)] get => Settings.OutputFileDirectory; }
         public bool   UniqueUrlsOnly                { [M(O.AggressiveInlining)] get => Settings.UniqueUrlsOnly; }
         public string MainFormPositionJson          { [M(O.AggressiveInlining)] get => Settings.MainFormPositionJson; [M(O.AggressiveInlining)] set => Settings.MainFormPositionJson = value; }
+        public string DownloadRowsJson              { [M(O.AggressiveInlining)] get => Settings.DownloadRowsJson; [M(O.AggressiveInlining)] set => Settings.DownloadRowsJson = value; }
        
         public bool UseCrossDownloadInstanceParallelism { [M(O.AggressiveInlining)] get => Settings.UseCrossDownloadInstanceParallelism; }
         public int  MaxDegreeOfParallelism              { [M(O.AggressiveInlining)] get => Settings.MaxDegreeOfParallelism; [M(O.AggressiveInlining)] set => Settings.MaxDegreeOfParallelism = value; }

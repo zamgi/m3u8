@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
+using m3u8.download.manager.models;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -26,7 +29,7 @@ namespace m3u8.download.manager.ui
 
         private Brush _BackBrush;
         private Brush _TextBrush;
-        private Color _TextColor;
+        //private Color _TextColor;
         private Pen   _BorderPen;
 
         private bool  _UseColumnsHoverHighlight;
@@ -42,7 +45,7 @@ namespace m3u8.download.manager.ui
 
             _BackBrush = Brushes.LightGray;
             _TextBrush = Brushes.DimGray;
-            _TextColor = Color.DimGray;
+            //_TextColor = Color.DimGray;
             _BorderPen = Pens.Silver;
             
             if ( useColumnsHoverHighlight )
@@ -58,7 +61,7 @@ namespace m3u8.download.manager.ui
                 _SelBackBrush = new SolidBrush( _DGV.DefaultCellStyle.SelectionBackColor );
                 _SelBorderPen = new Pen       ( _DGV.DefaultCellStyle.SelectionForeColor );
                 _SelTextBrush = new SolidBrush( _DGV.DefaultCellStyle.SelectionForeColor );
-                _DGV.CellPainting += DGV_CellPaintingRowNumbers_useSelectedBackColor;
+                _DGV.CellPainting += DGV_CellPaintingRowNumbers_UseSelectedBackColor;
             }
             else
             {
@@ -67,7 +70,7 @@ namespace m3u8.download.manager.ui
         }
         public void Dispose()
         {
-            _DGV.CellPainting -= DGV_CellPaintingRowNumbers_useSelectedBackColor;
+            _DGV.CellPainting -= DGV_CellPaintingRowNumbers_UseSelectedBackColor;
             _DGV.CellPainting -= DGV_CellPaintingRowNumbers;
 
             _SF_RowNumbers.Dispose();
@@ -80,7 +83,7 @@ namespace m3u8.download.manager.ui
             _SelTextBrush?.Dispose();
         }
 
-        private void DGV_CellPaintingRowNumbers_useSelectedBackColor( object sender, DataGridViewCellPaintingEventArgs e )
+        private void DGV_CellPaintingRowNumbers_UseSelectedBackColor( object sender, DataGridViewCellPaintingEventArgs e )
         {
             if ( 0 <= e.RowIndex ) //row numbers
             {
@@ -90,19 +93,25 @@ namespace m3u8.download.manager.ui
                     var gr = e.Graphics;
 
                     Brush backBrush;
-                    Pen borderPen;
+                    Pen   borderPen;
                     Brush textBrush;
+                    bool  drawCircle;
                     if ( e.State.IsSelected() )
                     {
+                        //var isFocused = (_DGV.CurrentCell.OwningRow.Index == e.RowIndex); // ((e.PaintParts & DataGridViewPaintParts.Focus) == DataGridViewPaintParts.Focus);
+
                         backBrush = _SelBackBrush;
                         borderPen = _SelBorderPen;
                         textBrush = _SelTextBrush;
+
+                        drawCircle = (1 < _DGV.SelectedRows.Count) && (_DGV.CurrentCell.RowIndex == e.RowIndex);
                     }
                     else
                     {
-                        backBrush = _BackBrush;
-                        borderPen = _BorderPen;
-                        textBrush = _TextBrush;
+                        backBrush = _BackBrush; // Brushes.LightGray;
+                        borderPen = _BorderPen; // Pens.Silver;
+                        textBrush = _TextBrush; // Brushes.DimGray;
+                        drawCircle = false;
                     }
 
                     gr.FillRectangle( backBrush, e.CellBounds );
@@ -111,6 +120,18 @@ namespace m3u8.download.manager.ui
                     rc.Y++; rc.Height -= 3;
                     rc.Width -= 2;
                     gr.DrawRectangle( borderPen, rc );
+
+                    if ( drawCircle )
+                    {
+                        var cb = e.CellBounds;
+
+                        const float VERGE = 15;
+                        var circle_rc = new RectangleF( cb.X + cb.Width / 2.0f - VERGE / 2, cb.Y + cb.Height / 2.0f - VERGE / 2, VERGE, VERGE );
+                        gr.FillEllipse( Brushes.Blue, circle_rc );
+
+                        circle_rc.Inflate( 0.5f, 0.5f );
+                        gr.DrawEllipse( Pens.White, circle_rc );
+                    }
 
                     gr.DrawString( (e.RowIndex + 1).ToString(), _DGV.Font, textBrush, e.CellBounds, _SF_RowNumbers );
                 }
@@ -149,7 +170,6 @@ namespace m3u8.download.manager.ui
         {
             e.Handled = true;
             var gr   = e.Graphics;
-            var font = _DGV.Font;
 
             var br = (_UseColumnsHoverHighlight && e.CellBounds.Contains( _DGV.PointToClient( Control.MousePosition ) )
                                                 && _DGV.IsColumnSortable( e.ColumnIndex )) 
@@ -247,6 +267,7 @@ namespace m3u8.download.manager.ui
                 await Task.Delay( 330 );
                 control.BackColor = bc;
                 _BlinkedControls.Remove( control );
+                //Task.Delay( 330 ).ContinueWith( _ => control.BackColor = bc, TaskScheduler.FromCurrentSynchronizationContext() );
             }
         }
         public static void FocusAndBlinkBackColor( this Control control ) => control.FocusAndBlinkBackColor( Color.HotPink );
@@ -270,7 +291,7 @@ namespace m3u8.download.manager.ui
                         return (titleAttribute.Title);
                     }
                 }
-                return (Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().Location/*.CodeBase*/ )); 
+                return (Path.GetFileNameWithoutExtension( Assembly.GetExecutingAssembly().CodeBase )); 
             }
         }
         public static string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -323,5 +344,49 @@ namespace m3u8.download.manager.ui
             }
         }
         public static string AssemblyLastWriteTime => File.GetLastWriteTime( Assembly.GetExecutingAssembly().Location ).ToString( "dd.MM.yyyy HH:mm" );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal static class DownloadRowsSerializer
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataContract] private sealed class DownloadRow_4_Serialize
+        {
+            public DownloadRow_4_Serialize() { }
+            public DownloadRow_4_Serialize( DownloadRow r )
+            {
+                CreatedOrStartedDateTime = r.CreatedOrStartedDateTime;
+                Url                      = r.Url;
+                OutputFileName           = r.OutputFileName;
+                OutputDirectory          = r.OutputDirectory;
+            }
+            [DataMember(Name="c")] public DateTime CreatedOrStartedDateTime { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="u")] public string   Url                      { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="f")] public string   OutputFileName           { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="d")] public string   OutputDirectory          { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="s")] public DownloadStatus Status             { [M(O.AggressiveInlining)] get; set; }
+        }
+
+        public static string ToJSON( IEnumerable< DownloadRow > rows ) => rows.Select( r => new DownloadRow_4_Serialize( r ) ).ToJSON();
+        public static IEnumerable< (DateTime CreatedOrStartedDateTime, string Url, string OutputFileName, string OutputDirectory, DownloadStatus Status) > FromJSON( string json )
+        {
+            if ( !json.IsNullOrWhiteSpace() )
+            {
+                try
+                {
+                    var rows = Extensions.FromJSON< DownloadRow_4_Serialize[] >( json ).Select( r => (r.CreatedOrStartedDateTime, r.Url, r.OutputFileName, r.OutputDirectory, DownloadStatus.Created/*r.Status*/) );
+                    return (rows);
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
+            }
+            return (Enumerable.Empty< (DateTime CreatedOrStartedDateTime, string Url, string OutputFileName, string OutputDirectory, DownloadStatus Status) >());
+        }
     }
 }

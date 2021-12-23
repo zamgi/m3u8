@@ -16,7 +16,7 @@
         {
             System.Windows.Forms.DataGridViewCellStyle cs1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle cs2 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.DGV = new System.Windows.Forms.DataGridView();
+            this.DGV = new System.Windows.Forms.DataGridViewEx();
             this.DGV_urlColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_outputFileNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_outputDirectoryColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -60,8 +60,8 @@
                 this.DGV_urlColumn
             });
             cs2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            cs2.BackColor = System.Drawing.SystemColors.Window;
             cs2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            cs2.BackColor = System.Drawing.SystemColors.Window;
             cs2.ForeColor = System.Drawing.SystemColors.ControlText;
             cs2.SelectionBackColor = System.Drawing.Color.CadetBlue;
             cs2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
@@ -69,7 +69,7 @@
             this.DGV.DefaultCellStyle = cs2;
             this.DGV.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DGV.Location = new System.Drawing.Point(0, 0);
-            this.DGV.MultiSelect = false;
+            this.DGV.MultiSelect = true; //false;
             this.DGV.Name = "DGV";
             this.DGV.ReadOnly = true;
             this.DGV.RowHeadersWidth = 25;
@@ -81,6 +81,7 @@
             this.DGV.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DGV_CellValueNeeded);
             this.DGV.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DGV_CellFormatting);
             this.DGV.SelectionChanged += new System.EventHandler(this.DGV_SelectionChanged);
+            //---this.DGV.CurrentCellChanged += new System.EventHandler(this.DGV_CurrentCellChanged);
             this.DGV.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DGV_CellPainting);
             this.DGV.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_CellClick);
             this.DGV.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_CellMouseEnter);
@@ -88,9 +89,11 @@
             this.DGV.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DGV_ColumnHeaderMouseClick);
             this.DGV.MouseDown +=new System.Windows.Forms.MouseEventHandler(this.DGV_MouseDown);
             this.DGV.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseClick);
-            this.DGV.DoubleClick += new System.EventHandler(this.DGV_DoubleClick);
             this.DGV.MouseMove += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseMove);
+            this.DGV.DoubleClick += new System.EventHandler(this.DGV_DoubleClick);
             this.DGV.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DGV_DataError);
+            this.DGV.StartDrawSelectRect += new System.EventHandler(this.DGV_StartDrawSelectRect);
+            this.DGV.EndDrawSelectRect += new System.EventHandler(this.DGV_EndDrawSelectRect);
             // 
             // DGV_urlColumn
             // 
@@ -202,7 +205,7 @@
         }        
         #endregion
 
-        private System.Windows.Forms.DataGridView DGV;
+        private System.Windows.Forms.DataGridViewEx DGV;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_urlColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_outputFileNameColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_outputDirectoryColumn;

@@ -13,7 +13,6 @@ namespace m3u8.download.manager.models
     internal abstract class RowBase< T > where T : RowBase< T >
     {
         private ListModel< T > _Model;
-
         protected RowBase( ListModel< T > model )
         {
             _Model = model ?? throw (new ArgumentNullException( nameof(model) ));

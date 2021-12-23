@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
@@ -224,7 +225,7 @@ namespace m3u8.download.manager
             return (false);
         }
         public static IReadOnlyCollection< string > TryGetM3u8FileUrlsFromClipboardOrDefault() => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) ? m3u8FileUrls : new string[ 0 ]);
-        public static void CopyM3u8FileUrlToClipboard( string m3u8FileUrl ) => Clipboard.SetText( m3u8FileUrl, TextDataFormat.UnicodeText );
+        public static void CopyM3u8FileUrlToClipboard( IEnumerable< DownloadRow > rows ) => Clipboard.SetText( string.Join( "\r\n", rows.Select( r => r.Url ) ), TextDataFormat.UnicodeText );
 
         public static string ToJSON< T >( this T t )
         {
@@ -375,5 +376,12 @@ namespace m3u8.download.manager
             return (0);            
         }
         [M(O.AggressiveInlining)] public static byte Min( byte b1, byte b2 ) => ((b1 < b2) ? b1 : b2);
+
+        public static void SetDoubleBuffered< T >( this T t, bool doubleBuffered ) where T : Control
+        {          
+            //Control.DoubleBuffered = true;
+            var field = typeof(T).GetProperty( "DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance );
+            field?.SetValue( t, doubleBuffered );
+        }
     }
 }

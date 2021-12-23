@@ -126,7 +126,7 @@ namespace m3u8.download.manager.ui
             if ( _LastFilterText != text )
             {
                 await Task.Delay( 250 );
-                _LastFilterText = text;
+                _LastFilterText = text;                
                 filterTextBox_TextChanged( sender, e );
                 return;
             }

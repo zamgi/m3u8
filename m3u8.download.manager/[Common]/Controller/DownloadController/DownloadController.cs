@@ -73,7 +73,7 @@ namespace m3u8.download.manager.controllers
             _DownloadThreadsSemaphoreFactory  = new download_threads_semaphore_factory( _SettingsController.UseCrossDownloadInstanceParallelism,
                                                                                         _SettingsController.MaxDegreeOfParallelism );
 
-            _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( _SettingsController.MaxDegreeOfParallelism );
+            _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( _SettingsController.MaxDegreeOfParallelism );            
         }
 
         public void Dispose()
@@ -132,7 +132,7 @@ namespace m3u8.download.manager.controllers
             {
                 case nameof(Settings.MaxDegreeOfParallelism):
                 {
-                    await ProcessChangedMaxDegreeOfParallelism( _SettingsController.MaxDegreeOfParallelism );
+                    await ProcessChangedMaxDegreeOfParallelism( _SettingsController.MaxDegreeOfParallelism );                    
                 }
                 break;
 
@@ -314,7 +314,7 @@ namespace m3u8.download.manager.controllers
                     return;
                 }
 
-                await Task.Run( () =>
+                await Task.Run( /*async*/ () =>
                 {
                     var remainedDelayCount = (totalMillisecondsTimeout.HasValue ? (totalMillisecondsTimeout.Value / Math.Max( 1, millisecondsDelay )) : int.MaxValue);
 
@@ -328,6 +328,7 @@ namespace m3u8.download.manager.controllers
 
                         remainedDelayCount--;
                         Task.Delay( millisecondsDelay, ct ).Wait( ct );
+                        //await Task.Delay( millisecondsDelay, ct );
                     }
                 }, ct ).ContinueWith( task => {
                     if ( !task.IsCanceled && task.IsFaulted ) // suppress cancel exception
@@ -537,7 +538,6 @@ namespace m3u8.download.manager.controllers
             await ProcessCrossDownloadInstanceRestriction( _CrossDownloadInstanceRestriction.GetMaxCrossDownloadInstance() );
             #endregion
         }
-
         public void Pause( DownloadRow row )
         {
             if ( (row != null) && _Dict.TryGetValue( row, out var t ) )
@@ -774,7 +774,7 @@ namespace m3u8.download.manager.controllers
             });
         [M(O.AggressiveInlining)] public static void Remove< DownloadRow, V >( this ConcurrentDictionary< DownloadRow, V > dict, DownloadRow row ) => dict.TryRemove( row, out var _ );
 
-        [M( O.AggressiveInlining )] public static void WaitAsyncAndDispose( this SemaphoreSlim semaphore, int millisecondsTimeout = 7_000 )
+        [M(O.AggressiveInlining)] public static void WaitAsyncAndDispose( this SemaphoreSlim semaphore, int millisecondsTimeout = 7_000 )
         {
             if ( semaphore != null )
             {

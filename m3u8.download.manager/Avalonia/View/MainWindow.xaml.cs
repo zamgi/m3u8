@@ -203,11 +203,14 @@ namespace m3u8.download.manager.ui
                     _VM.AddCommand.AddNewDownload( (m3u8FileUrls.FirstOrDefault(), false) );
                 }
             }
-
+            _VM.DownloadListModel.AddRows( DownloadRowsSerializer.FromJSON( _VM.SettingsController.DownloadRowsJson ) );
 #if DEBUG
-            _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8", "xz-1", Settings.Default.OutputFileDirectory) );
-            _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", "xz-2", Settings.Default.OutputFileDirectory) );
-            _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", "xz-3", Settings.Default.OutputFileDirectory) );
+            if ( _VM.DownloadListModel.RowsCount == 0 )
+            {
+                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , "xz-1", Settings.Default.OutputFileDirectory) );
+                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", "xz-2", Settings.Default.OutputFileDirectory) );
+                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", "xz-3", Settings.Default.OutputFileDirectory) );
+            }
 #endif
         }
         protected override void OnClosed( EventArgs e )
@@ -217,6 +220,7 @@ namespace m3u8.download.manager.ui
             #region [.save settings.]
             _VM.SettingsController.MainFormPositionJson = this.GetBounds().ToJSON();
             _VM.SettingsController.SetDownloadListColumnsWidthJson( downloadListUC.GetColumnsWidth().ToJSON() );
+            _VM.SettingsController.DownloadRowsJson = DownloadRowsSerializer.ToJSON( _VM.DownloadListModel.GetRows() );
             _VM.SettingsController.SaveNoThrow();
             #endregion
         }

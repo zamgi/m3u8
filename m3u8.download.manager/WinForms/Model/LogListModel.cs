@@ -17,7 +17,6 @@ namespace m3u8.download.manager.models
     internal sealed class LogRow : RowBase< LogRow >
     {
         private _RowPropertiesChanged_ _RowPropertiesChanged;
-
         internal LogRow( LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )
         {
             _RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));

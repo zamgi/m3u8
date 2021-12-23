@@ -17,8 +17,7 @@ namespace m3u8.download.manager
         /// <summary>
         ///
         /// </summary>
-        [STAThread]
-        private static void Main( string[] args )
+        [STAThread] private static void Main( string[] args )
         {
             Application.ThreadException                  += (sender, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
             AppDomain  .CurrentDomain.UnhandledException += (sender, e) => Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
@@ -98,11 +97,28 @@ namespace m3u8.download.manager
                     #endregion
 
                     #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
-#if NET5_0
-                    ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13);
-#else
-                    ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13 | SecurityProtocolType.Ssl3);
-#endif
+                    static void set_SecurityProtocol( SecurityProtocolType spt )
+                    {
+                        try
+                        {
+                            ServicePointManager.SecurityProtocol |= spt;
+                        }
+                        catch ( Exception ex )
+                        {
+                            Debug.WriteLine( ex );
+                        }
+                    };
+                    #region comm. other vers.
+                    //foreach ( var spt in Enum.GetValues( typeof(SecurityProtocolType) ).Cast< SecurityProtocolType >() )
+                    //{
+                    //    set_SecurityProtocol( spt );
+                    //} 
+                    #endregion
+                    set_SecurityProtocol( SecurityProtocolType.Tls   );
+                    set_SecurityProtocol( SecurityProtocolType.Tls11 );
+                    set_SecurityProtocol( SecurityProtocolType.Tls12 );
+                    set_SecurityProtocol( SecurityProtocolType.Tls13 );
+                    set_SecurityProtocol( SecurityProtocolType.Ssl3  );
                     #endregion
 #if NET5_0
                     Application.SetHighDpiMode( HighDpiMode.SystemAware ); 

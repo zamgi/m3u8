@@ -33,7 +33,6 @@ namespace m3u8.download.manager.ui
             parallelismLabel_set();
             settingsLabel_set();
         }
-
         protected override void Dispose( bool disposing )
         {
             if ( disposing )
@@ -47,7 +46,6 @@ namespace m3u8.download.manager.ui
 
         #region [.public.]
         public void SetDownloadController( DownloadController dc ) => _DownloadController = dc;
-
         public void SetSettingsController( SettingsPropertyChangeController sc )
         {
             DetachSettingsController();

@@ -41,6 +41,7 @@
     <Compile Include="..\WinForms\Properties\Resources.Designer.cs" Link="Properties\Resources.Designer.cs" />
     <Compile Include="..\WinForms\Properties\Settings.Designer.cs" Link="Properties\Settings.Designer.cs" />
     <Compile Include="..\WinForms\UI\BrowseForForlder\SHBrowser.cs" Link="UI\BrowseForForlder\SHBrowser.cs" />
+    <Compile Include="..\WinForms\UI\Controls\DataGridViewEx.cs" Link="UI\Controls\DataGridViewEx.cs" />
     <Compile Include="..\WinForms\UI\Forms\AddNewDownloadForm.cs" Link="UI\Forms\AddNewDownloadForm.cs" />
     <Compile Include="..\WinForms\UI\Forms\AddNewDownloadForm.Designer.cs" Link="UI\Forms\AddNewDownloadForm.Designer.cs" />
     <Compile Include="..\WinForms\UI\Forms\ChangeOutputFileForm.cs" Link="UI\Forms\ChangeOutputFileForm.cs" />
@@ -114,22 +115,6 @@
 
   <ItemGroup>
     <EmbeddedResource Include="..\WinForms\Properties\Resources.resx" Link="Properties\Resources.resx" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controller\DownloadController\" />
-    <Folder Include="Infrastructure\" />
-    <Folder Include="Model\" />
-    <Folder Include="Program\IPC\" />
-    <Folder Include="Resources\contextMenu\" />
-    <Folder Include="Resources\menu\" />
-    <Folder Include="Resources\roller\" />
-    <Folder Include="Resources\statuses\" />
-    <Folder Include="UI\BrowseForForlder\" />
-    <Folder Include="UI\Forms\" />
-    <Folder Include="UI\UC\" />
-    <Folder Include="UI\WaitBanner\" />
-    <Folder Include="[-= m3u8.client =-]\" />
   </ItemGroup>
 
   <ItemGroup>

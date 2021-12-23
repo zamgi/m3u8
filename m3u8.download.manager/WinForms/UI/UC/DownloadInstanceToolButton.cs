@@ -113,7 +113,7 @@ namespace System.Windows.Forms
         public DegreeOfParallelismToolButton() { }
 
         protected override string MainToolTipText   => "degree of parallelism";
-        protected override Image  MainImage         => _Resources_.dop.ToBitmap();
+        protected override Image  MainImage         => _Resources_.dop_16.ToBitmap();
         protected override Color  MainForeColor     => Color.Green;
         protected override Color  SelectedBackColor => Color.LightGreen;
 

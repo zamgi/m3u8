@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -19,6 +20,14 @@ namespace m3u8.download.manager.models
             var row = base.Add( new DownloadRow( in t, this ) );
             _Urls.Add( row.Url );
             return (row);
+        }
+        public void AddRows( IEnumerable< (DateTime CreatedOrStartedDateTime, string Url, string OutputFileName, string OutputDirectory, DownloadStatus Status) > rows )
+        {
+            foreach ( var t in rows )
+            {
+                var row = base.Add( new DownloadRow( in t, this ) );
+                _Urls.Add( row.Url );
+            }
         }
 
         [M(O.AggressiveInlining)] public bool HasAnyFinished() => GetAllFinished().Any();

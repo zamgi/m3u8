@@ -27,8 +27,11 @@
     </Setting>
     <Setting Name="MaxCrossDownloadInstanceSaved" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
-    </Setting>
+    </Setting>    
     <Setting Name="NameCleanerExcludesWords" Type="System.Collections.Specialized.StringCollection" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DownloadRowsJson" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="AttemptRequestCountByPart" Type="System.Int32" Scope="User">
@@ -66,6 +69,6 @@
     </Setting>
     <Setting Name="ShowLog" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
-    </Setting>
+    </Setting>  
   </Settings>
 </SettingsFile>

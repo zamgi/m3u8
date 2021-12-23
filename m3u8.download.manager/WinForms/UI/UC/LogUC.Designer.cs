@@ -20,14 +20,14 @@
             System.Windows.Forms.DataGridViewCellStyle cs4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle cs5 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle cs6 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.DGV = new System.Windows.Forms.DataGridView();
+            this.DGV = new System.Windows.Forms.DataGridViewEx();
             this.DGV_requestColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_responseColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
             // 
             // DGV
-            // 
+            //
             this.DGV.AllowUserToAddRows = false;
             this.DGV.AllowUserToDeleteRows = false;
             cs1.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -106,7 +106,7 @@
         }
         #endregion
 
-        private System.Windows.Forms.DataGridView DGV;
+        private System.Windows.Forms.DataGridViewEx DGV;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_requestColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_responseColumn;
     }

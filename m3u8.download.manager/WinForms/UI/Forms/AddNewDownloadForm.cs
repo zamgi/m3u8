@@ -28,6 +28,7 @@ namespace m3u8.download.manager.ui
         private FileNameCleaner.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private (int n, int total) _SeriesInfo;
+        private string _Initial_M3u8FileUrl;
         #endregion
 
         #region [.ctor().]
@@ -41,13 +42,16 @@ namespace m3u8.download.manager.ui
             logPanel.VisibleChanged += logPanel_VisibleChanged;
             logUC.ShowResponseColumn = false;
 
-            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
+            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, 
+                                                   () => this.OutputFileName,
+                                                   setOutputFileName );
         }
         public AddNewDownloadForm( DownloadController dc, SettingsPropertyChangeController sc, string m3u8FileUrl, (int n, int total)? seriesInfo = null ) : this()
         {
             _Settings = sc.Settings;
             _DownloadListModel = dc?.Model;
 
+            _Initial_M3u8FileUrl = m3u8FileUrl;
             this.M3u8FileUrl     = m3u8FileUrl;
             this.OutputDirectory = _Settings.OutputFileDirectory;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
@@ -160,13 +164,16 @@ namespace m3u8.download.manager.ui
                 _Settings.SaveNoThrow();
             }
         }
+        private IntPtr _LastForegroundWnd;
         protected override void OnShown( EventArgs e )
         {
             base.OnShown( e );
-           
+
+            _LastForegroundWnd = WinApi.GetForegroundWindow(); //WinApi.GetTopForegroundWindow();
+
             this.Activate();
             WinApi.SetForegroundWindow( this.Handle );
-            WinApi.SetForceForegroundWindow( this.Handle );
+            WinApi.SetForceForegroundWindow( this.Handle, _LastForegroundWnd );
         }
         protected override void OnClosing( CancelEventArgs e )
         {
@@ -204,7 +211,12 @@ namespace m3u8.download.manager.ui
                     _DownloadLater = true;
                     DialogResult   = DialogResult.OK;
                 }
-            }                
+            }
+
+            if ( !e.Cancel && (_LastForegroundWnd != this.Handle) && !_Initial_M3u8FileUrl.IsNullOrEmpty() )
+            {
+                WinApi.SetForegroundWindow( _LastForegroundWnd );
+            }
         }
         protected override bool ProcessCmdKey( ref Message msg, Keys keyData )
         {
@@ -342,7 +354,7 @@ namespace m3u8.download.manager.ui
                 }
             }
 
-            #region comm. prev.
+            #region comm.
             /*
             using ( var d = new FolderBrowserDialog() { SelectedPath        = this.OutputDirectory,
                                                         Description         = "Select Output directory",

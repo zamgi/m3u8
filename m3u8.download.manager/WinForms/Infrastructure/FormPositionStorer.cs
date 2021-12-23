@@ -45,7 +45,7 @@ namespace m3u8.download.manager.ui.infrastructure
         public DGVColumnWidths() => ColumnWidths = new List< DGVColumnWidth >();
         public DGVColumnWidths( DataGridView dgv, bool skipNonResizableColumns = true )
         {
-            Name = dgv.Name;
+            Name         = dgv.Name;
             ColumnWidths = new List< DGVColumnWidth >( dgv.Columns.Count );
             foreach ( DataGridViewColumn column in dgv.Columns )
             {
@@ -90,11 +90,7 @@ namespace m3u8.download.manager.ui.infrastructure
         [DataMember(Name="d")] public int    Distance { get; set; }
 
         public SplitDistance() => Distance = 200;
-        internal SplitDistance( SplitContainer sc )
-        {
-            Name     = sc.Name;
-            Distance = sc.SplitterDistance;
-        }
+        internal SplitDistance( SplitContainer sc ) => (Name, Distance) = (sc.Name, sc.SplitterDistance);
     }
 
     /// <summary>
@@ -103,10 +99,10 @@ namespace m3u8.download.manager.ui.infrastructure
     [DataContract]
     internal sealed class FormData
     {
-        [DataMember(Name="r")]  public Rectangle       Rect        { get; set; }
-        [DataMember(Name="ws")] public FormWindowState WindowState { get; set; }
+        [DataMember(Name="r")     ] public Rectangle       Rect        { get; set; }
+        [DataMember(Name="ws")    ] public FormWindowState WindowState { get; set; }
 
-        [DataMember(Name="sds")]    public List< SplitDistance   > SplitDistances  { get; set; }
+        [DataMember(Name="sds")   ] public List< SplitDistance   > SplitDistances  { get; set; }
         [DataMember(Name="dgvcws")] public List< DGVColumnWidths > DGVColumnWidths { get; set; }
 
         /// <summary>
@@ -122,35 +118,38 @@ namespace m3u8.download.manager.ui.infrastructure
             SplitDistances  = new List< SplitDistance  >();
             DGVColumnWidths = new List< DGVColumnWidths >();
         }
-        internal FormData( Rectangle r, FormWindowState ws ) : this()
-        {
-            Rect        = r;
-            WindowState = ws;
-        }
-
+        internal FormData( Rectangle r, FormWindowState ws ) : this() => (Rect, WindowState) = (r, ws);
 
         [IgnoreDataMember] private Dictionary< string, DGVColumnWidths > _dgvcws_Dict;
-        [M(O.AggressiveInlining)] public DGVColumnWidths TryGetDGVColumnWidths( string name )
+        [M(O.AggressiveInlining)] public bool TryGetDGVColumnWidths( string name, out DGVColumnWidths dgvcws )
         {
-            if ( (name == null) || (DGVColumnWidths.Count == 0) ) return (null);
+            if ( (name == null) || (DGVColumnWidths.Count == 0) )
+            {
+                dgvcws = default;
+                return (false);
+            }
 
             if ( _dgvcws_Dict == null )
             {
                 _dgvcws_Dict = DGVColumnWidths.GroupBy( o => o.Name ).ToDictionary( g => g.Key, g => g.First() );
             }
-            return (_dgvcws_Dict.TryGetValue( name, out var dgvcws ) ? dgvcws : null);
+            return (_dgvcws_Dict.TryGetValue( name, out dgvcws ));
         }
 
         [IgnoreDataMember] private Dictionary< string, SplitDistance > _sds_Dict;
-        [M(O.AggressiveInlining)] public SplitDistance TryGetSplitDistance( string name )
+        [M(O.AggressiveInlining)] public bool TryGetSplitDistance( string name, out SplitDistance sd )
         {
-            if ( (name == null) || (SplitDistances.Count == 0) ) return (null);
+            if ( (name == null) || (SplitDistances.Count == 0) )
+            {
+                sd = default;
+                return (false);
+            }
 
             if ( _sds_Dict == null )
             {
                 _sds_Dict = SplitDistances.GroupBy( o => o.Name ).ToDictionary( g => g.Key, g => g.First() );
             }
-            return (_sds_Dict.TryGetValue( name, out var sd ) ? sd : null);
+            return (_sds_Dict.TryGetValue( name, out sd ));
         }
 
         [M(O.AggressiveInlining)] public bool IsEmptyLists() => ((0 == SplitDistances.Count) && (0 == DGVColumnWidths.Count));
@@ -166,7 +165,7 @@ namespace m3u8.download.manager.ui.infrastructure
 
         private static void CorrectPosition( this Form form, int? minWidth = null, int? minHeight = null )
         {
-            Rectangle workingArea = Screen.GetWorkingArea( form );
+            var workingArea = Screen.GetWorkingArea( form );
             if ( form.Top < workingArea.Top )
             {
                 form.Top = workingArea.Top;
@@ -233,8 +232,7 @@ namespace m3u8.download.manager.ui.infrastructure
             var dgv = parent as DataGridView;
             if ( dgv != null )
             {
-                var dgvcws = d.TryGetDGVColumnWidths( dgv.Name );
-                if ( dgvcws != null )
+                if ( d.TryGetDGVColumnWidths( dgv.Name, out var dgvcws ) )
                 {
                     dgvcws.RestoreInDGV( dgv );
                     goto NEXT;
@@ -246,8 +244,7 @@ namespace m3u8.download.manager.ui.infrastructure
             var sc = parent as SplitContainer;
             if ( sc != null )
             {
-                var sd = d.TryGetSplitDistance( sc.Name );
-                if ( sd != null )
+                if ( d.TryGetSplitDistance( sc.Name, out var sd ) )
                 {
                     sc.SplitterDistance = ((sc.Panel1MinSize <= sd.Distance) ? sd.Distance : sc.Panel1MinSize);
                     goto NEXT;
@@ -400,8 +397,8 @@ namespace m3u8.download.manager.ui.infrastructure
                 return (null);
             }
         }
-        public static string Save( Form form ) => Save( form, false );
-        public static string SaveOnlyPos( Form form ) => Save( form, true );
-        public static string SaveOnlyPos( Form form, int height ) => Save( form, true, height );
+        public  static string Save( Form form ) => Save( form, false );
+        public  static string SaveOnlyPos( Form form ) => Save( form, true );
+        public  static string SaveOnlyPos( Form form, int height ) => Save( form, true, height );
     }
 }

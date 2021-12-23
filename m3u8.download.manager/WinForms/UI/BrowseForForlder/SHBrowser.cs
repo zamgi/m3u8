@@ -16,7 +16,7 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
-        [Flags] public enum BrowseInfoFlag
+        [Flags] public enum BrowseInfoFlag : uint
         {
             // Browsing for directory.
             BIF_RETURNONLYFSDIRS =  0x0001,  // For finding a folder to start document searching

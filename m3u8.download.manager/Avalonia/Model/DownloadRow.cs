@@ -44,6 +44,16 @@ namespace m3u8.download.manager.models
 
             Log = new LogListModel();
         }
+        internal DownloadRow( in (DateTime CreatedOrStartedDateTime, string Url, string OutputFileName, string OutputDirectory, DownloadStatus Status) t, DownloadListModel model ) : base( model )
+        {
+            Status                   = DownloadStatus.Created; //t.Status;
+            CreatedOrStartedDateTime = t.CreatedOrStartedDateTime;// DateTime.Now;
+            Url                      = t.Url;
+            OutputFileName           = t.OutputFileName;
+            OutputDirectory          = t.OutputDirectory;
+
+            Log = new LogListModel();
+        }
 
         public DateTime       CreatedOrStartedDateTime    { [M(O.AggressiveInlining)] get; private set; }
         public string         Url                         { [M(O.AggressiveInlining)] get; private set; }
