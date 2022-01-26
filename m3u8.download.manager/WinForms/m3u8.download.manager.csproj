@@ -81,6 +81,9 @@
     <Compile Include="UI\BrowseForForlder\SHBrowser.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UI\Controls\TextBoxEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UI\Controls\DataGridViewEx.cs">
       <SubType>Component</SubType>
     </Compile>

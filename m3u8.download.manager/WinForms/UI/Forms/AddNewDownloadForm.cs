@@ -42,9 +42,7 @@ namespace m3u8.download.manager.ui
             logPanel.VisibleChanged += logPanel_VisibleChanged;
             logUC.ShowResponseColumn = false;
 
-            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, 
-                                                   () => this.OutputFileName,
-                                                   setOutputFileName );
+            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
         }
         public AddNewDownloadForm( DownloadController dc, SettingsPropertyChangeController sc, string m3u8FileUrl, (int n, int total)? seriesInfo = null ) : this()
         {
@@ -319,8 +317,7 @@ namespace m3u8.download.manager.ui
         }
 
         private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;
-        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
-            => _FNCP.FileNameTextBox_TextChanged( outputFileName => _LastManualInputed_outputFileNameText = outputFileName );
+        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e ) => _FNCP.FileNameTextBox_TextChanged( outputFileName => _LastManualInputed_outputFileNameText = outputFileName );
 
         private void outputFileNameClearButton_Click( object sender, EventArgs e )
         {

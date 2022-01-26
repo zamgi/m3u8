@@ -196,10 +196,7 @@ namespace m3u8.download.manager.infrastructure
             return (pathname);
         }
 
-        public static string CleanPathnameAndFilename( string pathnameAndFilename
-            , string replacedPathChar = "--"
-            , char   replacedNameChar = '-'
-            , bool   trimStartDashes  = true )
+        public static string CleanPathnameAndFilename( string pathnameAndFilename, string replacedPathChar = "--", char replacedNameChar = '-', bool trimStartDashes = true )
         {            
             if ( pathnameAndFilename != null )
             {
@@ -398,9 +395,7 @@ namespace m3u8.download.manager.infrastructure
             private Func< string >   _GetFileNameAction;
             private Action< string > _SetFileNameAction;
 
-            public Processor( TextBox fileNameTextBox
-                , Func< string >   getFileNameAction
-                , Action< string > setFileNameAction )
+            public Processor( TextBox fileNameTextBox, Func< string >   getFileNameAction, Action< string > setFileNameAction )
             {
                 _FileNameTextBox   = fileNameTextBox;
                 _GetFileNameAction = getFileNameAction;

@@ -227,7 +227,29 @@ namespace m3u8.download.manager.ui
         {
             if ( !_IsTurnOff__outputFileNameTextBox_TextChanged )
             {
-                _FNCP.FileNameTextBox_TextChanged( outputFileName => _LastManualInputed_outputFileNameText = outputFileName );
+                var text = PathnameCleaner.CleanPathnameAndFilename( value?.Trim() );
+                if ( value != text )
+                {
+                    _IsTurnOff__outputFileNameTextBox_TextChanged = true;
+                    outputFileNameTextBox.IsVisible = false;
+                    Task.Delay( 1 ).ContinueWith( _ =>
+                    {
+                        outputFileNameTextBox.Text = text;
+                        outputFileNameTextBox.SelectionStart = outputFileNameTextBox.SelectionEnd = outputFileNameTextBox.Text.Length;
+                        outputFileNameTextBox.IsVisible = true;
+                        _IsTurnOff__outputFileNameTextBox_TextChanged = false;
+
+                        if ( !text.IsNullOrEmpty() )
+                        {
+                            _FNCP.FileNameTextBox_TextChanged( outputFileName => _LastManualInputed_outputFileNameText = outputFileName );
+                        }
+                    }
+                    , TaskScheduler.FromCurrentSynchronizationContext() );
+                }
+                else
+                {
+                    _FNCP.FileNameTextBox_TextChanged( outputFileName => _LastManualInputed_outputFileNameText = outputFileName );
+                }                
             }
         }
         #endregion

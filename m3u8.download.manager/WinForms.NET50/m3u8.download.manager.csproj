@@ -1,5 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
@@ -42,6 +41,7 @@
     <Compile Include="..\WinForms\Properties\Settings.Designer.cs" Link="Properties\Settings.Designer.cs" />
     <Compile Include="..\WinForms\UI\BrowseForForlder\SHBrowser.cs" Link="UI\BrowseForForlder\SHBrowser.cs" />
     <Compile Include="..\WinForms\UI\Controls\DataGridViewEx.cs" Link="UI\Controls\DataGridViewEx.cs" />
+    <Compile Include="..\WinForms\UI\Controls\TextBoxEx.cs" Link="UI\Controls\TextBoxEx.cs" />
     <Compile Include="..\WinForms\UI\Forms\AddNewDownloadForm.cs" Link="UI\Forms\AddNewDownloadForm.cs" />
     <Compile Include="..\WinForms\UI\Forms\AddNewDownloadForm.Designer.cs" Link="UI\Forms\AddNewDownloadForm.Designer.cs" />
     <Compile Include="..\WinForms\UI\Forms\ChangeOutputFileForm.cs" Link="UI\Forms\ChangeOutputFileForm.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Windows.Forms;
 
@@ -109,16 +110,16 @@ namespace m3u8.download.manager
                         }
                     };
                     #region comm. other vers.
-                    //foreach ( var spt in Enum.GetValues( typeof(SecurityProtocolType) ).Cast< SecurityProtocolType >() )
-                    //{
-                    //    set_SecurityProtocol( spt );
-                    //} 
+                    //set_SecurityProtocol( SecurityProtocolType.Tls   );
+                    //set_SecurityProtocol( SecurityProtocolType.Tls11 );
+                    //set_SecurityProtocol( SecurityProtocolType.Tls12 );
+                    //set_SecurityProtocol( SecurityProtocolType.Tls13 );
+                    //set_SecurityProtocol( SecurityProtocolType.Ssl3  );                    
                     #endregion
-                    set_SecurityProtocol( SecurityProtocolType.Tls   );
-                    set_SecurityProtocol( SecurityProtocolType.Tls11 );
-                    set_SecurityProtocol( SecurityProtocolType.Tls12 );
-                    set_SecurityProtocol( SecurityProtocolType.Tls13 );
-                    set_SecurityProtocol( SecurityProtocolType.Ssl3  );
+                    foreach ( var spt in Enum.GetValues( typeof(SecurityProtocolType) ).Cast< SecurityProtocolType >() )
+                    {
+                        set_SecurityProtocol( spt );
+                    }
                     #endregion
 #if NET5_0
                     Application.SetHighDpiMode( HighDpiMode.SystemAware ); 

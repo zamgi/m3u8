@@ -20,7 +20,7 @@
             this.l3 = new System.Windows.Forms.Label();
             this.topPanel = new System.Windows.Forms.Panel();
             this.m3u8FileUrlTextBox = new System.Windows.Forms.TextBox();
-            this.outputFileNameTextBox = new System.Windows.Forms.TextBox();
+            this.outputFileNameTextBox = new m3u8.download.manager.ui.TextBoxEx();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.outputDirectorySelectButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.outputFileNameSelectButton = new System.Windows.Forms.ButtonWithFocusCues();
@@ -28,7 +28,7 @@
             this.logPanel = new System.Windows.Forms.Panel();
             this.logUC = new m3u8.download.manager.ui.LogUC();
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.outputDirectoryTextBox = new System.Windows.Forms.TextBox();
+            this.outputDirectoryTextBox = new m3u8.download.manager.ui.TextBoxEx();
             this.loadM3u8FileContentButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.buttomPanel = new System.Windows.Forms.Panel();
             this.downloadStartButton = new System.Windows.Forms.ButtonWithFocusCues();
@@ -316,7 +316,7 @@
 
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.TextBox m3u8FileUrlTextBox;
-        private System.Windows.Forms.TextBox outputFileNameTextBox;
+        private m3u8.download.manager.ui.TextBoxEx outputFileNameTextBox;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.ButtonWithFocusCues outputFileNameClearButton;
         private System.Windows.Forms.ButtonWithFocusCues loadM3u8FileContentButton;
@@ -327,7 +327,7 @@
         private System.Windows.Forms.ButtonWithFocusCues downloadStartButton;
         private System.Windows.Forms.ButtonWithFocusCues downloadLaterButton;
         private System.Windows.Forms.ButtonWithFocusCues outputDirectorySelectButton;
-        private System.Windows.Forms.TextBox outputDirectoryTextBox;
+        private m3u8.download.manager.ui.TextBoxEx outputDirectoryTextBox;
         private LogUC logUC;
         private StatusBarUC statusBarUC;
         private System.Windows.Forms.Label l1;
