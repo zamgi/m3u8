@@ -156,6 +156,8 @@ namespace m3u8.download.manager.ui
                 f.UniqueUrlsOnly                        = _Settings.UniqueUrlsOnly;
                 f.ShowDownloadStatisticsInMainFormTitle = _Settings.ShowDownloadStatisticsInMainFormTitle;
                 f.OutputFileExtension                   = _Settings.OutputFileExtension;
+                f.ExternalProgCaption                   = _Settings.ExternalProgCaption;
+                f.ExternalProgFilePath                  = _Settings.ExternalProgFilePath;
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
@@ -165,6 +167,8 @@ namespace m3u8.download.manager.ui
                     _Settings.UniqueUrlsOnly                        = f.UniqueUrlsOnly;
                     _Settings.ShowDownloadStatisticsInMainFormTitle = f.ShowDownloadStatisticsInMainFormTitle;
                     _Settings.OutputFileExtension                   = f.OutputFileExtension;
+                    _Settings.ExternalProgCaption                   = f.ExternalProgCaption;
+                    _Settings.ExternalProgFilePath                  = f.ExternalProgFilePath;
                     _Settings.SaveNoThrow();
                     if ( _SettingsController == null )
                     {

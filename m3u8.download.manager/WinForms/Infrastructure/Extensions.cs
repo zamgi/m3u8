@@ -29,6 +29,16 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : (T?) null);
         [M(O.AggressiveInlining)] public static bool EqualIgnoreCase( this string s1, string s2 ) => (string.Compare( s1, s2, true ) == 0);
         [M(O.AggressiveInlining)] public static bool ContainsIgnoreCase( this string s1, string s2 ) => ((s1 != null) && (s1.IndexOf( s2, StringComparison.InvariantCultureIgnoreCase ) != -1));
+        public static void Remove< T >( this HashSet< T > hs, IEnumerable< T > seq )
+        {
+            if ( seq != null )
+            {
+                foreach ( var t in seq )
+                {
+                    hs.Remove( t );
+                }
+            }
+        }
 
         /// <summary>
         /// Copy user settings from previous application version if necessary
@@ -90,6 +100,7 @@ namespace m3u8.download.manager
                 Debug.WriteLine( ex );
             }
         }
+        public static (bool success, string outputFileName) TryGetFirstFileExists( ICollection<string> fileNames ) => (TryGetFirstFileExists( fileNames, out var outputFileName ), outputFileName);
         public static bool TryGetFirstFileExists( ICollection< string > fileNames, out string existsFileName )
         {
             if ( fileNames.AnyEx() )

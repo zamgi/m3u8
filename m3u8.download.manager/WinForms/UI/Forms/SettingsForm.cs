@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
+using m3u8.download.manager.Properties;
 
 namespace m3u8.download.manager.ui
 {
@@ -13,6 +15,7 @@ namespace m3u8.download.manager.ui
     {
         #region [.fields.]
         private DownloadController _DownloadController;
+        private string _ExternalProgFilePath_InitValue;
         #endregion
 
         #region [.ctor().]
@@ -37,14 +40,39 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
+        protected override void OnShown( EventArgs e )
+        {
+            base.OnShown( e );
+
+            _ExternalProgFilePath_InitValue = this.ExternalProgFilePath;
+        }
         protected override void OnClosing( CancelEventArgs e )
         {
             base.OnClosing( e );
 
-            if ( (DialogResult == DialogResult.OK) && this.OutputFileExtension.IsNullOrEmpty() )
+            if ( DialogResult == DialogResult.OK )
             {
-                e.Cancel = true;
-                outputFileExtensionTextBox.FocusAndBlinkBackColor();
+                if ( this.OutputFileExtension.IsNullOrEmpty() )
+                {
+                    e.Cancel = true;
+                    outputFileExtensionTextBox.FocusAndBlinkBackColor();
+                }
+
+                var externalProgFilePath = this.ExternalProgFilePath;
+                if ( (_ExternalProgFilePath_InitValue != externalProgFilePath) && !externalProgFilePath.IsNullOrEmpty() && !File.Exists( externalProgFilePath ) )
+                {
+                    if ( this.MessageBox_ShowQuestion( $"External program file doesn't exists:\r\n\r\n'{externalProgFilePath}'.\r\n\r\nContinue?", "External program" ) != DialogResult.Yes )
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                    //e.Cancel = true;
+                    //externalProgFilePathTextBox.FocusAndBlinkBackColor();
+                }
+                if ( this.ExternalProgCaption.IsNullOrEmpty() )
+                {
+                    this.ExternalProgCaption = GetFileName_NoThrow( externalProgFilePath );
+                }
             }
         }
 
@@ -79,6 +107,16 @@ namespace m3u8.download.manager.ui
             get => CorrectOutputFileExtension( outputFileExtensionTextBox.Text );
             set => outputFileExtensionTextBox.Text = CorrectOutputFileExtension( value );
         }
+        public string   ExternalProgCaption
+        {
+            get => externalProgCaptionTextBox.Text?.Trim();
+            set => externalProgCaptionTextBox.Text = value?.Trim();
+        }
+        public string   ExternalProgFilePath
+        {
+            get => externalProgFilePathTextBox.Text?.Trim();
+            set => externalProgFilePathTextBox.Text = value?.Trim();
+        }
         #endregion
 
         #region [.private methods.]
@@ -96,6 +134,73 @@ namespace m3u8.download.manager.ui
         {
             only4NotRunLabel1.Visible =
                 only4NotRunLabel2.Visible = isDownloading;
+        }
+
+        private void externalProgResetButton_Click( object sender, EventArgs e )
+        {
+            this.ExternalProgFilePath = Resources.ExternalProgFilePath;
+            this.ExternalProgCaption  = Resources.ExternalProgCaption;
+        }
+        private void externalProgFilePathTextBox_TextChanged( object sender, EventArgs e )
+        {
+            var externalProgFilePath = this.ExternalProgFilePath;
+            if ( externalProgFilePath.IsNullOrEmpty() )
+            {
+                toolTip.SetToolTip( (Control) sender, null );
+            }
+            else
+            {
+                var allowed = File.Exists( externalProgFilePath ) ? "allowed" : "file doesn't exists !";
+                toolTip.SetToolTip( (Control) sender, externalProgFilePath + $"  =>  ({allowed})" );
+
+                if ( this.ExternalProgCaption.IsNullOrEmpty() )
+                {
+                    this.ExternalProgCaption = GetFileName_NoThrow( externalProgFilePath );
+                }
+            }
+        }
+        private void externalProgCaptionTextBox_TextChanged ( object sender, EventArgs e ) => toolTip.SetToolTip( (Control) sender, this.ExternalProgCaption );
+        private void externalProgFilePathButton_Click( object sender, EventArgs e )
+        {
+            var externalProgFilePath = this.ExternalProgFilePath;
+            using var ofd = new OpenFileDialog()
+            {
+                RestoreDirectory = true,
+                Multiselect      = false,
+                CheckFileExists  = true,                
+                InitialDirectory = GetDirectoryName_NoThrow( externalProgFilePath )
+            };
+            if ( File.Exists( externalProgFilePath ) )
+            {
+                ofd.FileName = externalProgFilePath; //GetFileName_NoThrow( externalProgFilePath ), 
+            }
+            if ( ofd.ShowDialog( this ) == DialogResult.OK )
+            {
+                this.ExternalProgFilePath = ofd.FileName;
+            }
+        }
+
+        private static string GetDirectoryName_NoThrow( string path )
+        {
+            try
+            {
+                return (Path.GetDirectoryName( path ));
+            }
+            catch
+            {
+                return (path);
+            }
+        }
+        private static string GetFileName_NoThrow( string path )
+        {
+            try
+            {
+                return (Path.GetFileName( path ));
+            }
+            catch
+            {
+                return (path);
+            }
         }
         #endregion
     }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -36,6 +37,7 @@ namespace m3u8.download.manager.ui
         private LogRowsHeightStorer              _LogRowsHeightStorer;
         private Action< DownloadRow, string >    _DownloadListModel_RowPropertiesChangedAction;
         private bool                             _ShowDownloadStatistics;
+        private HashSet< string >                _ExternalProgQueue;
 #if NET5_0
         private static string _APP_TITLE_ => Resources.APP_TITLE__NET50;
 #else
@@ -57,10 +59,11 @@ namespace m3u8.download.manager.ui
 
             _DownloadListModel  = new DownloadListModel();
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;            
-            _DownloadController = new DownloadController( _DownloadListModel , _SettingsController );
+            _DownloadController = new DownloadController( _DownloadListModel, _SettingsController );
 
             _SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
             SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle) );
+            SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ExternalProgCaption) );
 
             logUC.SetModel( null );
             logUC.SetSettingsController( _SettingsController );
@@ -89,6 +92,8 @@ namespace m3u8.download.manager.ui
             }
             //degreeOfParallelismToolButton.Visible = ;
             degreeOfParallelismToolButton.Value = _SettingsController.MaxDegreeOfParallelism;
+
+            _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
         }
         public MainForm( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
         protected override void Dispose( bool disposing )
@@ -130,7 +135,7 @@ namespace m3u8.download.manager.ui
             if ( !base.DesignMode )
             {
                 _SettingsController.MainFormPositionJson = FormPositionStorer.Save( this );
-                _SettingsController.DownloadRowsJson = DownloadRowsSerializer.ToJSON( _DownloadListModel.GetRows() );
+                _SettingsController.DownloadRowsJson     = DownloadRowsSerializer.ToJSON( _DownloadListModel.GetRows() );
                 _SettingsController.SaveNoThrow();
             }
         }
@@ -252,6 +257,12 @@ namespace m3u8.download.manager.ui
                             openOutputFileMenuItem_Click( this, EventArgs.Empty );
                         }
                     break;
+                    case Keys.E: //Open output file with External progs
+                        if ( downloadListUC.HasFocus )
+                        {
+                            openOutputFilesWithExternalMenuItem_Click( this, EventArgs.Empty );
+                        }
+                    break;
                 }
             }
             else
@@ -333,6 +344,10 @@ namespace m3u8.download.manager.ui
                 case nameof(Settings.MaxDegreeOfParallelism):
                     degreeOfParallelismToolButton.Value = settings.MaxDegreeOfParallelism;
                 break;
+
+                case nameof(Settings.ExternalProgCaption):
+                    openOutputFilesWithExternalMenuItem.Text = $"    Open with '{settings.ExternalProgCaption}'";
+                break;
             }
         }
         private void ShowDownloadStatisticsInTitle()
@@ -407,34 +422,47 @@ namespace m3u8.download.manager.ui
 
                     case _CollectionChangedTypeEnum_.Clear:
                         _LogRowsHeightStorer.Clear();
+                        _ExternalProgQueue.Clear();
                     break;
                 }
             }
         }
         private void DownloadListModel_RowPropertiesChanged( DownloadRow row, string propertyName )
         {
-            if ( propertyName == nameof(DownloadRow.Status) )
+            switch ( propertyName )
             {
-                if ( this.InvokeRequired )
+                case nameof(DownloadRow.Status):
                 {
-                    this.BeginInvoke( _DownloadListModel_RowPropertiesChangedAction, row, propertyName );
-                    return;
-                }
-
-                if ( downloadListUC.GetSelectedDownloadRow() == row )
-                {
-                    SetDownloadToolButtonsStatus( row );
-
-                    if ( row.IsError() )
+                    if ( this.InvokeRequired )
                     {
-                        logUC.AdjustRowsHeightAndColumnsWidthSprain();
+                        this.BeginInvoke( _DownloadListModel_RowPropertiesChangedAction, row, propertyName );
+                        return;
                     }
+
+                    if ( downloadListUC.GetSelectedDownloadRow() == row )
+                    {
+                        SetDownloadToolButtonsStatus( row );
+
+                        if ( row.IsError() )
+                        {
+                            logUC.AdjustRowsHeightAndColumnsWidthSprain();
+                        }
+                    }
+                    else
+                    {
+                        SetDownloadToolButtonsStatus_NonSelected( row );
+                    }
+                    ShowDownloadStatisticsInTitle();
+
+                    #region [.run External progs if need.]                    
+                    if ( row.IsFinished() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
+                    {
+                        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                        ExternalProg_Run_IfExists( Settings.Default.ExternalProgFilePath, outputFileName );
+                    }
+                    #endregion
                 }
-                else
-                {
-                    SetDownloadToolButtonsStatus_NonSelected( row );
-                }
-                ShowDownloadStatisticsInTitle();
+                break;
             }
         }
 
@@ -584,6 +612,8 @@ namespace m3u8.download.manager.ui
                         {
                             ProcessDownloadCommand( DownloadCommandEnum.Delete, row );
                             await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
+
+                            _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                         }
                     }
                 }
@@ -601,6 +631,8 @@ namespace m3u8.download.manager.ui
                 foreach ( var row in rows )
                 {
                     ProcessDownloadCommand( DownloadCommandEnum.Delete, row );
+
+                    _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                 }
             }
         }
@@ -623,6 +655,8 @@ namespace m3u8.download.manager.ui
                         _DownloadListModel .RemoveRow( row );
 
                         await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
+
+                        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                     }
                 }
             }
@@ -873,6 +907,7 @@ namespace m3u8.download.manager.ui
                        "  Ctrl+C:\t Copy selected download url to clipboard" + Environment.NewLine +
                        "  Ctrl+B:\t Browse output file (if exists)" + Environment.NewLine +
                        "  Ctrl+D:\t Minimized application window" + Environment.NewLine +
+                       "  Ctrl+E:\t Open with External program" + Environment.NewLine +
                        "  Ctrl+O:\t Open output file (if exists)" + Environment.NewLine +
                        "  Ctrl+P:\t Pause selected download" + Environment.NewLine +
                        "  Ctrl+S:\t Start selected download" + Environment.NewLine +
@@ -913,15 +948,43 @@ namespace m3u8.download.manager.ui
         private void downloadListUC_MouseClickRightButton( MouseEventArgs e, DownloadRow row )
         {
             if ( (row != null) || (0 < _DownloadListModel.RowsCount) )
-            {                
-                startDownloadMenuItem            .Enabled = startDownloadToolButton .Enabled;
-                cancelDownloadMenuItem           .Enabled = cancelDownloadToolButton.Enabled;
-                pauseDownloadMenuItem            .Enabled = pauseDownloadToolButton .Enabled;
-                deleteDownloadMenuItem           .Enabled = deleteDownloadToolButton.Enabled;
-                deleteWithOutputFileMenuItem     .Enabled = deleteDownloadToolButton.Enabled && Extensions.AnyFileExists( row?.GetOutputFullFileNames() );
-                browseOutputFileMenuItem         .Visible = deleteWithOutputFileMenuItem.Enabled;
-                openOutputFileMenuItem           .Visible = deleteWithOutputFileMenuItem.Enabled;
-                deleteAllFinishedDownloadMenuItem.Enabled = deleteAllFinishedDownloadToolButton.Enabled;
+            {
+                startDownloadMenuItem              .Enabled = startDownloadToolButton .Enabled;
+                cancelDownloadMenuItem             .Enabled = cancelDownloadToolButton.Enabled;
+                pauseDownloadMenuItem              .Enabled = pauseDownloadToolButton .Enabled;
+                deleteDownloadMenuItem             .Enabled = deleteDownloadToolButton.Enabled;
+                deleteWithOutputFileMenuItem       .Enabled = deleteDownloadToolButton.Enabled && Extensions.AnyFileExists( row?.GetOutputFullFileNames() );
+                browseOutputFileMenuItem           .Visible = deleteWithOutputFileMenuItem.Enabled;
+                openOutputFileMenuItem             .Visible = deleteWithOutputFileMenuItem.Enabled;                
+                deleteAllFinishedDownloadMenuItem  .Enabled = deleteAllFinishedDownloadToolButton.Enabled;
+
+                #region [.CheckState-of-openOutputFilesWithExternalMenuItem.]
+                if ( row != null )
+                {
+                    openOutputFilesWithExternalMenuItem.Visible = true;
+                    if ( _ExternalProgQueue.Any() )
+                    {
+                        var rows = downloadListUC.GetSelectedDownloadRows();
+                        var outputFileNames = (from r in rows select r.GetOutputFullFileName()).ToArray();
+                        if ( outputFileNames.Any( fn => _ExternalProgQueue.Contains( fn ) ) )
+                        {
+                            openOutputFilesWithExternalMenuItem.CheckState = outputFileNames.All( fn => _ExternalProgQueue.Contains( fn ) ) ? CheckState.Checked : CheckState.Indeterminate;
+                        }
+                        else
+                        {
+                            openOutputFilesWithExternalMenuItem.CheckState = CheckState.Unchecked;
+                        }
+                    }
+                    else
+                    {
+                        openOutputFilesWithExternalMenuItem.CheckState = CheckState.Unchecked;
+                    }                    
+                }
+                else
+                {
+                    openOutputFilesWithExternalMenuItem.Visible = false;
+                }
+                #endregion
 
                 var allowedAll = (row == null) || (1 < _DownloadListModel.RowsCount);
                 SetAllDownloadsMenuItemsEnabled( allowedAll );
@@ -947,7 +1010,7 @@ namespace m3u8.download.manager.ui
                     }
                 }
 
-                void set_enabled_and_text( ToolStripMenuItem menuItem, int count )
+                static void set_enabled_and_text( ToolStripMenuItem menuItem, int count )
                 {
                     menuItem.Enabled = (0 < count);
                     if ( menuItem.Tag == null )
@@ -959,7 +1022,7 @@ namespace m3u8.download.manager.ui
                     {
                         menuItem.Text += $" ({count})";
                     }
-                }
+                };
 
                 set_enabled_and_text( startAllDownloadsMenuItem       , start  );
                 set_enabled_and_text( cancelAllDownloadsMenuItem      , cancel );
@@ -1011,6 +1074,70 @@ namespace m3u8.download.manager.ui
                     ;
                 }
 #endif
+            }
+        }
+        private void openOutputFilesWithExternalMenuItem_Click( object sender, EventArgs e )
+        {            
+            var externalProgFilePath = Settings.Default.ExternalProgFilePath;
+            if ( !File.Exists( externalProgFilePath ) )
+            {
+                this.MessageBox_ShowError( $"External program file doesn't exists: '{externalProgFilePath}'", _APP_TITLE_ );
+                return;
+            }
+
+            var rows = downloadListUC.GetSelectedDownloadRows();
+            var outputFileNames = (from row in rows
+                                   where row.IsFinished()
+                                   let t = Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames() )
+                                   where t.success
+                                   select t.outputFileName
+                                  )
+                                  .ToArray();
+            if ( outputFileNames.Any() )
+            {
+                var buf = new StringBuilder( 0x100 * outputFileNames.Length );
+                foreach ( var fn in outputFileNames )
+                {
+                    buf.Append( '"' ).Append( fn ).Append( '"' ).Append( ' ' );
+                }
+                var args = buf.ToString( 0, buf.Length - 1 );
+
+                ExternalProg_Run( externalProgFilePath, args );
+            }
+
+            //var cst = openOutputFilesWithExternalMenuItem.CheckState;
+
+            var outputFileNamesQueue = (from row in rows
+                                        where !row.IsFinished()
+                                        select row.GetOutputFullFileName()
+                                       ).ToArray();
+            if ( outputFileNamesQueue.All( fn => _ExternalProgQueue.Contains( fn ) ) )
+            {
+                foreach ( var fn in outputFileNamesQueue )
+                {
+                    _ExternalProgQueue.Remove( fn );
+                }
+            }
+            else
+            {
+                foreach ( var fn in outputFileNamesQueue )
+                {
+                    _ExternalProgQueue.Add( fn );
+                }
+            }
+        }
+        private static void ExternalProg_Run( string externalProgFilePath, string args )
+        {
+            using ( Process.Start( externalProgFilePath, args ) )
+            {
+                ;
+            }
+        }
+        private static void ExternalProg_Run_IfExists( string externalProgFilePath, string args )
+        {
+            if ( File.Exists( externalProgFilePath ) )
+            {
+                ExternalProg_Run( externalProgFilePath, args );
             }
         }
 
@@ -1077,8 +1204,12 @@ namespace m3u8.download.manager.ui
                      FileNameCleaner.TryGetOutputFileName( f.OutputFileName, out var outputFileName )
                    )
                 {
-                    f.Row.SetOutputFileName( outputFileName );
-                    downloadListUC.Invalidate( true );
+                    var need_add = _ExternalProgQueue.Remove( row.GetOutputFullFileName() );
+                    {
+                        row.SetOutputFileName( outputFileName );
+                        downloadListUC.Invalidate( true );
+                    }
+                    if ( need_add ) _ExternalProgQueue.Add( row.GetOutputFullFileName() );
                 }
             }
         }
@@ -1091,8 +1222,12 @@ namespace m3u8.download.manager.ui
             {
                 if ( d.ShowDialog( this ) == DialogResult.OK )
                 {
-                    row.SetOutputDirectory( d.SelectedPath );
-                    downloadListUC.Invalidate( true );
+                    var need_add = _ExternalProgQueue.Remove( row.GetOutputFullFileName() );
+                    {
+                        row.SetOutputDirectory( d.SelectedPath );
+                        downloadListUC.Invalidate( true );
+                    }
+                    if ( need_add ) _ExternalProgQueue.Add( row.GetOutputFullFileName() );
                 }
             }
 

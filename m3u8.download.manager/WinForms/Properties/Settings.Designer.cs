@@ -273,5 +273,30 @@ namespace m3u8.download.manager.Properties {
                 this["ShowLog"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\Freemake\\Freemake Video Converter\\FreemakeVideoConverter.e" +
+            "xe")]
+        public string ExternalProgFilePath {
+            get {
+                return ((string)(this["ExternalProgFilePath"]));
+            }
+            set {
+                this["ExternalProgFilePath"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Freemake Video Converter")]
+        public string ExternalProgCaption {
+            get {
+                return ((string)(this["ExternalProgCaption"]));
+            }
+            set {
+                this["ExternalProgCaption"] = value;
+            }
+        }
     }
 }

@@ -69,6 +69,12 @@
     </Setting>
     <Setting Name="ShowLog" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
-    </Setting>  
+    </Setting>
+    <Setting Name="ExternalProgFilePath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\Program Files (x86)\Freemake\Freemake Video Converter\FreemakeVideoConverter.exe</Value>
+    </Setting>
+    <Setting Name="ExternalProgCaption" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Freemake Video Converter</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

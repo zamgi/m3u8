@@ -229,6 +229,24 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Freemake Video Converter.
+        /// </summary>
+        internal static string ExternalProgCaption {
+            get {
+                return ResourceManager.GetString("ExternalProgCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to C:\Program Files (x86)\Freemake\Freemake Video Converter\FreemakeVideoConverter.exe.
+        /// </summary>
+        internal static string ExternalProgFilePath {
+            get {
+                return ResourceManager.GetString("ExternalProgFilePath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap finished {
