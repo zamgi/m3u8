@@ -458,7 +458,7 @@ namespace m3u8.download.manager.ui
                     if ( row.IsFinished() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
                     {
                         _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
-                        ExternalProg_Run_IfExists( Settings.Default.ExternalProgFilePath, outputFileName );
+                        ExternalProg_Run_IfExists( Settings.Default.ExternalProgFilePath, $"\"{outputFileName}\"" );
                     }
                     #endregion
                 }
