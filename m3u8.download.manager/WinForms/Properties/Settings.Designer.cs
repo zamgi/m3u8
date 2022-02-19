@@ -298,5 +298,17 @@ namespace m3u8.download.manager.Properties {
                 this["ExternalProgCaption"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ExternalProgApplyByDefault {
+            get {
+                return ((bool)(this["ExternalProgApplyByDefault"]));
+            }
+            set {
+                this["ExternalProgApplyByDefault"] = value;
+            }
+        }
     }
 }

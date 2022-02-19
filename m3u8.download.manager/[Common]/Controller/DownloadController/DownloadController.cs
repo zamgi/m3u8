@@ -724,6 +724,8 @@ namespace m3u8.download.manager.controllers
         public static void StatusWait( this DownloadRow row ) => row.SetStatus( DownloadStatus.Wait );
         public static void StatusFinished( this DownloadRow row, in _m3u8_processor_.DownloadPartsAndSaveResult dpsr, TimeSpan elapsed )
         {
+            static string to_text_format( ulong size ) => (0 < size) ? size.ToString("0,0") : "0";
+
             row.SetStatus( DownloadStatus.Finished );
             var log = row.Log;
             log.AddEmptyRow();
@@ -731,7 +733,7 @@ namespace m3u8.download.manager.controllers
             log.AddEmptyRow();
             log.AddRequestRow( $" elapsed: {elapsed}" );
             log.AddRequestRow( $"         file: '{dpsr.OutputFileName}'" );
-            log.AddRequestRow( $"       size: {(dpsr.TotalBytes >> 20).ToString( "0,0" )} mb" );
+            log.AddRequestRow( $"       size: {to_text_format( dpsr.TotalBytes >> 20 )} mb" );
         }
         public static void StatusError( this DownloadRow row, Exception ex ) => row.StatusError( ex.ToString() );
         public static void StatusError( this DownloadRow row, string errorText, bool addEmptyRow = false )

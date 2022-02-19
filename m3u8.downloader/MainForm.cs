@@ -671,12 +671,14 @@ namespace m3u8.downloader
                         }
                         #endregion
 
+                        static string to_text_format( ulong size ) => (0 < size) ? size.ToString( "0,0" ) : "0";
+
                         _m3U8FileResultUC.AppendEmptyLine();
                         _m3U8FileResultUC.AppendRequestText( $" downloaded & writed parts {res.PartsSuccessCount} of {res.TotalParts}" );
                         _m3U8FileResultUC.AppendEmptyLine();
                         _m3U8FileResultUC.AppendRequestText( $" elapsed: {sw.Elapsed}" );
                         _m3U8FileResultUC.AppendRequestText( $"         file: '{res.OutputFileName}'" );
-                        _m3U8FileResultUC.AppendRequestText( $"       size: {(res.TotalBytes >> 20).ToString("0,0")} mb" );
+                        _m3U8FileResultUC.AppendRequestText( $"       size: {to_text_format( res.TotalBytes >> 20 )} mb" );
 
                         FinishOpAction( _m3U8FileResultUC );
 
@@ -687,7 +689,7 @@ namespace m3u8.downloader
                         }
                         #endregion
 
-                        this.MessageBox_ShowInformation( $"SUCCESS.\r\n\r\nelapsed: {sw.Elapsed}\r\n       file: '{res.OutputFileName}'\r\n      size: {(res.TotalBytes >> 20).ToString( "0,0" )} mb.", this.Text );
+                        this.MessageBox_ShowInformation( $"SUCCESS.\r\n\r\nelapsed: {sw.Elapsed}\r\n       file: '{res.OutputFileName}'\r\n      size: {to_text_format( res.TotalBytes >> 20 )} mb.", this.Text );
 
                         #region [.auto close application when ends download.]
                         if ( Settings.Default.AutoCloseApplicationWhenEndsDownload && !anyErrorHappend && (renameOutputFileException == null) )

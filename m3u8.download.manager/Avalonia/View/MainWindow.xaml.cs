@@ -272,7 +272,10 @@ namespace m3u8.download.manager.ui
                         if ( success )
                         {
                             e.Handled = true;
-                            _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
+
+                            var autoStartDownload = ((e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift);
+                            if ( !autoStartDownload ) m3u8FileUrls = m3u8FileUrls.Take( 50/*100*/ ).ToArray();
+                            _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, autoStartDownload) );
                             return;
                         }
                     break;
@@ -804,7 +807,9 @@ return;
             var (success, m3u8FileUrls) = await Extensions.TryGetM3u8FileUrlsFromClipboard();
             if ( success )
             {
-                _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
+                var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
+                if ( !autoStartDownload ) m3u8FileUrls = m3u8FileUrls.Take( 50/*100*/ ).ToArray();
+                _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, autoStartDownload) );
             }
             else
             {

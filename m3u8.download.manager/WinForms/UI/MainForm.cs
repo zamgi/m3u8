@@ -198,7 +198,10 @@ namespace m3u8.download.manager.ui
                         if ( Extensions.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) )
                         {
                             e.SuppressKeyPress = true;
-                            AddNewDownloads( (m3u8FileUrls, false) );
+
+                            var autoStartDownload = e.Shift;
+                            if ( !autoStartDownload ) m3u8FileUrls = m3u8FileUrls.Take( 50/*100*/ ).ToArray();
+                            AddNewDownloads( (m3u8FileUrls, autoStartDownload) );
                             return;
                         }
                     break;
@@ -422,7 +425,14 @@ namespace m3u8.download.manager.ui
 
                     case _CollectionChangedTypeEnum_.Clear:
                         _LogRowsHeightStorer.Clear();
-                        _ExternalProgQueue.Clear();
+                        _ExternalProgQueue  .Clear();
+                    break;
+
+                    case _CollectionChangedTypeEnum_.Add:
+                        if ( Settings.Default.ExternalProgApplyByDefault )
+                        {
+                            _ExternalProgQueue.Add( (from row in _DownloadListModel.GetRows() select row.GetOutputFullFileName()) );
+                        }    
                     break;
                 }
             }
@@ -455,10 +465,13 @@ namespace m3u8.download.manager.ui
                     ShowDownloadStatisticsInTitle();
 
                     #region [.run External progs if need.]                    
-                    if ( row.IsFinished() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
+                    if ( row.IsFinished() && Extensions.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
                     {
                         _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
-                        ExternalProg_Run_IfExists( Settings.Default.ExternalProgFilePath, $"\"{outputFileName}\"" );
+                        if ( 0 < new FileInfo( outputFileName ).Length ) //NonZeroLength
+                        {
+                            ExternalProg_Run_IfExists( Settings.Default.ExternalProgFilePath, $"\"{outputFileName}\"" );
+                        }
                     }
                     #endregion
                 }
@@ -830,7 +843,7 @@ namespace m3u8.download.manager.ui
         {
             if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() && FileNameCleaner.TryGetOutputFileNameByUrl( p.m3u8FileUrl, out var outputFileName ) )
             {
-                if ( _SettingsController.UniqueUrlsOnly && !_DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
+                if ( !_SettingsController.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
                 {
                     var row = _DownloadListModel.AddRow( (p.m3u8FileUrl, outputFileName, _SettingsController.OutputFileDirectory) );
                     await downloadListUC.SelectDownloadRowDelay( row );
@@ -888,7 +901,9 @@ namespace m3u8.download.manager.ui
         {
             if ( Extensions.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) )
             {
-                AddNewDownloads( (m3u8FileUrls, false) );
+                var autoStartDownload = ((Control.ModifierKeys & Keys.Shift) == Keys.Shift);
+                if ( !autoStartDownload ) m3u8FileUrls = m3u8FileUrls.Take( 50/*100*/ ).ToArray();
+                AddNewDownloads( (m3u8FileUrls, autoStartDownload) );
             }
             else
             {

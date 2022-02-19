@@ -117,6 +117,11 @@ namespace m3u8.download.manager.ui
             get => externalProgFilePathTextBox.Text?.Trim();
             set => externalProgFilePathTextBox.Text = value?.Trim();
         }
+        public bool     ExternalProgApplyByDefault
+        {
+            get => externalProgApplyByDefaultCheckBox.Checked;
+            set => externalProgApplyByDefaultCheckBox.Checked = value;
+        }
         #endregion
 
         #region [.private methods.]

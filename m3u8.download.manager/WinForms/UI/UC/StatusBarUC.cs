@@ -158,6 +158,7 @@ namespace m3u8.download.manager.ui
                 f.OutputFileExtension                   = _Settings.OutputFileExtension;
                 f.ExternalProgCaption                   = _Settings.ExternalProgCaption;
                 f.ExternalProgFilePath                  = _Settings.ExternalProgFilePath;
+                f.ExternalProgApplyByDefault            = _Settings.ExternalProgApplyByDefault;
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
@@ -169,6 +170,7 @@ namespace m3u8.download.manager.ui
                     _Settings.OutputFileExtension                   = f.OutputFileExtension;
                     _Settings.ExternalProgCaption                   = f.ExternalProgCaption;
                     _Settings.ExternalProgFilePath                  = f.ExternalProgFilePath;
+                    _Settings.ExternalProgApplyByDefault            = f.ExternalProgApplyByDefault;
                     _Settings.SaveNoThrow();
                     if ( _SettingsController == null )
                     {

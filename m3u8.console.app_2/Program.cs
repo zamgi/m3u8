@@ -108,7 +108,7 @@ namespace m3u8
                         sw.Stop();
                         var totalBytes = downloadParts.Sum( p => (p.Bytes?.Length).GetValueOrDefault() );
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadParts.Count( p => p.Error == null )} of {downloadParts.Count}\r\n" + 
-                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {(totalBytes >> 20).ToString( "0,0" )} mb)\r\n" );
+                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {to_text_format( totalBytes >> 20 )} mb)\r\n" );
 
                     })
                     .ContinueWith( t =>
@@ -268,7 +268,7 @@ namespace m3u8
                         sw.Stop();
                         var totalBytes = downloadParts.Sum( p => (p.Bytes?.Length).GetValueOrDefault() );
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadParts.Count( p => p.Error == null )} of {downloadParts.Count}\r\n" + 
-                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {(totalBytes >> 20).ToString( "0,0" )} mb)\r\n" );
+                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {to_text_format( totalBytes >> 20 )} mb)\r\n" );
 
                     })
                     .ContinueWith( t =>
@@ -420,7 +420,7 @@ namespace m3u8
 
                         sw.Stop();
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadPartsSuccessCount} of {(downloadPartsErrorCount + downloadPartsSuccessCount)}\r\n" + 
-                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {(totalBytes >> 20).ToString( "0,0" )} mb)\r\n" );
+                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {to_text_format( totalBytes >> 20 )} mb)\r\n" );
 
                     })
                     .ContinueWith( t =>
@@ -457,6 +457,9 @@ namespace m3u8
                 await m3u8_processor.DownloadFileAndSave_Async( p );
             }
         }
+
+        private static string to_text_format( int size ) => to_text_format( (ulong) size );
+        private static string to_text_format( ulong size ) => (0 < size) ? size.ToString("0,0") : "0";
 
         [STAThread] private static async Task Main( string[] args )
         {

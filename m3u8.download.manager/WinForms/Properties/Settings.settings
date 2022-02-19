@@ -76,5 +76,8 @@
     <Setting Name="ExternalProgCaption" Type="System.String" Scope="User">
       <Value Profile="(Default)">Freemake Video Converter</Value>
     </Setting>
+    <Setting Name="ExternalProgApplyByDefault" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>    
   </Settings>
 </SettingsFile>

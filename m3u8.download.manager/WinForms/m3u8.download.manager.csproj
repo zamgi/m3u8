@@ -192,6 +192,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\browse.png" />
     <Content Include="Resources\contextMenu\cancel_all.png" />
     <Content Include="Resources\contextMenu\cancel.png" />
     <Content Include="Resources\contextMenu\delete_all.png" />
@@ -202,6 +203,7 @@
     <Content Include="Resources\contextMenu\start.png" />
     <Content Include="Resources\dop.ico" />
     <Content Include="Resources\downloadInstance.ico" />
+    <None Include="Resources\reset.png" />
     <Content Include="Resources\statuses\canceled.png" />
     <None Include="Resources\settings.ico" />
     <None Include="Resources\m3u8_32x36.ico" />

@@ -39,6 +39,16 @@ namespace m3u8.download.manager
                 }
             }
         }
+        public static void Add< T >( this HashSet< T > hs, IEnumerable< T > seq )
+        {
+            if ( seq != null )
+            {
+                foreach ( var t in seq )
+                {
+                    hs.Add( t );
+                }
+            }
+        }
 
         /// <summary>
         /// Copy user settings from previous application version if necessary
@@ -117,6 +127,22 @@ namespace m3u8.download.manager
             existsFileName = null;
             return (false);
         }
+        //public static bool TryGetFirstFileExistsNonZeroLength( ICollection< string > fileNames, out string existsFileName )
+        //{
+        //    if ( fileNames.AnyEx() )
+        //    {
+        //        foreach ( var fileName in fileNames )
+        //        {
+        //            if ( (fileName != null) && File.Exists( fileName ) && (0 < new FileInfo( fileName ).Length) )
+        //            {
+        //                existsFileName = fileName;
+        //                return (true);
+        //            }
+        //        }
+        //    }
+        //    existsFileName = null;
+        //    return (false);
+        //}
         public static bool AnyFileExists( ICollection< string > fileNames ) => TryGetFirstFileExists( fileNames, out var _ );
 
         public static void MessageBox_ShowInformation( this IWin32Window owner, string text, string caption ) => MessageBox.Show( owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Information );

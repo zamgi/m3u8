@@ -24,6 +24,7 @@
             this.externalProgFilePathButton = new System.Windows.Forms.Button();
             this.externalProgFilePathTextBox = new System.Windows.Forms.TextBox();
             this.externalProgCaptionTextBox = new System.Windows.Forms.TextBox();
+            this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.l1 = new System.Windows.Forms.Label();
@@ -84,30 +85,31 @@
             gb2.Controls.Add(this.externalProgFilePathButton);
             gb2.Controls.Add(this.externalProgFilePathTextBox);
             gb2.Controls.Add(this.externalProgCaptionTextBox);
+            gb2.Controls.Add(this.externalProgApplyByDefaultCheckBox);
             gb2.Controls.Add(l4);
             gb2.Controls.Add(l3);
             gb2.Location = new System.Drawing.Point(13, 271);
-            gb2.Size = new System.Drawing.Size(261, 127);
+            gb2.Size = new System.Drawing.Size(261, 150);
             gb2.TabIndex = 8;
             gb2.TabStop = false;
             gb2.Text = "External program";
             // 
             // externalProgFilePathButton
             // 
-            this.externalProgFilePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.externalProgFilePathButton.AutoEllipsis = true;
+            this.externalProgFilePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));            
             this.externalProgFilePathButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.externalProgFilePathButton.Location = new System.Drawing.Point(246, 85);
-            this.externalProgFilePathButton.Size = new System.Drawing.Size(13, 18);
+            this.externalProgFilePathButton.Location = new System.Drawing.Point(245, 85);
+            this.externalProgFilePathButton.Size = new System.Drawing.Size(16, 18);
             this.externalProgFilePathButton.TabIndex = 9;
             this.toolTip.SetToolTip(this.externalProgFilePathButton, "browse");
             this.externalProgFilePathButton.UseVisualStyleBackColor = true;
             this.externalProgFilePathButton.Click += new System.EventHandler(this.externalProgFilePathButton_Click);
+            this.externalProgFilePathButton.Image = new System.Drawing.Bitmap( Properties.Resources.browse, new System.Drawing.Size( 10, 10 ) );
+            this.externalProgFilePathButton.Margin = new System.Windows.Forms.Padding(0);
             // 
             // externalProgFilePathTextBox
             // 
-            this.externalProgFilePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.externalProgFilePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.externalProgFilePathTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.externalProgFilePathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.externalProgFilePathTextBox.Location = new System.Drawing.Point(6, 85);
@@ -119,8 +121,7 @@
             // 
             // externalProgCaptionTextBox
             // 
-            this.externalProgCaptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.externalProgCaptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
             this.externalProgCaptionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.externalProgCaptionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.externalProgCaptionTextBox.Location = new System.Drawing.Point(19, 35);
@@ -129,6 +130,28 @@
             this.externalProgCaptionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.externalProgCaptionTextBox.WordWrap = false;
             this.externalProgCaptionTextBox.TextChanged += new System.EventHandler(this.externalProgCaptionTextBox_TextChanged);
+            // 
+            // externalProgResetButton
+            // 
+            this.externalProgResetButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.externalProgResetButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.externalProgResetButton.Location = new System.Drawing.Point( 241, 0 );
+            this.externalProgResetButton.Size = new System.Drawing.Size( 18, 22 );
+            this.externalProgResetButton.TabIndex = 10;
+            this.externalProgResetButton.UseVisualStyleBackColor = true;
+            this.externalProgResetButton.Click += new System.EventHandler( this.externalProgResetButton_Click );
+            this.externalProgResetButton.Image = new System.Drawing.Bitmap( Properties.Resources.reset, new System.Drawing.Size( 12, 12 ) );
+            this.toolTip.SetToolTip( this.externalProgResetButton, "reset" );
+            // 
+            // externalProgApplyByDefaultCheckBox
+            // 
+            this.externalProgApplyByDefaultCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;            
+            this.externalProgApplyByDefaultCheckBox.AutoSize = true;
+            this.externalProgApplyByDefaultCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.externalProgApplyByDefaultCheckBox.Location = new System.Drawing.Point( 6, 115 );            
+            this.externalProgApplyByDefaultCheckBox.Text = "Apply to all new downloads by default";
+            //this.externalProgApplyByDefaultCheckBox.Size = new System.Drawing.Size( 245, 18 );
+            //this.externalProgApplyByDefaultCheckBox.AutoEllipsis = true;
             // 
             // l4
             // 
@@ -152,7 +175,7 @@
             this.okButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.okButton.Location = new System.Drawing.Point(65, 412);
+            this.okButton.Location = new System.Drawing.Point(65, 435);
             this.okButton.Size = new System.Drawing.Size(75, 23);
             this.okButton.TabIndex = 8;
             this.okButton.Text = "Ok";
@@ -164,7 +187,7 @@
             this.cancelButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.cancelButton.Location = new System.Drawing.Point(146, 412);
+            this.cancelButton.Location = new System.Drawing.Point(146, 435);
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 9;
             this.cancelButton.Text = "Cancel";
@@ -263,24 +286,12 @@
             0,
             0});
             // 
-            // externalProgResetButton
-            // 
-            this.externalProgResetButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.externalProgResetButton.AutoEllipsis = true;
-            this.externalProgResetButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.externalProgResetButton.Location = new System.Drawing.Point(241, 0);
-            this.externalProgResetButton.Size = new System.Drawing.Size(18, 22);
-            this.externalProgResetButton.TabIndex = 10;
-            this.externalProgResetButton.Text = "reset";
-            this.externalProgResetButton.UseVisualStyleBackColor = true;
-            this.externalProgResetButton.Click += new System.EventHandler(this.externalProgResetButton_Click);
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(286, 447);
+            this.ClientSize = new System.Drawing.Size(286, 470);
             this.Controls.Add(gb2);
             this.Controls.Add(this.outputFileExtensionLabel);
             this.Controls.Add(this.outputFileExtensionTextBox);
@@ -326,6 +337,7 @@
         private System.Windows.Forms.TextBox outputFileExtensionTextBox;
         private System.Windows.Forms.TextBox externalProgFilePathTextBox;
         private System.Windows.Forms.TextBox externalProgCaptionTextBox;
+        private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.Button externalProgFilePathButton;
         private System.Windows.Forms.Button externalProgResetButton;
