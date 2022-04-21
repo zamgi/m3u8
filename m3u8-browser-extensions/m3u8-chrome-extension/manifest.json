@@ -6,7 +6,7 @@
 
   "name": "m3u8 file downloader",
   "description": "m3u8 file downloader chrome extension.",
-  "version": "1.4",
+  "version": "1.5",
   "offline_enabled": true,
   "icons": {
     "32": "m3u8.png",
@@ -35,15 +35,9 @@
     "page": "background.html"
   },
 
-  "content_scripts": [
-    {
-      "matches": [
-        "http://*/*",
-        "https://*/*"
-      ],
-      "js": [
-        "script_in_content.js"
-      ]
-    }
-  ]
+  "content_scripts": [{
+    "matches": [ "http://*/*", "https://*/*" ],
+    "js": [ "script_in_content.js" ],
+    "run_at": "document_end"
+  }]
 }

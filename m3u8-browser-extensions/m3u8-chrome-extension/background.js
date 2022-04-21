@@ -13,30 +13,26 @@ window.onload = function () {
     */
 
     chrome.webRequest.onCompleted.addListener(function (details) {
-            var extension = details.url.split('?')[ 0 ].split('.').pop();
-            if ((extension || '').toLowerCase() === 'm3u8') {
-                window.bg.save_m3u8_url( details.tabId, details.url );
-                try {
-                    var t = window.bg.tabs[ details.tabId ];
-                    t.port_info.postMessage({ method: 'set_m3u8_urls', data: t.m3u8_urls });
-                } catch (ex) {
-                    console.log(ex);
-                }
-                window.bg.m3u8_urls_count( { tab_id: details.tabId } );
+        var extension = details.url.split('?')[ 0 ].split('.').pop();
+        if ((extension || '').toLowerCase() === 'm3u8') {
+            window.bg.save_m3u8_url( details.tabId, details.url );
+            try {
+                var t = window.bg.tabs[ details.tabId ];
+                t.port_info.postMessage({ method: 'set_m3u8_urls', data: t.m3u8_urls });
+            } catch (ex) {
+                console.log(ex);
             }
-        }, {
-            urls: ["<all_urls>"]
-        });
+            window.bg.m3u8_urls_count({ tab_id: details.tabId });
+        }
+    }, {
+        urls: ["<all_urls>"]
+    });
+
+    // set handler to tabs: need for seng objects
+    chrome.extension.onConnect.addListener(function (port) { port.onMessage.addListener(methodCaller); });
 
     // set handler to tabs
-    chrome.tabs.onActivated.addListener(function (info) {
-        window.bg.onActivated(info);
-    });
-
-    // set handler to tabs:  need for seng objects
-    chrome.extension.onConnect.addListener(function (port) {
-        port.onMessage.addListener(methodCaller);
-    });
+    chrome.tabs.onActivated.addListener(function (info) { window.bg.onActivated(info.tabId); });
 
     // set handler to tabs
     chrome.tabs.onUpdated.addListener(function (id, info, tab) {
@@ -50,6 +46,8 @@ window.onload = function () {
                 return (0);
             }
 
+            window.bg.onActivated(id);
+
             chrome.browserAction.enable(id);
 
             // save tab info if need
@@ -57,7 +55,7 @@ window.onload = function () {
 
             // connect with new tab, and save object
             var port = chrome.tabs.connect(id);
-            var t = window.bg.tabs[id];
+            var t    = window.bg.tabs[id];
             t.port_info = port;
 
             // run function in script_in_content.js
@@ -70,9 +68,7 @@ window.onload = function () {
         }
     });
 
-    chrome.tabs.onRemoved.addListener(function (id, info) {
-        window.bg.removeTab(id);
-    });
+    chrome.tabs.onRemoved.addListener(function (id) { window.bg.removeTab(id); });
 };
 
 function methodCaller(obj) {
@@ -91,11 +87,11 @@ window.bgObj = function () { };
 window.bgObj.prototype = {
     /* internal params */
     tabs: {},
-    active_tab: {},
+    active_tabId: -1,
 
     /* Function add tab into $tabs object, if need */
     addTab: function (tab) {
-        if (tab.id && (tab.id != 0)) {
+        if (tab.id) {
             var o = this.tabs[tab.id];
             if (!o) {
                 this.tabs[tab.id] = { tab_obj: tab };
@@ -121,6 +117,7 @@ window.bgObj.prototype = {
             else if (!o.m3u8_urls) {
                 o.m3u8_urls = [];
             }
+
             if (o.m3u8_urls.indexOf(m3u8_url) === -1) {
                 o.m3u8_urls.push(m3u8_url);
             }
@@ -128,43 +125,23 @@ window.bgObj.prototype = {
     },
     /* Function will be called from script_in_content.js */
     m3u8_urls_count: function (d) {
-        var id = d.tab_id, o = (id ? this.tabs[id] : null);
-        if (o && o.m3u8_urls) {
-            o.m3u8_urls_count = o.m3u8_urls.length + '';
-
-            if (o.m3u8_urls_count && o.m3u8_urls_count != '0') {
-                chrome.browserAction.setBadgeText({ text: o.m3u8_urls_count });
-                return (0);
-            }
+        var o = this.tabs[d.tab_id];
+        if (o && o.m3u8_urls && o.m3u8_urls.length) {
+            chrome.browserAction.setBadgeText({ text: o.m3u8_urls.length + '' });
+            return (0);
         }
-
         // show default text
         chrome.browserAction.setBadgeText({ text: '' });
     },    
-    m3u8_urls_count_internal: function (d) {
-        var id = d.tab_id, o = (id ? this.tabs[id] : null);
-        if (o) {
-            o.m3u8_urls = d.m3u8_urls;
-            o.m3u8_urls_count = o.m3u8_urls.length + '';
-
-            if (o.m3u8_urls_count && o.m3u8_urls_count != '0') {
-                chrome.browserAction.setBadgeText({ text: o.m3u8_urls_count });
-                return (0);
-            }
-        }
-
-        // show default text
-        chrome.browserAction.setBadgeText({ text: '' });
-    },
     /* Function will be called when user change active tab */
-    onActivated: function (info) {
+    onActivated: function (tabId) {
         // set active tab
-        this.active_tab = info;
+        this.active_tabId = tabId;
 
         var d = { m3u8_urls: [] };
 
-        if (info.tabId) {
-            d.tab_id = info.tabId;
+        if (tabId) {
+            d.tab_id = tabId;
             var o = this.tabs[d.tab_id];
             if (!o) {
                 o = { m3u8_urls: [] };
@@ -177,16 +154,16 @@ window.bgObj.prototype = {
         }
 
         // set actual count of m3u8_urls for current tab
-        this.m3u8_urls_count_internal(d);
+        this.m3u8_urls_count(d);
     },
 
     /* Function will be called from find.js and others places */
     get_m3u8_urls: function () {
         // init if need
-        var o = this.tabs[this.active_tab.tabId];
+        var o = this.tabs[this.active_tabId];
         if (!o) {
             o = { m3u8_urls: [] };
-            this.tabs[this.active_tab.tabId] = o;
+            this.tabs[this.active_tabId] = o;
         }
         else if (!o.m3u8_urls) {
             o.m3u8_urls = [];

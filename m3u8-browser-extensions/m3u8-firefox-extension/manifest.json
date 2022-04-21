@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "m3u8 file downloader",
-  "version": "1.4",
+  "version": "1.5",
 
   "description": "m3u8 file downloader firefox extension.",
   "icons": {
@@ -16,12 +16,11 @@
     }
   },
 
-  "content_scripts": [
-    {
-      "matches": [ "*://*/*" ],
-      "js": [ "script_in_content.js" ]
-    }
-  ],
+  "content_scripts": [{
+    "matches": [ "*://*/*" ],
+    "js": [ "script_in_content.js" ],
+    "run_at": "document_end"
+  }],
 
   "permissions": [
     "webNavigation",

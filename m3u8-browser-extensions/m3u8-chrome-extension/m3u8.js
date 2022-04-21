@@ -1,8 +1,10 @@
 window.onload = function () {
     try {
         // get m3u8 urls for current active tab
-        window.bg_wnd = chrome.extension.getBackgroundPage();
-        var m3u8_urls = window.bg_wnd.bg.get_m3u8_urls();
+        var backgroundPage = chrome.extension.getBackgroundPage();
+        var m3u8_urls = backgroundPage.bg.get_m3u8_urls();
+        //window.bg_wnd = chrome.extension.getBackgroundPage();
+        //var m3u8_urls = window.bg_wnd.bg.get_m3u8_urls();
 
         // function render m3u8 urls list
         render_m3u8_urls(m3u8_urls);
@@ -52,8 +54,7 @@ function render_m3u8_urls(m3u8_urls) {
     aa = content.querySelectorAll('a.download_all');
     if (0 < aa.length) {
         aa[0].addEventListener('click', function (event) {
-            var bb = content.querySelectorAll('a.download');
-            var messageObject = [];
+            var messageObject = [], bb = content.querySelectorAll('a.download');
             for (var j = 0; j < bb.length; j++) {
                 messageObject.push( create_messageObject(bb[j].href) );
             }
@@ -66,8 +67,7 @@ function render_m3u8_urls(m3u8_urls) {
     aa = content.querySelectorAll('a.auto_start_download_all');
     if (0 < aa.length) {
         aa[0].addEventListener('click', function (event) {
-            var bb = content.querySelectorAll('a.auto_start_download');
-            var messageObject = [];
+            var messageObject = [], bb = content.querySelectorAll('a.auto_start_download');
             for (var j = 0; j < bb.length; j++) {
                 messageObject.push( create_messageObject(bb[j].href, true) );
             }
@@ -84,38 +84,36 @@ function create_messageObject(m3u8_url, auto_start_download) {
         auto_start_download: !!auto_start_download
     });
 }
-function send2host_single(m3u8_url, auto_start_download) {
-    send2host_multi( [ create_messageObject(m3u8_url, auto_start_download) ] );
-}
+function send2host_single(m3u8_url, auto_start_download) { send2host_multi( [ create_messageObject(m3u8_url, auto_start_download) ] ); }
 function send2host_multi(messageObject) {
     var HOST_NAME = "m3u8.downloader.host";
     
     chrome.runtime.sendNativeMessage(HOST_NAME, 
-        {
-            array: messageObject 
-        },
-        function (response) {
-            var message;
-            if (response) {
-                if (response.text === "success") {
-                    console.log("[" + HOST_NAME + "] sent the response: '" + JSON.stringify(response) + "'");
-                    return;
-                } 
+    {
+        array: messageObject 
+    },
+    function (response) {
+        var message;
+        if (response) {
+            if (response.text === "success") {
+                console.log("[" + HOST_NAME + "] sent the response: '" + JSON.stringify(response) + "'");
+                return;
+            } 
 
-                message = response.text || JSON.stringify(response);
-            }
-            else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
-                message = chrome.runtime.lastError.message;
-            }
+            message = response.text || JSON.stringify(response);
+        }
+        else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
+            message = chrome.runtime.lastError.message;
+        }
 
-            var notificationOptions = {
-                type: "basic",
-                title: "[" + HOST_NAME + "] => send-native-message ERROR:",
-                message: message || "[NULL]",
-                iconUrl: "m3u8_148.png",
-                priority: 2
-            };
-            chrome.notifications.clear(HOST_NAME);
-            chrome.notifications.create(HOST_NAME, notificationOptions);
-        });
+        var notificationOptions = {
+            type    : "basic",
+            title   : "[" + HOST_NAME + "] => send-native-message ERROR:",
+            message : message || "[NULL]",
+            iconUrl : "m3u8_148.png",
+            priority: 2
+        };
+        chrome.notifications.clear(HOST_NAME);
+        chrome.notifications.create(HOST_NAME, notificationOptions);
+    });
 }
