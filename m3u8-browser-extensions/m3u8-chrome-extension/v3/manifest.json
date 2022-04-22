@@ -1,0 +1,48 @@
+{
+  // Extension ID: gdcogkdiaaholacgcdafpihelmdjmepe
+  "key": "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDml8JJDzGO8G7ChVqJyDWb5yCrnbPQHYGiZ2/pxqHKyUsIWTMa16JFfpoeLJOd4LE95rMiXqSHyOfCAMcAFyU7jp3wpxRCdB616tOUE4wCi/QUc8Ckg0WkdJR/3nQxtiSBu0sift1hHFE7txSAzw7DIwLyO1zq3NTNzPQeoGShprTK3BgSSk0tedeEblfIqb7j0cRoTQ4ahmgfjK1IZfKQT0AcePkDfwd+rpuMTNAD8415CTJlpxRFbdZJuimevXMlEaS4Wr755U+2XGFXfnhqpKqO8HQDXZ4kOJSplAUjOmilJjO8sywKS/8R7pJw4ofDhH05lnPa35Pd0/S6QDNPAgMBAAECggEAA5d4sWfHPABrM5ra6y7kia/rNWjPvc0Yvnd86dHgNDGk8NypyIFqs6glvbEPNIXnanmLMkUhTTEZ7weYVElPHeozFUAzfk5N3nNDrRrxWzcYSqITcmYG5g9dZNlL57FbGSPoj2mZ+jgxtsJhgroc1p86yD2YbmlW2ovr3pz+eGujKwEdvbtvZKxKIwmKsqC/04ZdYzylmjJsKMewLDdEAP85tORT1JxEeO0OxlYAdJBq01DVptQ/HydelX6/f7qneai3loDCpkY0R/DRLvzEIbjjcjTGf13O1u6NXejkphMAFkkZsZqpDEHRsAUhGx3aPPhH0sJajsEbtkLBNGG8TQKBgQD90vLYb5KmM02VOP0ouUSL3+lVr+5l7LeyVrpk0y59HHFY1GtWWXL67recbt6B2OkH99S+MLmqVE0D67XEqLMuam7XrUW9d7Mj5q7hBFHnu9QQLpuAnc4MMBUCXUWwp/tvDTUhVt7GX6pdrXXrGk0GKQXXDCk/4c+B6cNWeMte2wKBgQDokdOFoh2quv+8lOjjcqPs7S/uxXUm2uOZMf+xCTC8E1OvGql4WltJGM6F/60SigcMKM4Ts62XmuSdmN0XpD3Ec/8Y8EzSrW/xdBuCQmvZYEze++SNhia2tmFUM4ZJaJ0Ho9uofy57yx484dI/7OhE43WE/ob6Q+1EFmEyycJFnQKBgEuR2quFzGufKqIa7YSKZFYgvB++2YOPDsISADy0g0rMhRKla6+xwgHjwNbaS3TtV7P/nV9ismR75NIeA2ghsfdHyOh9th3K3ZL6w2ZLGvebfG+08KdCVG5cgmTJ0E3gNYPCsubSLlFxeg+Z7Vmp4vTKkeqMvFtAp79OEdJU9HexAoGBAIJeJEUXoCuxUWPj0TyWab+JIcJl24rhTo30khEqRrBW4SUZ+/+kHuG1zyccMGdhChxNz18J7Hg8coTJSL5U6e7y2v+ezGGYqVSfMkBtfUlICy8/4llW5uKrD5oEm/UQeF3tA1fLm0H3lUapi5Mb+QOMwbbAeudVJm5xYSD4KjedAoGBAM/LElcK9MD48SlqsGjYaIe3wqKMZjEs0vWSdzr8akJ6vlIb8hvgySru0jTnQRCC7r4WkmGcTnJDcfxtsThPq8HzimagW4ACUrmusvMkQ1tC7p5xOyuub9QVpOBCMCwDHFWfOvKovll9X6Z93nrYhTauMHd+gpSqaoAhHZniX/Ss",
+
+  "manifest_version": 3,
+
+  "name": "m3u8 file downloader (v3)",
+  "description": "m3u8 file downloader chrome extension (v3).",
+  "version": "2.0",
+  "offline_enabled": true,
+  "icons": {
+    "32": "m3u8.png",
+    "128": "m3u8_148.png"
+  },
+  "options_ui": {
+    "page": "m3u8_options.html"
+  },
+  "action": {
+    "default_icon": "m3u8.png",
+    "default_popup": "m3u8.html"
+  },
+
+  "permissions": [
+    "storage",
+    "scripting",
+    "tabs",
+    "webRequest",
+    "background",
+    "notifications",
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [ "http://*/*", "https://*/*" ],
+      "js": [ "workInfoType.js" ],
+      "run_at": "document_end"
+    }
+  ]
+}

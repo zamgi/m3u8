@@ -4,6 +4,7 @@
   "path": "/bin/m3u8.download.manager.exe",
   "type": "stdio",
   "allowed_origins": [
-    "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"
+    "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/",
+    "chrome-extension://gdcogkdiaaholacgcdafpihelmdjmepe/"
   ]
 }

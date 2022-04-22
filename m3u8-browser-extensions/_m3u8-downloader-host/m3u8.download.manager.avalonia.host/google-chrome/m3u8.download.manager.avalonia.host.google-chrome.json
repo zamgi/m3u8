@@ -4,6 +4,7 @@
   "path": "../m3u8.download.manager.avalonia.exe",
   "type": "stdio",
   "allowed_origins": [
-    "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"
+    "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/",
+    "chrome-extension://gdcogkdiaaholacgcdafpihelmdjmepe/"
   ]
 }
