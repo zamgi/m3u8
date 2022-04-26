@@ -1,59 +1,68 @@
 self.importScripts('workInfoType.js');
 
-chrome.storage.local.set({ workInfo: new workInfoType() });
+console.log('start \'service-worker.js\': ' + new Date().toLocaleString());
 
-chrome.webRequest.onCompleted.addListener(function (d/*details*/) {
+//urls-list will be saved between reloads.
+(async () => {
+    let res = await chrome.storage.local.get();
+//---console.log(JSON.stringify(res));
+    if (!res.saveUrlListBetweenTabReload) {
+        await chrome.storage.local.set({ workInfo: new workInfoType() });
+    }
+})();
+//---(async () => { await chrome.storage.local.set({ workInfo: new workInfoType() }); })();
+
+chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
     var ext_1 = d.url.split('?')[0].split('.').pop(),
         ext_2 = (ext_1 || '').toLowerCase();
     if (ext_2 !== 'm3u8') return;
 
-    chrome.storage.local.get('workInfo', function (res) {
-        let workInfo = new workInfoType(res.workInfo);
-        workInfo.save_m3u8_url(d.tabId, d.url);        
-        chrome.storage.local.set({ workInfo: workInfo });
-    });
+//---console.log('save_m3u8_url() => tabId: ' + d.tabId + ', url: ' + d.url );
+
+    let res = await chrome.storage.local.get('workInfo');
+    let workInfo = new workInfoType(res.workInfo);
+    await workInfo.save_m3u8_url(d.tabId, d.url);
+    await chrome.storage.local.set({ workInfo: workInfo });
 }, {
     urls: ["<all_urls>"]
 });
 
 // set handler to tabs
-chrome.tabs.onActivated.addListener(function (info) {
-    chrome.storage.local.get('workInfo', function (res) {
-        let workInfo = new workInfoType( res.workInfo );
-        workInfo.activateTab(info.tabId);
-        chrome.storage.local.set({ workInfo: workInfo });
-    });
+chrome.tabs.onActivated.addListener(async function (info) {
+    let res = await chrome.storage.local.get('workInfo');
+    let workInfo = new workInfoType(res.workInfo);
+    await workInfo.activateTab(info.tabId);
+    await chrome.storage.local.set({ workInfo: workInfo });
 });
 
-chrome.tabs.onRemoved.addListener(function (tabId) {
-    chrome.storage.local.get('workInfo', function (res) {
-        let workInfo = new workInfoType( res.workInfo );
-        workInfo.removeTab(tabId);
-        chrome.storage.local.set({ workInfo: workInfo });
-    });
+chrome.tabs.onRemoved.addListener(async function (tabId) {
+    let res = await chrome.storage.local.get('workInfo');
+    let workInfo = new workInfoType(res.workInfo);
+    workInfo.removeTab(tabId);
+    await chrome.storage.local.set({ workInfo: workInfo });
 });
 
 // set handler to tabs
-chrome.tabs.onUpdated.addListener(function (tabId, info, tab) {
+chrome.tabs.onUpdated.addListener(async function (tabId, info, tab) {
     // if tab load
     if (info && info.status && (info.status.toLowerCase() === 'complete')) {
         // if user open empty tab or ftp protocol and etc.
-        if (!tabId || !tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
-            if (tabId) {
-                chrome.action.disable(tabId);
+        if ((!tabId && (tabId !== 0) ) || !tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
+            if (tabId || (tabId === 0)) {
+                /*await*/ chrome.action.disable(tabId);
             }
             return (0);
         }
 
-        chrome.storage.local.get('workInfo', function (res) {
-            let workInfo = new workInfoType( res.workInfo );
+        await chrome.action.enable(tabId);
 
-            chrome.action.enable(tabId);
-            workInfo.updateActiveTab(tabId);
-            //---workInfo.activateTab(tabId); //urls-list will be saved between reloads.
-
-            chrome.storage.local.set({ workInfo: workInfo });
-        });
+        let res = await chrome.storage.local.get();
+        if (!res.saveUrlListBetweenTabReload) {
+            let workInfo = new workInfoType(res.workInfo);
+    //---console.log('resetTab() => tabId: ' + tabId);
+            await workInfo.resetTabUrls(tabId);
+            await chrome.storage.local.set({ workInfo: workInfo });
+        }
     }
 });
 

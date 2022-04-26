@@ -1,17 +1,33 @@
-window.onload = function () {
-    chrome.storage.local.get('workInfo', function (result) {
-        let workInfo = new workInfoType(result.workInfo);
-        try {
-            // get m3u8 urls for current active tab
-            var m3u8_urls = workInfo.get_m3u8_urls();
+window.onload = async function () {
+    let tabs  = await chrome.tabs.query({ active: true, currentWindow: true });
+    let tabId = ((tabs && tabs.length) ? tabs[ 0 ].id : -1);
+//---console.log('window.onload() => tabId: ' + tabId + ', json: ' + JSON.stringify(tabs));
 
-            // function render m3u8 urls list
-            render_m3u8_urls(m3u8_urls);
-        } catch (ex) {
-            console.error("m3u8 => " + ex);
-            render_m3u8_urls();
-        }        
+    let res = await chrome.storage.local.get();
+    let workInfo = new workInfoType(res.workInfo);
+
+    // get m3u8 urls for current active tab
+    var m3u8_urls = workInfo.get_m3u8_urls(tabId);
+
+    // function render m3u8 urls list
+    render_m3u8_urls(m3u8_urls);
+
+    let ch = document.getElementById('saveUrlListBetweenTabReload');
+    ch.checked = !!res.saveUrlListBetweenTabReload;    
+    ch.addEventListener('click', async function (event) {
+        await chrome.storage.local.set({ saveUrlListBetweenTabReload: this.checked /*ch.checked*/ });
     });
+
+    if (m3u8_urls && m3u8_urls.length) {
+        let bt = document.getElementById('clearUrlList');
+        bt.style.display = '';
+        bt.addEventListener('click', async function (event) {
+            await workInfo.resetTabUrls(tabId);
+            await chrome.storage.local.set({ workInfo: workInfo });
+            render_m3u8_urls();
+            this.style.display = 'none';
+        });
+    }    
 };
 
 function render_m3u8_urls(m3u8_urls) {
@@ -84,32 +100,31 @@ function create_messageObject(m3u8_url, auto_start_download) {
         auto_start_download: !!auto_start_download
     });
 }
-function send2host_single(m3u8_url, auto_start_download) { send2host_multi( [ create_messageObject(m3u8_url, auto_start_download) ] ); }
-function send2host_multi(messageObject) {
+async function send2host_single(m3u8_url, auto_start_download) { await send2host_multi( [ create_messageObject(m3u8_url, auto_start_download) ] ); }
+async function send2host_multi(messageObject) {
     var HOST_NAME = "m3u8.downloader.host";
-    
-    chrome.runtime.sendNativeMessage(HOST_NAME, { array: messageObject }, function (response) {
-        var message;
-        if (response) {
-            if (response.text === "success") {
-                console.log("[" + HOST_NAME + "] sent the response: '" + JSON.stringify(response) + "'");
-                return;
-            } 
 
-            message = response.text || JSON.stringify(response);
-        }
-        else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
-            message = chrome.runtime.lastError.message;
+    let res = await chrome.runtime.sendNativeMessage(HOST_NAME, { array: messageObject });
+    var message;
+    if (res) {
+        if (res.text === "success") {
+            console.log("[" + HOST_NAME + "] sent the response: '" + JSON.stringify(res) + "'");
+            return;
         }
 
-        var notificationOptions = {
-            type    : "basic",
-            title   : "[" + HOST_NAME + "] => send-native-message ERROR:",
-            message : message || "[NULL]",
-            iconUrl : "m3u8_148.png",
-            priority: 2
-        };
-        chrome.notifications.clear(HOST_NAME);
-        chrome.notifications.create(HOST_NAME, notificationOptions);
-    });
+        message = res.text || JSON.stringify(res);
+    }
+    else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
+        message = chrome.runtime.lastError.message;
+    }
+
+    var notificationOptions = {
+        type    : "basic",
+        title   : "[" + HOST_NAME + "] => send-native-message ERROR:",
+        message : message || "[NULL]",
+        iconUrl : "m3u8_148.png",
+        priority: 2
+    };
+    await chrome.notifications.clear(HOST_NAME);
+    await chrome.notifications.create(HOST_NAME, notificationOptions);
 }

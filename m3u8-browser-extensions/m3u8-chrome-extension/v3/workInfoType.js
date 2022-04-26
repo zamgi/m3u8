@@ -1,17 +1,12 @@
-/* work object */
 var workInfoType = function (wi) {
     if (wi) {
         this.tabs = wi.tabs || {};
-        this.active_tabId = wi.active_tabId || -1;
     }
 };
 workInfoType.prototype = {
     tabs: {},
-    active_tabId: -1,
 
-    updateActiveTab: function (tabId) {
-        this.active_tabId = tabId;
-
+    resetTabUrls: async function (tabId) {
         var o = this.tabs[tabId];
         if (!o) {
             o = this.tabs[tabId] = { m3u8_urls: [] };
@@ -19,12 +14,10 @@ workInfoType.prototype = {
             o.m3u8_urls = [];
         }
         // set actual count of m3u8_urls for current tab
-        this.set_actual_m3u8_urls_count_text(o);
+        await chrome.action.setBadgeText({ text: '' }); //---await this.set_actual_m3u8_urls_count_text(o);
     },
     /* Function will be called when user change active tab */
-    activateTab: function (tabId) {
-        this.active_tabId = tabId;
-
+    activateTab: async function (tabId) {
         var o = this.tabs[tabId];
         if (!o) {
             o = this.tabs[tabId] = { m3u8_urls: [] };
@@ -34,14 +27,14 @@ workInfoType.prototype = {
         }
 
         // set actual count of m3u8_urls for current tab
-        this.set_actual_m3u8_urls_count_text(o);
+        await this.set_actual_m3u8_urls_count_text(o);
     },
     removeTab: function (tabId) {
-        if (tabId) {
+        if (tabId || (tabId === 0)) {
             delete this.tabs[tabId];
         }
     },
-    save_m3u8_url: function (tabId, m3u8_url) {
+    save_m3u8_url: async function (tabId, m3u8_url) {
         var o = this.tabs[tabId];
         if (!o) {
             o = this.tabs[tabId] = { m3u8_urls: [] };
@@ -54,18 +47,20 @@ workInfoType.prototype = {
             o.m3u8_urls.push(m3u8_url);
         }
 
-        this.set_actual_m3u8_urls_count_text(o);
+        await this.set_actual_m3u8_urls_count_text(o);
     },
-    set_actual_m3u8_urls_count_text: function (o) {
+    set_actual_m3u8_urls_count_text: async function (o) {
         var txt = ((o && o.m3u8_urls && o.m3u8_urls.length) ? o.m3u8_urls.length + '' : '');
 
-        chrome.action.setBadgeText({ text: txt });
+        await chrome.action.setBadgeText({ text: txt });
     },
 
-    get_m3u8_urls: function () {
-        var o = this.tabs[this.active_tabId];
+    get_m3u8_urls: function (tabId) {
+//---console.log('get_m3u8_urls() => tabId: ' + tabId);
+
+        var o = this.tabs[tabId];
         if (!o) {
-            o = this.tabs[this.active_tabId] = { m3u8_urls: [] };
+            o = this.tabs[tabId] = { m3u8_urls: [] };
         }
         else if (!o.m3u8_urls) {
             o.m3u8_urls = [];

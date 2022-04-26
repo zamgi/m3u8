@@ -4,11 +4,15 @@
     <title>m3u8 file downloader (v3)</title>
     <link type="image/png" rel="shortcut icon" href="m3u8.png" />
     <link type="text/css"  rel="stylesheet"    href="m3u8.css" />
-    <script type="text/javascript" src="workInfoType.js" ></script>
+    <script type="text/javascript" src="workInfoType.js"></script>
     <script type="text/javascript" src="m3u8.js"></script>
 </head>
 <body class="body">
-    <div>(v3)</div>
+    <div class="options_1">
+        <button id="clearUrlList" title="clear url-list" style="display: none">clear</button>
+        <input id="saveUrlListBetweenTabReload" type="checkbox" />
+        <label for="saveUrlListBetweenTabReload">save url-list between tab reload</label>
+    </div>
     <div id="content" class="content"></div>
 </body>
 </html>

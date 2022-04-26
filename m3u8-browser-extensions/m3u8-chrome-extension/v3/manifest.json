@@ -4,9 +4,9 @@
 
   "manifest_version": 3,
 
-  "name": "m3u8 file downloader (v3)",
+  "name"       : "m3u8 file downloader (v3)",
   "description": "m3u8 file downloader chrome extension (v3).",
-  "version": "2.0",
+  "version"    : "2.0",
   "offline_enabled": true,
   "icons": {
     "32": "m3u8.png",
@@ -38,11 +38,9 @@
     "service_worker": "service-worker.js"
   },
 
-  "content_scripts": [
-    {
-      "matches": [ "http://*/*", "https://*/*" ],
-      "js"     : [ "workInfoType.js" ],
-      "run_at" : "document_end"
-    }
-  ]
+  "content_scripts": [{
+    "matches": [ "http://*/*", "https://*/*" ],
+    "js"     : [ "workInfoType.js" ],
+    "run_at" : "document_end"
+  }]
 }

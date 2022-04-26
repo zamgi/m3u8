@@ -18,6 +18,7 @@ td.content {
     text-overflow: ellipsis;
     /*max-width: 550px;*/
 }
+
 h5.found { text-align: left; vertical-align: central; margin: 3px 0 3px 7px; color: forestgreen; }
     h5.found a.download_all { color: forestgreen; }
 h5.not-found { color: maroon; white-space: nowrap; margin-left: 10px; margin-right: 10px; }
@@ -29,3 +30,13 @@ a { outline: none; text-decoration: none; color: dimgrey; }
     a.auto_start_download_all > img { border: 1px solid transparent; border-radius: 2px; }
         a.auto_start_download > img:hover, a.auto_start_download_all > img:hover { border-color: silver; }
     a.auto_start_download_all { margin-left: 5px; }
+
+div.options_1 { background-color: whitesmoke; text-align: right; }
+#clearUrlList { padding: 0 2px; position: absolute; left: 10px; border: 1px silver solid; border-radius: 2px; }
+#clearUrlList:hover { background-color: whitesmoke }
+#clearUrlList:active { background-color: lightgrey; }
+
+div.content_2 { font-size: 0.6em; font-weight: normal; padding: 0 0 5px 15px; }
+div.options_root { padding: 0 0 20px 15px; }
+div.options_2 { background-color: whitesmoke; }
+span.sign { padding: 0 0 15px 15px }
