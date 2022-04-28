@@ -1,12 +1,10 @@
 window.onload = async function () {
     let tabs  = await chrome.tabs.query({ active: true, currentWindow: true });
     let tabId = ((tabs && tabs.length) ? tabs[ 0 ].id : -1);
-//---console.log('window.onload() => tabId: ' + tabId + ', json: ' + JSON.stringify(tabs));
 
     let res = await chrome.storage.local.get();
     let workInfo = new workInfoType(res.workInfo);
 
-    // get m3u8 urls for current active tab
     var m3u8_urls = workInfo.get_m3u8_urls(tabId);
 
     // function render m3u8 urls list
@@ -15,7 +13,7 @@ window.onload = async function () {
     let ch = document.getElementById('saveUrlListBetweenTabReload');
     ch.checked = !!res.saveUrlListBetweenTabReload;    
     ch.addEventListener('click', async function (event) {
-        await chrome.storage.local.set({ saveUrlListBetweenTabReload: this.checked /*ch.checked*/ });
+        await chrome.storage.local.set({ saveUrlListBetweenTabReload: this.checked });
     });
 
     if (m3u8_urls && m3u8_urls.length) {
@@ -23,7 +21,7 @@ window.onload = async function () {
         bt.style.display = '';
         bt.addEventListener('click', async function (event) {
             await workInfo.resetTabUrls(tabId);
-            await chrome.storage.local.set({ workInfo: workInfo });
+
             render_m3u8_urls();
             this.style.display = 'none';
         });

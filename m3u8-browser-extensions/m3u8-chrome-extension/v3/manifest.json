@@ -25,14 +25,12 @@
     "scripting",
     "tabs",
     "webRequest",
+    "webNavigation",
     "background",
     "notifications",
     "nativeMessaging"
   ],
-  "host_permissions": [
-    "http://*/*",
-    "https://*/*"
-  ],
+  "host_permissions": [ "http://*/*", "https://*/*" ],
 
   "background": {
     "service_worker": "service-worker.js"
