@@ -8,21 +8,9 @@ var workInfoType = function (wi) {
 };
 workInfoType.prototype = {
     tabs: {},
-
     save_2_storage: async function () { await chrome.storage.local.set({ workInfo: this }); },
 
-    resetTabUrls: async function (tabId) {
-        var o = this.tabs[tabId];
-        if (!o) {
-            o = this.tabs[tabId] = { m3u8_urls: [] };
-        } else {
-            o.m3u8_urls = [];
-        }
-
-        await this.set_urls_count_text(o, tabId);
-        await this.save_2_storage();
-    },
-    activateTab: async function (tabId) {
+    onActivateTab: async function (tabId) {
         var o = this.tabs[tabId];
         if (!o) {
             o = this.tabs[tabId] = { m3u8_urls: [] };
@@ -31,16 +19,37 @@ workInfoType.prototype = {
             o.m3u8_urls = [];
         }
 
-        await this.set_urls_count_text(o, tabId);
+        await this.set_urls_count_text(tabId, o);
         await this.save_2_storage();
     },
-    removeTab: async function (tabId) {
-        if (tabId || (tabId === 0)) {
-            delete this.tabs[tabId];
+    onRemoveTab: async function (tabId) {
+        delete this.tabs[tabId];
+        await this.save_2_storage();
+    },
+    deleteTab: async function (tabId) {
+        delete this.tabs[tabId];
 
-            await this.set_urls_count_text(null, tabId);
-            await this.save_2_storage();
+        await chrome.action.disable(tabId);
+        await this.set_urls_count_text(tabId, null);
+        await this.save_2_storage();
+    },
+    deleteTabUrls: async function (tabId) {
+        delete this.tabs[tabId];
+
+        await this.set_urls_count_text(tabId, null);
+        await this.save_2_storage();
+    },
+    removeEmptyTabs: async function () {
+        let openTabs = (await chrome.tabs.query({ currentWindow: false })).map( tab => tab.id + '' );
+        var has = false;
+        for (var tabId in this.tabs) {
+            var o = this.tabs[tabId];
+            if (!o || !o.m3u8_urls || !o.m3u8_urls.length || (openTabs.indexOf(tabId) === -1)) {
+                delete this.tabs[tabId];
+                has = true;
+            }
         }
+        if (has) await this.save_2_storage();
     },
     add_m3u8_url: async function (tabId, m3u8_url) {
         var o = this.tabs[tabId];
@@ -55,10 +64,10 @@ workInfoType.prototype = {
             o.m3u8_urls.push(m3u8_url);
         }
 
-        await this.set_urls_count_text(o, tabId);
+        await this.set_urls_count_text(tabId, o);
         await this.save_2_storage();
     },
-    set_urls_count_text: async function (o, tabId) {
+    set_urls_count_text: async function (tabId, o) {
         var cnt = ((o && o.m3u8_urls && o.m3u8_urls.length) ? o.m3u8_urls.length : 0);
 
         await chrome.action.setBadgeText({ text: (cnt ? cnt + '' : '') });

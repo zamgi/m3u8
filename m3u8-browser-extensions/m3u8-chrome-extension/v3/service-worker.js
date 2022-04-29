@@ -9,6 +9,9 @@ chrome.webNavigation.onBeforeNavigate.addListener((details) => console.log('(for
     let res = await chrome.storage.local.get();
     if (!res.saveUrlListBetweenTabReload) {
         await (new workInfoType()).save_2_storage();
+    } else {
+        let workInfo = new workInfoType(res.workInfo);
+        await workInfo.removeEmptyTabs();
     }
 })();
 
@@ -28,12 +31,12 @@ chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
 // set handler to tabs
 chrome.tabs.onActivated.addListener(async function (info) {
     let workInfo = await get_workInfo();
-    await workInfo.activateTab(info.tabId);
+    await workInfo.onActivateTab(info.tabId);
 });
 
 chrome.tabs.onRemoved.addListener(async function (tabId) {
     let workInfo = await get_workInfo();
-    await workInfo.removeTab(tabId);
+    await workInfo.onRemoveTab(tabId);
 });
 
 // set handler to tabs
@@ -41,19 +44,16 @@ chrome.tabs.onUpdated.addListener(async function (tabId, info, tab) {
     // if tab not-load
     if (!info || !info.status || (info.status.toLowerCase() !== 'complete')) return;
 
-    let res = await chrome.storage.local.get();
-
     // if user open empty tab or ftp protocol and etc.
     if (!tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
-        let workInfo = new workInfoType(res.workInfo);
-        await workInfo.removeTab(tabId);
-        await chrome.action.disable(tabId);
-        return (0);
+        let res = await chrome.storage.local.get();
+        await (new workInfoType(res.workInfo)).deleteTab(tabId);
     }
-
-    if (!res.saveUrlListBetweenTabReload) {
-        let workInfo = new workInfoType(res.workInfo);
-        await workInfo.resetTabUrls(tabId);
+    else {
+        let res = await chrome.storage.local.get();
+        if (!res.saveUrlListBetweenTabReload) {
+            await (new workInfoType(res.workInfo)).deleteTabUrls(tabId);
+        }
     }    
 });
 
