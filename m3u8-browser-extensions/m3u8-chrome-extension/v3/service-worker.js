@@ -1,8 +1,50 @@
 self.importScripts('workInfoType.js');
 
-console.log('start \'service-worker.js\': ' + new Date().toLocaleString());
+//console.log('start \'service-worker.js\': ' + new Date().toLocaleString());
 //chrome.webNavigation.onBeforeNavigate.addListener((details) => console.log('(for don\'t sleep) onBeforeNavigate(): ' + new Date().toLocaleString() + ', ' + details.url));
-chrome.webNavigation.onBeforeNavigate.addListener((details) => console.log('(for don\'t sleep)'));
+//chrome.webNavigation.onBeforeNavigate.addListener((details) => console.log('(for don\'t sleep)'));
+//------------------------------------------------------------------------------------------------//
+let lifeline, keepAliveNum = 0;
+keepAlive();
+
+chrome.runtime.onConnect.addListener(port => {
+    if (port.name === 'keepAlive') {
+        console.log('keepAlive (for don\'t sleep): ' + (++keepAliveNum));
+        lifeline = port;
+        setTimeout(keepAliveForced, 10e3); // (295e3) 5 minutes minus 5 seconds
+        port.onDisconnect.addListener(keepAliveForced);
+    }
+});
+
+function keepAliveForced() {
+    lifeline?.disconnect();
+    lifeline = null;
+    keepAlive();
+}
+
+async function keepAlive() {
+    if (lifeline) return;
+    for (const tab of await chrome.tabs.query({ url: '*://*/*' })) {
+        try {
+            await chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: () => chrome.runtime.connect({ name: 'keepAlive' }),
+            });
+            chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
+            return;
+        } catch (e) {
+            ;
+        }
+    }
+    chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
+}
+
+async function retryOnTabUpdate(tabId, info, tab) {
+    if (info.url && /^(http|https?):/.test(info.url)) {
+        keepAlive();
+    }
+}
+//------------------------------------------------------------------------------------------------//
 
 //urls-list will be saved between reloads.
 (async () => {
