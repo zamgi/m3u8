@@ -453,5 +453,22 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+
+
+        public static bool TrySelectPath( IWin32Window owner, string selectedPath, string description, out string outSelectedPath )
+        {
+            using ( var d = new SHBrowser() { SelectedPath        = selectedPath,
+                                              Description         = description,
+                                              ShowNewFolderButton = true } )
+            {
+                if ( d.ShowDialog( owner ) == DialogResult.OK )
+                {
+                    outSelectedPath = d.SelectedPath;
+                    return (true);
+                }
+            }
+            outSelectedPath = default;
+            return (false);
+        }
     }
 }

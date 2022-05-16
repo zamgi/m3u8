@@ -199,7 +199,7 @@ namespace m3u8.download.manager.models
 
         [M(O.AggressiveInlining)] public bool HasAnyFinished() => GetAllFinished().Any();
         [M(O.AggressiveInlining)] public IEnumerable< DownloadRow > GetAllFinished() => (from row in GetRows() where (row.Status == DownloadStatus.Finished) select row);
-        
+
         [M(O.AggressiveInlining)] public bool ContainsUrl( string url ) => (!url.IsNullOrEmpty() && _Urls.Contains( url ));
         public bool RemoveRow( DownloadRow row )
         {

@@ -52,6 +52,7 @@
             this.browseOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputFilesWithExternalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeOutputDirectoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllFinishedDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -215,6 +216,7 @@
             this.downloadListUC.SelectionChanged += new m3u8.download.manager.ui.DownloadListUC.SelectionChangedEventHandler(this.downloadListUC_SelectionChanged);
             this.downloadListUC.OutputFileNameClick += new m3u8.download.manager.ui.DownloadListUC.OutputFileNameClickEventHandler(this.downloadListUC_OutputFileNameClick);
             this.downloadListUC.OutputDirectoryClick += new m3u8.download.manager.ui.DownloadListUC.OutputDirectoryClickEventHandler(this.downloadListUC_OutputDirectoryClick);
+            this.downloadListUC.IsDrawCheckMark += new DownloadListUC.IsDrawCheckMarkDelegate(this.downloadListUC_IsDrawCheckMark);
             // 
             // logUC
             // 
@@ -235,6 +237,7 @@
                 this.browseOutputFileMenuItem,
                 this.openOutputFileMenuItem,
                 this.openOutputFilesWithExternalMenuItem,
+                this.changeOutputDirectoryMenuItem,
                 s9,
                 this.deleteAllFinishedDownloadMenuItem,
                 s10,
@@ -296,7 +299,13 @@
             // 
             this.openOutputFilesWithExternalMenuItem.ShortcutKeyDisplayString = "(Ctrl + E)";
             this.openOutputFilesWithExternalMenuItem.Text = "    Open with '%EXTERNAL-PROG%'";
-            this.openOutputFilesWithExternalMenuItem.Click += new System.EventHandler(this.openOutputFilesWithExternalMenuItem_Click);            
+            this.openOutputFilesWithExternalMenuItem.Click += new System.EventHandler(this.openOutputFilesWithExternalMenuItem_Click);
+            // 
+            // changeOutputDirectoryMenuItem
+            // 
+            //---this.changeOutputDirectoryMenuItem.ShortcutKeyDisplayString = "(Ctrl + L)";
+            this.changeOutputDirectoryMenuItem.Text = "    Change output directory";
+            this.changeOutputDirectoryMenuItem.Click += new System.EventHandler(this.changeOutputDirectoryMenuItem_Click);
             // 
             // deleteAllFinishedDownloadMenuItem
             // 
@@ -395,7 +404,8 @@
         private System.Windows.Forms.ToolStripMenuItem browseOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFilesWithExternalMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem deleteAllFinishedDownloadMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeOutputDirectoryMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteAllFinishedDownloadMenuItem;       
         //---private System.Windows.Forms.ToolStripMenuItem allDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseAllDownloadsMenuItem;

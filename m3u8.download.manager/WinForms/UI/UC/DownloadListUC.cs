@@ -37,11 +37,15 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
-        public delegate void MouseClickRightButtonEventHandler( MouseEventArgs e, DownloadRow row );
+        public delegate void MouseClickRightButtonEventHandler( MouseEventArgs e, DownloadRow selectedRow, bool outOfGridArea );
         /// <summary>
         /// 
         /// </summary>
         public delegate void UpdatedSingleRunningRowEventHandler( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate bool IsDrawCheckMarkDelegate( DownloadRow row );
 
         #region [.column index's.]
         private const int OUTPUTFILENAME_COLUMN_INDEX        = 0;
@@ -64,6 +68,7 @@ namespace m3u8.download.manager.ui
         public event MouseClickRightButtonEventHandler   MouseClickRightButton;
         public event UpdatedSingleRunningRowEventHandler UpdatedSingleRunningRow;
         public event EventHandler                        DoubleClickEx;
+        public event IsDrawCheckMarkDelegate             IsDrawCheckMark;
 
         private DownloadListModel _Model;
         //private CellStyle _DefaultCellStyle;
@@ -73,6 +78,7 @@ namespace m3u8.download.manager.ui
         private RowNumbersPainter _RNP;
         private StringFormat      _SF_Left;
         private StringFormat      _SF_Center;
+        private StringFormat      _SF_Right;
         private bool              _UserMade_DGV_SelectionChanged;
         private SortInfo          _LastSortInfo;
         private Action            _RestoreSortIfNeedAction;
@@ -118,6 +124,7 @@ namespace m3u8.download.manager.ui
             _RNP = RowNumbersPainter.Create( DGV );
             _SF_Left   = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Near  , LineAlignment = StringAlignment.Center };
             _SF_Center = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+            _SF_Right  = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Far   , LineAlignment = StringAlignment.Center };
             //----------------------------------------//
 
             CreateColumnsContextMenu();            
@@ -172,6 +179,7 @@ namespace m3u8.download.manager.ui
                 _RNP       .Dispose();
                 _SF_Left   .Dispose();
                 _SF_Center .Dispose();
+                _SF_Right  .Dispose();
             }
             base.Dispose( disposing );
         }
@@ -247,7 +255,7 @@ namespace m3u8.download.manager.ui
             _Model.CollectionChanged    += Model_CollectionChanged;
             _Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
             _Model.RowPropertiesChanged += Model_RowPropertiesChanged;
-            Model_CollectionChanged( _CollectionChangedTypeEnum_.Add );
+            Model_CollectionChanged( _CollectionChangedTypeEnum_.Add, null );
         }
         private void DetachModel()
         {
@@ -271,7 +279,7 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
+        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType, DownloadRow row )
         {
             switch ( collectionChangedType )
             {
@@ -826,6 +834,13 @@ namespace m3u8.download.manager.ui
                 //-5- status text -//
                 rc = e.CellBounds; rc.Inflate( -22, 0 );
                 gr.DrawString( row.Status.ToString(), DGV.Font, Brushes.Black, rc, _SF_Left );
+
+                //-6- -//
+                if ( (IsDrawCheckMark != null) && IsDrawCheckMark( row ) )
+                {
+                    rc = e.CellBounds; //rc.Inflate( -2, 0 );
+                    gr.DrawString( "\u2713", DGV.Font, Brushes.Green, rc, _SF_Right );
+                }
             }
             else if ( e.ColumnIndex == DOWNLOAD_PROGRESS_COLUMN_INDEX )
             {
@@ -912,11 +927,15 @@ namespace m3u8.download.manager.ui
                                (_DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.RowHeader));
                 if ( allowed )
                 {
-                    //DGV.Rows[ ht.RowIndex ].Selected = true;
-
                     if ( e.Button == MouseButtons.Right )
                     {
-                        MouseClickRightButton?.Invoke( e, GetSelectedDownloadRow() );
+                        //select actual row if current selected only one-or-zero row
+                        if ( DGV.SelectedRows.Count <= 1 )
+                        {
+                            SelectOneRow( ht.RowIndex );
+                        }
+
+                        MouseClickRightButton?.Invoke( e, GetSelectedDownloadRow(), outOfGridArea: false );
                     }
                 }
             }
@@ -924,18 +943,8 @@ namespace m3u8.download.manager.ui
             {
                 switch ( e.Button )
                 {
-                    //---call in DGV_MouseDown_4DrawSelectRect()---//
-                    /*case MouseButtons.Left:
-                        if ( _DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.None )
-                        {
-                            DGV.ClearSelection();
-                            //DGV.CurrentCell = null;
-                        }
-                    break;
-                    //*/
-
                     case MouseButtons.Right:
-                        MouseClickRightButton?.Invoke( e, null );
+                        MouseClickRightButton?.Invoke( e, GetSelectedDownloadRow(), outOfGridArea: true );
                     break;
                 }
             }

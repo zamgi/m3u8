@@ -49,6 +49,20 @@ namespace m3u8.download.manager
                 }
             }
         }
+        public static void RemoveIf< T >( this HashSet< T > hs, T t )
+        {
+            if ( t != null )
+            {
+                hs.Remove( t );
+            }
+        }
+        public static void AddIf< T >( this HashSet< T > hs, T t )
+        {
+            if ( t != null )
+            {
+                hs.Add( t );
+            }
+        }
 
         /// <summary>
         /// Copy user settings from previous application version if necessary

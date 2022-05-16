@@ -46,7 +46,7 @@ namespace m3u8.download.manager.ui
         private Action< LogRow > _SetRowInvisibleAction;
         private CellStyle        _DefaultCellStyle_4ResponseReceived;
 
-        private Action< _CollectionChangedTypeEnum_ > _Model_CollectionChangedAction;
+        private Action< _CollectionChangedTypeEnum_, LogRow > _Model_CollectionChangedAction;
         private bool _WasAdjustColumnsWidthSprain; //_VScrollBarVisible;
 
         private LogRowsHeightStorer _LogRowsHeightStorer;
@@ -59,7 +59,7 @@ namespace m3u8.download.manager.ui
             //----------------------------------------------//
 
             _SetRowInvisibleAction = new Action< LogRow >( SetRowInvisible );
-            _Model_CollectionChangedAction = new Action< _CollectionChangedTypeEnum_ >( Model_CollectionChanged );
+            _Model_CollectionChangedAction = new Action< _CollectionChangedTypeEnum_, LogRow >( Model_CollectionChanged );
 
             //----------------------------------------------//
             _RNP = RowNumbersPainter.Create( DGV, useSelectedBackColor: true, useColumnsHoverHighlight: false );
@@ -211,7 +211,7 @@ namespace m3u8.download.manager.ui
                 _Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
                 _Model.CollectionChanged    += Model_CollectionChanged;
                 _Model.RowPropertiesChanged += Model_RowPropertiesChanged;
-                Model_CollectionChanged( _CollectionChangedTypeEnum_.Add );
+                Model_CollectionChanged( _CollectionChangedTypeEnum_.Add, null );
                 SetRowsVisiblity( true );
                 this.Visible = true;
             }
@@ -242,11 +242,11 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
+        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType, LogRow row )
         {
             if ( this.InvokeRequired )
             {
-                this.BeginInvoke( _Model_CollectionChangedAction, collectionChangedType );
+                this.BeginInvoke( _Model_CollectionChangedAction, collectionChangedType, row );
                 return;
             }
 

@@ -48,8 +48,11 @@ namespace System.Windows.Forms
 
             if ( this.HitTest( e.X, e.Y ).Type == DataGridViewHitTestType.None )
             {
-                this.ClearSelection();
-                //this.CurrentCell = null;
+                if ( e.Button == MouseButtons.Left )
+                {
+                    this.ClearSelection();
+                    //this.CurrentCell = null;
+                }
 
                 _DrawSelectRect = (e.Button == MouseButtons.Left);
                 _SelectVerticalScrollingOffset = this.VerticalScrollingOffset;
