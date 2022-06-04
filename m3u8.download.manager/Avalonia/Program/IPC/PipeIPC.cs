@@ -30,7 +30,7 @@ namespace m3u8.download.manager.ipc
 
                 Task.Run( async () =>
                 {
-                    for ( ; ; )
+                    for (; ; )
                     {
                         using ( var pipeServer = new NamedPipeServerStream( pipeName, PipeDirection.In ) )
                         {
