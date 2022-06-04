@@ -15,11 +15,15 @@ chrome.runtime.onConnect.addListener(port => {
         port.onDisconnect.addListener(keepAliveForced);
     }
 });
+chrome.runtime.onSuspend.addListener(async () => {
+    console.log('onSuspend-unloading');
+    await keepAliveForced();
+});
 
-function keepAliveForced() {
+async function keepAliveForced() {
     lifeline?.disconnect();
     lifeline = null;
-    keepAlive();
+    await keepAlive();
 }
 
 async function keepAlive() {
@@ -41,7 +45,7 @@ async function keepAlive() {
 
 async function retryOnTabUpdate(tabId, info, tab) {
     if (info.url && /^(http|https?):/.test(info.url)) {
-        keepAlive();
+        await keepAlive();
     }
 }
 //------------------------------------------------------------------------------------------------//
