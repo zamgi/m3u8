@@ -177,6 +177,12 @@ namespace m3u8.download.manager.ui
         {
             base.OnClosing( e );
 
+            if ( this.IsWaitBannerShown() )
+            {
+                e.Cancel = true;
+                return;
+            }
+
             if ( (DialogResult == DialogResult.OK) || (DialogResult == DialogResult.Yes) )
             {
                 if ( this.M3u8FileUrl.IsNullOrWhiteSpace() )
@@ -284,6 +290,8 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+
+        public bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
         #endregion
 
         #region [.text-boxes.]

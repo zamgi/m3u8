@@ -15,10 +15,10 @@ using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
-using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__in.ReceivedInputParamsArrayEventHandler;
-using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__in.ReceivedInputParamsArrayEventHandler;
+using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 
 namespace m3u8.download.manager.ui
 {
@@ -158,6 +158,16 @@ namespace m3u8.download.manager.ui
         {
             base.OnClosing( e );
 
+            #region comm. cancel if WaitBanner shown.
+            /*
+            if ( this.IsWaitBannerShown() )
+            {
+                e.Cancel = true;
+                return;
+            }
+            //*/
+            #endregion
+
             //still downloading?
             if ( _DownloadController.IsDownloading )
             {
@@ -165,6 +175,7 @@ namespace m3u8.download.manager.ui
                 {
                     this.WindowState = FormWindowState.Normal;
                 }
+
                 if ( this.MessageBox_ShowQuestion( "Dou you want to _cancel_ all downloading and exit ?", _APP_TITLE_, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes )
                 {
                     const int WAIT_Milliseconds = 10_000;
@@ -873,6 +884,8 @@ namespace m3u8.download.manager.ui
                 openedForm.ActivateAfterCloseOther();
             }
         }
+
+        private bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
         #endregion
 
         #region [.menu.]

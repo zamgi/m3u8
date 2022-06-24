@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia;
+
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -115,50 +115,6 @@ namespace m3u8.download.manager.ui
         private bool _IsInWaitingForOtherAppInstanceFinished;
         public void WaitingForOtherAppInstanceFinished() => _IsInWaitingForOtherAppInstanceFinished = true;
 
-        public static WaitBannerForm Create( Window owner, CancellationTokenSource cts, int visibleDelayInMilliseconds ) => Create( owner, cts, CAPTION_TEXT, visibleDelayInMilliseconds );
-        public static WaitBannerForm Create( Window owner, CancellationTokenSource cts, string captionText = CAPTION_TEXT, int? visibleDelayInMilliseconds = null )
-        {
-            if ( owner == null ) throw (new ArgumentNullException( nameof(owner) ));
-            if ( cts   == null ) throw (new ArgumentNullException( nameof(cts) ));
-            //------------------------------------------------------------------------//
-
-            //parent.SuspendDrawing();
-            //try
-            //{
-                var form = new WaitBannerForm()
-                {
-                    _CancellationTokenSource    = cts,
-                    _CaptionText                = captionText,
-                    _VisibleDelayInMilliseconds = visibleDelayInMilliseconds,
-                    Owner                       = owner,
-                };
-                form.captionLabel.Text = captionText;
-
-                /*
-                if ( visibleDelayInMilliseconds.HasValue )
-                {
-                    await Task.Delay( visibleDelayInMilliseconds.Value );
-                    //form.IsVisible = false;
-                    //form._Timer.Interval = Math.Min( 100, visibleDelayInMilliseconds.Value );
-                    //form._Timer.Enabled  = true;
-                }
-                form.Show();
-                */
-
-                //parent.Controls.Add( form );
-                //form.BringToFront();
-                //form.Anchor = AnchorStyles.None;
-                //form.Location = new Point( (parent.Width - form.Width) / 2, (parent.Height - form.Height) / 2 );
-                //Application.DoEvents();
-                return (form);
-
-            //}
-            //finally
-            //{
-            //    parent.ResumeDrawing();
-            //}
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -194,6 +150,35 @@ namespace m3u8.download.manager.ui
                     _Form.Show();
                 }
             }
+            public WaitBannerFormHolder( WaitBannerForm form, Window owner, int? visibleDelayInMilliseconds )
+            {
+                _Form = form;
+
+                if ( visibleDelayInMilliseconds.HasValue )
+                {
+                    void show_NoThrow()
+                    {
+                        try
+                        {
+                            _Form?.Show( owner );
+                        }
+                        catch ( Exception ex )
+                        {
+                            Debug.WriteLine( ex );
+                        }
+                    };
+
+                    Task.Run( async () =>
+                    {
+                        await Task.Delay( visibleDelayInMilliseconds.Value );
+                        await Dispatcher.UIThread.InvokeAsync( show_NoThrow );
+                    });
+                }
+                else
+                {
+                    _Form.Show( owner );
+                }
+            }
             public void Dispose()
             {
                 if ( _Form != null )
@@ -222,10 +207,11 @@ namespace m3u8.download.manager.ui
                 _CaptionText                = captionText,
                 _VisibleDelayInMilliseconds = visibleDelayInMilliseconds,
                 Owner                       = owner,
+                WindowStartupLocation       = WindowStartupLocation.CenterOwner,
             };
             form.captionLabel.Text = captionText;
 
-            return (new WaitBannerFormHolder( form, visibleDelayInMilliseconds ));
+            return (new WaitBannerFormHolder( form, owner, visibleDelayInMilliseconds ));
         }
         #endregion
     }

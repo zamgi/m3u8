@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -122,6 +123,16 @@ namespace m3u8.download.manager.ui
             {
                 _Settings.OutputFileDirectory = this.OutputDirectory;
                 _Settings.SaveNoThrow();
+            }
+        }
+        protected override void OnClosing( CancelEventArgs e )
+        {
+            base.OnClosing( e );
+
+            if ( this.IsWaitBannerShown() )
+            {
+                e.Cancel = true;
+                return;
             }
         }
         protected async override void OnKeyDown( KeyEventArgs e )
@@ -255,6 +266,8 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.Start Download.]
+        private bool IsWaitBannerShown() => !this.IsEnabled;
+
         private async Task< bool > IsValid()
         {
             if ( this.M3u8FileUrl.IsNullOrWhiteSpace() )

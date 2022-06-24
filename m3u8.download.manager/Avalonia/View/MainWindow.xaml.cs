@@ -230,6 +230,16 @@ namespace m3u8.download.manager.ui
 
             base.OnClosing( e );
 
+            #region comm. cancel if WaitBanner shown.
+            /*
+            if ( this.IsWaitBannerShown() )
+            {
+                e.Cancel = true;
+                return;
+            }
+            //*/
+            #endregion
+
             //still downloading?
             if ( _VM.DownloadController.IsDownloading )
             {
@@ -775,6 +785,8 @@ return;
             }, ct );
             return (task);
         }
+
+        private bool IsWaitBannerShown() => !this.IsEnabled;
         #endregion
 
         #region [.menu.]
