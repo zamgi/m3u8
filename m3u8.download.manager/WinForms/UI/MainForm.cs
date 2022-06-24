@@ -148,8 +148,9 @@ namespace m3u8.download.manager.ui
                 AddNewDownloads( _InputParamsArray );
                 _InputParamsArray = null;
             }
-            else
-            if ( Extensions.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) )
+            else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() && 
+                       Extensions.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) 
+                    )
             {
                 AddNewDownload( (m3u8FileUrls.FirstOrDefault(), false) );
             }

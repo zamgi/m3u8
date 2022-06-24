@@ -46,7 +46,7 @@ namespace m3u8.download.manager.ui
         }
         public AddNewDownloadForm( DownloadController dc, SettingsPropertyChangeController sc, string m3u8FileUrl, (int n, int total)? seriesInfo = null ) : this()
         {
-            _Settings = sc.Settings;
+            _Settings          = sc.Settings;
             _DownloadListModel = dc?.Model;
 
             _Initial_M3u8FileUrl = m3u8FileUrl;
