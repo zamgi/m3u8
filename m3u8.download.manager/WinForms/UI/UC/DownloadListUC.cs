@@ -479,7 +479,7 @@ namespace m3u8.download.manager.ui
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
-                    var speedText = default(string);
+                    string speedText;
                     //if ( downloadBytes < 1_000   ) speedText = (downloadBytes / elapsedSeconds).ToString("N2") + " bit/s";
                     if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
                     else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
@@ -495,16 +495,18 @@ namespace m3u8.download.manager.ui
                 return ("-");
             }
 
+            static string to_text( float f ) => f.ToString( (f == Math.Ceiling( f )) ? "N0" : "N2" );
+
             const float KILOBYTE = 1024;
             const float MEGABYTE = KILOBYTE * KILOBYTE;
             const float GIGABYTE = MEGABYTE * KILOBYTE;
 
             if ( GIGABYTE < size )
-                return ((size / GIGABYTE).ToString("N2") + " GB");
+                return (to_text( size / GIGABYTE ) + " GB");
             if ( MEGABYTE < size )
-                return ((size / MEGABYTE).ToString("N2") + " MB");
+                return (to_text( size / MEGABYTE) + " MB");
             if ( KILOBYTE < size )
-                return ((size / KILOBYTE).ToString("N2") + " KB");
+                return (to_text( size / KILOBYTE ) + " KB");
             return ((size / KILOBYTE).ToString("N1") + " KB");
         }
         [M(O.AggressiveInlining)] private static string GetApproxRemainedBytesText( DownloadRow row )

@@ -160,6 +160,8 @@ namespace m3u8.download.manager.ipc
             private const string M3U8_FILE_URL__PARAM       = "m3u8FileUrl=";
             private const string AUTO_START_DOWNLOAD__PARAM = "autoStartDownload=";
 
+            public const string CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG = "CREATE_AS_BREAKAWAY_FROM_JOB";
+
             public static BrowserTypeEnum GetBrowserType( string[] args )
             {
                 if ( args.Any( a => a.StartsWith( CHROME_PREAMBLE, StringComparison.InvariantCultureIgnoreCase ) ) ) //chrome
@@ -175,8 +177,7 @@ namespace m3u8.download.manager.ipc
                 return (BrowserTypeEnum.NoBrowser);
             }
 
-            public static string Create4PipeIPC( (string m3u8FileUrl, bool autoStartDownload)[] array )
-                => string.Join( "\0\0", from p in array select $"{p.m3u8FileUrl}\0{p.autoStartDownload}" );
+            public static string Create4PipeIPC( (string m3u8FileUrl, bool autoStartDownload)[] array ) => string.Join( "\0\0", from p in array select $"{p.m3u8FileUrl}\0{p.autoStartDownload}" );
             public static bool TryParse4PipeIPC_Multi( string pipeIpcCommandLine, out (string m3u8FileUrl, bool autoStartDownload)[] array )
             {
                 if ( pipeIpcCommandLine != null )
@@ -220,6 +221,8 @@ namespace m3u8.download.manager.ipc
             //public static string Create( in (string m3u8FileUrl, bool autoStartDownload) p ) => $"{M3U8_FILE_URL__PARAM}\"{p.m3u8FileUrl}\" {AUTO_START_DOWNLOAD__PARAM}\"{p.autoStartDownload}\"";
             //public static string Create( string executeFileName, in (string m3u8FileUrl, bool autoStartDownload) p ) => $"\"{executeFileName}\" {M3U8_FILE_URL__PARAM}\"{p.m3u8FileUrl}\" {AUTO_START_DOWNLOAD__PARAM}\"{p.autoStartDownload}\"";
             public static string Create( string executeFileName ) => $"\"{executeFileName}\"";
+            public static string Create_4_CreateAsBreakawayFromJob( string executeFileName ) => $"\"{executeFileName}\" {CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG}";
+            public static bool Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() => (Environment.GetCommandLineArgs()?.Any( a => a == CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG )).GetValueOrDefault();
             public static bool TryParse( string[] args, out (string m3u8FileUrl, bool autoStartDownload) p )
             {
                 p.m3u8FileUrl       = args.TryGetCmdArg( M3U8_FILE_URL__PARAM );

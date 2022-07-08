@@ -11,9 +11,9 @@ using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 
 using m3u8.download.manager.models;
-using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 
 namespace m3u8.download.manager.ui
 {
@@ -32,13 +32,13 @@ namespace m3u8.download.manager.ui
         public delegate void MouseClickRightButtonEventHandler( Point pt, DownloadRow row );
 
         #region [.field's.]
-        public event DownloadRowEventHandler SelectionChanged;
-        public event DownloadRowEventHandler OutputFileNameClick;
-        public event DownloadRowEventHandler OutputDirectoryClick;
-        public event DownloadRowEventHandler UpdatedSingleRunningRow;
+        public event DownloadRowEventHandler           SelectionChanged;
+        public event DownloadRowEventHandler           OutputFileNameClick;
+        public event DownloadRowEventHandler           OutputDirectoryClick;
+        public event DownloadRowEventHandler           UpdatedSingleRunningRow;
         public event MouseClickRightButtonEventHandler MouseClickRightButton;
-        public event EventHandler            DoubleClickEx;
-        //---public event EventHandler            EnterKeyDown;
+        public event EventHandler                      DoubleClickEx;
+        //---public event EventHandler                      EnterKeyDown;
 
         private DataGrid DGV;
         private DownloadListModel _Model;
@@ -54,6 +54,7 @@ namespace m3u8.download.manager.ui
             DGV.SelectionChanged   += DGV_SelectionChanged;
             DGV.CellPointerPressed += DGV_CellPointerPressed;
             DGV.DoubleTapped       += (s, e) => DoubleClickEx?.Invoke( s, e );
+            DGV.PointerPressed     += DGV_PointerPressed;
             //---DGV.KeyDown            += DGV_KeyDown;            
 
             #region comm.
@@ -102,6 +103,20 @@ namespace m3u8.download.manager.ui
             //} 
             #endregion
         }
+        private void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
+        {
+            var pp = e.GetCurrentPoint( null );
+            if ( pp.Properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed )
+            {
+                var evnt = MouseClickRightButton;
+                if ( evnt != null )
+                {
+                    e.Pointer.Capture( null );
+                    e.Handled = true;
+                    evnt( pp.Position, row: null/*this.GetSelectedDownloadRow()*/ );
+                }
+            }
+        }
         private void DGV_CellPointerPressed( object sender, DataGridCellPointerPressedEventArgs e )
         {
             const int OutputFileName_Column_DisplayIndex  = 0;
@@ -138,7 +153,7 @@ namespace m3u8.download.manager.ui
                 break;
 
                 case PointerUpdateKind.RightButtonPressed: //MouseButton.Right:
-                    {                        
+                    {
                         var evnt = MouseClickRightButton;
                         if ( evnt != null )
                         {
@@ -222,11 +237,7 @@ namespace m3u8.download.manager.ui
                 //}
             }
         }
-
-        //private void Tb_PropertyChanged( object sender, AvaloniaPropertyChangedEventArgs e )
-        //{
-        //    Debug.WriteLine( e.Property.ToString() );
-        //}
+        //private void Tb_PropertyChanged( object sender, AvaloniaPropertyChangedEventArgs e ) => Debug.WriteLine( e.Property.ToString() );
 
         internal DownloadRow GetSelectedDownloadRow() => (DGV.SelectedItem as DownloadRow);
         internal bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );
@@ -552,7 +563,7 @@ namespace m3u8.download.manager.ui
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
-                    var speedText = default(string);
+                    string speedText;
                     //if ( downloadBytes < 1_000   ) speedText = (downloadBytes / elapsedSeconds).ToString("N2") + " bit/s";
                     if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
                     else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
@@ -568,16 +579,18 @@ namespace m3u8.download.manager.ui
                 return ("-");
             }
 
+            static string to_text( float f ) => f.ToString( (f == Math.Ceiling( f )) ? "N0" : "N2" );
+
             const float KILOBYTE = 1024;
             const float MEGABYTE = KILOBYTE * KILOBYTE;
             const float GIGABYTE = MEGABYTE * KILOBYTE;
 
             if ( GIGABYTE < size )
-                return ((size / GIGABYTE).ToString("N2") + " GB");
+                return (to_text( size / GIGABYTE ) + " GB");
             if ( MEGABYTE < size )
-                return ((size / MEGABYTE).ToString("N2") + " MB");
+                return (to_text( size / MEGABYTE) + " MB");
             if ( KILOBYTE < size )
-                return ((size / KILOBYTE).ToString("N2") + " KB");
+                return (to_text( size / KILOBYTE ) + " KB");
             return ((size / KILOBYTE).ToString("N1") + " KB");
         }
         [M(O.AggressiveInlining)] internal static string GetApproxRemainedBytesText( DownloadRow row )

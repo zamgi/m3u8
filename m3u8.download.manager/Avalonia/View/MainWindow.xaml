@@ -61,13 +61,11 @@
           </MenuItem.Header>
         </MenuItem>
 
-        <!--
         <MenuItem x:Name="showLogToolButton" ToolTip.Tip="Show/Hide download log" Padding="0" Margin="0,0,5,0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/log.png" />
           </MenuItem.Header>
         </MenuItem>
-        -->
 
         <MenuItem x:Name="copyToolButton" ToolTip.Tip="Copy  (Ctrl + C)" Padding="0">
           <MenuItem.Header>
@@ -114,8 +112,7 @@
     
     <local:DownloadListUC x:Name="downloadListUC" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
     <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
-    <local:LogUC x:Name="logUC" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />
-    
+    <local:LogUC x:Name="logUC" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />    
   </Grid>
 
   <Window.Resources>

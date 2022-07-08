@@ -177,8 +177,7 @@ namespace m3u8.download.manager.ipc
                 return (BrowserTypeEnum.NoBrowser);
             }
 
-            public static string Create4PipeIPC( (string m3u8FileUrl, bool autoStartDownload)[] array )
-                => string.Join( "\0\0", from p in array select $"{p.m3u8FileUrl}\0{p.autoStartDownload}" );
+            public static string Create4PipeIPC( (string m3u8FileUrl, bool autoStartDownload)[] array ) => string.Join( "\0\0", from p in array select $"{p.m3u8FileUrl}\0{p.autoStartDownload}" );
             public static bool TryParse4PipeIPC_Multi( string pipeIpcCommandLine, out (string m3u8FileUrl, bool autoStartDownload)[] array )
             {
                 if ( pipeIpcCommandLine != null )

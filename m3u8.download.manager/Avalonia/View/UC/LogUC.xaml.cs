@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
@@ -50,9 +51,9 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.Model.]
-        private static IEnumerable< LogRow > GetRowsNotNone( IEnumerable< LogRow > rows ) => from row in rows
-                                                                                             where (row.RequestRowType != RequestRowTypeEnum.None)
-                                                                                             select row;
+        private static IEnumerable< LogRow > GetRowsDenyNone( IEnumerable< LogRow > rows ) => from row in rows
+                                                                                              where (row.RequestRowType != RequestRowTypeEnum.None)
+                                                                                              select row;
         private static IEnumerable< LogRow > GetRowsErrorOrFinish( IEnumerable< LogRow > rows ) => from row in rows
                                                                                                    where (row.RequestRowType == RequestRowTypeEnum.Error) ||
                                                                                                          (row.RequestRowType == RequestRowTypeEnum.Finish)
@@ -65,7 +66,10 @@ namespace m3u8.download.manager.ui
                 await Task.Delay( 1 );
                 try
                 {
-                    DGV.ScrollIntoView( _Model[ _Model.RowsCount - 1 ], DGV.Columns[ 0 ] );
+                    if ( (_Model != null) && (0 < _Model.RowsCount) )
+                    {
+                        DGV.ScrollIntoView( _Model[ _Model.RowsCount - 1 ], DGV.Columns[ 0 ] );
+                    }
                 }
                 catch ( Exception ex )
                 {

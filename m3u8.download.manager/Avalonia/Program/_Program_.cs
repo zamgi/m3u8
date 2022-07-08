@@ -58,7 +58,7 @@ namespace m3u8.download.manager
                                 if ( sca.IsFirstCopy )
                                 {
                                     var executeFileName = Process.GetCurrentProcess().MainModule.FileName;
-                                    var cmdLine         = BrowserIPC.CommandLine.Create( executeFileName );
+                                    var cmdLine         = BrowserIPC.CommandLine.Create_4_CreateAsBreakawayFromJob/*Create*/( executeFileName );
 
                                     sca.Release(); //!!!
 

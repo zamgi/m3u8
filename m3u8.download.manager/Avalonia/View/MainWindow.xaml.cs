@@ -15,10 +15,11 @@ using Avalonia.Threading;
 using MessageBox.Avalonia.Enums;
 
 using m3u8.download.manager.infrastructure;
+using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
-using _Resources_ = m3u8.download.manager.Properties.Resources;
+using _Resources_                 = m3u8.download.manager.Properties.Resources;
 
 namespace m3u8.download.manager.ui
 {
@@ -36,7 +37,7 @@ namespace m3u8.download.manager.ui
         private MenuItem cancelDownloadToolButton;
         private MenuItem deleteDownloadToolButton;
         private MenuItem deleteAllFinishedDownloadToolButton;
-        //private MenuItem showLogToolButton;
+        private MenuItem showLogToolButton;
         private MenuItem copyToolButton;
         private MenuItem pasteToolButton;
         private DegreeOfParallelismMenuItem degreeOfParallelismToolButton;
@@ -85,13 +86,13 @@ namespace m3u8.download.manager.ui
             #endregion
 
             #region [.menu.]
-            startDownloadToolButton = this.Find< MenuItem >( nameof(startDownloadToolButton)  ); startDownloadToolButton .Click += startDownloadToolButton_Click;
+            startDownloadToolButton  = this.Find< MenuItem >( nameof(startDownloadToolButton)  ); startDownloadToolButton .Click += startDownloadToolButton_Click;
             pauseDownloadToolButton  = this.Find< MenuItem >( nameof(pauseDownloadToolButton)  ); pauseDownloadToolButton .Click += pauseDownloadToolButton_Click;
             cancelDownloadToolButton = this.Find< MenuItem >( nameof(cancelDownloadToolButton) ); cancelDownloadToolButton.Click += cancelDownloadToolButton_Click;
             deleteDownloadToolButton = this.Find< MenuItem >( nameof(deleteDownloadToolButton) ); deleteDownloadToolButton.Click += deleteDownloadToolButton_Click;
             deleteAllFinishedDownloadToolButton = this.Find< MenuItem >( nameof(deleteAllFinishedDownloadToolButton) ); deleteAllFinishedDownloadToolButton.Click += deleteAllFinishedDownloadToolButton_Click;
 
-            //showLogToolButton = this.Find< MenuItem >( nameof(showLogToolButton) ); showLogToolButton.Click += showLogToolButton_Click;
+            showLogToolButton = this.Find< MenuItem >( nameof(showLogToolButton) ); showLogToolButton.Click += showLogToolButton_Click;
             copyToolButton    = this.Find< MenuItem >( nameof(copyToolButton)    ); copyToolButton   .Click += copyToolButton_Click;
             pasteToolButton   = this.Find< MenuItem >( nameof(pasteToolButton)   ); pasteToolButton  .Click += pasteToolButton_Click;
 
@@ -195,7 +196,7 @@ namespace m3u8.download.manager.ui
                 _VM.AddCommand.AddNewDownloads( _InputParamsArray );
                 _InputParamsArray = null;
             }
-            else
+            else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() )
             {
                 var (success, m3u8FileUrls) = await Extensions.TryGetM3u8FileUrlsFromClipboard();
                 if ( success )
@@ -795,13 +796,39 @@ return;
 #else
         private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => _VM.AddCommand.AddNewDownload( (null, false) );
 #endif
-        //private void showLogToolButton_Click( object sender, EventArgs e )
-        //{
-        //    var showLog = showLogToolButton.Checked;
-        //    _VM.SettingsController.ShowLog = showLog;
-        //    mainSplitContainer.Panel2Collapsed = !showLog; //m3u8FileResultUC.Visible = showLog;
-        //    logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
-        //}
+        private GridLength? _Last_logUC_row_Height;
+        private void showLogToolButton_Click( object sender, EventArgs e )
+        {
+            /*
+            var showLog = showLogToolButton.Checked;
+            _VM.SettingsController.ShowLog = showLog;
+            mainSplitContainer.Panel2Collapsed = !showLog; //m3u8FileResultUC.Visible = showLog;
+            logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
+            //*/
+
+            if ( logUC.Parent is Grid grid )
+            {
+                var row = grid.RowDefinitions.LastOrDefault();
+                if ( row != null )
+                {
+                    var showLog = (logUC.IsVisible = !logUC.IsVisible);
+                    if ( showLog )
+                    {
+                        row.Height    = _Last_logUC_row_Height.GetValueOrDefault( new GridLength( default, GridUnitType.Star ) );
+                        row.MinHeight = 70;
+                        showLogToolButton.Opacity = 1;
+                    }
+                    else
+                    {
+                        _Last_logUC_row_Height = row.Height;
+                        row.Height    = new GridLength( 0, GridUnitType.Pixel );
+                        row.MinHeight = 0;
+                        showLogToolButton.Opacity = 0.5;
+                    }
+                    logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
+                }
+            }
+        }
         private async void copyToolButton_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
@@ -873,12 +900,12 @@ return;
                 SetAllDownloadsMenuItemsEnabled( allowedAll );
 
                 var is_zero = (new Random().Next( 0, 2 ) == 0);
-                var ctrl = is_zero ? (Control) this : downloadListUC;
+                var ctrl    = is_zero ? (Control) this : downloadListUC;
                 pt = is_zero ? pt : this.TranslatePoint( pt, downloadListUC ).GetValueOrDefault( pt );
 
                 mainContextMenu.HorizontalOffset = pt.X;
                 mainContextMenu.VerticalOffset   = pt.Y;
-                mainContextMenu.PlacementMode = PlacementMode.Left;
+                mainContextMenu.PlacementMode    = PlacementMode.Left;
                 mainContextMenu.Open( ctrl );
             }
         }
