@@ -191,6 +191,8 @@ namespace m3u8.download.manager.ui
             downloadListUC.Focus();
             #endregion
 
+            if ( !_VM.SettingsController.ShowLog ) showLogToolButton_Click( showLogToolButton, EventArgs.Empty );
+
             if ( _InputParamsArray.AnyEx() )
             {
                 _VM.AddCommand.AddNewDownloads( _InputParamsArray );
@@ -799,12 +801,13 @@ return;
         private GridLength? _Last_logUC_row_Height;
         private void showLogToolButton_Click( object sender, EventArgs e )
         {
+            #region comm.
             /*
-            var showLog = showLogToolButton.Checked;
+            var showLog = (showLogToolButton.Opacity == 1); //showLogToolButton.Checked;
             _VM.SettingsController.ShowLog = showLog;
-            mainSplitContainer.Panel2Collapsed = !showLog; //m3u8FileResultUC.Visible = showLog;
             logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
-            //*/
+            //*/ 
+            #endregion
 
             if ( logUC.Parent is Grid grid )
             {
@@ -812,6 +815,7 @@ return;
                 if ( row != null )
                 {
                     var showLog = (logUC.IsVisible = !logUC.IsVisible);
+                    _VM.SettingsController.ShowLog = showLog;
                     if ( showLog )
                     {
                         row.Height    = _Last_logUC_row_Height.GetValueOrDefault( new GridLength( default, GridUnitType.Star ) );
