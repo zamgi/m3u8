@@ -1,24 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>m3u8.download.manager</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath> -->
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <StartupObject>m3u8.download.manager.Program</StartupObject>
     <ApplicationIcon>Resources\m3u8_32x36.ico</ApplicationIcon>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>bin\</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <!--<RetainVMGarbageCollection>true</RetainVMGarbageCollection>-->
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+  </PropertyGroup>  
+  
+  <PropertyGroup>
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   
@@ -37,6 +40,7 @@
   </ItemGroup>
    
   <ItemGroup>
+    <None Remove=".gitignore" />
     <None Remove="Resources\m3u.jpg" />
     <None Remove="Resources\m3u8.png" />
     <None Remove="Resources\m3u8_148x166.ico" />

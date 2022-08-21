@@ -38,8 +38,8 @@ namespace m3u8.download.manager.ui
         private Action< DownloadRow, string >    _DownloadListModel_RowPropertiesChangedAction;
         private bool                             _ShowDownloadStatistics;
         private HashSet< string >                _ExternalProgQueue;
-#if NET5_0
-        private static string _APP_TITLE_ => Resources.APP_TITLE__NET50;
+#if NETCOREAPP
+        private static string _APP_TITLE_ => Resources.APP_TITLE__NET_CORE;
 #else
         private static string _APP_TITLE_ => Resources.APP_TITLE;
 #endif 
@@ -1099,7 +1099,7 @@ namespace m3u8.download.manager.ui
             var row = downloadListUC.GetSelectedDownloadRow();
             if ( (row != null) && row.IsFinished() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
             {
-#if NET5_0
+#if NETCOREAPP
                 using ( Process.Start( new ProcessStartInfo( outputFileName ) { UseShellExecute = true } ) )
                 {
                     ;

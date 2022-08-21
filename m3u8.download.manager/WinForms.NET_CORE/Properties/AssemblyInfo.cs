@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("m3u8.download.manager (NET 5.0)")]
+[assembly: AssemblyTitle("m3u8.download.manager (NET 6.0)")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("zamgi")]
-[assembly: AssemblyProduct("m3u8.download.manager (NET 5.0)")]
+[assembly: AssemblyProduct("m3u8.download.manager (NET 6.0)")]
 [assembly: AssemblyCopyright("Copyright © zamgi 2020")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

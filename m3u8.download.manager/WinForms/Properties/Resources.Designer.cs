@@ -70,11 +70,11 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .m3u8 file download manager (NET 5.0).
+        ///   Looks up a localized string similar to .m3u8 file download manager (NET 6.0).
         /// </summary>
-        internal static string APP_TITLE__NET50 {
+        internal static string APP_TITLE__NET_CORE {
             get {
-                return ResourceManager.GetString("APP_TITLE__NET50", resourceCulture);
+                return ResourceManager.GetString("APP_TITLE__NET_CORE", resourceCulture);
             }
         }
         

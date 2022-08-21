@@ -468,7 +468,7 @@ namespace m3u8
                 Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
 
                 #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
-#if NET5_0
+#if NETCOREAPP
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13);
 #else
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13 | SecurityProtocolType.Ssl3);

@@ -121,7 +121,7 @@ namespace m3u8.download.manager
                         set_SecurityProtocol( spt );
                     }
                     #endregion
-#if NET5_0
+#if NETCOREAPP
                     Application.SetHighDpiMode( HighDpiMode.SystemAware ); 
 #endif
                     Application.EnableVisualStyles();
