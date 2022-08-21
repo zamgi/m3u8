@@ -25,9 +25,9 @@ rd "m3u8.download.manager\Avalonia\bin" /S /Q
 rd "m3u8.download.manager\Avalonia\obj" /S /Q
 rd "m3u8.download.manager\Avalonia\.vs" /S /Q
 
-rd "m3u8.download.manager\WinForms.NET50\bin" /S /Q
-rd "m3u8.download.manager\WinForms.NET50\obj" /S /Q
-rd "m3u8.download.manager\WinForms.NET50\.vs" /S /Q
+rd "m3u8.download.manager\WinForms.NET_CORE\bin" /S /Q
+rd "m3u8.download.manager\WinForms.NET_CORE\obj" /S /Q
+rd "m3u8.download.manager\WinForms.NET_CORE\.vs" /S /Q
 
 rd "m3u8_live_stream_downloader\bin" /S /Q
 rd "m3u8_live_stream_downloader\obj" /S /Q
