@@ -99,10 +99,10 @@
     <Compile Include="Program\IPC\SingleCopyApplication.cs" />
     <Compile Include="Program\IPC\PipeIPC.cs" />
     <Compile Include="Program\IPC\ProcessCreator.cs" />
-    <Compile Include="UI\MainForm.cs">
+    <Compile Include="UI\Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\MainForm.Designer.cs">
+    <Compile Include="UI\Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\Extensions.cs" />

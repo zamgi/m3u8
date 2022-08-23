@@ -410,7 +410,7 @@ namespace m3u8.download.manager.controllers
 
                     //-3-//
                     var anyErrorHappend = false;
-                    var dpsr = await Task.Run( () =>
+                    var dpsr = await Task.Run( async () =>
                     {
                         var rows_Dict = new Dictionary< int, LogRow >( m3u8File.Parts.Count );
 
@@ -464,9 +464,13 @@ namespace m3u8.download.manager.controllers
                             WaitIfPausedEvent        = waitIfPausedEvent,
                             DownloadThreadsSemaphore = downloadThreadsSemaphore,
                             WaitingIfPaused          = () => row.SetStatus( DownloadStatus.Paused ),
+                            //---!!!---// ThrottlerBySpeed         = ,
                         };
-
-                        var result = _m3u8_processor_.DownloadPartsAndSave( in ip );
+#if NETCOREAPP
+                        var result = await _m3u8_processor_.DownloadPartsAndSave_Async( ip ).ConfigureAwait( false );
+#else
+                        var result = _m3u8_processor_.DownloadPartsAndSave( ip );
+#endif
                         return (result);
                     });
 
@@ -540,9 +544,17 @@ namespace m3u8.download.manager.controllers
         }
         public void Pause( DownloadRow row )
         {
-            if ( (row != null) && _Dict.TryGetValue( row, out var t ) )
+            //if ( (row != null) && _Dict.TryGetValue( row, out var t ) )
+            //{
+            //    t.waitIfPausedEvent.Reset_NoThrow();
+            //}
+            if ( row != null )
             {
-                t.waitIfPausedEvent.Reset_NoThrow();
+                if ( _Dict.TryGetValue( row, out var t ) )
+                {
+                    t.waitIfPausedEvent.Reset_NoThrow();
+                }
+                row.SetStatus( DownloadStatus.Paused );
             }
         }
 

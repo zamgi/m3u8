@@ -60,8 +60,8 @@
     <Compile Include="..\WinForms\UI\Forms\SettingsForm.cs" Link="UI\Forms\SettingsForm.cs" />
     <Compile Include="..\WinForms\UI\Forms\SettingsForm.designer.cs" Link="UI\Forms\SettingsForm.designer.cs" />
     <Compile Include="..\WinForms\UI\LogRowsHeightStorer.cs" Link="UI\LogRowsHeightStorer.cs" />
-    <Compile Include="..\WinForms\UI\MainForm.cs" Link="UI\MainForm.cs" />
-    <Compile Include="..\WinForms\UI\MainForm.Designer.cs" Link="UI\MainForm.Designer.cs" />
+    <Compile Include="..\WinForms\UI\Forms\MainForm.cs" Link="UI\Forms\MainForm.cs" />
+    <Compile Include="..\WinForms\UI\Forms\MainForm.Designer.cs" Link="UI\Forms\MainForm.Designer.cs" />
     <Compile Include="..\WinForms\UI\UC\ButtonWithFocusCues.cs" Link="UI\UC\ButtonWithFocusCues.cs" />
     <Compile Include="..\WinForms\UI\UC\DownloadInstanceToolButton.cs" Link="UI\UC\DownloadInstanceToolButton.cs" />
     <Compile Include="..\WinForms\UI\UC\DownloadListUC.cs" Link="UI\UC\DownloadListUC.cs" />

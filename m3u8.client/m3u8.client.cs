@@ -109,9 +109,7 @@ namespace m3u8
     public struct m3u8_file_t
     {
         public IReadOnlyList< m3u8_part_ts > Parts { get; private set; }
-
         public Uri BaseAddress { get; private set; }
-
         public string RawText { get; private set; }
 
         public static m3u8_file_t Parse( string content, Uri baseAddress )

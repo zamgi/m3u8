@@ -629,7 +629,7 @@ return;
             SetDownloadToolButtonsStatus( row );
         }
 
-        private async void DeleteDownload( DownloadRow row, bool deleteOutputFile = true )
+        private async void DeleteDownload( DownloadRow row, bool deleteOutputFile )
         {
             if ( row == null )
             {
@@ -644,8 +644,10 @@ return;
                     using ( var cts = new CancellationTokenSource() )
                     using ( WaitBannerForm.CreateAndShow( this, cts, visibleDelayInMilliseconds: 2_000 ) )
                     {
-                        ProcessDownloadCommand( DownloadCommandEnum.Delete, row );
+                        _VM.DownloadController.Cancel( row );
+
                         await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
+                        ProcessDownloadCommand( DownloadCommandEnum.Delete, row );                        
                     }
                 }
                 catch ( OperationCanceledException ) //( Exception ex ) when (cts.IsCancellationRequested)
@@ -965,7 +967,7 @@ return;
         private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Cancel );
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
-        private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownload( downloadListUC.GetSelectedDownloadRow() );
+        private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownload( downloadListUC.GetSelectedDownloadRow(), deleteOutputFile: true );
 
         private async void browseOutputFileMenuItem_Click( object sender, EventArgs e )
         {

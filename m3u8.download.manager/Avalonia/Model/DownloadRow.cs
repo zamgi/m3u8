@@ -31,8 +31,7 @@ namespace m3u8.download.manager.models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        [M(O.AggressiveInlining)] private void Fire_PropertyChanged_Events( string propertyName )
-            => PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
+        [M(O.AggressiveInlining)] private void Fire_PropertyChanged_Events( string propertyName ) => PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
 
         internal DownloadRow( in (string Url, string OutputFileName, string OutputDirectory) t, DownloadListModel model ) : base( model )
         {

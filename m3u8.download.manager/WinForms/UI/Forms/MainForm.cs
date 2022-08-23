@@ -516,6 +516,7 @@ namespace m3u8.download.manager.ui
 
             SetDownloadToolButtonsStatus( row );
         }
+        private bool downloadListUC_IsDrawCheckMark( DownloadRow row ) => _ExternalProgQueue.Contains( row.GetOutputFullFileName() );
 
         /// <summary>
         /// 
@@ -553,7 +554,7 @@ namespace m3u8.download.manager.ui
                     break;
 
                     case DownloadCommandEnum.Delete:
-                        #region comm. with waiting
+                        #region comm. with waiting.
                         /*
                         using ( var cts = new CancellationTokenSource() )
                         using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1500 ) )
@@ -622,7 +623,7 @@ namespace m3u8.download.manager.ui
                 deleteAllFinishedDownloadToolButton.Enabled = true;
             }
         }
-        private async void DeleteDownload( IReadOnlyList< DownloadRow > rows, bool deleteOutputFile = true )
+        private async void DeleteDownload( IReadOnlyList< DownloadRow > rows, bool deleteOutputFile )
         {
             if ( rows.Count == 0 )
             {
@@ -639,10 +640,12 @@ namespace m3u8.download.manager.ui
                     {
                         foreach ( var row in rows )
                         {
-                            ProcessDownloadCommand( DownloadCommandEnum.Delete, row );
-                            _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                            _DownloadController.Cancel( row );
 
                             await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
+
+                            ProcessDownloadCommand( DownloadCommandEnum.Delete, row );
+                            _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                         }
                     }
                 }
@@ -1081,7 +1084,7 @@ namespace m3u8.download.manager.ui
         private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
-        private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownload( downloadListUC.GetSelectedDownloadRows() );
+        private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownload( downloadListUC.GetSelectedDownloadRows(), deleteOutputFile: true );
 
         private void browseOutputFileMenuItem_Click( object sender, EventArgs e )
         {
@@ -1218,26 +1221,6 @@ namespace m3u8.download.manager.ui
                 ExternalProg_Run( externalProgFilePath, args );
             }
         }
-        private void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
-        {
-            var rows = (from row in downloadListUC.GetSelectedDownloadRows()
-                        where !row.IsFinished()
-                        select row
-                       ).ToList();
-            if ( rows.Any() )
-            {
-                var first_row = rows.First();
-                var descr = (rows.Count == 1) ? $"Select output directory for file: '{first_row.OutputFileName}'" : $"Select output directory for {rows.Count} files";
-                if ( SHBrowser.TrySelectPath( this, first_row.OutputDirectory, descr, out var outputDirectory ) )
-                {
-                    foreach ( var row in rows )
-                    {
-                        changeOutputDirectory( row, outputDirectory );
-                    }
-                    downloadListUC.Invalidate( true );
-                }
-            }
-        }
 
         private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {
@@ -1294,6 +1277,27 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.change OutputFileName & OutputDirectory.]
+        private void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
+        {
+            var rows = (from row in downloadListUC.GetSelectedDownloadRows()
+                        where !row.IsFinished()
+                        select row
+                       ).ToList();
+            if ( rows.Any() )
+            {
+                var first_row = rows.First();
+                var descr = (rows.Count == 1) ? $"Select output directory for file: '{first_row.OutputFileName}'" : $"Select output directory for {rows.Count} files";
+                if ( SHBrowser.TrySelectPath( this, first_row.OutputDirectory, descr, out var outputDirectory ) )
+                {
+                    foreach ( var row in rows )
+                    {
+                        changeOutputDirectory( row, outputDirectory );
+                    }
+                    downloadListUC.Invalidate( true );
+                }
+            }
+        }
+
         private void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
             using ( var f = new ChangeOutputFileForm( row ) )
@@ -1335,9 +1339,7 @@ namespace m3u8.download.manager.ui
             */
             #endregion
         }
-        #endregion
 
-        private bool downloadListUC_IsDrawCheckMark( DownloadRow row ) => _ExternalProgQueue.Contains( row.GetOutputFullFileName() );
         private void changeOutputDirectory( DownloadRow row, string outputDirectory )
         {
             var need_add = _ExternalProgQueue.Remove( row.GetOutputFullFileName() );
@@ -1346,5 +1348,6 @@ namespace m3u8.download.manager.ui
             }
             if ( need_add ) _ExternalProgQueue.Add( row.GetOutputFullFileName() );
         }
+        #endregion
     }
 }

@@ -613,11 +613,11 @@ namespace m3u8.downloader
                                 else
                                 {
                                     var elapsedSeconds = (sw_download.ElapsedMilliseconds / 1000.0);
-                                    if ( (1000 < totalBytesLength) && (2.5 <= elapsedSeconds) )
+                                    if ( (1_024 < totalBytesLength) && (2.5 <= elapsedSeconds) )
                                     {
-                                        //if ( totalBytesLength < 1000   ) speedText = (totalBytesLength / elapsedSeconds).ToString("N2") + " bit/s";
-                                        if ( totalBytesLength < 100000 ) speedText = ((totalBytesLength / elapsedSeconds) / 1000).ToString("N2") + " Kbit/s";
-                                        else                             speedText = ((totalBytesLength / elapsedSeconds) / 1000000).ToString("N1") + " Mbit/s";
+                                        //if ( totalBytesLength < 1_024 ) speedText = (8 * totalBytesLength / elapsedSeconds).ToString("N2") + " bps"; //" bit/s";
+                                        if ( totalBytesLength < 100_024 ) speedText = (8 * (totalBytesLength / elapsedSeconds) /     1_024).ToString("N2") + " Kbps"; //" Kbit/s";
+                                        else                              speedText = (8 * (totalBytesLength / elapsedSeconds) / 1_048_576).ToString("N1") + " Mbps"; //" Mbit/s";
 
                                         responseStepActionLabel.Text += $", [speed: {speedText}]";
                                     }

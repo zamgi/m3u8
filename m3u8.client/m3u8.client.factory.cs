@@ -21,7 +21,6 @@ namespace m3u8.infrastructure
     internal sealed class ICollectionDebugView< T >
     {
         private ICollection< T > _Collection;
-
         public ICollectionDebugView( ICollection< T > collection ) => _Collection = collection ?? throw new ArgumentNullException( nameof(collection) );
 
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
@@ -81,7 +80,7 @@ namespace m3u8.infrastructure
 
         private LRUCache() { }
         public static LRUCache< T > CreateWithLimitMaxValue( int capacity, IEqualityComparer< T > comparer = null )
-            => new LRUCache<T>()
+            => new LRUCache< T >()
             {
                 Limit       = int.MaxValue,
                 _HashSet    = new HashSet< LinkedListNode< T > >( capacity, new LinkedListNode_EqualityComparer( comparer ) ),
@@ -261,7 +260,7 @@ namespace m3u8.infrastructure
 #if NETCOREAPP
             SocketsHttpHandler CreateSocketsHttpHandler( in TimeSpan? _timeout )
             {
-                void set_Protocol( SslClientAuthenticationOptions sslOptions, SslProtocols protocol )
+                static void set_Protocol( SslClientAuthenticationOptions sslOptions, SslProtocols protocol )
                 {
                     try
                     {
@@ -383,11 +382,7 @@ namespace m3u8
 
         private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, in m3u8_client.init_params ip ) => new m3u8_client( in t, in ip );
         private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, int attemptRequestCountByPart = 10 )
-            => Create( in t, new m3u8_client.init_params()
-                             {
-                                AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 )
-                             }
-                     );
+            => Create( in t, new m3u8_client.init_params() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
 
         public static void ForceClearAndDisposeAll() => HttpClientFactory_WithRefCount.ForceClearAndDisposeAll();
     }

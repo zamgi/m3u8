@@ -448,12 +448,12 @@ namespace m3u8.download.manager.ui
             {
                 var elapsedSeconds = ts.TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
-                if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
+                if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
                     string speedText;
-                    //if ( downloadBytes < 1_000 ) speedText = (downloadBytes / elapsedSeconds).ToString("N2") + " bit/s";
-                    if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
-                    else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
+                    //if ( downloadBytes < 1_024 ) speedText = (8 * downloadBytes / elapsedSeconds).ToString("N2") + " bps"; //" bit/s";
+                    if ( downloadBytes < 100_024 ) speedText = (8 * (downloadBytes / elapsedSeconds) /     1_024).ToString("N2") + " Kbps"; //" Kbit/s";
+                    else                           speedText = (8 * (downloadBytes / elapsedSeconds) / 1_048_576).ToString("N1") + " Mbps"; //" Mbit/s";
 
                     downloadInfo += $", [{speedText}]";
                 }
@@ -561,12 +561,12 @@ namespace m3u8.download.manager.ui
             {                
                 var elapsedSeconds = row.GetElapsed().TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
-                if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
+                if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
                     string speedText;
-                    //if ( downloadBytes < 1_000   ) speedText = (downloadBytes / elapsedSeconds).ToString("N2") + " bit/s";
-                    if ( downloadBytes < 100_000 ) speedText = ((downloadBytes / elapsedSeconds) /     1_000).ToString("N2") + " Kbit/s";
-                    else                           speedText = ((downloadBytes / elapsedSeconds) / 1_000_000).ToString("N1") + " Mbit/s";
+                    //if ( downloadBytes < 1_024 ) speedText = (8 * downloadBytes / elapsedSeconds).ToString("N2") + " bps"; //" bit/s";
+                    if ( downloadBytes < 100_024 ) speedText = (8 * (downloadBytes / elapsedSeconds) /     1_024).ToString("N2") + " Kbps"; //" Kbit/s"; //
+                    else                           speedText = (8 * (downloadBytes / elapsedSeconds) / 1_048_576).ToString("N1") + " Mbps"; //" Mbit/s"; //
                     return (speedText);
                 }
             }
