@@ -615,10 +615,7 @@ namespace m3u8.downloader
                                     var elapsedSeconds = (sw_download.ElapsedMilliseconds / 1000.0);
                                     if ( (1_024 < totalBytesLength) && (2.5 <= elapsedSeconds) )
                                     {
-                                        //if ( totalBytesLength < 1_024 ) speedText = (8 * totalBytesLength / elapsedSeconds).ToString("N2") + " bps"; //" bit/s";
-                                        if ( totalBytesLength < 100_024 ) speedText = (8 * (totalBytesLength / elapsedSeconds) /     1_024).ToString("N2") + " Kbps"; //" Kbit/s";
-                                        else                              speedText = (8 * (totalBytesLength / elapsedSeconds) / 1_048_576).ToString("N1") + " Mbps"; //" Mbit/s";
-
+                                        speedText = Extensions.GetSpeedText( totalBytesLength, elapsedSeconds );
                                         responseStepActionLabel.Text += $", [speed: {speedText}]";
                                     }
                                 }

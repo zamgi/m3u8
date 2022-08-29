@@ -92,6 +92,7 @@ namespace m3u8.download.manager.ui
             }
             //degreeOfParallelismToolButton.Visible = ;
             degreeOfParallelismToolButton.Value = _SettingsController.MaxDegreeOfParallelism;
+            speedThresholdToolButton     .Value = _SettingsController.MaxSpeedThresholdInMbps;
 
             _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
         }
@@ -362,6 +363,10 @@ namespace m3u8.download.manager.ui
 
                 case nameof(Settings.ExternalProgCaption):
                     openOutputFilesWithExternalMenuItem.Text = $"    Open with '{settings.ExternalProgCaption}'";
+                break;
+
+                case nameof(Settings.MaxSpeedThresholdInMbps):
+                    speedThresholdToolButton.Value = settings.MaxSpeedThresholdInMbps;
                 break;
             }
         }
@@ -640,7 +645,7 @@ namespace m3u8.download.manager.ui
                     {
                         foreach ( var row in rows )
                         {
-                            _DownloadController.Cancel( row );
+                            _DownloadController.CancelIfInProgress( row );
 
                             await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
 
@@ -682,11 +687,11 @@ namespace m3u8.download.manager.ui
                 {
                     foreach ( var row in rows )
                     {
-                        _DownloadController.Cancel( row );
-                        _DownloadListModel .RemoveRow( row );
+                        _DownloadController.CancelIfInProgress( row );
 
                         await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
 
+                        _DownloadListModel.RemoveRow( row );
                         _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                     }
                 }
@@ -977,6 +982,7 @@ namespace m3u8.download.manager.ui
             }
         }
         private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SettingsController.Settings.MaxDegreeOfParallelism = value;
+        private void speedThrottlerToolButton_ValueChanged( double? value ) => _SettingsController.Settings.MaxSpeedThresholdInMbps = value; 
         #endregion
 
         #region [.context menu.]

@@ -11,7 +11,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public abstract class MenuItemBase : MenuItem, IStyleable
+    public abstract class MenuItemBase< T > : MenuItem, IStyleable
     {
         /// <summary>
         /// 
@@ -19,18 +19,21 @@ namespace m3u8.download.manager.ui
         protected sealed class SubMenuItem : MenuItem, IStyleable
         {
             private Image _InnerImage;
-            public SubMenuItem( int value, EventHandler< RoutedEventArgs > onClick )
+            public SubMenuItem( T value, EventHandler< RoutedEventArgs > onClick ) : this( value, value.ToString(), onClick ){}
+            public SubMenuItem( T value, string text, EventHandler< RoutedEventArgs > onClick )
             {
                 this.Click += onClick;
                 Value = value;
 
-                this.Icon   = _InnerImage = new Image();
-                this.Header = new TextBlock() { Text = value.ToString(), TextTrimming = TextTrimming.CharacterEllipsis };
+                this.Icon = _InnerImage = new Image();
+                this.Header = new TextBlock() { Text = text, TextTrimming = TextTrimming.CharacterEllipsis };
+                this.Text   = text;
             }
 
             Type IStyleable.StyleKey => typeof(MenuItem);
+            public string Text { get; }
 
-            public int Value { get; }
+            public T Value { get; }
             public IImage Image
             {
                 get => _InnerImage.Source;
@@ -38,7 +41,11 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        public delegate void ValueChangedEventHandler( int value );
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void ValueChangedEventHandler( T value );
+
         public event ValueChangedEventHandler ValueChanged;
 
         Type IStyleable.StyleKey => typeof(MenuItem);
@@ -49,9 +56,16 @@ namespace m3u8.download.manager.ui
         protected abstract IBrush  SelectedBackground { get; }
 
         protected abstract void FillDropDownItems();
+        protected abstract T DefaultValue { get; }
+        protected abstract bool IsEqual( T x, T y );
 
-        private TextBlock _InnerTextBlock;
-        private Image     _InnerImage;
+        protected TextBlock _InnerTextBlock;
+        private Image       _InnerImage;
+        public IImage Image
+        {
+            get => _InnerImage.Source;
+            set => _InnerImage.Source = value;
+        }
         protected MenuItemBase() { }
         protected override void OnInitialized()
         {
@@ -67,16 +81,18 @@ namespace m3u8.download.manager.ui
             sp.Children.Add( _InnerImage );
             this.Header = sp;
 
+            _Value = DefaultValue;
+
             FillDropDownItems();
         }
 
-        private int _Value = -1;
-        public int Value
+        protected T _Value;
+        public virtual T Value
         {
             get => _Value;
             set
             {
-                if ( _Value != value )
+                if ( !IsEqual( _Value, value ) )
                 {
                     _Value = value;
 
@@ -85,11 +101,11 @@ namespace m3u8.download.manager.ui
 
                     foreach ( SubMenuItem mi in this.Items )
                     {
-                        if ( mi.Value == value )
+                        if ( IsEqual( mi.Value, value ) )
                         {
                             mi.Background = this.SelectedBackground;
                             mi.Foreground = this.Foreground;
-                            mi.Image      = _InnerImage.Source; //this.MainImage;
+                            mi.Image      = this.Image; //this.MainImage;
                             mi.FontWeight = this.FontWeight;
                         }
                         else
@@ -107,12 +123,22 @@ namespace m3u8.download.manager.ui
         }
 
         protected void SubMenuItem_Click( object sender, RoutedEventArgs e ) => this.Value = ((SubMenuItem) sender).Value;
+        protected void Fire_ValueChanged() => this.ValueChanged?.Invoke( this.Value );
+    }
+    //------------------------------------------------------------------------------------------//
+    /// <summary>
+    /// 
+    /// </summary>
+    public abstract class MenuItemBase__IntValue : MenuItemBase< int >
+    {
+        protected override int DefaultValue => -1;
+        protected override bool IsEqual( int x, int y ) => (x == y);
     }
 
     /// <summary>
     /// 
     /// </summary>
-    public sealed class DownloadInstanceMenuItem : MenuItemBase
+    public sealed class DownloadInstanceMenuItem : MenuItemBase__IntValue
     {
         public DownloadInstanceMenuItem() { }
 
@@ -136,7 +162,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class DegreeOfParallelismMenuItem : MenuItemBase
+    public sealed class DegreeOfParallelismMenuItem : MenuItemBase__IntValue
     {
         public DegreeOfParallelismMenuItem() { }
 
@@ -159,6 +185,100 @@ namespace m3u8.download.manager.ui
                 new SubMenuItem( 64, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
             };
             this.Items = subMenuItems;
+        }
+    }
+    //------------------------------------------------------------------------------------------//
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public abstract class MenuItemBase__DoubleValue : MenuItemBase< double? >
+    {
+        protected override double? DefaultValue => -1;
+        protected override bool IsEqual( double? x, double? y ) //=> (Math.Abs( x - y ) <= double.Epsilon);
+        {
+            if ( x.HasValue )
+            {
+                if ( y.HasValue )
+                {
+                    return (Math.Abs( x.Value - y.Value ) <= double.Epsilon);
+                }
+            }
+            else if ( !y.HasValue )
+            {
+                return (true);
+            }
+            return (false);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class SpeedThresholdToolButton : MenuItemBase__DoubleValue
+    {
+        private const string MAX_SPEED = "Max (unlim)";
+        private const string MBPS      = "Mbps";
+
+        public SpeedThresholdToolButton() { }
+
+        protected override string  MainToolTipText    => "speed limit";
+        protected override IBitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_main_1.png" ) );
+        protected override IBrush  MainForeground     => Brushes.CadetBlue;
+        protected override IBrush  SelectedBackground => Brushes.LightGreen;
+
+        public override double? Value 
+        { 
+            get => _Value;
+            set
+            {
+                if ( !IsEqual( _Value, value ) )
+                {
+                    _Value = value;
+
+                    var t = (value.HasValue ? $"{value.Value} {MBPS}" : MAX_SPEED);
+                    _InnerTextBlock.Text = t;
+                    _InnerTextBlock.SetValue( ToolTip.TipProperty, MainToolTipText + ": " + t );
+                    this.Image = MainImage;
+
+                    foreach ( SubMenuItem mi in this.Items )
+                    {
+                        if ( IsEqual( mi.Value, value ) )
+                        {
+                            mi.Background = this.SelectedBackground;
+                            mi.FontWeight = this.FontWeight;
+
+                            this.Image           = mi.Image;
+                            this.Foreground      = mi.Foreground;
+                            _InnerTextBlock.Text = mi.Text;
+                            _InnerTextBlock.SetValue( ToolTip.TipProperty, MainToolTipText + ": " + mi.Text );
+                        }
+                        else
+                        {
+                            mi.Background = this.Background;
+                            mi.FontWeight = FontWeight.Regular;
+                        }
+                    }
+
+                    Fire_ValueChanged();
+                }
+            }
+        }
+
+        protected override void FillDropDownItems()
+        {
+            var subMenuItems = new[]
+            {
+                new SubMenuItem( null, MAX_SPEED   , SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb(  81, 189, 255 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_main_1.png" ) ) },
+                new SubMenuItem(   40, $"40 {MBPS}", SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 190, 144, 255 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_1.ico" ) ) },
+                new SubMenuItem(   20, $"20 {MBPS}", SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 164, 110, 255 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_2.ico" ) ) },
+                new SubMenuItem(   10, $"10 {MBPS}", SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 234, 118,  33 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_3.ico" ) ) },
+                new SubMenuItem(    5, $"5 {MBPS}" , SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 252, 146,   0 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_4.ico" ) ) },
+                new SubMenuItem(    1, $"1 {MBPS}" , SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 178, 202,   0 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_5.ico" ) ) },
+            };
+            this.Items = subMenuItems;
+
+            this.Value = null;
         }
     }
 }

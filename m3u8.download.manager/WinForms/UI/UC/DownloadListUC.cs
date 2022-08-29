@@ -394,11 +394,7 @@ namespace m3u8.download.manager.ui
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
-                    string speedText;
-                    //if ( downloadBytes < 1_024 ) speedText = (8 * downloadBytes / elapsedSeconds).ToString("N2") + " bps"; //" bit/s";
-                    if ( downloadBytes < 100_024 ) speedText = (8 * (downloadBytes / elapsedSeconds) /     1_024).ToString("N2") + " Kbps"; //" Kbit/s";
-                    else                           speedText = (8 * (downloadBytes / elapsedSeconds) / 1_048_576).ToString("N1") + " Mbps"; //" Mbit/s";
-
+                    var speedText = Extensions.GetSpeedText( downloadBytes, elapsedSeconds );
                     downloadInfo += $", [{speedText}]";
                 }
             }
@@ -479,11 +475,7 @@ namespace m3u8.download.manager.ui
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
-                    string speedText;
-                    //if ( downloadBytes < 1_024 ) speedText = (8 * downloadBytes / elapsedSeconds).ToString("N2") + " bps"; //" bit/s";
-                    if ( downloadBytes < 100_024 ) speedText = (8 * (downloadBytes / elapsedSeconds) /     1_024).ToString("N2") + " Kbps"; //" Kbit/s";
-                    else                           speedText = (8 * (downloadBytes / elapsedSeconds) / 1_048_576).ToString("N1") + " Mbps"; //" Mbit/s";
-                    return (speedText);
+                    return (Extensions.GetSpeedText( downloadBytes, elapsedSeconds ));
                 }
             }
             return (string.Empty);

@@ -10,7 +10,7 @@
     </Setting>
     <Setting Name="OutputFileExtension" Type="System.String" Scope="User">
       <Value Profile="(Default)">.avi</Value>
-    </Setting>
+    </Setting>    
     <Setting Name="UseCrossDownloadInstanceParallelism" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
@@ -22,6 +22,9 @@
     </Setting>
     <Setting Name="MaxCrossDownloadInstanceSaved" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="MaxSpeedThresholdInMbps" Type="System.Nullable&lt;System.Double&gt;" Scope="User">
+      <!--<Value Profile="(Default)">null</Value>-->
     </Setting>
     <Setting Name="NameCleanerExcludesWords" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;

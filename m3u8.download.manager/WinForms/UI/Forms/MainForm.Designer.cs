@@ -40,6 +40,7 @@
             this.aboutToolButton = new System.Windows.Forms.ToolStripButton();
             this.degreeOfParallelismToolButton = new System.Windows.Forms.DegreeOfParallelismToolButton();
             this.downloadInstanceToolButton = new System.Windows.Forms.DownloadInstanceToolButton();
+            this.speedThresholdToolButton = new System.Windows.Forms.SpeedThresholdToolButton();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.downloadListUC = new m3u8.download.manager.ui.DownloadListUC();
             this.logUC = new m3u8.download.manager.ui.LogUC();
@@ -89,6 +90,7 @@
                 s5,
                 this.degreeOfParallelismToolButton,
                 this.downloadInstanceToolButton,
+                this.speedThresholdToolButton,
                 //---s6,
                 this.aboutToolButton
             });
@@ -185,11 +187,15 @@
             // 
             // degreeOfParallelismToolButton
             // 
-            this.degreeOfParallelismToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx.ValueChangedEventHandler(this.degreeOfParallelismToolButton_ValueChanged);
+            this.degreeOfParallelismToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__IntValue.ValueChangedEventHandler(this.degreeOfParallelismToolButton_ValueChanged);
             // 
             // downloadInstanceToolButton
             //             
-            this.downloadInstanceToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx.ValueChangedEventHandler(this.downloadInstanceToolButton_ValueChanged);
+            this.downloadInstanceToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__IntValue.ValueChangedEventHandler(this.downloadInstanceToolButton_ValueChanged);
+            // 
+            // speedThrottlerToolButton
+            //             
+            this.speedThresholdToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__DoubleValue.ValueChangedEventHandler(this.speedThrottlerToolButton_ValueChanged );            
             // 
             // mainSplitContainer
             // 
@@ -389,6 +395,9 @@
         private System.Windows.Forms.ToolStripButton showLogToolButton;
         private System.Windows.Forms.ToolStripButton copyToolButton;
         private System.Windows.Forms.ToolStripButton pasteToolButton;
+        private System.Windows.Forms.DegreeOfParallelismToolButton degreeOfParallelismToolButton;
+        private System.Windows.Forms.DownloadInstanceToolButton downloadInstanceToolButton;
+        private System.Windows.Forms.SpeedThresholdToolButton speedThresholdToolButton;
         private System.Windows.Forms.ToolStripButton aboutToolButton;
         private System.Windows.Forms.SplitContainer mainSplitContainer;
         private DownloadListUC downloadListUC;
@@ -412,7 +421,5 @@
         private System.Windows.Forms.ToolStripMenuItem cancelAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteAllWithOutputFilesMenuItem;
-        private System.Windows.Forms.DegreeOfParallelismToolButton degreeOfParallelismToolButton;
-        private System.Windows.Forms.DownloadInstanceToolButton downloadInstanceToolButton;
     }
 }

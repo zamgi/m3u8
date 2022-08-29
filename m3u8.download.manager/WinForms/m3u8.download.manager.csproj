@@ -88,7 +88,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\LogRowsHeightStorer.cs" />
-    <Compile Include="UI\UC\DownloadInstanceToolButton.cs">
+    <Compile Include="UI\UC\ToolStripDropDownButtonEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\UC\NumericUpDownEx.cs">
@@ -204,6 +204,13 @@
     <Content Include="Resources\dop.ico" />
     <Content Include="Resources\downloadInstance.ico" />
     <None Include="Resources\reset.png" />
+    <Content Include="Resources\speed\speed_1.ico" />
+    <Content Include="Resources\speed\speed_2.ico" />
+    <Content Include="Resources\speed\speed_3.ico" />
+    <Content Include="Resources\speed\speed_4.ico" />
+    <Content Include="Resources\speed\speed_5.ico" />
+    <Content Include="Resources\speed\speed_main_1.png" />
+    <Content Include="Resources\speed\speed_main_2.png" />
     <Content Include="Resources\statuses\canceled.png" />
     <None Include="Resources\settings.ico" />
     <None Include="Resources\m3u8_32x36.ico" />

@@ -299,7 +299,7 @@ namespace m3u8
             var expectedPartNumber = ip.m3u8File.Parts.FirstOrDefault().OrderNumber;
             var maxPartNumber      = ip.m3u8File.Parts.LastOrDefault ().OrderNumber;
             var sourceQueue        = new Queue< m3u8_part_ts >( ip.m3u8File.Parts );
-            var downloadPartsSet   = new SortedSet< m3u8_part_ts >( default(m3u8_part_ts.comparer) );
+            var downloadPartsSet   = new SortedSet< m3u8_part_ts >( new m3u8_part_ts.comparer() );
 
             using ( DefaultConnectionLimitSaver.Create( ip.maxDegreeOfParallelism ) )
             using ( var innerCts            = new CancellationTokenSource() )

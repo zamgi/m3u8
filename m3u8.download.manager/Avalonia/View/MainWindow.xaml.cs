@@ -42,6 +42,7 @@ namespace m3u8.download.manager.ui
         private MenuItem pasteToolButton;
         private DegreeOfParallelismMenuItem degreeOfParallelismToolButton;
         private DownloadInstanceMenuItem    downloadInstanceToolButton;
+        private SpeedThresholdToolButton    speedThresholdToolButton;
 
         private ContextMenu mainContextMenu;
         private MenuItem    startDownloadMenuItem;
@@ -98,6 +99,7 @@ namespace m3u8.download.manager.ui
 
             degreeOfParallelismToolButton = this.Find< DegreeOfParallelismMenuItem >( nameof(degreeOfParallelismToolButton) ); degreeOfParallelismToolButton.ValueChanged += degreeOfParallelismToolButton_ValueChanged;
             downloadInstanceToolButton    = this.Find< DownloadInstanceMenuItem    >( nameof(downloadInstanceToolButton)    ); downloadInstanceToolButton   .ValueChanged += downloadInstanceToolButton_ValueChanged;
+            speedThresholdToolButton      = this.Find< SpeedThresholdToolButton    >( nameof(speedThresholdToolButton)      ); speedThresholdToolButton     .ValueChanged += speedThresholdToolButton_ValueChanged;
             #endregion
 
             #region [.context menu.]
@@ -151,6 +153,7 @@ namespace m3u8.download.manager.ui
                 downloadInstanceToolButton.Value = _VM.SettingsController.MaxCrossDownloadInstance.Value;
             }
             degreeOfParallelismToolButton.Value = _VM.SettingsController.MaxDegreeOfParallelism;
+            speedThresholdToolButton     .Value = _VM.SettingsController.MaxSpeedThresholdInMbps;
             #endregion
         }
         #endregion
@@ -427,6 +430,10 @@ namespace m3u8.download.manager.ui
 
                 case nameof(Settings.MaxDegreeOfParallelism):
                     degreeOfParallelismToolButton.Value = settings.MaxDegreeOfParallelism;
+                break;
+
+                case nameof(Settings.MaxSpeedThresholdInMbps):
+                    speedThresholdToolButton.Value = settings.MaxSpeedThresholdInMbps;
                 break;
             }
         }
@@ -886,6 +893,7 @@ return;
             }
         }
         private void degreeOfParallelismToolButton_ValueChanged( int value ) => _VM.SettingsController.MaxDegreeOfParallelism = value;
+        private void speedThresholdToolButton_ValueChanged( double? value ) => _VM.SettingsController.MaxSpeedThresholdInMbps = value; 
         #endregion
 
         #region [.context menu.]

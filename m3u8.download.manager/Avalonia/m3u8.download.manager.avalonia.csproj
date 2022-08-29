@@ -37,6 +37,7 @@
     <AvaloniaResource Include="Resources\roller\*" />
     <AvaloniaResource Include="Resources\statuses\*" />
     <AvaloniaResource Include="Resources\contextMenu\*" />
+    <AvaloniaResource Include="Resources\speed\*" />
   </ItemGroup>
    
   <ItemGroup>

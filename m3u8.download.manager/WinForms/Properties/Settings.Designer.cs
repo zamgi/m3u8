@@ -109,6 +109,17 @@ namespace m3u8.download.manager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Nullable<System.Double> MaxSpeedThresholdInMbps {
+            get {
+                return ((global::System.Nullable<System.Double>)(this["MaxSpeedThresholdInMbps"]));
+            }
+            set {
+                this["MaxSpeedThresholdInMbps"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         public global::System.Collections.Specialized.StringCollection NameCleanerExcludesWords {
             get {
                 return ((global::System.Collections.Specialized.StringCollection)(this["NameCleanerExcludesWords"]));

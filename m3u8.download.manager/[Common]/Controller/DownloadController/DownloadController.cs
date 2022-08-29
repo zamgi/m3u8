@@ -57,6 +57,7 @@ namespace m3u8.download.manager.controllers
         private int                                        _RealRunningCount;
         private download_threads_semaphore_factory         _DownloadThreadsSemaphoreFactory;        
         private DefaultConnectionLimitSaver                _DefaultConnectionLimitSaver;
+        private throttler_by_speed_holder                  _ThrottlerBySpeed;
         #endregion
 
         #region [.ctor().]
@@ -73,7 +74,8 @@ namespace m3u8.download.manager.controllers
             _DownloadThreadsSemaphoreFactory  = new download_threads_semaphore_factory( _SettingsController.UseCrossDownloadInstanceParallelism,
                                                                                         _SettingsController.MaxDegreeOfParallelism );
 
-            _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( _SettingsController.MaxDegreeOfParallelism );            
+            _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( _SettingsController.MaxDegreeOfParallelism );
+            _ThrottlerBySpeed            = new throttler_by_speed_holder( _SettingsController.MaxSpeedThresholdInMbps );
         }
 
         public void Dispose()
@@ -81,6 +83,7 @@ namespace m3u8.download.manager.controllers
             m3u8_client_factory.ForceClearAndDisposeAll();
 
             _DefaultConnectionLimitSaver.Dispose();
+            _ThrottlerBySpeed.Dispose();
 
             if ( _DownloadThreadsSemaphoreFactory != null )
             {
@@ -146,6 +149,12 @@ namespace m3u8.download.manager.controllers
                 {
                     _CrossDownloadInstanceRestriction.SetMaxCrossDownloadInstance( settings.MaxCrossDownloadInstance );
                     await ProcessCrossDownloadInstanceRestriction( settings.MaxCrossDownloadInstance );
+                }
+                break;
+
+                case nameof(Settings.MaxSpeedThresholdInMbps):
+                {
+                    _ThrottlerBySpeed.ChangeMaxSpeedThreshold( settings.MaxSpeedThresholdInMbps );
                 }
                 break;
             }
@@ -464,7 +473,7 @@ namespace m3u8.download.manager.controllers
                             WaitIfPausedEvent        = waitIfPausedEvent,
                             DownloadThreadsSemaphore = downloadThreadsSemaphore,
                             WaitingIfPaused          = () => row.SetStatus( DownloadStatus.Paused ),
-                            //---!!!---// ThrottlerBySpeed         = ,
+                            ThrottlerBySpeed         = _ThrottlerBySpeed,
                         };
 #if NETCOREAPP
                         var result = await _m3u8_processor_.DownloadPartsAndSave_Async( ip ).ConfigureAwait( false );
@@ -558,6 +567,23 @@ namespace m3u8.download.manager.controllers
             }
         }
 
+        public void CancelIfInProgress( DownloadRow row )
+        {
+            if ( row != null )
+            {
+                switch ( row.Status )
+                {
+                    case DownloadStatus.Canceled:
+                    case DownloadStatus.Finished:
+                    case DownloadStatus.Error:
+                        break;
+
+                    default:
+                        Cancel( row );
+                        break;
+                }
+            }
+        }
         public void Cancel( DownloadRow row )
         {
             if ( row != null )

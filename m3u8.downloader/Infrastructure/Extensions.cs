@@ -93,5 +93,17 @@ namespace m3u8.downloader
                 return (t);
             }
         }
+
+        public static string GetSpeedText( long downloadBytes, double elapsedSeconds )
+        {
+            string speedText;
+            //if ( downloadBytes < 1_024 ) speedText = GetSpeedInBps( downloadBytes, elapsedSeconds ).ToString("N2") + " bps"; //" bit/s";
+            if ( downloadBytes < 100_024 ) speedText = GetSpeedInKbps( downloadBytes, elapsedSeconds ).ToString("N2") + " Kbps"; //" Kbit/s";
+            else                           speedText = GetSpeedInMbps( downloadBytes, elapsedSeconds ).ToString("N1") + " Mbps"; //" Mbit/s";
+            return (speedText);
+        }
+        public static double GetSpeedInMbps( long downloadedBytes, double elapsedSeconds ) => (8 * (downloadedBytes / elapsedSeconds) / 1_048_576); //" Mbps"; //" Mbit/s";
+        public static double GetSpeedInKbps( long downloadedBytes, double elapsedSeconds ) => (8 * (downloadedBytes / elapsedSeconds) / 1_024); //" Kbps"; //" Kbit/s";
+        public static double GetSpeedInBps( long downloadedBytes, double elapsedSeconds ) => (8 * (downloadedBytes / elapsedSeconds)); //" bps"; //" bit/s";
     }
 }

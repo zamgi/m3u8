@@ -63,7 +63,7 @@
     <Compile Include="..\WinForms\UI\Forms\MainForm.cs" Link="UI\Forms\MainForm.cs" />
     <Compile Include="..\WinForms\UI\Forms\MainForm.Designer.cs" Link="UI\Forms\MainForm.Designer.cs" />
     <Compile Include="..\WinForms\UI\UC\ButtonWithFocusCues.cs" Link="UI\UC\ButtonWithFocusCues.cs" />
-    <Compile Include="..\WinForms\UI\UC\DownloadInstanceToolButton.cs" Link="UI\UC\DownloadInstanceToolButton.cs" />
+    <Compile Include="..\WinForms\UI\UC\ToolStripDropDownButtonEx.cs" Link="UI\UC\ToolStripDropDownButtonEx.cs" />
     <Compile Include="..\WinForms\UI\UC\DownloadListUC.cs" Link="UI\UC\DownloadListUC.cs" />
     <Compile Include="..\WinForms\UI\UC\DownloadListUC.Designer.cs" Link="UI\UC\DownloadListUC.Designer.cs" />
     <Compile Include="..\WinForms\UI\UC\LogUC.cs" Link="UI\UC\LogUC.cs" />
@@ -118,6 +118,13 @@
     <Content Include="..\WinForms\Resources\statuses\paused.png" Link="Resources\statuses\paused.png" />
     <Content Include="..\WinForms\Resources\statuses\running.png" Link="Resources\statuses\running.png" />
     <Content Include="..\WinForms\Resources\statuses\wait.png" Link="Resources\statuses\wait.png" />
+    <Content Include="..\WinForms\Resources\speed\speed_1.ico" Link="Resources\speed\speed_1.ico" />
+    <Content Include="..\WinForms\Resources\speed\speed_2.ico" Link="Resources\speed\speed_2.ico" />
+    <Content Include="..\WinForms\Resources\speed\speed_3.ico" Link="Resources\speed\speed_3.ico" />
+    <Content Include="..\WinForms\Resources\speed\speed_4.ico" Link="Resources\speed\speed_4.ico" />
+    <Content Include="..\WinForms\Resources\speed\speed_5.ico" Link="Resources\speed\speed_5.ico" />
+    <Content Include="..\WinForms\Resources\speed\speed_main_1.png" Link="Resources\speed\speed_main_1.png" />
+    <Content Include="..\WinForms\Resources\speed\speed_main_2.png" Link="Resources\speed\speed_main_2.png" />
   </ItemGroup>
 
   <ItemGroup>

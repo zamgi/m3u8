@@ -250,4 +250,26 @@
   <data name="reset" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\reset.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+
+  <data name="speed_main_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\speed\speed_main_1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="speed_main_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\speed\speed_main_2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="speed_1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\speed\speed_1.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="speed_2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\speed\speed_2.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="speed_3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\speed\speed_3.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="speed_4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\speed\speed_4.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="speed_5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\speed\speed_5.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

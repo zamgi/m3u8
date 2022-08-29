@@ -36,6 +36,7 @@ namespace m3u8.download.manager.controllers
             APV( nameof(_Settings_.MaxCrossDownloadInstance)             , this.Settings.MaxCrossDownloadInstance );
             APV( nameof(_Settings_.ShowDownloadStatisticsInMainFormTitle), this.Settings.ShowDownloadStatisticsInMainFormTitle );
             APV( nameof(_Settings_.ShowOnlyRequestRowsWithErrors)        , this.Settings.ShowOnlyRequestRowsWithErrors );
+            APV( nameof(_Settings_.MaxSpeedThresholdInMbps)              , this.Settings.MaxSpeedThresholdInMbps );
 
             this.Settings.PropertyChanged += Settings_PropertyChanged;
         }
@@ -55,8 +56,9 @@ namespace m3u8.download.manager.controllers
         public string DownloadRowsJson              { [M(O.AggressiveInlining)] get => Settings.DownloadRowsJson; [M(O.AggressiveInlining)] set => Settings.DownloadRowsJson = value; }
        
         public bool UseCrossDownloadInstanceParallelism { [M(O.AggressiveInlining)] get => Settings.UseCrossDownloadInstanceParallelism; }
-        public int  MaxDegreeOfParallelism              { [M(O.AggressiveInlining)] get => Settings.MaxDegreeOfParallelism; [M(O.AggressiveInlining)] set => Settings.MaxDegreeOfParallelism = value; }
+        public int  MaxDegreeOfParallelism              { [M(O.AggressiveInlining)] get => Settings.MaxDegreeOfParallelism;   [M(O.AggressiveInlining)] set => Settings.MaxDegreeOfParallelism   = value; }
         public int? MaxCrossDownloadInstance            { [M(O.AggressiveInlining)] get => Settings.MaxCrossDownloadInstance; [M(O.AggressiveInlining)] set => Settings.MaxCrossDownloadInstance = value; }
+        public double? MaxSpeedThresholdInMbps          { [M(O.AggressiveInlining)] get => Settings.MaxSpeedThresholdInMbps;  [M(O.AggressiveInlining)] set => Settings.MaxSpeedThresholdInMbps  = value; }
 
         public bool ShowLog { [M(O.AggressiveInlining)] get => Settings.ShowLog; [M(O.AggressiveInlining)] set => Settings.ShowLog = value; }
 
@@ -112,6 +114,10 @@ namespace m3u8.download.manager.controllers
 
                 case nameof(_Settings_.ShowOnlyRequestRowsWithErrors):
                     PPC( e.PropertyName, this.Settings.ShowOnlyRequestRowsWithErrors );
+                break;
+
+                case nameof(_Settings_.MaxSpeedThresholdInMbps):
+                    PPC( e.PropertyName, this.Settings.MaxSpeedThresholdInMbps );
                 break;
             }
         }

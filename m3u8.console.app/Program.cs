@@ -30,7 +30,7 @@ namespace m3u8
                 var baseAddress = m3u8_file.BaseAddress;
                 var totalPatrs  = m3u8_file.Parts.Count;
                 var globalPartNumber = 0;
-                var downloadPartsSet = new SortedSet< m3u8_part_ts >( default(m3u8_part_ts.comparer) );
+                var downloadPartsSet = new SortedSet< m3u8_part_ts >( new m3u8_part_ts.comparer() );
 
                 using ( DefaultConnectionLimitSaver.Create( maxDegreeOfParallelism ) )
                 {                 
@@ -144,7 +144,7 @@ namespace m3u8
                 var expectedPartNumber  = parts.FirstOrDefault().OrderNumber;
                 var maxPartNumber       = parts.LastOrDefault ().OrderNumber;
                 var sourceQueue         = new Queue< m3u8_part_ts >( parts );
-                var downloadPartsSet    = new SortedSet< m3u8_part_ts >( default(m3u8_part_ts.comparer) );
+                var downloadPartsSet    = new SortedSet< m3u8_part_ts >( new m3u8_part_ts.comparer() );
                 var downloadPartsResult = new LinkedList< m3u8_part_ts >();
 
                 using ( DefaultConnectionLimitSaver.Create( maxDegreeOfParallelism ) )
@@ -297,7 +297,7 @@ namespace m3u8
                 var expectedPartNumber = m3u8_file.Parts.FirstOrDefault().OrderNumber;
                 var maxPartNumber      = m3u8_file.Parts.LastOrDefault ().OrderNumber;
                 var sourceQueue        = new Queue< m3u8_part_ts >( m3u8_file.Parts );
-                var downloadPartsSet   = new SortedSet< m3u8_part_ts >( default(m3u8_part_ts.comparer) );
+                var downloadPartsSet   = new SortedSet< m3u8_part_ts >( new m3u8_part_ts.comparer() );
 
                 using ( DefaultConnectionLimitSaver.Create( maxDegreeOfParallelism ) )
                 using ( var canExtractPartEvent = new AutoResetEvent( false ) )
