@@ -9,20 +9,21 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    internal sealed partial class ParallelismForm : Form
+    internal sealed partial class ParallelismSettingsUC : UserControl
     {
         #region [.fields.]
         private DownloadController _DownloadController; 
         #endregion
 
         #region [.ctor().]
-        private ParallelismForm()
+        public ParallelismSettingsUC()
         {
             InitializeComponent();
 
             maxDegreeOfParallelismNUD.Maximum = SETTINGS.MAX_DEGREE_OF_PARALLELISM;
         }
-        public ParallelismForm( DownloadController dc ) : this()
+        public ParallelismSettingsUC( DownloadController dc ) : this() => Init( dc );
+        public void Init( DownloadController dc )
         {
             _DownloadController = dc ?? throw (new ArgumentNullException( nameof(dc) ));
             _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
@@ -36,7 +37,10 @@ namespace m3u8.download.manager.ui
             if ( disposing )
             {
                 components?.Dispose();
-                _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
+                if ( _DownloadController != null )
+                {
+                    _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
+                }
             }
             base.Dispose( disposing );
         }
@@ -45,21 +49,33 @@ namespace m3u8.download.manager.ui
         #region [.public.]
         public int  MaxDegreeOfParallelism
         {
-            get => Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Convert.ToInt32( maxDegreeOfParallelismNUD.Value ) );
-            set => maxDegreeOfParallelismNUD.Value = Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, value );
+            get => Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, Convert.ToInt32( maxDegreeOfParallelismNUD.Value ) ) );
+            set => maxDegreeOfParallelismNUD.Value = Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, value ) );
         }
         public bool UseCrossDownloadInstanceParallelism
         {
             get => useCrossDownloadInstanceParallelismCheckBox.Checked;
             set => useCrossDownloadInstanceParallelismCheckBox.Checked = value;
         }
-        public int? MaxCrossDownloadInstance      => (useMaxCrossDownloadInstanceCheckBox.Checked ? Convert.ToInt32( maxCrossDownloadInstanceNUD.Value ) : ((int?) null));
-        public int  MaxCrossDownloadInstanceSaved => Convert.ToInt32( maxCrossDownloadInstanceNUD.Value );
+        public int? MaxCrossDownloadInstance      => (useMaxCrossDownloadInstanceCheckBox.Checked ? Math.Max( 1, Convert.ToInt32( maxCrossDownloadInstanceNUD.Value ) ) : ((int?) null));
+        public int  MaxCrossDownloadInstanceSaved => Math.Max( 1, Convert.ToInt32( maxCrossDownloadInstanceNUD.Value ) );
         public void SetMaxCrossDownloadInstance( int? maxCrossDownloadInstance, int maxCrossDownloadInstanceSaved )
         {
-            maxCrossDownloadInstanceNUD.Value = maxCrossDownloadInstance.GetValueOrDefault( maxCrossDownloadInstanceSaved );
+            maxCrossDownloadInstanceNUD.Value = Math.Max( 1, maxCrossDownloadInstance.GetValueOrDefault( maxCrossDownloadInstanceSaved ) );
             useMaxCrossDownloadInstanceCheckBox.Checked = maxCrossDownloadInstance.HasValue;
             useMaxCrossDownloadInstanceCheckBox_CheckedChanged( useMaxCrossDownloadInstanceCheckBox, EventArgs.Empty );
+        }
+        public double? MaxSpeedThresholdInMbps
+        {
+            get => !isUnlimMaxSpeedThresholdCheckBox.Checked ? Math.Max( 0.1, Convert.ToDouble( maxSpeedThresholdNUD.Value ) ) : null;
+            set
+            {
+                isUnlimMaxSpeedThresholdCheckBox.Checked = !value.HasValue;
+                if ( value.HasValue )
+                {
+                    maxSpeedThresholdNUD.Value = Convert.ToDecimal( Math.Max( 0.1, value.Value ) );
+                }
+            }
         }
         #endregion
 
@@ -73,6 +89,15 @@ namespace m3u8.download.manager.ui
         {
             maxCrossDownloadInstanceLabel.Enabled = useMaxCrossDownloadInstanceCheckBox.Checked;
             maxCrossDownloadInstanceNUD  .Enabled = useMaxCrossDownloadInstanceCheckBox.Checked;
+        }
+        //private void useCrossDownloadInstanceParallelismCheckBox_CheckedChanged( object sender, EventArgs e ) 
+        //    => useCrossDownloadInstanceParallelismCheckBox.Text = useCrossDownloadInstanceParallelismCheckBox.Checked
+        //        ? "share \"max download threads\"\r\n between all downloads-instance"
+        //        : "use \"max download threads\"\r\n per each downloads-instance";
+        private void isUnlimMaxSpeedThresholdCheckBox_CheckedChanged( object sender, EventArgs e )
+        {
+            maxSpeedThresholdLabel.Enabled = !isUnlimMaxSpeedThresholdCheckBox.Checked;
+            maxSpeedThresholdNUD  .Enabled = !isUnlimMaxSpeedThresholdCheckBox.Checked;
         }
         #endregion
     }

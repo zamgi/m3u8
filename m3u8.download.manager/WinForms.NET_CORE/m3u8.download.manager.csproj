@@ -55,8 +55,6 @@
     <Compile Include="..\WinForms\UI\Forms\ChangeOutputFileForm.Designer.cs" Link="UI\Forms\ChangeOutputFileForm.Designer.cs" />
     <Compile Include="..\WinForms\UI\Forms\FileNameExcludesWordsEditor.cs" Link="UI\Forms\FileNameExcludesWordsEditor.cs" />
     <Compile Include="..\WinForms\UI\Forms\FileNameExcludesWordsEditor.Designer.cs" Link="UI\Forms\FileNameExcludesWordsEditor.Designer.cs" />
-    <Compile Include="..\WinForms\UI\Forms\ParallelismForm.cs" Link="UI\Forms\ParallelismForm.cs" />
-    <Compile Include="..\WinForms\UI\Forms\ParallelismForm.Designer.cs" Link="UI\Forms\ParallelismForm.Designer.cs" />
     <Compile Include="..\WinForms\UI\Forms\SettingsForm.cs" Link="UI\Forms\SettingsForm.cs" />
     <Compile Include="..\WinForms\UI\Forms\SettingsForm.designer.cs" Link="UI\Forms\SettingsForm.designer.cs" />
     <Compile Include="..\WinForms\UI\LogRowsHeightStorer.cs" Link="UI\LogRowsHeightStorer.cs" />
@@ -74,6 +72,10 @@
     <Compile Include="..\WinForms\UI\WaitBanner\BitmapHolder.cs" Link="UI\WaitBanner\BitmapHolder.cs" />
     <Compile Include="..\WinForms\UI\WaitBanner\WaitBannerUC.cs" Link="UI\WaitBanner\WaitBannerUC.cs" />
     <Compile Include="..\WinForms\UI\WaitBanner\WaitBannerUC.designer.cs" Link="UI\WaitBanner\WaitBannerUC.designer.cs" />
+    <Compile Include="..\WinForms\UI\UC\OtherSettingsUC.cs" Link="UI\UC\OtherSettingsUC.cs" />
+    <Compile Include="..\WinForms\UI\UC\OtherSettingsUC.designer.cs" Link="UI\UC\OtherSettingsUC.designer.cs" />
+    <Compile Include="..\WinForms\UI\UC\ParallelismSettingsUC.cs" Link="UI\UC\ParallelismSettingsUC.cs" />
+    <Compile Include="..\WinForms\UI\UC\ParallelismSettingsUC.designer.cs" Link="UI\UC\ParallelismSettingsUC.designer.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController\dc_models.cs" Link="Controller\DownloadController\dc_models.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController\DownloadController.cs" Link="Controller\DownloadController\DownloadController.cs" />
     <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
@@ -81,6 +83,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\WinForms\Resources\browse.png" Link="Resources\browse.png" />
+    <Content Include="..\WinForms\Resources\dop.ico" Link="Resources\dop.ico" />
+    <Content Include="..\WinForms\Resources\dop_settings.ico" Link="Resources\dop_settings.ico" />
+    <Content Include="..\WinForms\Resources\downloadInstance.ico" Link="Resources\downloadInstance.ico" />
+    <Content Include="..\WinForms\Resources\listbullets.png" Link="Resources\listbullets.png" />
+    <Content Include="..\WinForms\Resources\m3u8_32x36.ico" Link="Resources\m3u8_32x36.ico" />
+    <Content Include="..\WinForms\Resources\reset.png" Link="Resources\reset.png" />
+    <Content Include="..\WinForms\Resources\settings.ico" Link="Resources\settings.ico" />
+    <Content Include="..\WinForms\Resources\settings.png" Link="Resources\settings.png" />
     <Content Include="..\WinForms\Resources\contextMenu\cancel.png" Link="Resources\contextMenu\cancel.png" />
     <Content Include="..\WinForms\Resources\contextMenu\cancel_all.png" Link="Resources\contextMenu\cancel_all.png" />
     <Content Include="..\WinForms\Resources\contextMenu\delete.png" Link="Resources\contextMenu\delete.png" />
@@ -89,9 +100,6 @@
     <Content Include="..\WinForms\Resources\contextMenu\pause_all.png" Link="Resources\contextMenu\pause_all.png" />
     <Content Include="..\WinForms\Resources\contextMenu\start.png" Link="Resources\contextMenu\start.png" />
     <Content Include="..\WinForms\Resources\contextMenu\start_all.png" Link="Resources\contextMenu\start_all.png" />
-    <Content Include="..\WinForms\Resources\dop.ico" Link="Resources\dop.ico" />
-    <Content Include="..\WinForms\Resources\downloadInstance.ico" Link="Resources\downloadInstance.ico" />
-    <Content Include="..\WinForms\Resources\m3u8_32x36.ico" Link="Resources\m3u8_32x36.ico" />
     <Content Include="..\WinForms\Resources\menu\control_cancel.png" Link="Resources\menu\control_cancel.png" />
     <Content Include="..\WinForms\Resources\menu\control_delete.png" Link="Resources\menu\control_delete.png" />
     <Content Include="..\WinForms\Resources\menu\control_delete_all_finished.png" Link="Resources\menu\control_delete_all_finished.png" />
@@ -109,8 +117,7 @@
     <Content Include="..\WinForms\Resources\roller\i5.ico" Link="Resources\roller\i5.ico" />
     <Content Include="..\WinForms\Resources\roller\i6.ico" Link="Resources\roller\i6.ico" />
     <Content Include="..\WinForms\Resources\roller\i7.ico" Link="Resources\roller\i7.ico" />
-    <Content Include="..\WinForms\Resources\roller\i8.ico" Link="Resources\roller\i8.ico" />
-    <Content Include="..\WinForms\Resources\settings.ico" Link="Resources\settings.ico" />
+    <Content Include="..\WinForms\Resources\roller\i8.ico" Link="Resources\roller\i8.ico" />    
     <Content Include="..\WinForms\Resources\statuses\canceled.png" Link="Resources\statuses\canceled.png" />
     <Content Include="..\WinForms\Resources\statuses\created.png" Link="Resources\statuses\created.png" />
     <Content Include="..\WinForms\Resources\statuses\error.png" Link="Resources\statuses\error.png" />

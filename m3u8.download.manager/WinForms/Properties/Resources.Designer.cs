@@ -221,6 +221,16 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon dop_settings_32 {
+            get {
+                object obj = ResourceManager.GetObject("dop_settings_32", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon downloadInstance {
             get {
                 object obj = ResourceManager.GetObject("downloadInstance", resourceCulture);
@@ -359,6 +369,16 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap listbullets_32 {
+            get {
+                object obj = ResourceManager.GetObject("listbullets_32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap log {
             get {
                 object obj = ResourceManager.GetObject("log", resourceCulture);
@@ -462,6 +482,16 @@ namespace m3u8.download.manager.Properties {
             get {
                 object obj = ResourceManager.GetObject("settings", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap settings_32 {
+            get {
+                object obj = ResourceManager.GetObject("settings_32", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         

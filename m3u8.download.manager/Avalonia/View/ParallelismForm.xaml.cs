@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+
 using m3u8.download.manager.controllers;
 using SETTINGS = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 
@@ -22,6 +23,9 @@ namespace m3u8.download.manager.ui
         private TextBlock     maxCrossDownloadInstanceLabel1;
         private TextBlock     maxCrossDownloadInstanceLabel2;
         private NumericUpDown maxCrossDownloadInstanceNUD;
+        private CheckBox      isUnlimMaxSpeedThresholdCheckBox;
+        private TextBlock     maxSpeedThresholdLabel;
+        private NumericUpDown maxSpeedThresholdNUD;
         #endregion
 
         #region [.fields.]
@@ -54,8 +58,12 @@ namespace m3u8.download.manager.ui
             maxCrossDownloadInstanceLabel1              = this.Find< TextBlock     >( nameof(maxCrossDownloadInstanceLabel1) );
             maxCrossDownloadInstanceLabel2              = this.Find< TextBlock     >( nameof(maxCrossDownloadInstanceLabel2) );
             maxCrossDownloadInstanceNUD                 = this.Find< NumericUpDown >( nameof(maxCrossDownloadInstanceNUD) );
+            isUnlimMaxSpeedThresholdCheckBox            = this.Find< CheckBox      >( nameof(isUnlimMaxSpeedThresholdCheckBox) );
+            maxSpeedThresholdLabel                      = this.Find< TextBlock     >( nameof(maxSpeedThresholdLabel) );
+            maxSpeedThresholdNUD                        = this.Find< NumericUpDown >( nameof(maxSpeedThresholdNUD) );
 
             useMaxCrossDownloadInstanceCheckBox.Click += useMaxCrossDownloadInstanceCheckBox_Click;
+            isUnlimMaxSpeedThresholdCheckBox   .Click += isUnlimMaxSpeedThresholdCheckBox_Click;
 
             this.Find< Button >( "okButton"     ).Click += (s, e) => OkButtonProcess();
             this.Find< Button >( "cancelButton" ).Click += (s, e) => this.Close();
@@ -110,6 +118,18 @@ namespace m3u8.download.manager.ui
             useMaxCrossDownloadInstanceCheckBox.IsChecked = maxCrossDownloadInstance.HasValue;
             useMaxCrossDownloadInstanceCheckBox_Click( null, null ); // useMaxCrossDownloadInstanceCheckBox, new RoutedEventArgs() );
         }
+        public double? MaxSpeedThresholdInMbps
+        {
+            get => !isUnlimMaxSpeedThresholdCheckBox.IsChecked.GetValueOrDefault() ? Math.Max( 0.1, maxSpeedThresholdNUD.Value ) : null;
+            set
+            {
+                isUnlimMaxSpeedThresholdCheckBox.IsChecked = !value.HasValue;
+                if ( value.HasValue )
+                {
+                    maxSpeedThresholdNUD.Value = Math.Max( 0.1, value.Value );
+                }
+            }
+        }
         #endregion
 
         #region [.private methods.]
@@ -133,6 +153,13 @@ namespace m3u8.download.manager.ui
                 maxCrossDownloadInstanceLabel2.Foreground = (isChecked ? this.Foreground : Brushes.DarkGray);
 
             maxCrossDownloadInstanceNUD.IsEnabled = isChecked;
+        }
+        private void isUnlimMaxSpeedThresholdCheckBox_Click( object sender, RoutedEventArgs e )
+        {
+            var isChecked = isUnlimMaxSpeedThresholdCheckBox.IsChecked.GetValueOrDefault();
+
+            maxSpeedThresholdLabel.Foreground = (!isChecked ? this.Foreground : Brushes.DarkGray); ;
+            maxSpeedThresholdNUD  .IsEnabled  = !isChecked;
         }
         #endregion
     }

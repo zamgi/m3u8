@@ -37,6 +37,9 @@
             this.showLogToolButton = new System.Windows.Forms.ToolStripButton();
             this.copyToolButton = new System.Windows.Forms.ToolStripButton();
             this.pasteToolButton = new System.Windows.Forms.ToolStripButton();
+            this.fileNameExcludesWordsEditorToolButton = new System.Windows.Forms.ToolStripButton();
+            this.parallelismSettingsToolButton = new System.Windows.Forms.ToolStripButton();
+            this.otherSettingsToolButton = new System.Windows.Forms.ToolStripButton();
             this.aboutToolButton = new System.Windows.Forms.ToolStripButton();
             this.degreeOfParallelismToolButton = new System.Windows.Forms.DegreeOfParallelismToolButton();
             this.downloadInstanceToolButton = new System.Windows.Forms.DownloadInstanceToolButton();
@@ -92,8 +95,11 @@
                 this.downloadInstanceToolButton,
                 this.speedThresholdToolButton,
                 //---s6,
-                this.aboutToolButton
-            });
+                this.aboutToolButton,
+                this.otherSettingsToolButton,                
+                this.parallelismSettingsToolButton,
+                this.fileNameExcludesWordsEditorToolButton,
+            } );
             this.mainToolStrip.TabIndex = 0;
             // 
             // addNewDownloadToolButton
@@ -175,6 +181,33 @@
             this.pasteToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.pasteToolButton.ToolTipText = "Paste  (Ctrl + V)";
             this.pasteToolButton.Click += new System.EventHandler(this.pasteToolButton_Click);
+            // 
+            // fileNameExcludesWordsEditorToolButton
+            // 
+            this.fileNameExcludesWordsEditorToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.fileNameExcludesWordsEditorToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.fileNameExcludesWordsEditorToolButton.Image = global::m3u8.download.manager.Properties.Resources.listbullets_32;
+            this.fileNameExcludesWordsEditorToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.fileNameExcludesWordsEditorToolButton.ToolTipText = "file name excludes words editor";
+            this.fileNameExcludesWordsEditorToolButton.Click += new System.EventHandler(this.fileNameExcludesWordsEditorToolButton_Click);
+            // 
+            // parallelismSettingsToolButton
+            // 
+            this.parallelismSettingsToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.parallelismSettingsToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.parallelismSettingsToolButton.Image = global::m3u8.download.manager.Properties.Resources.dop_settings_32.ToBitmap();
+            this.parallelismSettingsToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.parallelismSettingsToolButton.ToolTipText = "Parallelism settings";
+            this.parallelismSettingsToolButton.Click += new System.EventHandler(this.parallelismSettingsToolButton_Click);
+            // 
+            // otherSettingsToolButton
+            // 
+            this.otherSettingsToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.otherSettingsToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.otherSettingsToolButton.Image = global::m3u8.download.manager.Properties.Resources.settings_32;
+            this.otherSettingsToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.otherSettingsToolButton.ToolTipText = "Other settings";
+            this.otherSettingsToolButton.Click += new System.EventHandler(this.otherSettingsToolButton_Click);
             // 
             // aboutToolButton
             // 
@@ -398,6 +431,9 @@
         private System.Windows.Forms.DegreeOfParallelismToolButton degreeOfParallelismToolButton;
         private System.Windows.Forms.DownloadInstanceToolButton downloadInstanceToolButton;
         private System.Windows.Forms.SpeedThresholdToolButton speedThresholdToolButton;
+        private System.Windows.Forms.ToolStripButton fileNameExcludesWordsEditorToolButton;
+        private System.Windows.Forms.ToolStripButton parallelismSettingsToolButton;
+        private System.Windows.Forms.ToolStripButton otherSettingsToolButton;
         private System.Windows.Forms.ToolStripButton aboutToolButton;
         private System.Windows.Forms.SplitContainer mainSplitContainer;
         private DownloadListUC downloadListUC;

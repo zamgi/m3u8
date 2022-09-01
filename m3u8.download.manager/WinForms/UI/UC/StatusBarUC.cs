@@ -69,6 +69,69 @@ namespace m3u8.download.manager.ui
         public bool IsVisibleExcludesWordsLabel { get => exceptionWordsLabel.Visible; set => exceptionWordsLabel.Visible = value; }
         public string LeftSideTextLabelText     { get => leftSideTextLabel  .Text   ; set => leftSideTextLabel  .Text    = value; }
         //public bool IsVisibleLeftSideTextLabel  { get => leftSideTextLabel .Visible; set => leftSideTextLabel .Visible = value; }
+
+        public void ShowDialog_FileNameExcludesWordsEditor()
+        {
+            using ( var f = new FileNameExcludesWordsEditor( NameCleaner.ExcludesWords ) )
+            {
+                if ( f.ShowDialog() == DialogResult.OK )
+                {
+                    NameCleaner.ResetExcludesWords( f.GetFileNameExcludesWords() );
+                    _Settings.ResetNameCleanerExcludesWords( NameCleaner.ExcludesWords );
+                    _Settings.SaveNoThrow();
+                }
+            }
+        }
+        public void ShowDialog_Settings( SettingsForm2.SettingsTabEnum? settingsTab = default )
+        {
+            using ( var f = new SettingsForm2( _DownloadController, settingsTab ) )
+            {
+                f.Parallelism.MaxDegreeOfParallelism              = _Settings.MaxDegreeOfParallelism;                
+                f.Parallelism.UseCrossDownloadInstanceParallelism = _Settings.UseCrossDownloadInstanceParallelism;                
+                f.Parallelism.SetMaxCrossDownloadInstance( _Settings.MaxCrossDownloadInstance, _Settings.MaxCrossDownloadInstanceSaved );
+                f.Parallelism.MaxSpeedThresholdInMbps             = _Settings.MaxSpeedThresholdInMbps;
+
+                f.Other.AttemptRequestCountByPart             = _Settings.AttemptRequestCountByPart;
+                f.Other.RequestTimeoutByPart                  = _Settings.RequestTimeoutByPart;
+                f.Other.ShowOnlyRequestRowsWithErrors         = _Settings.ShowOnlyRequestRowsWithErrors;
+                f.Other.UniqueUrlsOnly                        = _Settings.UniqueUrlsOnly;
+                f.Other.ShowDownloadStatisticsInMainFormTitle = _Settings.ShowDownloadStatisticsInMainFormTitle;
+                f.Other.OutputFileExtension                   = _Settings.OutputFileExtension;
+                f.Other.ExternalProgCaption                   = _Settings.ExternalProgCaption;
+                f.Other.ExternalProgFilePath                  = _Settings.ExternalProgFilePath;
+                f.Other.ExternalProgApplyByDefault            = _Settings.ExternalProgApplyByDefault;
+
+                if ( f.ShowDialog() == DialogResult.OK )
+                {
+                    _Settings.MaxDegreeOfParallelism              = f.Parallelism.MaxDegreeOfParallelism;
+                    _Settings.UseCrossDownloadInstanceParallelism = f.Parallelism.UseCrossDownloadInstanceParallelism;
+                    _Settings.MaxCrossDownloadInstance            = f.Parallelism.MaxCrossDownloadInstance;
+                    _Settings.MaxCrossDownloadInstanceSaved       = f.Parallelism.MaxCrossDownloadInstanceSaved;
+                    _Settings.MaxSpeedThresholdInMbps             = f.Parallelism.MaxSpeedThresholdInMbps;
+
+                    _Settings.AttemptRequestCountByPart             = f.Other.AttemptRequestCountByPart;
+                    _Settings.RequestTimeoutByPart                  = f.Other.RequestTimeoutByPart;
+                    _Settings.ShowOnlyRequestRowsWithErrors         = f.Other.ShowOnlyRequestRowsWithErrors;
+                    _Settings.UniqueUrlsOnly                        = f.Other.UniqueUrlsOnly;
+                    _Settings.ShowDownloadStatisticsInMainFormTitle = f.Other.ShowDownloadStatisticsInMainFormTitle;
+                    _Settings.OutputFileExtension                   = f.Other.OutputFileExtension;
+                    _Settings.ExternalProgCaption                   = f.Other.ExternalProgCaption;
+                    _Settings.ExternalProgFilePath                  = f.Other.ExternalProgFilePath;
+                    _Settings.ExternalProgApplyByDefault            = f.Other.ExternalProgApplyByDefault;
+
+                    _Settings.SaveNoThrow();
+                    if ( _SettingsController == null )
+                    {
+                        parallelismLabel_set();
+                        settingsLabel_set();
+                    }
+
+                    SettingsChanged?.Invoke( this, EventArgs.Empty );
+                }
+            }
+        }
+        public void ShowDialog_ParallelismSettings() => ShowDialog_Settings( SettingsForm2.SettingsTabEnum.Parallelism );
+        public void ShowDialog_OtherSettings() => ShowDialog_Settings( SettingsForm2.SettingsTabEnum.Other );
         #endregion
 
         #region [.private methods.]
@@ -104,29 +167,7 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void parallelismLabel_Click( object sender, EventArgs e )
-        {
-            using ( var f = new ParallelismForm( _DownloadController ) )
-            {
-                f.UseCrossDownloadInstanceParallelism = _Settings.UseCrossDownloadInstanceParallelism;
-                f.MaxDegreeOfParallelism              = _Settings.MaxDegreeOfParallelism;
-                f.SetMaxCrossDownloadInstance( _Settings.MaxCrossDownloadInstance, _Settings.MaxCrossDownloadInstanceSaved );
-                if ( f.ShowDialog() == DialogResult.OK )
-                {
-                    _Settings.UseCrossDownloadInstanceParallelism = f.UseCrossDownloadInstanceParallelism;
-                    _Settings.MaxDegreeOfParallelism              = f.MaxDegreeOfParallelism;
-                    _Settings.MaxCrossDownloadInstance            = f.MaxCrossDownloadInstance;
-                    _Settings.MaxCrossDownloadInstanceSaved       = f.MaxCrossDownloadInstanceSaved;
-                    _Settings.SaveNoThrow();
-                    if ( _SettingsController == null )
-                    {
-                        parallelismLabel_set();
-                    }
-
-                    SettingsChanged?.Invoke( this, EventArgs.Empty );
-                }
-            }
-        }
+        private void parallelismLabel_Click( object sender, EventArgs e ) => ShowDialog_ParallelismSettings();
         private void parallelismLabel_EnabledChanged( object sender, EventArgs e )
         {
             if ( _Settings.UseCrossDownloadInstanceParallelism )
@@ -134,55 +175,8 @@ namespace m3u8.download.manager.ui
                 parallelismLabel.BackColor = (parallelismLabel.Enabled ? Color.DimGray : Color.FromKnownColor( KnownColor.Control ));
             }
         }
-        private void exceptionWordsLabel_Click( object sender, EventArgs e )
-        {
-            using ( var f = new FileNameExcludesWordsEditor( NameCleaner.ExcludesWords ) )
-            {
-                if ( f.ShowDialog() == DialogResult.OK )
-                {
-                    NameCleaner.ResetExcludesWords( f.GetFileNameExcludesWords() );
-                    _Settings.ResetNameCleanerExcludesWords( NameCleaner.ExcludesWords );
-                    _Settings.SaveNoThrow();
-                }
-            }
-        }
-        private void settingsLabel_Click( object sender, EventArgs e )
-        {
-            using ( var f = new SettingsForm( _DownloadController ) )
-            {
-                f.AttemptRequestCountByPart             = _Settings.AttemptRequestCountByPart;
-                f.RequestTimeoutByPart                  = _Settings.RequestTimeoutByPart;
-                f.ShowOnlyRequestRowsWithErrors         = _Settings.ShowOnlyRequestRowsWithErrors;
-                f.UniqueUrlsOnly                        = _Settings.UniqueUrlsOnly;
-                f.ShowDownloadStatisticsInMainFormTitle = _Settings.ShowDownloadStatisticsInMainFormTitle;
-                f.OutputFileExtension                   = _Settings.OutputFileExtension;
-                f.ExternalProgCaption                   = _Settings.ExternalProgCaption;
-                f.ExternalProgFilePath                  = _Settings.ExternalProgFilePath;
-                f.ExternalProgApplyByDefault            = _Settings.ExternalProgApplyByDefault;
-                //---f.MaxSpeedThresholdInMbps               = _Settings.MaxSpeedThresholdInMbps;
-
-                if ( f.ShowDialog() == DialogResult.OK )
-                {
-                    _Settings.AttemptRequestCountByPart             = f.AttemptRequestCountByPart;
-                    _Settings.RequestTimeoutByPart                  = f.RequestTimeoutByPart;
-                    _Settings.ShowOnlyRequestRowsWithErrors         = f.ShowOnlyRequestRowsWithErrors;
-                    _Settings.UniqueUrlsOnly                        = f.UniqueUrlsOnly;
-                    _Settings.ShowDownloadStatisticsInMainFormTitle = f.ShowDownloadStatisticsInMainFormTitle;
-                    _Settings.OutputFileExtension                   = f.OutputFileExtension;
-                    _Settings.ExternalProgCaption                   = f.ExternalProgCaption;
-                    _Settings.ExternalProgFilePath                  = f.ExternalProgFilePath;
-                    _Settings.ExternalProgApplyByDefault            = f.ExternalProgApplyByDefault;
-                    //---_Settings.MaxSpeedThresholdInMbps               = f.MaxSpeedThresholdInMbps;
-                    _Settings.SaveNoThrow();
-                    if ( _SettingsController == null )
-                    {
-                        settingsLabel_set();
-                    }
-
-                    SettingsChanged?.Invoke( this, EventArgs.Empty );
-                }
-            }
-        }
+        private void exceptionWordsLabel_Click( object sender, EventArgs e ) => ShowDialog_FileNameExcludesWordsEditor();
+        private void settingsLabel_Click( object sender, EventArgs e ) => ShowDialog_OtherSettings();
 
         private void parallelismLabel_set()
         {

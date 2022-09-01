@@ -26,6 +26,7 @@ namespace m3u8.download.manager
                 f.UseCrossDownloadInstanceParallelism = settings.UseCrossDownloadInstanceParallelism;
                 f.MaxDegreeOfParallelism              = settings.MaxDegreeOfParallelism;
                 f.SetMaxCrossDownloadInstance( settings.MaxCrossDownloadInstance, settings.MaxCrossDownloadInstanceSaved );
+                f.MaxSpeedThresholdInMbps             = settings.MaxSpeedThresholdInMbps;
 
                 await f.ShowDialogEx();
                 if ( f.Success )
@@ -34,6 +35,7 @@ namespace m3u8.download.manager
                     settings.MaxDegreeOfParallelism              = f.MaxDegreeOfParallelism;
                     settings.MaxCrossDownloadInstance            = f.MaxCrossDownloadInstance;
                     settings.MaxCrossDownloadInstanceSaved       = f.MaxCrossDownloadInstanceSaved;
+                    settings.MaxSpeedThresholdInMbps             = f.MaxSpeedThresholdInMbps;
                     settings.SaveNoThrow();
                 }
             }            

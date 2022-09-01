@@ -87,7 +87,25 @@
     <Compile Include="UI\Controls\DataGridViewEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UI\Forms\SettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\SettingsForm.designer.cs">
+      <DependentUpon>SettingsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\LogRowsHeightStorer.cs" />
+    <Compile Include="UI\UC\ParallelismSettingsUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\UC\ParallelismSettingsUC.Designer.cs">
+      <DependentUpon>ParallelismSettingsUC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\UC\OtherSettingsUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\UC\OtherSettingsUC.designer.cs">
+      <DependentUpon>OtherSettingsUC.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\UC\ToolStripDropDownButtonEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -142,18 +160,6 @@
     <Compile Include="UI\UC\LogUC.Designer.cs">
       <DependentUpon>LogUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Forms\ParallelismForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\ParallelismForm.Designer.cs">
-      <DependentUpon>ParallelismForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Forms\SettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\SettingsForm.designer.cs">
-      <DependentUpon>SettingsForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\UC\DownloadListUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -202,8 +208,11 @@
     <Content Include="Resources\contextMenu\start_all.png" />
     <Content Include="Resources\contextMenu\start.png" />
     <Content Include="Resources\dop.ico" />
+    <Content Include="Resources\dop_settings.ico" />
     <Content Include="Resources\downloadInstance.ico" />
     <None Include="Resources\reset.png" />
+    <Content Include="Resources\listbullets.png" />
+    <Content Include="Resources\settings.png" />
     <Content Include="Resources\speed\speed_1.ico" />
     <Content Include="Resources\speed\speed_2.ico" />
     <Content Include="Resources\speed\speed_3.ico" />
