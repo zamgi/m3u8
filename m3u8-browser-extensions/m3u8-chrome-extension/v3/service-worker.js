@@ -1,8 +1,5 @@
 self.importScripts('workInfoType.js');
 
-//console.log('start \'service-worker.js\': ' + new Date().toLocaleString());
-//chrome.webNavigation.onBeforeNavigate.addListener((details) => console.log('(for don\'t sleep) onBeforeNavigate(): ' + new Date().toLocaleString() + ', ' + details.url));
-//chrome.webNavigation.onBeforeNavigate.addListener((details) => console.log('(for don\'t sleep)'));
 //------------------------------------------------------------------------------------------------//
 let lifeline, keepAliveNum = 0;
 keepAlive();
@@ -11,7 +8,7 @@ chrome.runtime.onConnect.addListener(port => {
     if (port.name === 'keepAlive') {
         console.log('keepAlive (for don\'t sleep): ' + (++keepAliveNum));
         lifeline = port;
-        setTimeout(keepAliveForced, 10e3); // (295e3) 5 minutes minus 5 seconds
+        setTimeout(keepAliveForced, 30 * 1000); // (295e3) 5 minutes minus 5 seconds
         port.onDisconnect.addListener(keepAliveForced);
     }
 });
@@ -21,7 +18,7 @@ chrome.runtime.onSuspend.addListener(async () => {
 });
 
 async function keepAliveForced() {
-    lifeline?.disconnect();
+    try { lifeline?.disconnect(); } catch (ex) { ; }
     lifeline = null;
     await keepAlive();
 }
@@ -36,7 +33,7 @@ async function keepAlive() {
             });
             chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
             return;
-        } catch (e) {
+        } catch (ex) {
             ;
         }
     }
