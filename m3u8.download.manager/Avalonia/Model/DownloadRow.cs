@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -65,6 +66,7 @@ namespace m3u8.download.manager.models
         public int            FailedDownloadParts         { [M(O.AggressiveInlining)] get; private set; }
         public long           DownloadBytesLength         { [M(O.AggressiveInlining)] get; private set; }
         public DownloadStatus Status                      { [M(O.AggressiveInlining)] get; private set; }
+        private double?       _InstantaneousSpeedInMbps;
 
         //--- USING FOR BINDING & UPDATE BINDING---//
         public DownloadRow MySelf { [M(O.AggressiveInlining)] get => this; }
@@ -109,57 +111,76 @@ namespace m3u8.download.manager.models
             }
         }
 
-        [M(O.AggressiveInlining)]
-        internal void SetDownloadResponseStepParams( in m3u8_processor_v2.ResponseStepActionParams p )
+        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in m3u8_processor_v2.ResponseStepActionParams p )
         {
-            if ( 0 < p.BytesLength )
+            var call__Fire_PropertyChanged_Events = false;
+            lock ( this )
             {
-                var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
-                var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
-                if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
+                if ( 0 < p.BytesLength )
                 {
-                    SuccessDownloadParts = sdp;
-                    FailedDownloadParts  = fdp;
-                    DownloadBytesLength += p.BytesLength;
+                    var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
+                    var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
+                    if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
+                    {
+                        SuccessDownloadParts = sdp;
+                        FailedDownloadParts  = fdp;
+                        DownloadBytesLength += p.BytesLength;
 
-                    Fire_PropertyChanged_Events( nameof(MySelf) );
-                    //---Fire_PropertyChanged_Events( "DownloadParts-&-DownloadBytesLength" );                    
+                        call__Fire_PropertyChanged_Events = true;
+                    }
+                }
+
+                if ( _InstantaneousSpeedInMbps != p.InstantaneousSpeedInMbps )
+                {
+                    _InstantaneousSpeedInMbps = p.InstantaneousSpeedInMbps;
+                    call__Fire_PropertyChanged_Events = true;
                 }
             }
-        }
-
-        [M(O.AggressiveInlining)]
-        public void SetStatus( DownloadStatus newStatus )
-        {
-            if ( Status != newStatus )
+            if ( call__Fire_PropertyChanged_Events )
             {
-                switch ( newStatus )
+                Fire_PropertyChanged_Events( nameof(MySelf) );
+                //---Fire_PropertyChanged_Events( "DownloadParts-&-DownloadBytesLength" );
+            }
+        }
+        [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
+        {
+            var call__Fire_PropertyChanged_Events = false;
+            lock ( this )
+            {
+                if ( Status != newStatus )
                 {
-                    case DownloadStatus.Started:
-                        _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength = 0;
-                        CreatedOrStartedDateTime = DateTime.Now;
-                    break;
+                    switch ( newStatus )
+                    {
+                        case DownloadStatus.Started:
+                            _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength = 0;
+                            CreatedOrStartedDateTime           = DateTime.Now;
+                            _InstantaneousSpeedInMbps          = null;
+                        break;
 
-                    case DownloadStatus.Running:
-                        _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
-                        CreatedOrStartedDateTime           = DateTime.Now;
-                    break;
+                        case DownloadStatus.Running:
+                            _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
+                            CreatedOrStartedDateTime           = DateTime.Now;
+                            _InstantaneousSpeedInMbps          = null;
+                        break;
 
-                    case DownloadStatus.Canceled:
-                    case DownloadStatus.Error:
-                    case DownloadStatus.Finished:
-                        _FinitaElapsed = (DateTime.Now - CreatedOrStartedDateTime);
-                    break;
+                        case DownloadStatus.Canceled:
+                        case DownloadStatus.Error:
+                        case DownloadStatus.Finished:
+                            _FinitaElapsed = (DateTime.Now - CreatedOrStartedDateTime);
+                        break;
+                    }
+
+                    Status = newStatus;
+                    call__Fire_PropertyChanged_Events = true;
                 }
-
-                Status = newStatus;
+            }
+            if ( call__Fire_PropertyChanged_Events )
+            {
                 Fire_PropertyChanged_Events( nameof(Status) );
                 Fire_PropertyChanged_Events( nameof(MySelf) );
             }
         }
-
-        [M(O.AggressiveInlining)]
-        public TimeSpan GetElapsed()
+        [M(O.AggressiveInlining)] public TimeSpan GetElapsed()
         {
             switch ( Status )
             {
@@ -172,9 +193,20 @@ namespace m3u8.download.manager.models
                     return (DateTime.Now - CreatedOrStartedDateTime);
             }
         }
-
-        [M(O.AggressiveInlining)] 
-        public long GetDownloadBytesLengthAfterLastRun() => this.DownloadBytesLength - _DownloadBytesLength_BeforeRunning;
+        [M(O.AggressiveInlining)] public long GetDownloadBytesLengthAfterLastRun()
+        {
+            lock ( this )
+            {
+                return (this.DownloadBytesLength - _DownloadBytesLength_BeforeRunning);
+            }
+        }
+        [M(O.AggressiveInlining)] public double? GetInstantaneousSpeedInMbps()
+        {
+            lock ( this )
+            {
+                return (_InstantaneousSpeedInMbps);
+            }
+        }
 #if DEBUG
         public override string ToString() => Status.ToString();
 #endif

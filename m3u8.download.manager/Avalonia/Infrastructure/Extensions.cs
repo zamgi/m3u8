@@ -417,12 +417,16 @@ namespace m3u8.download.manager
                                                                                                                (status == DownloadStatus.Running );
         #endregion
 
-        public static string GetSpeedText( long downloadBytes, double elapsedSeconds )
+        public static string GetSpeedText( long downloadBytes, double elapsedSeconds, double? instantaneousSpeedInMbps )
         {
             string speedText;
             //if ( downloadBytes < 1_024 ) speedText = GetSpeedInBps( downloadBytes, elapsedSeconds ).ToString("N2") + " bps"; //" bit/s";
             if ( downloadBytes < 100_024 ) speedText = GetSpeedInKbps( downloadBytes, elapsedSeconds ).ToString("N2") + " Kbps"; //" Kbit/s";
             else                           speedText = GetSpeedInMbps( downloadBytes, elapsedSeconds ).ToString("N1") + " Mbps"; //" Mbit/s";
+            if ( instantaneousSpeedInMbps.HasValue )
+            {
+                speedText += $" (↑{instantaneousSpeedInMbps:N1} Mbps)";
+            }
             return (speedText);
         }
         public static double GetMbps( long downloadBytes ) => (downloadBytes * 1.0 / (1_048_576 / 8));

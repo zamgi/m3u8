@@ -134,7 +134,7 @@
 
       <DataGridTemplateColumn Width="*">
         <DataGridTemplateColumn.Header>
-          <TextBlock Text="Speed" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="Speed (↑Instant)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>

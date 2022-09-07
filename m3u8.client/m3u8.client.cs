@@ -90,8 +90,8 @@ namespace m3u8
 
         public m3u8_part_ts( string relativeUrlName, int orderNumber ) : this() => (RelativeUrlName, OrderNumber) = (relativeUrlName, orderNumber);
 
-        public string RelativeUrlName { get; private set; }
-        public int    OrderNumber     { get; private set; }
+        public string RelativeUrlName { get; }
+        public int    OrderNumber     { get; }
 
         public byte[] Bytes { get; private set; }
         public void SetBytes( byte[] bytes ) => Bytes = bytes;

@@ -394,7 +394,7 @@ namespace m3u8.download.manager.ui
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
-                    var speedText = Extensions.GetSpeedText( downloadBytes, elapsedSeconds );
+                    var speedText = Extensions.GetSpeedText( downloadBytes, elapsedSeconds, row.GetInstantaneousSpeedInMbps() );
                     downloadInfo += $", [{speedText}]";
                 }
             }
@@ -475,7 +475,7 @@ namespace m3u8.download.manager.ui
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
-                    return (Extensions.GetSpeedText( downloadBytes, elapsedSeconds ));
+                    return (Extensions.GetSpeedText( downloadBytes, elapsedSeconds, row.GetInstantaneousSpeedInMbps() ));
                 }
             }
             return (string.Empty);

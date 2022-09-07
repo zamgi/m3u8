@@ -160,7 +160,7 @@
             // 
             this.DGV_downloadSpeedColumn.FillWeight = 80F;
             this.DGV_downloadSpeedColumn.Width = 80;
-            this.DGV_downloadSpeedColumn.HeaderText = "Speed";
+            this.DGV_downloadSpeedColumn.HeaderText = "Speed (↑Instant)";
             this.DGV_downloadSpeedColumn.Name = "DGV_downloadSpeedColumn";
             this.DGV_downloadSpeedColumn.ReadOnly = true;
             this.DGV_downloadSpeedColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;

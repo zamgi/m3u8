@@ -33,7 +33,7 @@ namespace m3u8
         void Start( Task task );
         void Restart( Task task );
         public void End( Task task );
-        void Throttle( Task task, CancellationToken ct );        
+        double? Throttle( Task task, CancellationToken ct );        
         void TakeIntoAccountDownloadedBytes( Task task, int downloadedBytes );
     }
 
@@ -70,74 +70,81 @@ namespace m3u8
                     var task_download = Task.Run( () =>
                     {
                         var throttler_by_speed = ip.ThrottlerBySpeed;
-
-                        for ( var n = 1; sourceQueue.Count != 0; n++ )
+                        try
                         {
-                            #region [.check 'waitIfPausedEvent'.]
-                            if ( !ip.WaitIfPausedEvent.IsSet )
+                            for ( var n = 1; sourceQueue.Count != 0; n++ )
                             {
-                                ip.WaitingIfPaused?.Invoke();
-                                ip.WaitIfPausedEvent.Wait( joinedCts.Token );
-                                throttler_by_speed.Restart( marker_task );
-                            }
-                            #endregion
+                                #region [.check 'waitIfPausedEvent'.]
+                                if ( !ip.WaitIfPausedEvent.IsSet )
+                                {
+                                    ip.WaitingIfPaused?.Invoke();
+                                    ip.WaitIfPausedEvent.Wait( joinedCts.Token );
+                                    throttler_by_speed.Restart( marker_task );
+                                }
+                                #endregion
 
-                            #region [.throttler by speed.]
-                            throttler_by_speed.Throttle( marker_task, joinedCts.Token );
-                            #endregion
+                                #region [.throttler by speed.]
+                                var instantaneousSpeedInMbps = throttler_by_speed.Throttle( marker_task, joinedCts.Token );
+                                #endregion
 
-                            ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
-                            var part = sourceQueue.Dequeue();
+                                ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
+                                var part = sourceQueue.Dequeue();
 
-                            var rq = RequestStepActionParams.CreateSuccess( totalPatrs, n, part );
-                            ip.RequestStepAction?.Invoke( rq );
+                                var rq = RequestStepActionParams.CreateSuccess( totalPatrs, n, part );
+                                ip.RequestStepAction?.Invoke( rq );
 
-                            ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
-                                 .ContinueWith( continuationTask =>
-                                 {
-                                    var rsp = new ResponseStepActionParams( totalPatrs );
+                                ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
+                                     .ContinueWith( continuationTask =>
+                                     {
+                                        var rsp = new ResponseStepActionParams( totalPatrs, instantaneousSpeedInMbps );
 
-                                    if ( continuationTask.IsFaulted )
-                                    {
-                                        Interlocked.Increment( ref expectedPartNumber );
-
-                                        part.SetError( continuationTask.Exception );
-
-                                        rsp.SuccessReceivedPartCount = successReceivedPartCount;
-                                        rsp.FailedReceivedPartCount  = Interlocked.Increment( ref failedReceivedPartCount );
-                                        rsp.Part                     = part;
-
-                                        ip.ResponseStepAction?.Invoke( rsp );
-
-                                        innerCts.Cancel();
-                                    }
-                                    else if ( !continuationTask.IsCanceled )
-                                    {
-                                        var downloadPart = continuationTask.Result;
-                                        if ( downloadPart.Error != null )
+                                        if ( continuationTask.IsFaulted )
                                         {
+                                            Interlocked.Increment( ref expectedPartNumber );
+
+                                            part.SetError( continuationTask.Exception );
+
                                             rsp.SuccessReceivedPartCount = successReceivedPartCount;
                                             rsp.FailedReceivedPartCount  = Interlocked.Increment( ref failedReceivedPartCount );
-                                        }
-                                        else
-                                        {
-                                            rsp.SuccessReceivedPartCount = Interlocked.Increment( ref successReceivedPartCount );
-                                            rsp.FailedReceivedPartCount  = failedReceivedPartCount;
-                                            rsp.BytesLength              = downloadPart.Bytes.Length;
+                                            rsp.Part                     = part;
 
-                                            throttler_by_speed.TakeIntoAccountDownloadedBytes( marker_task, downloadPart.Bytes.Length );
-                                        }
-                                        rsp.Part = downloadPart;
-                                        ip.ResponseStepAction?.Invoke( rsp );
+                                            ip.ResponseStepAction?.Invoke( rsp );
 
-                                        lock ( downloadPartsSet )
-                                        {
-                                            downloadPartsSet.Add( downloadPart );
-                                            canExtractPartEvent.Set();
+                                            innerCts.Cancel();
                                         }
-                                    }
-                                 }
-                                 , /*ct*/ joinedCts.Token );
+                                        else if ( !continuationTask.IsCanceled )
+                                        {
+                                            var downloadPart = continuationTask.Result;
+                                            if ( downloadPart.Error != null )
+                                            {
+                                                rsp.SuccessReceivedPartCount = successReceivedPartCount;
+                                                rsp.FailedReceivedPartCount  = Interlocked.Increment( ref failedReceivedPartCount );
+                                            }
+                                            else
+                                            {
+                                                rsp.SuccessReceivedPartCount = Interlocked.Increment( ref successReceivedPartCount );
+                                                rsp.FailedReceivedPartCount  = failedReceivedPartCount;
+                                                rsp.BytesLength              = downloadPart.Bytes.Length;
+
+                                                throttler_by_speed.TakeIntoAccountDownloadedBytes( marker_task, downloadPart.Bytes.Length );
+                                            }
+                                            rsp.Part = downloadPart;
+                                            ip.ResponseStepAction?.Invoke( rsp );
+
+                                            lock ( downloadPartsSet )
+                                            {
+                                                downloadPartsSet.Add( downloadPart );
+                                                canExtractPartEvent.Set();
+                                            }
+                                        }
+                                     }
+                                     , /*ct*/ joinedCts.Token );
+                            }
+                        }
+                        catch ( Exception ex )
+                        {
+                            Debug.WriteLine( ex );
+                            throw;
                         }
                     }
                     , /*ct*/ joinedCts.Token );
@@ -228,74 +235,81 @@ namespace m3u8
                     var task_download = Task.Run( () =>
                     {
                         var throttler_by_speed = ip.ThrottlerBySpeed;
-
-                        for ( var n = 1; sourceQueue.Count != 0; n++ )
+                        try
                         {
-                            #region [.check 'waitIfPausedEvent'.]
-                            if ( !ip.WaitIfPausedEvent.IsSet )
+                            for ( var n = 1; sourceQueue.Count != 0; n++ )
                             {
-                                ip.WaitingIfPaused?.Invoke();
-                                ip.WaitIfPausedEvent.Wait( joinedCts.Token );
-                                throttler_by_speed.Restart( marker_task );
-                            }
-                            #endregion
+                                #region [.check 'waitIfPausedEvent'.]
+                                if ( !ip.WaitIfPausedEvent.IsSet )
+                                {
+                                    ip.WaitingIfPaused?.Invoke();
+                                    ip.WaitIfPausedEvent.Wait( joinedCts.Token );
+                                    throttler_by_speed.Restart( marker_task );
+                                }
+                                #endregion
 
-                            #region [.throttler by speed.]
-                            throttler_by_speed.Throttle( marker_task, joinedCts.Token );
-                            #endregion
+                                #region [.throttler by speed.]
+                                var instantaneousSpeedInMbps = throttler_by_speed.Throttle( marker_task, joinedCts.Token );
+                                #endregion
 
-                            ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
-                            var part = sourceQueue.Dequeue();
+                                ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
+                                var part = sourceQueue.Dequeue();
 
-                            var rq = RequestStepActionParams.CreateSuccess( totalPatrs, n, part );
-                            ip.RequestStepAction?.Invoke( rq );
+                                var rq = RequestStepActionParams.CreateSuccess( totalPatrs, n, part );
+                                ip.RequestStepAction?.Invoke( rq );
 
-                            ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
-                                 .ContinueWith( continuationTask =>
-                                 {
-                                    var rsp = new ResponseStepActionParams( totalPatrs );
+                                ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
+                                     .ContinueWith( continuationTask =>
+                                     {
+                                        var rsp = new ResponseStepActionParams( totalPatrs, instantaneousSpeedInMbps );
 
-                                    if ( continuationTask.IsFaulted )
-                                    {
-                                        Interlocked.Increment( ref expectedPartNumber );
-
-                                        part.SetError( continuationTask.Exception );
-
-                                        rsp.SuccessReceivedPartCount = successReceivedPartCount;
-                                        rsp.FailedReceivedPartCount  = Interlocked.Increment( ref failedReceivedPartCount );
-                                        rsp.Part                     = part;
-
-                                        ip.ResponseStepAction?.Invoke( rsp );
-
-                                        innerCts.Cancel();
-                                    }
-                                    else if ( !continuationTask.IsCanceled )
-                                    {
-                                        var downloadPart = continuationTask.Result;
-                                        if ( downloadPart.Error != null )
+                                        if ( continuationTask.IsFaulted )
                                         {
+                                            Interlocked.Increment( ref expectedPartNumber );
+
+                                            part.SetError( continuationTask.Exception );
+
                                             rsp.SuccessReceivedPartCount = successReceivedPartCount;
                                             rsp.FailedReceivedPartCount  = Interlocked.Increment( ref failedReceivedPartCount );
-                                        }
-                                        else
-                                        {
-                                            rsp.SuccessReceivedPartCount = Interlocked.Increment( ref successReceivedPartCount );
-                                            rsp.FailedReceivedPartCount  = failedReceivedPartCount;
-                                            rsp.BytesLength              = downloadPart.Bytes.Length;
+                                            rsp.Part                     = part;
 
-                                            throttler_by_speed.TakeIntoAccountDownloadedBytes( marker_task, downloadPart.Bytes.Length );
-                                        }
-                                        rsp.Part = downloadPart;
-                                        ip.ResponseStepAction?.Invoke( rsp );
+                                            ip.ResponseStepAction?.Invoke( rsp );
 
-                                        lock ( downloadPartsSet )
-                                        {
-                                            downloadPartsSet.Add( downloadPart );
-                                            canExtractPartEvent.Set();
+                                            innerCts.Cancel();
                                         }
-                                    }
-                                 }
-                                 , /*ct*/ joinedCts.Token );
+                                        else if ( !continuationTask.IsCanceled )
+                                        {
+                                            var downloadPart = continuationTask.Result;
+                                            if ( downloadPart.Error != null )
+                                            {
+                                                rsp.SuccessReceivedPartCount = successReceivedPartCount;
+                                                rsp.FailedReceivedPartCount  = Interlocked.Increment( ref failedReceivedPartCount );
+                                            }
+                                            else
+                                            {
+                                                rsp.SuccessReceivedPartCount = Interlocked.Increment( ref successReceivedPartCount );
+                                                rsp.FailedReceivedPartCount  = failedReceivedPartCount;
+                                                rsp.BytesLength              = downloadPart.Bytes.Length;
+
+                                                throttler_by_speed.TakeIntoAccountDownloadedBytes( marker_task, downloadPart.Bytes.Length );
+                                            }
+                                            rsp.Part = downloadPart;
+                                            ip.ResponseStepAction?.Invoke( rsp );
+
+                                            lock ( downloadPartsSet )
+                                            {
+                                                downloadPartsSet.Add( downloadPart );
+                                                canExtractPartEvent.Set();
+                                            }
+                                        }
+                                     }
+                                     , /*ct*/ joinedCts.Token );
+                            }
+                        }
+                        catch ( Exception ex )
+                        {
+                            Debug.WriteLine( ex );
+                            throw;
                         }
                     }
                     , /*ct*/ joinedCts.Token );
@@ -377,7 +391,7 @@ namespace m3u8
                 return (this);
             }
 
-            internal static RequestStepActionParams CreateSuccess( int totalPartCount, int partOrderNumber, m3u8_part_ts part ) 
+            internal static RequestStepActionParams CreateSuccess( int totalPartCount, int partOrderNumber, in m3u8_part_ts part ) 
                 => new RequestStepActionParams() { TotalPartCount = totalPartCount, PartOrderNumber = partOrderNumber, Part = part };
         }
         /// <summary>
@@ -389,14 +403,18 @@ namespace m3u8
         /// </summary>
         public struct ResponseStepActionParams
         {
-            internal ResponseStepActionParams( int totalPartCount ) : this()
-                => TotalPartCount = totalPartCount;
+            internal ResponseStepActionParams( int totalPartCount, double? instantaneousSpeedInMbps = null ) : this()
+            {
+                TotalPartCount           = totalPartCount;
+                InstantaneousSpeedInMbps = instantaneousSpeedInMbps;
+            }
 
-            public int TotalPartCount           { get; private  set; }
-            public int SuccessReceivedPartCount { get; internal set; }
-            public int FailedReceivedPartCount  { get; internal set; }
-            public int BytesLength              { get; internal set; }
-            public m3u8_part_ts Part            { get; internal set; }
+            public int     TotalPartCount           { get; }
+            public double? InstantaneousSpeedInMbps { get; }
+            public int     SuccessReceivedPartCount { get; internal set; }
+            public int     FailedReceivedPartCount  { get; internal set; }
+            public int     BytesLength              { get; internal set; }
+            public m3u8_part_ts Part                { get; internal set; }
         }
         /// <summary>
         /// 

@@ -128,6 +128,7 @@ namespace m3u8.download.manager.ui
                 {
                     maxSpeedThresholdNUD.Value = Math.Max( 0.1, value.Value );
                 }
+                isUnlimMaxSpeedThresholdCheckBox_Click( null, null );
             }
         }
         #endregion
@@ -158,7 +159,7 @@ namespace m3u8.download.manager.ui
         {
             var isChecked = isUnlimMaxSpeedThresholdCheckBox.IsChecked.GetValueOrDefault();
 
-            maxSpeedThresholdLabel.Foreground = (!isChecked ? this.Foreground : Brushes.DarkGray); ;
+            maxSpeedThresholdLabel.Foreground = (!isChecked ? this.Foreground : Brushes.DarkGray);
             maxSpeedThresholdNUD  .IsEnabled  = !isChecked;
         }
         #endregion
