@@ -1,50 +1,52 @@
 self.importScripts('workInfoType.js');
 
 //------------------------------------------------------------------------------------------------//
-let lifeline, keepAliveNum = 0;
-keepAlive();
 
-chrome.runtime.onConnect.addListener(port => {
-    if (port.name === 'keepAlive') {
-        console.log('keepAlive (for don\'t sleep): ' + (++keepAliveNum));
-        lifeline = port;
-        setTimeout(keepAliveForced, 30 * 1000); // (295e3) 5 minutes minus 5 seconds
-        port.onDisconnect.addListener(keepAliveForced);
-    }
-});
-chrome.runtime.onSuspend.addListener(async () => {
-    console.log('onSuspend-unloading');
-    await keepAliveForced();
-});
+//let lifeline, keepAliveNum = 0;
+//keepAlive();
 
-async function keepAliveForced() {
-    try { lifeline?.disconnect(); } catch (ex) { ; }
-    lifeline = null;
-    await keepAlive();
-}
+//chrome.runtime.onConnect.addListener(port => {
+//    if (port.name === 'keepAlive') {
+//        console.log('keepAlive (for don\'t sleep): ' + (++keepAliveNum));
+//        lifeline = port;
+//        setTimeout(keepAliveForced, 30 * 1000); // (295e3) 5 minutes minus 5 seconds
+//        port.onDisconnect.addListener(keepAliveForced);
+//    }
+//});
+//chrome.runtime.onSuspend.addListener(async () => {
+//    console.log('onSuspend-unloading');
+//    await keepAliveForced();
+//});
 
-async function keepAlive() {
-    if (lifeline) return;
-    for (const tab of await chrome.tabs.query({ url: '*://*/*' })) {
-        try {
-            await chrome.scripting.executeScript({
-                target: { tabId: tab.id },
-                func: () => chrome.runtime.connect({ name: 'keepAlive' }),
-            });
-            chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
-            return;
-        } catch (ex) {
-            ;
-        }
-    }
-    chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
-}
+//async function keepAliveForced() {
+//    try { lifeline?.disconnect(); } catch (ex) { ; }
+//    lifeline = null;
+//    await keepAlive();
+//}
 
-async function retryOnTabUpdate(tabId, info, tab) {
-    if (info.url && /^(http|https?):/.test(info.url)) {
-        await keepAlive();
-    }
-}
+//async function keepAlive() {
+//    if (lifeline) return;
+//    for (const tab of await chrome.tabs.query({ url: '*://*/*' })) {
+//        try {
+//            await chrome.scripting.executeScript({
+//                target: { tabId: tab.id },
+//                func: () => chrome.runtime.connect({ name: 'keepAlive' }),
+//            });
+//            chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
+//            return;
+//        } catch (ex) {
+//            ;
+//        }
+//    }
+//    chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
+//}
+
+//async function retryOnTabUpdate(tabId, info, tab) {
+//    if (info.url && /^(http|https?):/.test(info.url)) {
+//        await keepAlive();
+//    }
+//}
+
 //------------------------------------------------------------------------------------------------//
 
 //urls-list will be saved between reloads.

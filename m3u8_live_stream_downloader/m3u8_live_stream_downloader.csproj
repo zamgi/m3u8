@@ -12,7 +12,7 @@
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
     <!--<RetainVMGarbageCollection>true</RetainVMGarbageCollection>-->
-  <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
   </PropertyGroup>
   
   <PropertyGroup>
