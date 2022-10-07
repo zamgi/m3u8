@@ -94,6 +94,12 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\LogRowsHeightStorer.cs" />
+    <Compile Include="UI\UC\ToolStripItems\SpeedThresholdUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\UC\ToolStripItems\SpeedThresholdUC.designer.cs">
+      <DependentUpon>SpeedThresholdUC.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\UC\ParallelismSettingsUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -106,7 +112,13 @@
     <Compile Include="UI\UC\OtherSettingsUC.designer.cs">
       <DependentUpon>OtherSettingsUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\UC\ToolStripDropDownButtonEx.cs">
+    <Compile Include="UI\UC\ToolStripItems\ToolStripSpeedThreshold.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\UC\ToolStripItems\ToolStripNumericUpDownEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\UC\ToolStripItems\ToolStripDropDownButtonEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\UC\NumericUpDownEx.cs">

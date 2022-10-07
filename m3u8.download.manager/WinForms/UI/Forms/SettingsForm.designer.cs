@@ -38,6 +38,8 @@
             tabControl.Location = new System.Drawing.Point(0, 0);
             tabControl.Size = new System.Drawing.Size(296, 457);
             tabControl.TabIndex = 0;
+            tabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
+            tabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.TabControl_DrawItem);
             // 
             // parallelismTabPage
             // 

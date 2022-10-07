@@ -1,5 +1,8 @@
 ﻿using System.Drawing;
+using System.Linq;
+
 using _Resources_ = m3u8.download.manager.Properties.Resources;
+using _ToolStripSpeedThreshold_ = m3u8.download.manager.ui.ToolStripSpeedThreshold;
 
 namespace System.Windows.Forms
 {
@@ -44,7 +47,7 @@ namespace System.Windows.Forms
             this.ImageScaling          = ToolStripItemImageScaling.None;
             this.Image                 = MainImage;
             this.ToolTipText           = MainToolTipText;
-            this.Text = "-";
+            this.Text                  = "-";
 
             _Value = DefaultValue;
 
@@ -209,7 +212,8 @@ namespace System.Windows.Forms
                     this.Image       = MainImage;
 
                     var font = new Font( this.Font, FontStyle.Regular );
-                    foreach ( ToolStripMenuItemEx mi in this.DropDownItems )
+                    var was_find_mi = false;
+                    foreach ( var mi in this.DropDownItems.Cast< ToolStripItem >().OfType< ToolStripMenuItemEx >() )
                     {
                         if ( IsEqual( mi.Value, value ) )
                         {
@@ -220,6 +224,7 @@ namespace System.Windows.Forms
                             this.ForeColor   = mi.ForeColor;
                             this.Text        = mi.Text;
                             this.ToolTipText = MainToolTipText + ": " + mi.Text;
+                            was_find_mi = true;
                         }
                         else
                         {
@@ -228,11 +233,30 @@ namespace System.Windows.Forms
                         }
                     }
 
+                    if ( !was_find_mi && _Value.HasValue )
+                    {
+                        _ToolStripSpeedThreshold.BackColor = this.SelectedBackColor;
+                        //_ToolStripSpeedThreshold.Font = this.Font;
+
+                        var val_int = (int) _Value.Value;
+                        if ( _ToolStripSpeedThreshold.Value != val_int )
+                        {
+                            _ToolStripSpeedThreshold.Value = val_int;
+                        }
+                    }
+                    else
+                    {
+                        _ToolStripSpeedThreshold.BackColor = this.BackColor;
+                        //_ToolStripSpeedThreshold.Font = font;
+                    }
+
                     Fire_ValueChanged();
                 }
             }
         }
 
+        private _ToolStripSpeedThreshold_ _ToolStripSpeedThreshold;
+        private void ToolStripSpeedThreshold_ValueChanged( object sender, EventArgs e ) => this.Value = ((_ToolStripSpeedThreshold_) sender).Value;
         protected override void FillDropDownItems()
         {            
             var font = new Font( this.Font, FontStyle.Regular );
@@ -242,6 +266,9 @@ namespace System.Windows.Forms
             this.DropDownItems.Add( new ToolStripMenuItemEx(   10, ToolStripMenuItemEx_EventHandler ) { Text = $"10 {MBPS}", ForeColor = Color.FromArgb( 234, 118,  33 ), Image = _Resources_.speed_3.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx(    5, ToolStripMenuItemEx_EventHandler ) { Text = $"5 {MBPS}" , ForeColor = Color.FromArgb( 252, 146,   0 ), Image = _Resources_.speed_4.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx(    1, ToolStripMenuItemEx_EventHandler ) { Text = $"1 {MBPS}" , ForeColor = Color.FromArgb( 178, 202,   0 ), Image = _Resources_.speed_5.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            
+            this.DropDownItems.Add( new ToolStripSeparator() );
+            this.DropDownItems.Add( _ToolStripSpeedThreshold = new _ToolStripSpeedThreshold_( ToolStripSpeedThreshold_ValueChanged ) { Font = font } );
 
             this.Value = null;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -58,6 +59,32 @@ namespace m3u8.download.manager.ui
             base.OnClosing( e );
 
             otherSettingsUC.OnClosing( DialogResult, e );
+        }
+        private void TabControl_DrawItem( object sender, DrawItemEventArgs e )
+        {
+            var tabControl = (TabControl) sender;
+            var tabPage    = tabControl.TabPages[ e.Index ];
+            
+            //e.DrawBackground();
+            using var br = new SolidBrush( tabPage.BackColor );
+            e.Graphics.FillRectangle( br, e.Bounds );
+
+            var color = (tabPage == parallelismTabPage) ? Brushes.DodgerBlue : Brushes.DarkOrange;
+
+            using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.None, FormatFlags = StringFormatFlags.NoWrap };
+            using var ft = new Font( tabPage.Font, FontStyle.Underline );
+            e.Graphics.DrawString( tabPage.Text, ft, color, e.Bounds, sf );
+
+            //ALWAYS DRAW ITS OWNER CONTROL
+            //if ( (e.State & DrawItemState.Selected) == DrawItemState.Selected ) //if ( (e.State & DrawItemState.Focus) == DrawItemState.Focus )
+            //{
+            //    var rc = e.Bounds;
+            //    rc.Inflate( -2, -2 );
+
+            //    ControlPaint.DrawFocusRectangle( e.Graphics, rc );
+            //    //e.Graphics.DrawRectangle( Pens.Silver, rc );
+            //    //e.DrawFocusRectangle();
+            //}
         }
 
         #region [.public props.]
