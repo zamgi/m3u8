@@ -1,5 +1,6 @@
 html { overflow: hidden; max-width: 800px; }
 .body { font-family: verdana; overflow: hidden; margin: 3px 3px 0 3px; }
+.body_2 { margin-bottom: 10px }
 .right { text-align: right; }
 
 div.content {
@@ -22,14 +23,18 @@ a { outline: none; text-decoration: none; color: dimgrey; }
         a.auto_start_download > img:hover, a.auto_start_download_all > img:hover { border-color: silver; }
     a.auto_start_download_all { margin-left: 5px; }
 
-div.options_1 { background-color: whitesmoke; text-align: right; }
-#directionRtl, label[for="directionRtl"] { color: silver; }
-               label[for="directionRtl"] { margin-right: 20px }
+div.options_1 { background-color: whitesmoke; text-align: right; white-space: nowrap; }
+div.options_1 #directionRtl, div.options_1 label[for="directionRtl"] { color: silver; }
+               div.options_1 label[for="directionRtl"] { margin-right: 20px }
 #clearUrlList { padding: 0 2px; margin-left: 35px; border: 1px silver solid; border-radius: 2px; }
 #clearUrlList:hover { background-color: whitesmoke }
 #clearUrlList:active { background-color: lightgrey; }
 
 div.content_2 { font-size: 0.6em; font-weight: normal; padding: 0 0 5px 15px; }
 div.options_root { padding: 0 0 20px 15px; }
-div.options_2 { background-color: whitesmoke; }
+div.options_2 { background-color: whitesmoke; margin-right: 15px; }
+    div.options_2:nth-child(1) {padding-top: 5px;}
+    div.options_2:nth-last-child(1) {padding-bottom: 5px;}
 span.sign { padding: 0 0 15px 15px }
+
+input[type="checkbox"], label[for] { cursor: pointer; }
