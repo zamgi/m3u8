@@ -16,6 +16,15 @@ window.onload = async function () {
         await chrome.storage.local.set({ saveUrlListBetweenTabReload: this.checked });
     });
 
+    let content = document.getElementById('content');
+    ch = document.getElementById('directionRtl');
+    ch.checked = (res.directionRtl !== undefined) ? !!res.directionRtl : (content.style.direction === 'rtl');
+    content.style.direction = ch.checked ? 'rtl' : '';
+    ch.addEventListener('click', async function (event) {
+        content.style.direction = this.checked ? 'rtl' : '';
+        await chrome.storage.local.set({ directionRtl: this.checked });
+    });
+
     if (m3u8_urls && m3u8_urls.length) {
         let bt = document.getElementById('clearUrlList');
         bt.style.display = '';
