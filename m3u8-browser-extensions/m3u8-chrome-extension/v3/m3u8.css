@@ -6,6 +6,7 @@ html { overflow: hidden; max-width: 800px; }
 div.content {
     overflow: auto;
     min-width: 200px;
+    white-space: nowrap;
     /*max-width: 800px;*/
     /*direction: rtl;*/
 }
