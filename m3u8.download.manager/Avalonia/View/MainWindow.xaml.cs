@@ -28,7 +28,7 @@ namespace m3u8.download.manager.ui
     /// </summary>
     public sealed class MainWindow : Window, IDisposable
     {
-        #region [.markup fields.]
+        #region [.fields from markup.]
         private DownloadListUC downloadListUC;
         private LogUC          logUC;
 

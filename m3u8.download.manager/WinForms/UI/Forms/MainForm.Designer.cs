@@ -386,10 +386,6 @@
             this.statusBarUC.AutoSize = true;
             this.statusBarUC.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.statusBarUC.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.statusBarUC.IsVisibleExcludesWordsLabel = true;
-            this.statusBarUC.IsVisibleParallelismLabel = true;
-            this.statusBarUC.IsVisibleSettingsLabel = true;
-            this.statusBarUC.LeftSideTextLabelText = null;
             this.statusBarUC.Location = new System.Drawing.Point(0, 540);
             this.statusBarUC.Margin = new System.Windows.Forms.Padding(0);
             this.statusBarUC.TabIndex = 4;

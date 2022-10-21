@@ -4,6 +4,7 @@ using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.infrastructure;
+using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
 namespace m3u8.download.manager.ui
@@ -29,7 +30,7 @@ namespace m3u8.download.manager.ui
 
             _Settings = Settings.Default;
 
-            LeftSideTextLabelText = null;
+            //LeftSideTextLabelText = null;
             parallelismLabel_set();
             settingsLabel_set();
         }
@@ -38,7 +39,8 @@ namespace m3u8.download.manager.ui
             if ( disposing )
             {
                 components?.Dispose();
-                DetachSettingsController();
+                _DetachSettingsControllerAction?.Invoke();
+                _DetachTrackItemsCountAction?.Invoke();
             }
             base.Dispose( disposing );
         }
@@ -46,28 +48,68 @@ namespace m3u8.download.manager.ui
 
         #region [.public.]
         public void SetDownloadController( DownloadController dc ) => _DownloadController = dc;
+        private Action _DetachSettingsControllerAction;
         public void SetSettingsController( SettingsPropertyChangeController sc )
         {
-            DetachSettingsController();
+            _DetachSettingsControllerAction?.Invoke();
 
             _SettingsController = sc ?? throw (new ArgumentNullException( nameof(sc) ));
             _SettingsController.SettingsPropertyChanged -= SettingsController_PropertyChanged;
             _SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
 
-        }
-        private void DetachSettingsController()
-        {
-            if ( _SettingsController != null )
+            _DetachSettingsControllerAction = () =>
             {
-                _SettingsController.SettingsPropertyChanged -= SettingsController_PropertyChanged;
-                _SettingsController = null;
-            }
+                if ( _SettingsController != null )
+                {
+                    _SettingsController.SettingsPropertyChanged -= SettingsController_PropertyChanged;
+                    _SettingsController = null;
+                }
+            };
         }
+
+        #region [.TrackItemsCount.]
+        private Action _DetachTrackItemsCountAction;
+        public void TrackItemsCount( DownloadListUC downloadListUC )
+        {
+            _DetachTrackItemsCountAction?.Invoke();
+
+            if ( downloadListUC == null ) throw (new ArgumentNullException( nameof(downloadListUC) ));
+            var model = downloadListUC.Model ?? throw (new ArgumentNullException( nameof(downloadListUC.Model) ));
+
+            var setItemsCount = new Action(() =>
+            {
+                var cnt = downloadListUC.GetSelectedDownloadRowsCount();
+                leftSideTextLabel.Text = (1 < cnt) ? $"{cnt} items selected" : $"{model.RowsCount} items";
+            });
+
+            var downloadListUC_SelectionChanged     = new DownloadListUC.SelectionChangedEventHandler( _ => setItemsCount() );
+            var downloadListModel_CollectionChanged = new ListModel< DownloadRow >.CollectionChangedEventHandler( (collectionChangedType, _) => setItemsCount() );
+
+            downloadListUC.SelectionChanged  += downloadListUC_SelectionChanged;
+            model         .CollectionChanged += downloadListModel_CollectionChanged;
+
+            _DetachTrackItemsCountAction = () =>
+            {
+                if ( downloadListUC != null )
+                {
+                    downloadListUC.SelectionChanged -= downloadListUC_SelectionChanged;
+                    downloadListUC = null;
+                }
+                if ( model != null )
+                {
+                    model.CollectionChanged -= downloadListModel_CollectionChanged;
+                    model = null;
+                }
+            };
+
+            setItemsCount();
+        }
+        #endregion
 
         public bool IsVisibleSettingsLabel      { get => settingsLabel      .Visible; set => settingsLabel      .Visible = value; }
         public bool IsVisibleParallelismLabel   { get => parallelismLabel   .Visible; set => parallelismLabel   .Visible = value; }
         public bool IsVisibleExcludesWordsLabel { get => exceptionWordsLabel.Visible; set => exceptionWordsLabel.Visible = value; }
-        public string LeftSideTextLabelText     { get => leftSideTextLabel  .Text   ; set => leftSideTextLabel  .Text    = value; }
+        //---public string LeftSideTextLabelText     { get => leftSideTextLabel  .Text   ; set => leftSideTextLabel  .Text    = value; }
         //public bool IsVisibleLeftSideTextLabel  { get => leftSideTextLabel .Visible; set => leftSideTextLabel .Visible = value; }
 
         public void ShowDialog_FileNameExcludesWordsEditor()
@@ -82,9 +124,9 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public void ShowDialog_Settings( SettingsForm2.SettingsTabEnum? settingsTab = default )
+        public void ShowDialog_Settings( SettingsForm.SettingsTabEnum? settingsTab = default )
         {
-            using ( var f = new SettingsForm2( _DownloadController, settingsTab ) )
+            using ( var f = new SettingsForm( _DownloadController, settingsTab ) )
             {
                 f.Parallelism.MaxDegreeOfParallelism              = _Settings.MaxDegreeOfParallelism;                
                 f.Parallelism.UseCrossDownloadInstanceParallelism = _Settings.UseCrossDownloadInstanceParallelism;                
@@ -130,8 +172,8 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public void ShowDialog_ParallelismSettings() => ShowDialog_Settings( SettingsForm2.SettingsTabEnum.Parallelism );
-        public void ShowDialog_OtherSettings() => ShowDialog_Settings( SettingsForm2.SettingsTabEnum.Other );
+        public void ShowDialog_ParallelismSettings() => ShowDialog_Settings( SettingsForm.SettingsTabEnum.Parallelism );
+        public void ShowDialog_OtherSettings() => ShowDialog_Settings( SettingsForm.SettingsTabEnum.Other );
         #endregion
 
         #region [.private methods.]

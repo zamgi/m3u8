@@ -85,6 +85,8 @@
     </DockPanel>
     <DockPanel Background="WhiteSmoke" Grid.Row="0" Grid.Column="1">      
       <Menu DockPanel.Dock="Top" Padding="2">
+        <Label Content="{Binding ItemsCount}" VerticalContentAlignment="Center" Foreground="Silver" IsEnabled="False" />
+        
         <MenuItem Command="{Binding FileNameExcludesWordsEditorCommand}" ToolTip.Tip="file name excludes words editor" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
             <Image Source="/Resources/listbullets.png" />

@@ -76,6 +76,7 @@ namespace m3u8.download.manager.ui
             downloadListUC.DoubleClickEx           += openOutputFileMenuItem_Click;
             statusBarUC.SetDownloadController( _DownloadController );
             statusBarUC.SetSettingsController( _SettingsController );
+            statusBarUC.TrackItemsCount( downloadListUC );
 
             _ReceivedInputParamsArrayEventHandler = ((string m3u8FileUrl, bool autoStartDownload)[] array) => AddNewDownloads( array );
             PipeIPC.NamedPipeServer__in.ReceivedInputParamsArray += NamedPipeServer__in_ReceivedInputParamsArray;

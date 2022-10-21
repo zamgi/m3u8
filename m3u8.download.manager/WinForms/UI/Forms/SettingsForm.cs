@@ -10,7 +10,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    internal sealed partial class SettingsForm2 : Form
+    internal sealed partial class SettingsForm : Form
     {
         /// <summary>
         /// 
@@ -22,8 +22,8 @@ namespace m3u8.download.manager.ui
         }
 
         #region [.ctor().]
-        private SettingsForm2() => InitializeComponent();
-        public SettingsForm2( DownloadController dc, SettingsTabEnum? settingsTab = default ) : this()
+        private SettingsForm() => InitializeComponent();
+        public SettingsForm( DownloadController dc, SettingsTabEnum? settingsTab = default ) : this()
         {
             parallelismSettingsUC.Init( dc );
             otherSettingsUC      .Init( dc );

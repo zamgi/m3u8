@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
@@ -9,13 +10,14 @@ namespace m3u8.download.manager
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class MainVM : IDisposable
+    internal sealed class MainVM : IDisposable, INotifyPropertyChanged
     {
         public MainVM( MainWindow mainWindow )
         {
             SettingsController = new SettingsPropertyChangeController();
 
             DownloadListModel  = new DownloadListModel();
+            DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
             DownloadController = new DownloadController( DownloadListModel, SettingsController );
 
             AddCommand         = new AddCommand( this );
@@ -24,8 +26,13 @@ namespace m3u8.download.manager
             AboutCommand       = new AboutCommand();
             FileNameExcludesWordsEditorCommand = new FileNameExcludesWordsEditorCommand( this );
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void DownloadListModel_CollectionChanged( ListModel< DownloadRow >.CollectionChangedTypeEnum collectionChangedType ) => PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( nameof(ItemsCount) ) );
+
         public void Dispose()
         {
+            DownloadListModel.CollectionChanged -= DownloadListModel_CollectionChanged;
             SettingsController.Dispose_NoThrow();
             DownloadController.Dispose_NoThrow();
         }
@@ -39,5 +46,7 @@ namespace m3u8.download.manager
         public SettingsCommand    SettingsCommand    { get; }
         public AboutCommand       AboutCommand       { get; }
         public FileNameExcludesWordsEditorCommand FileNameExcludesWordsEditorCommand { get; }
+
+        public string ItemsCount => $"{DownloadListModel.RowsCount} Items";
     }
 }
