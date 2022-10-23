@@ -26,7 +26,10 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
         [M(O.AggressiveInlining)] public static bool HasFirstCharNotDot( this string s ) => (s != null) && (0 < s.Length) && (s[ 0 ] != '.');
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null) && seq.Any();
-        [M(O.AggressiveInlining)] public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : (T?) null);
+        [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IList< T > seq ) => (seq != null) && (0 < seq.Count);
+        [M(O.AggressiveInlining)] public static bool AnyEx_< T >( this IReadOnlyList< T > seq ) => (seq != null) && (0 < seq.Count);
+        [M(O.AggressiveInlining)] public static bool AnyEx_< T >( this IReadOnlyCollection< T > seq ) => (seq != null) && (0 < seq.Count);
+        [M(O.AggressiveInlining)] public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : null);
         [M(O.AggressiveInlining)] public static bool EqualIgnoreCase( this string s1, string s2 ) => (string.Compare( s1, s2, true ) == 0);
         [M(O.AggressiveInlining)] public static bool ContainsIgnoreCase( this string s1, string s2 ) => ((s1 != null) && (s1.IndexOf( s2, StringComparison.InvariantCultureIgnoreCase ) != -1));
         public static void Remove< T >( this HashSet< T > hs, IEnumerable< T > seq )
@@ -61,6 +64,20 @@ namespace m3u8.download.manager
             if ( t != null )
             {
                 hs.Add( t );
+            }
+        }
+        public static List< T > ToList< T >( this IEnumerable< T > seq, int capacity )
+        {
+            var list = new List< T >( capacity );
+            list.AddRange( seq );
+            return (list);
+        }
+        public static void Replace< T >( this List< T > lst, IEnumerable< T > seq )
+        {
+            lst.Clear();
+            if ( seq != null )
+            {
+                lst.AddRange( seq );
             }
         }
 
@@ -123,6 +140,18 @@ namespace m3u8.download.manager
             {
                 Debug.WriteLine( ex );
             }
+        }
+        public static string GetFirstExistsDirectory( string path )
+        {
+            for ( var dir = path; !dir.IsNullOrEmpty(); dir = Path.GetDirectoryName( dir ) )
+            {
+                if ( Directory.Exists( dir ) )
+                {
+                    return (dir);
+                }
+            }
+
+            return (null);
         }
         public static (bool success, string outputFileName) TryGetFirstFileExists( ICollection<string> fileNames ) => (TryGetFirstFileExists( fileNames, out var outputFileName ), outputFileName);
         public static bool TryGetFirstFileExists( ICollection< string > fileNames, out string existsFileName )
@@ -319,6 +348,18 @@ namespace m3u8.download.manager
             }
         }
 
+        public static bool TryGetData< T >( this IDataObject d, out T t )
+        {
+            if ( d.GetData( typeof(T) ) is T x )
+            {
+                t = x;
+                return (true);
+            }
+            t = default;
+            return (false);
+        }
+        public static void SetDataEx< T >( this IDataObject d, T t ) => d.SetData( typeof(T), t );
+        //public static T GetData< T >( this IDataObject d ) => (d.GetData( typeof(T) ) is T t) ? t : default;
 
         [M(O.AggressiveInlining)] public static void Cancel_NoThrow( this CancellationTokenSource cts )
         {
@@ -393,6 +434,7 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool IsWait    ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Wait);
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Paused);
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadStatus status ) => (status     == DownloadStatus.Paused);
+        [M(O.AggressiveInlining)] public static bool IsRunningOrPaused( this DownloadStatus status ) => status switch { DownloadStatus.Running => true, DownloadStatus.Paused => true, _ => false };
 
         [M(O.AggressiveInlining)] public static bool IsColumnSortable( this DataGridView dgv, int columnIndex )
             => /*(0 <= columnIndex) && */ (columnIndex < 0) || (dgv.Columns[ columnIndex ].SortMode != DataGridViewColumnSortMode.NotSortable);

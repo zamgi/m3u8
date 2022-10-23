@@ -256,6 +256,25 @@ namespace m3u8.download.manager.ui
             }
             return (false);
         }
+        private void SelectDownloadRows( IReadOnlyList< DownloadRow > rows, DownloadRow focusedRow )
+        {
+            DGV.ClearSelection();
+
+            var visibleIndex = focusedRow.GetVisibleIndex();
+            if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
+            {
+                DGV.CurrentCell = DGV.Rows[ visibleIndex ].Cells[ 0 ];
+            }
+            foreach ( var row in rows )
+            {
+                visibleIndex = row.GetVisibleIndex();
+                if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
+                {
+                    DGV.Rows[ visibleIndex ].Selected = true;
+                    _UserMade_DGV_SelectionChanged = false;
+                }
+            }
+        }
         public bool HasFocus => (DGV.Focused || this.Focused);
 
         public DownloadListModel Model => _Model;
@@ -914,7 +933,7 @@ namespace m3u8.download.manager.ui
         private void DGV_EndDrawSelectRect( object sender, EventArgs e ) => _CommonUpdateTimer.Enabled = true;
         #endregion
 
-        private HitTestInfo _DGV_MouseDown_HitTestInfo;
+        private HitTestInfo _DGV_MouseDown_HitTestInfo = HitTestInfo.Nowhere;
         private Point       _DGV_MouseDown_ButtonLeft_Location;
         private void DGV_MouseDown( object sender, MouseEventArgs e )
         {
@@ -959,13 +978,18 @@ namespace m3u8.download.manager.ui
         private void DGV_DoubleClick( object sender, EventArgs e ) => DoubleClickEx?.Invoke( sender, e );
 
         #region [.DragDrop rows.]
+        /// <summary>
+        /// 
+        /// </summary>
+        private sealed class DRAGDROP_ROWS_FORMAT_TYPE
+        {
+            public DRAGDROP_ROWS_FORMAT_TYPE( IReadOnlyList< DownloadRow > selectedRows, DownloadRow focusedRow ) => (Rows, FocusedRow) = (selectedRows, focusedRow);
+            public IReadOnlyList< DownloadRow > Rows { get; }
+            public DownloadRow FocusedRow { get; }
+        }
         private void DGV_MouseMove( object sender, MouseEventArgs e )
         {
             if ( e.Button != MouseButtons.Left ) return;
-            //---if ( DGV.RowCount < 2 ) return;
-            var row = GetSelectedDownloadRow();
-            if ( row == null ) return;
-
             var ht = DGV.HitTest( e.X, e.Y );
             if ( (ht.RowIndex < 0) || (ht.ColumnIndex < 0) ) return;
 
@@ -976,28 +1000,33 @@ namespace m3u8.download.manager.ui
                  Math.Abs( _DGV_MouseDown_ButtonLeft_Location.Y - e.Y ) < MOVE_DELTA ) return;
             //-----------------------------------------------------//
 
+            var rows = GetSelectedDownloadRows();
+            if ( !rows.Any() ) return;
+            var focusedRow = _Model[ DGV.CurrentCell.RowIndex ];
+
+            var fileNames = rows.SelectMany( r => r.GetOutputFullFileNames() ).ToList( rows.Count ).ToArray();
+            var dataObj = new DataObject();
+                dataObj.SetData( DataFormats.FileDrop, fileNames );
+                dataObj.SetDataEx( new DRAGDROP_ROWS_FORMAT_TYPE( rows, focusedRow ) );
+
             _DragOver_RowIndex = null;
             DGV.AllowDrop = true;
-            DGV.DragOver += DGV_DragOver;
-            DGV.DragDrop += DGV_DragDrop;
+            DGV.DragOver     += DGV_DragOver;
+            DGV.DragDrop     += DGV_DragDrop;
             DGV.CellPainting += DGV_DragDrop_CellPainting;
             DGV.SetDoubleBuffered( false );
             try
             {
-                var dragDropEffect = DGV.DoDragDrop( row, DragDropEffects.Move );
-                if ( dragDropEffect == DragDropEffects.Move )
-                {
-                    SelectDownloadRow( row );
-                }
-                else
+                var dragDropEffect = DGV.DoDragDrop( dataObj, DragDropEffects.Move | DragDropEffects.Copy );
+                if ( dragDropEffect == DragDropEffects.None )
                 {
                     DGV.Invalidate();
                 }
             }
             finally
             {
-                DGV.DragOver -= DGV_DragOver;
-                DGV.DragDrop -= DGV_DragDrop;
+                DGV.DragOver     -= DGV_DragOver;
+                DGV.DragDrop     -= DGV_DragDrop;
                 DGV.CellPainting -= DGV_DragDrop_CellPainting;
                 DGV.AllowDrop = false;
                 DGV.SetDoubleBuffered( true );
@@ -1005,14 +1034,16 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_DragDrop( object sender, DragEventArgs e )
         {
-            if ( e.Data.GetData( typeof(DownloadRow) ) is DownloadRow row )
+            if ( e.Data.TryGetData< DRAGDROP_ROWS_FORMAT_TYPE > ( out var ddrf ) )
             {
                 var pt = DGV.PointToClient( new Point( e.X, e.Y ) );
                 var ht = DGV.HitTest( pt.X, pt.Y );
-                if ( (0 <= ht.RowIndex) && (row.GetVisibleIndex() != ht.RowIndex) )
+                if (( 0 <= ht.RowIndex ) && (ddrf.Rows[ 0 ].GetVisibleIndex() != ht.RowIndex))
                 {
-                    _Model.ChangeRowPosition( row, ht.RowIndex );
-                    e.Effect = e.AllowedEffect;                    
+                    _Model.ChangeRowsPosition( ddrf.Rows, ht.RowIndex );
+                    SelectDownloadRows( ddrf.Rows, ddrf.FocusedRow );                    
+
+                    e.Effect = e.AllowedEffect;
                     return;
                 }
             }
@@ -1020,6 +1051,32 @@ namespace m3u8.download.manager.ui
         }
 
         private int? _DragOver_RowIndex;
+        private void DGV_DragOver( object sender, DragEventArgs e )
+        {
+            var pt = DGV.PointToClient( new Point( e.X, e.Y ) );
+            var ht = DGV.HitTest( pt.X, pt.Y );
+
+            if ( (0 <= ht.RowIndex) && e.Data.TryGetData< DRAGDROP_ROWS_FORMAT_TYPE >( out var ddrf ) && (ddrf.Rows[ 0 ].GetVisibleIndex() != ht.RowIndex) )
+            {
+                e.Effect = e.AllowedEffect;
+
+                if ( _DragOver_RowIndex != ht.RowIndex )
+                {
+                    _DragOver_RowIndex = ht.RowIndex;
+                    DGV.Invalidate();
+                }
+                DGV.ScrollIfNeed( in pt );
+                return;
+            }
+
+            e.Effect = DragDropEffects.None;
+            if ( _DragOver_RowIndex.HasValue )
+            {
+                _DragOver_RowIndex = null;
+                DGV.Invalidate();
+            }
+            DGV.ScrollIfNeed( in pt );
+        }
         private void DGV_DragDrop_CellPainting( object sender, DataGridViewCellPaintingEventArgs e )
         {
             if ( e.RowIndex == _DragOver_RowIndex )
@@ -1053,33 +1110,8 @@ namespace m3u8.download.manager.ui
                 #endregion
             }
         }
-        private void DGV_DragOver( object sender, DragEventArgs e )
-        {
-            var pt = DGV.PointToClient( new Point( e.X, e.Y ) );
-            var ht = DGV.HitTest( pt.X, pt.Y );
-
-            if ( (0 <= ht.RowIndex) && (e.Data.GetData( typeof(DownloadRow) ) is DownloadRow row) && (row.GetVisibleIndex() != ht.RowIndex) )
-            {
-                e.Effect = e.AllowedEffect;
-
-                if ( _DragOver_RowIndex != ht.RowIndex )
-                {
-                    _DragOver_RowIndex = ht.RowIndex;
-                    DGV.Invalidate();
-                }
-                DGV.ScrollIfNeed( in pt );
-                return;
-            }            
-
-            e.Effect = DragDropEffects.None;
-            if ( _DragOver_RowIndex.HasValue )
-            {
-                _DragOver_RowIndex = null;
-                DGV.Invalidate();
-            }
-            DGV.ScrollIfNeed( in pt );
-        }
         #endregion
+
         private void DGV_DataError( object sender, DataGridViewDataErrorEventArgs e ) => Debug.WriteLine( $"{nameof(DGV_DataError)}::'{e.Context}'; [row={e.RowIndex}:col={e.ColumnIndex}] => '{e.Exception}'" );
         #endregion
     }

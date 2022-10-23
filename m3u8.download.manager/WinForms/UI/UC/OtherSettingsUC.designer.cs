@@ -21,6 +21,8 @@
             System.Windows.Forms.Label l3;
             this.showOnlyRequestRowsWithErrorsCheckBox = new System.Windows.Forms.CheckBox();
             this.showDownloadStatisticsInMainFormTitleCheckBox = new System.Windows.Forms.CheckBox();
+            this.useDirectorySelectDialogModernCheckBox = new System.Windows.Forms.CheckBox();
+            this.testDirectorySelectDialog = new System.Windows.Forms.Button();
             this.externalProgFilePathButton = new System.Windows.Forms.Button();
             this.externalProgFilePathTextBox = new System.Windows.Forms.TextBox();
             this.externalProgCaptionTextBox = new System.Windows.Forms.TextBox();
@@ -49,6 +51,8 @@
             // 
             gb1.Controls.Add(this.showOnlyRequestRowsWithErrorsCheckBox);
             gb1.Controls.Add(this.showDownloadStatisticsInMainFormTitleCheckBox);
+            gb1.Controls.Add(this.useDirectorySelectDialogModernCheckBox);
+            gb1.Controls.Add(this.testDirectorySelectDialog);
             gb1.Location = new System.Drawing.Point(13, 155);
             gb1.Size = new System.Drawing.Size(261, 110);
             gb1.TabIndex = 7;
@@ -60,8 +64,8 @@
             this.showOnlyRequestRowsWithErrorsCheckBox.AutoSize = true;
             this.showOnlyRequestRowsWithErrorsCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.showOnlyRequestRowsWithErrorsCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.showOnlyRequestRowsWithErrorsCheckBox.Location = new System.Drawing.Point(30, 30);
-            this.showOnlyRequestRowsWithErrorsCheckBox.Size = new System.Drawing.Size(185, 17);
+            this.showOnlyRequestRowsWithErrorsCheckBox.Location = new System.Drawing.Point(30, 25);
+            //this.showOnlyRequestRowsWithErrorsCheckBox.Size = new System.Drawing.Size(185, 17);
             this.showOnlyRequestRowsWithErrorsCheckBox.TabIndex = 0;
             this.showOnlyRequestRowsWithErrorsCheckBox.Text = "show only request rows with errors";
             this.showOnlyRequestRowsWithErrorsCheckBox.UseVisualStyleBackColor = true;
@@ -71,11 +75,37 @@
             this.showDownloadStatisticsInMainFormTitleCheckBox.AutoSize = true;
             this.showDownloadStatisticsInMainFormTitleCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.showDownloadStatisticsInMainFormTitleCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.showDownloadStatisticsInMainFormTitleCheckBox.Location = new System.Drawing.Point(30, 60);
-            this.showDownloadStatisticsInMainFormTitleCheckBox.Size = new System.Drawing.Size(177, 30);
+            this.showDownloadStatisticsInMainFormTitleCheckBox.Location = new System.Drawing.Point(30, 45);
+            //this.showDownloadStatisticsInMainFormTitleCheckBox.Size = new System.Drawing.Size(177, 30);
             this.showDownloadStatisticsInMainFormTitleCheckBox.TabIndex = 1;
             this.showDownloadStatisticsInMainFormTitleCheckBox.Text = "show download statistics in main\r\nwindow title";
             this.showDownloadStatisticsInMainFormTitleCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // useDirectorySelectDialogModernCheckBox
+            // 
+            this.useDirectorySelectDialogModernCheckBox.AutoSize = true;
+            this.useDirectorySelectDialogModernCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.useDirectorySelectDialogModernCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.useDirectorySelectDialogModernCheckBox.Location = new System.Drawing.Point( 30, 80 );
+            //this.useDirectorySelectDialogClassicCheckBox.Size = new System.Drawing.Size(177, 30);
+            this.useDirectorySelectDialogModernCheckBox.TabIndex = 2;
+            this.useDirectorySelectDialogModernCheckBox.Text = "use directory select dialog modern style";
+            this.useDirectorySelectDialogModernCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // testDirectorySelectDialog
+            // 
+            this.testDirectorySelectDialog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));            
+            this.testDirectorySelectDialog.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.testDirectorySelectDialog.Location = new System.Drawing.Point(240, 80);
+            this.testDirectorySelectDialog.Size = new System.Drawing.Size(16, 18);
+            this.testDirectorySelectDialog.TabIndex = 3;
+            this.toolTip.SetToolTip(this.testDirectorySelectDialog, "test directory select dialog" );
+            this.testDirectorySelectDialog.UseVisualStyleBackColor = true;
+            this.testDirectorySelectDialog.Click += new System.EventHandler(this.testDirectorySelectDialog_Click);
+            this.testDirectorySelectDialog.Text = "¨";
+            //this.testDirectorySelectDialog.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            //this.testDirectorySelectDialog.Image = new System.Drawing.Bitmap( Properties.Resources.browse, new System.Drawing.Size( 10, 10 ) );
+            this.testDirectorySelectDialog.Margin = new System.Windows.Forms.Padding(0);
             // 
             // gb2
             // 
@@ -293,6 +323,8 @@
         private System.Windows.Forms.DateTimePicker requestTimeoutByPartDTP;
         private System.Windows.Forms.CheckBox showOnlyRequestRowsWithErrorsCheckBox;
         private System.Windows.Forms.CheckBox showDownloadStatisticsInMainFormTitleCheckBox;
+        private System.Windows.Forms.CheckBox useDirectorySelectDialogModernCheckBox;
+        private System.Windows.Forms.Button testDirectorySelectDialog;
         private System.Windows.Forms.CheckBox uniqueUrlsOnlyCheckBox;
         private System.Windows.Forms.Label only4NotRunLabel1;
         private System.Windows.Forms.Label only4NotRunLabel2;

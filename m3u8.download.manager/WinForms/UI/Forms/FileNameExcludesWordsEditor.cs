@@ -19,6 +19,20 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
+        public static bool TryEdit( IReadOnlyCollection< string > excludesWords, out IList< string > resultExcludesWords )
+        {
+            using ( var f = new FileNameExcludesWordsEditor( excludesWords ) )
+            {
+                if ( f.ShowDialog() == DialogResult.OK )
+                {
+                    resultExcludesWords = f.GetFileNameExcludesWords();
+                    return (true);
+                }
+            }
+            resultExcludesWords = default;
+            return (false);
+        }
+
         private FileNameExcludesWordsEditor()
         {
             InitializeComponent();

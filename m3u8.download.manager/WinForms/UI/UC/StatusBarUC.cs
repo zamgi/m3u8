@@ -114,14 +114,10 @@ namespace m3u8.download.manager.ui
 
         public void ShowDialog_FileNameExcludesWordsEditor()
         {
-            using ( var f = new FileNameExcludesWordsEditor( NameCleaner.ExcludesWords ) )
+            if ( FileNameExcludesWordsEditor.TryEdit( NameCleaner.ExcludesWords, out var resultExcludesWords ) )
             {
-                if ( f.ShowDialog() == DialogResult.OK )
-                {
-                    NameCleaner.ResetExcludesWords( f.GetFileNameExcludesWords() );
-                    _Settings.ResetNameCleanerExcludesWords( NameCleaner.ExcludesWords );
-                    _Settings.SaveNoThrow();
-                }
+                _Settings.ResetNameCleanerExcludesWords( NameCleaner.ResetExcludesWords( resultExcludesWords ) );
+                _Settings.SaveNoThrow();
             }
         }
         public void ShowDialog_Settings( SettingsForm.SettingsTabEnum? settingsTab = default )
@@ -142,6 +138,7 @@ namespace m3u8.download.manager.ui
                 f.Other.ExternalProgCaption                   = _Settings.ExternalProgCaption;
                 f.Other.ExternalProgFilePath                  = _Settings.ExternalProgFilePath;
                 f.Other.ExternalProgApplyByDefault            = _Settings.ExternalProgApplyByDefault;
+                f.Other.UseDirectorySelectDialogModern        = _Settings.UseDirectorySelectDialogModern;
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
@@ -160,6 +157,7 @@ namespace m3u8.download.manager.ui
                     _Settings.ExternalProgCaption                   = f.Other.ExternalProgCaption;
                     _Settings.ExternalProgFilePath                  = f.Other.ExternalProgFilePath;
                     _Settings.ExternalProgApplyByDefault            = f.Other.ExternalProgApplyByDefault;
+                    _Settings.UseDirectorySelectDialogModern        = f.Other.UseDirectorySelectDialogModern;
 
                     _Settings.SaveNoThrow();
                     if ( _SettingsController == null )

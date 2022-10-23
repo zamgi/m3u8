@@ -28,6 +28,10 @@ namespace m3u8.download.manager.ui
             _DownloadController.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
 
             DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
+#if NETCOREAPP
+            useDirectorySelectDialogModernCheckBox.Enabled = false;
+            useDirectorySelectDialogModernCheckBox.Text += "\r\n(disabled for NETCOREAPP)";
+#endif
         }
 
         protected override void Dispose( bool disposing )
@@ -120,6 +124,11 @@ namespace m3u8.download.manager.ui
             get => externalProgApplyByDefaultCheckBox.Checked;
             set => externalProgApplyByDefaultCheckBox.Checked = value;
         }
+        public bool     UseDirectorySelectDialogModern
+        {
+            get => useDirectorySelectDialogModernCheckBox.Checked;
+            set => useDirectorySelectDialogModernCheckBox.Checked = value;
+        }
         #endregion
 
         #region [.private methods.]
@@ -180,6 +189,17 @@ namespace m3u8.download.manager.ui
             if ( ofd.ShowDialog( this ) == DialogResult.OK )
             {
                 this.ExternalProgFilePath = ofd.FileName;
+            }
+        }
+        private void testDirectorySelectDialog_Click( object sender, EventArgs e )
+        {
+            if ( UseDirectorySelectDialogModern )
+            {
+                DirectorySelectDialog.Show_AsFileSelectDialog( this, Environment.CurrentDirectory, this.toolTip.GetToolTip( testDirectorySelectDialog ), out var _ );
+            }
+            else
+            {
+                DirectorySelectDialog.Show_Classic( this, Environment.CurrentDirectory, this.toolTip.GetToolTip( testDirectorySelectDialog ), out var _ );
             }
         }
 

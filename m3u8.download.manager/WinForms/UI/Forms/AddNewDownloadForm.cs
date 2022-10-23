@@ -349,24 +349,10 @@ namespace m3u8.download.manager.ui
         }
         private void outputDirectorySelectButton_Click( object sender, EventArgs e )
         {
-            if ( SHBrowser.TrySelectPath( this, this.OutputDirectory, "Select output directory", out var selectedPath ) )
+            if ( DirectorySelectDialog.Show( this, this.OutputDirectory, "Select output directory", out var selectedPath ) )
             {
                 this.OutputDirectory = selectedPath;
             }
-
-            #region comm. prev. v1.
-            /*
-            using ( var d = new FolderBrowserDialog() { SelectedPath        = this.OutputDirectory,
-                                                        Description         = "Select Output directory",
-                                                        ShowNewFolderButton = true } )
-            {
-                if ( d.ShowDialog( this ) == DialogResult.OK )
-                {
-                    this.OutputDirectory = d.SelectedPath;
-                }
-            }
-            */
-            #endregion
         }
         #endregion
 

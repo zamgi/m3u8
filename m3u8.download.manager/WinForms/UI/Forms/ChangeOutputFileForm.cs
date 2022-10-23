@@ -19,6 +19,21 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
+        internal static bool TryChangeOutputFile( IWin32Window owner, DownloadRow row, out string outputFileName )
+        {
+            using ( var f = new ChangeOutputFileForm( row ) )
+            {
+                if ( (f.ShowDialog( owner ) == DialogResult.OK) &&
+                     FileNameCleaner.TryGetOutputFileName( f.OutputFileName, out outputFileName )
+                   )
+                {
+                    return (true);
+                }
+            }
+            outputFileName = default;
+            return (false);
+        }
+
         public ChangeOutputFileForm()
         {
             InitializeComponent();

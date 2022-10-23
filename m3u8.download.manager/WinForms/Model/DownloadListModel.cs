@@ -208,7 +208,7 @@ namespace m3u8.download.manager.models
             }
         }
 #if DEBUG
-        public override string ToString() => Status.ToString();
+        public override string ToString() => $"{Status}, '{GetOutputFullFileName()}'";
 #endif
     }
 

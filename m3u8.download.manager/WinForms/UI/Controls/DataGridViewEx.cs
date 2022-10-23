@@ -20,6 +20,11 @@ namespace System.Windows.Forms
             _ScrollIfNeedTimer = new Timer() { Interval = ScrollDelayInMilliseconds, Enabled = false };
             _ScrollIfNeedTimer.Tick += ScrollIfNeedTimer_Tick;
         }
+        protected override void Dispose( bool disposing )
+        {
+            _ScrollIfNeedTimer.Enabled = false;
+            base.Dispose( disposing );
+        }
 
         /// <summary>
         /// 
@@ -35,16 +40,20 @@ namespace System.Windows.Forms
         public event EventHandler EndDrawSelectRect;
 
         #region [.draw select rows rect.]
-        private bool _DrawSelectRect;
+        private bool  _DrawSelectRect;
         private Point _SelectLocation;
-        private int _SelectVerticalScrollingOffset;
+        private int   _SelectVerticalScrollingOffset;
         private Rectangle _SelectRect;
         private SortedSet< DataGridViewRow > _SelectedRows;
         private Timer _ScrollIfNeedTimer;
 
         protected override void OnMouseDown( MouseEventArgs e )
         {
-            base.OnMouseDown( e );
+            //doesn't process base.OnMouseDown() for save multi-rows selection (else it disappear/stay one-row)
+            if ( (SelectedRows.Count <= 1) || (Control.ModifierKeys == Keys.None) )
+            {
+                base.OnMouseDown( e );
+            }            
 
             if ( this.HitTest( e.X, e.Y ).Type == DataGridViewHitTestType.None )
             {
@@ -79,14 +88,17 @@ namespace System.Windows.Forms
                 _DrawSelectRect = false;
                 _SelectedRows?.Clear();
                 this.Invalidate();
-                EndDrawSelectRect?.Invoke( this, EventArgs.Empty );                
+                EndDrawSelectRect?.Invoke( this, EventArgs.Empty );
             }
         }
         protected override void OnMouseMove( MouseEventArgs e )
-        {            
+        {
             base.OnMouseMove( e );
 
-            ProcessDrawSelectRect( e.X, e.Y );
+            if ( _DrawSelectRect )
+            {
+                ProcessDrawSelectRect( e.X, e.Y );
+            }
         }
         private void ProcessDrawSelectRect( int X, int Y )
         {
@@ -118,20 +130,6 @@ namespace System.Windows.Forms
                         selectedRows.Add( row );
                     }
                 }
-                #region comm. prev.
-                /*
-                var selectedRows = new SortedSet< DataGridViewRow >( DataGridViewRow_Comparer.Inst );
-                for ( int y = _SelectRect.Y, end_y = _SelectRect.Bottom; y < end_y; y += 10 )
-                {
-                    var hti = this.HitTest( _SelectRect.X, y );
-                    if ( hti.Type == DataGridViewHitTestType.Cell )
-                    {
-                        var row = this.Rows[ hti.RowIndex ];
-                        selectedRows.Add( row );
-                    }
-                }
-                //*/ 
-                #endregion
 
                 if ( !_SelectedRows.IsEqual( selectedRows ) )
                 {
@@ -267,15 +265,15 @@ namespace System.Windows.Forms
         [DllImport(GDI32_DLL)] private static extern bool DeleteObject( IntPtr hObj );
 
         [M(O.AggressiveInlining)] private static int ArgbToRGB( int rgb ) => ((rgb >> 16 & 0x0000FF) | (rgb & 0x00FF00) | (rgb << 16 & 0xFF0000));
-        public static void DrawXORRectangle( this Graphics graphics, in Rectangle rc, Color color, int penWidth = 2 )
+        public static void DrawXORRectangle( this Graphics gr, in Rectangle rc, Color color, int penWidth = 2 )
         {
-            IntPtr hDC = graphics.GetHdc();
+            IntPtr hDC = gr.GetHdc();
             IntPtr hPen = CreatePen( 0, penWidth, ArgbToRGB( color.ToArgb() ) );
             SelectObject( hDC, hPen );
             SetROP2( hDC, DrawingMode.R2_NOTXORPEN );
             Rectangle( hDC, rc.Left, rc.Top, rc.Right, rc.Bottom );
             DeleteObject( hPen );
-            graphics.ReleaseHdc( hDC );
+            gr.ReleaseHdc( hDC );
         }
     }
 

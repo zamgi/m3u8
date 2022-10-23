@@ -42,7 +42,7 @@ namespace m3u8.download.manager.infrastructure
             EXCLUDES_WORDS_SET = new SortedSet< string >( StringComparer.InvariantCultureIgnoreCase );
         }
 
-        public static void ResetExcludesWords( IEnumerable< string > excludesWords )
+        public static IReadOnlyCollection< string > ResetExcludesWords( IEnumerable< string > excludesWords )
         {
             lock ( EXCLUDES_WORDS_SET )
             {
@@ -55,6 +55,7 @@ namespace m3u8.download.manager.infrastructure
                         EXCLUDES_WORDS_SET.Add( w );
                     }
                 }
+                return (EXCLUDES_WORDS_SET);
             }
         }
         public static IReadOnlyCollection< string > ExcludesWords => EXCLUDES_WORDS_SET;

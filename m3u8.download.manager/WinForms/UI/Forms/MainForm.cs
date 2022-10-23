@@ -1287,76 +1287,108 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.change OutputFileName & OutputDirectory.]
+        private void downloadListUC_OutputFileNameClick( DownloadRow row )
+        {
+            if ( ChangeOutputFileForm.TryChangeOutputFile( this, row, out var outputFileName ) )
+            {
+                ChangeOutputFileName( row, outputFileName );
+                downloadListUC.Invalidate( true );
+            }
+        }
+
+        private string _Last_ChangeOutputDirectory;
         private void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
         {
-            var rows = (from row in downloadListUC.GetSelectedDownloadRows()
-                        where !row.IsFinished()
-                        select row
-                       ).ToList();
+            var rows = downloadListUC.GetSelectedDownloadRows();
             if ( rows.Any() )
             {
                 var first_row = rows.First();
                 var descr = (rows.Count == 1) ? $"Select output directory for file: '{first_row.OutputFileName}'" : $"Select output directory for {rows.Count} files";
-                if ( SHBrowser.TrySelectPath( this, first_row.OutputDirectory, descr, out var outputDirectory ) )
+                if ( DirectorySelectDialog.Show( this, GetSelectedDirectory( first_row ), descr, out var outputDirectory ) )
                 {
+                    _Last_ChangeOutputDirectory = outputDirectory;
                     foreach ( var row in rows )
                     {
-                        changeOutputDirectory( row, outputDirectory );
+                        ChangeOutputDirectory( row, outputDirectory );
                     }
                     downloadListUC.Invalidate( true );
                 }
             }
         }
-
-        private void downloadListUC_OutputFileNameClick( DownloadRow row )
-        {
-            using ( var f = new ChangeOutputFileForm( row ) )
-            {
-                if ( (f.ShowDialog( this ) == DialogResult.OK) &&
-                     FileNameCleaner.TryGetOutputFileName( f.OutputFileName, out var outputFileName )
-                   )
-                {
-                    var need_add = _ExternalProgQueue.Remove( row.GetOutputFullFileName() );
-                    {
-                        row.SetOutputFileName( outputFileName );
-                        downloadListUC.Invalidate( true );
-                    }
-                    if ( need_add ) _ExternalProgQueue.Add( row.GetOutputFullFileName() );
-                }
-            }
-        }
-
         private void downloadListUC_OutputDirectoryClick( DownloadRow row )
         {
-            if ( SHBrowser.TrySelectPath( this, row.OutputDirectory, $"Select output directory for file: '{row.OutputFileName}'", out var outputDirectory ) )
+            if ( DirectorySelectDialog.Show( this, GetSelectedDirectory( row ), $"Select output directory for file: '{row.OutputFileName}'", out var outputDirectory ) )
             {
-                changeOutputDirectory( row, outputDirectory );
+                _Last_ChangeOutputDirectory = outputDirectory;
+                ChangeOutputDirectory( row, outputDirectory );
                 downloadListUC.Invalidate( true );
             }
+        }
+        private string GetSelectedDirectory( DownloadRow row ) => Extensions.GetFirstExistsDirectory( _Last_ChangeOutputDirectory ) ?? row.OutputDirectory;
 
-            #region comm. prev. v1.
-            /*
-            using ( var d = new FolderBrowserDialog() { SelectedPath        = row.OutputDirectory,
-                                                        Description         = $"Select output directory for file: '{row.OutputFileName}'",
-                                                        ShowNewFolderButton = true } )
+        private void ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
+        private void ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
+        private void ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
+        {
+            var prev_outputFullFileName = row.GetOutputFullFileName();
+            var need_add = _ExternalProgQueue.Remove( prev_outputFullFileName );
+               
+            if ( change_outputDirectory )
             {
-                if ( d.ShowDialog( this ) == DialogResult.OK )
-                {
-                    row.SetOutputDirectory( d.SelectedPath );
-                    downloadListUC.Invalidate( true );
-                }
+                row.SetOutputDirectory( outputFileName_or_outputDirectory );
             }
-            */
-            #endregion
+            else
+            {
+                row.SetOutputFileName( outputFileName_or_outputDirectory );
+            }                
+            var new_outputFullFileName = row.GetOutputFullFileName();
+
+            if ( need_add ) _ExternalProgQueue.Add( new_outputFullFileName );
+
+            MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName );
         }
 
-        private void changeOutputDirectory( DownloadRow row, string outputDirectory )
+        /// <summary>
+        /// 
+        /// </summary>
+        private enum MoveFileByRenameModeEnum { OverwriteAsk, OverwriteSilent, SkipIfAlreadyExists }
+        private void MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
+            , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
         {
-            var need_add = _ExternalProgQueue.Remove( row.GetOutputFullFileName() );
+            if ( !row.Status.IsRunningOrPaused() && File.Exists( prev_outputFullFileName ) )
             {
-                row.SetOutputDirectory( outputDirectory );
+                switch ( mode )
+                {
+                    case MoveFileByRenameModeEnum.OverwriteSilent: 
+                        Extensions.DeleteFile_NoThrow( new_outputFullFileName ); 
+                        break;
+                    case MoveFileByRenameModeEnum.OverwriteAsk: 
+                        if ( File.Exists( new_outputFullFileName ) )
+                        {
+                            if ( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) != DialogResult.Yes )
+                            {
+                                return;
+                            }
+                            Extensions.DeleteFile_NoThrow( new_outputFullFileName );
+                        }
+                        break;
+                    case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
+                        if ( File.Exists( new_outputFullFileName ) )
+                        {
+                            return;
+                        }
+                        break;
+                }
+                
+                try
+                {
+                    File.Move( prev_outputFullFileName, new_outputFullFileName /*?? row.GetOutputFullFileName()*/ );
+                }
+                catch ( Exception ex )
+                {
+                    this.MessageBox_ShowError( ex.ToString(), "Move/Remane output file" );
+                }
             }
-            if ( need_add ) _ExternalProgQueue.Add( row.GetOutputFullFileName() );
         }
         #endregion
     }
