@@ -143,63 +143,80 @@ namespace m3u8.download.manager.models
             }
         }
 
-        public void ChangeRowPosition( T row, int newIndex )
+        /// <summary>
+        /// 
+        /// </summary>
+        internal sealed class MoveRowsIdxList : IEnumerable< (T move_row, int move_idx) >
         {
-            if ( row == null )                                 throw (new ArgumentNullException( nameof(row) ));
-            if ( (newIndex < 0) || (_Rows.Count <= newIndex) ) throw (new ArgumentException( nameof(newIndex) ));
-
-            var oldIndex = row.GetVisibleIndex();
-            if ( oldIndex == -1 ) throw (new ArgumentException( nameof(row.GetVisibleIndex) ));
-
-            if ( oldIndex != newIndex )
+            private List< (T move_row, int move_idx) > _List;
+            private HashSet< T > _HS;
+            public MoveRowsIdxList( int capacity, IEqualityComparer< T > comparer = null )
             {
-                _Rows.RemoveAt( oldIndex );
-                _Rows.Insert( newIndex, row );
-
-                #region [.re-calculate '_RowsVisibleIndexes'.]
-                ReCalculateRowsVisibleIndexes();
-                #endregion
-
-                if ( !_UpdtTup.InUpdate )
+                _List = new List< (T move_row, int move_idx) >( capacity );
+                _HS   = new HashSet< T >( capacity, comparer ?? EqualityComparer< T >.Default );
+            }
+            public void Add( (T move_row, int move_idx) t )
+            {
+                if ( _HS.Add( t.move_row ) )
                 {
-                    CollectionChanged?.Invoke( CollectionChangedTypeEnum.Sort, null );
+                    _List.Add( t );
                 }
             }
+            //public void AddRange( IEnumerable< (T move_row, int move_idx) > seq )
+            //{
+            //    foreach ( var t in seq )
+            //    {
+            //        Add( t );
+            //    }
+            //}
+            public bool Contains( T t ) => _HS.Contains( t );
+
+            public IEnumerator< (T move_row, int move_idx) > GetEnumerator() => _List.GetEnumerator();
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            public static MoveRowsIdxList Create( IReadOnlyList< T > moveRows, Func< T, int > get_move_idx_func )
+            {
+                var moveRowsIdx = new MoveRowsIdxList( moveRows.Count );
+                foreach ( var row in moveRows )
+                {
+                    moveRowsIdx.Add( (row, get_move_idx_func( row )) );
+                }
+                moveRowsIdx._List.Sort( (x, y) => x.move_idx.CompareTo( y.move_idx ) );
+                return (moveRowsIdx);
+            }
         }
-        public void ChangeRowsPosition( IReadOnlyList< T > moveRows, int newPivotIndex )
+        public bool ChangeRowsPosition( IReadOnlyList< T > moveRows, int newPivotIndex )
         {
             if ( !moveRows.AnyEx() )
             {
-                return;
+                return (false);
             }
             if ( moveRows.Count == 1 )
             {
-                ChangeRowPosition( moveRows[ 0 ], newPivotIndex );
-                return;
+                return (ChangeRowPosition( moveRows[ 0 ], newPivotIndex ));
             }
 #if DEBUG
             Debug.Assert( moveRows.SequenceEqual( moveRows.OrderBy( r => r.GetVisibleIndex() ) ) );
             Debug.Assert( moveRows.Distinct().Count() == moveRows.Count );
             Debug.Assert( moveRows.All( row => _Rows.Contains( row ) ) );
 #endif
-            moveRows = moveRows.OrderBy( r => r.GetVisibleIndex() ).ToList( moveRows.Count );
-
-            var moveRowsIdx = new List< (T move_row, int move_idx) >( moveRows.Count );
-            var moveRowsHs  = new HashSet< T >( moveRows.Count );
             var first_row_vis_idx = moveRows[ 0 ].GetVisibleIndex();
-            var move_down = (first_row_vis_idx < newPivotIndex);
-            if ( move_down )
+            var last_row_vis_idx  = moveRows[ moveRows.Count - 1 ].GetVisibleIndex();
+            var offset = newPivotIndex - first_row_vis_idx;
+
+            var dif = (last_row_vis_idx + offset) - (_Rows.Count - 1);
+            if ( 0 < dif ) offset -= dif;
+
+            if ( offset == 0 )
             {
-                first_row_vis_idx = moveRows[ moveRows.Count - 1 ].GetVisibleIndex();
-            }
-            foreach ( var row in moveRows )
-            {
-                moveRowsIdx.Add( (row, newPivotIndex + (row.GetVisibleIndex() - first_row_vis_idx)) );
-                moveRowsHs.Add( row );
+                //nothing to move
+                return (false);
             }
 
-            var new_rows_order = new UniqueList< T >( _Rows.Count );
-            static void add_remainder< X >( UniqueList< X > lst, IEnumerator< X > e )
+            var moveRowsIdx = MoveRowsIdxList.Create( moveRows, row => row.GetVisibleIndex() + offset );
+
+            var new_rows_order = new List< T >( _Rows.Count );
+            static void add_remainder< X >( List< X > lst, IEnumerator< X > e )
             {
                 lst.Add( e.Current );
                 for ( ; e.MoveNext(); )
@@ -207,7 +224,7 @@ namespace m3u8.download.manager.models
                     lst.Add( e.Current );
                 }
             };
-            static void add_remainder_if_exists< X >( UniqueList< X > lst, IEnumerator< (X move_row, int move_idx) > e )
+            static void add_remainder_if_exists< X >( List< X > lst, IEnumerator< (X move_row, int move_idx) > e )
             {
                 if ( e.Current.move_row != null )
                 {
@@ -219,7 +236,7 @@ namespace m3u8.download.manager.models
                 }
             };
 
-            using var rows_e = _Rows.Where( row => !moveRowsHs.Contains( row ) ).GetEnumerator();
+            using var rows_e     = _Rows.Where( row => !moveRowsIdx.Contains( row ) ).GetEnumerator();
             using var moveRows_e = moveRowsIdx.GetEnumerator();
             if ( rows_e.MoveNext() && moveRows_e.MoveNext() )
             {
@@ -263,6 +280,32 @@ namespace m3u8.download.manager.models
             {
                 CollectionChanged?.Invoke( CollectionChangedTypeEnum.Sort, null );
             }
+
+            return (true);
+        }
+        public bool ChangeRowPosition( T row, int newIndex )
+        {
+            if ( row == null )                                 throw (new ArgumentNullException( nameof(row) ));
+            if ( (newIndex < 0) || (_Rows.Count <= newIndex) ) throw (new ArgumentException( nameof(newIndex) ));
+
+            var oldIndex = row.GetVisibleIndex();
+            if ( oldIndex == -1 ) throw (new ArgumentException( nameof(row.GetVisibleIndex) ));
+
+            if ( oldIndex != newIndex )
+            {
+                _Rows.RemoveAt( oldIndex );
+                _Rows.Insert( newIndex, row );
+
+                #region [.re-calculate '_RowsVisibleIndexes'.]
+                ReCalculateRowsVisibleIndexes();
+                #endregion
+
+                if ( !_UpdtTup.InUpdate )
+                {
+                    CollectionChanged?.Invoke( CollectionChangedTypeEnum.Sort, null );
+                }                
+            }
+            return (oldIndex != newIndex);
         }
 
         [M(O.AggressiveInlining)] public int GetVisibleIndex( RowBase< T > row ) => (_RowsVisibleIndexes.TryGetValue( row.Id, out var visibleIndex ) ? visibleIndex : -1);
@@ -279,43 +322,5 @@ namespace m3u8.download.manager.models
         public T this[ int i ] { [M(O.AggressiveInlining)] get => _Rows[ i ]; }
 
         [M(O.AggressiveInlining)] public IEnumerable< T > GetRows() => _Rows;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    internal sealed class UniqueList< T > : IEnumerable< T >
-    {
-        private List< T > _List;
-        private HashSet< T > _HS;
-        public UniqueList( int capacity, IEqualityComparer< T > comparer = null )
-        {
-            _List = new List< T >( capacity );
-            _HS   = new HashSet< T >( capacity, comparer ?? EqualityComparer< T >.Default );
-        }
-        public void Add( T t )
-        {
-            if ( _HS.Add( t ) )
-            {
-                _List.Add( t );
-            }
-        }
-
-        public IReadOnlyList< T > List => _List;
-        public void AddRange( IEnumerable< T > seq )
-        {
-            foreach ( var t in seq )
-            {
-                Add( t );
-            }
-        }
-        public IEnumerator< T > GetEnumerator()
-        {
-            foreach ( var t in _List )
-            {
-                yield return (t);
-            }
-        }
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

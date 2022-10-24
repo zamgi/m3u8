@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+using m3u8.download.manager.ui;
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -50,10 +52,16 @@ namespace System.Windows.Forms
         protected override void OnMouseDown( MouseEventArgs e )
         {
             //doesn't process base.OnMouseDown() for save multi-rows selection (else it disappear/stay one-row)
-            if ( (SelectedRows.Count <= 1) || (Control.ModifierKeys == Keys.None) )
+            if ( (Control.ModifierKeys != Keys.None) && (1 < SelectedRows.Count) )
+            {
+                var selRows = SelectedRows.ToArray();
+                base.OnMouseDown( e );
+                 this.SelectRows( selRows );
+            }
+            else
             {
                 base.OnMouseDown( e );
-            }            
+            }
 
             if ( this.HitTest( e.X, e.Y ).Type == DataGridViewHitTestType.None )
             {
@@ -313,6 +321,33 @@ namespace System.Windows.Forms
                 }
             }
             return (true);
+        }
+
+        public static DataGridViewRow[] ToArray( this DataGridViewSelectedRowCollection selectedRows )
+        {
+            var rows = new DataGridViewRow[ selectedRows.Count ];
+            for ( var i = selectedRows.Count - 1; 0 <= i; i-- )
+            {
+                rows[ i ] = selectedRows[ i ];
+            }
+            return (rows);
+        }
+        public static void SelectRows( this DataGridView DGV, DataGridViewRow[] rows )
+        {
+            DGV.SuspendDrawing();
+            DGV.SuspendLayout();
+            try
+            {
+                for ( var i = rows.Length - 1; 0 <= i; i-- )
+                {
+                    rows[ i ].Selected = true;
+                }
+            }
+            finally
+            {
+                DGV.ResumeLayout( true );
+                DGV.ResumeDrawing();
+            }
         }
     }
 }

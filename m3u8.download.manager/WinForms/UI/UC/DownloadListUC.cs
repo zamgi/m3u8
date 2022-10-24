@@ -765,7 +765,7 @@ namespace m3u8.download.manager.ui
         private void DGV_CellMouseEnter( object sender, DataGridViewCellEventArgs e )
         {
             if ( (0 <= e.RowIndex) && ((e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX) || (e.ColumnIndex == OUTPUTDIRECTORY_COLUMN_INDEX)) && 
-                 DGV.Rows[ e.RowIndex ].Selected && !_Model[ e.RowIndex ].IsFinished() )
+                 DGV.Rows[ e.RowIndex ].Selected /*&& !_Model[ e.RowIndex ].IsFinished()*/ )
             {
                 DGV.SetHandCursorIfNonHand();
             }
@@ -1040,11 +1040,14 @@ namespace m3u8.download.manager.ui
                 var ht = DGV.HitTest( pt.X, pt.Y );
                 if (( 0 <= ht.RowIndex ) && (ddrf.Rows[ 0 ].GetVisibleIndex() != ht.RowIndex))
                 {
-                    _Model.ChangeRowsPosition( ddrf.Rows, ht.RowIndex );
-                    SelectDownloadRows( ddrf.Rows, ddrf.FocusedRow );                    
+                    var suc = _Model.ChangeRowsPosition( ddrf.Rows, ht.RowIndex );
+                    if ( suc )
+                    {
+                        SelectDownloadRows( ddrf.Rows, ddrf.FocusedRow );
 
-                    e.Effect = e.AllowedEffect;
-                    return;
+                        e.Effect = e.AllowedEffect;
+                        return;
+                    }
                 }
             }
             e.Effect = DragDropEffects.None;
