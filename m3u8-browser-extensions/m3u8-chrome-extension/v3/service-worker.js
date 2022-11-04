@@ -53,6 +53,13 @@ self.importScripts('workInfoType.js');
     } else {
         await get_workInfo(res.workInfo).removeEmptyTabs();
     }
+    chrome.storage.local.onChanged.addListener(async function () {
+        let res = await chrome.storage.local.get();
+        if (res.saved_from_out_service_worker) {            
+            let workInfo = get_workInfo(res.workInfo); //restore changes from 'm3u8.js'      
+            await chrome.storage.local.remove('saved_from_out_service_worker');
+        }        
+    });
 })();
 
 chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {

@@ -11,7 +11,11 @@ var workInfoType = function (saved_wi) {
 var _Global_Tabs = {};
 workInfoType.prototype = {
     tabs: {},
-    save2Storage: async function () { await chrome.storage.local.set({ workInfo: this }); },
+    save2Storage: async function (saved_from_out_service_worker) {
+        var res = { workInfo: this };
+        if (saved_from_out_service_worker) res.saved_from_out_service_worker = true;
+        await chrome.storage.local.set(res);
+    },
     clear: async function () {
         this.tabs = _Global_Tabs = {};
         await this.save2Storage();
@@ -32,12 +36,12 @@ workInfoType.prototype = {
         await this.setUrlsCountText(tabId, null);
         if (has) await this.save2Storage();
     },
-    deleteTabUrls: async function (tabId) {
+    deleteTabUrls: async function (tabId, saved_from_out_service_worker) {
         let has = !!this.tabs[tabId];
         if (has) delete this.tabs[tabId];
 
         await this.setUrlsCountText(tabId, null);
-        if (has) await this.save2Storage();
+        if (has) await this.save2Storage(saved_from_out_service_worker);
     },
     removeEmptyTabs: async function () {
         let openTabs = (await chrome.tabs.query({ currentWindow: false })).map(tab => tab.id + ''),

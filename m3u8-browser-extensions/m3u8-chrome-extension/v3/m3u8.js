@@ -29,7 +29,7 @@ window.onload = async function () {
         let bt = document.getElementById('clearUrlList');
         bt.style.display = '';
         bt.addEventListener('click', async function (event) {
-            await workInfo.deleteTabUrls(tabId);
+            await workInfo.deleteTabUrls(tabId, true);
 
             render_m3u8_urls();
             this.style.display = 'none';
