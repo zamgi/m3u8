@@ -13,6 +13,9 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 
+using _DC_ = m3u8.download.manager.controllers.DownloadController;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -44,7 +47,7 @@ namespace m3u8.download.manager.ui
 
             _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
         }
-        public AddNewDownloadForm( DownloadController dc, SettingsPropertyChangeController sc, string m3u8FileUrl, (int n, int total)? seriesInfo = null ) : this()
+        public AddNewDownloadForm( _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo = null ) : this()
         {
             _Settings          = sc.Settings;
             _DownloadListModel = dc?.Model;
@@ -78,6 +81,28 @@ namespace m3u8.download.manager.ui
             base.Dispose( disposing );
         }
         #endregion
+
+        public static bool
+            ShowModalDialog( IWin32Window owner, _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo, Func< AddNewDownloadForm, Task > okAction )
+        {
+            using ( var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, seriesInfo ) )
+            {
+                if ( f.ShowDialog( owner ) == DialogResult.OK )
+                {
+                    okAction?.Invoke( f );
+                    return (true);
+                }
+            }
+            return (false);
+        }
+        public static void Show( IWin32Window owner, _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo, Func< AddNewDownloadForm, Task > formClosedAction )
+        {
+            var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, seriesInfo );
+            f.FormClosed += (_, _) => formClosedAction?.Invoke( f );
+            f.downloadStartButton.Click += (_, _) => f.Close();
+            f.downloadLaterButton.Click += (_, _) => f.Close();
+            f.Show( owner );
+        }
 
         #region [.TryGetOtherOpenedForm.]
         public static bool TryGetOpenedForm( out AddNewDownloadForm openedForm )

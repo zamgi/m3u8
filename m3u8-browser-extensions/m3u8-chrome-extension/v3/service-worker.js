@@ -41,11 +41,7 @@ self.importScripts('workInfoType.js');
 //    chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
 //}
 
-//async function retryOnTabUpdate(tabId, info, tab) {
-//    if (info.url && /^(http|https?):/.test(info.url)) {
-//        await keepAlive();
-//    }
-//}
+//async function retryOnTabUpdate(tabId, info, tab) { if (info.url && /^(http|https?):/.test(info.url)) await keepAlive(); }
 
 //------------------------------------------------------------------------------------------------//
 
@@ -53,36 +49,28 @@ self.importScripts('workInfoType.js');
 (async () => {
     let res = await chrome.storage.local.get();
     if (!res.saveUrlListBetweenTabReload) {
-        await (new workInfoType()).save_2_storage();
+        await get_workInfo().clear();
     } else {
-        let workInfo = new workInfoType(res.workInfo);
-        await workInfo.removeEmptyTabs();
+        await get_workInfo(res.workInfo).removeEmptyTabs();
     }
 })();
 
 chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
-    var ext_1 = d.url.split('?')[0].split('.').pop(),
-        ext_2 = (ext_1 || '').toLowerCase();
-    if (ext_2 !== 'm3u8') return;
+    let ext = (d.url.split('?')[0].split('.').pop() || '').toLowerCase();
+    if (ext === 'm3u8') {
+        //---console.log('addM3u8Urls() => tabId: ' + d.tabId + ', url: ' + d.url );
 
-//---console.log('add_m3u8_url() => tabId: ' + d.tabId + ', url: ' + d.url );
-
-    let workInfo = await get_workInfo();
-    await workInfo.add_m3u8_url(d.tabId, d.url);
+        await get_workInfo().addM3u8Urls(d.tabId, d.url);
+    }
+    //else console.log('discarded => tabId: ' + d.tabId + ', url: ' + d.url );
 }, {
     urls: ["<all_urls>"]
 });
 
 // set handler to tabs
-chrome.tabs.onActivated.addListener(async function (info) {
-    let workInfo = await get_workInfo();
-    await workInfo.onActivateTab(info.tabId);
-});
+chrome.tabs.onActivated.addListener(async function (info) { await get_workInfo().onActivateTab(info.tabId); });
 
-chrome.tabs.onRemoved.addListener(async function (tabId) {
-    let workInfo = await get_workInfo();
-    await workInfo.onRemoveTab(tabId);
-});
+chrome.tabs.onRemoved.addListener(async function (tabId) { await get_workInfo().onRemoveTab(tabId); });
 
 // set handler to tabs
 chrome.tabs.onUpdated.addListener(async function (tabId, info, tab) {
@@ -91,13 +79,12 @@ chrome.tabs.onUpdated.addListener(async function (tabId, info, tab) {
 
     // if user open empty tab or ftp protocol and etc.
     if (!tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
-        let res = await chrome.storage.local.get();
-        await (new workInfoType(res.workInfo)).deleteTab(tabId);
+        await get_workInfo().deleteTab(tabId);
     }
     else {
         let res = await chrome.storage.local.get();
         if (!res.saveUrlListBetweenTabReload) {
-            await (new workInfoType(res.workInfo)).deleteTabUrls(tabId);
+            await get_workInfo(res.workInfo).deleteTabUrls(tabId);
         }
     }    
 });

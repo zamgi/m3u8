@@ -1,74 +1,75 @@
-async function get_workInfo() {
-    let res = await chrome.storage.local.get('workInfo');
-    return (new workInfoType(res.workInfo));
+function get_workInfo(saved_wi) { return (new workInfoType(saved_wi)); }
+
+var workInfoType = function (saved_wi) {
+    if (saved_wi && saved_wi.tabs) {
+        this.tabs = _Global_Tabs = saved_wi.tabs;
+    } else {
+        this.tabs = _Global_Tabs;
+    }
 };
 
-var workInfoType = function (wi) {
-    if (wi) this.tabs = wi.tabs || {};
-};
+var _Global_Tabs = {};
 workInfoType.prototype = {
     tabs: {},
-    save_2_storage: async function () { await chrome.storage.local.set({ workInfo: this }); },
-
-    onActivateTab: async function (tabId) {
-        var o = this.tabs[tabId];
-        if (!o) {
-            o = this.tabs[tabId] = { m3u8_urls: [] };
-        }
-        else if (!o.m3u8_urls) {
-            o.m3u8_urls = [];
-        }
-
-        await this.set_urls_count_text(tabId, o);
-        await this.save_2_storage();
+    save2Storage: async function () { await chrome.storage.local.set({ workInfo: this }); },
+    clear: async function () {
+        this.tabs = _Global_Tabs = {};
+        await this.save2Storage();
     },
+
+    onActivateTab: async function (tabId) { await this.setUrlsCountText(tabId, this.tabs[tabId]); },
     onRemoveTab: async function (tabId) {
-        delete this.tabs[tabId];
-        await this.save_2_storage();
+        if (this.tabs[tabId]) {
+            delete this.tabs[tabId];
+            await this.save2Storage();
+        }
     },
     deleteTab: async function (tabId) {
-        delete this.tabs[tabId];
+        let has = !!this.tabs[tabId];
+        if (has) delete this.tabs[tabId];
 
         await chrome.action.disable(tabId);
-        await this.set_urls_count_text(tabId, null);
-        await this.save_2_storage();
+        await this.setUrlsCountText(tabId, null);
+        if (has) await this.save2Storage();
     },
     deleteTabUrls: async function (tabId) {
-        delete this.tabs[tabId];
+        let has = !!this.tabs[tabId];
+        if (has) delete this.tabs[tabId];
 
-        await this.set_urls_count_text(tabId, null);
-        await this.save_2_storage();
+        await this.setUrlsCountText(tabId, null);
+        if (has) await this.save2Storage();
     },
     removeEmptyTabs: async function () {
-        let openTabs = (await chrome.tabs.query({ currentWindow: false })).map( tab => tab.id + '' );
-        var has = false;
-        for (var tabId in this.tabs) {
-            var o = this.tabs[tabId];
+        let openTabs = (await chrome.tabs.query({ currentWindow: false })).map(tab => tab.id + ''),
+            need_save = false;
+        for (let tabId in this.tabs) {
+            let o = this.tabs[tabId];
             if (!o || !o.m3u8_urls || !o.m3u8_urls.length || (openTabs.indexOf(tabId) === -1)) {
                 delete this.tabs[tabId];
-                has = true;
+                need_save = true;
             }
         }
-        if (has) await this.save_2_storage();
+        if (need_save) await this.save2Storage();
     },
-    add_m3u8_url: async function (tabId, m3u8_url) {
-        var o = this.tabs[tabId];
+    addM3u8Urls: async function (tabId, m3u8_url) {
+        let o = this.tabs[tabId], need_save = true;
         if (!o) {
-            o = this.tabs[tabId] = { m3u8_urls: [] };
+            o = this.tabs[tabId] = { m3u8_urls: [m3u8_url] };
         }
         else if (!o.m3u8_urls) {
-            o.m3u8_urls = [];
+            o.m3u8_urls = [m3u8_url];
         }
-
-        if (m3u8_url && o.m3u8_urls.indexOf(m3u8_url) === -1) {
+        else if (o.m3u8_urls.indexOf(m3u8_url) === -1) {
             o.m3u8_urls.push(m3u8_url);
+        } else {
+            need_save = false;
         }
 
-        await this.set_urls_count_text(tabId, o);
-        await this.save_2_storage();
+        await this.setUrlsCountText(tabId, o);
+        if (need_save) await this.save2Storage();
     },
-    set_urls_count_text: async function (tabId, o) {
-        var cnt = ((o && o.m3u8_urls && o.m3u8_urls.length) ? o.m3u8_urls.length : 0);
+    setUrlsCountText: async function (tabId, o) {
+        let cnt = ((o && o.m3u8_urls && o.m3u8_urls.length) ? o.m3u8_urls.length : 0);
 
         await chrome.action.setBadgeText({ text: (cnt ? cnt + '' : '') });
         if (cnt) {
@@ -76,14 +77,8 @@ workInfoType.prototype = {
         }
     },
 
-    get_m3u8_urls: function (tabId) {
-        var o = this.tabs[tabId];
-        if (!o) {
-            o = this.tabs[tabId] = { m3u8_urls: [] };
-        }
-        else if (!o.m3u8_urls) {
-            o.m3u8_urls = [];
-        }
-        return (o.m3u8_urls);
+    getM3u8Urls: function (tabId) {
+        let o = this.tabs[tabId];
+        return ((o && o.m3u8_urls) ? o.m3u8_urls : []);
     }
 };

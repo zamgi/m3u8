@@ -860,7 +860,7 @@ namespace m3u8.download.manager.ui
             }
             else //if ( forceShowEmptyDialog )
             {
-                AddNewDownload( ((string) null, false) );
+                AddNewDownload( (null, false) );
             }
         }
         private async void AddNewDownload( (string m3u8FileUrl, bool autoStartDownload) p, (int n, int total)? seriesInfo = null )
@@ -876,6 +876,45 @@ namespace m3u8.download.manager.ui
                 return;
             }
 
+            #region [.AddNewDownloadForm as top-always-owner-form.]
+            AddNewDownloadForm.Show( this, _DownloadController, _SettingsController, p.m3u8FileUrl, seriesInfo, async f =>
+            {
+                if ( f.DialogResult == DialogResult.OK )
+                {
+                    var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory()) );
+                    await downloadListUC.SelectDownloadRowDelay( row );
+                    if ( f.AutoStartDownload )
+                    {
+                        _DownloadController.Start( row );
+                    }
+                }
+
+                if ( AddNewDownloadForm.TryGetOpenedForm( out var openedForm ) )
+                {
+                    openedForm.ActivateAfterCloseOther();
+                }
+            });
+            #endregion
+
+            #region comm. [.AddNewDownloadForm as modal-dialog.]
+            /*
+            AddNewDownloadForm.ShowModalDialog( this, _DownloadController, _SettingsController, p.m3u8FileUrl, seriesInfo, async f =>
+            {
+                var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory()) );
+                await downloadListUC.SelectDownloadRowDelay( row );
+                if ( f.AutoStartDownload )
+                {
+                    _DownloadController.Start( row );
+                }
+            });
+
+            if ( AddNewDownloadForm.TryGetOpenedForm( out var openedForm ) )
+            {
+                openedForm.ActivateAfterCloseOther();
+            }
+            //*/
+
+            /*
             using ( var f = new AddNewDownloadForm( _DownloadController, _SettingsController, p.m3u8FileUrl, seriesInfo ) )
             {
                 if ( f.ShowDialog( this ) == DialogResult.OK )
@@ -893,6 +932,8 @@ namespace m3u8.download.manager.ui
             {
                 openedForm.ActivateAfterCloseOther();
             }
+            //*/
+            #endregion
         }
 
         private bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
