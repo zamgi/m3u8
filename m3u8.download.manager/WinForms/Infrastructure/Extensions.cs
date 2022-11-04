@@ -72,6 +72,16 @@ namespace m3u8.download.manager
             list.AddRange( seq );
             return (list);
         }
+        //public static T[] ToArray< T >( this IEnumerable< T > seq, int size )
+        //{
+        //    var array = new T[ size ];
+        //    var i = 0;
+        //    foreach ( var t in seq )
+        //    {
+        //        array[ i++ ] = t;
+        //    }
+        //    return (array);
+        //}
         public static void Replace< T >( this List< T > lst, IEnumerable< T > seq )
         {
             lst.Clear();

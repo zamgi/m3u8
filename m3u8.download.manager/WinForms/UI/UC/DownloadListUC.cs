@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -1002,12 +1003,19 @@ namespace m3u8.download.manager.ui
 
             var rows = GetSelectedDownloadRows();
             if ( !rows.Any() ) return;
+
+            #region [.create DragDrop DataObject.]
             var focusedRow = _Model[ DGV.CurrentCell.RowIndex ];
 
             var fileNames = rows.SelectMany( r => r.GetOutputFullFileNames() ).ToList( rows.Count ).ToArray();
+
             var dataObj = new DataObject();
-                dataObj.SetData( DataFormats.FileDrop, fileNames );
-                dataObj.SetDataEx( new DRAGDROP_ROWS_FORMAT_TYPE( rows, focusedRow ) );
+
+            var hasExistsFiles = fileNames.Any( fn => File.Exists( fn ) );            
+            if ( hasExistsFiles ) dataObj.SetData( DataFormats.FileDrop, fileNames );
+            
+            dataObj.SetDataEx( new DRAGDROP_ROWS_FORMAT_TYPE( rows, focusedRow ) );
+            #endregion
 
             _DragOver_RowIndex = null;
             DGV.AllowDrop = true;

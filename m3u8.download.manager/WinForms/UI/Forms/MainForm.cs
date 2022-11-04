@@ -1067,7 +1067,7 @@ namespace m3u8.download.manager.ui
                         openOutputFilesWithExternalMenuItem.CheckState = CheckState.Unchecked;
                     }
 
-                    changeOutputDirectoryMenuItem.Visible = (from r in rows where !r.IsFinished() select selectedRow).Any();
+                    changeOutputDirectoryMenuItem.Visible = true;// (from r in rows where !r.IsFinished() select selectedRow).Any();
                 }
                 else
                 {
@@ -1373,27 +1373,53 @@ namespace m3u8.download.manager.ui
         {
             var prev_outputFullFileName = row.GetOutputFullFileName();
             var need_add = _ExternalProgQueue.Remove( prev_outputFullFileName );
-               
+
+            string prev_outputFileName_or_outputDirectory;
             if ( change_outputDirectory )
             {
+                prev_outputFileName_or_outputDirectory = row.OutputDirectory;
                 row.SetOutputDirectory( outputFileName_or_outputDirectory );
             }
             else
             {
+                prev_outputFileName_or_outputDirectory = row.OutputFileName;
                 row.SetOutputFileName( outputFileName_or_outputDirectory );
-            }                
+            }
             var new_outputFullFileName = row.GetOutputFullFileName();
 
             if ( need_add ) _ExternalProgQueue.Add( new_outputFullFileName );
 
-            MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName );
+            var res = MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName );
+            switch ( res )
+            {
+                //case MoveFileByRenameResultEnum.Postponed: break;
+                //case MoveFileByRenameResultEnum.Suc: break;
+                case MoveFileByRenameResultEnum.Canceled:
+                case MoveFileByRenameResultEnum.Fail:
+                    //rollback
+                    if ( change_outputDirectory )
+                    {
+                        row.SetOutputDirectory( prev_outputFileName_or_outputDirectory );
+                    }
+                    else
+                    {
+                        row.SetOutputFileName( prev_outputFileName_or_outputDirectory );
+                    }
+                    if ( need_add )
+                    {
+                        _ExternalProgQueue.Remove( new_outputFullFileName );
+                        _ExternalProgQueue.Add( prev_outputFullFileName );
+                    }
+                    break;
+            }
         }
 
         /// <summary>
         /// 
         /// </summary>
         private enum MoveFileByRenameModeEnum { OverwriteAsk, OverwriteSilent, SkipIfAlreadyExists }
-        private void MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
+        private enum MoveFileByRenameResultEnum { Postponed, Canceled, Suc, Fail }
+        private MoveFileByRenameResultEnum MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
             , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
         {
             if ( !row.Status.IsRunningOrPaused() && File.Exists( prev_outputFullFileName ) )
@@ -1408,7 +1434,7 @@ namespace m3u8.download.manager.ui
                         {
                             if ( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) != DialogResult.Yes )
                             {
-                                return;
+                                return (MoveFileByRenameResultEnum.Canceled);
                             }
                             Extensions.DeleteFile_NoThrow( new_outputFullFileName );
                         }
@@ -1416,7 +1442,7 @@ namespace m3u8.download.manager.ui
                     case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
                         if ( File.Exists( new_outputFullFileName ) )
                         {
-                            return;
+                            return (MoveFileByRenameResultEnum.Canceled);
                         }
                         break;
                 }
@@ -1424,12 +1450,15 @@ namespace m3u8.download.manager.ui
                 try
                 {
                     File.Move( prev_outputFullFileName, new_outputFullFileName /*?? row.GetOutputFullFileName()*/ );
+                    return (MoveFileByRenameResultEnum.Suc);
                 }
                 catch ( Exception ex )
                 {
                     this.MessageBox_ShowError( ex.ToString(), "Move/Remane output file" );
+                    return  (MoveFileByRenameResultEnum.Fail);
                 }
             }
+            return (MoveFileByRenameResultEnum.Postponed);
         }
         #endregion
     }
