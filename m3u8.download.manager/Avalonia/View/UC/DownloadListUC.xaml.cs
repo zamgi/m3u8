@@ -35,9 +35,11 @@ namespace m3u8.download.manager.ui
         public event DownloadRowEventHandler           SelectionChanged;
         public event DownloadRowEventHandler           OutputFileNameClick;
         public event DownloadRowEventHandler           OutputDirectoryClick;
-        public event DownloadRowEventHandler           UpdatedSingleRunningRow;
         public event MouseClickRightButtonEventHandler MouseClickRightButton;
         public event EventHandler                      DoubleClickEx;
+#pragma warning disable CS0067
+        public event DownloadRowEventHandler           UpdatedSingleRunningRow;
+#pragma warning restore CS0067
         //---public event EventHandler                      EnterKeyDown;
 
         private DataGrid DGV;
@@ -241,7 +243,7 @@ namespace m3u8.download.manager.ui
 
         internal DownloadRow GetSelectedDownloadRow() => (DGV.SelectedItem as DownloadRow);
         internal bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );
-        private bool SelectDownloadRowInternal( DownloadRow row, bool callAfterSort = false )
+        private bool SelectDownloadRowInternal( DownloadRow row ) //---, bool callAfterSort = false )
         {
             if ( row != null )
             {
@@ -341,9 +343,9 @@ namespace m3u8.download.manager.ui
                 case _CollectionChangedTypeEnum_.Clear:
                 case _CollectionChangedTypeEnum_.BulkUpdate:
                 {
-                    #region [.save selected row.]
-                    var selectedVisibleIndex = DGV.SelectedIndex;
-                    #endregion
+                    //#region [.save selected row.]
+                    //var selectedVisibleIndex = DGV.SelectedIndex;
+                    //#endregion
 
                     SetDataGridItems();
 
@@ -440,9 +442,9 @@ namespace m3u8.download.manager.ui
             var ts           = row.GetElapsed();
             var elapsed      = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
             var percent      = ((0 < row.TotalParts) ? Convert.ToByte( (100.0 * row.SuccessDownloadParts) / row.TotalParts ).ToString() : "-");
-            var failedParts  = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
             var downloadInfo = $"{percent}%, ({elapsed})";
-            
+            //var failedParts  = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);            
+
             #region [.speed.]
             if ( !st.IsPaused() )
             {

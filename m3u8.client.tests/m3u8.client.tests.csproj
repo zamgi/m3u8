@@ -13,6 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove=".gitignore" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />
     <Compile Include="..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
     <Compile Include="..\m3u8.download.manager\[Common]\[-= m3u8.client =-]\m3u8_processor_v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_v2.cs" />

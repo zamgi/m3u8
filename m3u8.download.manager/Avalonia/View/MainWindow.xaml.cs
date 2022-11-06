@@ -532,7 +532,8 @@ namespace m3u8.download.manager.ui
         }
         private void ShowDownloadStatisticsInTitle()
         {
-return;
+            #region comm.
+            /*
             if ( _ShowDownloadStatistics && (0 < _VM.DownloadListModel.RowsCount) )
             {
                 #region [.if single downloads running.]
@@ -575,6 +576,8 @@ return;
             {
                 this.Title = _Resources_.APP_TITLE;
             }
+            //*/
+            #endregion
         }
 
         /// <summary>

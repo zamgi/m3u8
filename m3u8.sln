@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29926.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.client", "m3u8.client\m3u8.client.csproj", "{46961224-7B51-4115-BA59-53F8537CF7C4}"
 EndProject
@@ -110,6 +110,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.console.app_2", "m3u8.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8_live_stream_downloader", "m3u8_live_stream_downloader\m3u8_live_stream_downloader.csproj", "{B3EA7DC6-8C12-4A40-B437-9C737EC0EF28}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution_Items", "_Solution_Items", "{19F2164B-ECA9-451D-971F-D06C2A4C16B9}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prev", "prev", "{D571F14E-ED1C-40A3-AEEC-C7B902D82BBA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -157,6 +164,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{B4726081-D6C9-4183-99CF-D52913E25C85} = {D571F14E-ED1C-40A3-AEEC-C7B902D82BBA}
 		{1894D434-5969-44B7-B51A-87F123427C6D} = {18F2AF0D-B182-4885-9B27-68F67E1E14A0}
 		{96151C69-A1DB-49F5-BE3A-C61B5835D5E3} = {18F2AF0D-B182-4885-9B27-68F67E1E14A0}
 		{5F7272EB-A4D3-4D05-80AF-67D4348E03E7} = {18F2AF0D-B182-4885-9B27-68F67E1E14A0}

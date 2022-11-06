@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Security.Permissions;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -210,7 +209,7 @@ namespace m3u8.download.manager.ui
         #region [.field's.]
         private string                    _DescriptionText;
         private string                    _SelectedPath;
-        private bool                      _SelectedPathNeedsCheck;
+        //private bool                      _SelectedPathNeedsCheck;
         private bool                      _SelectOnlyFiles;
         private Environment.SpecialFolder _RootFolder;
         private string                    _RootFolderPath;
@@ -258,16 +257,31 @@ namespace m3u8.download.manager.ui
         {
             get
             {
-                if ( !_SelectedPath.IsNullOrEmpty() && _SelectedPathNeedsCheck )
-                {
-                    (new FileIOPermission( FileIOPermissionAccess.PathDiscovery, _SelectedPath )).Demand();
-                }
+                #region comm.
+                //if ( !_SelectedPath.IsNullOrEmpty() && _SelectedPathNeedsCheck )
+                //{
+                //    /*
+                //    var di = new DirectoryInfo( _SelectedPath );
+                //    var ac = di.GetAccessControl( AccessControlSections.Access );
+                //    ac.AddAccessRule( new FileSystemAccessRule( new SecurityIdentifier( WellKnownSidType.WorldSid, null ), 
+                //                                                FileSystemRights.ListDirectory, 
+                //                                                InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit, 
+                //                                                PropagationFlags.NoPropagateInherit, 
+                //                                                AccessControlType.Allow ) );
+                //    di.SetAccessControl( ac );
+                //    //*/
+
+                //    #region comm. prev.
+                //    //(new FileIOPermission( FileIOPermissionAccess.PathDiscovery, _SelectedPath )).Demand();
+                //    #endregion
+                //}
+                #endregion
                 return (_SelectedPath);
             }
             set
             {
-                _SelectedPath           = value ?? string.Empty;
-                _SelectedPathNeedsCheck = false;
+                _SelectedPath = value ?? string.Empty;
+                //_SelectedPathNeedsCheck = false;
             }
         }
         public bool ShowNewFolderButton { get; set; }
@@ -366,8 +380,8 @@ namespace m3u8.download.manager.ui
             _RootFolder             = Environment.SpecialFolder.Desktop;
             _DescriptionText        = string.Empty;
             _SelectedPath           = string.Empty;
-            _SelectedPathNeedsCheck = false;
             ShowNewFolderButton     = true;
+            //_SelectedPathNeedsCheck = false;
         }
         protected override bool RunDialog( IntPtr hWndOwner )
         {
@@ -426,7 +440,7 @@ namespace m3u8.download.manager.ui
                             if ( success )
                             {
                                 _SelectedPath = path;
-                                _SelectedPathNeedsCheck = true;
+                                //_SelectedPathNeedsCheck = true;
                                 return (true);
                             }
                         }

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.ext;
+
 using _m3u8_processor_ = m3u8.m3u8_processor_v2;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -419,7 +420,11 @@ namespace m3u8.download.manager.controllers
 
                     //-3-//
                     var anyErrorHappend = false;
-                    var dpsr = await Task.Run( async () =>
+                    var dpsr = await Task.Run(
+#if NETCOREAPP
+                    async
+#endif
+                    () =>
                     {
                         var rows_Dict = new Dictionary< int, LogRow >( m3u8File.Parts.Count );
 

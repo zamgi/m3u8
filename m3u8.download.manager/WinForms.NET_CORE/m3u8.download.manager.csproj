@@ -32,6 +32,7 @@
     <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
     <Compile Include="..\WinForms\Infrastructure\classes.cs" Link="Infrastructure\classes.cs" />
+    <Compile Include="..\WinForms\Infrastructure\Color2ColorTransition.cs" Link="Infrastructure\Color2ColorTransition.cs" />
     <Compile Include="..\WinForms\Infrastructure\Extensions.cs" Link="Infrastructure\Extensions.cs" />
     <Compile Include="..\WinForms\Infrastructure\FormPositionStorer.cs" Link="Infrastructure\FormPositionStorer.cs" />
     <Compile Include="..\WinForms\Infrastructure\NameCleaner.cs" Link="Infrastructure\NameCleaner.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="..\WinForms\UI\BrowseForForlder\DirectorySelectDialog.cs" Link="UI\BrowseForForlder\DirectorySelectDialog.cs" />
     <Compile Include="..\WinForms\UI\Controls\DataGridViewEx.cs" Link="UI\Controls\DataGridViewEx.cs" />
     <Compile Include="..\WinForms\UI\Controls\TextBoxEx.cs" Link="UI\Controls\TextBoxEx.cs" />
+    <Compile Include="..\WinForms\UI\Controls\ToolStripStatusLabelEx.cs" Link="UI\Controls\ToolStripStatusLabelEx.cs" />
     <Compile Include="..\WinForms\UI\Forms\AddNewDownloadForm.cs" Link="UI\Forms\AddNewDownloadForm.cs" />
     <Compile Include="..\WinForms\UI\Forms\AddNewDownloadForm.Designer.cs" Link="UI\Forms\AddNewDownloadForm.Designer.cs" />
     <Compile Include="..\WinForms\UI\Forms\ChangeOutputFileForm.cs" Link="UI\Forms\ChangeOutputFileForm.cs" />

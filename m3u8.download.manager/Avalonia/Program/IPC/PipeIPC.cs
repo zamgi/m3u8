@@ -156,14 +156,17 @@ namespace m3u8.download.manager.ipc
 
         private static void WaitForPipeDrain_NoThrow( this NamedPipeClientStream pipeClient )
         {
-            try
+            if ( OperatingSystem.IsWindows() )
             {
-                pipeClient.WaitForPipeDrain();
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
+                try
+                {
+                    pipeClient.WaitForPipeDrain();
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
+            }            
         }
     }
 }
