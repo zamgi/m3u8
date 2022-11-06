@@ -239,18 +239,18 @@ namespace m3u8
                         {
                             for ( var n = 1; sourceQueue.Count != 0; n++ )
                             {
-                                #region [.check 'waitIfPausedEvent'.]
+        #region [.check 'waitIfPausedEvent'.]
                                 if ( !ip.WaitIfPausedEvent.IsSet )
                                 {
                                     ip.WaitingIfPaused?.Invoke();
                                     ip.WaitIfPausedEvent.Wait( joinedCts.Token );
                                     throttler_by_speed.Restart( marker_task );
                                 }
-                                #endregion
+        #endregion
 
-                                #region [.throttler by speed.]
+        #region [.throttler by speed.]
                                 var instantaneousSpeedInMbps = throttler_by_speed.Throttle( marker_task, joinedCts.Token );
-                                #endregion
+        #endregion
 
                                 ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
                                 var part = sourceQueue.Dequeue();
@@ -360,7 +360,7 @@ namespace m3u8
                     }
 
                     //-3-//
-                    await task_download.ConfigureAwait( false );
+                    await task_download.CAX();
                 }
 
                 //-4-//

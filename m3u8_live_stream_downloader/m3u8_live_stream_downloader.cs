@@ -9,6 +9,9 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using M = System.Runtime.CompilerServices.MethodImplAttribute;
+using O = System.Runtime.CompilerServices.MethodImplOptions;
+
 namespace m3u8
 {
     /// <summary>
@@ -83,8 +86,8 @@ namespace m3u8
             }
         }
 
-        public string M3u8Url        { get; private set; }
-        public string OutputFileName { get; private set; }
+        public string M3u8Url        { get; }
+        public string OutputFileName { get; }
 
         public async Task Download( CancellationToken ct, int? max_output_file_size, int milliseconds_delay_between_request = 1_000 )
         {
@@ -286,13 +289,13 @@ namespace m3u8
     /// </summary>
     internal static class m3u8_live_stream_downloader_extensions
     {
-        public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
-        public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
+        [M(O.AggressiveInlining)] public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
+        [M(O.AggressiveInlining)] public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
 
-        public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );
-        public static ConfiguredTaskAwaitable CAX( this Task task ) => task.ConfigureAwait( false );
+        [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );
+        [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable CAX( this Task task ) => task.ConfigureAwait( false );
 
-        public static HashSet< T > ToHashSet< T >( this IEnumerable< T > seq, HashSet< T > hs )
+        [M(O.AggressiveInlining)] public static HashSet< T > ToHashSet< T >( this IEnumerable< T > seq, HashSet< T > hs )
         {
             hs.Clear();
             if ( seq != null )
@@ -304,7 +307,7 @@ namespace m3u8
             }
             return (hs);
         }
-        public static bool TryAddWithLock< K, T >( this Dictionary< K, T > dict, K k, T t )
+        [M(O.AggressiveInlining)] public static bool TryAddWithLock< K, T >( this Dictionary< K, T > dict, K k, T t )
         {
             lock ( dict )
             {
@@ -316,7 +319,7 @@ namespace m3u8
             }
             return (false);
         }
-        public static bool UpdateWithLock< K, T >( this Dictionary< K, T > dict, K k, T t )
+        [M(O.AggressiveInlining)] public static bool UpdateWithLock< K, T >( this Dictionary< K, T > dict, K k, T t )
         {
             lock ( dict )
             {
@@ -329,7 +332,7 @@ namespace m3u8
             }
             return (false);
         }
-        public static void RemoveWhereValuesWithLock< K, T >( this Dictionary< K, T > dict, Func< K, bool > keyMatchFunc, Func< T, bool > valueMatchFunc
+        [M(O.AggressiveInlining)] public static void RemoveWhereValuesWithLock< K, T >( this Dictionary< K, T > dict, Func< K, bool > keyMatchFunc, Func< T, bool > valueMatchFunc
             , List< KeyValuePair< K, T > > buf = null )
         {
             lock ( dict )

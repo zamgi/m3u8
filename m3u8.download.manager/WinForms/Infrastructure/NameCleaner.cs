@@ -25,7 +25,7 @@ namespace m3u8.download.manager.infrastructure
         static NameCleaner()
         {
             //-1-//
-            var lst = new List< char >();
+            var lst = new List< char >( char.MinValue + char.MaxValue );
             for ( var c = char.MinValue; ; c++ )
             {
                 if ( c == char.MaxValue )
@@ -392,11 +392,23 @@ namespace m3u8.download.manager.infrastructure
         /// </summary>
         public sealed class Processor : IDisposable
         {
+            public Processor( TextBox fileNameTextBox, Func< string > getFileNameAction, Action< string > setFileNameAction ) { }
+            public void Dispose() { }
+
+            public void FileNameTextBox_TextChanged( Action< string > setFileNameFinishAction = null ) { }
+        }
+        #region comm. Processor__PREV.
+        /*
+        /// <summary>
+        /// 
+        /// </summary>
+        public sealed class Processor__PREV : IDisposable
+        {
             private TextBox _FileNameTextBox;
             private Func< string >   _GetFileNameAction;
             private Action< string > _SetFileNameAction;
 
-            public Processor( TextBox fileNameTextBox, Func< string >   getFileNameAction, Action< string > setFileNameAction )
+            public Processor__PREV( TextBox fileNameTextBox, Func< string > getFileNameAction, Action< string > setFileNameAction )
             {
                 _FileNameTextBox   = fileNameTextBox;
                 _GetFileNameAction = getFileNameAction;
@@ -468,5 +480,7 @@ namespace m3u8.download.manager.infrastructure
                 return (null);
             }
         }
+        //*/
+        #endregion
     }
 }

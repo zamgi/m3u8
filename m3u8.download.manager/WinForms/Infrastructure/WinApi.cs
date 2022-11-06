@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -70,8 +71,8 @@ namespace m3u8.download.manager.ui
         public static void SetForceForegroundWindow( IntPtr hWnd, IntPtr foreWnd )
         {
             //IntPtr foreWnd    = GetForegroundWindow();
-            uint   foreThread = GetWindowThreadProcessId( foreWnd, IntPtr.Zero );
-            uint   appThread  = GetCurrentThreadId();            
+            uint foreThread = GetWindowThreadProcessId( foreWnd, IntPtr.Zero );
+            uint appThread  = GetCurrentThreadId();            
             if ( foreThread != appThread )
             {
                 AttachThreadInput( foreThread, appThread, true );
@@ -106,7 +107,6 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region comm [.WINDOWPLACEMENT.]
-        /*
         /// <summary>
         /// 
         /// </summary>
@@ -138,7 +138,6 @@ namespace m3u8.download.manager.ui
         }
 
         public static FormWindowState ToFormWindowState( this WINDOWPLACEMENT? wp ) => ((!wp.HasValue || !wp.Value.IsRestoredWindowWillBeMaximized) ? FormWindowState.Normal : FormWindowState.Maximized);
-        */
         #endregion
     }
 }

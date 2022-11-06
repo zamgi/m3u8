@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+//using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.ipc;
@@ -18,7 +19,7 @@ namespace m3u8.download.manager
         /// <summary>
         ///
         /// </summary>
-        [STAThread] private static void Main( string[] args )
+        [STAThread] private static void/*async Task*/ Main( string[] args )
         {
             Application.ThreadException                  += (sender, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
             AppDomain  .CurrentDomain.UnhandledException += (sender, e) => Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
@@ -135,7 +136,14 @@ namespace m3u8.download.manager
                 }
                 else if ( success )
                 {
-                    PipeIPC.NamedPipeClient__out.Send( sca.MutexName, inputParamsArray );
+                    //disallowed async/await => don't work Drag-N-Drop
+                    //---await PipeIPC.NamedPipeClient__out.Send_Async( sca.MutexName, inputParamsArray ).CAX();
+                    PipeIPC.NamedPipeClient__out.Send_Async( sca.MutexName, inputParamsArray ).Wait();
+                }
+                else
+                {
+                    //await PipeIPC.NamedPipeClient__out.Send2FirstCopy_Async( sca.MutexName ).CAX();
+                    PipeIPC.NamedPipeClient__out.Send2FirstCopy_Async( sca.MutexName ).Wait();
                 }
                 #endregion
             }

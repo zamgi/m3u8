@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -103,6 +105,64 @@ namespace m3u8.download.manager.ui
             };
 
             setItemsCount();
+        }
+        #endregion
+
+        #region [.Show disappearing message.]
+        private bool _Running_ShowDisappearingMessage;
+        private bool _Break_ShowDisappearingMessage;
+        public async void ShowDisappearingMessage( string message, int millisecondsDelay = 3 * 1_000 )
+        {
+            if ( _Running_ShowDisappearingMessage )
+            {
+                _Break_ShowDisappearingMessage = true;
+                while ( _Running_ShowDisappearingMessage )
+                {
+                    await Task.Delay( 10 );
+                }
+            }
+
+            _Break_ShowDisappearingMessage   = false;
+            _Running_ShowDisappearingMessage = true;
+            leftSideTextLabel_2.Text = message;
+            {
+                const int STEP_COUNT = 100;
+                const KnownColor START_COLOR = KnownColor.OrangeRed; // Black;
+
+                var stepMillisecondsDelay = millisecondsDelay / STEP_COUNT;
+
+                var start_color = Color.FromKnownColor( START_COLOR );
+                var end_color   = leftSideTextLabel_2.BackColor;
+
+                var r = start_color.R * 1.0f; var e_r = end_color.R;
+                var g = start_color.G * 1.0f; var e_g = end_color.G;
+                var b = start_color.B * 1.0f; var e_b = end_color.B;
+
+                var r_i = (e_r - r) / STEP_COUNT;
+                var g_i = (e_g - g) / STEP_COUNT;
+                var b_i = (e_b - b) / STEP_COUNT;
+
+                leftSideTextLabel_2.ForeColor = start_color;
+
+                for ( var i = 0; i < STEP_COUNT && !_Break_ShowDisappearingMessage; i++ )
+                {
+                    await Task.Delay( stepMillisecondsDelay );
+
+                    r += r_i; g += g_i; b += b_i;
+                    leftSideTextLabel_2.ForeColor = Color.FromArgb( (int) r, (int) g, (int) b );
+                }
+            }
+            leftSideTextLabel_2.Text = null;
+            _Running_ShowDisappearingMessage = false;
+        }
+        private void leftSideTextLabel_2_Paint( object sender, PaintEventArgs e )
+        {
+            using var br = new SolidBrush( leftSideTextLabel_2.BackColor );
+            e.Graphics.FillRectangle( br, e.ClipRectangle );
+
+            TextRenderer.DrawText( e.Graphics, leftSideTextLabel_2.Text, leftSideTextLabel_2.Font,
+                e.ClipRectangle, leftSideTextLabel_2.ForeColor, Color.Transparent,
+                TextFormatFlags.SingleLine | TextFormatFlags.EndEllipsis | TextFormatFlags.VerticalCenter );
         }
         #endregion
 

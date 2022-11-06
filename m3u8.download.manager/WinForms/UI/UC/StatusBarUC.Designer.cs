@@ -16,6 +16,7 @@
         {
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.leftSideTextLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.leftSideTextLabel_2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.exceptionWordsLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.parallelismLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.settingsLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -27,6 +28,7 @@
             this.statusBar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                 this.leftSideTextLabel,
+                this.leftSideTextLabel_2,
                 this.exceptionWordsLabel,
                 this.parallelismLabel,
                 this.settingsLabel
@@ -43,6 +45,15 @@
             this.leftSideTextLabel.Size = new System.Drawing.Size(2, 20);
             this.leftSideTextLabel.Spring = true;
             this.leftSideTextLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // leftSideTextLabel_2
+            // 
+            this.leftSideTextLabel_2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.leftSideTextLabel_2.Size = new System.Drawing.Size(2, 20);
+            this.leftSideTextLabel_2.Spring = true;
+            this.leftSideTextLabel_2.Paint += new System.Windows.Forms.PaintEventHandler(this.leftSideTextLabel_2_Paint);
+            this.leftSideTextLabel_2.AutoToolTip = true;
+            this.leftSideTextLabel_2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // exceptionWordsLabel
             // 
@@ -92,11 +103,12 @@
             this.statusBar.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
-        }
+        }        
         #endregion
 
         private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel leftSideTextLabel;
+        private System.Windows.Forms.ToolStripStatusLabel leftSideTextLabel_2;
         private System.Windows.Forms.ToolStripStatusLabel exceptionWordsLabel;
         private System.Windows.Forms.ToolStripStatusLabel parallelismLabel;
         private System.Windows.Forms.ToolStripStatusLabel settingsLabel;

@@ -476,7 +476,7 @@ namespace m3u8.download.manager.controllers
                             ThrottlerBySpeed         = _ThrottlerBySpeed,
                         };
 #if NETCOREAPP
-                        var result = await _m3u8_processor_.DownloadPartsAndSave_Async( ip ).ConfigureAwait( false );
+                        var result = await _m3u8_processor_.DownloadPartsAndSave_Async( ip ).CAX();
 #else
                         var result = _m3u8_processor_.DownloadPartsAndSave( ip );
 #endif

@@ -348,6 +348,19 @@ namespace m3u8.download.manager.infrastructure
         /// </summary>
         public sealed class Processor : IDisposable
         {
+            public Processor( TextBox fileNameTextBox, Func< string >   getFileNameAction, Action< string > setFileNameAction ) { }
+            public void Dispose() { }
+
+            public void FileNameTextBox_TextChanged( Action< string > setFileNameFinishAction = null ) { }
+        }
+
+        #region comm. Processor__PREV.
+        /*
+        /// <summary>
+        /// 
+        /// </summary>
+        public sealed class Processor__PREV : IDisposable
+        {
             #region [.fields.]
             private TextBox          _FileNameTextBox;
             private Func< string >   _GetFileNameAction;
@@ -357,7 +370,7 @@ namespace m3u8.download.manager.infrastructure
             #endregion
 
             #region [.ctor().]
-            public Processor( TextBox fileNameTextBox
+            public Processor__PREV( TextBox fileNameTextBox
                 , Func< string >   getFileNameAction
                 , Action< string > setFileNameAction )
             {
@@ -431,5 +444,7 @@ namespace m3u8.download.manager.infrastructure
                 return (null);
             }
         }
+        //*/
+        #endregion
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,6 +32,9 @@ namespace m3u8.ext
             fs.SetLength( 0 );
             return (fs);
         }
+
+        [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );
+        [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable CAX( this Task task ) => task.ConfigureAwait( false );
     }
 
     /// <summary>
@@ -268,7 +272,7 @@ namespace m3u8
                     {
                         requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
 
-                        using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, ct ).ConfigureAwait( false ) )
+                        using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, ct ).CAX() )
                         using ( var content     = responseMsg.Content )
                         {
                             if ( !responseMsg.IsSuccessStatusCode )
@@ -276,7 +280,7 @@ namespace m3u8
                                 var responseText = default(string);
                                 try
                                 {
-                                    responseText = await content.ReadAsStringAsync().ConfigureAwait( false );
+                                    responseText = await content.ReadAsStringAsync().CAX();
                                 }
                                 catch ( Exception ex )
                                 {
@@ -286,7 +290,7 @@ namespace m3u8
                                 throw (new m3u8_Exception( responseMsg.CreateExceptionMessage( responseText ) ));
                             }
 
-                            var text = await content.ReadAsStringAsync().ConfigureAwait( false );
+                            var text = await content.ReadAsStringAsync().CAX();
                             var m3u8File = m3u8_file_t.Parse( text, url );
                             return (m3u8File);
                         }
@@ -321,7 +325,7 @@ namespace m3u8
                     {
                         requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
 
-                        using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, ct ).ConfigureAwait( false ) )
+                        using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, ct ).CAX() )
                         using ( var content     = responseMsg.Content )
                         {
                             if ( !responseMsg.IsSuccessStatusCode )
@@ -329,7 +333,7 @@ namespace m3u8
                                 var responseText = default(string);
                                 try
                                 {
-                                    responseText = await content.ReadAsStringAsync().ConfigureAwait( false );
+                                    responseText = await content.ReadAsStringAsync().CAX();
                                 }
                                 catch ( Exception ex )
                                 {
@@ -339,7 +343,7 @@ namespace m3u8
                                 throw (new m3u8_Exception( responseMsg.CreateExceptionMessage( responseText ) ));
                             }
 
-                            var bytes = await content.ReadAsByteArrayAsync().ConfigureAwait( false );
+                            var bytes = await content.ReadAsByteArrayAsync().CAX();
                             part.SetBytes( bytes );
                             return (part);
                         }

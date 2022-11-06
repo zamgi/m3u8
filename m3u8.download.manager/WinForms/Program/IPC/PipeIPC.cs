@@ -12,7 +12,9 @@ namespace m3u8.download.manager.ipc
     /// 
     /// </summary>
     internal static class PipeIPC
-    { 
+    {
+        private const string SEND_2_FIRST_COPY_MESSAGE = "Send2FirstCopy";
+
         /// <summary>
         /// 
         /// </summary>
@@ -22,43 +24,53 @@ namespace m3u8.download.manager.ipc
             /// 
             /// </summary>
             public delegate void ReceivedInputParamsArrayEventHandler( (string m3u8FileUrl, bool autoStartDownload)[] array );
-
+            /// <summary>
+            /// 
+            /// </summary>
+            public delegate void ReceivedSend2FirstCopyEventHandler();
+            
             public static event ReceivedInputParamsArrayEventHandler ReceivedInputParamsArray;
+            public static event ReceivedSend2FirstCopyEventHandler   ReceivedSend2FirstCopy;
 
-            public static void RunListener( string pipeName, CancellationTokenSource cts = null )
+            private static NamedPipeServerStream Create_NamedPipeServerStream( string pipeName )
             {
-                static NamedPipeServerStream create_NamedPipeServerStream( string pipeName )
+                try
                 {
-                    try
-                    {
-                        return (new NamedPipeServerStream( pipeName, PipeDirection.In, 1, PipeTransmissionMode.Message ));
-                    }
-                    catch ( NotSupportedException )
-                    {
-                        return (new NamedPipeServerStream( pipeName, PipeDirection.In ));
-                    }
-                };
-
-                Task.Run( async () =>
+                    return (new NamedPipeServerStream( pipeName, PipeDirection.In, 1, PipeTransmissionMode.Message ));
+                }
+                catch ( NotSupportedException )
+                {
+                    return (new NamedPipeServerStream( pipeName, PipeDirection.In ));
+                }
+            }
+            public static void RunListener( string pipeName, CancellationTokenSource cts = null )
+                => Task.Run( async () =>
                 {
                     for ( var ct = (cts?.Token).GetValueOrDefault( CancellationToken.None ); ; )
                     {
-                        using ( var pipeServer = create_NamedPipeServerStream( pipeName ) )
+                        using ( var pipeServer = Create_NamedPipeServerStream( pipeName ) )
                         {
-                            Debug.WriteLine( $"[SERVER] WaitForConnection... (Current TransmissionMode: '{pipeServer.TransmissionMode}')" );
-
+#if DEBUG
+                            Debug.WriteLine( $"[SERVER] WaitForConnection... (Current TransmissionMode: '{pipeServer.TransmissionMode}')" ); 
+#endif
                             try
                             {
-                                await pipeServer.WaitForConnectionAsync( ct ).ConfigureAwait( false );
+                                await pipeServer.WaitForConnectionAsync( ct ).CAX();
 
                                 // Read user input and send that to the client process.
                                 using ( var sr = new StreamReader( pipeServer ) )
                                 {
-                                    var line = await sr.ReadLineAsync().ConfigureAwait( false );
-                                    Debug.WriteLine( $"[SERVER] Read from [CLIENT]: {line}" );
+                                    var line = await sr.ReadLineAsync().CAX();
+#if DEBUG
+                                    Debug.WriteLine( $"[SERVER] Read from [CLIENT]: {line}" ); 
+#endif
                                     if ( BrowserIPC.CommandLine.TryParse4PipeIPC_Multi( line, out var array ) )
                                     {
                                         ReceivedInputParamsArray?.Invoke( array );
+                                    }
+                                    else if ( line == SEND_2_FIRST_COPY_MESSAGE )
+                                    {
+                                        ReceivedSend2FirstCopy?.Invoke();
                                     }
                                 }
                             }                            
@@ -69,7 +81,6 @@ namespace m3u8.download.manager.ipc
                         }
                     }
                 }, (cts?.Token).GetValueOrDefault( CancellationToken.None ) );
-            }
         }
 
         /// <summary>
@@ -77,27 +88,75 @@ namespace m3u8.download.manager.ipc
         /// </summary>
         internal static class NamedPipeClient__out
         {
-            public static void Send( string pipeName, in (string m3u8FileUrl, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 5_000 )
+            private static NamedPipeClientStream Create_NamedPipeClientStream( string pipeName ) => new NamedPipeClientStream( ".", pipeName, PipeDirection.Out, PipeOptions.None, TokenImpersonationLevel.None, HandleInheritability.Inheritable );
+
+            public static void Send( string pipeName, (string m3u8FileUrl, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 5_000 )
             {
-                using ( var pipeClient = new NamedPipeClientStream( ".", pipeName, PipeDirection.Out, PipeOptions.None, TokenImpersonationLevel.None, HandleInheritability.Inheritable ) )
+                using ( var pipeClient = Create_NamedPipeClientStream( pipeName ) )
                 {
                     pipeClient.ConnectAsync( connectMillisecondsTimeout ).Wait( connectMillisecondsTimeout );
-
-                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'" );
-
-                    using ( var sw = new StreamWriter( pipeClient ) )
+#if DEBUG
+                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'" ); 
+#endif
+                    using ( var sw = new StreamWriter( pipeClient ) { AutoFlush = true } )
                     {
-                        sw.AutoFlush = true;
-
                         // Send a 'sync message' and wait for client to receive it.
                         var line = BrowserIPC.CommandLine.Create4PipeIPC( array ); // $"PID: '{Process.GetCurrentProcess().Id}' ('{Assembly.GetEntryAssembly().FullName}') => DateTime.Now: '{DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss.fff")}'";
-                        Debug.WriteLine( $"[CLIENT] Send: {line}" );
+#if DEBUG
+                        Debug.WriteLine( $"[CLIENT] Send: {line}" ); 
+#endif
                         sw.WriteLine( line );
                         pipeClient.WaitForPipeDrain_NoThrow();
                     }
                 }
+#if DEBUG
+                Debug.WriteLine( "[CLIENT] Client terminating.\r\n" ); 
+#endif
+            }
+            public static async Task Send_Async( string pipeName, (string m3u8FileUrl, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 5_000 )
+            {
+                using ( var pipeClient = Create_NamedPipeClientStream( pipeName ) )
+                {
+                    await pipeClient.ConnectAsync( connectMillisecondsTimeout ).CAX();
+#if DEBUG
+                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'" ); 
+#endif
+                    using ( var sw = new StreamWriter( pipeClient ) { AutoFlush = true } )
+                    {
+                        // Send a 'sync message' and wait for client to receive it.
+                        var line = BrowserIPC.CommandLine.Create4PipeIPC( array ); // $"PID: '{Process.GetCurrentProcess().Id}' ('{Assembly.GetEntryAssembly().FullName}') => DateTime.Now: '{DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss.fff")}'";                        
+#if DEBUG
+                        Debug.WriteLine( $"[CLIENT] Send: {line}" ); 
+#endif
+                        await sw.WriteLineAsync( line ).CAX();
+                        pipeClient.WaitForPipeDrain_NoThrow();
+                    }
+                }
+#if DEBUG
+                Debug.WriteLine( "[CLIENT] Client terminating.\r\n" ); 
+#endif
+            }
 
-                Debug.WriteLine( "[CLIENT] Client terminating.\r\n" );
+            public static async Task Send2FirstCopy_Async( string pipeName, int connectMillisecondsTimeout = 5_000 )
+            {
+                using ( var pipeClient = Create_NamedPipeClientStream( pipeName ) )
+                {
+                    await pipeClient.ConnectAsync( connectMillisecondsTimeout ).CAX();
+#if DEBUG
+                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'" ); 
+#endif
+                    using ( var sw = new StreamWriter( pipeClient ) { AutoFlush = true } )
+                    {
+#if DEBUG
+                        Debug.WriteLine( $"[CLIENT] Send: {SEND_2_FIRST_COPY_MESSAGE}" ); 
+#endif
+                        await sw.WriteLineAsync( SEND_2_FIRST_COPY_MESSAGE ).CAX();
+                        pipeClient.WaitForPipeDrain_NoThrow();
+                    }
+                }
+#if DEBUG
+                Debug.WriteLine( "[CLIENT] Client terminating.\r\n" ); 
+#endif
             }
         }
         private static void WaitForPipeDrain_NoThrow( this NamedPipeClientStream pipeClient )

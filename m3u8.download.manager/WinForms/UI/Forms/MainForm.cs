@@ -18,6 +18,7 @@ using m3u8.download.manager.ui.infrastructure;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__in.ReceivedInputParamsArrayEventHandler;
+using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__in.ReceivedSend2FirstCopyEventHandler;
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 
 namespace m3u8.download.manager.ui
@@ -30,6 +31,7 @@ namespace m3u8.download.manager.ui
         #region [.fields.]
         private (string m3u8FileUrl, bool autoStartDownload)[] _InputParamsArray;
         private _ReceivedInputParamsArrayEventHandler_ _ReceivedInputParamsArrayEventHandler;
+        private _ReceivedSend2FirstCopyEventHandler_   _ReceivedSend2FirstCopyEventHandler;        
 
         private DownloadListModel                _DownloadListModel;
         private DownloadController               _DownloadController;
@@ -79,7 +81,9 @@ namespace m3u8.download.manager.ui
             statusBarUC.TrackItemsCount( downloadListUC );
 
             _ReceivedInputParamsArrayEventHandler = ((string m3u8FileUrl, bool autoStartDownload)[] array) => AddNewDownloads( array );
+            _ReceivedSend2FirstCopyEventHandler   = ReceivedSend2FirstCopy;
             PipeIPC.NamedPipeServer__in.ReceivedInputParamsArray += NamedPipeServer__in_ReceivedInputParamsArray;
+            PipeIPC.NamedPipeServer__in.ReceivedSend2FirstCopy   += NamedPipeServer__in_ReceivedSend2FirstCopy;
 
             NameCleaner.ResetExcludesWords( _SettingsController.NameCleanerExcludesWords );
 
@@ -334,6 +338,18 @@ namespace m3u8.download.manager.ui
 
         #region [.private methods.]
         private void NamedPipeServer__in_ReceivedInputParamsArray( (string m3u8FileUrl, bool autoStartDownload)[] array ) => this.BeginInvoke( _ReceivedInputParamsArrayEventHandler, array );
+        private void NamedPipeServer__in_ReceivedSend2FirstCopy() => this.BeginInvoke( _ReceivedSend2FirstCopyEventHandler );
+        private void ReceivedSend2FirstCopy()
+        {
+            if ( this.WindowState == FormWindowState.Minimized )
+            {
+                this.WindowState = WinApi.GetWindowPlacement( this.Handle ).ToFormWindowState();
+            }
+            this.Activate();
+            WinApi.SetForegroundWindow( this.Handle );
+
+            statusBarUC.ShowDisappearingMessage( $"Received signal about try start other copy of this application: {DateTime.Now}." );
+        }
 
         private void SettingsController_PropertyChanged( Settings settings, string propertyName )
         {

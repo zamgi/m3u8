@@ -72,7 +72,8 @@ namespace m3u8.download.manager.ui
             InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
-#endif            
+#endif
+            PipeIPC.NamedPipeServer__in.ReceivedSend2FirstCopy += NamedPipeServer__in_ReceivedSend2FirstCopy;
         }
         public MainWindow( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
         public void Dispose() => _VM.Dispose_NoThrow();
@@ -405,6 +406,16 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.private methods.]
+        private async void NamedPipeServer__in_ReceivedSend2FirstCopy() => await Dispatcher.UIThread.InvokeAsync( () => ReceivedSend2FirstCopy() );
+        private void ReceivedSend2FirstCopy()
+        {
+            if ( this.WindowState == WindowState.Minimized )
+            {
+                this.WindowState = WindowState.Normal;
+            }
+            this.Activate();
+        }
+
         private void SettingsController_PropertyChanged( Settings settings, string propertyName )
         {
             switch ( propertyName )

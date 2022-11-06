@@ -5,9 +5,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.models;
@@ -514,5 +516,8 @@ namespace m3u8.download.manager
         public static double GetSpeedInMbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_048_576); //" Mbps"; //" Mbit/s";
         public static double GetSpeedInKbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_024); //" Kbps"; //" Kbit/s";
         public static double GetSpeedInBps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds)); //" bps"; //" bit/s";
+
+        [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );
+        [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable CAX( this Task task ) => task.ConfigureAwait( false );
     }
 }

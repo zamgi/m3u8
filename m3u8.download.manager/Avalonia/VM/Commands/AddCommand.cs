@@ -23,7 +23,7 @@ namespace m3u8.download.manager
             PipeIPC.NamedPipeServer__in.ReceivedInputParamsArray += NamedPipeServer__in_ReceivedInputParamsArray;
         }
         private async void NamedPipeServer__in_ReceivedInputParamsArray( (string m3u8FileUrl, bool autoStartDownload)[] array )
-            => await Dispatcher.UIThread.InvokeAsync( () => AddNewDownloads( array ) );
+            => await Dispatcher.UIThread.InvokeAsync( () => AddNewDownloads( array ) );     
 
         #region [.ICommand.]
 #pragma warning disable CS0067

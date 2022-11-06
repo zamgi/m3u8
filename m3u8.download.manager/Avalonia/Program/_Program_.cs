@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
+
 using Avalonia;
 using Avalonia.Controls;
+
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
@@ -13,11 +16,7 @@ namespace m3u8.download.manager
     /// </summary>
     internal static class Program
     {
-        /// <summary>
-        ///
-        /// </summary>
-        //---[STAThread]
-        private static void Main( string[] args )
+        private static async Task Main( string[] args )
         {
             //Application.ThreadException += (sender, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
             AppDomain.CurrentDomain.UnhandledException += async (sender, e) => await Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(),"AppDomain.CurrentDomain.UnhandledException"  );                
@@ -139,7 +138,12 @@ namespace m3u8.download.manager
                 }
                 else if ( success )
                 {
-                    PipeIPC.NamedPipeClient__out.Send( sca.MutexName, inputParamsArray );
+                    //PipeIPC.NamedPipeClient__out.Send( sca.MutexName, inputParamsArray );
+                    await PipeIPC.NamedPipeClient__out.Send_Async( sca.MutexName, inputParamsArray ).CAX();
+                }
+                else
+                {
+                    await PipeIPC.NamedPipeClient__out.Send2FirstCopy_Async( sca.MutexName ).CAX();
                 }
                 #endregion
             }
