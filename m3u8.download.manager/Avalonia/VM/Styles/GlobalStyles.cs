@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+
 using Avalonia.Markup.Xaml.Styling;
 
 namespace m3u8.download.manager.ui

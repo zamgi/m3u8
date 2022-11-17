@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;

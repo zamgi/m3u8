@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Globalization;
+
 using Avalonia.Data.Converters;
 using Avalonia.Media;
+
 using m3u8.download.manager.models;
 
 namespace m3u8.download.manager.ui

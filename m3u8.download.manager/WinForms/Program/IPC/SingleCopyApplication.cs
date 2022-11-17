@@ -9,7 +9,7 @@ namespace m3u8.download.manager.ipc
     /// </summary>
     internal sealed class SingleCopyApplication : IDisposable
     {
-        public string MutexName { get; private set; }
+        public string MutexName { get; }
         private Mutex Mutex     { get; set; }
         private bool _OwnedMutex;
 

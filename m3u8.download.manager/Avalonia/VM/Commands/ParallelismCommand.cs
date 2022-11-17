@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
+
 using m3u8.download.manager.ui;
 
 namespace m3u8.download.manager

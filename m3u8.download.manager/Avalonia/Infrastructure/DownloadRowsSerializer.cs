@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 using m3u8.download.manager.models;
-
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 

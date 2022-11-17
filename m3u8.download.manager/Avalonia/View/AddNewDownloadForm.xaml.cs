@@ -3,11 +3,13 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;

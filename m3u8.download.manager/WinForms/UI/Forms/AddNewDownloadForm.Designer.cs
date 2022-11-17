@@ -45,7 +45,6 @@
             this.l1.AutoSize = true;
             this.l1.ForeColor = System.Drawing.Color.SteelBlue;
             this.l1.Location = new System.Drawing.Point(3, 3);
-            this.l1.Name = "l1";
             this.l1.Size = new System.Drawing.Size(69, 13);
             this.l1.TabIndex = 0;
             this.l1.Text = ".m3u8 file url:";
@@ -56,7 +55,6 @@
             this.l2.AutoSize = true;
             this.l2.ForeColor = System.Drawing.Color.SteelBlue;
             this.l2.Location = new System.Drawing.Point(6, 2);
-            this.l2.Name = "l2";
             this.l2.Size = new System.Drawing.Size(55, 26);
             this.l2.TabIndex = 0;
             this.l2.Text = "output \r\nfile name :";
@@ -68,7 +66,6 @@
             this.l3.AutoSize = true;
             this.l3.ForeColor = System.Drawing.Color.SteelBlue;
             this.l3.Location = new System.Drawing.Point(6, 32);
-            this.l3.Name = "l3";
             this.l3.Size = new System.Drawing.Size(55, 26);
             this.l3.TabIndex = 4;
             this.l3.Text = "output \r\ndirectory :";
@@ -81,7 +78,6 @@
             this.topPanel.Controls.Add(this.l1);
             this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.topPanel.Location = new System.Drawing.Point(0, 0);
-            this.topPanel.Name = "topPanel";
             this.topPanel.Size = new System.Drawing.Size(803, 81);
             this.topPanel.TabIndex = 0;
             // 
@@ -94,7 +90,6 @@
             this.m3u8FileUrlTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.m3u8FileUrlTextBox.Location = new System.Drawing.Point(6, 20);
             this.m3u8FileUrlTextBox.Multiline = true;
-            this.m3u8FileUrlTextBox.Name = "m3u8FileUrlTextBox";
             this.m3u8FileUrlTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.m3u8FileUrlTextBox.Size = new System.Drawing.Size(790, 54);
             this.m3u8FileUrlTextBox.TabIndex = 1;
@@ -106,7 +101,6 @@
             this.outputFileNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.outputFileNameTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.outputFileNameTextBox.Location = new System.Drawing.Point(67, 6);
-            this.outputFileNameTextBox.Name = "outputFileNameTextBox";
             this.outputFileNameTextBox.Size = new System.Drawing.Size(539, 18);
             this.outputFileNameTextBox.TabIndex = 1;
             this.outputFileNameTextBox.WordWrap = false;
@@ -117,7 +111,6 @@
             this.outputDirectorySelectButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.outputDirectorySelectButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.outputDirectorySelectButton.Location = new System.Drawing.Point(641, 33);
-            this.outputDirectorySelectButton.Name = "outputDirectorySelectButton";
             this.outputDirectorySelectButton.Size = new System.Drawing.Size(23, 23);
             this.outputDirectorySelectButton.TabIndex = 6;
             this.outputDirectorySelectButton.Text = "≡";
@@ -133,7 +126,6 @@
             this.outputFileNameSelectButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.outputFileNameSelectButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.outputFileNameSelectButton.Location = new System.Drawing.Point(641, 3);
-            this.outputFileNameSelectButton.Name = "outputFileNameSelectButton";
             this.outputFileNameSelectButton.Size = new System.Drawing.Size(23, 23);
             this.outputFileNameSelectButton.TabIndex = 3;
             this.outputFileNameSelectButton.Text = "≡";
@@ -149,7 +141,6 @@
             this.outputFileNameClearButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.outputFileNameClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.outputFileNameClearButton.Location = new System.Drawing.Point(612, 3);
-            this.outputFileNameClearButton.Name = "outputFileNameClearButton";
             this.outputFileNameClearButton.Size = new System.Drawing.Size(23, 23);
             this.outputFileNameClearButton.TabIndex = 2;
             this.outputFileNameClearButton.Text = "X";
@@ -165,7 +156,6 @@
             this.logPanel.Controls.Add(this.logUC);
             this.logPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logPanel.Location = new System.Drawing.Point(0, 141);
-            this.logPanel.Name = "logPanel";
             //---this.logPanel.Padding = new System.Windows.Forms.Padding(6, 0, 3, 0);
             this.logPanel.Size = new System.Drawing.Size(803, 93);
             this.logPanel.TabIndex = 2;
@@ -174,7 +164,6 @@
             // 
             this.logUC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logUC.Location = new System.Drawing.Point(6, 0);
-            this.logUC.Name = "logUC";
             this.logUC.Size = new System.Drawing.Size(790, 89);
             this.logUC.TabIndex = 0;
             // 
@@ -196,7 +185,6 @@
             this.mainLayoutPanel.Controls.Add(this.loadM3u8FileContentButton, 4, 1);
             this.mainLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.mainLayoutPanel.Location = new System.Drawing.Point(0, 81);
-            this.mainLayoutPanel.Name = "mainLayoutPanel";
             this.mainLayoutPanel.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.mainLayoutPanel.RowCount = 2;
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
@@ -211,7 +199,6 @@
             this.outputDirectoryTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.outputDirectoryTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.outputDirectoryTextBox.Location = new System.Drawing.Point(67, 36);
-            this.outputDirectoryTextBox.Name = "outputDirectoryTextBox";
             this.outputDirectoryTextBox.Size = new System.Drawing.Size(539, 18);
             this.outputDirectoryTextBox.TabIndex = 5;
             this.outputDirectoryTextBox.WordWrap = false;
@@ -224,7 +211,6 @@
             this.loadM3u8FileContentButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.loadM3u8FileContentButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.loadM3u8FileContentButton.Location = new System.Drawing.Point(670, 33);
-            this.loadM3u8FileContentButton.Name = "m3u8FileTextContentLoadButton";
             this.loadM3u8FileContentButton.Size = new System.Drawing.Size(130, 23);
             this.loadM3u8FileContentButton.TabIndex = 7;
             this.loadM3u8FileContentButton.Text = "(load .m3u8 file-content)";
@@ -239,7 +225,6 @@
             this.buttomPanel.Controls.Add(this.downloadLaterButton);
             this.buttomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.buttomPanel.Location = new System.Drawing.Point(0, 234);
-            this.buttomPanel.Name = "buttomPanel";
             this.buttomPanel.Size = new System.Drawing.Size(803, 36);
             this.buttomPanel.TabIndex = 3;
             // 
@@ -254,7 +239,6 @@
             this.downloadStartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
             this.downloadStartButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.downloadStartButton.Location = new System.Drawing.Point(233, 5);
-            this.downloadStartButton.Name = "downloadStartButton";
             this.downloadStartButton.Size = new System.Drawing.Size(159, 23);
             this.downloadStartButton.TabIndex = 0;
             this.downloadStartButton.Text = "Start Download";
@@ -270,7 +254,6 @@
             this.downloadLaterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.downloadLaterButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
             this.downloadLaterButton.Location = new System.Drawing.Point(413, 5);
-            this.downloadLaterButton.Name = "downloadLaterButton";
             this.downloadLaterButton.Size = new System.Drawing.Size(159, 23);
             this.downloadLaterButton.TabIndex = 1;
             this.downloadLaterButton.Text = "Download later";
@@ -280,7 +263,6 @@
             // 
             this.statusBarUC.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.statusBarUC.Location = new System.Drawing.Point(0, 270);
-            this.statusBarUC.Name = "statusBarUC";
             this.statusBarUC.Size = new System.Drawing.Size(803, 35);
             this.statusBarUC.TabIndex = 4;
             // 
@@ -297,7 +279,6 @@
             this.Icon = global::m3u8.download.manager.Properties.Resources.m3u8_32x36;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "AddNewDownloadForm";
             this.ShowInTaskbar = false;
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

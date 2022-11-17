@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows.Input;
 
 using Avalonia.Threading;
+
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.ui;

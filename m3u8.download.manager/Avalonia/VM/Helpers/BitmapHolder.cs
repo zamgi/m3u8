@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+
 using Avalonia.Media.Imaging;
 
 namespace m3u8.download.manager.ui

@@ -31,7 +31,7 @@ namespace m3u8.download.manager.ui
         private FileNameCleaner.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private (int n, int total) _SeriesInfo;
-        private string _Initial_M3u8FileUrl;
+        private string             _Initial_M3u8FileUrl;
         #endregion
 
         #region [.ctor().]
@@ -403,7 +403,7 @@ namespace m3u8.download.manager.ui
             using ( var cts = new CancellationTokenSource() )
             using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1_500 ) )
             {
-                var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl /*this.M3u8FileUrl*/, cts ); //all possible exceptions are thrown within inside
+                var t = await _DC_.GetFileTextContent( x.m3u8FileUrl /*this.M3u8FileUrl*/, cts ); //all possible exceptions are thrown within inside
                 if ( cts.IsCancellationRequested )
                 {
                     ;

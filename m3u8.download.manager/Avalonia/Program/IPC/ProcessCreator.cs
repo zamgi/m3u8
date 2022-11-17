@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using Avalonia;
+
 using Avalonia.Platform;
 
 namespace m3u8.download.manager.ipc
