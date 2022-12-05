@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -21,6 +22,9 @@ namespace m3u8.download.manager.ui
             InitializeComponent();
 
             maxDegreeOfParallelismNUD.Maximum = SETTINGS.MAX_DEGREE_OF_PARALLELISM;
+
+            this.SetForeColor4ParentOnly< GroupBox >( Color.DodgerBlue );
+            useMaxCrossDownloadInstanceCheckBox.ForeColor = Color.DodgerBlue;
         }
         public ParallelismSettingsUC( DownloadController dc ) : this() => Init( dc );
         public void Init( DownloadController dc )

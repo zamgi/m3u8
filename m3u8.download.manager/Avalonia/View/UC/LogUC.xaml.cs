@@ -23,7 +23,7 @@ namespace m3u8.download.manager.ui
     public sealed class LogUC : UserControl
     {
         #region [.field's.]
-        private DataGrid     DGV;
+        private DataGrid DGV;
         private ObservableCollection< LogRow > _DGVRows;
         private LogListModel _Model;
         private SettingsPropertyChangeController _SettingsController;
@@ -55,10 +55,9 @@ namespace m3u8.download.manager.ui
         private static IEnumerable< LogRow > GetRowsDenyNone( IEnumerable< LogRow > rows ) => from row in rows
                                                                                               where (row.RequestRowType != RequestRowTypeEnum.None)
                                                                                               select row;
-        private static IEnumerable< LogRow > GetRowsErrorOrFinish( IEnumerable< LogRow > rows ) => from row in rows
-                                                                                                   where (row.RequestRowType == RequestRowTypeEnum.Error) ||
-                                                                                                         (row.RequestRowType == RequestRowTypeEnum.Finish)
-                                                                                                   select row;
+        private static IEnumerable< LogRow > GetRowsNotSuccess( IEnumerable< LogRow > rows ) => from row in rows
+                                                                                                where (row.RequestRowType != RequestRowTypeEnum.Success)
+                                                                                                select row;
         private async Task ScrollToLastRow()
         {
             if ( (_Model != null) && (0 < _Model.RowsCount) )
@@ -88,7 +87,7 @@ namespace m3u8.download.manager.ui
             }
             else 
             {
-                var rows = _ShowOnlyRequestRowsWithErrors ? GetRowsErrorOrFinish( _Model.GetRows() )
+                var rows = _ShowOnlyRequestRowsWithErrors ? GetRowsNotSuccess( _Model.GetRows() )
                                                           : _Model.GetRows(); //GetRowsNotNone( _Model.GetRows() );
                 var new_DGVRows = new ObservableCollection< LogRow >( rows );
                 await Dispatcher.UIThread.InvokeAsync( () => DGV.Items = _DGVRows = new_DGVRows );

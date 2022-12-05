@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "m3u8_live_stream_downloader [cfg]": {
+      "commandName": "Project"
+    },
+    "m3u8_live_stream_downloader [cmd]": {
+      "commandName": "Project",
+      "commandLineArgs": "url=\"https://msk224.extcam.com/hls/playlist.m3u8?hlsId=76f0561f71324ba2a9d944137be0f116_100001391604_0&token=a8a37126bfdfabafd0b418aa8ecbebe9\""
+    }
+  }
+}

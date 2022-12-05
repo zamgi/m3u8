@@ -8,6 +8,8 @@ namespace System.Windows.Forms
     /// </summary>
     internal class NumericUpDownEx : NumericUpDown
     {
+        public decimal? Increment_MouseWheel { get; set; }
+        public bool     Round2NextTenGroup   { get; set; }        
         protected override void OnMouseWheel( MouseEventArgs e )
         {
             if ( e is HandledMouseEventArgs hme )
@@ -17,14 +19,31 @@ namespace System.Windows.Forms
 
             if ( 0 < e.Delta )
             {
-                var v = this.Value + this.Increment;
+                var v = GetValue( 1 );
                 this.Value = Math.Min( this.Maximum, v );
             }
             else if ( e.Delta < 0 )
             {
-                var v = this.Value - this.Increment;
+                var v = GetValue( -1 );
                 this.Value = Math.Max( this.Minimum, v );
             }
+        }
+        private decimal GetValue( int sign ) => GetValue( this.Value, sign * Increment_MouseWheel.GetValueOrDefault( this.Increment ), Round2NextTenGroup );
+        private static decimal GetValue( decimal value, decimal increment, bool round2NextTenGroup )
+        {
+            var d = value + increment;
+            if ( round2NextTenGroup )
+            {
+                var tenGroupCnt = 0;
+                for ( int i = (int) Math.Abs( increment ); 1 < i; tenGroupCnt++ )
+                {
+                    i /= 10;
+                }
+
+                var tenGroupOrder = Math.Max( 1, tenGroupCnt ) * 10;
+                d = ((int) (d + tenGroupOrder / 2) / tenGroupOrder) * tenGroupOrder;
+            }
+            return (d);
         }
         public void Fire_ValueChanged() => this.OnValueChanged( EventArgs.Empty );
     }
@@ -39,15 +58,15 @@ namespace System.Windows.Forms
         /// </summary>
         private sealed class OverriddenNativeWindow : NativeWindow
         {
-            private const int WM_NCHITTEST  = 0x0084;
-            private const int WM_SETFOCUS   = 0x0007;
-            private const int HTTRANSPARENT = -1;
-
             private OverriddenNativeWindow() { }
             public static void AssignHWnd( IntPtr hWnd ) => new OverriddenNativeWindow().AssignHandle( hWnd );
 
             protected override void WndProc( ref Message m )
             {
+                const int WM_NCHITTEST  = 0x0084;
+                const int WM_SETFOCUS   = 0x0007;
+                const int HTTRANSPARENT = -1;
+
                 switch ( m.Msg )
                 {
                     case WM_NCHITTEST:

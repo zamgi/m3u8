@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>m3u8</RootNamespace>
     <AssemblyName>m3u8.console.app</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

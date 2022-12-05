@@ -460,11 +460,11 @@ namespace m3u8
 
         public static DownloadPartsAndSaveResult DownloadPartsAndSave( in DownloadPartsAndSaveInputParams ip )
         {            
-            if ( ip.mc == null )                           throw (new m3u8_ArgumentException( nameof(ip.mc) ));
-            if ( !ip.m3u8File.Parts.AnyEx() )              throw (new m3u8_ArgumentException( nameof(ip.m3u8File) ));
-            if ( ip.OutputFileName.IsNullOrWhiteSpace() )  throw (new m3u8_ArgumentException( nameof(ip.OutputFileName) ));
-            if ( ip.DownloadThreadsSemaphore     == null ) throw (new m3u8_ArgumentException( nameof(ip.DownloadThreadsSemaphore) ));
-            if ( ip.WaitIfPausedEvent            == null ) throw (new m3u8_ArgumentException( nameof(ip.WaitIfPausedEvent) ));
+            if ( ip.mc == null )                          throw (new m3u8_ArgumentException( nameof(ip.mc) ));
+            if ( !ip.m3u8File.Parts.AnyEx() )             throw (new m3u8_ArgumentException( nameof(ip.m3u8File) ));
+            if ( ip.OutputFileName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(ip.OutputFileName) ));
+            if ( ip.DownloadThreadsSemaphore    == null ) throw (new m3u8_ArgumentException( nameof(ip.DownloadThreadsSemaphore) ));
+            if ( ip.WaitIfPausedEvent           == null ) throw (new m3u8_ArgumentException( nameof(ip.WaitIfPausedEvent) ));
             //---------------------------------------------------------------------------------------------------------//
 
             //-1-//

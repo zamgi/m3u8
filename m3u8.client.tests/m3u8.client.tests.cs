@@ -16,6 +16,7 @@ namespace m3u8.client.tests
     /// </summary>
     public sealed class m3u8_client_tests : IDisposable
     {
+        #region [.ctor().]
         private HttpClient _HttpClient;
         private Uri        _M3u8Url;
 
@@ -51,6 +52,7 @@ namespace m3u8.client.tests
             _HttpClient = new HttpClient();
         }
         public void Dispose() => _HttpClient?.Dispose();
+        #endregion
 
         #region [.Tests.]
         private static void _Assert_( in m3u8_file_t m3u8_file  )

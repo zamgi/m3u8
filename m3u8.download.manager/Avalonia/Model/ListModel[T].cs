@@ -13,7 +13,6 @@ namespace m3u8.download.manager.models
     public abstract class RowBase< T > where T : RowBase< T >
     {
         private ListModel< T > _Model;
-
         protected RowBase( ListModel< T > model )
         {
             _Model = model ?? throw (new ArgumentNullException( nameof(model) ));
@@ -21,6 +20,7 @@ namespace m3u8.download.manager.models
         }
 
         public Guid Id { [M(O.AggressiveInlining)] get; }
+        protected ListModel< T > Model { [M(O.AggressiveInlining)] get => _Model; }
 
         [M(O.AggressiveInlining)] public int GetVisibleIndex() => _Model.GetVisibleIndex( this );
     }
@@ -177,6 +177,6 @@ namespace m3u8.download.manager.models
         public int RowsCount { [M(O.AggressiveInlining)] get => _Rows.Count; }
         public T this[ int i ] { [M(O.AggressiveInlining)] get => _Rows[ i ]; }
 
-        [M(O.AggressiveInlining)] public IEnumerable< T > GetRows() => _Rows;
+        [M(O.AggressiveInlining)] public /*IEnumerable*/IReadOnlyList< T > GetRows() => _Rows;
     }
 }

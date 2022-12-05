@@ -41,7 +41,7 @@ namespace m3u8.download.manager.ui
             var hs = models?.ToHashSet();
             if ( hs.AnyEx() )
             {
-                var existsModels = _Dict.Keys.ToArray();
+                var existsModels = _Dict.Keys.ToArrayEx();
                 foreach ( var m in existsModels )
                 {
                     if ( !hs.Contains( m ) )

@@ -448,6 +448,12 @@ namespace m3u8.download.manager.ui
         {
             if ( collectionChangedType != _CollectionChangedTypeEnum_.Sort )
             {
+                if ( this.InvokeRequired )
+                {
+                    this.BeginInvoke( DownloadListModel_CollectionChanged, collectionChangedType, row );
+                    return;
+                }
+
                 ShowDownloadStatisticsInTitle();
 
                 switch ( collectionChangedType )
@@ -885,7 +891,7 @@ namespace m3u8.download.manager.ui
             {
                 if ( !_SettingsController.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
                 {
-                    var row = _DownloadListModel.AddRow( (p.m3u8FileUrl, outputFileName, _SettingsController.OutputFileDirectory) );
+                    var row = _DownloadListModel.AddRow( (p.m3u8FileUrl, outputFileName, _SettingsController.OutputFileDirectory/*, IsLiveStream: false, default*/) );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     _DownloadController.Start( row );
                 }
@@ -897,7 +903,7 @@ namespace m3u8.download.manager.ui
             {
                 if ( f.DialogResult == DialogResult.OK )
                 {
-                    var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory()) );
+                    var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     if ( f.AutoStartDownload )
                     {
@@ -1323,7 +1329,7 @@ namespace m3u8.download.manager.ui
 
         private void deleteAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {
-            var rows = _DownloadListModel.GetRows().ToArray();
+            var rows = _DownloadListModel.GetRows().ToArrayEx();
             foreach ( var row in rows )
             {
                 _DownloadController.Cancel( row );
@@ -1336,7 +1342,7 @@ namespace m3u8.download.manager.ui
         }
         private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e )
         {
-            DeleteDownloadsWithOutputFiles( _DownloadListModel.GetRows().ToArray() );
+            DeleteDownloadsWithOutputFiles( _DownloadListModel.GetRows().ToArrayEx() );
 
             //-2-//
             SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
@@ -1477,5 +1483,14 @@ namespace m3u8.download.manager.ui
             return (MoveFileByRenameResultEnum.Postponed);
         }
         #endregion
+
+        private void downloadListUC_LiveStreamMaxFileSizeClick( DownloadRow row )
+        {
+            if ( ChangeLiveStreamMaxFileSizeForm.Show( this, row.LiveStreamMaxFileSizeInBytes, out var liveStreamMaxFileSizeInBytes ) )
+            {
+                row.SetLiveStreamMaxFileSizeInBytes( liveStreamMaxFileSizeInBytes );
+                downloadListUC.Invalidate( true );
+            }
+        }
     }
 }

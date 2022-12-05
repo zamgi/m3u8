@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 
@@ -13,7 +12,7 @@ namespace m3u8.download.manager.models
     /// <summary>
     /// 
     /// </summary>
-    public enum DownloadStatus
+    internal enum DownloadStatus
     {
         Created,
         Started,
@@ -28,19 +27,11 @@ namespace m3u8.download.manager.models
     /// <summary>
     /// 
     /// </summary>
-    public sealed class DownloadRow : RowBase< DownloadRow >, INotifyPropertyChanged
+    internal sealed class DownloadRow : RowBase< DownloadRow >
     {
-        private TimeSpan _FinitaElapsed;
-        private long     _DownloadBytesLength_BeforeRunning;
+        private TimeSpan               _FinitaElapsed;
+        private long                   _DownloadBytesLength_BeforeRunning;
         private _RowPropertiesChanged_ _RowPropertiesChanged;
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [M(O.AggressiveInlining)] private void Fire_PropertyChanged_Events( string propertyName )
-        {
-            _RowPropertiesChanged?.Invoke( this, propertyName );
-            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-        }
 
         private DownloadRow( string url, string outputFileName, string outputDirectory
             , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )
@@ -56,7 +47,7 @@ namespace m3u8.download.manager.models
             Log = new LogListModel();
         }
         internal DownloadRow( in (string Url, string OutputFileName, string OutputDirectory) t
-            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
+            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) 
             : this( t.Url, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged ) { }
         internal DownloadRow( in (string Url, string OutputFileName, string OutputDirectory, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t
             , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) 
@@ -114,10 +105,6 @@ namespace m3u8.download.manager.models
 
         public bool           IsLiveStream                 { [M(O.AggressiveInlining)] get; /*private set;*/ }
         public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; private set; }
-        //public int            LiveStreamMaxFileSizeInMb    { [M(O.AggressiveInlining)] get => (int) (LiveStreamMaxFileSizeInBytes >> 20); }
-
-        //--- USING FOR BINDING & UPDATE BINDING---//
-        public DownloadRow MySelf { [M(O.AggressiveInlining)] get => this; }
 
         public LogListModel Log { [M(O.AggressiveInlining)] get; }
 
@@ -138,7 +125,7 @@ namespace m3u8.download.manager.models
             if ( OutputFileName != outputFileName )
             {
                 OutputFileName = outputFileName;
-                Fire_PropertyChanged_Events( nameof(OutputFileName) );
+                _RowPropertiesChanged?.Invoke( this, nameof(OutputFileName) );
             }
         }
         public void SetOutputDirectory( string outputDirectory )
@@ -146,7 +133,7 @@ namespace m3u8.download.manager.models
             if ( OutputDirectory != outputDirectory )
             {
                 OutputDirectory = outputDirectory;
-                Fire_PropertyChanged_Events( nameof(OutputDirectory) );
+                _RowPropertiesChanged?.Invoke( this, nameof(OutputDirectory) );
             }
         }
         public void SetTotalParts( int totalParts )
@@ -154,8 +141,7 @@ namespace m3u8.download.manager.models
             if ( (0 < totalParts) && (TotalParts != totalParts) )
             {
                 TotalParts = totalParts;
-                Fire_PropertyChanged_Events( nameof(MySelf) );
-                //---Fire_PropertyChanged_Events( nameof(TotalParts) );
+                _RowPropertiesChanged?.Invoke( this, nameof(TotalParts) );
             }
         }
         public void SetLiveStreamMaxFileSizeInBytes( long liveStreamMaxFileSizeInBytes )
@@ -163,7 +149,7 @@ namespace m3u8.download.manager.models
             if ( LiveStreamMaxFileSizeInBytes != liveStreamMaxFileSizeInBytes )
             {
                 LiveStreamMaxFileSizeInBytes = liveStreamMaxFileSizeInBytes;
-                Fire_PropertyChanged_Events( nameof(LiveStreamMaxFileSizeInBytes) );
+                _RowPropertiesChanged?.Invoke( this, nameof(LiveStreamMaxFileSizeInBytes) );
             }
         }
 
@@ -186,9 +172,10 @@ namespace m3u8.download.manager.models
 
             return (row);
         }
+
         [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in m3u8_processor_v2.ResponseStepActionParams p )
         {
-            var call__Fire_PropertyChanged_Events = false;
+            var call__RowPropertiesChanged = false;
             lock ( this )
             {
                 if ( 0 < p.BytesLength )
@@ -201,20 +188,19 @@ namespace m3u8.download.manager.models
                         FailedDownloadParts  = fdp;
                         DownloadBytesLength += p.BytesLength;
 
-                        call__Fire_PropertyChanged_Events = true;
+                        call__RowPropertiesChanged = true;
                     }
                 }
 
                 if ( _InstantaneousSpeedInMbps != p.InstantaneousSpeedInMbps )
                 {
                     _InstantaneousSpeedInMbps = p.InstantaneousSpeedInMbps;
-                    call__Fire_PropertyChanged_Events = true;
+                    call__RowPropertiesChanged = true;
                 }
             }
-            if ( call__Fire_PropertyChanged_Events )
+            if ( call__RowPropertiesChanged )
             {
-                Fire_PropertyChanged_Events( nameof(MySelf) );
-                //---Fire_PropertyChanged_Events( "DownloadParts-&-DownloadBytesLength" );
+                _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
             }
         }
         [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams_Error()
@@ -224,21 +210,45 @@ namespace m3u8.download.manager.models
                 TotalParts++;
                 FailedDownloadParts++;
             }
-            Fire_PropertyChanged_Events( nameof(MySelf) );
+            _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
         }
         [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes )
         {
+            //var call__RowPropertiesChanged = false;
             lock ( this )
             {
                 TotalParts++;
                 SuccessDownloadParts++;
                 DownloadBytesLength = total_in_bytes;
+
+                //if ( 0 < p.BytesLength )
+                //{
+                //    var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
+                //    var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
+                //    if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
+                //    {
+                //        SuccessDownloadParts = sdp;
+                //        FailedDownloadParts  = fdp;
+                //        DownloadBytesLength += p.BytesLength;
+
+                //        call__RowPropertiesChanged = true;
+                //    }
+                //}
+
+                //if ( _InstantaneousSpeedInMbps != p.InstantaneousSpeedInMbps )
+                //{
+                //    _InstantaneousSpeedInMbps = p.InstantaneousSpeedInMbps;
+                //    call__RowPropertiesChanged = true;
+                //}
             }
-            Fire_PropertyChanged_Events( nameof(MySelf) );
+            //if ( call__RowPropertiesChanged )
+            //{
+                _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
+            //}
         }
         [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
         {
-            var call__Fire_PropertyChanged_Events = false;
+            var call__RowPropertiesChanged = false;
             lock ( this )
             {
                 if ( Status != newStatus )
@@ -265,13 +275,12 @@ namespace m3u8.download.manager.models
                     }
 
                     Status = newStatus;
-                    call__Fire_PropertyChanged_Events = true;
+                    call__RowPropertiesChanged = true;
                 }
             }
-            if ( call__Fire_PropertyChanged_Events )
+            if ( call__RowPropertiesChanged )
             {
-                Fire_PropertyChanged_Events( nameof(Status) );
-                Fire_PropertyChanged_Events( nameof(MySelf) );
+                _RowPropertiesChanged?.Invoke( this, nameof(Status) );
             }
         }
         [M(O.AggressiveInlining)] public TimeSpan GetElapsed()

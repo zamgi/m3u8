@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,9 +15,9 @@ namespace m3u8
         {
             try
             {
-                var M3U8_URL                   = ConfigurationManager.AppSettings[ "M3U8_URL" ];
-                var OUTPUT_FILENAME            = ConfigurationManager.AppSettings[ "OUTPUT_FILENAME" ];
-                var MAX_OUTPUT_FILE_SZIE_IN_MB = (int.TryParse( ConfigurationManager.AppSettings[ "MAX_OUTPUT_FILE_SZIE_IN_MB" ], out var i ) ? i : 250) * 1024 * 1024;
+                var M3U8_URL                   = args.GetArg( "url=" ) ?? ConfigurationManager.AppSettings[ "M3U8_URL" ];
+                var OUTPUT_FILENAME            = args.GetArg( "out=" ) ?? args.GetArg( "output=" ) ?? ConfigurationManager.AppSettings[ "OUTPUT_FILENAME" ];
+                var MAX_OUTPUT_FILE_SZIE_IN_MB = (int.TryParse( (args.GetArg( "size=" ) ?? ConfigurationManager.AppSettings[ "MAX_OUTPUT_FILE_SZIE_IN_MB" ]), out var i ) ? i : 250);
                 //-------------------------------------------------------------------//
 
                 using var cts = new CancellationTokenSource();
@@ -24,6 +25,9 @@ namespace m3u8
                 //-------------------------------------------------------------------//
 
                 $"Start download from M3U8_URL: '{M3U8_URL}'".ToConsole( to_title: true );
+                $"            (OUTPUT_FILENAME: '{OUTPUT_FILENAME}')".ToConsole();
+                $" (MAX_OUTPUT_FILE_SZIE_IN_MB: '{MAX_OUTPUT_FILE_SZIE_IN_MB:0,0}')".ToConsole();
+                $"---------------------------------------------\r\n".ToConsole();
 
                 var p = new m3u8_live_stream_downloader.InitParams()
                 { 
@@ -37,8 +41,10 @@ namespace m3u8
                     DownloadCreateOutputFile = (fn)                   => $"Created output file: '{fn}'".ToConsole( cts )
                 };
 
-                using var m = new m3u8_live_stream_downloader( in p );
-                await m.Download( cts.Token, MAX_OUTPUT_FILE_SZIE_IN_MB ).CAX();
+                var max_output_file_size = MAX_OUTPUT_FILE_SZIE_IN_MB * (1024 * 1024);
+
+                using var m = new m3u8_live_stream_downloader( p );
+                await m.Download( cts.Token, max_output_file_size ).CAX();
                 //-------------------------------------------------------------------//
             }
             catch ( Exception ex )
@@ -56,6 +62,11 @@ namespace m3u8
     /// </summary>
     internal static class Extensions
     {
+        public static string GetArg( this string[] args, string argName )
+        {
+            if ( !argName.EndsWith( "=" ) ) argName += '=';
+            return args?.Where( a => a.StartsWith( argName, StringComparison.InvariantCultureIgnoreCase ) ).FirstOrDefault()?.Substring( argName.Length );
+        }
         public static void Cancel( this CancellationTokenSource cts, ConsoleCancelEventArgs e )
         {
             e.Cancel = true;
@@ -81,6 +92,6 @@ namespace m3u8
                 if ( to_title ) Console.Title = msg;
             }
         }
-        public static void ToConsole( this Exception ex ) => ex.ToString().ToConsole( ConsoleColor.Red );
+        public static void ToConsole( this Exception ex ) => (Environment.NewLine + ex.ToString()).ToConsole( ConsoleColor.DarkRed );
     }
 }

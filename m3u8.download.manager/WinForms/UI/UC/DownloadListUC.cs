@@ -38,6 +38,10 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
+        public delegate void LiveStreamMaxFileSizeClickEventHandler( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void MouseClickRightButtonEventHandler( MouseEventArgs e, DownloadRow selectedRow, bool outOfGridArea );
         /// <summary>
         /// 
@@ -49,27 +53,30 @@ namespace m3u8.download.manager.ui
         public delegate bool IsDrawCheckMarkDelegate( DownloadRow row );
 
         #region [.column index's.]
-        private const int OUTPUTFILENAME_COLUMN_INDEX        = 0;
-        private const int OUTPUTDIRECTORY_COLUMN_INDEX       = 1;
-        private const int STATUS_COLUMN_INDEX                = 2;
-        private const int DOWNLOAD_PROGRESS_COLUMN_INDEX     = 3;
-        private const int DOWNLOAD_TIME_COLUMN_INDEX         = 4;
-        private const int APPROX_REMAINED_TIME_COLUMN_INDEX  = 5;
-        private const int DOWNLOAD_SPEED_COLUMN_INDEX        = 6;
-        private const int DOWNLOAD_BYTES_COLUMN_INDEX        = 7;
-        private const int APPROX_REMAINED_BYTES_COLUMN_INDEX = 8;
-        private const int APPROX_TOTAL_BYTES_COLUMN_INDEX    = 9;
-        private const int URL_COLUMN_INDEX                   = 10;
+        private const int OUTPUTFILENAME_COLUMN_INDEX            = 0;
+        private const int OUTPUTDIRECTORY_COLUMN_INDEX           = 1;
+        private const int STATUS_COLUMN_INDEX                    = 2;
+        private const int DOWNLOAD_PROGRESS_COLUMN_INDEX         = 3;
+        private const int DOWNLOAD_TIME_COLUMN_INDEX             = 4;
+        private const int APPROX_REMAINED_TIME_COLUMN_INDEX      = 5;
+        private const int DOWNLOAD_SPEED_COLUMN_INDEX            = 6;
+        private const int DOWNLOAD_BYTES_COLUMN_INDEX            = 7;
+        private const int APPROX_REMAINED_BYTES_COLUMN_INDEX     = 8;
+        private const int APPROX_TOTAL_BYTES_COLUMN_INDEX        = 9;
+        private const int IS_LIVE_STREAM_COLUMN_INDEX            = 10;
+        private const int LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX = 11;
+        private const int URL_COLUMN_INDEX                       = 12;
         #endregion
 
         #region [.field's.]
-        public event SelectionChangedEventHandler        SelectionChanged;
-        public event OutputFileNameClickEventHandler     OutputFileNameClick;
-        public event OutputDirectoryClickEventHandler    OutputDirectoryClick;
-        public event MouseClickRightButtonEventHandler   MouseClickRightButton;
-        public event UpdatedSingleRunningRowEventHandler UpdatedSingleRunningRow;
-        public event EventHandler                        DoubleClickEx;
-        public event IsDrawCheckMarkDelegate             IsDrawCheckMark;
+        public event SelectionChangedEventHandler           SelectionChanged;
+        public event OutputFileNameClickEventHandler        OutputFileNameClick;
+        public event OutputDirectoryClickEventHandler       OutputDirectoryClick;
+        public event LiveStreamMaxFileSizeClickEventHandler LiveStreamMaxFileSizeClick;
+        public event MouseClickRightButtonEventHandler      MouseClickRightButton;
+        public event UpdatedSingleRunningRowEventHandler    UpdatedSingleRunningRow;
+        public event EventHandler                           DoubleClickEx;
+        public event IsDrawCheckMarkDelegate                IsDrawCheckMark;
 
         private DownloadListModel _Model;
         //private CellStyle _DefaultCellStyle;
@@ -314,6 +321,12 @@ namespace m3u8.download.manager.ui
 
         private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType, DownloadRow row )
         {
+            if ( this.InvokeRequired )
+            {
+                this.BeginInvoke( Model_CollectionChanged, collectionChangedType, row );
+                return;
+            }
+
             switch ( collectionChangedType )
             {
                 case _CollectionChangedTypeEnum_.Sort:
@@ -647,6 +660,13 @@ namespace m3u8.download.manager.ui
                     comparison = (x, y) => string.Compare( x.Url, y.Url, true );
                 break;
 
+                case IS_LIVE_STREAM_COLUMN_INDEX:
+                    comparison = (x, y) => x.IsLiveStream.CompareTo( y.IsLiveStream );
+                break;
+                case LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX:
+                    comparison = (x, y) => x.LiveStreamMaxFileSizeInBytes.CompareTo( y.LiveStreamMaxFileSizeInBytes );
+                break;
+
                 case DOWNLOAD_TIME_COLUMN_INDEX:
                 case APPROX_REMAINED_TIME_COLUMN_INDEX:
                 case DOWNLOAD_SPEED_COLUMN_INDEX:
@@ -688,15 +708,20 @@ namespace m3u8.download.manager.ui
             {
                 case OUTPUTFILENAME_COLUMN_INDEX       : e.Value = row.OutputFileName;                                    break;
                 case OUTPUTDIRECTORY_COLUMN_INDEX      : e.Value = row.OutputDirectory;                                   break;
-                case STATUS_COLUMN_INDEX               : e.Value = $"               {row.Status}";                        break;
-                case DOWNLOAD_PROGRESS_COLUMN_INDEX    : e.Value = new string( ' ', 30 );                                 break;
-                case DOWNLOAD_TIME_COLUMN_INDEX        : e.Value = GetDownloadTimeText       ( row );                     break;
-                case APPROX_REMAINED_TIME_COLUMN_INDEX : e.Value = GetApproxRemainedTimeText ( row );                     break;
-                case DOWNLOAD_SPEED_COLUMN_INDEX       : e.Value = GetDownloadSpeedText      ( row );                     break;
-                case DOWNLOAD_BYTES_COLUMN_INDEX       : e.Value = GetDisplaySizeText        ( row.DownloadBytesLength ); break;
-                case APPROX_REMAINED_BYTES_COLUMN_INDEX: e.Value = GetApproxRemainedBytesText( row );                     break;
-                case APPROX_TOTAL_BYTES_COLUMN_INDEX   : e.Value = GetApproxTotalBytesText   ( row );                     break;
-                case URL_COLUMN_INDEX                  : e.Value = row.Url;                                               break;
+                case STATUS_COLUMN_INDEX               : e.Value = row.Status.ToString()/*$"               {row.Status}"*/;break;
+                case DOWNLOAD_PROGRESS_COLUMN_INDEX    : 
+                    //e.Value = new string( ' ', 30 );
+                    e.Value = TryGetDownloadProgress( row, out _, out var progressText ) ? progressText : string.Empty/*new string( ' ', 30 )*/;
+                    break;
+                case DOWNLOAD_TIME_COLUMN_INDEX            : e.Value = GetDownloadTimeText       ( row );                     break;
+                case APPROX_REMAINED_TIME_COLUMN_INDEX     : e.Value = GetApproxRemainedTimeText ( row );                     break;
+                case DOWNLOAD_SPEED_COLUMN_INDEX           : e.Value = GetDownloadSpeedText      ( row );                     break;
+                case DOWNLOAD_BYTES_COLUMN_INDEX           : e.Value = GetDisplaySizeText        ( row.DownloadBytesLength ); break;
+                case APPROX_REMAINED_BYTES_COLUMN_INDEX    : e.Value = GetApproxRemainedBytesText( row );                     break;
+                case APPROX_TOTAL_BYTES_COLUMN_INDEX       : e.Value = GetApproxTotalBytesText   ( row );                     break;
+                case URL_COLUMN_INDEX                      : e.Value = row.Url;                                               break;
+                case IS_LIVE_STREAM_COLUMN_INDEX           : e.Value = row.IsLiveStream ? "YES" : "-"; break;
+                case LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX: e.Value = row.IsLiveStream ? $"{row.GetLiveStreamMaxFileSizeInMb()} mb" : "-"; break;
             }
         }
         private void DGV_CellFormatting( object sender, DataGridViewCellFormattingEventArgs e )
@@ -735,6 +760,7 @@ namespace m3u8.download.manager.ui
                 {
                     case OUTPUTFILENAME_COLUMN_INDEX:
                     case OUTPUTDIRECTORY_COLUMN_INDEX:
+                    case LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX:
                         DGV.SetHandCursorIfNonHand();
                         break;
                 }
@@ -765,7 +791,22 @@ namespace m3u8.download.manager.ui
         //*/
         private void DGV_CellMouseEnter( object sender, DataGridViewCellEventArgs e )
         {
-            if ( (0 <= e.RowIndex) && ((e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX) || (e.ColumnIndex == OUTPUTDIRECTORY_COLUMN_INDEX)) && 
+            [M(O.AggressiveInlining)] bool is_need_change_cursor( int columnIndex )
+            {
+                switch ( columnIndex )
+                {
+                    case OUTPUTFILENAME_COLUMN_INDEX:
+                    case OUTPUTDIRECTORY_COLUMN_INDEX:
+                        return (true);
+
+                    case LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX:
+                        return (_Model[ e.RowIndex ].IsLiveStream);
+                    default: 
+                        return (false);
+                }
+            };
+
+            if ( (0 <= e.RowIndex) && is_need_change_cursor( e.ColumnIndex ) && 
                  DGV.Rows[ e.RowIndex ].Selected /*&& !_Model[ e.RowIndex ].IsFinished()*/ )
             {
                 DGV.SetHandCursorIfNonHand();
@@ -776,6 +817,24 @@ namespace m3u8.download.manager.ui
             }
         }
         private void DGV_CellMouseLeave( object sender, DataGridViewCellEventArgs e ) => DGV.SetDefaultCursorIfHand();
+        private void DGV_CellMouseMove( object sender, DataGridViewCellMouseEventArgs e )
+        {
+            if ( (e.Button == MouseButtons.None) && (0 <= e.RowIndex) && (e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX) )
+            {
+                var row = _Model[ e.RowIndex ];
+                if ( row.IsLiveStream )
+                {
+                    var rc = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
+                    var pt = DGV.PointToClient( Control.MousePosition );
+                    if ( rc.Contains( pt /*e.Location*/ ) )
+                    {
+                        //toolTip.ShowAlways = true;
+                        var f = this.FindForm();
+                        toolTip.Show( $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)", f, f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
+                    }
+                }
+            }
+        }
         private void DGV_CellClick( object sender, DataGridViewCellEventArgs e )
         {
             if ( !_UserMade_DGV_SelectionChanged && (0 <= e.RowIndex) && (DGV.SelectedRows.Count == 1) )
@@ -785,6 +844,17 @@ namespace m3u8.download.manager.ui
                     case OUTPUTFILENAME_COLUMN_INDEX:
                     {   
                         var row = _Model[ e.RowIndex ];
+                        if ( row.IsLiveStream )
+                        {
+                            var rc = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
+                            var pt = DGV.PointToClient( Control.MousePosition );
+                            if ( rc.Contains( pt ) )
+                            {
+                                LiveStreamMaxFileSizeClick?.Invoke( row );
+                                break;
+                            }
+                        }
+                        
                         if ( !row.IsFinished() )
                         {
                             OutputFileNameClick?.Invoke( row );
@@ -801,6 +871,16 @@ namespace m3u8.download.manager.ui
                         }
                     }
                     break;
+
+                    case LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX:
+                    {
+                        var row = _Model[ e.RowIndex ];
+                        if ( row.IsLiveStream )
+                        {
+                            LiveStreamMaxFileSizeClick?.Invoke( row );
+                        }
+                    }
+                    break;
                 }
             }
             _UserMade_DGV_SelectionChanged = false;
@@ -811,20 +891,23 @@ namespace m3u8.download.manager.ui
             e.Handled = true;
             var gr = e.Graphics;
 
-            //-1- bottom & right lines -//
+            #region [.-1- bottom & right lines.]
             var rc = e.CellBounds; rc.Width--; rc.Height--;
             gr.DrawLines( Pens.DimGray, new[] { new Point( rc.X    , rc.Bottom ), new Point( rc.Right, rc.Bottom ),
                                                 new Point( rc.Right, rc.Y      ), new Point( rc.Right, rc.Bottom ), } );
-            //-2- fill background -//
+            #endregion
+            #region [.-2- fill background.]
             var backColor = (e.State.IsSelected() ? e.CellStyle.SelectionBackColor : e.CellStyle.BackColor);
             using ( var br = new SolidBrush( backColor ) )
             {
                 gr.FillRectangle( br, rc );
             }
+            #endregion
 
-            //-3- fill background -//
+            #region [.-3- fill background.]            
             rc.Inflate( -1, -1 );
             gr.FillRectangle( Brushes.White, rc );
+            #endregion
         }
         private void DGV_CellPainting( object sender, DataGridViewCellPaintingEventArgs e )
         {
@@ -834,7 +917,7 @@ namespace m3u8.download.manager.ui
             {
                 CellPaintRoutine( e );
 
-                //-4- status image -//
+                #region [.-4- status image.]
                 var row = _Model[ e.RowIndex ];
                 var img = default(Image);
                 switch ( row.Status )
@@ -850,30 +933,34 @@ namespace m3u8.download.manager.ui
                 }
 
                 var gr = e.Graphics;
-                const int IMAGE_HEIGHT = 16;
-                var rc = e.CellBounds; 
-                rc = new Rectangle( rc.X + 2, rc.Y + (rc.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );                
+                Rectangle rc;
                 if ( img != null )
                 {
+                    const int IMAGE_HEIGHT = 16;
+                    rc = e.CellBounds;
+                    rc = new Rectangle( rc.X + 2, rc.Y + (rc.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
                     gr.DrawImage( img, rc );
                 }
+                #endregion
 
-                //-5- status text -//
+                #region [.-5- status text.]
                 rc = e.CellBounds; rc.Inflate( -22, 0 );
                 gr.DrawString( row.Status.ToString(), DGV.Font, Brushes.Black, rc, _SF_Left );
+                #endregion
 
-                //-6- -//
+                #region [.-6- draw-check-mark.]
                 if ( (IsDrawCheckMark != null) && IsDrawCheckMark( row ) )
                 {
                     rc = e.CellBounds; //rc.Inflate( -2, 0 );
                     gr.DrawString( "\u2713", DGV.Font, Brushes.Green, rc, _SF_Right );
                 }
+                #endregion
             }
             else if ( e.ColumnIndex == DOWNLOAD_PROGRESS_COLUMN_INDEX )
             {
                 CellPaintRoutine( e );
 
-                //-1- progress-text -//
+                #region [.progress-bar-text.]
                 var row  = _Model[ e.RowIndex ];
                 var has  = TryGetDownloadProgress( row, out var part, out var progressText );
 
@@ -903,7 +990,28 @@ namespace m3u8.download.manager.ui
                     progressText = "-";
                 }
                 gr.DrawString( progressText, DGV.Font, Brushes.Black, rc, sf );
+                #endregion
             }
+            else if ( e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX )
+            {
+                #region [.IsLiveStream image in output-filename.]
+                var row = _Model[ e.RowIndex ];
+                if ( row.IsLiveStream )
+                {
+                    e.Handled = true;
+                    e.Paint( e.ClipBounds, DataGridViewPaintParts.All );
+
+                    var rc = GetIsLiveStreamImageRect( e.CellBounds );
+                    e.Graphics.DrawImage( Resources.live_stream, rc );
+                }
+                #endregion
+            }
+        }
+        [M(O.AggressiveInlining)] private static Rectangle GetIsLiveStreamImageRect( in Rectangle cellClipBounds )
+        {
+            const int IMAGE_HEIGHT = 16;
+            var rc = new Rectangle( cellClipBounds.Right - IMAGE_HEIGHT - 5, cellClipBounds.Y + (cellClipBounds.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
+            return (rc);
         }
         private void DGV_ColumnHeaderMouseClick( object sender, DataGridViewCellMouseEventArgs e )
         {
@@ -1042,7 +1150,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_DragDrop( object sender, DragEventArgs e )
         {
-            if ( e.Data.TryGetData< DRAGDROP_ROWS_FORMAT_TYPE > ( out var ddrf ) )
+            if ( e.Data.TryGetData< DRAGDROP_ROWS_FORMAT_TYPE >( out var ddrf ) )
             {
                 var pt = DGV.PointToClient( new Point( e.X, e.Y ) );
                 var ht = DGV.HitTest( pt.X, pt.Y );

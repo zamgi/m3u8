@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Json;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -67,6 +69,26 @@ namespace m3u8.download.manager
             {
                 hs.Add( t );
             }
+        }
+
+        public static T[] ToArrayEx< T >( this IReadOnlyList< T > seq )
+        {
+            var array = new T[ seq.Count ];
+            for ( var i = seq.Count - 1; 0 <= i; i-- )
+            {
+                array[ i ] = seq[ i ];
+            }
+            return (array);
+        }
+        public static T[] ToArrayEx< T >( this IReadOnlyCollection< T > seq )
+        {
+            var array = new T[ seq.Count ];
+            var i = 0;
+            foreach ( var t in seq )
+            {
+                array[ i++ ] = t;
+            }
+            return (array);
         }
         public static List< T > ToList< T >( this IEnumerable< T > seq, int capacity )
         {
@@ -129,7 +151,7 @@ namespace m3u8.download.manager
             {
                 settings.NameCleanerExcludesWords.Clear();
             }
-            settings.NameCleanerExcludesWords.AddRange( excludesWords.ToArray() );
+            settings.NameCleanerExcludesWords.AddRange( excludesWords.ToArrayEx() );
         }
 
         public static void DeleteFiles_NoThrow( string[] fileNames )
@@ -274,6 +296,22 @@ namespace m3u8.download.manager
             }
         }
         [M(O.AggressiveInlining)] public static bool IsSelected( this DataGridViewElementStates state ) => ((state & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected);
+        public static void SetForeColor4ParentOnly< T >( this Control parent, Color foreColor ) where T : Control
+        {
+            if ( parent is T )
+            {
+                var fc = parent.ForeColor;
+                parent.ForeColor = foreColor;
+                foreach ( var child in parent.Controls.Cast< Control >() )
+                {
+                    child.ForeColor = fc;
+                }
+            }
+            foreach ( var child in parent.Controls.Cast< Control >() )
+            {
+                SetForeColor4ParentOnly< T >( child, foreColor );
+            }
+        }
 
         public static bool TryGetM3u8FileUrlsFromClipboard( out IReadOnlyCollection< string > m3u8FileUrls )
         {
@@ -475,6 +513,7 @@ namespace m3u8.download.manager
             }
             return (null);
         }
+        [M(O.AggressiveInlining)] public static long GetLiveStreamMaxFileSizeInMb( this DownloadRow row ) => (row.LiveStreamMaxFileSizeInBytes >> 20);
         [M(O.AggressiveInlining)] public static int CompareTo< T >( in this T? x, in T? y ) where T : struct, IComparable< T >
         {
             if ( x.HasValue )
@@ -516,6 +555,26 @@ namespace m3u8.download.manager
         public static double GetSpeedInMbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_048_576); //" Mbps"; //" Mbit/s";
         public static double GetSpeedInKbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_024); //" Kbps"; //" Kbit/s";
         public static double GetSpeedInBps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds)); //" bps"; //" bit/s";
+
+        public static string GetSizeInMbFormatted( long sizeInBytes )
+        {
+            var sizeInMb = sizeInBytes >> 20;
+            return ((0 < sizeInMb) ? sizeInMb.ToString("0,0") : "0");
+        }
+        public static string GetSizeInMbFormatted( ulong sizeInBytes )
+        {
+            var sizeInMb = sizeInBytes >> 20;
+            return ((0 < sizeInMb) ? sizeInMb.ToString("0,0") : "0");
+        }
+        public static string GetElapsedFormatted( this in TimeSpan ts )
+        {
+            const string HH_MM_SS = "hh\\:mm\\:ss";
+            const string MM_SS    = "mm\\:ss";
+
+            if ( 1 < ts.TotalHours   ) return (ts.ToString( HH_MM_SS ));
+            if ( 1 < ts.TotalSeconds ) return (':' + ts.ToString( MM_SS ));
+            return (ts.ToString());
+        }
 
         [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );
         [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable CAX( this Task task ) => task.ConfigureAwait( false );

@@ -1,0 +1,29 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        x:Class="m3u8.download.manager.ui.ChangeLiveStreamMaxFileSizeForm"
+        d:DesignWidth="400" d:DesignHeight="130"
+        Width="400" Height="130"
+        Title="change max single output file size in mb for live stream"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Resources/m3u8_32x36.ico"
+        Background="WhiteSmoke"
+        ShowInTaskbar="False"
+        >
+  <Grid ColumnDefinitions="*,auto,auto,*" RowDefinitions="auto,*,auto" Margin="15,25,15,15">
+    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"
+               VerticalAlignment="Center">max single output file size in mb:
+               (for live stream)</TextBlock>
+    <NumericUpDown x:Name="liveStreamMaxSizeInMbNumUpDn" Grid.Row="0" Grid.Column="2"
+                   Minimum="1" Maximum="10000000" Value="250"
+                   AllowSpin="True" ClipValueToMinMax="True"
+                   HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0" />      
+
+    <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+      <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
+      <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
+    </DockPanel>
+  </Grid>
+</Window>

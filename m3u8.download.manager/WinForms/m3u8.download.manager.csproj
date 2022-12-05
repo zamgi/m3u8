@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>m3u8.download.manager</RootNamespace>
     <AssemblyName>m3u8.download.manager</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -72,6 +72,9 @@
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs">
       <Link>[-= m3u8.client =-]\m3u8.client.factory.cs</Link>
     </Compile>
+    <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs">
+      <Link>[-= m3u8.client =-]\m3u8_live_stream_downloader.cs</Link>
+    </Compile>
     <Compile Include="..\[Common]\Controller\DownloadController\dc_models.cs">
       <Link>Controller\DownloadController\dc_models.cs</Link>
     </Compile>
@@ -85,7 +88,9 @@
       <Link>[-= m3u8.client =-]\m3u8_processor_v2.cs</Link>
     </Compile>
     <Compile Include="Infrastructure\Color2ColorTransition.cs" />
+    <Compile Include="Model\DownloadRow.cs" />
     <Compile Include="Model\DownloadListModel.cs" />
+    <Compile Include="Model\LogRow.cs" />
     <Compile Include="Model\LogListModel.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -105,6 +110,12 @@
     <Compile Include="UI\Controls\DataGridViewEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="UI\Forms\ChangeLiveStreamMaxFileSizeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\ChangeLiveStreamMaxFileSizeForm.Designer.cs">
+      <DependentUpon>ChangeLiveStreamMaxFileSizeForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,10 +123,10 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\LogRowsHeightStorer.cs" />
-    <Compile Include="UI\UC\ToolStripItems\SpeedThresholdUC.cs">
+    <Compile Include="UI\Controls\ToolStripItems\SpeedThresholdUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\UC\ToolStripItems\SpeedThresholdUC.designer.cs">
+    <Compile Include="UI\Controls\ToolStripItems\SpeedThresholdUC.designer.cs">
       <DependentUpon>SpeedThresholdUC.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\UC\ParallelismSettingsUC.cs">
@@ -130,16 +141,16 @@
     <Compile Include="UI\UC\OtherSettingsUC.designer.cs">
       <DependentUpon>OtherSettingsUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\UC\ToolStripItems\ToolStripSpeedThreshold.cs">
+    <Compile Include="UI\Controls\ToolStripItems\ToolStripSpeedThreshold.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\UC\ToolStripItems\ToolStripNumericUpDownEx.cs">
+    <Compile Include="UI\Controls\ToolStripItems\ToolStripNumericUpDownEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\UC\ToolStripItems\ToolStripDropDownButtonEx.cs">
+    <Compile Include="UI\Controls\ToolStripItems\ToolStripDropDownButtonEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\UC\NumericUpDownEx.cs">
+    <Compile Include="UI\Controls\NumericUpDownEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Infrastructure\FormPositionStorer.cs" />
@@ -156,7 +167,7 @@
     <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Infrastructure\NameCleaner.cs" />
     <Compile Include="Infrastructure\WinApi.cs" />
-    <Compile Include="Model\models.cs" />
+    <Compile Include="Model\ListModel[T].cs" />
     <Compile Include="UI\Forms\AddNewDownloadForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -175,7 +186,7 @@
     <Compile Include="UI\Forms\ChangeOutputFileForm.Designer.cs">
       <DependentUpon>ChangeOutputFileForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\UC\ButtonWithFocusCues.cs">
+    <Compile Include="UI\Controls\ButtonWithFocusCues.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\UC\StatusBarUC.cs">
@@ -243,6 +254,7 @@
     <Content Include="Resources\downloadInstance.ico" />
     <None Include="Resources\reset.png" />
     <Content Include="Resources\listbullets.png" />
+    <Content Include="Resources\live_stream.png" />
     <Content Include="Resources\settings.png" />
     <Content Include="Resources\speed\speed_1.ico" />
     <Content Include="Resources\speed\speed_2.ico" />

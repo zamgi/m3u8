@@ -41,6 +41,32 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool EqualIgnoreCase( this string s1, string s2 ) => (string.Compare( s1, s2, true ) == 0);
         [M(O.AggressiveInlining)] public static bool ContainsIgnoreCase( this string s1, string s2 ) => ((s1 != null) && s1.Contains( s2, StringComparison.InvariantCultureIgnoreCase ));
 
+        public static T[] ToArrayEx< T >( this IReadOnlyList< T > seq )
+        {
+            var array = new T[ seq.Count ];
+            for ( var i = seq.Count - 1; 0 <= i; i-- )
+            {
+                array[ i ] = seq[ i ];
+            }
+            return (array);
+        }
+        public static T[] ToArrayEx< T >( this IReadOnlyCollection< T > seq )
+        {
+            var array = new T[ seq.Count ];
+            var i = 0;
+            foreach ( var t in seq )
+            {
+                array[ i++ ] = t;
+            }
+            return (array);
+        }
+        public static List< T > ToList< T >( this IEnumerable< T > seq, int capacity )
+        {
+            var list = new List< T >( capacity );
+            list.AddRange( seq );
+            return (list);
+        }
+
         /// <summary>
         /// Copy user settings from previous application version if necessary
         /// </summary>
@@ -252,6 +278,7 @@ namespace m3u8.download.manager
             }
             return (null);
         }
+        [M(O.AggressiveInlining)] public static long GetLiveStreamMaxFileSizeInMb( this DownloadRow row ) => (row.LiveStreamMaxFileSizeInBytes >> 20);
         [M(O.AggressiveInlining)] public static int CompareTo< T >( in this T? x, in T? y ) where T : struct, IComparable< T >
         {
             if ( x.HasValue )
@@ -434,6 +461,26 @@ namespace m3u8.download.manager
         public static double GetSpeedInMbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_048_576); //" Mbps"; //" Mbit/s";
         public static double GetSpeedInKbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_024); //" Kbps"; //" Kbit/s";
         public static double GetSpeedInBps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds)); //" bps"; //" bit/s";
+
+        public static string GetSizeInMbFormatted( long sizeInBytes )
+        {
+            var sizeInMb = sizeInBytes >> 20;
+            return ((0 < sizeInMb) ? sizeInMb.ToString("0,0") : "0");
+        }
+        public static string GetSizeInMbFormatted( ulong sizeInBytes )
+        {
+            var sizeInMb = sizeInBytes >> 20;
+            return ((0 < sizeInMb) ? sizeInMb.ToString("0,0") : "0");
+        }
+        public static string GetElapsedFormatted( this in TimeSpan ts )
+        {
+            const string HH_MM_SS = "hh\\:mm\\:ss";
+            const string MM_SS    = "mm\\:ss";
+
+            if ( 1 < ts.TotalHours   ) return (ts.ToString( HH_MM_SS ));
+            if ( 1 < ts.TotalSeconds ) return (':' + ts.ToString( MM_SS ));
+            return (ts.ToString());
+        }
 
         [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );
         [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable CAX( this Task task ) => task.ConfigureAwait( false );

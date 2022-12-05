@@ -24,23 +24,35 @@
     <TextBlock Foreground="SteelBlue">.m3u8 file url:</TextBlock>
     <TextBox x:Name="m3u8FileUrlTextBox" AcceptsReturn="True" TextWrapping="Wrap" Height="75"></TextBox>
     
-    <Grid RowDefinitions="auto,auto" ColumnDefinitions="auto,*,auto,auto,auto"
+    <Grid RowDefinitions="auto,2,auto,2,auto" ColumnDefinitions="auto,*,auto,auto,auto"
           Margin="0,5,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">      
-      <TextBlock Grid.Row="0" Grid.Column="0" Foreground="SteelBlue" Margin="0,0,5,0">
-        output
-file name:
+      <TextBlock Grid.Row="0" Grid.Column="0" Foreground="SteelBlue" Margin="5,0,5,0" TextAlignment="Right">
+        output 
+file name :
       </TextBlock>
       <TextBox x:Name="outputFileNameTextBox"      Grid.Row="0" Grid.Column="1" Margin="0.5"></TextBox>
       <Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="2" Width="25" Cursor="Hand" Margin="0.5">x</Button>
       <Button  x:Name="outputFileNameSelectButton" Grid.Row="0" Grid.Column="3" Width="25" Cursor="Hand" Margin="0.5">=</Button>
-    
-      <TextBlock Grid.Row="1" Grid.Column="0" Foreground="SteelBlue" Margin="0,0,5,0">
-        output 
+
+      <CheckBox x:Name="isLiveStreamCheckBox" Grid.Row="0" Grid.Column="4" Foreground="Silver" Cursor="Hand" Margin="5,0,0,0">this is a live stream</CheckBox>
+      <TextBlock x:Name="liveStreamMaxSizeInMbTextBlock" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" 
+                 Foreground="DimGray" Margin="0,5,5,5" TextAlignment="Right"
+                 IsVisible="False">
+        max single output file size in mb :
+      </TextBlock>
+      <NumericUpDown x:Name="liveStreamMaxSizeInMbNumUpDn" Grid.Row="2" Grid.Column="4" 
+                     Minimum="1" Maximum="10000000" Value="250"
+                     AllowSpin="True" ClipValueToMinMax="True"
+                     HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0"
+                     IsVisible="False" />
+      
+      <TextBlock Grid.Row="4" Grid.Column="0" Foreground="SteelBlue" Margin="5,0,5,0" TextAlignment="Right">
+        output
 directory :
       </TextBlock>
-      <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="1" Grid.Column="1" IsReadOnly="True" Margin="0.5"></TextBox>    
-      <Button  x:Name="outputDirectorySelectButton" Grid.Row="1" Grid.Column="3" Width="25" Cursor="Hand" Margin="0.5">=</Button>
-      <Button  x:Name="loadM3u8FileContentButton"   Grid.Row="1" Grid.Column="4" Cursor="Hand" Margin="0.5">(load .m3u8 file-content)</Button>    
+      <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="4" Grid.Column="1" IsReadOnly="True" Margin="0.5"></TextBox>    
+      <Button  x:Name="outputDirectorySelectButton" Grid.Row="4" Grid.Column="3" Width="25" Cursor="Hand" Margin="0.5">=</Button>
+      <Button  x:Name="loadM3u8FileContentButton"   Grid.Row="4" Grid.Column="4" Cursor="Hand" Margin="0.5">(load .m3u8 file-content)</Button>    
     </Grid>
   </StackPanel>
 

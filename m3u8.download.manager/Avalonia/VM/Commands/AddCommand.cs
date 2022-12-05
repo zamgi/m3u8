@@ -77,7 +77,6 @@ namespace m3u8.download.manager
                 if ( _VM.SettingsController.UniqueUrlsOnly && !_VM.DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
                 {
                     var row = _VM.DownloadListModel.AddRow( (p.m3u8FileUrl, outputFileName, _VM.SettingsController.OutputFileDirectory) );
-                    //downloadListUC.SelectDownloadRow( row );
                     _VM.DownloadController.Start( row );
                 }
                 return;
@@ -88,8 +87,7 @@ namespace m3u8.download.manager
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
-                    var row = _VM.DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory()) );
-                    //downloadListUC.SelectDownloadRow( row );
+                    var row = _VM.DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
                     if ( f.AutoStartDownload )
                     {
                         _VM.DownloadController.Start( row );

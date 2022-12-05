@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
@@ -19,7 +20,12 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
-        public OtherSettingsUC() => InitializeComponent();
+        public OtherSettingsUC()
+        {
+            InitializeComponent();
+
+            this.SetForeColor4ParentOnly< GroupBox >( Color.DodgerBlue );
+        }
         public OtherSettingsUC( DownloadController dc ) : this() => Init( dc );
         public void Init( DownloadController dc )
         {
@@ -30,7 +36,7 @@ namespace m3u8.download.manager.ui
             DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
 #if NETCOREAPP
             useDirectorySelectDialogModernCheckBox.Enabled = false;
-            useDirectorySelectDialogModernCheckBox.Text += "\r\n(disabled for NETCOREAPP)";
+            useDirectorySelectDialogModernCheckBox.Text   += "\r\n(disabled for NETCOREAPP)";
 #endif
         }
 

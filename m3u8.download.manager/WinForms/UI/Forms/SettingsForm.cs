@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -69,12 +70,13 @@ namespace m3u8.download.manager.ui
             using var br = new SolidBrush( tabPage.BackColor );
             e.Graphics.FillRectangle( br, e.Bounds );
 
-            var color = (tabPage == parallelismTabPage) ? Brushes.DodgerBlue : Brushes.DarkOrange;
+            var color = (tabPage == parallelismTabPage) ? Brushes.DarkOliveGreen : Brushes.DarkOrange;
 
             using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.None, FormatFlags = StringFormatFlags.NoWrap };
             using var ft = new Font( tabPage.Font, FontStyle.Underline );
             e.Graphics.DrawString( tabPage.Text, ft, color, e.Bounds, sf );
 
+            #region comm.
             //ALWAYS DRAW ITS OWNER CONTROL
             //if ( (e.State & DrawItemState.Selected) == DrawItemState.Selected ) //if ( (e.State & DrawItemState.Focus) == DrawItemState.Focus )
             //{
@@ -85,6 +87,7 @@ namespace m3u8.download.manager.ui
             //    //e.Graphics.DrawRectangle( Pens.Silver, rc );
             //    //e.DrawFocusRectangle();
             //}
+            #endregion
         }
 
         #region [.public props.]

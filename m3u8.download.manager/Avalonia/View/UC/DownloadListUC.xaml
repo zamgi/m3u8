@@ -17,6 +17,10 @@
     <local:ApproxRemainedBytesText_Converter x:Key="ApproxRemainedBytesText" />
     <local:ApproxTotalBytesText_Converter    x:Key="ApproxTotalBytesText" />
     <local:StatusImage_Converter             x:Key="StatusImage" />
+      
+    <local:IsLiveStream_Converter              x:Key="IsLiveStream" />
+    <local:LiveStreamMaxFileSizeInMb_Converter x:Key="LiveStreamMaxFileSizeInMb" />
+    <local:LiveStreamMaxFileSizeInMb_ToolTip_Converter x:Key="LiveStreamMaxFileSizeInMb_ToolTip" />    
   </UserControl.Resources>
 
   <UserControl.Styles>
@@ -59,7 +63,12 @@
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <TextBlock Text="{Binding OutputFileName}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+            <DockPanel>
+              <TextBlock Text="{Binding OutputFileName}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+              <Image Name="live_stream"
+                     Source="/Resources/live_stream.png" Stretch="Fill" Width="16" Height="16" HorizontalAlignment="Right" Margin="0,0,5,0" Cursor="Hand"
+                     IsVisible="{Binding IsLiveStream}" ToolTip.Tip="{Binding MySelf, Mode=OneWay, Converter={StaticResource LiveStreamMaxFileSizeInMb_ToolTip}}" />
+            </DockPanel>
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
@@ -175,6 +184,30 @@
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource ApproxTotalBytesText}}" 
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+        
+      <DataGridTemplateColumn Width="*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Is Live Stream" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource IsLiveStream}}" 
+                       ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis" />
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
+        
+      <DataGridTemplateColumn Width="*">
+        <DataGridTemplateColumn.Header>
+          <TextBlock Text="Live Stream Max File Size" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+        </DataGridTemplateColumn.Header>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <TextBlock Text="{Binding MySelf, Mode=OneWay, Converter={StaticResource LiveStreamMaxFileSizeInMb}}" 
                        ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>

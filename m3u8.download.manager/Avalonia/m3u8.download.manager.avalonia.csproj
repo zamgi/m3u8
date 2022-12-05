@@ -23,6 +23,7 @@
   
   <PropertyGroup>
     <OutputPath>bin\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   
   <ItemGroup>
@@ -45,11 +46,13 @@
     <None Remove="Resources\m3u.jpg" />
     <None Remove="Resources\m3u8.png" />
     <None Remove="Resources\m3u8_148x166.ico" />
+    <None Remove="View\ChangeLiveStreamMaxFileSizeForm.xaml" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
+    <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
     <Compile Include="..\[Common]\[-= m3u8.client =-]\m3u8_processor_v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_v2.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController\dc_models.cs" Link="Controller\DownloadController\dc_models.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController\DownloadController.cs" Link="Controller\DownloadController\DownloadController.cs" />
@@ -72,6 +75,12 @@
     <PackageReference Include="System.Reactive.PlatformServices" Version="5.0.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
   </ItemGroup>
+     
+  <ItemGroup>
+    <AvaloniaResource Update="View\ChangeLiveStreamMaxFileSizeForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaResource>
+  </ItemGroup>
     
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
@@ -83,6 +92,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Update="View\ChangeLiveStreamMaxFileSizeForm.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
   </ItemGroup>
   

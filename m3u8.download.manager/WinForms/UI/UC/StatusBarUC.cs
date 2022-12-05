@@ -81,8 +81,14 @@ namespace m3u8.download.manager.ui
             if ( downloadListUC == null ) throw (new ArgumentNullException( nameof(downloadListUC) ));
             var model = downloadListUC.Model ?? throw (new ArgumentNullException( nameof(downloadListUC.Model) ));
 
-            var setItemsCount = new Action(() =>
+            var setItemsCount = default(Action);
+            setItemsCount = new Action(() =>
             {
+                if ( this.InvokeRequired )
+                {
+                    this.BeginInvoke( setItemsCount );
+                    return;
+                }
                 var cnt = downloadListUC.GetSelectedDownloadRowsCount();
                 leftSideTextLabel.Text = (1 < cnt) ? $"{cnt} items selected" : $"{model.RowsCount} items";
             });

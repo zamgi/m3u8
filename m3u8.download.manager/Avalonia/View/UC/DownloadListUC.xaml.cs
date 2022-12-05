@@ -8,6 +8,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 
 using m3u8.download.manager.models;
@@ -35,6 +36,7 @@ namespace m3u8.download.manager.ui
         public event DownloadRowEventHandler           SelectionChanged;
         public event DownloadRowEventHandler           OutputFileNameClick;
         public event DownloadRowEventHandler           OutputDirectoryClick;
+        public event DownloadRowEventHandler           LiveStreamMaxFileSizeClick;
         public event MouseClickRightButtonEventHandler MouseClickRightButton;
         public event EventHandler                      DoubleClickEx;
 #pragma warning disable CS0067
@@ -121,31 +123,54 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_CellPointerPressed( object sender, DataGridCellPointerPressedEventArgs e )
         {
-            const int OutputFileName_Column_DisplayIndex  = 0;
-            const int OutputDirectory_Column_DisplayIndex = 1;            
+            const int OutputFileName_Column_DisplayIndex        = 0;
+            const int OutputDirectory_Column_DisplayIndex       = 1;
+            const int LiveStreamMaxFileSize_Column_DisplayIndex = 11;
 
             var pp = e.PointerPressedEventArgs.GetCurrentPoint( null );
             switch ( pp.Properties.PointerUpdateKind ) //e.PointerPressedEventArgs.MouseButton )
             {
                 case PointerUpdateKind.LeftButtonPressed: //MouseButton.Left:
-                    switch ( e.Column.DisplayIndex )
+                    var columnDisplayIndex = e.Column.DisplayIndex;
+                    switch ( columnDisplayIndex )
                     {
                         case OutputFileName_Column_DisplayIndex:
                         case OutputDirectory_Column_DisplayIndex:
+                        case LiveStreamMaxFileSize_Column_DisplayIndex:
                         {
-                            bool is_valid( int _rowIndex, DownloadRow _selectedDownloadRow ) => ((0 <= _rowIndex) && (_rowIndex < _Model.RowsCount) && (_Model[ _rowIndex ] == _selectedDownloadRow));
+                            bool is_valid( int rowIndex_, DownloadRow selectedDownloadRow_ ) => ((0 <= rowIndex_) && (rowIndex_ < _Model.RowsCount) && (_Model[ rowIndex_ ] == selectedDownloadRow_));
 
                             var selectedDownloadRow = this.GetSelectedDownloadRow();
-                            var rowIndex = e.Row.GetIndex();
+                            var rowIndex            = e.Row.GetIndex();
                             if ( is_valid( rowIndex, selectedDownloadRow ) )
                             {
-                                var evnt = (e.Column.DisplayIndex == OutputFileName_Column_DisplayIndex) ? OutputFileNameClick : OutputDirectoryClick;
+                                var evnt = default(DownloadRowEventHandler);
+                                switch ( columnDisplayIndex )
+                                {                                    
+                                    case OutputDirectory_Column_DisplayIndex: evnt = OutputDirectoryClick; break;
+                                    case OutputFileName_Column_DisplayIndex:
+                                        if ( (e.PointerPressedEventArgs.Source is Image img) && (img.Name == "live_stream") && _Model[ rowIndex ].IsLiveStream )
+                                        {
+                                            evnt = LiveStreamMaxFileSizeClick;
+                                        }
+                                        else
+                                        {
+                                            evnt = OutputFileNameClick;
+                                        }
+                                    break;
+                                    case LiveStreamMaxFileSize_Column_DisplayIndex:
+                                        if ( _Model[ rowIndex ].IsLiveStream )
+                                        {
+                                            evnt = LiveStreamMaxFileSizeClick;
+                                        }
+                                    break;
+                                }
                                 if ( evnt != null )
                                 {
                                     e.PointerPressedEventArgs.Pointer.Capture( null );
                                     e.PointerPressedEventArgs.Handled = true;
                                     evnt( selectedDownloadRow );
-
+                                    
                                     //Dispatcher.UIThread.Post( () => evnt( selectedDownloadRow ) );
                                 }
                             }
@@ -213,8 +238,14 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void SetDataGridItems()
+        private async void SetDataGridItems()
         {
+            if ( !Dispatcher.UIThread.CheckAccess() )
+            {
+                await Dispatcher.UIThread.InvokeAsync( SetDataGridItems );
+                return;
+            }
+
             if ( _Model == null )
             {
                 DGV.Items = null;

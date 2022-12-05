@@ -121,4 +121,29 @@ namespace m3u8.download.manager.ui
             return (value);
         }
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class IsLiveStream_Converter : _DownloadRow_ConverterBase
+    {
+        public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
+            => ((value is DownloadRow row) ? (row.IsLiveStream ? "YES" : "-") : value);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class LiveStreamMaxFileSizeInMb_Converter : _DownloadRow_ConverterBase
+    {
+        public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
+            => ((value is DownloadRow row) ? (row.IsLiveStream ? $"{row.GetLiveStreamMaxFileSizeInMb()} mb" : "-") : value);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class LiveStreamMaxFileSizeInMb_ToolTip_Converter : _DownloadRow_ConverterBase
+    {
+        public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
+            => ((value is DownloadRow row) ? (row.IsLiveStream ? $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)" : string.Empty) : value);
+    }
 }

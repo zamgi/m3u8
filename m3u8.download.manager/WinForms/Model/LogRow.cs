@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 
 using _RowPropertiesChanged_ = m3u8.download.manager.models.LogListModel.RowPropertiesChangedEventHandler;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -10,22 +9,14 @@ namespace m3u8.download.manager.models
     /// <summary>
     /// 
     /// </summary>
-    public enum RequestRowTypeEnum { None, Success, Error, Finish };
+    internal enum RequestRowTypeEnum { None, Success, Error };
 
     /// <summary>
     /// 
     /// </summary>
-    public sealed class LogRow : RowBase< LogRow >, INotifyPropertyChanged
+    internal sealed class LogRow : RowBase< LogRow >
     {
         private _RowPropertiesChanged_ _RowPropertiesChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [M(O.AggressiveInlining)] private void Fire_PropertyChanged_Events( string propertyName )
-        {
-            _RowPropertiesChanged?.Invoke( this, propertyName );
-            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-        }
-
         internal LogRow( LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )
         {
             _RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));
@@ -41,10 +32,6 @@ namespace m3u8.download.manager.models
 
         internal static LogRow CreateRequest( string requestText, LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
             => new LogRow( model, rowPropertiesChanged ) { RequestText = requestText };
-        internal static LogRow CreateRequestSuccess( string requestText, LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
-            => new LogRow( model, rowPropertiesChanged ) { RequestRowType = RequestRowTypeEnum.Success, RequestText = requestText };
-        internal static LogRow CreateRequestFinish( string requestText, LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
-            => new LogRow( model, rowPropertiesChanged ) { RequestRowType = RequestRowTypeEnum.Finish, RequestText = requestText };
 
         internal static LogRow CreateRequestError( string requestErrorText, LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
             => new LogRow( model, rowPropertiesChanged ) { RequestRowType = RequestRowTypeEnum.Error, RequestText = requestErrorText };
@@ -55,30 +42,29 @@ namespace m3u8.download.manager.models
 
         public string RequestText  { [M(O.AggressiveInlining)] get; private set; }
         public string ResponseText { [M(O.AggressiveInlining)] get; private set; }
-        public RequestRowTypeEnum RequestRowType { [M(O.AggressiveInlining)] get; private set; }
 
         [M(O.AggressiveInlining)] public void SetResponseSuccess( string responseText )
         {
             ResponseText   = responseText;
             RequestRowType = RequestRowTypeEnum.Success;
 
-            Fire_PropertyChanged_Events( nameof(ResponseText)   );
-            Fire_PropertyChanged_Events( nameof(RequestRowType) );
+            _RowPropertiesChanged.Invoke( this, nameof(RequestRowType) );
         }
         [M(O.AggressiveInlining)] public void SetResponseError( string responseErrorText )
         {
             ResponseText   = responseErrorText;
             RequestRowType = RequestRowTypeEnum.Error;
 
-            Fire_PropertyChanged_Events( nameof(ResponseText)   );
-            Fire_PropertyChanged_Events( nameof(RequestRowType) );
+            _RowPropertiesChanged.Invoke( this, nameof(RequestRowType) );
         }
         public void Append2RequestText( string append2RequestText )
         {
             RequestText += append2RequestText;
             //RequestRowType = RequestRowTypeEnum.Success;
 
-            Fire_PropertyChanged_Events( nameof(RequestRowType) );
+            _RowPropertiesChanged.Invoke( this, nameof(RequestRowType) );
         }
+
+        public RequestRowTypeEnum RequestRowType { [M(O.AggressiveInlining)] get; private set; }
     }
 }

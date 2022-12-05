@@ -41,7 +41,7 @@ namespace m3u8.infrastructure
     internal interface ILRUCache< T > : ICollection< T >, IReadOnlyCollection< T >
     {
         int Limit { get; set; }
-        int Count_ { get; }
+        int Count_2 { get; }
         bool TryGetValue( T equalValue, out T actualValue );
     }
 
@@ -129,7 +129,7 @@ namespace m3u8.infrastructure
         }
 
         public int Count => _LinkedList.Count;
-        public int Count_ => _LinkedList.Count;
+        public int Count_2 => _LinkedList.Count;
         public bool IsReadOnly => false;
 
         public void Add( T item )
@@ -332,7 +332,7 @@ namespace m3u8.infrastructure
             lock ( _LRUCache )
             {
                 var refCount = t.DecrementRefCount();
-                if ( (refCount <= 0) && (1 < _LRUCache.Count_) )
+                if ( (refCount <= 0) && (1 < _LRUCache.Count_2) )
                 {
                     var first_t = _LRUCache.First();
                     if ( t != first_t )
@@ -378,11 +378,11 @@ namespace m3u8
         public static m3u8_client Create() => Create( HttpClientFactory_WithRefCount.Get() );
         public static m3u8_client Create( in (TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.timeout, t.attemptRequestCountByPart );
         public static m3u8_client Create( in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( timeout ), attemptRequestCountByPart );
-        public static m3u8_client Create( in m3u8_client.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get(), in ip );
+        public static m3u8_client Create( in m3u8_client.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get(), ip );
 
-        private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, in m3u8_client.init_params ip ) => new m3u8_client( in t, in ip );
+        private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, in m3u8_client.init_params ip ) => new m3u8_client( t, ip );
         private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, int attemptRequestCountByPart = 10 )
-            => Create( in t, new m3u8_client.init_params() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
+            => Create( t, new m3u8_client.init_params() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
 
         public static void ForceClearAndDisposeAll() => HttpClientFactory_WithRefCount.ForceClearAndDisposeAll();
     }

@@ -9,11 +9,14 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+using _AvaColor_   = Avalonia.Media.Color;
+using _AvaBrushes_ = Avalonia.Media.Brushes;
 
 namespace m3u8.download.manager.ui
 {
@@ -27,6 +30,10 @@ namespace m3u8.download.manager.ui
         private TextBox outputFileNameTextBox;
         private TextBox outputDirectoryTextBox;
         private RequestLogUC logUC;
+
+        private CheckBox      isLiveStreamCheckBox;
+        private TextBlock     liveStreamMaxSizeInMbTextBlock;
+        private NumericUpDown liveStreamMaxSizeInMbNumUpDn;
 
         private IDisposable m3u8FileUrlTextBox_SubscribeDisposable;
         private IDisposable outputFileNameTextBox_SubscribeDisposable;
@@ -51,13 +58,17 @@ namespace m3u8.download.manager.ui
             outputDirectoryTextBox = this.Find< TextBox >( nameof(outputDirectoryTextBox) );
             logUC                  = this.Find< RequestLogUC >( nameof(logUC) );
 
+            isLiveStreamCheckBox           = this.Find< CheckBox      >( nameof(isLiveStreamCheckBox)           );
+            liveStreamMaxSizeInMbTextBlock = this.Find< TextBlock     >( nameof(liveStreamMaxSizeInMbTextBlock) );
+            liveStreamMaxSizeInMbNumUpDn   = this.Find< NumericUpDown >( nameof(liveStreamMaxSizeInMbNumUpDn)   );
+
             this.Find< Button >( "outputFileNameClearButton"   ).Click += outputFileNameClearButton_Click;
             this.Find< Button >( "outputFileNameSelectButton"  ).Click += outputFileNameSelectButton_Click;
             this.Find< Button >( "outputDirectorySelectButton" ).Click += outputDirectorySelectButton_Click;
             this.Find< Button >( "startDownloadButton"         ).Click += startDownloadButton_Click;
             this.Find< Button >( "laterDownloadButton"         ).Click += laterDownloadButton_Click;
             this.Find< Button >( "loadM3u8FileContentButton"   ).Click += loadM3u8FileContentButton_Click;
-
+            isLiveStreamCheckBox.Click += isLiveStreamCheckBox_Click;
 
             _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
 
@@ -67,6 +78,7 @@ namespace m3u8.download.manager.ui
             this.AttachDevTools();
 #endif
         }
+
         internal AddNewDownloadForm( MainVM vm, string m3u8FileUrl, (int n, int total)? seriesInfo = null ) : this()
         {
             this.DataContext = new AddNewDownloadFormVM( this );
@@ -76,6 +88,8 @@ namespace m3u8.download.manager.ui
             
             this.M3u8FileUrl     = m3u8FileUrl;
             this.OutputDirectory = _Settings.OutputFileDirectory;
+            this.IsLiveStream              = _Settings.IsLiveStream;
+            this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
@@ -93,6 +107,9 @@ namespace m3u8.download.manager.ui
             _FNCP.Dispose_NoThrow();
             m3u8FileUrlTextBox_SubscribeDisposable.Dispose_NoThrow();
             outputFileNameTextBox_SubscribeDisposable.Dispose_NoThrow();
+
+            _Settings.LiveStreamMaxSingleFileSizeInMb = this.LiveStreamMaxFileSizeInMb;
+            _Settings.IsLiveStream                    = this.IsLiveStream;
         }
 
         protected async override void OnOpened( EventArgs e )
@@ -350,6 +367,15 @@ namespace m3u8.download.manager.ui
             }
             this.IsEnabled = true;
         }
+
+        private void isLiveStreamCheckBox_Click( object sender, RoutedEventArgs e )
+        {
+            var isLiveStream = this.IsLiveStream;
+            
+            isLiveStreamCheckBox.Foreground = isLiveStream ? new SolidColorBrush( _AvaColor_.FromArgb( 255, 70, 70, 70 ) ) : _AvaBrushes_.Silver; //isLiveStream ? Color.FromArgb( 70, 70, 70 ) : Color.Silver;
+            liveStreamMaxSizeInMbNumUpDn.IsVisible = liveStreamMaxSizeInMbTextBlock.IsVisible = isLiveStream;
+            //this.mainLayoutPanel.Height = isLiveStream ? 90 : 60;
+        }
         #endregion
 
         #region [.public methods.]
@@ -369,6 +395,21 @@ namespace m3u8.download.manager.ui
         }
         public  string GetOutputFileName() => FileNameCleaner.GetOutputFileName( this.OutputFileName );
         public  string GetOutputDirectory() => this.OutputDirectory;
+        public  bool   IsLiveStream
+        { 
+            get => isLiveStreamCheckBox.IsChecked.GetValueOrDefault();
+            set => isLiveStreamCheckBox.IsChecked = value;
+        }
+        public int     LiveStreamMaxFileSizeInMb
+        {
+            get => (int) liveStreamMaxSizeInMbNumUpDn.Value;
+            set => liveStreamMaxSizeInMbNumUpDn.Value = Math.Max( liveStreamMaxSizeInMbNumUpDn.Minimum, Math.Min( liveStreamMaxSizeInMbNumUpDn.Maximum, value ) );
+        }
+        public long    LiveStreamMaxFileSizeInBytes
+        {
+            get => this.LiveStreamMaxFileSizeInMb << 20;
+            set => this.LiveStreamMaxFileSizeInMb = (int) (value >> 20);
+        }
 
         private string OutputFileName
         {

@@ -101,7 +101,7 @@
             this.useMaxCrossDownloadInstanceCheckBox.TabIndex = 5;
             this.useMaxCrossDownloadInstanceCheckBox.Text = "use downloads-instance";
             this.useMaxCrossDownloadInstanceCheckBox.UseVisualStyleBackColor = true;
-            this.useMaxCrossDownloadInstanceCheckBox.CheckedChanged += new System.EventHandler(this.useMaxCrossDownloadInstanceCheckBox_CheckedChanged);
+            this.useMaxCrossDownloadInstanceCheckBox.CheckedChanged += new System.EventHandler(this.useMaxCrossDownloadInstanceCheckBox_CheckedChanged);            
 
             // 
             // isUnlimMaxSpeedThresholdCheckBox

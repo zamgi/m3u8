@@ -137,12 +137,13 @@ namespace m3u8.download.manager.ui
             logUC.SetSettingsController( _VM.SettingsController );
 
             downloadListUC.SetModel( _VM.DownloadListModel );
-            downloadListUC.SelectionChanged        += downloadListUC_SelectionChanged;
-            downloadListUC.OutputFileNameClick     += downloadListUC_OutputFileNameClick;
-            downloadListUC.OutputDirectoryClick    += downloadListUC_OutputDirectoryClick;
-            downloadListUC.UpdatedSingleRunningRow += downloadListUC_UpdatedSingleRunningRow;
-            downloadListUC.MouseClickRightButton   += downloadListUC_MouseClickRightButton;
-            downloadListUC.DoubleClickEx           += openOutputFileMenuItem_Click;
+            downloadListUC.SelectionChanged           += downloadListUC_SelectionChanged;
+            downloadListUC.OutputFileNameClick        += downloadListUC_OutputFileNameClick;
+            downloadListUC.OutputDirectoryClick       += downloadListUC_OutputDirectoryClick;
+            downloadListUC.LiveStreamMaxFileSizeClick += downloadListUC_LiveStreamMaxFileSizeClick;
+            downloadListUC.UpdatedSingleRunningRow    += downloadListUC_UpdatedSingleRunningRow;
+            downloadListUC.MouseClickRightButton      += downloadListUC_MouseClickRightButton;
+            downloadListUC.DoubleClickEx              += openOutputFileMenuItem_Click;
             //---downloadListUC.EnterKeyDown            += downloadListUC_EnterKeyDown;
 
             SetDownloadToolButtonsStatus( null );
@@ -1130,5 +1131,17 @@ namespace m3u8.download.manager.ui
             }
         }
         #endregion
+
+        private async void downloadListUC_LiveStreamMaxFileSizeClick( DownloadRow row )
+        {
+            var f = new ChangeLiveStreamMaxFileSizeForm( row );
+            {
+                await f.ShowDialog( this );
+                if ( f.Success )
+                {
+                    f.Row.SetLiveStreamMaxFileSizeInBytes( f.LiveStreamMaxFileSizeInBytes );
+                }
+            }
+        }
     }
 }

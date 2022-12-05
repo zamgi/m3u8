@@ -69,6 +69,10 @@ namespace m3u8.download.manager.ui
                 this.Text += $" ({x.n} of {x.total})";
             }
             _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
+            
+            this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
+            this.IsLiveStream              = _Settings.IsLiveStream;
+            if ( isLiveStreamCheckBox.Checked ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
         }
 
         protected override void Dispose( bool disposing )
@@ -77,13 +81,15 @@ namespace m3u8.download.manager.ui
             {
                 components?.Dispose();
                 _FNCP.Dispose();
+
+                _Settings.LiveStreamMaxSingleFileSizeInMb = this.LiveStreamMaxFileSizeInMb;
+                _Settings.IsLiveStream                    = this.IsLiveStream;
             }
             base.Dispose( disposing );
         }
         #endregion
 
-        public static bool
-            ShowModalDialog( IWin32Window owner, _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo, Func< AddNewDownloadForm, Task > okAction )
+        public static bool ShowModalDialog( IWin32Window owner, _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo, Func< AddNewDownloadForm, Task > okAction )
         {
             using ( var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, seriesInfo ) )
             {
@@ -242,7 +248,11 @@ namespace m3u8.download.manager.ui
                 }
             }
 
-            if ( !e.Cancel && (_LastForegroundWnd != this.Handle) && !_Initial_M3u8FileUrl.IsNullOrEmpty() )
+            if ( e.Cancel )
+            {
+                if ( DialogResult != DialogResult.Cancel ) DialogResult = DialogResult.Cancel;
+            }
+            else if ( (_LastForegroundWnd != this.Handle) && !_Initial_M3u8FileUrl.IsNullOrEmpty() )
             {
                 WinApi.SetForegroundWindow( _LastForegroundWnd );
             }
@@ -289,6 +299,21 @@ namespace m3u8.download.manager.ui
         }
         public  string GetOutputFileName() => FileNameCleaner.GetOutputFileName( this.OutputFileName );
         public  string GetOutputDirectory() => this.OutputDirectory;
+        public  bool   IsLiveStream
+        { 
+            get => isLiveStreamCheckBox.Checked;
+            set => isLiveStreamCheckBox.Checked = value;
+        }
+        public int LiveStreamMaxFileSizeInMb
+        {
+            get => (int) liveStreamMaxSizeInMbNumUpDn.Value;
+            set => liveStreamMaxSizeInMbNumUpDn.Value = Math.Max( liveStreamMaxSizeInMbNumUpDn.Minimum, Math.Min( liveStreamMaxSizeInMbNumUpDn.Maximum, value ) );
+        }
+        public long LiveStreamMaxFileSizeInBytes
+        {
+            get => this.LiveStreamMaxFileSizeInMb << 20;
+            set => this.LiveStreamMaxFileSizeInMb = (int) (value >> 20);
+        }
         private string OutputFileName
         {
             get => outputFileNameTextBox.Text.Trim();
@@ -378,6 +403,13 @@ namespace m3u8.download.manager.ui
             {
                 this.OutputDirectory = selectedPath;
             }
+        }
+
+        private void isLiveStreamCheckBox_Click( object sender, EventArgs e )
+        {
+            isLiveStreamCheckBox.ForeColor = isLiveStreamCheckBox.Checked ? Color.FromArgb(70, 70, 70) : Color.Silver;
+            liveStreamMaxSizeInMbNumUpDn.Visible = liveStreamMaxSizeInMbLabel.Visible = isLiveStreamCheckBox.Checked;
+            this.mainLayoutPanel.Height = isLiveStreamCheckBox.Checked ? 90 : 60;
         }
         #endregion
 
