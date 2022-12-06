@@ -1,0 +1,69 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        x:Class="m3u8.download.manager.ui.ColumnsVisibilityEditor"
+        d:DesignWidth="350" d:DesignHeight="550"
+        Width="350" Height="550"        
+        Title="columns visibility editor"
+        WindowStartupLocation="CenterOwner"
+        Icon="/Resources/m3u8_32x36.ico"
+        Background="WhiteSmoke"
+        ShowInTaskbar="False"
+        >
+  <Window.Styles>    
+    <Style Selector="DataGridRow /template/Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="Transparent" />
+    </Style>
+    <Style Selector="DataGridRow:selected TextBlock">
+      <Setter Property="Foreground" Value="Black" />
+    </Style>
+    <Style Selector="DataGridRow TextBlock">
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style Selector="DataGridCell.order_number">
+      <Setter Property="Foreground" Value="Silver" />
+    </Style>
+    <Style Selector="DataGridRow:selected DataGridCell.order_number TextBlock">
+      <Setter Property="Foreground" Value="Silver" />
+    </Style>
+  </Window.Styles>
+  
+  <Grid RowDefinitions="*,auto" ColumnDefinitions="auto,*,auto" Margin="15">
+    <DataGrid x:Name="DGV" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+              SelectionMode="Extended"
+              CanUserResizeColumns="False"
+              CanUserReorderColumns="False"
+              CanUserSortColumns="True"
+              IsReadOnly="False"
+              GridLinesVisibility="Vertical" 
+              VerticalGridLinesBrush="White" HorizontalGridLinesBrush="Black"
+              BorderBrush="LightGray" BorderThickness="1"
+              ClipboardCopyMode="None"
+              RowBackground="White" AlternatingRowBackground="WhiteSmoke"
+              >
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="#" Binding="{Binding ViewOrderNumber, Mode=OneWay}" 
+                            Width="auto" IsReadOnly="True" CanUserSort="False"
+                            CellStyleClasses="order_number" />
+        
+        <DataGridCheckBoxColumn Header="Is Visible" Binding="{Binding IsVisible, Mode=TwoWay}"
+                                Width="auto" IsReadOnly="True" CanUserSort="False"
+                                />
+                                <!--ToolTip.Tip="{Binding ToolTip}"-->
+
+        <DataGridTextColumn Header="Column name" Binding="{Binding Text, Mode=OneWay}"
+                            Width="*" CanUserSort="False" SortMemberPath="Text"
+                            IsReadOnly="True" />
+      </DataGrid.Columns>
+    </DataGrid>
+    
+    <DockPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" 
+               HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,0">
+      <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
+      <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
+    </DockPanel>
+  </Grid>
+</Window>

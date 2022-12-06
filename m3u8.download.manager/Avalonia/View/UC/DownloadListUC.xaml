@@ -57,7 +57,7 @@
             HorizontalScrollBarVisibility="Auto"
             >
     <DataGrid.Columns>
-      <DataGridTemplateColumn Width="2.25*">
+      <DataGridTemplateColumn Width="2.25*" CellStyleClasses="visible_always_sign">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Output file name" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
         </DataGridTemplateColumn.Header>
@@ -189,7 +189,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
         
-      <DataGridTemplateColumn Width="*">
+      <DataGridTemplateColumn Width="*" IsVisible="False">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Is Live Stream" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -201,7 +201,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
         
-      <DataGridTemplateColumn Width="*">
+      <DataGridTemplateColumn Width="*" IsVisible="False">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Live Stream Max File Size" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -213,7 +213,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="1.5*">
+      <DataGridTemplateColumn Width="1.5*" IsVisible="False">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Url" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>

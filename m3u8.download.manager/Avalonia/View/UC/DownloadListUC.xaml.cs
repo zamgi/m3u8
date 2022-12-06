@@ -66,9 +66,9 @@ namespace m3u8.download.manager.ui
                 InputElement.PointerPressedEvent,
                 (s, e) =>
                 {
-                    var pp = e.GetCurrentPoint( null );
-                    Debug.WriteLine( $"PointerPressedEvent: {pp.Position}" );
-                    if ( pp.Properties.IsRightButtonPressed )
+                    var p = e.GetCurrentPoint( null );
+                    Debug.WriteLine( $"PointerPressedEvent: {p.Position}" );
+                    if ( p.Properties.IsRightButtonPressed )
                     {
                         var coll = (e.Source as IControl)?.GetSelfAndVisualAncestors().OfType< DataGridColumnHeader >().FirstOrDefault();
                         if ( coll != null )
@@ -109,15 +109,15 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
         {
-            var pp = e.GetCurrentPoint( null );
-            if ( pp.Properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed )
+            var p = e.GetCurrentPoint( null );
+            if ( p.Properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed )
             {
                 var evnt = MouseClickRightButton;
                 if ( evnt != null )
                 {
                     e.Pointer.Capture( null );
                     e.Handled = true;
-                    evnt( pp.Position, row: null/*this.GetSelectedDownloadRow()*/ );
+                    evnt( p.Position, row: null/*this.GetSelectedDownloadRow()*/ );
                 }
             }
         }
@@ -127,8 +127,8 @@ namespace m3u8.download.manager.ui
             const int OutputDirectory_Column_DisplayIndex       = 1;
             const int LiveStreamMaxFileSize_Column_DisplayIndex = 11;
 
-            var pp = e.PointerPressedEventArgs.GetCurrentPoint( null );
-            switch ( pp.Properties.PointerUpdateKind ) //e.PointerPressedEventArgs.MouseButton )
+            var p = e.PointerPressedEventArgs.GetCurrentPoint( null );
+            switch ( p.Properties.PointerUpdateKind ) //e.PointerPressedEventArgs.MouseButton )
             {
                 case PointerUpdateKind.LeftButtonPressed: //MouseButton.Left:
                     var columnDisplayIndex = e.Column.DisplayIndex;
@@ -192,7 +192,7 @@ namespace m3u8.download.manager.ui
 
                             e.PointerPressedEventArgs.Pointer.Capture( null );
                             e.PointerPressedEventArgs.Handled = true;
-                            evnt( pp.Position, this.GetSelectedDownloadRow() );
+                            evnt( p.Position, this.GetSelectedDownloadRow() );
                         }
                     }
                 break;
@@ -237,6 +237,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        internal void RestoreColumnsVisibilityFromJson( string json ) => DGV.Columns.RestoreVisibility( json );
 
         private async void SetDataGridItems()
         {
@@ -453,6 +454,8 @@ namespace m3u8.download.manager.ui
         //    //} 
         //    #endregion
         //}
+
+        internal DataGrid DataGrid => DGV;
         #endregion
 
         #region [.static methods for view.]

@@ -78,7 +78,6 @@ namespace m3u8.download.manager.ui
             this.AttachDevTools();
 #endif
         }
-
         internal AddNewDownloadForm( MainVM vm, string m3u8FileUrl, (int n, int total)? seriesInfo = null ) : this()
         {
             this.DataContext = new AddNewDownloadFormVM( this );
@@ -86,10 +85,10 @@ namespace m3u8.download.manager.ui
             _Settings          = vm.SettingsController.Settings;
             _DownloadListModel = vm.DownloadController?.Model;
             
-            this.M3u8FileUrl     = m3u8FileUrl;
-            this.OutputDirectory = _Settings.OutputFileDirectory;
-            this.IsLiveStream              = _Settings.IsLiveStream;
+            this.M3u8FileUrl = m3u8FileUrl;
+            this.OutputDirectory           = _Settings.OutputFileDirectory;            
             this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
+            //this.IsLiveStream              = _Settings.IsLiveStream;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
@@ -105,11 +104,8 @@ namespace m3u8.download.manager.ui
         public void Dispose()
         {
             _FNCP.Dispose_NoThrow();
-            m3u8FileUrlTextBox_SubscribeDisposable.Dispose_NoThrow();
+            m3u8FileUrlTextBox_SubscribeDisposable   .Dispose_NoThrow();
             outputFileNameTextBox_SubscribeDisposable.Dispose_NoThrow();
-
-            _Settings.LiveStreamMaxSingleFileSizeInMb = this.LiveStreamMaxFileSizeInMb;
-            _Settings.IsLiveStream                    = this.IsLiveStream;
         }
 
         protected async override void OnOpened( EventArgs e )
@@ -134,13 +130,13 @@ namespace m3u8.download.manager.ui
         {
             base.OnClosed( e );
 
-            m3u8FileUrlTextBox_SubscribeDisposable   .Dispose_NoThrow();
-            outputFileNameTextBox_SubscribeDisposable.Dispose_NoThrow();
-            _FNCP.Dispose_NoThrow();
+            Dispose();
 
             if ( this.Success )
             {
-                _Settings.OutputFileDirectory = this.OutputDirectory;
+                _Settings.OutputFileDirectory             = this.OutputDirectory;
+                _Settings.LiveStreamMaxSingleFileSizeInMb = this.LiveStreamMaxFileSizeInMb;
+                _Settings.IsLiveStream                    = this.IsLiveStream;
                 _Settings.SaveNoThrow();
             }
         }

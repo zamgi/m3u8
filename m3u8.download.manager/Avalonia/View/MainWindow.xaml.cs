@@ -125,7 +125,7 @@ namespace m3u8.download.manager.ui
             this.Title = _Resources_.APP_TITLE;
             this.DataContext = _VM = new MainVM( this );
 
-            _VM.DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
+            _VM.DownloadListModel .RowPropertiesChanged    += DownloadListModel_RowPropertiesChanged;
             _VM.SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
             SettingsController_PropertyChanged( _VM.SettingsController.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle) );
             #endregion
@@ -160,6 +160,8 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
+        internal DataGrid DownloadListDGV => downloadListUC.DataGrid;
+
         #region [.override methods.]
         private PixelPoint _Position;
         private void RestoreBounds( string json )
@@ -193,6 +195,7 @@ namespace m3u8.download.manager.ui
                 this.RestoreBounds( _VM.SettingsController.MainFormPositionJson );
             }
             downloadListUC.SetColumnsWidthFromJson( _VM.SettingsController.GetDownloadListColumnsWidthJson() );
+            downloadListUC.RestoreColumnsVisibilityFromJson( _VM.SettingsController.Settings.DownloadListDGVColumnsVisibilityJson );
             downloadListUC.Focus();
             #endregion
 

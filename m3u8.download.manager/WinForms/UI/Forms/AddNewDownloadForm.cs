@@ -71,8 +71,8 @@ namespace m3u8.download.manager.ui
             _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
             
             this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
-            this.IsLiveStream              = _Settings.IsLiveStream;
-            if ( isLiveStreamCheckBox.Checked ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
+            //this.IsLiveStream              = _Settings.IsLiveStream;
+            //if ( isLiveStreamCheckBox.Checked ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
         }
 
         protected override void Dispose( bool disposing )
@@ -81,9 +81,6 @@ namespace m3u8.download.manager.ui
             {
                 components?.Dispose();
                 _FNCP.Dispose();
-
-                _Settings.LiveStreamMaxSingleFileSizeInMb = this.LiveStreamMaxFileSizeInMb;
-                _Settings.IsLiveStream                    = this.IsLiveStream;
             }
             base.Dispose( disposing );
         }
@@ -188,7 +185,9 @@ namespace m3u8.download.manager.ui
                 }
                 if ( DialogResult != DialogResult.Cancel )
                 {
-                    _Settings.OutputFileDirectory = this.OutputDirectory;
+                    _Settings.OutputFileDirectory             = this.OutputDirectory;
+                    _Settings.LiveStreamMaxSingleFileSizeInMb = this.LiveStreamMaxFileSizeInMb;
+                    _Settings.IsLiveStream                    = this.IsLiveStream;
                 }
                 _Settings.SaveNoThrow();
             }
@@ -270,8 +269,7 @@ namespace m3u8.download.manager.ui
                 case (Keys.Enter | Keys.Shift)  : //DownloadLater
                 case (Keys.Enter | Keys.Control): //DownloadLater
                 case (Keys.Enter | Keys.Alt)    : //DownloadLater
-                    var button = (this.ActiveControl as Button);
-                    if ( (button == null) || !button.Focused ) //if ( !m3u8FileTextContentLoadButton.Focused && !outputFileNameClearButton.Focused && !outputFileNameSelectButton.Focused )
+                    if ( !(this.ActiveControl is Button button) || !button.Focused ) //if ( !m3u8FileTextContentLoadButton.Focused && !outputFileNameClearButton.Focused && !outputFileNameSelectButton.Focused )
                     {
                         DialogResult = (keyData == Keys.Enter) ? DialogResult.OK : DialogResult.Yes;
                         this.Close();
@@ -299,17 +297,17 @@ namespace m3u8.download.manager.ui
         }
         public  string GetOutputFileName() => FileNameCleaner.GetOutputFileName( this.OutputFileName );
         public  string GetOutputDirectory() => this.OutputDirectory;
-        public  bool   IsLiveStream
+        public  bool IsLiveStream
         { 
             get => isLiveStreamCheckBox.Checked;
             set => isLiveStreamCheckBox.Checked = value;
         }
-        public int LiveStreamMaxFileSizeInMb
+        public int   LiveStreamMaxFileSizeInMb
         {
             get => (int) liveStreamMaxSizeInMbNumUpDn.Value;
             set => liveStreamMaxSizeInMbNumUpDn.Value = Math.Max( liveStreamMaxSizeInMbNumUpDn.Minimum, Math.Min( liveStreamMaxSizeInMbNumUpDn.Maximum, value ) );
         }
-        public long LiveStreamMaxFileSizeInBytes
+        public long  LiveStreamMaxFileSizeInBytes
         {
             get => this.LiveStreamMaxFileSizeInMb << 20;
             set => this.LiveStreamMaxFileSizeInMb = (int) (value >> 20);
@@ -407,9 +405,11 @@ namespace m3u8.download.manager.ui
 
         private void isLiveStreamCheckBox_Click( object sender, EventArgs e )
         {
-            isLiveStreamCheckBox.ForeColor = isLiveStreamCheckBox.Checked ? Color.FromArgb(70, 70, 70) : Color.Silver;
-            liveStreamMaxSizeInMbNumUpDn.Visible = liveStreamMaxSizeInMbLabel.Visible = isLiveStreamCheckBox.Checked;
-            this.mainLayoutPanel.Height = isLiveStreamCheckBox.Checked ? 90 : 60;
+            var isLiveStream = this.IsLiveStream;
+
+            isLiveStreamCheckBox.ForeColor = isLiveStream ? Color.FromArgb(70, 70, 70) : Color.Silver;
+            liveStreamMaxSizeInMbNumUpDn.Visible = liveStreamMaxSizeInMbLabel.Visible = isLiveStream;
+            this.mainLayoutPanel.Height = isLiveStream ? 90 : 60;
         }
         #endregion
 

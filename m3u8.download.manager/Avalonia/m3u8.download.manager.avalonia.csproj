@@ -47,6 +47,7 @@
     <None Remove="Resources\m3u8.png" />
     <None Remove="Resources\m3u8_148x166.ico" />
     <None Remove="View\ChangeLiveStreamMaxFileSizeForm.xaml" />
+    <None Remove="View\ColumnsVisibilityEditor.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,6 +81,9 @@
     <AvaloniaResource Update="View\ChangeLiveStreamMaxFileSizeForm.xaml">
       <Generator>MSBuild:Compile</Generator>
     </AvaloniaResource>
+    <AvaloniaResource Update="View\ColumnsVisibilityEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaResource>
   </ItemGroup>
     
   <ItemGroup>
@@ -95,6 +99,9 @@
     </Compile>
     <Compile Update="View\ChangeLiveStreamMaxFileSizeForm.xaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="View\ColumnsVisibilityEditor.xaml.cs">
+      <DependentUpon>ColumnsVisibilityEditor.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   

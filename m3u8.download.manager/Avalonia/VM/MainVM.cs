@@ -20,11 +20,12 @@ namespace m3u8.download.manager
             DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
             DownloadController = new DownloadController( DownloadListModel, SettingsController );
 
-            AddCommand         = new AddCommand( this );
-            ParallelismCommand = new ParallelismCommand( this );
-            SettingsCommand    = new SettingsCommand( this );
-            AboutCommand       = new AboutCommand();
+            AddCommand                         = new AddCommand( this );
+            ParallelismCommand                 = new ParallelismCommand( this );
+            SettingsCommand                    = new SettingsCommand( this );
+            AboutCommand                       = new AboutCommand();
             FileNameExcludesWordsEditorCommand = new FileNameExcludesWordsEditorCommand( this );
+            ColumnsVisibilityEditorCommand     = new ColumnsVisibilityEditorCommand( this, mainWindow );
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -41,11 +42,12 @@ namespace m3u8.download.manager
         public DownloadController               DownloadController { get; }
         public SettingsPropertyChangeController SettingsController { get; }
 
-        public AddCommand         AddCommand         { get; }
-        public ParallelismCommand ParallelismCommand { get; }
-        public SettingsCommand    SettingsCommand    { get; }
-        public AboutCommand       AboutCommand       { get; }
+        public AddCommand                         AddCommand                         { get; }
+        public ParallelismCommand                 ParallelismCommand                 { get; }
+        public SettingsCommand                    SettingsCommand                    { get; }
+        public AboutCommand                       AboutCommand                       { get; }
         public FileNameExcludesWordsEditorCommand FileNameExcludesWordsEditorCommand { get; }
+        public ColumnsVisibilityEditorCommand     ColumnsVisibilityEditorCommand     { get; }
 
         public string ItemsCount => $"{DownloadListModel.RowsCount} Items";
     }

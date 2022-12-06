@@ -92,6 +92,12 @@
             <Image Source="/Resources/listbullets.png" />
           </MenuItem.Header>
         </MenuItem>
+
+        <MenuItem Command="{Binding ColumnsVisibilityEditorCommand}" ToolTip.Tip="columns visibility editor" HorizontalAlignment="Right" Padding="0">
+          <MenuItem.Header>
+            <Image Source="/Resources/listcheck.png" />
+          </MenuItem.Header>
+        </MenuItem>        
         
         <MenuItem Command="{Binding ParallelismCommand}" ToolTip.Tip="Parallelism settings" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
