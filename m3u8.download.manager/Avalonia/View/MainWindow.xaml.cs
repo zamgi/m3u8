@@ -20,13 +20,59 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_                 = m3u8.download.manager.Properties.Resources;
+using Avalonia.X11;
 
 namespace m3u8.download.manager.ui
 {
     /// <summary>
     /// 
     /// </summary>
-    public sealed class MainWindow : Window, IDisposable
+    public abstract class StoreBoundsWindowBase : Window
+    {
+        private PixelPoint _Position;
+        protected override void OnClosing( CancelEventArgs e )
+        {
+            _Position = this.Position;
+
+            base.OnClosing( e );
+        }
+
+        protected void RestoreBounds( string json )
+        {
+            if ( !json.IsNullOrEmpty() )
+            {
+                try
+                {
+                    var (x, y, width, height, state) = Extensions.FromJSON< (int x, int y, double width, double height, WindowState state) >( json );
+                    switch ( state )
+                    {
+                        case WindowState.Maximized: this.WindowState = WindowState.Maximized; break;
+                        //case WindowState.Minimized: goto default;
+                        default:
+                            this.WindowState = WindowState.Normal;
+                            if ( (double.Epsilon < Math.Abs( width )) && (double.Epsilon < Math.Abs( height )) ) //---if ( (width != default) && (height != default) )
+                            {                                
+                                this.Position = new PixelPoint( Math.Max( -10, x ), Math.Max( -10, y ) );
+                                //this.ClientSize = new Size( width, height );
+                                this.Width  = width;
+                                this.Height = height;
+                            }
+                            break;
+                    }                    
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
+            }
+        }
+        protected (int x, int y, double width, double height, WindowState state) GetBounds() => (x: _Position.X, y: _Position.Y, width: this.Width, height: this.Height, state: this.WindowState);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class MainWindow : StoreBoundsWindowBase/*Window*/, IDisposable
     {
         #region [.fields from markup.]
         private DownloadListUC downloadListUC;
@@ -163,28 +209,6 @@ namespace m3u8.download.manager.ui
         internal DataGrid DownloadListDGV => downloadListUC.DataGrid;
 
         #region [.override methods.]
-        private PixelPoint _Position;
-        private void RestoreBounds( string json )
-        {
-            if ( !json.IsNullOrEmpty() )
-            {
-                try
-                {
-                    var (x, y, width, height) = Extensions.FromJSON< (int x, int y, double width, double height) >( json );
-                    if ( (double.Epsilon < Math.Abs( width )) && (double.Epsilon < Math.Abs( height )) ) //---if ( (width != default) && (height != default) )
-                    {
-                        this.Position   = new PixelPoint( x, y );
-                        this.ClientSize = new Size( width, height );
-                    }                    
-                }
-                catch ( Exception ex )
-                {
-                    Debug.WriteLine( ex );
-                }
-            }
-        }
-        private (int x, int y, double width, double height) GetBounds() => (x: _Position.X, y: _Position.Y, width: this.Width, height: this.Height);
-
         protected async override void OnOpened( EventArgs e )
         {
             base.OnOpened( e );
@@ -194,8 +218,7 @@ namespace m3u8.download.manager.ui
             {
                 this.RestoreBounds( _VM.SettingsController.MainFormPositionJson );
             }
-            downloadListUC.SetColumnsWidthFromJson( _VM.SettingsController.GetDownloadListColumnsWidthJson() );
-            downloadListUC.RestoreColumnsVisibilityFromJson( _VM.SettingsController.Settings.DownloadListDGVColumnsVisibilityJson );
+            downloadListUC.RestoreColumnsInfoFromJson( _VM.SettingsController.GetDownloadListColumnsInfoJson() );
             downloadListUC.Focus();
             #endregion
 
@@ -230,15 +253,13 @@ namespace m3u8.download.manager.ui
 
             #region [.save settings.]
             _VM.SettingsController.MainFormPositionJson = this.GetBounds().ToJSON();
-            _VM.SettingsController.SetDownloadListColumnsWidthJson( downloadListUC.GetColumnsWidth().ToJSON() );
+            _VM.SettingsController.SetDownloadListColumnsInfoJson( downloadListUC.GetColumnsInfoJson() );
             _VM.SettingsController.DownloadRowsJson = DownloadRowsSerializer.ToJSON( _VM.DownloadListModel.GetRows() );
             _VM.SettingsController.SaveNoThrow();
             #endregion
         }
         protected async override void OnClosing( CancelEventArgs e )
         {
-            _Position = this.Position;
-
             base.OnClosing( e );
 
             #region comm. cancel if WaitBanner shown.

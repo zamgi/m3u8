@@ -214,30 +214,8 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.Model.]
-        internal IEnumerable< (int index, double width) > GetColumnsWidth() => DGV.Columns.Select( (c, i) => (index: i, width: c.ActualWidth) );
-        private void SetColumnsWidth( IList< (int index, double width) > seq )
-        {
-            foreach ( var (index, width) in seq )
-            {
-                DGV.Columns[ index ].Width = new DataGridLength( width );
-            }
-        }
-        internal void SetColumnsWidthFromJson( string json )
-        {
-            if ( !json.IsNullOrEmpty() )
-            {
-                try
-                {
-                    var seq = Extensions.FromJSON< (int index, double width)[] >( json );
-                    SetColumnsWidth( seq );
-                }
-                catch ( Exception ex )
-                {
-                    Debug.WriteLine( ex );
-                }
-            }
-        }
-        internal void RestoreColumnsVisibilityFromJson( string json ) => DGV.Columns.RestoreVisibility( json );
+        internal string GetColumnsInfoJson() => ColumnsInfoSerializer.ToJSON( DGV.Columns );
+        internal void RestoreColumnsInfoFromJson( string json ) => ColumnsInfoSerializer.Restore_NoThrow( DGV.Columns, json );
 
         private async void SetDataGridItems()
         {

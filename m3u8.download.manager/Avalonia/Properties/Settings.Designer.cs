@@ -326,12 +326,12 @@ namespace m3u8.download.manager.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DownloadListColumnsWidthJson {
+        public string DownloadListColumnsInfoJson {
             get {
-                return ((string)(this["DownloadListColumnsWidthJson"]));
+                return ((string)(this["DownloadListColumnsInfoJson"]));
             }
             set {
-                this["DownloadListColumnsWidthJson"] = value;
+                this["DownloadListColumnsInfoJson"] = value;
             }
         }
         
@@ -356,18 +356,6 @@ namespace m3u8.download.manager.Properties {
             }
             set {
                 this["IsLiveStream"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string DownloadListDGVColumnsVisibilityJson {
-            get {
-                return ((string)(this["DownloadListDGVColumnsVisibilityJson"]));
-            }
-            set {
-                this["DownloadListDGVColumnsVisibilityJson"] = value;
             }
         }
     }

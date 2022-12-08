@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows.Input;
 
-using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
 
 namespace m3u8.download.manager
@@ -11,9 +11,8 @@ namespace m3u8.download.manager
     /// </summary>
     internal sealed class ColumnsVisibilityEditorCommand : ICommand
     {
-        private Settings   _Settings;
         private MainWindow _MainWindow;
-        public ColumnsVisibilityEditorCommand( MainVM vm, MainWindow mainWindow ) => (_Settings, _MainWindow) = (vm.SettingsController.Settings, mainWindow);
+        public ColumnsVisibilityEditorCommand( MainWindow mainWindow ) => _MainWindow = mainWindow;
 
 #pragma warning disable CS0067
         public event EventHandler CanExecuteChanged;
@@ -27,10 +26,9 @@ namespace m3u8.download.manager
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
-                    _Settings.DownloadListDGVColumnsVisibilityJson = ColumnsVisibilitySerializer.ToJSON( _MainWindow.DownloadListDGV.Columns );
-                    _Settings.SaveNoThrow();
+                    Debug.WriteLine( "apply columns visibility" );
                 }
-            }            
+            }
         }
     }
 }

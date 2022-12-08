@@ -105,7 +105,7 @@
     <Setting Name="ShowLog" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="DownloadListColumnsWidthJson" Type="System.String" Scope="User">
+    <Setting Name="DownloadListColumnsInfoJson" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="LiveStreamMaxSingleFileSizeInMb" Type="System.Int32" Scope="User">
@@ -113,9 +113,6 @@
     </Setting>
     <Setting Name="IsLiveStream" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="DownloadListDGVColumnsVisibilityJson" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>    
+    </Setting> 
   </Settings>
 </SettingsFile>

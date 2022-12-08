@@ -103,10 +103,10 @@ namespace m3u8.download.manager
             {
                 settings.NameCleanerExcludesWords.Clear();
             }
-            settings.NameCleanerExcludesWords.AddRange( excludesWords.ToArray() );
+            settings.NameCleanerExcludesWords.AddRange( excludesWords.ToArrayEx() );
         }
-        public static string GetDownloadListColumnsWidthJson( this SettingsPropertyChangeController settingsController ) => settingsController.Settings.DownloadListColumnsWidthJson;
-        public static void SetDownloadListColumnsWidthJson( this SettingsPropertyChangeController settingsController, string json ) => settingsController.Settings.DownloadListColumnsWidthJson = json;
+        public static string GetDownloadListColumnsInfoJson( this SettingsPropertyChangeController settingsController ) => settingsController.Settings.DownloadListColumnsInfoJson;
+        public static void SetDownloadListColumnsInfoJson( this SettingsPropertyChangeController settingsController, string json ) => settingsController.Settings.DownloadListColumnsInfoJson = json;
 
         public static void DeleteFiles_NoThrow( string[] fileNames )
         {

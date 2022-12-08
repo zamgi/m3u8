@@ -25,7 +25,7 @@ namespace m3u8.download.manager
             SettingsCommand                    = new SettingsCommand( this );
             AboutCommand                       = new AboutCommand();
             FileNameExcludesWordsEditorCommand = new FileNameExcludesWordsEditorCommand( this );
-            ColumnsVisibilityEditorCommand     = new ColumnsVisibilityEditorCommand( this, mainWindow );
+            ColumnsVisibilityEditorCommand     = new ColumnsVisibilityEditorCommand( mainWindow );
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
