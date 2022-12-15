@@ -999,6 +999,7 @@ namespace m3u8.download.manager.ui
                 this.MessageBox_ShowError( "Nothing for paste from clipboard.", this.Text );
             }
         }
+        private void columnsVisibilityEditorToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_ColumnsVisibilityEditor( downloadListUC.GetDataGridColumns(), downloadListUC.GetAlwaysVisibleDataGridColumns() );
         private void fileNameExcludesWordsEditorToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_FileNameExcludesWordsEditor();
         private void parallelismSettingsToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_ParallelismSettings();
         private void otherSettingsToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_OtherSettings();

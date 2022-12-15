@@ -62,7 +62,9 @@
     <Compile Include="..\WinForms\UI\Forms\ChangeOutputFileForm.cs" Link="UI\Forms\ChangeOutputFileForm.cs" />
     <Compile Include="..\WinForms\UI\Forms\ChangeOutputFileForm.Designer.cs" Link="UI\Forms\ChangeOutputFileForm.Designer.cs" />
     <Compile Include="..\WinForms\UI\Forms\ChangeLiveStreamMaxFileSizeForm.cs" Link="UI\Forms\ChangeLiveStreamMaxFileSizeForm.cs" />
-    <Compile Include="..\WinForms\UI\Forms\ChangeLiveStreamMaxFileSizeForm.Designer.cs" Link="UI\Forms\ChangeLiveStreamMaxFileSizeForm.Designer.cs" />    
+    <Compile Include="..\WinForms\UI\Forms\ChangeLiveStreamMaxFileSizeForm.Designer.cs" Link="UI\Forms\ChangeLiveStreamMaxFileSizeForm.Designer.cs" />
+    <Compile Include="..\WinForms\UI\Forms\ColumnsVisibilityEditor.cs" Link="UI\Forms\ColumnsVisibilityEditor.cs" />
+    <Compile Include="..\WinForms\UI\Forms\ColumnsVisibilityEditor.Designer.cs" Link="UI\Forms\ColumnsVisibilityEditor.Designer.cs" />
     <Compile Include="..\WinForms\UI\Forms\FileNameExcludesWordsEditor.cs" Link="UI\Forms\FileNameExcludesWordsEditor.cs" />
     <Compile Include="..\WinForms\UI\Forms\FileNameExcludesWordsEditor.Designer.cs" Link="UI\Forms\FileNameExcludesWordsEditor.Designer.cs" />
     <Compile Include="..\WinForms\UI\Forms\SettingsForm.cs" Link="UI\Forms\SettingsForm.cs" />

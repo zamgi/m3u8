@@ -160,8 +160,6 @@ namespace m3u8.download.manager.ui
         #region [.private methods.]
         private bool OkButtonProcess()
         {
-            //Apply();
-
             this.Success = true;
             this.Close();
             return (true);

@@ -410,6 +410,9 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+
+        internal IEnumerable< DataGridViewColumn > GetDataGridColumns() => DGV.Columns.Cast< DataGridViewColumn >();
+        internal IEnumerable< DataGridViewColumn > GetAlwaysVisibleDataGridColumns() => new[] { DGV_outputFileNameColumn };
         #endregion
 
         #region [.private methods.]

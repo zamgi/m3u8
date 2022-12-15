@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -128,6 +129,16 @@ namespace m3u8.download.manager.ui
         //---public string LeftSideTextLabelText     { get => leftSideTextLabel  .Text   ; set => leftSideTextLabel  .Text    = value; }
         //public bool IsVisibleLeftSideTextLabel  { get => leftSideTextLabel .Visible; set => leftSideTextLabel .Visible = value; }
 
+        public void ShowDialog_ColumnsVisibilityEditor( IEnumerable< DataGridViewColumn > dataGridColumns, IEnumerable< DataGridViewColumn > immutableDataGridColumns )
+        {
+            using var f = new ColumnsVisibilityEditor( dataGridColumns, immutableDataGridColumns );
+            {
+                if ( f.ShowDialog() == DialogResult.OK )
+                {
+                    Debug.WriteLine( "apply columns visibility" );
+                }
+            }
+        }
         public void ShowDialog_FileNameExcludesWordsEditor()
         {
             if ( FileNameExcludesWordsEditor.TryEdit( NameCleaner.ExcludesWords, out var resultExcludesWords ) )

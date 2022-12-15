@@ -37,6 +37,7 @@
             this.showLogToolButton = new System.Windows.Forms.ToolStripButton();
             this.copyToolButton = new System.Windows.Forms.ToolStripButton();
             this.pasteToolButton = new System.Windows.Forms.ToolStripButton();
+            this.columnsVisibilityEditorToolButton = new System.Windows.Forms.ToolStripButton();
             this.fileNameExcludesWordsEditorToolButton = new System.Windows.Forms.ToolStripButton();
             this.parallelismSettingsToolButton = new System.Windows.Forms.ToolStripButton();
             this.otherSettingsToolButton = new System.Windows.Forms.ToolStripButton();
@@ -98,8 +99,9 @@
                 this.aboutToolButton,
                 this.otherSettingsToolButton,                
                 this.parallelismSettingsToolButton,
+                this.columnsVisibilityEditorToolButton,
                 this.fileNameExcludesWordsEditorToolButton,
-            } );
+            });
             this.mainToolStrip.TabIndex = 0;
             // 
             // addNewDownloadToolButton
@@ -181,6 +183,15 @@
             this.pasteToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.pasteToolButton.ToolTipText = "Paste  (Ctrl + V)";
             this.pasteToolButton.Click += new System.EventHandler(this.pasteToolButton_Click);
+            // 
+            // columnsVisibilityEditorToolButton
+            // 
+            this.columnsVisibilityEditorToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.columnsVisibilityEditorToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.columnsVisibilityEditorToolButton.Image = global::m3u8.download.manager.Properties.Resources.listcheck;
+            this.columnsVisibilityEditorToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.columnsVisibilityEditorToolButton.ToolTipText = "columns visibility editor";
+            this.columnsVisibilityEditorToolButton.Click += new System.EventHandler(this.columnsVisibilityEditorToolButton_Click);
             // 
             // fileNameExcludesWordsEditorToolButton
             // 
@@ -428,6 +439,7 @@
         private System.Windows.Forms.DegreeOfParallelismToolButton degreeOfParallelismToolButton;
         private System.Windows.Forms.DownloadInstanceToolButton downloadInstanceToolButton;
         private System.Windows.Forms.SpeedThresholdToolButton speedThresholdToolButton;
+        private System.Windows.Forms.ToolStripButton columnsVisibilityEditorToolButton;
         private System.Windows.Forms.ToolStripButton fileNameExcludesWordsEditorToolButton;
         private System.Windows.Forms.ToolStripButton parallelismSettingsToolButton;
         private System.Windows.Forms.ToolStripButton otherSettingsToolButton;

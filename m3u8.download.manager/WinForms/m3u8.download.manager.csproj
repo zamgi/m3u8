@@ -116,6 +116,12 @@
     <Compile Include="UI\Forms\ChangeLiveStreamMaxFileSizeForm.Designer.cs">
       <DependentUpon>ChangeLiveStreamMaxFileSizeForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Forms\ColumnsVisibilityEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\ColumnsVisibilityEditor.Designer.cs">
+      <DependentUpon>ColumnsVisibilityEditor.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -254,6 +260,7 @@
     <Content Include="Resources\downloadInstance.ico" />
     <None Include="Resources\reset.png" />
     <Content Include="Resources\listbullets.png" />
+    <Content Include="Resources\listcheck.png" />
     <Content Include="Resources\live_stream.png" />
     <Content Include="Resources\settings.png" />
     <Content Include="Resources\speed\speed_1.ico" />
