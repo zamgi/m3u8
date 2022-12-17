@@ -18,8 +18,7 @@ namespace m3u8.download.manager
     {
         private static async Task Main( string[] args )
         {
-            //Application.ThreadException += (sender, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
-            AppDomain.CurrentDomain.UnhandledException += async (sender, e) => await Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(),"AppDomain.CurrentDomain.UnhandledException"  );                
+            AppDomain.CurrentDomain.UnhandledException += async (sender, e) => await Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(),"AppDomain.CurrentDomain.UnhandledException"  );
 
             using ( var sca = SingleCopyApplication.Current )
             {
@@ -125,9 +124,9 @@ namespace m3u8.download.manager
 
                     App._InputParamsArray = inputParamsArray;
                     PipeIPC.NamedPipeServer__in.RunListener( sca.MutexName );
-
+                    
                     try
-                    {
+                    {                        
                         BuildAvaloniaApp().StartWithClassicDesktopLifetime( args, ShutdownMode.OnLastWindowClose );
                     }
                     catch ( Exception ex )
@@ -138,7 +137,6 @@ namespace m3u8.download.manager
                 }
                 else if ( success )
                 {
-                    //PipeIPC.NamedPipeClient__out.Send( sca.MutexName, inputParamsArray );
                     await PipeIPC.NamedPipeClient__out.Send_Async( sca.MutexName, inputParamsArray ).CAX();
                 }
                 else

@@ -197,15 +197,16 @@ namespace m3u8.download.manager.ui
         public DownloadRow GetSelectedDownloadRow()
         {
             DataGridViewRow dtrow;
-            switch ( DGV.SelectedRows.Count )
+            var srs = DGV.SelectedRows;
+            switch ( srs.Count )
             {
                 case 0: 
                     return (null);
                 case 1:
-                    dtrow = DGV.SelectedRows[ 0 ];
+                    dtrow = srs[ 0 ];
                     break;
                 default:
-                    dtrow = DGV.SelectedRows.Cast< DataGridViewRow >().OrderBy( r => r.Index ).FirstOrDefault();
+                    dtrow = srs.Cast< DataGridViewRow >().OrderBy( r => r.Index ).FirstOrDefault();
                     break;
             }
             var row = ((dtrow != null) && (dtrow.Index < _Model.RowsCount)) ? _Model[ dtrow.Index ] : null;

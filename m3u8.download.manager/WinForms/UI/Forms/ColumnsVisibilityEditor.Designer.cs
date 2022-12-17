@@ -17,7 +17,7 @@
             System.Windows.Forms.DataGridViewCellStyle cs1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
-            this.DGV = new System.Windows.Forms.DataGridViewEx();
+            this.DGV = new System.Windows.Forms.DataGridView_SaveSelectionByMouseDown();
             this.DGV_columnNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_isVisibleColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
@@ -70,16 +70,18 @@
                 this.DGV_columnNameColumn
             });
             this.DGV.RowHeadersWidth = 25;
-            this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
-            this.DGV.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_CellContentClick);
-            this.DGV.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_CellValueChanged);
-            this.DGV.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.DGV_ColumnWidthChanged);
-            this.DGV.RowHeadersWidthChanged += new System.EventHandler(this.DGV_RowHeadersWidthChanged);
             this.DGV.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
             this.DGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DGV.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DGV_CellPainting);
             this.DGV.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.DGV.TabIndex = 0;
+            this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
+            this.DGV.ColumnWidthChanged += new System.Windows.Forms.DataGridViewColumnEventHandler(this.DGV_ColumnWidthChanged);
+            this.DGV.RowHeadersWidthChanged += new System.EventHandler(this.DGV_RowHeadersWidthChanged);
+            this.DGV.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_CellContentClick);
+            this.DGV.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_CellValueChanged);
+            this.DGV.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DGV_CellPainting);
+            this.DGV.IsNeedSaveSelectionByMouseDown += new System.Windows.Forms.DataGridView_SaveSelectionByMouseDown.IsNeedSaveSelectionByMouseDownHandler(this.DGV_IsNeedSaveSelectionByMouseDown);
+
             // 
             // DGV_isVisibleColumn
             // 
@@ -115,7 +117,7 @@
 
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button okButton;
-        private System.Windows.Forms.DataGridViewEx DGV;
+        private System.Windows.Forms.DataGridView_SaveSelectionByMouseDown DGV;
         private System.Windows.Forms.DataGridViewCheckBoxColumn DGV_isVisibleColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_columnNameColumn;
     }

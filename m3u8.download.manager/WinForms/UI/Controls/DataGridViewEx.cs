@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 using m3u8.download.manager.ui;
-
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -13,7 +13,7 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class DataGridViewEx : DataGridView
+    internal class DataGridViewEx : DataGridView
     {
         public DataGridViewEx() : base()
         {
@@ -52,11 +52,12 @@ namespace System.Windows.Forms
         protected override void OnMouseDown( MouseEventArgs e )
         {
             //doesn't process base.OnMouseDown() for save multi-rows selection (else it disappear/stay one-row)
-            if ( (Control.ModifierKeys != Keys.None) && (1 < SelectedRows.Count) )
+            var srs = ((Control.ModifierKeys != Keys.None) ? this.SelectedRows : null);            
+            if ( (srs != null) && (1 < srs.Count) ) //---if ( (Control.ModifierKeys != Keys.None) && (1 < SelectedRows.Count) )
             {
-                var selRows = SelectedRows.ToArray();
+                var selRows = srs.ToArray();
                 base.OnMouseDown( e );
-                 this.SelectRows( selRows );
+                this.SelectRows( selRows );
             }
             else
             {
@@ -128,11 +129,12 @@ namespace System.Windows.Forms
                     else if ( disp_count <= disp_i )
                     {
                         break;
-                    }                    
+                    }
                 }
-                for ( var i = this.SelectedRows.Count - 1; 0 <= i; i-- )
+                var srs = this.SelectedRows;
+                for ( var i = srs.Count - 1; 0 <= i; i-- )
                 {
-                    var row = this.SelectedRows[ i ];
+                    var row = srs[ i ];
                     if ( !row.Displayed /*&& row.Visible*/ && row.Selected )
                     {
                         selectedRows.Add( row );
@@ -233,6 +235,74 @@ namespace System.Windows.Forms
                 && pt.X <= bounds.Width;
         }
         #endregion
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal sealed class DataGridView_SaveSelectionByMouseDown : DataGridViewEx
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate bool IsNeedSaveSelectionByMouseDownHandler( MouseEventArgs e );
+
+        private List< DataGridViewRow > _SelectedRowsBuf;
+        public DataGridView_SaveSelectionByMouseDown() => _SelectedRowsBuf = new List< DataGridViewRow >();
+
+        public IsNeedSaveSelectionByMouseDownHandler IsNeedSaveSelectionByMouseDown;
+        public IReadOnlyList< DataGridViewRow > SelectedRowsBuf => _SelectedRowsBuf;
+
+        private void Clear_SelectedRowsBuf()
+        {
+            if ( 0 < _SelectedRowsBuf.Count ) _SelectedRowsBuf.Clear();
+        }
+        private void MouseDown_Before( MouseEventArgs e )
+        {
+            Clear_SelectedRowsBuf();
+
+            var saveSelectionByMouseDown = IsNeedSaveSelectionByMouseDown;
+            if ( (saveSelectionByMouseDown != null) && saveSelectionByMouseDown( e ) )
+            {
+                var srs = this.SelectedRows;
+                if ( 1 < srs.Count )
+                {
+                    _SelectedRowsBuf.AddRange( srs.Cast< DataGridViewRow >() );
+                    this.SelectionChanged -= DGV_SelectionChanged;
+                }
+            }
+        }
+        private void MouseDown_After( /*MouseEventArgs e*/ )
+        {
+            if ( 0 < _SelectedRowsBuf.Count )
+            {
+                this.SuspendDrawing();
+                this.SuspendLayout();
+                try
+                {
+                    foreach ( var selRow in _SelectedRowsBuf )
+                    {
+                        selRow.Selected = true;
+                    }
+                }
+                finally
+                {
+                    this.ResumeLayout( true );
+                    this.ResumeDrawing();
+
+                    this.SelectionChanged -= DGV_SelectionChanged;
+                    this.SelectionChanged += DGV_SelectionChanged;
+                }
+            }
+        }
+        private void DGV_SelectionChanged( object sender, EventArgs e ) => Clear_SelectedRowsBuf();
+
+        protected override void OnMouseDown( MouseEventArgs e )
+        {
+            MouseDown_Before( e );
+            base.OnMouseDown( e );
+            MouseDown_After( /*e*/ );
+        }
     }
 
     /// <summary>

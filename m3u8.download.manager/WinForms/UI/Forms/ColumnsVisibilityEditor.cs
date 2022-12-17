@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-
-using m3u8.download.manager.Properties;
-using m3u8.download.manager.ui.infrastructure;
 
 namespace m3u8.download.manager.ui
 {
@@ -68,10 +64,10 @@ namespace m3u8.download.manager.ui
         //protected override void OnLoad( EventArgs e )
         //{
         //    base.OnLoad( e );
-
+        //
         //    if ( !base.DesignMode )
         //    {
-        //        //FormPositionStorer.Load( this, Settings.Default.FileNameExcludesWordsEditorPositionJson );
+        //        FormPositionStorer.Load( this, Settings.Default.ColumnsVisibilityEditorPositionJson );
         //    }
         //}
         protected override void OnClosed( EventArgs e )
@@ -80,8 +76,8 @@ namespace m3u8.download.manager.ui
 
             //if ( !base.DesignMode )
             //{
-            //    //Settings.Default.FileNameExcludesWordsEditorPositionJson = FormPositionStorer.SaveOnlyPos( this );
-            //    //Settings.Default.SaveNoThrow();
+            //    Settings.Default.ColumnsVisibilityEditorPositionJson = FormPositionStorer.SaveOnlyPos( this );
+            //    Settings.Default.SaveNoThrow();
             //}
 
             if ( !Success && _HasChanges )
@@ -93,7 +89,7 @@ namespace m3u8.download.manager.ui
         {
             base.OnShown( e );
 
-            DGV_Resize( null, null );
+            DGV_Resize( this, EventArgs.Empty );
         }
         protected override bool ProcessCmdKey( ref Message msg, Keys keyData )
         {
@@ -133,6 +129,17 @@ namespace m3u8.download.manager.ui
             t = default;
             return (false);
         }
+        private bool TryGetTargetColumn( DataGridViewRow row, int columnIndex, out (DataGridViewColumn TargetColumn, DataGridViewCell Cell) t )
+        {
+            var cell = row.Cells[ columnIndex ];
+            if ( (cell != null) && (cell.Tag is DataGridViewColumn col) )
+            {
+                t = (col, cell);
+                return (true);
+            }
+            t = default;
+            return (false);
+        }
         private IEnumerable< DataGridViewColumn > GetTargetColumns()
         {
             var idx  = DGV_isVisibleColumn.DisplayIndex;
@@ -157,6 +164,7 @@ namespace m3u8.download.manager.ui
                 }
             }
 
+            #region [.change window title text.]
             var lastChar = this.Text.LastOrDefault();
             if ( _HasChanges )
             {
@@ -169,6 +177,7 @@ namespace m3u8.download.manager.ui
             {
                 this.Text = this.Text.Substring( 0, this.Text.Length - 2 );
             }
+            #endregion
         }
         private void RollbackChanges()
         {
@@ -186,9 +195,9 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_ColumnWidthChanged( object sender, DataGridViewColumnEventArgs e )
         {
-            if ( e.Column != DGV_columnNameColumn ) DGV_Resize( null, null );
+            if ( e.Column != DGV_columnNameColumn ) DGV_Resize( sender, EventArgs.Empty );
         }
-        private void DGV_RowHeadersWidthChanged( object sender, EventArgs e ) => DGV_Resize( null, null );
+        private void DGV_RowHeadersWidthChanged( object sender, EventArgs e ) => DGV_Resize( sender, EventArgs.Empty );
 
         private void DGV_CellPainting( object sender, DataGridViewCellPaintingEventArgs e )
         {
@@ -196,7 +205,7 @@ namespace m3u8.download.manager.ui
             {
                 e.Handled = true;
                 e.PaintBackground( e.ClipBounds, (e.State & DataGridViewElementStates.Selected) != 0 );
-                var is_checked = Convert.ToBoolean( cell.Value );
+                var is_checked    = Convert.ToBoolean( cell.Value );
                 var checkBoxState = is_checked ? CheckBoxState.CheckedDisabled : CheckBoxState.UncheckedDisabled;
                 var rc = e.CellBounds;
                 var sz = CheckBoxRenderer.GetGlyphSize( e.Graphics, checkBoxState );
@@ -215,9 +224,40 @@ namespace m3u8.download.manager.ui
         {
             if ( TryGetTargetColumn( e.RowIndex, e.ColumnIndex, out var t ) )
             {
-                t.TargetColumn.Visible = Convert.ToBoolean( t.Cell.Value );
+                var isVisible = Convert.ToBoolean( t.Cell.Value );
+                t.TargetColumn.Visible = isVisible;
+
+                #region [.spread to selected rows.]
+                var srs = DGV.SelectedRowsBuf/*DGV.SelectedRows.Cast< DataGridViewRow >()*/;
+                if ( 0 < srs.Count )
+                {
+                    DGV.CellValueChanged -= DGV_CellValueChanged;
+                    try
+                    {
+                        foreach ( var selRow in srs )
+                        {
+                            if ( (selRow.Index != e.RowIndex) && TryGetTargetColumn( selRow, e.ColumnIndex, out t ) )
+                            {
+                                t.Cell.Value = isVisible;
+                                t.TargetColumn.Visible = isVisible;
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        DGV.CellValueChanged += DGV_CellValueChanged;
+                    }
+                }
+                #endregion
+
                 SetHasChanges();
             }
+        }
+
+        private bool DGV_IsNeedSaveSelectionByMouseDown( MouseEventArgs e )
+        {
+            var ht = DGV.HitTest( e.X, e.Y );
+            return ((0 <= ht.RowIndex) && (ht.ColumnIndex == DGV_isVisibleColumn.DisplayIndex));
         }
         #endregion
     }
