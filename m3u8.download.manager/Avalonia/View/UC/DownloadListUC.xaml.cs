@@ -460,7 +460,7 @@ namespace m3u8.download.manager.ui
             #region [.speed.]
             if ( !st.IsPaused() )
             {
-                var elapsedSeconds = ts.TotalSeconds;
+                var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
@@ -569,7 +569,7 @@ namespace m3u8.download.manager.ui
         {
             if ( !row.Status.IsPaused() )
             {                
-                var elapsedSeconds = row.GetElapsed().TotalSeconds;
+                var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {

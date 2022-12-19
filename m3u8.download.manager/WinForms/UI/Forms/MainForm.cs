@@ -183,7 +183,7 @@ namespace m3u8.download.manager.ui
                     this.WindowState = FormWindowState.Normal;
                 }
 
-                if ( this.MessageBox_ShowQuestion( "Dou you want to _cancel_ all downloading and exit ?", _APP_TITLE_, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes )
+                if ( this.MessageBox_ShowQuestion( "Dou you want to [CANCEL] all downloading and exit ?", _APP_TITLE_, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes )
                 {
                     const int WAIT_Milliseconds = 10_000;
 

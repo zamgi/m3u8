@@ -105,5 +105,29 @@ namespace m3u8.downloader
         public static double GetSpeedInMbps( long downloadedBytes, double elapsedSeconds ) => (8 * (downloadedBytes / elapsedSeconds) / 1_048_576); //" Mbps"; //" Mbit/s";
         public static double GetSpeedInKbps( long downloadedBytes, double elapsedSeconds ) => (8 * (downloadedBytes / elapsedSeconds) / 1_024); //" Kbps"; //" Kbit/s";
         public static double GetSpeedInBps( long downloadedBytes, double elapsedSeconds ) => (8 * (downloadedBytes / elapsedSeconds)); //" bps"; //" bit/s";
+
+        [M(O.AggressiveInlining)] public static void SetFirstDisplayedScrollingRowIndex( this DataGridView DGV, int rowIndex )
+        {
+            try
+            {
+                DGV.FirstDisplayedScrollingRowIndex = rowIndex;
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+        }
+        [M(O.AggressiveInlining)] public static int GetFirstDisplayedScrollingRowIndex( this DataGridView DGV, int defVal = 0 )
+        {
+            try
+            {
+                return (DGV.FirstDisplayedScrollingRowIndex);
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+                return (defVal);
+            }
+        }
     }
 }

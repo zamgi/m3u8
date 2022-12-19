@@ -105,6 +105,7 @@ namespace m3u8.download.manager.models
 
         public bool           IsLiveStream                 { [M(O.AggressiveInlining)] get; /*private set;*/ }
         public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; private set; }
+        private DateTime? _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
 
         public LogListModel Log { [M(O.AggressiveInlining)] get; }
 
@@ -156,8 +157,6 @@ namespace m3u8.download.manager.models
         public DownloadRow CreateCopy() => new DownloadRow( this );
         public DownloadRow Add2ModelFinishedCopy( DateTime createDateTime, IReadOnlyList< LogRow > logRows, DownloadRow rowSaveState )
         {
-            logRows = logRows.Where( r => !r.ResponseText.IsNullOrEmpty() ).ToList( logRows.Count );
-
             var row = new DownloadRow( this, logRows );
             row.CreatedOrStartedDateTime = createDateTime;
             row.SetStatus( DownloadStatus.Finished );
@@ -172,6 +171,13 @@ namespace m3u8.download.manager.models
 
             return (row);
         }
+        public void StartNewPartOfLiveStream( IReadOnlyList< LogRow > logRows4Removing )
+        {
+            //---Log.Clear();
+            Log.RemoveRows( logRows4Removing );
+            _CreatedOrStartedDateTime_4_LastPartOfLiveStream = DateTime.Now;
+        }
+
 
         [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in m3u8_processor_v2.ResponseStepActionParams p )
         {
@@ -294,6 +300,19 @@ namespace m3u8.download.manager.models
 
                 default:
                     return (DateTime.Now - CreatedOrStartedDateTime);
+            }
+        }
+        [M(O.AggressiveInlining)] public TimeSpan GetElapsed4SpeedMeasurement()
+        {
+            switch ( Status )
+            {
+                case DownloadStatus.Canceled:
+                case DownloadStatus.Error:
+                case DownloadStatus.Finished:
+                    return (_FinitaElapsed);
+
+                default:
+                    return (DateTime.Now - (IsLiveStream ? _CreatedOrStartedDateTime_4_LastPartOfLiveStream.GetValueOrDefault( CreatedOrStartedDateTime ) : CreatedOrStartedDateTime));
             }
         }
         [M(O.AggressiveInlining)] public long GetDownloadBytesLengthAfterLastRun()

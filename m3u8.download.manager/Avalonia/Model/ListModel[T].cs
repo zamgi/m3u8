@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -113,6 +114,40 @@ namespace m3u8.download.manager.models
                 return (success);
             }
             return (false);
+        }
+        protected void RemoveRows_Internal( IEnumerable< T > rows )
+        {
+            if ( rows.AnyEx() )
+            {
+                this.BeginUpdate();
+
+                var cnt = _Rows.Count;
+                var hs = rows.ToHashSet();
+                for ( var i = 0; i < cnt; )
+                {
+                    var row = _Rows[ i ];
+                    if ( hs.Remove( row ) )
+                    {
+                        _Rows.RemoveAt( i );
+                        _RowsVisibleIndexes.Remove( row.Id );
+                        if ( !hs.Any() )
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+
+                if ( _Rows.Count != cnt )
+                {
+                    ReCalculateRowsVisibleIndexes();
+                }
+
+                this.EndUpdate();
+            }
         }
         public void Clear()
         {

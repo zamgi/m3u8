@@ -226,17 +226,6 @@ namespace m3u8.download.manager.ui
             return (lst);
         }
         public int GetSelectedDownloadRowsCount() => DGV.SelectedRows.Count;
-        //{
-        //    var cnt = 0;
-        //    foreach ( var dtrow in DGV.SelectedRows.Cast< DataGridViewRow >() )
-        //    {
-        //        if ( dtrow.Index < _Model.RowsCount )
-        //        {
-        //            cnt++;
-        //        }
-        //    }
-        //    return (cnt);
-        //}
         public async Task SelectDownloadRowDelay( DownloadRow row, int millisecondsDelay = 100 ) 
         {
             await Task.Delay( millisecondsDelay );
@@ -440,7 +429,7 @@ namespace m3u8.download.manager.ui
             #region [.speed.]
             if ( !st.IsPaused() )
             {                
-                var elapsedSeconds = ts.TotalSeconds;
+                var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {
@@ -521,7 +510,7 @@ namespace m3u8.download.manager.ui
         {
             if ( !row.Status.IsPaused() )
             {                
-                var elapsedSeconds = row.GetElapsed().TotalSeconds;
+                var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
                 {

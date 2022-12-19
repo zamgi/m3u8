@@ -799,25 +799,21 @@ namespace m3u8.download.manager.controllers
                         #endregion
 
                         var rows_Dict = new Dictionary< string, LogRow >();
+                        //---var pre_rows_Dict = new Dictionary< string, (string requestText, string exception) >();
                         var localLock = new object();
 
-                        var st = (LogRows: new List< LogRow >(),
+                        var st = (LastPartLogRows: new List< LogRow >(),
                                   CreateDateTime: default(DateTime), 
                                   RowSaveState: default(DownloadRow), 
                                   CreatedOutpuFileLogRow: default(LogRow));
-
-                        void add_log_row( string part_url, LogRow logRow )
-                        {
-                            rows_Dict[ part_url ] = logRow; //rows_Dict.Add( part_url, logRow );
-                            st.LogRows.Add( logRow );
-                        }
 
                         var downloadContentAction = new m3u8_live_stream_downloader.DownloadContentDelegate( part_url =>
                         {
                             lock ( localLock )
                             {
                                 row.SetStatus( DownloadStatus.Running );
-                                add_log_row( part_url, row.Log.AddRequestRow( $"[QUEUEED]: {part_url}" ) );
+                                rows_Dict[ part_url ] = row.Log.AddRequestRow( $"[QUEUEED]: {part_url}" );
+                                //---pre_rows_Dict[ part_url ] = ($"[QUEUEED]: {part_url}", default);
                             }
                         });
                         var downloadContentErrorAction = new m3u8_live_stream_downloader.DownloadContentErrorDelegate( (part_url, ex) =>
@@ -825,7 +821,8 @@ namespace m3u8.download.manager.controllers
                             lock ( localLock )
                             {
                                 anyErrorHappend = true;
-                                add_log_row( part_url, row.Log.AddResponseErrorRow( $"[QUEUEED]: {part_url}", ex.ToString() ) );
+                                rows_Dict[ part_url ] = row.Log.AddResponseErrorRow( $"[QUEUEED]: {part_url}", ex.ToString() );
+                                //---pre_rows_Dict[ part_url ] = ($"[QUEUEED]: {part_url}", ex.ToString());
                             }
                         });
                         var downloadPartAction = new m3u8_live_stream_downloader.DownloadPartDelegate( (part_url, partBytes, totalBytes) =>
@@ -836,7 +833,14 @@ namespace m3u8.download.manager.controllers
                                 if ( rows_Dict.RemoveEx( part_url, out var logRow ) )
                                 {
                                     logRow.SetResponseSuccess( "received" );
+                                    st.LastPartLogRows.Add( logRow );
                                 }
+                                //if ( pre_rows_Dict.RemoveEx( part_url, out var x ) )
+                                //{
+                                //    var logRow = (x.exception != null) ? row.Log.AddResponseErrorRow( x.requestText, x.exception ) : row.Log.AddRequestRow( x.requestText );
+                                //    logRow.SetResponseSuccess( "received" );
+                                //    st.LastPartLogRows.Add( logRow );
+                                //}
                                 //$"[DOWNLOAD]: {part_url} => ok. (part-size: {(1.0 * partBytes / 1024):N2} KB, total-size: {(1.0 * totalBytes / (1024 * 1024)):N2} MB)";
                             }
                         });
@@ -849,7 +853,14 @@ namespace m3u8.download.manager.controllers
                                 if ( rows_Dict.RemoveEx( part_url, out var logRow ) )
                                 {
                                     logRow.SetResponseError( ex.ToString() );
+                                    st.LastPartLogRows.Add( logRow );
                                 }
+                                //if ( pre_rows_Dict.RemoveEx( part_url, out var x ) )
+                                //{
+                                //    var logRow = (x.exception != null) ? row.Log.AddResponseErrorRow( x.requestText, x.exception ) : row.Log.AddRequestRow( x.requestText );
+                                //    logRow.SetResponseError( ex.ToString() );
+                                //    st.LastPartLogRows.Add( logRow );
+                                //}
                             }
                         });
                         var downloadCreateOutputFileAction = new m3u8_live_stream_downloader.DownloadCreateOutputFileDelegate( fn =>
@@ -859,7 +870,7 @@ namespace m3u8.download.manager.controllers
                                 #region [.create copy of current row with finished state.]
                                 if ( 0 < row.DownloadBytesLength /*lastCreatedOutpuFileLogRow != null*/ )
                                 {
-                                    var part_row = row.Add2ModelFinishedCopy( st.CreateDateTime, st.LogRows, st.RowSaveState );
+                                    var part_row = row.Add2ModelFinishedCopy( st.CreateDateTime, st.LastPartLogRows, st.RowSaveState );
 
                                     st.CreatedOutpuFileLogRow.Append2RequestText( $"size: {Extensions.GetSizeInMbFormatted( part_row.DownloadBytesLength )} mb, elapsed: {part_row.GetElapsed().GetElapsedFormatted()}" );
                                     part_row.Log.AddRow( st.CreatedOutpuFileLogRow );
@@ -868,9 +879,10 @@ namespace m3u8.download.manager.controllers
 
                                 row.SetOutputFileName( Path.GetFileName( fn ) );
 
-                                st.LogRows.Clear();
-                                st.CreateDateTime         = DateTime.Now;
-                                st.RowSaveState           = row.CreateCopy();
+                                st.CreateDateTime = DateTime.Now;
+                                st.RowSaveState   = row.CreateCopy();
+                                row.StartNewPartOfLiveStream( st.LastPartLogRows );
+                                st.LastPartLogRows.Clear();
                                 st.CreatedOutpuFileLogRow = row.Log.AddRequestRow( $"Created output file: '{fn}',..." );
                             }
                         });

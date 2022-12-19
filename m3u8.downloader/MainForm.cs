@@ -171,7 +171,7 @@ namespace m3u8.downloader
                 {
                     this.WindowState = FormWindowState.Normal;
                 }
-                if ( this.MessageBox_ShowQuestion( "Dou you want to _cancel_ downloading and exit ?", APP_TITLE, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes )
+                if ( this.MessageBox_ShowQuestion( "Dou you want to [CANCEL] downloading and exit ?", APP_TITLE, MessageBoxButtons.YesNo, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes )
                 {
                     _Cts?.Cancel();
 

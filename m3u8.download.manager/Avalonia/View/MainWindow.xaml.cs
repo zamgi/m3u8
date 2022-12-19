@@ -282,7 +282,7 @@ namespace m3u8.download.manager.ui
 
                 e.Cancel = true;
 
-                var result = await this.MessageBox_ShowQuestion( "Dou you want to _cancel_ all downloading and exit ?", _Resources_.APP_TITLE );
+                var result = await this.MessageBox_ShowQuestion( "Dou you want to [CANCEL] all downloading and exit ?", _Resources_.APP_TITLE );
                 if ( result == ButtonResult.Yes )
                 {
                     const int WAIT_Milliseconds = 10_000;

@@ -270,7 +270,7 @@ namespace m3u8.download.manager
                 c.HeaderCell.SortGlyphDirection = ((c.Index == columnIndex) ? sortOrder : SortOrder.None);
             }
         }
-        [M(O.AggressiveInlining)] public static void FirstDisplayedScrollingRowIndex( this DataGridView DGV, int rowIndex )
+        [M(O.AggressiveInlining)] public static void SetFirstDisplayedScrollingRowIndex( this DataGridView DGV, int rowIndex )
         {
             try
             {
@@ -279,6 +279,18 @@ namespace m3u8.download.manager
             catch ( Exception ex )
             {
                 Debug.WriteLine( ex );
+            }
+        }
+        [M(O.AggressiveInlining)] public static int GetFirstDisplayedScrollingRowIndex( this DataGridView DGV, int defVal = 0 )
+        {
+            try
+            {
+                return (DGV.FirstDisplayedScrollingRowIndex);
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+                return (defVal);
             }
         }
         [M(O.AggressiveInlining)] public static void SetHandCursorIfNonHand( this DataGridView DGV )

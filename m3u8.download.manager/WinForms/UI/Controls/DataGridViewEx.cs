@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
+using m3u8.download.manager;
 using m3u8.download.manager.ui;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -115,7 +116,7 @@ namespace System.Windows.Forms
             {
                 #region [.1.]
                 var selectedRows = new SortedSet< DataGridViewRow >( DataGridViewRow_Comparer.Inst );
-                for ( int i = Math.Max( 0, this.FirstDisplayedScrollingRowIndex ), len = this.RowCount, disp_i = 0, disp_count = this.DisplayedRowCount( true ); i < len; i++ )
+                for ( int i = Math.Max( 0, this.GetFirstDisplayedScrollingRowIndex() ), len = this.RowCount, disp_i = 0, disp_count = this.DisplayedRowCount( true ); i < len; i++ )
                 {
                     var row = this.Rows[ i ];
                     if ( row.Displayed )
@@ -183,8 +184,17 @@ namespace System.Windows.Forms
         }
         private void ScrollIfNeedTimer_Tick( object sender, EventArgs e )
         {
+            if ( !_DrawSelectRect )
+            {
+                if ( _ScrollIfNeedTimer.Enabled )
+                {
+                    _ScrollIfNeedTimer.Enabled = false;
+                }                
+                return;
+            }
+
             var pt = this.PointToClient( Control.MousePosition );
-            if ( this.ScrollIfNeed( in pt ) )
+            if ( this.ScrollIfNeed( pt ) )
             {
                 ProcessDrawSelectRect( pt.X, pt.Y );
             }
@@ -200,18 +210,20 @@ namespace System.Windows.Forms
         {
             if ( ShouldScrollUp( in pt ) )
             {
-                if ( (0 < this.FirstDisplayedScrollingRowIndex) && (TimeSpan.FromMilliseconds( ScrollDelayInMilliseconds ) < (DateTime.Now - _LastScrollDateTime)) )
+                var firstIdx = this.GetFirstDisplayedScrollingRowIndex();
+                if ( (0 < firstIdx) && (TimeSpan.FromMilliseconds( ScrollDelayInMilliseconds ) < (DateTime.Now - _LastScrollDateTime)) )
                 {
-                    this.FirstDisplayedScrollingRowIndex--;
+                    this.SetFirstDisplayedScrollingRowIndex( firstIdx - 1 );
                     _LastScrollDateTime = DateTime.Now;
                     return (true);
                 }
             }
             else if ( ShouldScrollDown( in pt ) )
             {
-                if ( (this.FirstDisplayedScrollingRowIndex < (this.RowCount - 1)) && (TimeSpan.FromMilliseconds( ScrollDelayInMilliseconds ) < (DateTime.Now - _LastScrollDateTime)) )
+                var firstIdx = this.GetFirstDisplayedScrollingRowIndex();
+                if ( (firstIdx < (this.RowCount - 1)) && (TimeSpan.FromMilliseconds( ScrollDelayInMilliseconds ) < (DateTime.Now - _LastScrollDateTime)) )
                 {
-                    this.FirstDisplayedScrollingRowIndex++;
+                    this.SetFirstDisplayedScrollingRowIndex( firstIdx + 1);
                     _LastScrollDateTime = DateTime.Now;
                     return (true);
                 }

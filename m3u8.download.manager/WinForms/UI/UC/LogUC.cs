@@ -121,7 +121,15 @@ namespace m3u8.download.manager.ui
         public bool ShowOnlyRequestRowsWithErrors
         {
             get => _ShowOnlyRequestRowsWithErrors;
-            set => (_SettingsController?.Settings ?? SettingsPropertyChangeController.SettingsDefault).ShowOnlyRequestRowsWithErrors = value;
+            set
+            {
+                var st = (_SettingsController?.Settings ?? SettingsPropertyChangeController.SettingsDefault);
+                if ( st.ShowOnlyRequestRowsWithErrors != value )
+                {
+                    st.ShowOnlyRequestRowsWithErrors = value;
+                    AdjustColumnsWidthSprain();
+                }
+            }
         }
         public bool ShowResponseColumn
         {
@@ -266,7 +274,7 @@ namespace m3u8.download.manager.ui
                     }
                     if ( 0 < modelRowsCount )
                     {
-                        DGV.FirstDisplayedScrollingRowIndex( modelRowsCount - 1 );
+                        DGV.SetFirstDisplayedScrollingRowIndex( modelRowsCount - 1 );
                     }
                     DGV.ClearSelection();
                 }
@@ -369,18 +377,21 @@ namespace m3u8.download.manager.ui
                 return;
             }
 
-            DGV.SuspendDrawing();
-            try
+            //const int MAX_TUPLES = 5_000;
+
+            if ( _ShowOnlyRequestRowsWithErrors )
             {
-                if ( _ShowOnlyRequestRowsWithErrors )
+                DGV.SuspendLayout();
+                DGV.SuspendDrawing();
+                try
                 {
                     if ( (_LogRowsHeightStorer != null) && _LogRowsHeightStorer.TryGetStorerByModel( _Model, out var storer ) )
                     {
-                        foreach ( var t in GetRowTuplesNotNone() )
+                        foreach ( var t in GetRowTuplesNotNone()/*.Take( MAX_TUPLES )*/ )
                         {
                             var visible = (t.rrt == RequestRowTypeEnum.Error);
-                            t.dgvRow.Visible = visible;
-                            if ( visible && storer.TryGetValue( t.dgvRow.Index, out var height ) )
+                            /*if ( t.dgvRow.Visible != visible )*/ t.dgvRow.Visible = visible;
+                            if ( visible && storer.TryGetValue( t.dgvRow.Index, out var height ) && (t.dgvRow.Height != height) )
                             {
                                 t.dgvRow.Height = height;
                             }
@@ -388,37 +399,60 @@ namespace m3u8.download.manager.ui
                     }
                     else
                     {
-                        foreach ( var t in GetRowTuplesNotNone() )
+                        foreach ( var t in GetRowTuplesNotNone()/*.Take( MAX_TUPLES )*/ )
                         {
-                            t.dgvRow.Visible = (t.rrt == RequestRowTypeEnum.Error);
+                            var visible = (t.rrt == RequestRowTypeEnum.Error);
+                            /*if ( t.dgvRow.Visible != visible )*/ t.dgvRow.Visible = visible;
                         }
                     }
                 }
-                else
+                finally
                 {
-                    if ( (_LogRowsHeightStorer != null) && _LogRowsHeightStorer.TryGetStorerByModel( _Model, out var storer ) )
+                    DGV.ResumeLayout( true );
+                    DGV.ResumeDrawing();
+                }
+            }
+            else
+            {
+                if ( (_LogRowsHeightStorer != null) && _LogRowsHeightStorer.TryGetStorerByModel( _Model, out var storer ) )
+                {
+                    DGV.SuspendLayout();
+                    DGV.SuspendDrawing();
+                    try
                     {
-                        foreach ( var t in GetRowTuplesNotNone() )
+                        foreach ( var t in GetRowTuplesNotNone()/*.Take( MAX_TUPLES )*/ )
                         {
-                            t.dgvRow.Visible = true;
-                            if ( storer.TryGetValue( t.dgvRow.Index, out var height ) )
+
+                            /*if ( !t.dgvRow.Visible )*/ t.dgvRow.Visible = true;
+                            if ( storer.TryGetValue( t.dgvRow.Index, out var height ) && (t.dgvRow.Height != height) )
                             {
                                 t.dgvRow.Height = height;
                             }
                         }
                     }
-                    else if ( !fromSetModelMethod )
+                    finally
                     {
-                        foreach ( var t in GetRowTuplesNotNone() )
-                        {
-                            t.dgvRow.Visible = true;
-                        }
+                        DGV.ResumeLayout( true );
+                        DGV.ResumeDrawing();
                     }
                 }
-            }
-            finally
-            {
-                DGV.ResumeDrawing();
+                else if ( !fromSetModelMethod )
+                {
+                    DGV.SuspendLayout();
+                    DGV.SuspendDrawing();
+                    try
+                    {
+                        foreach ( var t in GetRowTuplesNotNone()/*.Take( MAX_TUPLES )*/ )
+                        {
+                            /*if ( !t.dgvRow.Visible )*/ t.dgvRow.Visible = true;
+                        }
+                    }
+                    finally
+                    {
+                        DGV.ResumeLayout( true );
+                        DGV.ResumeDrawing();
+                    }
+                }
             }
         }
         private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;

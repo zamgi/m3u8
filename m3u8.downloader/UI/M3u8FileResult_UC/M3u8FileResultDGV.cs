@@ -318,7 +318,7 @@ namespace m3u8.downloader
             DGV.ResumeDrawing();
         }
 
-        public override void AppendEmptyLine() => DGV.FirstDisplayedScrollingRowIndex = AddRow( CreateRow() );
+        public override void AppendEmptyLine() => DGV.SetFirstDisplayedScrollingRowIndex( AddRow( CreateRow() ) );
         public override IRowHolder AppendRequestText( string requestText, bool ensureVisible = true )
         {
             var t = Get_4_RequestColumn( requestText );
@@ -329,7 +329,7 @@ namespace m3u8.downloader
             var rowIndex = AddRow( row );
             if ( ensureVisible )
             {
-                DGV.FirstDisplayedScrollingRowIndex = rowIndex;
+                DGV.SetFirstDisplayedScrollingRowIndex( rowIndex );
             }
             DGV.AutoResizeRow( rowIndex, DataGridViewAutoSizeRowMode.AllCells );            
             return (new RowHolder( row ));
@@ -355,7 +355,7 @@ namespace m3u8.downloader
             row.Cells.Add( new DataGridViewTextBoxCell() { Value = x.errorText, Style = x.errorCellStyle } );
 
             var rowIndex = AddRow( row );
-            DGV.FirstDisplayedScrollingRowIndex = rowIndex;
+            DGV.SetFirstDisplayedScrollingRowIndex( rowIndex );
             DGV.AutoResizeRow( rowIndex, DataGridViewAutoSizeRowMode.AllCells );
         }        
         public override void AppendRequestAndResponseErrorText( string requestText, Exception responseError )
@@ -368,7 +368,7 @@ namespace m3u8.downloader
             row.Cells.Add( new DataGridViewTextBoxCell() { Value = x.errorText, Style = x.errorCellStyle } );
 
             var rowIndex = AddRow( row );
-            DGV.FirstDisplayedScrollingRowIndex = rowIndex;
+            DGV.SetFirstDisplayedScrollingRowIndex( rowIndex );
             DGV.AutoResizeRow( rowIndex, DataGridViewAutoSizeRowMode.AllCells );
         }
 

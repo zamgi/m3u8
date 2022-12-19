@@ -118,6 +118,41 @@ namespace m3u8.download.manager.models
             }
             return (false);
         }
+        protected void RemoveRows_Internal( IEnumerable< T > rows )
+        {
+            if ( rows.AnyEx() )
+            {
+                this.BeginUpdate();
+
+                var cnt = _Rows.Count;
+                var hs  = rows.ToHashSet();
+                for ( var i = 0; i < cnt; )
+                {
+                    var row = _Rows[ i ];
+                    if ( hs.Remove( row ) )
+                    {
+                        _Rows.RemoveAt( i );
+                        _RowsVisibleIndexes.Remove( row.Id );
+                        if ( !hs.Any() )
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+
+                if ( _Rows.Count != cnt )
+                {
+                    ReCalculateRowsVisibleIndexes();
+                }
+
+                this.EndUpdate();
+            }
+        }
+
         public void Clear()
         {
             var rowCount = _Rows.Count;

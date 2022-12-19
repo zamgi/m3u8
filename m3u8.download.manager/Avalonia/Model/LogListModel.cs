@@ -33,5 +33,8 @@ namespace m3u8.download.manager.models
         public LogRow AddResponseErrorRow( string requestText, string responseErrorText ) => base.Add( LogRow.CreateResponseError( requestText, responseErrorText, this, base._Fire_RowPropertiesChangedEventHandler ) );
 
         public LogRow AddRow( LogRow row ) => base.Add( new LogRow( this, base._Fire_RowPropertiesChangedEventHandler, row ) );
+
+        public void RemoveRows( IEnumerable< LogRow > rows ) => base.RemoveRows_Internal( rows );              
+
     }
 }
