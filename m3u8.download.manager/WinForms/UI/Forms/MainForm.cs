@@ -444,24 +444,24 @@ namespace m3u8.download.manager.ui
             //    this.Text = _APP_TITLE_;
             //}
         }
-        private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType, DownloadRow row )
+        private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
         {
-            if ( collectionChangedType != _CollectionChangedTypeEnum_.Sort )
+            if ( changedType != _CollectionChangedTypeEnum_.Sort )
             {
                 if ( this.InvokeRequired )
                 {
-                    this.BeginInvoke( DownloadListModel_CollectionChanged, collectionChangedType, row );
+                    this.BeginInvoke( DownloadListModel_CollectionChanged, changedType, row );
                     return;
                 }
 
                 ShowDownloadStatisticsInTitle();
 
-                switch ( collectionChangedType )
+                switch ( changedType )
                 {
                     case _CollectionChangedTypeEnum_.BulkUpdate:
                     case _CollectionChangedTypeEnum_.Remove:                    
                         _LogRowsHeightStorer.LeaveOnly( (from _row in _DownloadListModel.GetRows() select _row.Log) );
-                        if ( collectionChangedType == _CollectionChangedTypeEnum_.Remove )
+                        if ( changedType == _CollectionChangedTypeEnum_.Remove )
                         {
                             _ExternalProgQueue.Remove( row?.GetOutputFullFileNames() );
                         }

@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
 using CellStyle = System.Windows.Forms.DataGridViewCellStyle;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -43,7 +44,9 @@ namespace m3u8.download.manager.ui
         private SettingsPropertyChangeController _SettingsController;
 
         private LogListModel     _Model;
-        private Action< LogRow > _SetRowInvisibleAction;
+        private List_WithIndex< LogRow > _Rows;
+        private ThreadSafeList< LogRow > _Model_CollectionChanged_AddChangedType_Buf;
+        private Action< LogRow > _RemoveRowAction;
         private CellStyle        _DefaultCellStyle_4ResponseReceived;
 
         private Action< _CollectionChangedTypeEnum_, LogRow > _Model_CollectionChangedAction;
@@ -58,7 +61,7 @@ namespace m3u8.download.manager.ui
             InitializeComponent();
             //----------------------------------------------//
 
-            _SetRowInvisibleAction = new Action< LogRow >( SetRowInvisible );
+            _RemoveRowAction = new Action< LogRow >( RemoveRow );
             _Model_CollectionChangedAction = new Action< _CollectionChangedTypeEnum_, LogRow >( Model_CollectionChanged );
 
             //----------------------------------------------//
@@ -101,6 +104,9 @@ namespace m3u8.download.manager.ui
             _ShowOnlyRequestRowsWithErrorsMenuItem = new ToolStripMenuItem( "Show only request rows with errors", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = _ShowOnlyRequestRowsWithErrors };
             _ContextMenu = new ContextMenuStrip();
             _ContextMenu.Items.Add( _ShowOnlyRequestRowsWithErrorsMenuItem );
+
+            _Rows = new List_WithIndex< LogRow >();
+            _Model_CollectionChanged_AddChangedType_Buf = new ThreadSafeList< LogRow >();
         }
 
         protected override void Dispose( bool disposing )
@@ -112,6 +118,7 @@ namespace m3u8.download.manager.ui
                 _SF.Dispose();
                 DetachSettingsController();
                 DetachLogRowsHeightStorer();
+                DetachModel();
             }
             base.Dispose( disposing );
         }
@@ -215,99 +222,114 @@ namespace m3u8.download.manager.ui
             if ( model != null )
             {
                 _Model = model;
-                _Model.CollectionChanged    -= Model_CollectionChanged;
-                _Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
-                _Model.CollectionChanged    += Model_CollectionChanged;
-                _Model.RowPropertiesChanged += Model_RowPropertiesChanged;
-                Model_CollectionChanged( _CollectionChangedTypeEnum_.Add, null );
-                SetRowsVisiblity( true );
+                model.CollectionChanged    -= Model_CollectionChanged;
+                model.RowPropertiesChanged -= Model_RowPropertiesChanged;
+                model.CollectionChanged    += Model_CollectionChanged;
+                model.RowPropertiesChanged += Model_RowPropertiesChanged;
+
+                //Model_CollectionChanged( _CollectionChangedTypeEnum_.Add, null );
+                //SetRowsVisiblity( true );
                 this.Visible = true;
             }
             else
-            {
-                this.Visible = false;
+            {                
+                this.Visible = false;                
             }
+
+            SetDataGridItems();            
         }
         private void DetachModel()
         {
             if ( _Model != null )
             {
-                _Model.CollectionChanged    -= Model_CollectionChanged;
+                _Model.CollectionChanged -= Model_CollectionChanged;
                 _Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
                 _Model = null;
 
-                DGV.CellValueNeeded -= DGV_CellValueNeeded;
-                DGV.CellFormatting  -= DGV_CellFormatting;
-                try
-                {
-                    DGV.RowCount = 0;
-                }
-                finally
-                {
-                    DGV.CellValueNeeded += DGV_CellValueNeeded;
-                    DGV.CellFormatting  += DGV_CellFormatting;
-                }
+                SetDataGridItems();
+                _Model_CollectionChanged_AddChangedType_Buf.Clear();
             }
         }
+        
+        private async void Model_CollectionChanged_Buf__TaskRoutine()
+        {
+            const int COUNT_THRESHOLD = 100;
+            const int TICK_THRESHOLD  = 500;
 
-        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType, LogRow row )
+            var startTickCount = Environment.TickCount;
+            var startCount     = _Model_CollectionChanged_AddChangedType_Buf.GetCount();
+            for (; ; )
+            {
+                if ( (COUNT_THRESHOLD <= (_Model_CollectionChanged_AddChangedType_Buf.GetCount() - startCount)) || (TICK_THRESHOLD <= (Environment.TickCount - startTickCount)) )
+                {
+                    this.BeginInvoke( Process_Model_CollectionChanged_Buf );
+                    return;
+                }
+                await Task.Delay( 1 );
+            }
+        }
+        private bool Process_Model_CollectionChanged_Buf()
+        {
+            var suc = _Model_CollectionChanged_AddChangedType_Buf.TryGetAndClear( out var addRows );
+            if ( suc )
+            {
+                _Rows.AddRange( addRows );
+                Set_DGV_RowCount();
+                AdjustColumnsWidthSprain_And_ScrollToLastRow();
+            }
+            return (suc);
+        }
+        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType, LogRow row )
         {
             if ( this.InvokeRequired )
             {
-                this.BeginInvoke( _Model_CollectionChangedAction, collectionChangedType, row );
-                return;
+                if ( changedType == _CollectionChangedTypeEnum_.Add )
+                {
+                    var cnt = _Model_CollectionChanged_AddChangedType_Buf.Add( row );
+                    if ( cnt == 1 )
+                    {
+                        Task.Run( Model_CollectionChanged_Buf__TaskRoutine );
+                    }
+                }
+                else
+                {
+                    this.BeginInvoke( _Model_CollectionChangedAction, changedType, row );
+                }                
             }
-
-            var modelRowsCount = (_Model?.RowsCount).GetValueOrDefault( 0 );
-
-            switch ( collectionChangedType )
+            else if ( !Process_Model_CollectionChanged_Buf() )
             {
-                case _CollectionChangedTypeEnum_.Add:
-                case _CollectionChangedTypeEnum_.BulkUpdate:
+                switch ( changedType )
                 {
-                    DGV.RowCount = modelRowsCount;
+                    case _CollectionChangedTypeEnum_.Add:
+                        _Rows.Add( row );
+                        Set_DGV_RowCount();
 
-                    if ( !_WasAdjustColumnsWidthSprain && this.IsVerticalScrollBarVisible )
-                    {
-                        _WasAdjustColumnsWidthSprain = true;
-                        AdjustColumnsWidthSprain();
-                    }
-                    if ( 0 < modelRowsCount )
-                    {
-                        DGV.SetFirstDisplayedScrollingRowIndex( modelRowsCount - 1 );
-                    }
-                    DGV.ClearSelection();
-                }
-                break;
+                        AdjustColumnsWidthSprain_And_ScrollToLastRow();
+                    break;
 
-                case _CollectionChangedTypeEnum_.Clear:
-                {
-                    _WasAdjustColumnsWidthSprain = false;
-                    DGV.CellValueNeeded -= DGV_CellValueNeeded;
-                    DGV.CellFormatting  -= DGV_CellFormatting;
-                    try
-                    {
-                        DGV.RowCount = modelRowsCount;
-                    }
-                    finally
-                    {
-                        DGV.CellValueNeeded += DGV_CellValueNeeded;
-                        DGV.CellFormatting  += DGV_CellFormatting;
-                    }
+                    case _CollectionChangedTypeEnum_.Clear:
+                        _Rows.Clear();
+                        _WasAdjustColumnsWidthSprain = false;
+                        Set_DGV_RowCount();
+                    break;
+
+                    case _CollectionChangedTypeEnum_.BulkUpdate:
+                        AdjustColumnsWidthSprain_And_ScrollToLastRow();
+                        DGV.ClearSelection();
+                    break;
                 }
-                break;
             }
         }
         private void Model_RowPropertiesChanged( LogRow row, string propertyName )
         {
-            var visibleIndex = row.GetVisibleIndex();
+            var visibleIndex = _Rows.GetIndex( row );
             if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
             {
                 DGV.InvalidateRow( visibleIndex );
                 if ( _ShowOnlyRequestRowsWithErrors && (row.RequestRowType == RequestRowTypeEnum.Success) && (propertyName == nameof(LogRow.RequestRowType)) )
                 {
-                    Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _SetRowInvisibleAction, row ) );
-                }                
+                    Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _RemoveRowAction, row ) );
+                }
             }
         }
         private void SettingsController_PropertyChanged( Settings settings, string propertyName )
@@ -317,9 +339,104 @@ namespace m3u8.download.manager.ui
                 _ShowOnlyRequestRowsWithErrors = settings.ShowOnlyRequestRowsWithErrors;
 
                 _ShowOnlyRequestRowsWithErrorsMenuItem.Checked = _ShowOnlyRequestRowsWithErrors;
-                SetRowsVisiblity();
+                SetDataGridItems();
             }
         }
+        #endregion
+
+        #region [.private.]
+        private async void SetDataGridItems()
+        {
+            if ( _Model == null )
+            {
+                _Rows.Clear();
+            }
+            else
+            {
+                static IEnumerable< LogRow > GetRowsNotSuccess( IEnumerable< LogRow > rows ) => from row in rows 
+                                                                                                where (row.RequestRowType != RequestRowTypeEnum.Success)
+                                                                                                select row;
+
+                var rows = _ShowOnlyRequestRowsWithErrors ? GetRowsNotSuccess( _Model.GetRows() )
+                                                          : _Model.GetRows();
+                _Rows.Replace( rows );
+            }
+
+            Set_DGV_RowCount();
+            SetRowsHeight();
+            
+            DGV.ClearSelection();
+
+            await Task.Delay( 1 );
+            AdjustColumnsWidthSprain_And_ScrollToLastRow();
+        }
+        private void Set_DGV_RowCount()
+        {
+            if ( DGV.RowCount != _Rows.Count )
+            {
+                DGV.CellValueNeeded -= DGV_CellValueNeeded;
+                DGV.CellFormatting  -= DGV_CellFormatting;
+                try
+                {
+                    DGV.RowCount = _Rows.Count;
+                }
+                finally
+                {
+                    DGV.CellValueNeeded += DGV_CellValueNeeded;
+                    DGV.CellFormatting  += DGV_CellFormatting;
+                }
+            }
+        }
+        private void SetRowsHeight()
+        {
+            if ( (0 < _Rows.Count) && (_LogRowsHeightStorer != null) && _LogRowsHeightStorer.TryGetStorerByModel( _Model, out var storer ) )
+            {
+                DGV.SuspendLayout();
+                DGV.SuspendDrawing();
+                try
+                {
+                    foreach ( var dgvRow in DGV.Rows.Cast< DataGridViewRow >() )
+                    {
+                        if ( storer.TryGetValue( dgvRow.Index, out var height ) && (dgvRow.Height != height) )
+                        {
+                            dgvRow.Height = height;
+                        }
+                    }
+                }
+                finally
+                {
+                    DGV.ResumeLayout( true );
+                    DGV.ResumeDrawing();
+                }
+            }
+        }
+        private void RemoveRow( LogRow row )
+        {
+            var suc = _Rows.Remove( row );
+            if ( suc )
+            {
+                Set_DGV_RowCount();
+                DGV.Invalidate();
+            }
+        }
+        private void AdjustColumnsWidthSprain_And_ScrollToLastRow()
+        {
+            if ( !_WasAdjustColumnsWidthSprain && this.IsVerticalScrollBarVisible )
+            {
+                _WasAdjustColumnsWidthSprain = true;
+                AdjustColumnsWidthSprain();
+            }
+            ScrollToLastRow();
+        }
+        private void ScrollToLastRow()
+        {
+            //if ( 0 < _Rows.Count )
+            //{
+            //    DGV.SetFirstDisplayedScrollingRowIndex( _Rows.Count - 1 );
+            //}
+        }
+
+        private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;
         #endregion
 
         #region [.get cell-styles.]
@@ -352,7 +469,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region [.DGV.]
+        #region [.DGV events.]
         protected override void OnLoad( EventArgs e )
         {
             base.OnLoad( e );
@@ -363,99 +480,6 @@ namespace m3u8.download.manager.ui
         private int GetColumnsResizeDiff() => (DGV.RowHeadersVisible ? DGV.RowHeadersWidth : 0) + 
                                               (IsVerticalScrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0) + //3 + 
                                               ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : 0);
-
-        private void SetRowInvisible( LogRow row ) => DGV.SetRowInvisible( row.GetVisibleIndex() );
-
-        private IEnumerable< (DataGridViewRow dgvRow, RequestRowTypeEnum rrt) > GetRowTuplesNotNone() => from dgvRow in DGV.Rows.Cast< DataGridViewRow >()
-                                                                                                         let row = _Model[ dgvRow.Index ]
-                                                                                                         where (row.RequestRowType != RequestRowTypeEnum.None)
-                                                                                                         select (dgvRow, row.RequestRowType);
-        private void SetRowsVisiblity( bool fromSetModelMethod = false )
-        {
-            if ( DGV.RowCount <= 0 )
-            {
-                return;
-            }
-
-            //const int MAX_TUPLES = 5_000;
-
-            if ( _ShowOnlyRequestRowsWithErrors )
-            {
-                DGV.SuspendLayout();
-                DGV.SuspendDrawing();
-                try
-                {
-                    if ( (_LogRowsHeightStorer != null) && _LogRowsHeightStorer.TryGetStorerByModel( _Model, out var storer ) )
-                    {
-                        foreach ( var t in GetRowTuplesNotNone()/*.Take( MAX_TUPLES )*/ )
-                        {
-                            var visible = (t.rrt == RequestRowTypeEnum.Error);
-                            /*if ( t.dgvRow.Visible != visible )*/ t.dgvRow.Visible = visible;
-                            if ( visible && storer.TryGetValue( t.dgvRow.Index, out var height ) && (t.dgvRow.Height != height) )
-                            {
-                                t.dgvRow.Height = height;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach ( var t in GetRowTuplesNotNone()/*.Take( MAX_TUPLES )*/ )
-                        {
-                            var visible = (t.rrt == RequestRowTypeEnum.Error);
-                            /*if ( t.dgvRow.Visible != visible )*/ t.dgvRow.Visible = visible;
-                        }
-                    }
-                }
-                finally
-                {
-                    DGV.ResumeLayout( true );
-                    DGV.ResumeDrawing();
-                }
-            }
-            else
-            {
-                if ( (_LogRowsHeightStorer != null) && _LogRowsHeightStorer.TryGetStorerByModel( _Model, out var storer ) )
-                {
-                    DGV.SuspendLayout();
-                    DGV.SuspendDrawing();
-                    try
-                    {
-                        foreach ( var t in GetRowTuplesNotNone()/*.Take( MAX_TUPLES )*/ )
-                        {
-
-                            /*if ( !t.dgvRow.Visible )*/ t.dgvRow.Visible = true;
-                            if ( storer.TryGetValue( t.dgvRow.Index, out var height ) && (t.dgvRow.Height != height) )
-                            {
-                                t.dgvRow.Height = height;
-                            }
-                        }
-                    }
-                    finally
-                    {
-                        DGV.ResumeLayout( true );
-                        DGV.ResumeDrawing();
-                    }
-                }
-                else if ( !fromSetModelMethod )
-                {
-                    DGV.SuspendLayout();
-                    DGV.SuspendDrawing();
-                    try
-                    {
-                        foreach ( var t in GetRowTuplesNotNone()/*.Take( MAX_TUPLES )*/ )
-                        {
-                            /*if ( !t.dgvRow.Visible )*/ t.dgvRow.Visible = true;
-                        }
-                    }
-                    finally
-                    {
-                        DGV.ResumeLayout( true );
-                        DGV.ResumeDrawing();
-                    }
-                }
-            }
-        }
-        private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;
 
         private void DGV_RowHeightChanged( object sender, DataGridViewRowEventArgs e ) => _LogRowsHeightStorer.StoreRowHeight( _Model, e.Row );
         private void DGV_ColumnWidthChanged( object sender, DataGridViewColumnEventArgs e )
@@ -548,7 +572,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_CellValueNeeded( object sender, DataGridViewCellValueEventArgs e )
         {
-            var row = _Model[ e.RowIndex ];
+            var row = _Rows[ e.RowIndex ];
             switch ( e.ColumnIndex )
             {
                 case 0:
@@ -582,7 +606,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_CellFormatting( object sender, DataGridViewCellFormattingEventArgs e )
         {
-            var row = _Model[ e.RowIndex ];
+            var row = _Rows[ e.RowIndex ];
             CellStyle cs;
             switch ( e.ColumnIndex )
             {
@@ -644,11 +668,14 @@ namespace m3u8.download.manager.ui
 
                 var cs   = e.CellStyle;
                 var text = e.Value?.ToString();
-                using ( var br = new SolidBrush( (isSelected ? cs.SelectionForeColor : cs.ForeColor) ) )
+                if ( !text.IsNullOrEmpty() )
                 {
-                    var rc = e.CellBounds;
-                        rc.Inflate( -2, -2 );
-                    e.Graphics.DrawString( text, cs.Font, br, rc, _SF );
+                    using ( var br = new SolidBrush( (isSelected ? cs.SelectionForeColor : cs.ForeColor) ) )
+                    {
+                        var rc = e.CellBounds;
+                            rc.Inflate( -2, -2 );
+                        e.Graphics.DrawString( text, cs.Font, br, rc, _SF );
+                    }
                 }
             }
         }        

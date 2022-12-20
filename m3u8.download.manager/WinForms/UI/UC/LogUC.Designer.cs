@@ -40,7 +40,8 @@
             cs2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.DGV.ColumnHeadersDefaultCellStyle = cs2;
             this.DGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DGV.Columns.AddRange( new System.Windows.Forms.DataGridViewColumn[] {
+            this.DGV.Columns.AddRange( new System.Windows.Forms.DataGridViewColumn[] 
+            {
                 this.DGV_requestColumn,
                 this.DGV_responseColumn
             });
@@ -94,7 +95,7 @@
             this.DGV_responseColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.DGV_responseColumn.Width = 350;
             // 
-            // M3u8FileResultDGV
+            // LogUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

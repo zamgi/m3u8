@@ -96,6 +96,13 @@ namespace m3u8.download.manager.models
             }
             return (row);
         }
+        [M(O.AggressiveInlining)] protected bool Contains( T row )
+        {
+#if DEBUG
+            Debug.Assert( row != null );
+#endif
+            return (_RowsVisibleIndexes.ContainsKey( row.Id ));
+        }
         [M(O.AggressiveInlining)] protected bool Remove( T row )
         {
 #if DEBUG
@@ -191,7 +198,7 @@ namespace m3u8.download.manager.models
                 _List = new List< (T move_row, int move_idx) >( capacity );
                 _HS   = new HashSet< T >( capacity, comparer ?? EqualityComparer< T >.Default );
             }
-            public void Add( (T move_row, int move_idx) t )
+            public void Add( in (T move_row, int move_idx) t )
             {
                 if ( _HS.Add( t.move_row ) )
                 {
@@ -357,6 +364,6 @@ namespace m3u8.download.manager.models
         public int RowsCount { [M(O.AggressiveInlining)] get => _Rows.Count; }
         public T this[ int i ] { [M(O.AggressiveInlining)] get => _Rows[ i ]; }
 
-        [M(O.AggressiveInlining)] public /*IEnumerable*/IReadOnlyList< T > GetRows() => _Rows;
+        [M(O.AggressiveInlining)] public IReadOnlyList< T > GetRows() => _Rows;
     }
 }

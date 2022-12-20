@@ -90,6 +90,7 @@
     <Compile Include="Infrastructure\Color2ColorTransition.cs" />
     <Compile Include="Model\DownloadRow.cs" />
     <Compile Include="Model\DownloadListModel.cs" />
+    <Compile Include="Model\_more.cs" />
     <Compile Include="Model\LogRow.cs" />
     <Compile Include="Model\LogListModel.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

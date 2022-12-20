@@ -799,7 +799,6 @@ namespace m3u8.download.manager.controllers
                         #endregion
 
                         var rows_Dict = new Dictionary< string, LogRow >();
-                        //---var pre_rows_Dict = new Dictionary< string, (string requestText, string exception) >();
                         var localLock = new object();
 
                         var st = (LastPartLogRows: new List< LogRow >(),
@@ -813,7 +812,6 @@ namespace m3u8.download.manager.controllers
                             {
                                 row.SetStatus( DownloadStatus.Running );
                                 rows_Dict[ part_url ] = row.Log.AddRequestRow( $"[QUEUEED]: {part_url}" );
-                                //---pre_rows_Dict[ part_url ] = ($"[QUEUEED]: {part_url}", default);
                             }
                         });
                         var downloadContentErrorAction = new m3u8_live_stream_downloader.DownloadContentErrorDelegate( (part_url, ex) =>
@@ -822,7 +820,6 @@ namespace m3u8.download.manager.controllers
                             {
                                 anyErrorHappend = true;
                                 rows_Dict[ part_url ] = row.Log.AddResponseErrorRow( $"[QUEUEED]: {part_url}", ex.ToString() );
-                                //---pre_rows_Dict[ part_url ] = ($"[QUEUEED]: {part_url}", ex.ToString());
                             }
                         });
                         var downloadPartAction = new m3u8_live_stream_downloader.DownloadPartDelegate( (part_url, partBytes, totalBytes) =>
@@ -835,12 +832,6 @@ namespace m3u8.download.manager.controllers
                                     logRow.SetResponseSuccess( "received" );
                                     st.LastPartLogRows.Add( logRow );
                                 }
-                                //if ( pre_rows_Dict.RemoveEx( part_url, out var x ) )
-                                //{
-                                //    var logRow = (x.exception != null) ? row.Log.AddResponseErrorRow( x.requestText, x.exception ) : row.Log.AddRequestRow( x.requestText );
-                                //    logRow.SetResponseSuccess( "received" );
-                                //    st.LastPartLogRows.Add( logRow );
-                                //}
                                 //$"[DOWNLOAD]: {part_url} => ok. (part-size: {(1.0 * partBytes / 1024):N2} KB, total-size: {(1.0 * totalBytes / (1024 * 1024)):N2} MB)";
                             }
                         });
@@ -855,12 +846,6 @@ namespace m3u8.download.manager.controllers
                                     logRow.SetResponseError( ex.ToString() );
                                     st.LastPartLogRows.Add( logRow );
                                 }
-                                //if ( pre_rows_Dict.RemoveEx( part_url, out var x ) )
-                                //{
-                                //    var logRow = (x.exception != null) ? row.Log.AddResponseErrorRow( x.requestText, x.exception ) : row.Log.AddRequestRow( x.requestText );
-                                //    logRow.SetResponseError( ex.ToString() );
-                                //    st.LastPartLogRows.Add( logRow );
-                                //}
                             }
                         });
                         var downloadCreateOutputFileAction = new m3u8_live_stream_downloader.DownloadCreateOutputFileDelegate( fn =>

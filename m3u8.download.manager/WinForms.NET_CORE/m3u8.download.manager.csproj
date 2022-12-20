@@ -42,6 +42,7 @@
     <Compile Include="..\WinForms\Infrastructure\FormPositionStorer.cs" Link="Infrastructure\FormPositionStorer.cs" />
     <Compile Include="..\WinForms\Infrastructure\NameCleaner.cs" Link="Infrastructure\NameCleaner.cs" />
     <Compile Include="..\WinForms\Infrastructure\WinApi.cs" Link="Infrastructure\WinApi.cs" />
+    <Compile Include="..\WinForms\Model\_more.cs" Link="Model\_more.cs" />
     <Compile Include="..\WinForms\Model\DownloadListModel.cs" Link="Model\DownloadListModel.cs" />
     <Compile Include="..\WinForms\Model\DownloadRow.cs" Link="Model\DownloadRow.cs" />
     <Compile Include="..\WinForms\Model\LogListModel.cs" Link="Model\LogListModel.cs" />

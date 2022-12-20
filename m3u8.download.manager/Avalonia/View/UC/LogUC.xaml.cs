@@ -24,11 +24,13 @@ namespace m3u8.download.manager.ui
     {
         #region [.field's.]
         private DataGrid DGV;
-        private ObservableCollection< LogRow > _DGVRows;
-        private LogListModel _Model;
         private SettingsPropertyChangeController _SettingsController;
         private bool     _ShowOnlyRequestRowsWithErrors;
         private CheckBox _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox;
+
+        private LogListModel _Model;
+        private ObservableCollection_WithIndex< LogRow > _DGVRows;
+        private ThreadSafeList< LogRow > _Model_CollectionChanged_AddChangedType_Buf;
         #endregion
 
         #region [.ctor().]
@@ -36,9 +38,10 @@ namespace m3u8.download.manager.ui
         {
             this.InitializeComponent();
 
-            _DGVRows = new ObservableCollection< LogRow >();
+            _DGVRows = new ObservableCollection_WithIndex< LogRow >();
+            _Model_CollectionChanged_AddChangedType_Buf = new ThreadSafeList< LogRow >();
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
-            DGV.Items = _DGVRows;
+            DGV.Items = _DGVRows.List;
 
             _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox = this.FindControl< CheckBox >( nameof(_ShowOnlyRequestRowsWithErrorsMenuItemCheckBox) );
             this.FindControl< MenuItem >( "_ShowOnlyRequestRowsWithErrorsMenuItem" ).Click += _ShowOnlyRequestRowsWithErrorsMenuItem_Click;
@@ -83,14 +86,13 @@ namespace m3u8.download.manager.ui
         {
             if ( _Model == null )
             {
-                await Dispatcher.UIThread.InvokeAsync( () => _DGVRows.Clear() );
+                await Dispatcher.UIThread.InvokeAsync( _DGVRows.Clear );
             }
             else 
             {
                 var rows = _ShowOnlyRequestRowsWithErrors ? GetRowsNotSuccess( _Model.GetRows() )
                                                           : _Model.GetRows(); //GetRowsNotNone( _Model.GetRows() );
-                var new_DGVRows = new ObservableCollection< LogRow >( rows );
-                await Dispatcher.UIThread.InvokeAsync( () => DGV.Items = _DGVRows = new_DGVRows );
+                await Dispatcher.UIThread.InvokeAsync( () => _DGVRows.Replace( rows ) );
                 ScrollToLastRowInternal();
             }
         }
@@ -120,6 +122,8 @@ namespace m3u8.download.manager.ui
 
                 _DGVRows.Clear();
                 //DGV.Items = null;
+
+                _Model_CollectionChanged_AddChangedType_Buf.Clear();
             }
         }
 
@@ -141,20 +145,62 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private async void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
+        private async void Model_CollectionChanged_Buf__TaskRoutine()
         {
-            switch ( collectionChangedType )
-            {
-                case _CollectionChangedTypeEnum_.Add:
-                    var row = _Model.GetRows().Last();
-                    await Dispatcher.UIThread.InvokeAsync( () => _DGVRows.Add( row ) );
-                    ScrollToLastRowInternal();
-                break;
+            const int COUNT_THRESHOLD = 100;
+            const int TICK_THRESHOLD  = 500;
 
-                case _CollectionChangedTypeEnum_.BulkUpdate:
-                case _CollectionChangedTypeEnum_.Clear:
-                    SetDataGridItems();
-                break;
+            var startTickCount = Environment.TickCount;
+            var startCount     = _Model_CollectionChanged_AddChangedType_Buf.GetCount();
+            for (; ; )
+            {
+                if ( (COUNT_THRESHOLD <= (_Model_CollectionChanged_AddChangedType_Buf.GetCount() - startCount)) || (TICK_THRESHOLD <= (Environment.TickCount - startTickCount)) )
+                {
+                    Dispatcher.UIThread.Post( () => Process_Model_CollectionChanged_Buf() );
+                    return;
+                }
+                await Task.Delay( 1 );
+            }
+        }
+        private bool Process_Model_CollectionChanged_Buf()
+        {
+            var suc = _Model_CollectionChanged_AddChangedType_Buf.TryGetAndClear( out var addRows );
+            if ( suc )
+            {
+                _DGVRows.AddRange( addRows );
+                ScrollToLastRowInternal();
+            }
+            return (suc);
+        }
+        private async void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType )
+        {
+            if ( !Dispatcher.UIThread.CheckAccess() && (changedType == _CollectionChangedTypeEnum_.Add) )
+            {
+                var row = _Model.GetRows().Last();
+                var cnt = _Model_CollectionChanged_AddChangedType_Buf.Add( row );
+                if ( cnt == 1 )
+                {
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                    Task.Run( Model_CollectionChanged_Buf__TaskRoutine );
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                }
+                return;
+            }
+            else if ( !Process_Model_CollectionChanged_Buf() )
+            {
+                switch ( changedType )
+                {
+                    case _CollectionChangedTypeEnum_.Add:
+                        var row = _Model.GetRows().Last();
+                        await Dispatcher.UIThread.InvokeAsync( () => _DGVRows.Add( row ) );
+                        ScrollToLastRowInternal();
+                    break;
+
+                    case _CollectionChangedTypeEnum_.BulkUpdate:
+                    case _CollectionChangedTypeEnum_.Clear:
+                        SetDataGridItems();
+                    break;
+                }
             }
         }
         private void Model_RowPropertiesChanged( LogRow row, string propertyName )

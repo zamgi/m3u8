@@ -17,26 +17,26 @@ namespace m3u8.download.manager.models
     internal sealed class LogRow : RowBase< LogRow >
     {
         private _RowPropertiesChanged_ _RowPropertiesChanged;
-        internal LogRow( LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )
+        internal LogRow( /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )
         {
             _RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));
             RequestText = ResponseText = string.Empty;
         }
-        internal LogRow( LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged, LogRow r ) : base( model )
+        internal LogRow( /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged, LogRow other ) : base( model )
         {
             _RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));
-            RequestRowType = r.RequestRowType;
-            RequestText    = r.RequestText;
-            ResponseText   = r.ResponseText;            
+            RequestRowType = other.RequestRowType;
+            RequestText    = other.RequestText;
+            ResponseText   = other.ResponseText;            
         }
 
-        internal static LogRow CreateRequest( string requestText, LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
+        internal static LogRow CreateRequest( string requestText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
             => new LogRow( model, rowPropertiesChanged ) { RequestText = requestText };
 
-        internal static LogRow CreateRequestError( string requestErrorText, LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
+        internal static LogRow CreateRequestError( string requestErrorText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
             => new LogRow( model, rowPropertiesChanged ) { RequestRowType = RequestRowTypeEnum.Error, RequestText = requestErrorText };
 
-        internal static LogRow CreateResponseError( string requestText, string responseErrorText, LogListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
+        internal static LogRow CreateResponseError( string requestText, string responseErrorText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
             => new LogRow( model, rowPropertiesChanged ) { RequestRowType = RequestRowTypeEnum.Error, RequestText  = requestText, ResponseText = responseErrorText };
 
 

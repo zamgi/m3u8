@@ -2,7 +2,8 @@
 using System.Linq;
 using System.Windows.Forms;
 
-using m3u8.download.manager.models;
+//using _LogModel_ = m3u8.download.manager.models.LogListModel;
+using _LogModel_ = m3u8.download.manager.models.ListModel< m3u8.download.manager.models.LogRow >;
 
 namespace m3u8.download.manager.ui
 {
@@ -11,10 +12,10 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed class LogRowsHeightStorer
     {
-        private Dictionary< LogListModel, Dictionary< int, int > > _Dict;
-        public LogRowsHeightStorer() => _Dict = new Dictionary< LogListModel, Dictionary< int, int > >();
+        private Dictionary< _LogModel_, Dictionary< int, int > > _Dict;
+        public LogRowsHeightStorer() => _Dict = new Dictionary< _LogModel_, Dictionary< int, int > >();
 
-        public void StoreRowHeight( LogListModel model, DataGridViewRow row )
+        public void StoreRowHeight( _LogModel_ model, DataGridViewRow row )
         {
             if ( !_Dict.TryGetValue( model, out var modelDict ) )
             {
@@ -24,7 +25,7 @@ namespace m3u8.download.manager.ui
 
             modelDict[ row.Index ] = row.Height;
         }
-        public bool TryGetStorerByModel( LogListModel model, out IReadOnlyDictionary< int, int > dict )
+        public bool TryGetStorerByModel( _LogModel_ model, out IReadOnlyDictionary< int, int > dict )
         {
             if ( _Dict.TryGetValue( model, out var modelDict ) )
             {
@@ -34,9 +35,9 @@ namespace m3u8.download.manager.ui
             dict = null;
             return (false);
         }
-        public bool ContainsModel( LogListModel model ) => _Dict.ContainsKey( model );
+        public bool ContainsModel( _LogModel_ model ) => _Dict.ContainsKey( model );
 
-        public void LeaveOnly( IEnumerable< LogListModel > models )
+        public void LeaveOnly( IEnumerable< _LogModel_ > models )
         {
             var hs = models?.ToHashSet();
             if ( hs.AnyEx() )
