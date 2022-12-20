@@ -59,6 +59,13 @@
                         BorderThickness="0" IsHitTestVisible="False" IsChecked="True" />
             </MenuItem.Icon>
           </MenuItem>
+          <MenuItem x:Name="_ScrollToLastRowMenuItem"
+                    Header="Scroll to last row">
+            <MenuItem.Icon>
+              <CheckBox x:Name="_ScrollToLastRowMenuItemCheckBox"
+                        BorderThickness="0" IsHitTestVisible="False" IsChecked="True" />
+            </MenuItem.Icon>
+          </MenuItem>
         </ContextMenu>
       </DataGrid.ContextMenu>
     </DataGrid>

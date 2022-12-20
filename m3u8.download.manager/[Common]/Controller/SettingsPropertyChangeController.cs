@@ -36,6 +36,7 @@ namespace m3u8.download.manager.controllers
             APV( nameof(_Settings_.MaxCrossDownloadInstance)             , this.Settings.MaxCrossDownloadInstance );
             APV( nameof(_Settings_.ShowDownloadStatisticsInMainFormTitle), this.Settings.ShowDownloadStatisticsInMainFormTitle );
             APV( nameof(_Settings_.ShowOnlyRequestRowsWithErrors)        , this.Settings.ShowOnlyRequestRowsWithErrors );
+            APV( nameof(_Settings_.ScrollToLastRow)                      , this.Settings.ScrollToLastRow );
             APV( nameof(_Settings_.MaxSpeedThresholdInMbps)              , this.Settings.MaxSpeedThresholdInMbps );
 
             this.Settings.PropertyChanged += Settings_PropertyChanged;
@@ -114,6 +115,10 @@ namespace m3u8.download.manager.controllers
 
                 case nameof(_Settings_.ShowOnlyRequestRowsWithErrors):
                     PPC( e.PropertyName, this.Settings.ShowOnlyRequestRowsWithErrors );
+                break;
+
+                case nameof(_Settings_.ScrollToLastRow):
+                    PPC( e.PropertyName, this.Settings.ScrollToLastRow );
                 break;
 
                 case nameof(_Settings_.MaxSpeedThresholdInMbps):

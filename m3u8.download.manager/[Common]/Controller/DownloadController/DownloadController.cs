@@ -1146,7 +1146,8 @@ namespace m3u8.download.manager.controllers
         public static void Output( this LogListModel log, in m3u8_file_t m3u8File )
         {
             var lines = m3u8File.RawText?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
-                                .Where( line => !line.IsNullOrWhiteSpace() );
+                                .Where( line => !line.IsNullOrWhiteSpace() )
+                                ;//.ToList();
             if ( lines.AnyEx() )
             {
                 log.BeginUpdate();

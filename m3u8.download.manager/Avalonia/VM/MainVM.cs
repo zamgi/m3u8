@@ -29,7 +29,7 @@ namespace m3u8.download.manager
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void DownloadListModel_CollectionChanged( ListModel< DownloadRow >.CollectionChangedTypeEnum collectionChangedType ) => PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( nameof(ItemsCount) ) );
+        private void DownloadListModel_CollectionChanged( ListModel< DownloadRow >.CollectionChangedTypeEnum changedType, DownloadRow _ ) => PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( nameof(ItemsCount) ) );
 
         public void Dispose()
         {

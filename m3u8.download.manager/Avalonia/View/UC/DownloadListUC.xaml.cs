@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 using Avalonia;
@@ -232,24 +230,8 @@ namespace m3u8.download.manager.ui
             else
             {
                 DGV.Items = new DataGridCollectionView( _Model.GetRows() );
-
-                //--------------------------------------------------//
-                //foreach ( var row in _Model.GetRows() )
-                //{
-                //    var ctrl = DGV.Columns[ 0 ].GetCellContent( row );
-                //}
-
-                //var _ = DGV.Columns[ 0 ].GetValue( DataGrid.RowHeightProperty );
-
-                //var tbs = DGV.GetVisualDescendants().OfType< TextBlock >().Skip( DGV.Columns.Count ).ToArray();
-                //foreach ( var tb in tbs )
-                //{
-                //    tb.PropertyChanged -= Tb_PropertyChanged;
-                //    tb.PropertyChanged += Tb_PropertyChanged;
-                //}
             }
         }
-        //private void Tb_PropertyChanged( object sender, AvaloniaPropertyChangedEventArgs e ) => Debug.WriteLine( e.Property.ToString() );
 
         internal DownloadRow GetSelectedDownloadRow() => (DGV.SelectedItem as DownloadRow);
         internal bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );
@@ -324,94 +306,23 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
+        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow _ )
         {
-            switch ( collectionChangedType )
+            switch ( changedType )
             {
                 case _CollectionChangedTypeEnum_.Sort:
                     DGV.InvalidateVisual();
                 break;
 
                 case _CollectionChangedTypeEnum_.Add:
-                {
                     SetDataGridItems();
-
-                    #region comm.
-                    //var v = _UserMade_DGV_SelectionChanged;
-                    //DGV.RowCount = _Model.RowsCount;
-                    //RestoreSortIfNeed();
-                    //if ( v != _UserMade_DGV_SelectionChanged )
-                    //{
-                    //    _UserMade_DGV_SelectionChanged = false;
-                    //}
-                    //_CommonUpdateTimer.Enabled = true;
-                    #endregion
-                }
                 break;
 
                 case _CollectionChangedTypeEnum_.Remove:
                 case _CollectionChangedTypeEnum_.Clear:
                 case _CollectionChangedTypeEnum_.BulkUpdate:
-                {
-                    //#region [.save selected row.]
-                    //var selectedVisibleIndex = DGV.SelectedIndex;
-                    //#endregion
-
                     SetDataGridItems();
-
-                    #region comm.
-                    /*
-                    DGV.CellValueNeeded  -= DGV_CellValueNeeded;
-                    DGV.CellFormatting   -= DGV_CellFormatting;
-                    DGV.SelectionChanged -= DGV_SelectionChanged;
-                    DGV.CellPainting     -= DGV_CellPainting;
-                    try
-                    {
-                        DGV.RowCount = _Model.RowsCount;
-                        RestoreSortIfNeed();
-                    }
-                    finally
-                    {
-                        DGV.CellValueNeeded  += DGV_CellValueNeeded;
-                        DGV.CellFormatting   += DGV_CellFormatting;
-                        DGV.SelectionChanged += DGV_SelectionChanged;
-                        DGV.CellPainting     += DGV_CellPainting;
-                    }
-
-                    #region [.restore selected row.]
-                    try
-                    {
-                        var hasRows = (0 < DGV.RowCount);
-                        _CommonUpdateTimer.Enabled = hasRows;
-                        if ( hasRows )
-                        {
-                            var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), DGV.RowCount - 1 );
-                            var dtrow = DGV.Rows[ visibleIndex ];
-                            if ( dtrow.Selected )
-                            {
-                                var row = _Model[ visibleIndex ];
-                                SelectionChanged?.Invoke( row );
-                            }
-                            else
-                            {
-                                dtrow.Selected = true;
-                            }
-                        }
-                        else
-                        {                            
-                            SelectionChanged?.Invoke( null );
-                        }
-                    }
-                    catch ( Exception ex)
-                    {
-                        Debug.WriteLine( ex );
-                    }
-                    #endregion
-                    */
-                    #endregion
-
                     DGV.InvalidateVisual();
-                }
                 break;
             }
         }

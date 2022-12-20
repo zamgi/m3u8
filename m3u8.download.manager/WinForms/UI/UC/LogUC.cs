@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,19 +38,23 @@ namespace m3u8.download.manager.ui
         private CellStyle _Rsp_ErrorCellStyle;
         private CellStyle _Rsp_ErrorCellStyleSmallFont_1;
         private CellStyle _Rsp_ErrorCellStyleSmallFont_2;
+        private CellStyle _DefaultCellStyle_4ResponseReceived;
 
         private ContextMenuStrip  _ContextMenu;
         private ToolStripMenuItem _ShowOnlyRequestRowsWithErrorsMenuItem;
         private bool              _ShowOnlyRequestRowsWithErrors;
+        private ToolStripMenuItem _ScrollToLastRowMenuItem;
+        private bool              _ScrollToLastRow;
         private SettingsPropertyChangeController _SettingsController;
 
         private LogListModel     _Model;
-        private List_WithIndex< LogRow > _Rows;
+        private List_WithIndex< LogRow > _DGVRows;
         private ThreadSafeList< LogRow > _Model_CollectionChanged_AddChangedType_Buf;
-        private Action< LogRow > _RemoveRowAction;
-        private CellStyle        _DefaultCellStyle_4ResponseReceived;
-
-        private Action< _CollectionChangedTypeEnum_, LogRow > _Model_CollectionChangedAction;
+        private Action< LogRow >  _RemoveRowAction;
+        private HashSet< LogRow > _RemovedBeforeAddRows;
+        private Action< LogRow > _InvalidateRowAction;
+        private Action _Model_CollectionChanged_AddChangedType_Buf__UIRoutineAction;
+        private Action< _CollectionChangedTypeEnum_, LogRow > _Model_CollectionChangedAction;        
         private bool _WasAdjustColumnsWidthSprain; //_VScrollBarVisible;
 
         private LogRowsHeightStorer _LogRowsHeightStorer;
@@ -61,8 +66,14 @@ namespace m3u8.download.manager.ui
             InitializeComponent();
             //----------------------------------------------//
 
-            _RemoveRowAction = new Action< LogRow >( RemoveRow );
+            _RemoveRowAction = new Action< LogRow >( RemoveRow_UI );
+            _InvalidateRowAction = new Action< LogRow >( InvalidateRow_UI );
             _Model_CollectionChangedAction = new Action< _CollectionChangedTypeEnum_, LogRow >( Model_CollectionChanged );
+            _Model_CollectionChanged_AddChangedType_Buf__UIRoutineAction = new Action( () => Model_CollectionChanged_AddChangedType_Buf__UIRoutine() );
+
+            _DGVRows = new List_WithIndex< LogRow >();
+            _Model_CollectionChanged_AddChangedType_Buf = new ThreadSafeList< LogRow >();
+            _RemovedBeforeAddRows = new HashSet< LogRow >();
 
             //----------------------------------------------//
             _RNP = RowNumbersPainter.Create( DGV, useSelectedBackColor: true, useColumnsHoverHighlight: false );
@@ -100,13 +111,16 @@ namespace m3u8.download.manager.ui
             _Rsp_CellStyleSmallFont_2      = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, ForeColor = fc_suc, BackColor = bc_suc, Alignment = alg };
 
             //----------------------------------------------//
-            _ShowOnlyRequestRowsWithErrors = SettingsPropertyChangeController.SettingsDefault.ShowOnlyRequestRowsWithErrors;
+            var st = SettingsPropertyChangeController.SettingsDefault;
+            _ShowOnlyRequestRowsWithErrors = st.ShowOnlyRequestRowsWithErrors;
             _ShowOnlyRequestRowsWithErrorsMenuItem = new ToolStripMenuItem( "Show only request rows with errors", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = _ShowOnlyRequestRowsWithErrors };
+
+            _ScrollToLastRow = st.ScrollToLastRow;
+            _ScrollToLastRowMenuItem = new ToolStripMenuItem( "Scroll to last row", null, _ScrollToLastRow_Click ) { Checked = _ScrollToLastRow };
+
             _ContextMenu = new ContextMenuStrip();
             _ContextMenu.Items.Add( _ShowOnlyRequestRowsWithErrorsMenuItem );
-
-            _Rows = new List_WithIndex< LogRow >();
-            _Model_CollectionChanged_AddChangedType_Buf = new ThreadSafeList< LogRow >();
+            _ContextMenu.Items.Add( _ScrollToLastRowMenuItem );
         }
 
         protected override void Dispose( bool disposing )
@@ -138,6 +152,22 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        public bool ScrollToLastRow
+        {
+            get => _ScrollToLastRow;
+            set
+            {
+                var st = (_SettingsController?.Settings ?? SettingsPropertyChangeController.SettingsDefault);
+                if ( st.ScrollToLastRow != value )
+                {
+                    st.ScrollToLastRow = value;
+                    if ( value )
+                    {
+                        ScrollToLastRow_UI();
+                    }
+                }
+            }
+        }        
         public bool ShowResponseColumn
         {
             get => DGV_responseColumn.Visible;
@@ -230,7 +260,7 @@ namespace m3u8.download.manager.ui
                 this.Visible = true;
             }
             else
-            {                
+            {
                 this.Visible = false;                
             }
 
@@ -244,12 +274,11 @@ namespace m3u8.download.manager.ui
                 _Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
                 _Model = null;
 
-                SetDataGridItems();
-                _Model_CollectionChanged_AddChangedType_Buf.Clear();
+                ClearDataGridItems_UI();
             }
         }
         
-        private async void Model_CollectionChanged_Buf__TaskRoutine()
+        private async void Model_CollectionChanged_AddChangedType_Buf__TaskRoutine()
         {
             const int COUNT_THRESHOLD = 100;
             const int TICK_THRESHOLD  = 500;
@@ -260,20 +289,24 @@ namespace m3u8.download.manager.ui
             {
                 if ( (COUNT_THRESHOLD <= (_Model_CollectionChanged_AddChangedType_Buf.GetCount() - startCount)) || (TICK_THRESHOLD <= (Environment.TickCount - startTickCount)) )
                 {
-                    this.BeginInvoke( Process_Model_CollectionChanged_Buf );
+                    this.BeginInvoke( _Model_CollectionChanged_AddChangedType_Buf__UIRoutineAction );
                     return;
                 }
-                await Task.Delay( 1 );
+                await Task.Delay( 1 ).CAX();
             }
         }
-        private bool Process_Model_CollectionChanged_Buf()
+        private bool Model_CollectionChanged_AddChangedType_Buf__UIRoutine()
         {
             var suc = _Model_CollectionChanged_AddChangedType_Buf.TryGetAndClear( out var addRows );
             if ( suc )
             {
-                _Rows.AddRange( addRows );
-                Set_DGV_RowCount();
-                AdjustColumnsWidthSprain_And_ScrollToLastRow();
+                var addRows_exclude_removed = addRows.Where( row => !_RemovedBeforeAddRows.Remove( row ) ).ToList( addRows.Count );
+                var suc_2 = _DGVRows.AddRange( addRows_exclude_removed );
+                if ( suc_2 )
+                {
+                    Set_DGV_RowCount();
+                    AdjustColumnsWidthSprain_And_ScrollToLastRow();
+                }
             }
             return (suc);
         }
@@ -286,7 +319,7 @@ namespace m3u8.download.manager.ui
                     var cnt = _Model_CollectionChanged_AddChangedType_Buf.Add( row );
                     if ( cnt == 1 )
                     {
-                        Task.Run( Model_CollectionChanged_Buf__TaskRoutine );
+                        Task.Run( Model_CollectionChanged_AddChangedType_Buf__TaskRoutine );
                     }
                 }
                 else
@@ -294,19 +327,16 @@ namespace m3u8.download.manager.ui
                     this.BeginInvoke( _Model_CollectionChangedAction, changedType, row );
                 }                
             }
-            else if ( !Process_Model_CollectionChanged_Buf() )
+            else if ( !Model_CollectionChanged_AddChangedType_Buf__UIRoutine() )
             {
                 switch ( changedType )
                 {
                     case _CollectionChangedTypeEnum_.Add:
-                        _Rows.Add( row );
-                        Set_DGV_RowCount();
-
-                        AdjustColumnsWidthSprain_And_ScrollToLastRow();
+                        AddRow_UI( row );                        
                     break;
 
                     case _CollectionChangedTypeEnum_.Clear:
-                        _Rows.Clear();
+                        ClearDataGridItems_UI();
                         _WasAdjustColumnsWidthSprain = false;
                         Set_DGV_RowCount();
                     break;
@@ -315,31 +345,42 @@ namespace m3u8.download.manager.ui
                         SetDataGridItems();
                         AdjustColumnsWidthSprain_And_ScrollToLastRow();
                         DGV.ClearSelection();
-                        ScrollToLastRow();
+                        ScrollToLastRow_UI();
                     break;
                 }
             }
         }
         private void Model_RowPropertiesChanged( LogRow row, string propertyName )
         {
-            var visibleIndex = _Rows.GetIndex( row );
-            if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
+            if ( _ShowOnlyRequestRowsWithErrors && (row.RequestRowType == RequestRowTypeEnum.Success) && (propertyName == nameof(LogRow.RequestRowType)) )
             {
-                DGV.InvalidateRow( visibleIndex );
-                if ( _ShowOnlyRequestRowsWithErrors && (row.RequestRowType == RequestRowTypeEnum.Success) && (propertyName == nameof(LogRow.RequestRowType)) )
-                {
-                    Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _RemoveRowAction, row ) );
-                }
+                Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _RemoveRowAction, row ) );
             }
+            else
+            {
+                InvalidateRow_UI( row );
+            }            
         }
         private void SettingsController_PropertyChanged( Settings settings, string propertyName )
         {
-            if ( propertyName == nameof(Settings.ShowOnlyRequestRowsWithErrors) )
+            switch ( propertyName )
             {
-                _ShowOnlyRequestRowsWithErrors = settings.ShowOnlyRequestRowsWithErrors;
+                case nameof(Settings.ShowOnlyRequestRowsWithErrors):
+                    _ShowOnlyRequestRowsWithErrors = settings.ShowOnlyRequestRowsWithErrors;
 
-                _ShowOnlyRequestRowsWithErrorsMenuItem.Checked = _ShowOnlyRequestRowsWithErrors;
-                SetDataGridItems();
+                    _ShowOnlyRequestRowsWithErrorsMenuItem.Checked = _ShowOnlyRequestRowsWithErrors;
+                    SetDataGridItems();
+                break;
+
+                case nameof(Settings.ScrollToLastRow):
+                    _ScrollToLastRow = settings.ScrollToLastRow;
+
+                    _ScrollToLastRowMenuItem.Checked = _ScrollToLastRow;
+                    if ( _ScrollToLastRow )
+                    {
+                        ScrollToLastRow_UI();
+                    }
+                break;
             }
         }
         #endregion
@@ -349,7 +390,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _Model == null )
             {
-                _Rows.Clear();
+                ClearDataGridItems_UI();
             }
             else
             {
@@ -359,10 +400,9 @@ namespace m3u8.download.manager.ui
 
                 var rows = _ShowOnlyRequestRowsWithErrors ? GetRowsNotSuccess( _Model.GetRows() )
                                                           : _Model.GetRows();
-                _Rows.Replace( rows );
+                SetDataGridItems_UI( rows );
             }
-
-            Set_DGV_RowCount();
+            
             SetRowsHeight();
             
             DGV.ClearSelection();
@@ -370,15 +410,69 @@ namespace m3u8.download.manager.ui
             await Task.Delay( 1 );
             AdjustColumnsWidthSprain_And_ScrollToLastRow();
         }
+        private void ClearDataGridItems_UI()
+        {
+            _Model_CollectionChanged_AddChangedType_Buf.Clear();
+            _RemovedBeforeAddRows.Clear();
+            _DGVRows.Clear();
+
+            Set_DGV_RowCount();
+        }
+        private void SetDataGridItems_UI( IEnumerable< LogRow > rows )
+        {
+            _Model_CollectionChanged_AddChangedType_Buf.Clear();
+            _RemovedBeforeAddRows.Clear();
+            _DGVRows.Replace( rows );
+
+            Set_DGV_RowCount();
+        }
+        private void AddRow_UI( LogRow row )
+        {
+            if ( !_RemovedBeforeAddRows.Remove( row ) )
+            {
+                _DGVRows.Add( row );
+
+                Set_DGV_RowCount();
+                AdjustColumnsWidthSprain_And_ScrollToLastRow();
+            }
+        }
+        private void RemoveRow_UI( LogRow row )
+        {
+            var suc = _DGVRows.Remove( row );
+            if ( !suc )
+            {
+                _RemovedBeforeAddRows.Add( row );
+            }
+            else
+            {
+                Set_DGV_RowCount();
+                DGV.Invalidate();
+            }
+        }
+        private void InvalidateRow_UI( LogRow row )
+        {
+            if ( this.InvokeRequired )
+            {
+                this.BeginInvoke( _InvalidateRowAction, row );
+            }
+            else
+            {
+                var visibleIndex = _DGVRows.GetIndex( row );
+                if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
+                {
+                    DGV.InvalidateRow( visibleIndex );
+                }
+            }
+        }
         private void Set_DGV_RowCount()
         {
-            if ( DGV.RowCount != _Rows.Count )
+            if ( DGV.RowCount != _DGVRows.Count )
             {
                 DGV.CellValueNeeded -= DGV_CellValueNeeded;
                 DGV.CellFormatting  -= DGV_CellFormatting;
                 try
                 {
-                    DGV.RowCount = _Rows.Count;
+                    DGV.RowCount = _DGVRows.Count;
                 }
                 finally
                 {
@@ -389,7 +483,7 @@ namespace m3u8.download.manager.ui
         }
         private void SetRowsHeight()
         {
-            if ( (0 < _Rows.Count) && (_LogRowsHeightStorer != null) && _LogRowsHeightStorer.TryGetStorerByModel( _Model, out var storer ) )
+            if ( (0 < _DGVRows.Count) && (_LogRowsHeightStorer != null) && _LogRowsHeightStorer.TryGetStorerByModel( _Model, out var storer ) )
             {
                 DGV.SuspendLayout();
                 DGV.SuspendDrawing();
@@ -410,15 +504,6 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        private void RemoveRow( LogRow row )
-        {
-            var suc = _Rows.Remove( row );
-            if ( suc )
-            {
-                Set_DGV_RowCount();
-                DGV.Invalidate();
-            }
-        }
         private void AdjustColumnsWidthSprain_And_ScrollToLastRow()
         {
             if ( !_WasAdjustColumnsWidthSprain && this.IsVerticalScrollBarVisible )
@@ -426,17 +511,21 @@ namespace m3u8.download.manager.ui
                 _WasAdjustColumnsWidthSprain = true;
                 AdjustColumnsWidthSprain();
             }
-            //ScrollToLastRow();
-        }
-        private void ScrollToLastRow()
-        {
-            if ( 0 < _Rows.Count )
+            if ( _ScrollToLastRow )
             {
-                DGV.SetFirstDisplayedScrollingRowIndex( _Rows.Count - 1 );
+                ScrollToLastRow_UI();
+            }
+        }
+        private void ScrollToLastRow_UI()
+        {
+            if ( 0 < _DGVRows.Count )
+            {
+                DGV.SetFirstDisplayedScrollingRowIndex( _DGVRows.Count - 1 );
             }
         }
 
         private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;
+        private void _ScrollToLastRow_Click( object sender, EventArgs e ) => this.ScrollToLastRow = !this.ScrollToLastRow;
         #endregion
 
         #region [.get cell-styles.]
@@ -572,7 +661,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_CellValueNeeded( object sender, DataGridViewCellValueEventArgs e )
         {
-            var row = _Rows[ e.RowIndex ];
+            var row = _DGVRows[ e.RowIndex ];
             switch ( e.ColumnIndex )
             {
                 case 0:
@@ -606,7 +695,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_CellFormatting( object sender, DataGridViewCellFormattingEventArgs e )
         {
-            var row = _Rows[ e.RowIndex ];
+            var row = _DGVRows[ e.RowIndex ];
             CellStyle cs;
             switch ( e.ColumnIndex )
             {

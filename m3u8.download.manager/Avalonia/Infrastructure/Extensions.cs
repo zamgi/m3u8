@@ -37,7 +37,9 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
         [M(O.AggressiveInlining)] public static bool HasFirstCharNotDot( this string s ) => (s != null) && (0 < s.Length) && (s[ 0 ] != '.');
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null) && seq.Any();
-        [M(O.AggressiveInlining)] public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : (T?) null);
+        //[M(O.AggressiveInlining)] public static bool AnyEx< T >( this ICollection< T > seq ) => (seq != null) && (0 < seq.Count);
+        [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IReadOnlyCollection< T > seq ) => (seq != null) && (0 < seq.Count);
+        [M(O.AggressiveInlining)] public static bool AnyEx< T >( this T[] seq ) => (seq != null) && (0 < seq.Length);
         [M(O.AggressiveInlining)] public static bool EqualIgnoreCase( this string s1, string s2 ) => (string.Compare( s1, s2, true ) == 0);
         [M(O.AggressiveInlining)] public static bool ContainsIgnoreCase( this string s1, string s2 ) => ((s1 != null) && s1.Contains( s2, StringComparison.InvariantCultureIgnoreCase ));
 

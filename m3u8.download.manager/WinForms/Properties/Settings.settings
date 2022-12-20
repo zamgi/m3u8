@@ -46,6 +46,9 @@
     <Setting Name="ShowOnlyRequestRowsWithErrors" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="ScrollToLastRow" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>    
     <Setting Name="ShowDownloadStatisticsInMainFormTitle" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

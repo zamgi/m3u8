@@ -218,6 +218,18 @@ namespace m3u8.download.manager.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ScrollToLastRow {
+            get {
+                return ((bool)(this["ScrollToLastRow"]));
+            }
+            set {
+                this["ScrollToLastRow"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ShowDownloadStatisticsInMainFormTitle {
             get {
                 return ((bool)(this["ShowDownloadStatisticsInMainFormTitle"]));

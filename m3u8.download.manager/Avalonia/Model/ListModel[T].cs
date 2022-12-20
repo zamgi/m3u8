@@ -38,7 +38,7 @@ namespace m3u8.download.manager.models
         /// <summary>
         /// 
         /// </summary>
-        public delegate void CollectionChangedEventHandler( CollectionChangedTypeEnum collectionChangedType );
+        public delegate void CollectionChangedEventHandler( CollectionChangedTypeEnum collectionChangedType, T row );
 
         /// <summary>
         /// 
@@ -69,7 +69,7 @@ namespace m3u8.download.manager.models
             _UpdtTup = (false, -1);
             if ( rowCount != this.RowsCount )
             {
-                CollectionChanged?.Invoke( CollectionChangedTypeEnum.BulkUpdate );
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.BulkUpdate, null );
             }
         }
 
@@ -89,7 +89,7 @@ namespace m3u8.download.manager.models
             _Rows.Add( row );
             if ( !_UpdtTup.InUpdate )
             {
-                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Add );
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Add, row );
             }
             return (row);
         }
@@ -109,7 +109,7 @@ namespace m3u8.download.manager.models
 
                 if ( !_UpdtTup.InUpdate )
                 {
-                    CollectionChanged?.Invoke( CollectionChangedTypeEnum.Remove );
+                    CollectionChanged?.Invoke( CollectionChangedTypeEnum.Remove, row );
                 }
                 return (success);
             }
@@ -157,7 +157,7 @@ namespace m3u8.download.manager.models
             OnAfterClear();
             if ( (rowCount != _Rows.Count) && !_UpdtTup.InUpdate )
             {
-                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Clear );
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Clear, null );
             }
         }
         protected virtual void OnAfterClear() { }
@@ -171,7 +171,7 @@ namespace m3u8.download.manager.models
 
             if ( !_UpdtTup.InUpdate )
             {
-                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Sort );
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Sort, null );
             }
         }
 
@@ -194,7 +194,7 @@ namespace m3u8.download.manager.models
 
                 if ( !_UpdtTup.InUpdate )
                 {
-                    CollectionChanged?.Invoke( CollectionChangedTypeEnum.Sort );
+                    CollectionChanged?.Invoke( CollectionChangedTypeEnum.Sort, null );
                 }
             }
         }

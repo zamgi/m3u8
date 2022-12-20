@@ -49,6 +49,9 @@ namespace m3u8.download.manager.models
             seq = default;
             return (false);
         }
+#if DEBUG
+        public override string ToString() => $"{_List.Count}";
+#endif
     }
 
     /// <summary>
@@ -69,12 +72,17 @@ namespace m3u8.download.manager.models
             _Dict[ t ] = _List.Count;
             _List.Add( t );
         }
-        public void AddRange( IEnumerable< T > seq )
+        public bool AddRange( ICollection< T > seq )
         {
-            foreach ( var t in seq )
+            var suc = seq.AnyEx();
+            if ( suc )
             {
-                Add( t );
+                foreach ( var t in seq )
+                {
+                    Add( t );
+                }
             }
+            return (suc);
         }
         public void Replace( IEnumerable< T > seq )
         {
@@ -112,5 +120,8 @@ namespace m3u8.download.manager.models
         public int Count => _List.Count;
         public T this[ int index ] => _List[ index ];
         public int GetIndex( T t ) => _Dict.TryGetValue( t, out var idx ) ? idx : -1;
+#if DEBUG
+        public override string ToString() => $"{_List.Count}";
+#endif
     }
 }

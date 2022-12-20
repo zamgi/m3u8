@@ -70,9 +70,9 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
+        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType, LogRow _ )
         {
-            switch ( collectionChangedType )
+            switch ( changedType )
             {
                 case _CollectionChangedTypeEnum_.Add:
                 case _CollectionChangedTypeEnum_.BulkUpdate:

@@ -487,9 +487,9 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType )
+        private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow _ )
         {
-            if ( collectionChangedType != _CollectionChangedTypeEnum_.Sort )
+            if ( changedType != _CollectionChangedTypeEnum_.Sort )
             {
                 ShowDownloadStatisticsInTitle();
 
