@@ -144,7 +144,7 @@ namespace m3u8.download.manager.ui
             set => DGV_responseColumn.Visible = value;
         }
 
-        public bool IsVerticalScrollBarVisible => DGV.Controls.OfType< VScrollBar >().First().Visible;
+        public bool IsVerticalScrollBarVisible => (DGV.Controls.OfType< VScrollBar >().FirstOrDefault()?.Visible).GetValueOrDefault();
         public void AdjustColumnsWidthSprain() => DGV_Resize( null, null );
         public void AdjustRowsHeight()
         {
@@ -226,9 +226,7 @@ namespace m3u8.download.manager.ui
                 model.RowPropertiesChanged -= Model_RowPropertiesChanged;
                 model.CollectionChanged    += Model_CollectionChanged;
                 model.RowPropertiesChanged += Model_RowPropertiesChanged;
-
-                //Model_CollectionChanged( _CollectionChangedTypeEnum_.Add, null );
-                //SetRowsVisiblity( true );
+                
                 this.Visible = true;
             }
             else
@@ -314,8 +312,10 @@ namespace m3u8.download.manager.ui
                     break;
 
                     case _CollectionChangedTypeEnum_.BulkUpdate:
+                        SetDataGridItems();
                         AdjustColumnsWidthSprain_And_ScrollToLastRow();
                         DGV.ClearSelection();
+                        ScrollToLastRow();
                     break;
                 }
             }
@@ -426,14 +426,14 @@ namespace m3u8.download.manager.ui
                 _WasAdjustColumnsWidthSprain = true;
                 AdjustColumnsWidthSprain();
             }
-            ScrollToLastRow();
+            //ScrollToLastRow();
         }
         private void ScrollToLastRow()
         {
-            //if ( 0 < _Rows.Count )
-            //{
-            //    DGV.SetFirstDisplayedScrollingRowIndex( _Rows.Count - 1 );
-            //}
+            if ( 0 < _Rows.Count )
+            {
+                DGV.SetFirstDisplayedScrollingRowIndex( _Rows.Count - 1 );
+            }
         }
 
         private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;
