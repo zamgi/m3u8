@@ -67,7 +67,6 @@ namespace m3u8.download.manager.ui
             SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle) );
             SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ExternalProgCaption) );
 
-            logUC.SetModel( null );
             logUC.SetSettingsController( _SettingsController );
             logUC.SetLogRowsHeightStorer( _LogRowsHeightStorer );
 

@@ -13,14 +13,14 @@ namespace m3u8
     {
         private static async Task Main( string[] args )
         {
+            using var cts = new CancellationTokenSource();
             try
             {
                 var M3U8_URL                   = args.GetArg( "url=" ) ?? ConfigurationManager.AppSettings[ "M3U8_URL" ];
                 var OUTPUT_FILENAME            = args.GetArg( "out=" ) ?? args.GetArg( "output=" ) ?? ConfigurationManager.AppSettings[ "OUTPUT_FILENAME" ];
                 var MAX_OUTPUT_FILE_SZIE_IN_MB = (int.TryParse( (args.GetArg( "size=" ) ?? ConfigurationManager.AppSettings[ "MAX_OUTPUT_FILE_SZIE_IN_MB" ]), out var i ) ? i : 250);
                 //-------------------------------------------------------------------//
-
-                using var cts = new CancellationTokenSource();
+                
                 Console.CancelKeyPress += (_, e) => cts.Cancel( e );
                 //-------------------------------------------------------------------//
 
@@ -36,7 +36,8 @@ namespace m3u8
 
                     DownloadContent      = (p)                        => $"[ QUEUEED]: {p}".ToConsole( cts ),
                     DownloadContentError = (p, ex)                    => $"[ QUEUEED]: {p} => {ex}".ToConsole( ConsoleColor.Red, cts ),
-                    DownloadPart         = (p, partBytes, totalBytes) => $"[DOWNLOAD]: {p} => ok. (part-size: {(1.0 * partBytes / 1024):N2} KB, total-size: {(1.0 * totalBytes / (1024 * 1024)):N2} MB)".ToConsole( cts ),
+                    DownloadPart         = (p, partBytes, totalBytes, 
+                                            instantaneousSpeedInMbps) => $"[DOWNLOAD]: {p} => ok. (part-size: {(1.0 * partBytes / 1024):N2} KB, total-size: {(1.0 * totalBytes / (1024 * 1024)):N2} MB)".ToConsole( cts ),
                     DownloadPartError    = (p, ex)                    => $"[DOWNLOAD]: {p} => {ex}".ToConsole( ConsoleColor.Red, cts ),
                     DownloadCreateOutputFile = (fn)                   => $"Created output file: '{fn}'".ToConsole( cts )
                 };
@@ -49,7 +50,14 @@ namespace m3u8
             }
             catch ( Exception ex )
             {
-                ex.ToConsole();
+                if ( cts.IsCancellationRequested )
+                {
+                    ("\r\n[Canceled by user...]").ToConsole( ConsoleColor.Red );
+                }
+                else
+                {
+                    ex.ToConsole();
+                }                
             }
             //-----------------------------------------------------------//
             $"\r\n[.....finita.....]".ToConsole( ConsoleColor.DarkGray, to_title: true );

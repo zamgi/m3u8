@@ -269,6 +269,8 @@ namespace m3u8.download.manager.ui
 
         internal void SetModel( DownloadListModel model )
         {
+            if ( _Model == model ) return;
+
             DetachModel();
 
             _Model = model ?? throw (new ArgumentNullException( nameof(model) ));

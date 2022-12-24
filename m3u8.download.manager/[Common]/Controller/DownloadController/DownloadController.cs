@@ -666,7 +666,7 @@ namespace m3u8.download.manager.controllers
                         });
                         var responseStepAction = new _m3u8_processor_.ResponseStepActionDelegate( p =>
                         {
-                            row.SetDownloadResponseStepParams( in p );
+                            row.SetDownloadResponseStepParams( p );
 
                             if ( rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
                             {
@@ -822,11 +822,11 @@ namespace m3u8.download.manager.controllers
                                 rows_Dict[ part_url ] = row.Log.AddResponseErrorRow( $"[QUEUEED]: {part_url}", ex.ToString() );
                             }
                         });
-                        var downloadPartAction = new m3u8_live_stream_downloader.DownloadPartDelegate( (part_url, partBytes, totalBytes) =>
+                        var downloadPartAction = new m3u8_live_stream_downloader.DownloadPartDelegate( (part_url, partBytes, totalBytes, instantaneousSpeedInMbps) =>
                         {
                             lock ( localLock )
                             {
-                                row.SetDownloadResponseStepParams( partBytes, totalBytes );
+                                row.SetDownloadResponseStepParams( partBytes, totalBytes, instantaneousSpeedInMbps );
                                 if ( rows_Dict.RemoveEx( part_url, out var logRow ) )
                                 {
                                     logRow.SetResponseSuccess( "received" );
@@ -881,6 +881,7 @@ namespace m3u8.download.manager.controllers
 
                             WaitIfPausedEvent = waitIfPausedEvent,
                             WaitingIfPaused   = () => row.SetStatus( DownloadStatus.Paused ),
+                            ThrottlerBySpeed  = _ThrottlerBySpeed,
 
                             DownloadContent          = downloadContentAction,
                             DownloadContentError     = downloadContentErrorAction,

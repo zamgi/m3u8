@@ -218,39 +218,17 @@ namespace m3u8.download.manager.models
             }
             _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
         }
-        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes )
+        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes, double? instantaneousSpeedInMbps )
         {
-            //var call__RowPropertiesChanged = false;
             lock ( this )
             {
                 TotalParts++;
                 SuccessDownloadParts++;
                 DownloadBytesLength = total_in_bytes;
 
-                //if ( 0 < p.BytesLength )
-                //{
-                //    var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
-                //    var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
-                //    if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
-                //    {
-                //        SuccessDownloadParts = sdp;
-                //        FailedDownloadParts  = fdp;
-                //        DownloadBytesLength += p.BytesLength;
-
-                //        call__RowPropertiesChanged = true;
-                //    }
-                //}
-
-                //if ( _InstantaneousSpeedInMbps != p.InstantaneousSpeedInMbps )
-                //{
-                //    _InstantaneousSpeedInMbps = p.InstantaneousSpeedInMbps;
-                //    call__RowPropertiesChanged = true;
-                //}
+                if ( _InstantaneousSpeedInMbps != instantaneousSpeedInMbps ) _InstantaneousSpeedInMbps = instantaneousSpeedInMbps;
             }
-            //if ( call__RowPropertiesChanged )
-            //{
-                _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
-            //}
+            _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
         }
         [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
         {

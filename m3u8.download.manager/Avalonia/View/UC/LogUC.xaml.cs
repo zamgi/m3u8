@@ -84,6 +84,8 @@ namespace m3u8.download.manager.ui
 
         internal void SetModel( LogListModel model )
         {
+            if ( _Model == model ) return;
+
             DetachModel();
 
             if ( model != null )

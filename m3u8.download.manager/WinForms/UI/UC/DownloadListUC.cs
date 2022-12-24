@@ -232,10 +232,53 @@ namespace m3u8.download.manager.ui
             SelectDownloadRowInternal( row );
         }
         public bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );
-        [M(O.AggressiveInlining)] private void SelectOneRow( int rowIndex )
+        [M(O.AggressiveInlining)] private void SelectLonelyRow( int rowIndex )
         {
-            DGV.ClearSelection();
-            DGV.Rows[ rowIndex ].Selected = true;
+            //DGV.ClearSelection();
+            //DGV.Rows[ rowIndex ].Selected = true;
+
+            var srs = DGV.SelectedRows;
+            switch ( srs.Count )
+            {
+                case 0: DGV.Rows[ rowIndex ].Selected = true; break;
+                case 1:
+                    if ( srs[ 0 ].Index != rowIndex )
+                    {
+                        DGV.ClearSelection();
+                        DGV.Rows[ rowIndex ].Selected = true;
+                    }
+                break;
+
+                default:
+                    DGV.ClearSelection();
+                    DGV.Rows[ rowIndex ].Selected = true;
+                break;
+            }
+        }
+        [M(O.AggressiveInlining)] private void SelectLonelyRowIfCurrentSelectedOnlyOneOrZeroRow( int rowIndex )
+        {
+            var srs = DGV.SelectedRows;
+            switch ( srs.Count )
+            {
+                case 0: DGV.Rows[ rowIndex ].Selected = true; break;
+                case 1:
+                    if ( srs[ 0 ].Index != rowIndex )
+                    {
+                        DGV.ClearSelection();
+                        DGV.Rows[ rowIndex ].Selected = true;
+                    }
+                break;
+            }
+
+            //if ( srs.Count <= 1 )
+            //{
+            //    var row = DGV.Rows[ rowIndex ];
+            //    if ( !row.Selected )
+            //    {
+            //        DGV.ClearSelection();
+            //        row.Selected = true;
+            //    }
+            //}
         }
         private bool SelectDownloadRowInternal( DownloadRow row, bool callAfterSort = false )
         {
@@ -244,7 +287,7 @@ namespace m3u8.download.manager.ui
                 var visibleIndex = row.GetVisibleIndex();
                 if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
                 {
-                    SelectOneRow( visibleIndex );
+                    SelectLonelyRow( visibleIndex );
                     if ( !callAfterSort )
                     {
                         _UserMade_DGV_SelectionChanged = false;
@@ -278,6 +321,8 @@ namespace m3u8.download.manager.ui
         public DownloadListModel Model => _Model;
         public void SetModel( DownloadListModel model )
         {
+            if ( _Model == model ) return;
+
             DetachModel();
 
             _Model = model ?? throw (new ArgumentNullException( nameof(model) ));
@@ -295,6 +340,7 @@ namespace m3u8.download.manager.ui
                 _Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
                 _Model = null;
 
+                #region [.set DGV row-count.]
                 DGV.CellValueNeeded -= DGV_CellValueNeeded;
                 DGV.CellFormatting  -= DGV_CellFormatting;
                 try
@@ -306,6 +352,7 @@ namespace m3u8.download.manager.ui
                     DGV.CellValueNeeded += DGV_CellValueNeeded;
                     DGV.CellFormatting  += DGV_CellFormatting;
                 }
+                #endregion
             }
         }
 
@@ -364,12 +411,13 @@ namespace m3u8.download.manager.ui
                     #region [.restore selected row.]
                     try
                     {
-                        var hasRows = (0 < DGV.RowCount);
+                        var rowCount = DGV.RowCount;
+                        var hasRows  = (0 < rowCount);
                         _CommonUpdateTimer.Enabled = hasRows;
                         if ( hasRows )
                         {
-                            var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), DGV.RowCount - 1 ); // ((0 <= selectedVisibleIndex) && (selectedVisibleIndex < DGV.RowCount)) ? selectedVisibleIndex : (DGV.RowCount - 1); //0;
-                            SelectOneRow( visibleIndex );
+                            var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), rowCount - 1 );
+                            SelectLonelyRow( visibleIndex );
                         }
                         else
                         {                            
@@ -1058,10 +1106,7 @@ namespace m3u8.download.manager.ui
                     if ( e.Button == MouseButtons.Right )
                     {
                         //select actual row if current selected only one-or-zero row
-                        if ( DGV.SelectedRows.Count <= 1 )
-                        {
-                            SelectOneRow( ht.RowIndex );
-                        }
+                        SelectLonelyRowIfCurrentSelectedOnlyOneOrZeroRow( ht.RowIndex );                        
 
                         MouseClickRightButton?.Invoke( e, GetSelectedDownloadRow(), outOfGridArea: false );
                     }

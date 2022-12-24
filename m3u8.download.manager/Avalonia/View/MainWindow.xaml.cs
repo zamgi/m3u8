@@ -179,7 +179,6 @@ namespace m3u8.download.manager.ui
             //----------------------------------------//
 
             #region [.-2-.]
-            logUC.SetModel( null );
             logUC.SetSettingsController( _VM.SettingsController );
 
             downloadListUC.SetModel( _VM.DownloadListModel );
@@ -511,12 +510,10 @@ namespace m3u8.download.manager.ui
 
         private void downloadListUC_SelectionChanged( DownloadRow row )
         {
-            #region comm.
-            //if ( !mainSplitContainer.Panel2Collapsed )
+            if ( logUC.IsVisible )
             {
                 logUC.SetModel( row?.Log );
             } 
-            #endregion
 
             SetDownloadToolButtonsStatus( row );
         }

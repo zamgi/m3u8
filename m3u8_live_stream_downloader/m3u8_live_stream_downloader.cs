@@ -21,7 +21,7 @@ namespace m3u8
     {
         public delegate void DownloadContentDelegate( string part_url );
         public delegate void DownloadContentErrorDelegate( string m3u8_url, Exception ex );        
-        public delegate void DownloadPartDelegate( string part_url, long part_size_in_bytes, long total_in_bytes );
+        public delegate void DownloadPartDelegate( string part_url, long part_size_in_bytes, long total_in_bytes, double? instantaneousSpeedInMbps );
         public delegate void DownloadPartErrorDelegate( string part_url, Exception ex );
         public delegate void DownloadCreateOutputFileDelegate( string output_file_name );
 
@@ -35,8 +35,9 @@ namespace m3u8
 
             public HttpClient HttpClient { get; set; }
 
-            public ManualResetEventSlim WaitIfPausedEvent { [M(O.AggressiveInlining)] get; set; }
-            public Action               WaitingIfPaused   { [M(O.AggressiveInlining)] get; set; }
+            public ManualResetEventSlim   WaitIfPausedEvent { [M(O.AggressiveInlining)] get; set; }
+            public Action                 WaitingIfPaused   { [M(O.AggressiveInlining)] get; set; }
+            public I_throttler_by_speed_t ThrottlerBySpeed  { [M(O.AggressiveInlining)] get; set; }
 
             public DownloadContentDelegate          DownloadContent          { get; set; }
             public DownloadContentErrorDelegate     DownloadContentError     { get; set; }
@@ -54,11 +55,14 @@ namespace m3u8
             Processed,
         }
 
+        #region [.ctor().]
         private HttpClient _HttpClient;
         private bool       _Dispose_HttpClient;
         private InitParams _IP;
         private BlockingCollection< string > _PartUrls;
         private Dictionary< string, PartUrlStatusEnum > _PartUrlsStatus;
+        private I_ThrottlerBySpeed_InDownloadProcessUser _ThrottlerBySpeed_User;
+
         public m3u8_live_stream_downloader( in InitParams ip )
         {
             M3u8Url        = ip.M3u8Url        ?? throw (new ArgumentNullException( nameof(ip.M3u8Url) ));
@@ -70,7 +74,18 @@ namespace m3u8
             _Dispose_HttpClient = (ip.HttpClient == null);
             _PartUrls           = new BlockingCollection< string >();
             _PartUrlsStatus     = new Dictionary< string, PartUrlStatusEnum >();
+            _ThrottlerBySpeed_User = ThrottlerBySpeed_InDownloadProcessUser.Start( ip.ThrottlerBySpeed );
         }
+        public void Dispose()
+        {
+            if ( _Dispose_HttpClient )
+            {
+                _HttpClient.Dispose();
+            }
+            _ThrottlerBySpeed_User.Dispose();
+        }
+        #endregion
+
         public static async Task _Download_( string m3u8_url, string output_file_name, CancellationToken ct, long? max_output_file_size, int milliseconds_delay_between_request = 1_000 )
         {
             using var m = new m3u8_live_stream_downloader( new InitParams() { M3u8Url = m3u8_url, OutputFileName = output_file_name } );
@@ -85,13 +100,6 @@ namespace m3u8
         {
             using var m = new m3u8_live_stream_downloader( ip );
             await m.Download( ct, get_max_output_file_size_func, milliseconds_delay_between_request ).CAX();
-        }
-        public void Dispose()
-        {
-            if ( _Dispose_HttpClient )
-            {
-                _HttpClient.Dispose();
-            }
         }
 
         public string M3u8Url        { get; }
@@ -113,11 +121,11 @@ namespace m3u8
             Task task_DownloadParts;
             if ( max_output_file_size.HasValue )
             {
-                task_DownloadParts = RunDownloadParts_WithMaxFileSize( output_file_name, base_url, ct, max_output_file_size.Value );
+                task_DownloadParts = RunDownloadParts_LimitedFileSize( output_file_name, base_url, ct, max_output_file_size.Value );
             }
             else
             {
-                task_DownloadParts = RunDownloadParts( output_file_name, base_url, ct );
+                task_DownloadParts = RunDownloadParts_NoLimitedFileSize( output_file_name, base_url, ct );
             }            
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
@@ -143,7 +151,7 @@ namespace m3u8
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            var task_DownloadParts = RunDownloadParts_WithMaxFileSize( output_file_name, base_url, ct, get_max_output_file_size_func );
+            var task_DownloadParts = RunDownloadParts_LimitedFileSize( output_file_name, base_url, ct, get_max_output_file_size_func );
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
             //---await Task.Delay( Timeout.Infinite, ct ).CAX();
@@ -185,7 +193,7 @@ namespace m3u8
                                 {
                                     //var suc = debug_hs.Add( p ); Debug.Assert( suc );
 
-                                    _PartUrls.Add( p );
+                                    _PartUrls.Add( p, ct );
                                     _IP.DownloadContent?.Invoke( p );
                                     new_parts++;
                                 }
@@ -210,7 +218,85 @@ namespace m3u8
                 }
             }
             , ct );
-        private Task RunDownloadParts( string output_file_name, string base_url, CancellationToken ct )
+        private Task RunDownloadParts_LimitedFileSize( string output_file_name, string base_url, CancellationToken ct, Func< long > get_max_output_file_size_func )
+            => Task.Run( async () =>
+            {
+                var dir = Path.GetDirectoryName( output_file_name );
+                if ( !Directory.Exists( dir ) ) Directory.CreateDirectory( dir );
+
+                var fileNumber = 0;
+                string get_next_output_file_name() => Path.Combine( dir, Path.GetFileNameWithoutExtension( output_file_name ) + $"-({++fileNumber})" + Path.GetExtension( output_file_name ) );
+
+                long totalBytes = 0;
+                var fi = default(FileInfo);
+                Stream open_file_stream_4_write()
+                {
+                    var fn = get_next_output_file_name();
+                    var fs = new FileStream( fn, FileMode.Create, FileAccess.Write, FileShare.Read );
+                    _IP.DownloadCreateOutputFile?.Invoke( fn );
+                    totalBytes = 0;
+                    fi = new FileInfo( fn );
+                    return (fs);
+                }
+
+            NEXT_FILE:
+                using ( var fs = open_file_stream_4_write() )
+                {
+                    for ( var n = 0; !ct.IsCancellationRequested; )
+                    {
+                        WaitIfPaused( ct );
+
+                        #region [.throttler by speed.]
+                        var instantaneousSpeedInMbps = _ThrottlerBySpeed_User.Throttle( ct );
+                        #endregion
+
+                        var p = _PartUrls.Take_Ex( ct );
+                        var part_url = base_url + p;
+
+                        try
+                        {
+                            Debug.WriteLine( p );
+#if NETCOREAPP
+                            using var s = await _HttpClient.GetStreamAsync( part_url, ct ).CAX();
+#else
+                            using var s = await _HttpClient.GetStreamAsync( part_url/*, ct*/ ).CAX();
+#endif
+                            await s.CopyToAsync( fs/*, ct */).CAX();
+
+                            if ( (++n % 10) == 0 )
+                            {
+                                await fs.FlushAsync(/*ct*/).CAX();
+                            }
+
+                            fi.Refresh();
+                            var file_size = fi.Length;
+                            var partBytes = file_size - totalBytes;
+                            totalBytes = file_size;
+
+                            _ThrottlerBySpeed_User.TakeIntoAccountDownloadedBytes( (int) partBytes );
+
+                            _IP.DownloadPart?.Invoke( p, partBytes, totalBytes, instantaneousSpeedInMbps );
+
+                            if ( get_max_output_file_size_func() <= totalBytes )
+                            {
+                                goto NEXT_FILE;
+                            }
+                        }
+                        catch ( Exception ex )
+                        {
+                            _IP.DownloadPartError?.Invoke( p, ex );
+                        }
+                        finally
+                        {
+                            _PartUrlsStatus.UpdateWithLock( p, PartUrlStatusEnum.Processed );
+                        }
+                    }
+                }
+            }
+            , ct );
+        private Task RunDownloadParts_LimitedFileSize( string output_file_name, string base_url, CancellationToken ct, long max_output_file_size )
+            => RunDownloadParts_LimitedFileSize( output_file_name, base_url, ct, () => max_output_file_size );
+        private Task RunDownloadParts_NoLimitedFileSize( string output_file_name, string base_url, CancellationToken ct )
             => Task.Run( async () =>
             {
                 var dir = Path.GetDirectoryName( output_file_name );
@@ -226,7 +312,11 @@ namespace m3u8
                 {
                     WaitIfPaused( ct );
 
-                    var p = _PartUrls.Take( ct );
+                    #region [.throttler by speed.]
+                    var instantaneousSpeedInMbps = _ThrottlerBySpeed_User.Throttle( ct );
+                    #endregion
+
+                    var p = _PartUrls.Take_Ex( ct );
                     var part_url = base_url + p;
 
                     try
@@ -251,7 +341,10 @@ namespace m3u8
                         totalBytes = file_size;
                         //var partBytes = fi.Length;
                         //totalBytes += partBytes;
-                        _IP.DownloadPart?.Invoke( p, partBytes, totalBytes );
+
+                        _ThrottlerBySpeed_User.TakeIntoAccountDownloadedBytes( (int) partBytes );
+
+                        _IP.DownloadPart?.Invoke( p, partBytes, totalBytes, instantaneousSpeedInMbps );
                     }
                     catch ( Exception ex )
                     {
@@ -264,146 +357,6 @@ namespace m3u8
                 }
             }
             , ct );
-        private Task RunDownloadParts_WithMaxFileSize( string output_file_name, string base_url, CancellationToken ct, long max_output_file_size )
-            => Task.Run( async () =>
-            {
-                var dir = Path.GetDirectoryName( output_file_name );
-                if ( !Directory.Exists( dir ) ) Directory.CreateDirectory( dir );
-
-                var fileNumber = 0;
-                string get_next_output_file_name() => Path.Combine( dir, Path.GetFileNameWithoutExtension( output_file_name ) + $"-({++fileNumber})" + Path.GetExtension( output_file_name ) );
-
-                long totalBytes = 0;
-                var fi = default(FileInfo);
-                Stream open_file_stream_4_write()
-                {
-                    var fn = get_next_output_file_name();
-                    var fs = new FileStream( fn, FileMode.Create, FileAccess.Write, FileShare.Read );
-                    _IP.DownloadCreateOutputFile?.Invoke( fn );
-                    totalBytes = 0;
-                    fi = new FileInfo( fn );
-                    return (fs);
-                }
-
-            NEXT_FILE:
-                using ( var fs = open_file_stream_4_write() )
-                {
-                    for ( var n = 0; !ct.IsCancellationRequested; )
-                    {
-                        WaitIfPaused( ct );
-
-                        var p = _PartUrls.Take( ct );
-                        var part_url = base_url + p;
-
-                        try
-                        {
-                            Debug.WriteLine( p );
-#if NETCOREAPP
-                            using var s = await _HttpClient.GetStreamAsync( part_url, ct ).CAX();
-#else
-                            using var s = await _HttpClient.GetStreamAsync( part_url/*, ct*/ ).CAX();
-#endif
-                            await s.CopyToAsync( fs/*, ct */).CAX();
-
-                            if ( (++n % 10) == 0 )
-                            {
-                                await fs.FlushAsync(/*ct*/).CAX();
-                            }
-
-                            fi.Refresh();
-                            var file_size = fi.Length;
-                            var partBytes = file_size - totalBytes;
-                            totalBytes = file_size;
-
-                            _IP.DownloadPart?.Invoke( p, partBytes, totalBytes );
-
-                            if ( max_output_file_size <= totalBytes )
-                            {
-                                goto NEXT_FILE;
-                            }
-                        }
-                        catch ( Exception ex )
-                        {
-                            _IP.DownloadPartError?.Invoke( p, ex );
-                        }
-                        finally
-                        {
-                            _PartUrlsStatus.UpdateWithLock( p, PartUrlStatusEnum.Processed );
-                        }
-                    }
-                }
-            }
-            , ct );
-        private Task RunDownloadParts_WithMaxFileSize( string output_file_name, string base_url, CancellationToken ct, Func< long > get_max_output_file_size_func )
-            => Task.Run( async () =>
-            {
-                var dir = Path.GetDirectoryName( output_file_name );
-                if ( !Directory.Exists( dir ) ) Directory.CreateDirectory( dir );
-
-                var fileNumber = 0;
-                string get_next_output_file_name() => Path.Combine( dir, Path.GetFileNameWithoutExtension( output_file_name ) + $"-({++fileNumber})" + Path.GetExtension( output_file_name ) );
-
-                long totalBytes = 0;
-                var fi = default(FileInfo);
-                Stream open_file_stream_4_write()
-                {
-                    var fn = get_next_output_file_name();
-                    var fs = new FileStream( fn, FileMode.Create, FileAccess.Write, FileShare.Read );
-                    _IP.DownloadCreateOutputFile?.Invoke( fn );
-                    totalBytes = 0;
-                    fi = new FileInfo( fn );
-                    return (fs);
-                }
-
-            NEXT_FILE:
-                using ( var fs = open_file_stream_4_write() )
-                {
-                    for ( var n = 0; !ct.IsCancellationRequested; )
-                    {
-                        WaitIfPaused( ct );
-
-                        var p = _PartUrls.Take( ct );
-                        var part_url = base_url + p;
-
-                        try
-                        {
-                            Debug.WriteLine( p );
-#if NETCOREAPP
-                            using var s = await _HttpClient.GetStreamAsync( part_url, ct ).CAX();
-#else
-                            using var s = await _HttpClient.GetStreamAsync( part_url/*, ct*/ ).CAX();
-#endif
-                            await s.CopyToAsync( fs/*, ct */).CAX();
-
-                            if ( (++n % 10) == 0 )
-                            {
-                                await fs.FlushAsync(/*ct*/).CAX();
-                            }
-
-                            fi.Refresh();
-                            var file_size = fi.Length;
-                            var partBytes = file_size - totalBytes;
-                            totalBytes = file_size;
-
-                            _IP.DownloadPart?.Invoke( p, partBytes, totalBytes );
-
-                            if ( get_max_output_file_size_func() <= totalBytes )
-                            {
-                                goto NEXT_FILE;
-                            }
-                        }
-                        catch ( Exception ex )
-                        {
-                            _IP.DownloadPartError?.Invoke( p, ex );
-                        }
-                        finally
-                        {
-                            _PartUrlsStatus.UpdateWithLock( p, PartUrlStatusEnum.Processed );
-                        }
-                    }
-                }
-            }
-            , ct );
 
         private void WaitIfPaused( CancellationToken ct )
         {
@@ -412,11 +365,13 @@ namespace m3u8
             {
                 return;
             }
+
             if ( !_IP.WaitIfPausedEvent.IsSet )
             {
                 _IP.WaitingIfPaused?.Invoke();
                 _IP.WaitIfPausedEvent.Wait( ct );
-                //throttler_by_speed.Restart( marker_task );
+
+                _ThrottlerBySpeed_User.Restart();
             }
             #endregion
         }
@@ -485,6 +440,17 @@ namespace m3u8
                     {
                         dict.Remove( p.Key );
                     }
+                }
+            }
+        }
+
+        [M(O.AggressiveInlining)] public static T Take_Ex< T >( this BlockingCollection< T > col, CancellationToken ct, int millisecondsTimeout = 1_000 )
+        {
+            for (; ; )
+            {
+                if ( col.TryTake( out var t, millisecondsTimeout, ct ) )
+                {
+                    return (t);
                 }
             }
         }

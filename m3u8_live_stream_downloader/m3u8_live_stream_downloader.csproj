@@ -24,6 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\m3u8.download.manager\[Common]\[-= m3u8.client =-]\throttler_by_speed.cs" Link="throttler_by_speed.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
   </ItemGroup>
 

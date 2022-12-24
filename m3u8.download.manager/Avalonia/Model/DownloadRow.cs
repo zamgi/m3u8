@@ -231,13 +231,15 @@ namespace m3u8.download.manager.models
             }
             Fire_PropertyChanged_Events( nameof(MySelf) );
         }
-        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes )
+        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes, double? instantaneousSpeedInMbps )
         {
             lock ( this )
             {
                 TotalParts++;
                 SuccessDownloadParts++;
                 DownloadBytesLength = total_in_bytes;
+
+                if ( _InstantaneousSpeedInMbps != instantaneousSpeedInMbps ) _InstantaneousSpeedInMbps = instantaneousSpeedInMbps;
             }
             Fire_PropertyChanged_Events( nameof(MySelf) );
         }

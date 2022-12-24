@@ -33,6 +33,7 @@
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />    
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
     <Compile Include="..\[Common]\[-= m3u8.client =-]\m3u8_processor_v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_v2.cs" />
+    <Compile Include="..\[Common]\[-= m3u8.client =-]\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController\dc_models.cs" Link="Controller\DownloadController\dc_models.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController\DownloadController.cs" Link="Controller\DownloadController\DownloadController.cs" />
     <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
