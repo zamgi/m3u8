@@ -232,20 +232,25 @@ namespace m3u8.download.manager.ui
             SelectDownloadRowInternal( row );
         }
         public bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );
-        [M(O.AggressiveInlining)] private void SelectLonelyRow( int rowIndex )
+        [M(O.AggressiveInlining)] private void SelectLonelyRow( int rowIndex, bool forceSelect = false )
         {
-            //DGV.ClearSelection();
-            //DGV.Rows[ rowIndex ].Selected = true;
+            if ( forceSelect )
+            {
+                DGV.ClearSelection();
+                DGV.Rows[ rowIndex ].Selected = true;
+                return;
+            }
 
             var srs = DGV.SelectedRows;
             switch ( srs.Count )
             {
                 case 0: DGV.Rows[ rowIndex ].Selected = true; break;
                 case 1:
-                    if ( srs[ 0 ].Index != rowIndex )
+                    var row = DGV.Rows[ rowIndex ];
+                    if ( srs[ 0 ] != row /*srs[ 0 ].Index != rowIndex*/ )
                     {
                         DGV.ClearSelection();
-                        DGV.Rows[ rowIndex ].Selected = true;
+                        row.Selected = true;
                     }
                 break;
 
@@ -262,23 +267,17 @@ namespace m3u8.download.manager.ui
             {
                 case 0: DGV.Rows[ rowIndex ].Selected = true; break;
                 case 1:
-                    if ( srs[ 0 ].Index != rowIndex )
+                    var row = DGV.Rows[ rowIndex ];
+                    if ( srs[ 0 ] != row /*srs[ 0 ].Index != rowIndex*/ )
                     {
                         DGV.ClearSelection();
-                        DGV.Rows[ rowIndex ].Selected = true;
+                        row.Selected = true;
                     }
                 break;
+                default:
+                    int x = 0;
+                    break;
             }
-
-            //if ( srs.Count <= 1 )
-            //{
-            //    var row = DGV.Rows[ rowIndex ];
-            //    if ( !row.Selected )
-            //    {
-            //        DGV.ClearSelection();
-            //        row.Selected = true;
-            //    }
-            //}
         }
         private bool SelectDownloadRowInternal( DownloadRow row, bool callAfterSort = false )
         {
@@ -356,15 +355,15 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ collectionChangedType, DownloadRow row )
+        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
         {
             if ( this.InvokeRequired )
             {
-                this.BeginInvoke( Model_CollectionChanged, collectionChangedType, row );
+                this.BeginInvoke( Model_CollectionChanged, changedType, row );
                 return;
             }
 
-            switch ( collectionChangedType )
+            switch ( changedType )
             {
                 case _CollectionChangedTypeEnum_.Sort:
                     DGV.Refresh();
@@ -417,7 +416,7 @@ namespace m3u8.download.manager.ui
                         if ( hasRows )
                         {
                             var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), rowCount - 1 );
-                            SelectLonelyRow( visibleIndex );
+                            SelectLonelyRow( visibleIndex, forceSelect: (changedType == _CollectionChangedTypeEnum_.Remove)/*true*/ );
                         }
                         else
                         {                            

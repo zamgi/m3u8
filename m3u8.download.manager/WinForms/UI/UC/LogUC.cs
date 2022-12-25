@@ -263,10 +263,10 @@ namespace m3u8.download.manager.ui
             }
             else
             {
-                this.Visible = false;                
+                this.Visible = false;
             }
 
-            SetDataGridItems();            
+            SetDataGridItems();
         }
         private void DetachModel()
         {
