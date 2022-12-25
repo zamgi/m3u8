@@ -274,9 +274,6 @@ namespace m3u8.download.manager.ui
                         row.Selected = true;
                     }
                 break;
-                default:
-                    int x = 0;
-                    break;
             }
         }
         private bool SelectDownloadRowInternal( DownloadRow row, bool callAfterSort = false )
