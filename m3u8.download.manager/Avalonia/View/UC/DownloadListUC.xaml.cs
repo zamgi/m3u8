@@ -274,8 +274,8 @@ namespace m3u8.download.manager.ui
             DetachModel();
 
             _Model = model ?? throw (new ArgumentNullException( nameof(model) ));
-            _Model.CollectionChanged    -= Model_CollectionChanged;
-            _Model.CollectionChanged    += Model_CollectionChanged;
+            _Model.CollectionChanged -= Model_CollectionChanged;
+            _Model.CollectionChanged += Model_CollectionChanged;
             //_Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
             //_Model.RowPropertiesChanged += Model_RowPropertiesChanged;
 
@@ -291,20 +291,6 @@ namespace m3u8.download.manager.ui
                 _Model = null;
 
                 DGV.Items = null;
-
-                #region comm.
-                //DGV.CellValueNeeded -= DGV_CellValueNeeded;
-                //DGV.CellFormatting  -= DGV_CellFormatting;
-                //try
-                //{
-                //    DGV.RowCount = 0;
-                //}
-                //finally
-                //{
-                //    DGV.CellValueNeeded += DGV_CellValueNeeded;
-                //    DGV.CellFormatting  += DGV_CellFormatting;
-                //}
-                #endregion
             }
         }
 

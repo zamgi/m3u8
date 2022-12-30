@@ -409,7 +409,13 @@ namespace m3u8.download.manager.ui
 
             isLiveStreamCheckBox.ForeColor = isLiveStream ? Color.FromArgb(70, 70, 70) : Color.Silver;
             liveStreamMaxSizeInMbNumUpDn.Visible = liveStreamMaxSizeInMbLabel.Visible = isLiveStream;
-            this.mainLayoutPanel.Height = isLiveStream ? 90 : 60;
+
+            const int DEFAULT_HEIGHT_isLiveStream    = 30;
+            const int DEFAULT_HEIGHT_mainLayoutPanel = 60;
+            const int DEFAULT_HEIGHT_this            = 255;
+
+            mainLayoutPanel.Height =  DEFAULT_HEIGHT_mainLayoutPanel + (isLiveStream ? DEFAULT_HEIGHT_isLiveStream : 0);
+            if ( isLiveStream ) this.Height = Math.Max( DEFAULT_HEIGHT_this + DEFAULT_HEIGHT_isLiveStream, this.Height );
         }
         #endregion
 

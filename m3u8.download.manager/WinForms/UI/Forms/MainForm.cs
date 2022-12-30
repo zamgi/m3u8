@@ -737,8 +737,7 @@ namespace m3u8.download.manager.ui
                     return (AskDeleteDownloadDialog( rows[ 0 ], askOnlyOutputFileExists, deleteOutputFile ));
                 default:
                     var msg = $"Delete {rows.Count} downloads{(deleteOutputFile ? " with output file" : null)} ?";
-                    var defaultButton = MessageBoxDefaultButton.Button1;
-                    var r = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.OKCancel, defaultButton ) == DialogResult.OK);
+                    var r = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.OKCancel, MessageBoxDefaultButton.Button1 ) == DialogResult.OK);
                     return (r);
             }            
         }
@@ -756,7 +755,6 @@ namespace m3u8.download.manager.ui
                 }
                 var outputFileExistsText = (anyOutputFileExists ? "_exists_" : "no exists");
                 var deleteOutputFileText = ((deleteOutputFile && anyOutputFileExists) ? " with output file" : null);
-                var defaultButton        = MessageBoxDefaultButton.Button1; //---(anyOutputFileExists ? MessageBoxDefaultButton.Button2 : MessageBoxDefaultButton.Button1);
                 var outputFileNameText   = default(string);
                 if ( vfOutputFileExists )
                 {
@@ -772,7 +770,7 @@ namespace m3u8.download.manager.ui
                     outputFileNameText = $"\n\n        '{outputFullFileName}'";
                 }
                 var msg = $"Delete download{deleteOutputFileText}:\n '{row.Url}'    ?\n\nOutput file ({outputFileExistsText}):{outputFileNameText}";
-                var r = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.OKCancel, defaultButton ) == DialogResult.OK);
+                var r = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.OKCancel, MessageBoxDefaultButton.Button1 ) == DialogResult.OK);
                 return (r);
             }
             return (false);
@@ -1034,10 +1032,10 @@ namespace m3u8.download.manager.ui
         private void deleteDownloadToolButton_Click( object sender, EventArgs e )
         {
             var rows = downloadListUC.GetSelectedDownloadRows();
-            if ( AskDeleteDownloadDialog( rows, askOnlyOutputFileExists: true, deleteOutputFile: false ) )
-            {
+            //if ( AskDeleteDownloadDialog( rows, askOnlyOutputFileExists: true, deleteOutputFile: false ) )
+            //{
                 DeleteDownload( rows, deleteOutputFile: false );
-            }
+            //}
         }
         private void deleteAllFinishedDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.DeleteAllFinished );
 

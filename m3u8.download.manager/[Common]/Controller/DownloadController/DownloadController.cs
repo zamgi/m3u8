@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,7 +9,6 @@ using System.Threading.Tasks;
 
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
-using m3u8.download.manager.ui;
 using m3u8.ext;
 using m3u8.infrastructure;
 
@@ -805,13 +803,15 @@ namespace m3u8.download.manager.controllers
                                   CreateDateTime: default(DateTime), 
                                   RowSaveState: default(DownloadRow), 
                                   CreatedOutpuFileLogRow: default(LogRow));
+                        var queueed_cnt     = 0;
+                        var output_file_cnt = 0;
 
                         var downloadContentAction = new m3u8_live_stream_downloader.DownloadContentDelegate( part_url =>
                         {
                             lock ( localLock )
                             {
                                 row.SetStatus( DownloadStatus.Running );
-                                rows_Dict[ part_url ] = row.Log.AddRequestRow( $"[QUEUEED]: {part_url}" );
+                                rows_Dict[ part_url ] = row.Log.AddRequestRow( $"{++queueed_cnt}). [queueed]: {part_url}" );
                             }
                         });
                         var downloadContentErrorAction = new m3u8_live_stream_downloader.DownloadContentErrorDelegate( (part_url, ex) =>
@@ -819,7 +819,7 @@ namespace m3u8.download.manager.controllers
                             lock ( localLock )
                             {
                                 anyErrorHappend = true;
-                                rows_Dict[ part_url ] = row.Log.AddResponseErrorRow( $"[QUEUEED]: {part_url}", ex.ToString() );
+                                rows_Dict[ part_url ] = row.Log.AddResponseErrorRow( $"{++queueed_cnt}).[queueed]: {part_url}", ex.ToString() );
                             }
                         });
                         var downloadPartAction = new m3u8_live_stream_downloader.DownloadPartDelegate( (part_url, partBytes, totalBytes, instantaneousSpeedInMbps) =>
@@ -868,7 +868,7 @@ namespace m3u8.download.manager.controllers
                                 st.RowSaveState   = row.CreateCopy();
                                 row.StartNewPartOfLiveStream( st.LastPartLogRows );
                                 st.LastPartLogRows.Clear();
-                                st.CreatedOutpuFileLogRow = row.Log.AddRequestRow( $"Created output file: '{fn}',..." );
+                                st.CreatedOutpuFileLogRow = row.Log.AddRequestRow( $"[#{++output_file_cnt}]. Created output file: '{fn}',..." );
                             }
                         });
 

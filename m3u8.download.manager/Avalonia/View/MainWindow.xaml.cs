@@ -20,7 +20,6 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_                 = m3u8.download.manager.Properties.Resources;
-using Avalonia.X11;
 
 namespace m3u8.download.manager.ui
 {
@@ -39,31 +38,29 @@ namespace m3u8.download.manager.ui
 
         protected void RestoreBounds( string json )
         {
-            if ( !json.IsNullOrEmpty() )
+            if ( json.IsNullOrEmpty() ) return;
+            try
             {
-                try
+                var (x, y, width, height, state) = Extensions.FromJSON< (int x, int y, double width, double height, WindowState state) >( json );
+                switch ( state )
                 {
-                    var (x, y, width, height, state) = Extensions.FromJSON< (int x, int y, double width, double height, WindowState state) >( json );
-                    switch ( state )
-                    {
-                        case WindowState.Maximized: this.WindowState = WindowState.Maximized; break;
-                        //case WindowState.Minimized: goto default;
-                        default:
-                            this.WindowState = WindowState.Normal;
-                            if ( (double.Epsilon < Math.Abs( width )) && (double.Epsilon < Math.Abs( height )) ) //---if ( (width != default) && (height != default) )
-                            {                                
-                                this.Position = new PixelPoint( Math.Max( -10, x ), Math.Max( -10, y ) );
-                                //this.ClientSize = new Size( width, height );
-                                this.Width  = width;
-                                this.Height = height;
-                            }
-                            break;
-                    }                    
-                }
-                catch ( Exception ex )
-                {
-                    Debug.WriteLine( ex );
-                }
+                    case WindowState.Maximized: this.WindowState = WindowState.Maximized; break;
+                    //case WindowState.Minimized: goto default;
+                    default:
+                        this.WindowState = WindowState.Normal;
+                        if ( (double.Epsilon < Math.Abs( width )) && (double.Epsilon < Math.Abs( height )) ) //---if ( (width != default) && (height != default) )
+                        {                                
+                            this.Position = new PixelPoint( Math.Max( -10, x ), Math.Max( -10, y ) );
+                            //this.ClientSize = new Size( width, height );
+                            this.Width  = width;
+                            this.Height = height;
+                        }
+                        break;
+                }                    
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
             }
         }
         protected (int x, int y, double width, double height, WindowState state) GetBounds() => (x: _Position.X, y: _Position.Y, width: this.Width, height: this.Height, state: this.WindowState);
@@ -753,7 +750,6 @@ namespace m3u8.download.manager.ui
                 }
                 var outputFileExistsText = (anyOutputFileExists ? "_exists_" : "no exists");
                 var deleteOutputFileText = ((deleteOutputFile && anyOutputFileExists) ? " with output file" : null);
-                //---var defaultButton        = MessageBoxDefaultButton.Button1; //---(anyOutputFileExists ? MessageBoxDefaultButton.Button2 : MessageBoxDefaultButton.Button1);
                 var outputFileNameText   = default(string);
                 if ( vfOutputFileExists )
                 {
@@ -769,7 +765,7 @@ namespace m3u8.download.manager.ui
                     outputFileNameText = $"\n\n        '{outputFullFileName}'";
                 }
                 var msg = $"Delete download{deleteOutputFileText}:\n '{row.Url}'    ?\n\nOutput file ({outputFileExistsText}):{outputFileNameText}";
-                var r = await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.OkCancel/*, defaultButton*/ );
+                var r = await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.OkCancel );
                 return (r == ButtonResult.Ok);
             }
             return (false);
@@ -909,15 +905,14 @@ namespace m3u8.download.manager.ui
         private void startDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Start  );
         private void pauseDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Pause  );
         private void cancelDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Cancel );
-        private async void deleteDownloadToolButton_Click( object sender, EventArgs e )
+        private /*async*/ void deleteDownloadToolButton_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
             var shiftPushed = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
-            //---var shiftPushed = (KeyboardDevice.Instance is Avalonia.Win32.Input.WindowsKeyboardDevice wkd) ? ((wkd.Modifiers & ) == ) : false;
-            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: true, deleteOutputFile: shiftPushed ) )
-            {
+            //if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: true, deleteOutputFile: shiftPushed ) )
+            //{
                 DeleteDownload( row, deleteOutputFile: shiftPushed );
-            }
+            //}
         }
         private void deleteAllFinishedDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.DeleteAllFinished );
 
