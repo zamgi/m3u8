@@ -229,6 +229,13 @@ namespace m3u8.download.manager
             return (false);
         }
 
+        public static void CancelAll( this DownloadController controller, IEnumerable<DownloadRow> rows )
+        {
+            foreach ( var row in rows )
+            {
+                controller.Cancel( row );
+            }
+        }
         public static void RemoveAll( this DownloadListModel model, IEnumerable< DownloadRow > rows )
         {
             var array = rows?.ToArray();
@@ -249,6 +256,7 @@ namespace m3u8.download.manager
         }
 
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadRow    row    ) => (row.Status == DownloadStatus.Finished);
+        [M(O.AggressiveInlining)] public static bool IsFinishedOrError( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, _ => false };
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadStatus status ) => (status     == DownloadStatus.Finished);
         [M(O.AggressiveInlining)] public static bool IsError   ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Error);
         [M(O.AggressiveInlining)] public static bool IsRunning ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Running);

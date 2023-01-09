@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -31,6 +30,7 @@ namespace m3u8.download.manager.models
     public sealed class DownloadRow : RowBase< DownloadRow >, INotifyPropertyChanged
     {
         private TimeSpan _FinitaElapsed;
+        private TimeSpan _PausedOrWaitElapsed;
         private long     _DownloadBytesLength_BeforeRunning;
         private _RowPropertiesChanged_ _RowPropertiesChanged;
 
@@ -92,6 +92,7 @@ namespace m3u8.download.manager.models
             VeryFirstOutputFullFileName  = r.VeryFirstOutputFullFileName;
             _InstantaneousSpeedInMbps    = r._InstantaneousSpeedInMbps;
             _FinitaElapsed               = r._FinitaElapsed;
+            _PausedOrWaitElapsed               = r._PausedOrWaitElapsed;
             _DownloadBytesLength_BeforeRunning = r._DownloadBytesLength_BeforeRunning;
 
             //Log = rows.AnyEx() ? new LogListModel( rows ) : new LogListModel( r.Log );
@@ -269,6 +270,11 @@ namespace m3u8.download.manager.models
                         case DownloadStatus.Finished:
                             _FinitaElapsed = (DateTime.Now - CreatedOrStartedDateTime);
                         break;
+
+                        case DownloadStatus.Paused:
+                        case DownloadStatus.Wait:
+                            _PausedOrWaitElapsed = (DateTime.Now - CreatedOrStartedDateTime);
+                        break;
                     }
 
                     Status = newStatus;
@@ -302,6 +308,10 @@ namespace m3u8.download.manager.models
                 case DownloadStatus.Error:
                 case DownloadStatus.Finished:
                     return (_FinitaElapsed);
+
+                case DownloadStatus.Paused:
+                case DownloadStatus.Wait:
+                    return (_PausedOrWaitElapsed);
 
                 default:
                     return (DateTime.Now - (IsLiveStream ? _CreatedOrStartedDateTime_4_LastPartOfLiveStream.GetValueOrDefault( CreatedOrStartedDateTime ) : CreatedOrStartedDateTime));

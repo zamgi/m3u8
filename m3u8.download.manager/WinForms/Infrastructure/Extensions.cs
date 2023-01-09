@@ -8,14 +8,15 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Json;
-using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -33,7 +34,7 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IList< T > seq ) => (seq != null) && (0 < seq.Count);
         [M(O.AggressiveInlining)] public static bool AnyEx_< T >( this IReadOnlyList< T > seq ) => (seq != null) && (0 < seq.Count);
         [M(O.AggressiveInlining)] public static bool AnyEx_< T >( this IReadOnlyCollection< T > seq ) => (seq != null) && (0 < seq.Count);
-        [M(O.AggressiveInlining)] public static bool AnyEx<T>( this T[] seq ) => (seq != null) && (0 < seq.Length);
+        [M(O.AggressiveInlining)] public static bool AnyEx< T >( this T[] seq ) => (seq != null) && (0 < seq.Length);
         [M(O.AggressiveInlining)] public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : null);
         [M(O.AggressiveInlining)] public static bool EqualIgnoreCase( this string s1, string s2 ) => (string.Compare( s1, s2, true ) == 0);
         [M(O.AggressiveInlining)] public static bool ContainsIgnoreCase( this string s1, string s2 ) => ((s1 != null) && (s1.IndexOf( s2, StringComparison.InvariantCultureIgnoreCase ) != -1));
@@ -471,6 +472,13 @@ namespace m3u8.download.manager
             }
         }
 
+        public static void CancelAll( this DownloadController controller, IEnumerable< DownloadRow > rows )
+        {
+            foreach ( var row in rows )
+            {
+                controller.Cancel( row );
+            }
+        }
         public static void RemoveAll( this DownloadListModel model, IEnumerable< DownloadRow > rows )
         {
             var array = rows?.ToArray();
@@ -491,6 +499,7 @@ namespace m3u8.download.manager
         }
 
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadRow    row    ) => (row.Status == DownloadStatus.Finished);
+        [M(O.AggressiveInlining)] public static bool IsFinishedOrError( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, _ => false };
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadStatus status ) => (status     == DownloadStatus.Finished);
         [M(O.AggressiveInlining)] public static bool IsError   ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Error);
         [M(O.AggressiveInlining)] public static bool IsRunning ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Running);

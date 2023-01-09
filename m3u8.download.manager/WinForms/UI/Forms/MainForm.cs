@@ -302,7 +302,7 @@ namespace m3u8.download.manager.ui
                             var rows = downloadListUC.GetSelectedDownloadRows();
                             if ( AskDeleteDownloadDialog( rows, askOnlyOutputFileExists: false, deleteOutputFile: e.Shift ) )
                             {
-                                DeleteDownload( rows, deleteOutputFile: e.Shift );
+                                DeleteDownloads( rows.ToArrayEx(), deleteOutputFiles: e.Shift );
                             }
                         }
                     break;
@@ -317,7 +317,7 @@ namespace m3u8.download.manager.ui
                             var row = downloadListUC.GetSelectedDownloadRow();
                             if ( row != null )
                             {
-                                if ( row.IsFinished() )
+                                if ( row.IsFinishedOrError() )
                                 {
                                     openOutputFileMenuItem_Click( this, EventArgs.Empty );
                                 }
@@ -363,7 +363,7 @@ namespace m3u8.download.manager.ui
                         _DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
                     }
                     ShowDownloadStatisticsInTitle();
-                break;
+                    break;
 
                 case nameof(Settings.MaxCrossDownloadInstance): // nameof(Settings.UseCrossDownloadInstanceParallelism):
                     downloadInstanceToolButton.Visible = settings.MaxCrossDownloadInstance.HasValue;
@@ -371,15 +371,15 @@ namespace m3u8.download.manager.ui
                     {
                         downloadInstanceToolButton.Value = settings.MaxCrossDownloadInstance.Value;
                     }
-                break;
+                    break;
 
                 case nameof(Settings.MaxDegreeOfParallelism):
                     degreeOfParallelismToolButton.Value = settings.MaxDegreeOfParallelism;
-                break;
+                    break;
 
                 case nameof(Settings.ExternalProgCaption):
                     openOutputFilesWithExternalMenuItem.Text = $"    Open with '{settings.ExternalProgCaption}'";
-                break;
+                    break;
 
                 case nameof(Settings.MaxSpeedThresholdInMbps):
                     speedThresholdToolButton.Value = settings.MaxSpeedThresholdInMbps;
@@ -508,7 +508,7 @@ namespace m3u8.download.manager.ui
                     ShowDownloadStatisticsInTitle();
 
                     #region [.run External progs if need.]                    
-                    if ( row.IsFinished() && Extensions.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
+                    if ( row.IsFinishedOrError() && Extensions.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
                     {
                         _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                         if ( 0 < new FileInfo( outputFileName ).Length ) //NonZeroLength
@@ -559,10 +559,7 @@ namespace m3u8.download.manager.ui
         }
         private void ProcessDownloadCommand( DownloadCommandEnum downloadCommand, DownloadRow row = null )
         {
-            if ( row == null )
-            {
-                row = downloadListUC.GetSelectedDownloadRow();
-            }
+            if ( row == null ) row = downloadListUC.GetSelectedDownloadRow();
 
             if ( row != null )
             {
@@ -570,49 +567,26 @@ namespace m3u8.download.manager.ui
                 {
                     case DownloadCommandEnum.Start:
                         _DownloadController.Start( row );
-                    break;
+                        break;
 
                     case DownloadCommandEnum.Pause:
                         _DownloadController.Pause( row );
-                    break;
+                        break;
 
                     case DownloadCommandEnum.Cancel:
                         _DownloadController.Cancel( row );
-                    break;
+                        break;
 
                     case DownloadCommandEnum.Delete:
-                        #region comm. with waiting.
-                        /*
-                        using ( var cts = new CancellationTokenSource() )
-                        using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1500 ) )
-                        {
-                            try
-                            {
-                                await _DownloadController.CancelWithWait( row, cts.Token );
-                                _DownloadListModel.RemoveRow( row );
-                            }
-                            catch ( Exception ex )
-                            {
-                                if ( !cts.IsCancellationRequested )
-                                {
-                                    Debug.WriteLine( ex );
-                                    this.MessageBox_ShowError( ex.ToString(), this.Text );
-                                    //---throw;
-                                }
-                            }
-                        }
-                        //*/
-                        #endregion
-
                         _DownloadController.Cancel   ( row );
                         _DownloadListModel .RemoveRow( row );
                         row = downloadListUC.GetSelectedDownloadRow();
-                    break;
+                        break;
 
                     case DownloadCommandEnum.DeleteAllFinished:
                         _DownloadListModel.RemoveAllFinished();
                         row = downloadListUC.GetSelectedDownloadRow();
-                    break;
+                        break;
                 }
             }
             else if ( downloadCommand == DownloadCommandEnum.DeleteAllFinished )
@@ -650,16 +624,17 @@ namespace m3u8.download.manager.ui
                 deleteAllFinishedDownloadToolButton.Enabled = true;
             }
         }
-        private async void DeleteDownload( IReadOnlyList< DownloadRow > rows, bool deleteOutputFile )
+        private async void DeleteDownloads( DownloadRow[] rows, bool deleteOutputFiles )
         {
-            if ( rows.Count == 0 )
+            if ( !rows.AnyEx() )
             {
                 return;
             }
 
-            if ( deleteOutputFile )
+            if ( deleteOutputFiles )
             {
                 this.SetEnabledAllChildControls( false );
+                //SuspendDrawing_DownloadListUC_And_Log();
                 try
                 {
                     using ( var cts = new CancellationTokenSource() )
@@ -668,64 +643,42 @@ namespace m3u8.download.manager.ui
                         foreach ( var row in rows )
                         {
                             _DownloadController.CancelIfInProgress( row );
-
                             await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
-
-                            ProcessDownloadCommand( DownloadCommandEnum.Delete, row );
+                            _DownloadListModel.RemoveRow( row );
                             _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                         }
                     }
                 }
-                catch ( OperationCanceledException ) //( Exception ex ) when (cts.IsCancellationRequested)
+                catch ( OperationCanceledException )
                 {
-                    ; //Debug.WriteLine( ex );
+                    ;
                 }
                 finally
                 {
-                    this.SetEnabledAllChildControls( true );
+                    SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
+
+                    //ResumeDrawing_DownloadListUC_And_Log();
+                    this.SetEnabledAllChildControls( true );                    
                 }
             }
             else
             {
-                foreach ( var row in rows )
+                #region comm. [.variant #1.]
+                /*foreach ( var row in rows )
                 {
                     ProcessDownloadCommand( DownloadCommandEnum.Delete, row );
                     _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
-                }
-            }
-        }
-        private async void DeleteDownloadsWithOutputFiles( IList< DownloadRow > rows )
-        {
-            if ( !rows.AnyEx() )
-            {
-                return;
-            }
+                }*/
+                #endregion
 
-            this.SetEnabledAllChildControls( false );
-            try
-            {
-                using ( var cts = new CancellationTokenSource() )
-                using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 2_000 ) )
-                {
-                    foreach ( var row in rows )
-                    {
-                        _DownloadController.CancelIfInProgress( row );
+                #region [.variant #2.]
+                _DownloadController.CancelAll( rows );
+                _DownloadListModel.RemoveAll( rows );
+                _ExternalProgQueue.Remove( rows.SelectMany( row => row.GetOutputFullFileNames() ) );
 
-                        await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
-
-                        _DownloadListModel.RemoveRow( row );
-                        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
-                    }
-                }
-            }
-            catch ( OperationCanceledException ) //( Exception ex ) when (cts.IsCancellationRequested)
-            {
-                ; //Debug.WriteLine( ex );
-            }
-            finally
-            {
-                this.SetEnabledAllChildControls( true );
-            }
+                SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
+                #endregion
+            }            
         }
         private bool AskDeleteDownloadDialog( IReadOnlyList< DownloadRow > rows, bool askOnlyOutputFileExists, bool deleteOutputFile )
         {
@@ -956,11 +909,21 @@ namespace m3u8.download.manager.ui
         }
 
         private bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
+        private void SuspendDrawing_DownloadListUC_And_Log()
+        {
+            downloadListUC.SuspendDrawing();
+            logUC.SuspendDrawing();
+        }
+        private void ResumeDrawing_DownloadListUC_And_Log()
+        {
+            downloadListUC.ResumeDrawing();
+            logUC.ResumeDrawing();
+        }
         #endregion
 
         #region [.menu.]
 #if DEBUG
-        private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => AddNewDownload( ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/asd.egf", false) );
+        private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => AddNewDownload( ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", false) );
 #else
         private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => AddNewDownload( (null, false) );
 #endif
@@ -1029,14 +992,7 @@ namespace m3u8.download.manager.ui
         private void startDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Start  );
         private void pauseDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Pause  );
         private void cancelDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
-        private void deleteDownloadToolButton_Click( object sender, EventArgs e )
-        {
-            var rows = downloadListUC.GetSelectedDownloadRows();
-            //if ( AskDeleteDownloadDialog( rows, askOnlyOutputFileExists: true, deleteOutputFile: false ) )
-            //{
-                DeleteDownload( rows, deleteOutputFile: false );
-            //}
-        }
+        private void deleteDownloadToolButton_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRows().ToArrayEx(), deleteOutputFiles: false );
         private void deleteAllFinishedDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.DeleteAllFinished );
 
         private void downloadInstanceToolButton_ValueChanged( int downloadInstanceValue )
@@ -1155,34 +1111,25 @@ namespace m3u8.download.manager.ui
         private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
-        private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownload( downloadListUC.GetSelectedDownloadRows(), deleteOutputFile: true );
+        private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRows().ToArrayEx(), deleteOutputFiles: true );
 
         private void browseOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
             if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
             {
-                using ( Process.Start( "explorer", "/e,/select," + outputFileName ) )
-                {
-                    ;
-                }
+                using ( Process.Start( "explorer", "/e,/select," + outputFileName ) ) {; }
             }
         }
         private void openOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( (row != null) && row.IsFinished() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( (row != null) && row.IsFinishedOrError() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
             {
 #if NETCOREAPP
-                using ( Process.Start( new ProcessStartInfo( outputFileName ) { UseShellExecute = true } ) )
-                {
-                    ;
-                }
+                using ( Process.Start( new ProcessStartInfo( outputFileName ) { UseShellExecute = true } ) ) {; }
 #else
-                using ( Process.Start( outputFileName ) )
-                {
-                    ;
-                }
+                using ( Process.Start( outputFileName ) ) {; }
 #endif
             }
         }
@@ -1197,7 +1144,7 @@ namespace m3u8.download.manager.ui
 
             var rows = downloadListUC.GetSelectedDownloadRows();
             var outputFileNames = (from row in rows
-                                   where row.IsFinished()
+                                   where row.IsFinishedOrError()
                                    let t = Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames() )
                                    where t.success
                                    select t.outputFileName
@@ -1216,7 +1163,7 @@ namespace m3u8.download.manager.ui
             }
 
             var outputFileNamesQueue = (from row in rows
-                                        where !row.IsFinished()
+                                        where !row.IsFinishedOrError()
                                         select row.GetOutputFullFileName()
                                        ).ToList();
             if ( outputFileNamesQueue.Any() )
@@ -1280,10 +1227,7 @@ namespace m3u8.download.manager.ui
         //*/
         private static void ExternalProg_Run( string externalProgFilePath, string args )
         {
-            using ( Process.Start( externalProgFilePath, args ) )
-            {
-                ;
-            }
+            using ( Process.Start( externalProgFilePath, args ) ) {; }
         }
         private static void ExternalProg_Run_IfExists( string externalProgFilePath, string args )
         {
@@ -1325,26 +1269,8 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void deleteAllDownloadsMenuItem_Click( object sender, EventArgs e )
-        {
-            var rows = _DownloadListModel.GetRows().ToArrayEx();
-            foreach ( var row in rows )
-            {
-                _DownloadController.Cancel( row );
-                //_DownloadListModel .RemoveRow( row );
-            }
-            _DownloadListModel.RemoveAll( rows );
-
-            //-2-//
-            SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
-        }
-        private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e )
-        {
-            DeleteDownloadsWithOutputFiles( _DownloadListModel.GetRows().ToArrayEx() );
-
-            //-2-//
-            SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
-        }
+        private void deleteAllDownloadsMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _DownloadListModel.GetRows().ToArrayEx(), deleteOutputFiles: false );
+        private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _DownloadListModel.GetRows().ToArrayEx(), deleteOutputFiles: true );
         #endregion
 
         #region [.change OutputFileName & OutputDirectory.]
@@ -1482,6 +1408,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
+        #region [.LiveStream change max-file-size.]
         private void downloadListUC_LiveStreamMaxFileSizeClick( DownloadRow row )
         {
             if ( ChangeLiveStreamMaxFileSizeForm.Show( this, row.LiveStreamMaxFileSizeInBytes, out var liveStreamMaxFileSizeInBytes ) )
@@ -1490,5 +1417,6 @@ namespace m3u8.download.manager.ui
                 downloadListUC.Invalidate( true );
             }
         }
+        #endregion
     }
 }
