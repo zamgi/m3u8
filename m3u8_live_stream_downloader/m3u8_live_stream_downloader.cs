@@ -183,7 +183,7 @@ namespace m3u8
                         var parts = content?.Split().Where( s => !s.StartsWith( "#" ) )
                                                     .Select( s => s.Trim() )
                                                     .Where( s => !s.IsNullOrEmpty() )
-                                                    .ToHashSet( hs );
+                                                    .ToFillHashSet( hs );
                         if ( parts != null )
                         {
                             var new_parts = 0;
@@ -388,7 +388,7 @@ namespace m3u8
         [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );
         [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable CAX( this Task task ) => task.ConfigureAwait( false );
 
-        [M(O.AggressiveInlining)] public static HashSet< T > ToHashSet< T >( this IEnumerable< T > seq, HashSet< T > hs )
+        [M(O.AggressiveInlining)] public static HashSet< T > ToFillHashSet< T >( this IEnumerable< T > seq, HashSet< T > hs )
         {
             hs.Clear();
             if ( seq != null )

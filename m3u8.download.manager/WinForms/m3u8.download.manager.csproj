@@ -91,6 +91,7 @@
       <Link>[-= m3u8.client =-]\throttler_by_speed.cs</Link>
     </Compile>
     <Compile Include="Infrastructure\Color2ColorTransition.cs" />
+    <Compile Include="Infrastructure\FileDeleter.cs" />
     <Compile Include="Model\DownloadRow.cs" />
     <Compile Include="Model\DownloadListModel.cs" />
     <Compile Include="Model\_more.cs" />

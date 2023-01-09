@@ -508,7 +508,7 @@ namespace m3u8.download.manager.ui
                     ShowDownloadStatisticsInTitle();
 
                     #region [.run External progs if need.]                    
-                    if ( row.IsFinishedOrError() && Extensions.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
+                    if ( row.IsFinished()/*.IsFinishedOrError()*/ && Extensions.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
                     {
                         _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                         if ( 0 < new FileInfo( outputFileName ).Length ) //NonZeroLength
@@ -638,15 +638,64 @@ namespace m3u8.download.manager.ui
                 try
                 {
                     using ( var cts = new CancellationTokenSource() )
-                    using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 2_000 ) )
+                    using ( WaitBannerUC.Create( this, cts, "delete files...", visibleDelayInMilliseconds: 2_000 ) )
                     {
-                        foreach ( var row in rows )
+                        await _DownloadController.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token,
+                            (row, ct) => FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
+                            (row) =>
+                            {
+                                _DownloadListModel.RemoveRow( row );
+                                _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                            }
+                        );
+
+                        #region [.parallel.]
+                        /*
+                        var syncCtx = SynchronizationContext.Current;
+                        await Task.Run(() =>
                         {
-                            _DownloadController.CancelIfInProgress( row );
-                            await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
-                            _DownloadListModel.RemoveRow( row );
-                            _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                            Parallel.ForEach( rows, new ParallelOptions() { CancellationToken = cts.Token, MaxDegreeOfParallelism = rows.Length }, row =>
+                            {
+                                using ( var statusTran = _DownloadController.CancelIfInProgress_WithTransaction( row ) )
+                                {
+                                    FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), cts.Token );
+                                    statusTran.CommitStatus();
+
+                                    syncCtx.Invoke(() =>
+                                    {
+                                        _DownloadListModel.RemoveRow( row );
+                                        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                                    });
+                                }
+       
+                            });
+                        });
+                        */
+                        #endregion
+
+                        #region comm prev. [.consecutively.]
+                        //await _DownloadController.DeleteRowsWithOutputFiles_Consecutively( rows, cts.Token,
+                        //    (row, ct) => FileDeleter.TryDeleteFiles_Async( row.GetOutputFullFileNames(), ct ),
+                        //    (row) =>
+                        //    {
+                        //        _DownloadListModel.RemoveRow( row );
+                        //        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                        //    }
+                        //);
+
+                        /*foreach ( var row in rows )
+                        {
+                            using ( var statusTran = _DownloadController.CancelIfInProgress_WithTransaction( row ) )
+                            {
+                                await FileDeleter.TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
+                                statusTran.CommitStatus();
+
+                                _DownloadListModel.RemoveRow( row );
+                                _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                            }
                         }
+                        //*/
+                        #endregion
                     }
                 }
                 catch ( OperationCanceledException )
@@ -727,65 +776,6 @@ namespace m3u8.download.manager.ui
                 return (r);
             }
             return (false);
-        }
-
-        /*private static bool TryDeleteFile( string fullFileName, int attemptCount = 20, int millisecondsDelay = 100 )
-        {
-            for ( var n = 0; (n < attemptCount); n++ )
-            {
-                try
-                {
-                    if ( File.Exists( fullFileName ) )
-                    {
-                        File.Delete( fullFileName );
-                    }
-                    return (true);
-                }
-                catch ( Exception ex )
-                {
-                    Debug.WriteLine( ex );
-                    Task.Delay( millisecondsDelay ).Wait();
-                }
-            }
-            var success = !File.Exists( fullFileName );
-            return (success);
-        }*/
-        private static Task< bool > TryDeleteFiles_Async( string[] fullFileNames, CancellationToken ct, int millisecondsDelay = 100 )
-        {
-            if ( !fullFileNames.AnyEx() )
-            {
-                return (Task.FromResult( true ));
-            }
-
-            var task = Task.Run( () =>
-            {
-                var hs = fullFileNames.ToHashSet( StringComparer.InvariantCultureIgnoreCase );
-
-                Parallel.ForEach( hs, new ParallelOptions() { CancellationToken = ct }, fullFileName =>
-                {
-                    for ( ; !ct.IsCancellationRequested; )
-                    {
-                        try
-                        {
-                            if ( File.Exists( fullFileName ) )
-                            {
-                                File.Delete( fullFileName );
-                            }
-                            return;
-                        }
-                        catch ( Exception ex )
-                        {
-                            Debug.WriteLine( ex );
-                            Task.Delay( millisecondsDelay ).Wait( ct );
-                        }
-                    }
-                });
-
-                //var success = !Extensions.AnyFileExists( hs );
-                //return (success);
-                return (true);
-            }, ct );
-            return (task);
         }
 
         #region [.allowed Command by current status.]

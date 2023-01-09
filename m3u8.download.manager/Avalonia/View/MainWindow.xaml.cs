@@ -20,6 +20,7 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_                 = m3u8.download.manager.Properties.Resources;
+using m3u8.download.manager.controllers;
 
 namespace m3u8.download.manager.ui
 {
@@ -665,12 +666,50 @@ namespace m3u8.download.manager.ui
                     using ( var cts = new CancellationTokenSource() )
                     using ( WaitBannerForm.CreateAndShow( this, cts, visibleDelayInMilliseconds: 2_000 ) )
                     {
+                        await _VM.DownloadController.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token,
+                            (row, ct) => FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
+                            (row) => _VM.DownloadListModel.RemoveRow( row ) 
+                        );
+
+                        #region [.parallel.]
+                        /*
+                        var syncCtx = SynchronizationContext.Current;
+                        await Task.Run(() =>
+                        {
+                            Parallel.ForEach( rows, new ParallelOptions() { CancellationToken = cts.Token, MaxDegreeOfParallelism = rows.Length }, row =>
+                            {
+                                using ( var statusTran = _VM.DownloadController.CancelIfInProgress_WithTransaction( row ) )
+                                {
+                                    FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), cts.Token );
+                                    statusTran.CommitStatus();
+
+                                    syncCtx.Invoke(() => _VM.DownloadListModel.RemoveRow( row ));
+                                }
+       
+                            });
+                        });
+                        */
+                        #endregion
+
+                        #region comm prev. [.consecutively.]
+                        //await _VM.DownloadController.DeleteRowsWithOutputFiles_Consecutively( rows, cts.Token,
+                        //    (row, ct) => FileDeleter.TryDeleteFiles_Async( row.GetOutputFullFileNames(), ct ),
+                        //    (row) => _VM.DownloadListModel.RemoveRow( row )
+                        //);
+
+                        /*
                         foreach ( var row in rows )
                         {
-                            _VM.DownloadController.CancelIfInProgress( row );
-                            await TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
-                            _VM.DownloadListModel.RemoveRow( row );
+                            using ( var statusTran = _VM.DownloadController.CancelIfInProgress_WithTransaction( row ) )
+                            {
+                                await FileDeleter.TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
+                                statusTran.CommitStatus();
+
+                                _VM.DownloadListModel.RemoveRow( row );
+                            }
                         }
+                        //*/
+                        #endregion
                     }
                 }
                 catch ( OperationCanceledException )
@@ -735,65 +774,6 @@ namespace m3u8.download.manager.ui
                 return (r == ButtonResult.Ok);
             }
             return (false);
-        }
-
-        /*private static bool TryDeleteFile( string fullFileName, int attemptCount = 20, int millisecondsDelay = 100 )
-        {
-            for ( var n = 0; (n < attemptCount); n++ )
-            {
-                try
-                {
-                    if ( File.Exists( fullFileName ) )
-                    {
-                        File.Delete( fullFileName );
-                    }
-                    return (true);
-                }
-                catch ( Exception ex )
-                {
-                    Debug.WriteLine( ex );
-                    Task.Delay( millisecondsDelay ).Wait();
-                }
-            }
-            var success = !File.Exists( fullFileName );
-            return (success);
-        }*/
-        private static Task< bool > TryDeleteFiles_Async( string[] fullFileNames, CancellationToken ct, int millisecondsDelay = 100 )
-        {
-            if ( !fullFileNames.AnyEx() )
-            {
-                return (Task.FromResult( true ));
-            }
-
-            var task = Task.Run( () =>
-            {
-                var hs = fullFileNames.ToHashSet( StringComparer.InvariantCultureIgnoreCase );
-
-                Parallel.ForEach( hs, new ParallelOptions() { CancellationToken = ct }, fullFileName =>
-                {
-                    for ( ; !ct.IsCancellationRequested; )
-                    {
-                        try
-                        {
-                            if ( File.Exists( fullFileName ) )
-                            {
-                                File.Delete( fullFileName );
-                            }
-                            return;
-                        }
-                        catch ( Exception ex )
-                        {
-                            Debug.WriteLine( ex );
-                            Task.Delay( millisecondsDelay ).Wait( ct );
-                        }
-                    }
-                });
-
-                //var success = !Extensions.AnyFileExists( hs );
-                //return (success);
-                return (true);
-            }, ct );
-            return (task);
         }
 
         private bool IsWaitBannerShown() => !this.IsEnabled;

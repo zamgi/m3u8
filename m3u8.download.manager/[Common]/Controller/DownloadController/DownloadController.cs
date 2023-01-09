@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.ext;
@@ -962,10 +963,6 @@ namespace m3u8.download.manager.controllers
 
         public void Pause( DownloadRow row )
         {
-            //if ( (row != null) && _Dict.TryGetValue( row, out var t ) )
-            //{
-            //    t.waitIfPausedEvent.Reset_NoThrow();
-            //}
             if ( row != null )
             {
                 if ( _Dict.TryGetValue( row, out var t ) )
@@ -976,23 +973,52 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-        public void CancelIfInProgress( DownloadRow row )
+        /// <summary>
+        /// 
+        /// </summary>
+        public interface IDownloadRowStatusTransaction : IDisposable
+        {
+            void CommitStatus();
+            void RollbackStatus();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        private struct CancelIfInProgress_Transaction : IDownloadRowStatusTransaction
+        {
+            private DownloadRow _Row;
+            private DownloadStatus _RollbackStatus;
+            public CancelIfInProgress_Transaction( DownloadRow row, DownloadStatus rollbackStatus ) => (_Row, _RollbackStatus) = (row, rollbackStatus);
+            public void Dispose() => RollbackStatus();
+            public void CommitStatus() => _Row = null;
+            public void RollbackStatus() => _Row?.SetStatus( _RollbackStatus );
+
+            public static CancelIfInProgress_Transaction Empty => new CancelIfInProgress_Transaction();
+        }
+        public IDownloadRowStatusTransaction CancelIfInProgress_WithTransaction( DownloadRow row )
         {
             if ( row != null )
             {
-                switch ( row.Status )
+                var status = row.Status;
+                switch ( status )
                 {
                     case DownloadStatus.Canceled:
                     case DownloadStatus.Finished:
-                    case DownloadStatus.Error:
+                    case DownloadStatus.Created:
                         break;
+
+                    case DownloadStatus.Error:
+                        Cancel( row );
+                        return (new CancelIfInProgress_Transaction( row, status ));                        
 
                     default:
                         Cancel( row );
                         break;
                 }
             }
+            return (CancelIfInProgress_Transaction.Empty);
         }
+
         public void Cancel( DownloadRow row )
         {
             if ( row != null )
@@ -1135,6 +1161,46 @@ namespace m3u8.download.manager.controllers
                 }
             }
             #endregion
+        }
+        #endregion
+
+
+        #region [.Delete rows with output-files.]
+        public Task DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( DownloadRow[] rows, CancellationToken ct, 
+            Action< DownloadRow, CancellationToken > deleteFilesAction, 
+            Action< DownloadRow > afterSuccesDeleteAction )
+        {
+            var syncCtx = SynchronizationContext.Current;
+            var delete_task = Task.Run(() =>
+            {
+                Parallel.ForEach( rows, new ParallelOptions() { CancellationToken = ct, MaxDegreeOfParallelism = rows.Length }, row =>
+                {
+                    using ( var statusTran = this.CancelIfInProgress_WithTransaction( row ) )
+                    {
+                        deleteFilesAction( row, ct );
+                        statusTran.CommitStatus();
+
+                        syncCtx.Invoke(() => afterSuccesDeleteAction( row ));
+                    }
+                });
+            });
+            return (delete_task);
+        }
+
+        public async Task DeleteRowsWithOutputFiles_Consecutively( DownloadRow[] rows, CancellationToken ct,
+            Func< DownloadRow, CancellationToken, Task > deleteFilesAction, 
+            Action< DownloadRow > afterSuccesDeleteAction )
+        {
+            foreach ( var row in rows )
+            {
+                using ( var statusTran = this.CancelIfInProgress_WithTransaction( row ) )
+                {
+                    await deleteFilesAction( row, ct );
+                    statusTran.CommitStatus();
+
+                    afterSuccesDeleteAction( row );
+                }
+            }
         }
         #endregion
     }
