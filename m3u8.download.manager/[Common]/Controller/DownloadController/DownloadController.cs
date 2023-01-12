@@ -355,6 +355,7 @@ namespace m3u8.download.manager.controllers
 
         #region [.public props.]
         public event IsDownloadingChangedEventHandler IsDownloadingChanged;
+
         public DownloadListModel Model { get => _Model; }
         public bool IsDownloading { [M(O.AggressiveInlining)] get => (_Dict.Count != 0); }
         #endregion

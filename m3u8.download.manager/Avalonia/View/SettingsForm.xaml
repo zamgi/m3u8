@@ -53,6 +53,7 @@
             <TextBlock>window title</TextBlock>
           </StackPanel>
         </CheckBox>
+        <CheckBox x:Name="showAllDownloadsCompleted_NotificationCheckBox" Background="White" Cursor="Hand">show all downloads completed notification</CheckBox>
       </StackPanel>
     </Border>
     

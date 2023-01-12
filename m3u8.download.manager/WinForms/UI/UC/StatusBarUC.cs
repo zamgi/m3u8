@@ -156,16 +156,17 @@ namespace m3u8.download.manager.ui
                 f.Parallelism.SetMaxCrossDownloadInstance( _Settings.MaxCrossDownloadInstance, _Settings.MaxCrossDownloadInstanceSaved );
                 f.Parallelism.MaxSpeedThresholdInMbps             = _Settings.MaxSpeedThresholdInMbps;
 
-                f.Other.AttemptRequestCountByPart             = _Settings.AttemptRequestCountByPart;
-                f.Other.RequestTimeoutByPart                  = _Settings.RequestTimeoutByPart;
-                f.Other.ShowOnlyRequestRowsWithErrors         = _Settings.ShowOnlyRequestRowsWithErrors;
-                f.Other.UniqueUrlsOnly                        = _Settings.UniqueUrlsOnly;
-                f.Other.ShowDownloadStatisticsInMainFormTitle = _Settings.ShowDownloadStatisticsInMainFormTitle;
-                f.Other.OutputFileExtension                   = _Settings.OutputFileExtension;
-                f.Other.ExternalProgCaption                   = _Settings.ExternalProgCaption;
-                f.Other.ExternalProgFilePath                  = _Settings.ExternalProgFilePath;
-                f.Other.ExternalProgApplyByDefault            = _Settings.ExternalProgApplyByDefault;
-                f.Other.UseDirectorySelectDialogModern        = _Settings.UseDirectorySelectDialogModern;
+                f.Other.AttemptRequestCountByPart              = _Settings.AttemptRequestCountByPart;
+                f.Other.RequestTimeoutByPart                   = _Settings.RequestTimeoutByPart;
+                f.Other.ShowOnlyRequestRowsWithErrors          = _Settings.ShowOnlyRequestRowsWithErrors;
+                f.Other.ShowDownloadStatisticsInMainFormTitle  = _Settings.ShowDownloadStatisticsInMainFormTitle;
+                f.Other.ShowAllDownloadsCompleted_Notification = _Settings.ShowAllDownloadsCompleted_Notification;
+                f.Other.OutputFileExtension                    = _Settings.OutputFileExtension;
+                f.Other.ExternalProgCaption                    = _Settings.ExternalProgCaption;
+                f.Other.ExternalProgFilePath                   = _Settings.ExternalProgFilePath;
+                f.Other.ExternalProgApplyByDefault             = _Settings.ExternalProgApplyByDefault;
+                f.Other.UseDirectorySelectDialogModern         = _Settings.UseDirectorySelectDialogModern;
+                f.Other.UniqueUrlsOnly                         = _Settings.UniqueUrlsOnly;
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
@@ -175,16 +176,17 @@ namespace m3u8.download.manager.ui
                     _Settings.MaxCrossDownloadInstanceSaved       = f.Parallelism.MaxCrossDownloadInstanceSaved;
                     _Settings.MaxSpeedThresholdInMbps             = f.Parallelism.MaxSpeedThresholdInMbps;
 
-                    _Settings.AttemptRequestCountByPart             = f.Other.AttemptRequestCountByPart;
-                    _Settings.RequestTimeoutByPart                  = f.Other.RequestTimeoutByPart;
-                    _Settings.ShowOnlyRequestRowsWithErrors         = f.Other.ShowOnlyRequestRowsWithErrors;
-                    _Settings.UniqueUrlsOnly                        = f.Other.UniqueUrlsOnly;
-                    _Settings.ShowDownloadStatisticsInMainFormTitle = f.Other.ShowDownloadStatisticsInMainFormTitle;
-                    _Settings.OutputFileExtension                   = f.Other.OutputFileExtension;
-                    _Settings.ExternalProgCaption                   = f.Other.ExternalProgCaption;
-                    _Settings.ExternalProgFilePath                  = f.Other.ExternalProgFilePath;
-                    _Settings.ExternalProgApplyByDefault            = f.Other.ExternalProgApplyByDefault;
-                    _Settings.UseDirectorySelectDialogModern        = f.Other.UseDirectorySelectDialogModern;
+                    _Settings.AttemptRequestCountByPart              = f.Other.AttemptRequestCountByPart;
+                    _Settings.RequestTimeoutByPart                   = f.Other.RequestTimeoutByPart;
+                    _Settings.ShowOnlyRequestRowsWithErrors          = f.Other.ShowOnlyRequestRowsWithErrors;
+                    _Settings.ShowDownloadStatisticsInMainFormTitle  = f.Other.ShowDownloadStatisticsInMainFormTitle;
+                    _Settings.ShowAllDownloadsCompleted_Notification = f.Other.ShowAllDownloadsCompleted_Notification;
+                    _Settings.OutputFileExtension                    = f.Other.OutputFileExtension;
+                    _Settings.ExternalProgCaption                    = f.Other.ExternalProgCaption;
+                    _Settings.ExternalProgFilePath                   = f.Other.ExternalProgFilePath;
+                    _Settings.ExternalProgApplyByDefault             = f.Other.ExternalProgApplyByDefault;
+                    _Settings.UseDirectorySelectDialogModern         = f.Other.UseDirectorySelectDialogModern;
+                    _Settings.UniqueUrlsOnly                         = f.Other.UniqueUrlsOnly;
 
                     _Settings.SaveNoThrow();
                     if ( _SettingsController == null )

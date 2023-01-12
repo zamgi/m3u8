@@ -123,4 +123,7 @@
   <data name="M3U8_EXTENSION" xml:space="preserve">
     <value>.m3u8</value>
   </data>
+  <data name="ALL_DOWNLOADS_COMPLETED_NOTIFICATION" xml:space="preserve">
+    <value>All downloads completed/finished.</value>
+  </data>
 </root>

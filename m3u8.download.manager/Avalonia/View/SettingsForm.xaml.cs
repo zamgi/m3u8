@@ -24,6 +24,7 @@ namespace m3u8.download.manager.ui
         private TextBox       outputFileExtensionTextBox;
         private CheckBox      showOnlyRequestRowsWithErrorsCheckBox;
         private CheckBox      showDownloadStatisticsInMainFormTitleCheckBox;
+        private CheckBox      showAllDownloadsCompleted_NotificationCheckBox;
         #endregion
 
         #region [.fields.]
@@ -50,15 +51,16 @@ namespace m3u8.download.manager.ui
         {
             AvaloniaXamlLoader.Load( this );
 
-            attemptRequestCountByPartNUD                  = this.Find< NumericUpDown >( nameof(attemptRequestCountByPartNUD) );
-            uniqueUrlsOnlyCheckBox                        = this.Find< CheckBox      >( nameof(uniqueUrlsOnlyCheckBox) );
-            only4NotRunLabel1                             = this.Find< TextBlock     >( nameof(only4NotRunLabel1) );
-            only4NotRunLabel2                             = this.Find< TextBlock     >( nameof(only4NotRunLabel2) );
-            requestTimeoutByPartDTP                       = this.Find< TimePickerUC  >( nameof(requestTimeoutByPartDTP) );
-            //requestTimeoutByPartDTP                       = this.Find< DatePicker    >( nameof(requestTimeoutByPartDTP) );
-            outputFileExtensionTextBox                    = this.Find< TextBox       >( nameof(outputFileExtensionTextBox) );
-            showOnlyRequestRowsWithErrorsCheckBox         = this.Find< CheckBox      >( nameof(showOnlyRequestRowsWithErrorsCheckBox) );
-            showDownloadStatisticsInMainFormTitleCheckBox = this.Find< CheckBox      >( nameof(showDownloadStatisticsInMainFormTitleCheckBox) );
+            attemptRequestCountByPartNUD                   = this.Find< NumericUpDown >( nameof(attemptRequestCountByPartNUD) );
+            uniqueUrlsOnlyCheckBox                         = this.Find< CheckBox      >( nameof(uniqueUrlsOnlyCheckBox) );
+            only4NotRunLabel1                              = this.Find< TextBlock     >( nameof(only4NotRunLabel1) );
+            only4NotRunLabel2                              = this.Find< TextBlock     >( nameof(only4NotRunLabel2) );
+            requestTimeoutByPartDTP                        = this.Find< TimePickerUC  >( nameof(requestTimeoutByPartDTP) );
+            //requestTimeoutByPartDTP                        = this.Find< DatePicker    >( nameof(requestTimeoutByPartDTP) );
+            outputFileExtensionTextBox                     = this.Find< TextBox       >( nameof(outputFileExtensionTextBox) );
+            showOnlyRequestRowsWithErrorsCheckBox          = this.Find< CheckBox      >( nameof(showOnlyRequestRowsWithErrorsCheckBox) );
+            showDownloadStatisticsInMainFormTitleCheckBox  = this.Find< CheckBox      >( nameof(showDownloadStatisticsInMainFormTitleCheckBox) );
+            showAllDownloadsCompleted_NotificationCheckBox = this.Find< CheckBox      >( nameof(showAllDownloadsCompleted_NotificationCheckBox) );
 
             this.Find< Button >( "okButton"     ).Click += (s, e) => OkButtonProcess();
             this.Find< Button >( "cancelButton" ).Click += (s, e) => this.Close();
@@ -119,6 +121,11 @@ namespace m3u8.download.manager.ui
         {
             get => showDownloadStatisticsInMainFormTitleCheckBox.IsChecked.GetValueOrDefault();
             set => showDownloadStatisticsInMainFormTitleCheckBox.IsChecked = value;
+        }
+        public bool ShowAllDownloadsCompleted_Notification
+        {
+            get => showAllDownloadsCompleted_NotificationCheckBox.IsChecked.GetValueOrDefault();
+            set => showAllDownloadsCompleted_NotificationCheckBox.IsChecked = value;
         }
         public bool     UniqueUrlsOnly
         {

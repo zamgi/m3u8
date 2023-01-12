@@ -105,6 +105,11 @@ namespace m3u8.download.manager.ui
             get => showDownloadStatisticsInMainFormTitleCheckBox.Checked;
             set => showDownloadStatisticsInMainFormTitleCheckBox.Checked = value;
         }
+        public bool ShowAllDownloadsCompleted_Notification
+        {
+            get => showAllDownloadsCompleted_NotificationCheckBox.Checked;
+            set => showAllDownloadsCompleted_NotificationCheckBox.Checked = value;
+        }        
         public bool     UniqueUrlsOnly
         {
             get => uniqueUrlsOnlyCheckBox.Checked;
