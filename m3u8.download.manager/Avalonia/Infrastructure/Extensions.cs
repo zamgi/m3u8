@@ -236,24 +236,7 @@ namespace m3u8.download.manager
                 controller.Cancel( row );
             }
         }
-        public static void RemoveAll( this DownloadListModel model, IEnumerable< DownloadRow > rows )
-        {
-            var array = rows?.ToArray();
-            if ( array.AnyEx() )
-            {
-                model.BeginUpdate();
-                foreach ( var row in array )
-                {
-                    model.RemoveRow( row );
-                }
-                model.EndUpdate();
-            }
-        }
-        public static void RemoveAllFinished( this DownloadListModel model )
-        {
-            var allFinished = model.GetAllFinished();
-            model.RemoveAll( allFinished );
-        }
+        public static void RemoveAllFinished( this DownloadListModel model ) => model.RemoveRows( model.GetAllFinished().ToList() );
 
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadRow    row    ) => (row.Status == DownloadStatus.Finished);
         [M(O.AggressiveInlining)] public static bool IsFinishedOrError( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, _ => false };

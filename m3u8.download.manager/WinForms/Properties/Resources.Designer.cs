@@ -61,6 +61,15 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All downloads completed/finished..
+        /// </summary>
+        internal static string ALL_DOWNLOADS_COMPLETED_NOTIFICATION {
+            get {
+                return ResourceManager.GetString("ALL_DOWNLOADS_COMPLETED_NOTIFICATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to .m3u8 file download manager.
         /// </summary>
         internal static string APP_TITLE {

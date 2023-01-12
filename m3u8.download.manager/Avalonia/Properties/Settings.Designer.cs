@@ -370,5 +370,17 @@ namespace m3u8.download.manager.Properties {
                 this["IsLiveStream"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowAllDownloadsCompleted_Notification {
+            get {
+                return ((bool)(this["ShowAllDownloadsCompleted_Notification"]));
+            }
+            set {
+                this["ShowAllDownloadsCompleted_Notification"] = value;
+            }
+        }
     }
 }

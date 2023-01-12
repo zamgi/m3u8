@@ -34,7 +34,7 @@ namespace m3u8.download.manager.models
         /// <summary>
         /// 
         /// </summary>
-        public enum CollectionChangedTypeEnum { Add, Remove, Clear, BulkUpdate, Sort }
+        public enum CollectionChangedTypeEnum { Add, Remove, Clear, /*BulkUpdate,*/ Sort }
         /// <summary>
         /// 
         /// </summary>
@@ -67,9 +67,15 @@ namespace m3u8.download.manager.models
         {
             var rowCount = _UpdtTup.RowsCount;
             _UpdtTup = (false, -1);
-            if ( rowCount != this.RowsCount )
+
+            var new_rowCount = this.RowsCount;            
+            if ( rowCount < new_rowCount )
             {
-                CollectionChanged?.Invoke( CollectionChangedTypeEnum.BulkUpdate, null );
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Add, null ); //CollectionChangedTypeEnum.BulkUpdate
+            }
+            else if ( new_rowCount < rowCount )
+            {
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Remove, null );
             }
         }
 
@@ -115,7 +121,7 @@ namespace m3u8.download.manager.models
             }
             return (false);
         }
-        protected void RemoveRows_Internal( IEnumerable< T > rows )
+        protected void RemoveRows_Internal( IReadOnlyList< T > rows )
         {
             if ( rows.AnyEx() )
             {

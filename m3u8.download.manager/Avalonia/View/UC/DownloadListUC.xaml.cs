@@ -308,7 +308,7 @@ namespace m3u8.download.manager.ui
 
                 case _CollectionChangedTypeEnum_.Remove:
                 case _CollectionChangedTypeEnum_.Clear:
-                case _CollectionChangedTypeEnum_.BulkUpdate:
+                //case _CollectionChangedTypeEnum_.BulkUpdate:
                     SetDataGridItems();
                     DGV.InvalidateVisual();
                 break;

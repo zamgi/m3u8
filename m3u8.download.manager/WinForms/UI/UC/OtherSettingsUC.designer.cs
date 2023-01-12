@@ -17,10 +17,12 @@
             this.components = new System.ComponentModel.Container();
             System.Windows.Forms.GroupBox gb1;
             System.Windows.Forms.GroupBox gb2;
+            System.Windows.Forms.GroupBox gb3;
             System.Windows.Forms.Label l4;
             System.Windows.Forms.Label l3;
             this.showOnlyRequestRowsWithErrorsCheckBox = new System.Windows.Forms.CheckBox();
             this.showDownloadStatisticsInMainFormTitleCheckBox = new System.Windows.Forms.CheckBox();
+            this.showAllDownloadsCompleted_NotificationCheckBox = new System.Windows.Forms.CheckBox();
             this.useDirectorySelectDialogModernCheckBox = new System.Windows.Forms.CheckBox();
             this.testDirectorySelectDialog = new System.Windows.Forms.Button();
             this.externalProgFilePathButton = new System.Windows.Forms.Button();
@@ -40,24 +42,130 @@
             this.externalProgResetButton = new System.Windows.Forms.Button();
             gb1 = new System.Windows.Forms.GroupBox();
             gb2 = new System.Windows.Forms.GroupBox();
+            gb3 = new System.Windows.Forms.GroupBox();
             l4 = new System.Windows.Forms.Label();
             l3 = new System.Windows.Forms.Label();
             gb1.SuspendLayout();
             gb2.SuspendLayout();
+            gb3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attemptRequestCountByPartNUD)).BeginInit();
             this.SuspendLayout();
             // 
             // gb1
             // 
-            gb1.Controls.Add(this.showOnlyRequestRowsWithErrorsCheckBox);
-            gb1.Controls.Add(this.showDownloadStatisticsInMainFormTitleCheckBox);
-            gb1.Controls.Add(this.useDirectorySelectDialogModernCheckBox);
-            gb1.Controls.Add(this.testDirectorySelectDialog);
-            gb1.Location = new System.Drawing.Point(13, 155);
-            gb1.Size = new System.Drawing.Size(261, 110);
-            gb1.TabIndex = 7;
+            gb1.Controls.Add(this.l1);
+            gb1.Controls.Add(this.attemptRequestCountByPartNUD);
+            gb1.Controls.Add(this.only4NotRunLabel1);
+            gb1.Controls.Add(this.l2);
+            gb1.Controls.Add(this.requestTimeoutByPartDTP);
+            gb1.Controls.Add(this.only4NotRunLabel2);
+            gb1.Controls.Add(this.outputFileExtensionLabel);
+            gb1.Controls.Add(this.outputFileExtensionTextBox);            
+            gb1.Controls.Add(this.uniqueUrlsOnlyCheckBox);
+            
+            gb1.Location = new System.Drawing.Point(13, 7);
+            gb1.Size = new System.Drawing.Size(261, 150);
+            gb1.TabIndex = 0;
             gb1.TabStop = false;
-            gb1.Text = "UI / download log UI";
+            gb1.Text = "Download params";
+            // 
+            // l1
+            // 
+            this.l1.AutoSize = true;
+            this.l1.Location = new System.Drawing.Point(12, 20);
+            this.l1.Size = new System.Drawing.Size(148, 13);
+            this.l1.TabIndex = 0;
+            this.l1.Text = "attempt request count by part:";
+            // 
+            // l2
+            // 
+            this.l2.AutoSize = true;
+            this.l2.Location = new System.Drawing.Point(43, 62);
+            this.l2.Size = new System.Drawing.Size(117, 13);
+            this.l2.TabIndex = 3;
+            this.l2.Text = "request timeout by part:";
+            // 
+            // attemptRequestCountByPartNUD
+            // 
+            this.attemptRequestCountByPartNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.attemptRequestCountByPartNUD.Location = new System.Drawing.Point(167, 18);
+            this.attemptRequestCountByPartNUD.Minimum = new decimal(new int[] { 1, 0, 0, 0 } );
+            this.attemptRequestCountByPartNUD.Size = new System.Drawing.Size(89, 16);
+            this.attemptRequestCountByPartNUD.TabIndex = 1;
+            this.attemptRequestCountByPartNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.attemptRequestCountByPartNUD.Value = new decimal(new int[] { 1, 0, 0, 0 } );
+            // 
+            // requestTimeoutByPartDTP
+            // 
+            this.requestTimeoutByPartDTP.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.requestTimeoutByPartDTP.Location = new System.Drawing.Point(167, 60);
+            this.requestTimeoutByPartDTP.ShowUpDown = true;
+            this.requestTimeoutByPartDTP.Size = new System.Drawing.Size(91, 20);
+            this.requestTimeoutByPartDTP.TabIndex = 2;
+            // 
+            // uniqueUrlsOnlyCheckBox
+            // 
+            this.uniqueUrlsOnlyCheckBox.AutoSize = true;
+            this.uniqueUrlsOnlyCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.uniqueUrlsOnlyCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.uniqueUrlsOnlyCheckBox.Location = new System.Drawing.Point(43, 98);
+            this.uniqueUrlsOnlyCheckBox.Size = new System.Drawing.Size(117, 17);
+            this.uniqueUrlsOnlyCheckBox.TabIndex = 4;
+            this.uniqueUrlsOnlyCheckBox.Text = "use unique urls only";
+            this.uniqueUrlsOnlyCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // only4NotRunLabel1
+            // 
+            this.only4NotRunLabel1.AutoSize = true;
+            this.only4NotRunLabel1.ForeColor = System.Drawing.Color.DarkGoldenrod;
+            this.only4NotRunLabel1.Location = new System.Drawing.Point(7, 37);
+            this.only4NotRunLabel1.Size = new System.Drawing.Size(157, 13);
+            this.only4NotRunLabel1.TabIndex = 10;
+            this.only4NotRunLabel1.Text = "(only for not-running downloads)";
+            this.only4NotRunLabel1.Visible = false;
+            // 
+            // only4NotRunLabel2
+            // 
+            this.only4NotRunLabel2.AutoSize = true;
+            this.only4NotRunLabel2.ForeColor = System.Drawing.Color.DarkGoldenrod;
+            this.only4NotRunLabel2.Location = new System.Drawing.Point(7, 79);
+            this.only4NotRunLabel2.Size = new System.Drawing.Size(157, 13);
+            this.only4NotRunLabel2.TabIndex = 11;
+            this.only4NotRunLabel2.Text = "(only for not-running downloads)";
+            this.only4NotRunLabel2.Visible = false;
+            // 
+            // outputFileExtensionLabel
+            // 
+            this.outputFileExtensionLabel.AutoSize = true;
+            this.outputFileExtensionLabel.Location = new System.Drawing.Point(20, 120);
+            this.outputFileExtensionLabel.Size = new System.Drawing.Size(139, 21);
+            this.outputFileExtensionLabel.TabIndex = 5;
+            this.outputFileExtensionLabel.Text = "default output file extension:";
+            // 
+            // outputFileExtensionTextBox
+            // 
+            this.outputFileExtensionTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.outputFileExtensionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.outputFileExtensionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
+            this.outputFileExtensionTextBox.Location = new System.Drawing.Point(167, 120);
+            this.outputFileExtensionTextBox.Size = new System.Drawing.Size(89, 26);
+            this.outputFileExtensionTextBox.TabIndex = 6;
+            this.outputFileExtensionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.outputFileExtensionTextBox.WordWrap = false;
+
+            // 
+            // gb2
+            // 
+            gb2.Controls.Add(this.showOnlyRequestRowsWithErrorsCheckBox);
+            gb2.Controls.Add(this.showDownloadStatisticsInMainFormTitleCheckBox);
+            gb2.Controls.Add(this.showAllDownloadsCompleted_NotificationCheckBox);
+            gb2.Controls.Add(this.useDirectorySelectDialogModernCheckBox);
+            gb2.Controls.Add(this.testDirectorySelectDialog);
+            gb2.Location = new System.Drawing.Point(13, 163);
+            gb2.Size = new System.Drawing.Size(261, 140);
+            gb2.TabIndex = 1;
+            gb2.TabStop = false;
+            gb2.Text = "UI / download log UI";
             // 
             // showOnlyRequestRowsWithErrorsCheckBox
             // 
@@ -79,14 +187,24 @@
             //this.showDownloadStatisticsInMainFormTitleCheckBox.Size = new System.Drawing.Size(177, 30);
             this.showDownloadStatisticsInMainFormTitleCheckBox.TabIndex = 1;
             this.showDownloadStatisticsInMainFormTitleCheckBox.Text = "show download statistics in main\r\nwindow title";
-            this.showDownloadStatisticsInMainFormTitleCheckBox.UseVisualStyleBackColor = true;
+            this.showDownloadStatisticsInMainFormTitleCheckBox.UseVisualStyleBackColor = true;            
+            // 
+            // showAllDownloadsCompleted_NotificationCheckBox
+            // 
+            this.showAllDownloadsCompleted_NotificationCheckBox.AutoSize = true;
+            this.showAllDownloadsCompleted_NotificationCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.showAllDownloadsCompleted_NotificationCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.showAllDownloadsCompleted_NotificationCheckBox.Location = new System.Drawing.Point(30, 80);
+            this.showAllDownloadsCompleted_NotificationCheckBox.TabIndex = 2;
+            this.showAllDownloadsCompleted_NotificationCheckBox.Text = "show all downloads completed notification";
+            this.showAllDownloadsCompleted_NotificationCheckBox.UseVisualStyleBackColor = true;
             // 
             // useDirectorySelectDialogModernCheckBox
             // 
             this.useDirectorySelectDialogModernCheckBox.AutoSize = true;
             this.useDirectorySelectDialogModernCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.useDirectorySelectDialogModernCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.useDirectorySelectDialogModernCheckBox.Location = new System.Drawing.Point( 30, 80 );
+            this.useDirectorySelectDialogModernCheckBox.Location = new System.Drawing.Point(30, 105);
             //this.useDirectorySelectDialogClassicCheckBox.Size = new System.Drawing.Size(177, 30);
             this.useDirectorySelectDialogModernCheckBox.TabIndex = 2;
             this.useDirectorySelectDialogModernCheckBox.Text = "use directory select dialog modern style";
@@ -96,7 +214,7 @@
             // 
             this.testDirectorySelectDialog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));            
             this.testDirectorySelectDialog.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.testDirectorySelectDialog.Location = new System.Drawing.Point(240, 80);
+            this.testDirectorySelectDialog.Location = new System.Drawing.Point(240, 105);
             this.testDirectorySelectDialog.Size = new System.Drawing.Size(16, 18);
             this.testDirectorySelectDialog.TabIndex = 3;
             this.toolTip.SetToolTip(this.testDirectorySelectDialog, "test directory select dialog" );
@@ -109,18 +227,34 @@
             // 
             // gb2
             // 
-            gb2.Controls.Add(this.externalProgResetButton);
-            gb2.Controls.Add(this.externalProgFilePathButton);
-            gb2.Controls.Add(this.externalProgFilePathTextBox);
-            gb2.Controls.Add(this.externalProgCaptionTextBox);
-            gb2.Controls.Add(this.externalProgApplyByDefaultCheckBox);
-            gb2.Controls.Add(l4);
-            gb2.Controls.Add(l3);
-            gb2.Location = new System.Drawing.Point(13, 271);
-            gb2.Size = new System.Drawing.Size(261, 150);
-            gb2.TabIndex = 8;
-            gb2.TabStop = false;
-            gb2.Text = "External program";
+            gb3.Controls.Add(this.externalProgResetButton);
+            gb3.Controls.Add(this.externalProgFilePathButton);
+            gb3.Controls.Add(this.externalProgFilePathTextBox);
+            gb3.Controls.Add(this.externalProgCaptionTextBox);
+            gb3.Controls.Add(this.externalProgApplyByDefaultCheckBox);
+            gb3.Controls.Add(l3);
+            gb3.Controls.Add(l4);
+            gb3.Location = new System.Drawing.Point(13, 308);
+            gb3.Size = new System.Drawing.Size(261, 150);
+            gb3.TabIndex = 2;
+            gb3.TabStop = false;
+            gb3.Text = "External program";
+            // 
+            // l3
+            // 
+            l3.AutoSize = true;
+            l3.Location = new System.Drawing.Point(16, 19);
+            l3.Size = new System.Drawing.Size(38, 13);
+            l3.TabIndex = 0;
+            l3.Text = "Name:";
+            // 
+            // l4
+            // 
+            l4.AutoSize = true;
+            l4.Location = new System.Drawing.Point( 16, 69);
+            l4.Size = new System.Drawing.Size( 32, 13 );
+            l4.TabIndex = 1;
+            l4.Text = "Path:";
             // 
             // externalProgFilePathButton
             // 
@@ -179,138 +313,23 @@
             this.externalProgApplyByDefaultCheckBox.Location = new System.Drawing.Point( 6, 115 );            
             this.externalProgApplyByDefaultCheckBox.Text = "Apply to all new downloads by default";
             //this.externalProgApplyByDefaultCheckBox.Size = new System.Drawing.Size( 245, 18 );
-            //this.externalProgApplyByDefaultCheckBox.AutoEllipsis = true;
-            // 
-            // l4
-            // 
-            l4.AutoSize = true;
-            l4.Location = new System.Drawing.Point(16, 69);
-            l4.Size = new System.Drawing.Size(32, 13);
-            l4.TabIndex = 1;
-            l4.Text = "Path:";
-            // 
-            // l3
-            // 
-            l3.AutoSize = true;
-            l3.Location = new System.Drawing.Point(16, 19);
-            l3.Size = new System.Drawing.Size(38, 13);
-            l3.TabIndex = 0;
-            l3.Text = "Name:";
-            // 
-            // l1
-            // 
-            this.l1.AutoSize = true;
-            this.l1.Location = new System.Drawing.Point(12, 12);
-            this.l1.Size = new System.Drawing.Size(148, 13);
-            this.l1.TabIndex = 0;
-            this.l1.Text = "attempt request count by part:";
-            // 
-            // l2
-            // 
-            this.l2.AutoSize = true;
-            this.l2.Location = new System.Drawing.Point(43, 54);
-            this.l2.Size = new System.Drawing.Size(117, 13);
-            this.l2.TabIndex = 3;
-            this.l2.Text = "request timeout by part:";
-            // 
-            // requestTimeoutByPartDTP
-            // 
-            this.requestTimeoutByPartDTP.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.requestTimeoutByPartDTP.Location = new System.Drawing.Point(167, 52);
-            this.requestTimeoutByPartDTP.ShowUpDown = true;
-            this.requestTimeoutByPartDTP.Size = new System.Drawing.Size(91, 20);
-            this.requestTimeoutByPartDTP.TabIndex = 2;
-            // 
-            // uniqueUrlsOnlyCheckBox
-            // 
-            this.uniqueUrlsOnlyCheckBox.AutoSize = true;
-            this.uniqueUrlsOnlyCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.uniqueUrlsOnlyCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.uniqueUrlsOnlyCheckBox.Location = new System.Drawing.Point(43, 90);
-            this.uniqueUrlsOnlyCheckBox.Size = new System.Drawing.Size(117, 17);
-            this.uniqueUrlsOnlyCheckBox.TabIndex = 4;
-            this.uniqueUrlsOnlyCheckBox.Text = "use unique urls only";
-            this.uniqueUrlsOnlyCheckBox.UseVisualStyleBackColor = true;
-            // 
-            // only4NotRunLabel1
-            // 
-            this.only4NotRunLabel1.AutoSize = true;
-            this.only4NotRunLabel1.ForeColor = System.Drawing.Color.DarkGoldenrod;
-            this.only4NotRunLabel1.Location = new System.Drawing.Point(7, 29);
-            this.only4NotRunLabel1.Size = new System.Drawing.Size(157, 13);
-            this.only4NotRunLabel1.TabIndex = 10;
-            this.only4NotRunLabel1.Text = "(only for not-running downloads)";
-            this.only4NotRunLabel1.Visible = false;
-            // 
-            // only4NotRunLabel2
-            // 
-            this.only4NotRunLabel2.AutoSize = true;
-            this.only4NotRunLabel2.ForeColor = System.Drawing.Color.DarkGoldenrod;
-            this.only4NotRunLabel2.Location = new System.Drawing.Point(7, 71);
-            this.only4NotRunLabel2.Size = new System.Drawing.Size(157, 13);
-            this.only4NotRunLabel2.TabIndex = 11;
-            this.only4NotRunLabel2.Text = "(only for not-running downloads)";
-            this.only4NotRunLabel2.Visible = false;
-            // 
-            // outputFileExtensionLabel
-            // 
-            this.outputFileExtensionLabel.AutoSize = true;
-            this.outputFileExtensionLabel.Location = new System.Drawing.Point(20, 120);
-            this.outputFileExtensionLabel.Size = new System.Drawing.Size(139, 13);
-            this.outputFileExtensionLabel.TabIndex = 5;
-            this.outputFileExtensionLabel.Text = "default output file extension:";
-            // 
-            // outputFileExtensionTextBox
-            // 
-            this.outputFileExtensionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.outputFileExtensionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.outputFileExtensionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
-            this.outputFileExtensionTextBox.Location = new System.Drawing.Point(167, 120);
-            this.outputFileExtensionTextBox.Size = new System.Drawing.Size(89, 18);
-            this.outputFileExtensionTextBox.TabIndex = 6;
-            this.outputFileExtensionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.outputFileExtensionTextBox.WordWrap = false;
-            // 
-            // attemptRequestCountByPartNUD
-            // 
-            this.attemptRequestCountByPartNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.attemptRequestCountByPartNUD.Location = new System.Drawing.Point(167, 10);
-            this.attemptRequestCountByPartNUD.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.attemptRequestCountByPartNUD.Size = new System.Drawing.Size(89, 16);
-            this.attemptRequestCountByPartNUD.TabIndex = 1;
-            this.attemptRequestCountByPartNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.attemptRequestCountByPartNUD.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            //this.externalProgApplyByDefaultCheckBox.AutoEllipsis = true;         
             // 
             // OtherSettingsUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(286, 470);
-            this.Controls.Add(gb2);
-            this.Controls.Add(this.outputFileExtensionLabel);
-            this.Controls.Add(this.outputFileExtensionTextBox);
-            this.Controls.Add(this.only4NotRunLabel2);
-            this.Controls.Add(this.only4NotRunLabel1);
             this.Controls.Add(gb1);
-            this.Controls.Add(this.requestTimeoutByPartDTP);
-            this.Controls.Add(this.l2);
-            this.Controls.Add(this.l1);
-            this.Controls.Add(this.uniqueUrlsOnlyCheckBox);
-            this.Controls.Add(this.attemptRequestCountByPartNUD);
+            this.Controls.Add(gb2);            
+            this.Controls.Add(gb3);
             this.Text = "settings";
             gb1.ResumeLayout(false);
             gb1.PerformLayout();
             gb2.ResumeLayout(false);
             gb2.PerformLayout();
+            gb3.ResumeLayout(false);
+            gb3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attemptRequestCountByPartNUD)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -323,6 +342,7 @@
         private System.Windows.Forms.DateTimePicker requestTimeoutByPartDTP;
         private System.Windows.Forms.CheckBox showOnlyRequestRowsWithErrorsCheckBox;
         private System.Windows.Forms.CheckBox showDownloadStatisticsInMainFormTitleCheckBox;
+        private System.Windows.Forms.CheckBox showAllDownloadsCompleted_NotificationCheckBox;
         private System.Windows.Forms.CheckBox useDirectorySelectDialogModernCheckBox;
         private System.Windows.Forms.Button testDirectorySelectDialog;
         private System.Windows.Forms.CheckBox uniqueUrlsOnlyCheckBox;

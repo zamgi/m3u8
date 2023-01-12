@@ -335,20 +335,27 @@ namespace m3u8.download.manager.ui
                 {
                     case _CollectionChangedTypeEnum_.Add:
                         AddRow_UI( row );                        
-                    break;
+                        break;
 
                     case _CollectionChangedTypeEnum_.Clear:
                         ClearDataGridItems_UI();
                         _WasAdjustColumnsWidthSprain = false;
                         Set_DGV_RowCount();
-                    break;
+                        break;
 
-                    case _CollectionChangedTypeEnum_.BulkUpdate:
+                    case _CollectionChangedTypeEnum_.Remove:
                         SetDataGridItems();
                         AdjustColumnsWidthSprain_And_ScrollToLastRow();
                         DGV.ClearSelection();
                         ScrollToLastRow_UI();
-                    break;
+                        break;
+
+                    //case _CollectionChangedTypeEnum_.BulkUpdate:
+                    //    SetDataGridItems();
+                    //    AdjustColumnsWidthSprain_And_ScrollToLastRow();
+                    //    DGV.ClearSelection();
+                    //    ScrollToLastRow_UI();
+                    //    break;
                 }
             }
         }
@@ -372,7 +379,7 @@ namespace m3u8.download.manager.ui
 
                     _ShowOnlyRequestRowsWithErrorsMenuItem.Checked = _ShowOnlyRequestRowsWithErrors;
                     SetDataGridItems();
-                break;
+                    break;
 
                 case nameof(Settings.ScrollToLastRow):
                     _ScrollToLastRow = settings.ScrollToLastRow;
@@ -382,7 +389,7 @@ namespace m3u8.download.manager.ui
                     {
                         ScrollToLastRow_UI();
                     }
-                break;
+                    break;
             }
         }
         #endregion

@@ -368,10 +368,10 @@ namespace m3u8.download.manager.ui
 
                 case _CollectionChangedTypeEnum_.Add:
                 {
-                    var v = _UserMade_DGV_SelectionChanged;
+                    var b = _UserMade_DGV_SelectionChanged;
                     DGV.RowCount = _Model.RowsCount;
                     RestoreSortIfNeed();
-                    if ( v != _UserMade_DGV_SelectionChanged )
+                    if ( b != _UserMade_DGV_SelectionChanged )
                     {
                         _UserMade_DGV_SelectionChanged = false;
                     }
@@ -381,12 +381,13 @@ namespace m3u8.download.manager.ui
 
                 case _CollectionChangedTypeEnum_.Remove:
                 case _CollectionChangedTypeEnum_.Clear:
-                case _CollectionChangedTypeEnum_.BulkUpdate:
+                //case _CollectionChangedTypeEnum_.BulkUpdate:
                 {
                     #region [.save selected row.]
                     var selectedVisibleIndex = (DGV.SelectedRows.Cast< DataGridViewRow >().FirstOrDefault()?.Index).GetValueOrDefault( -1 );
                     #endregion
 
+                    #region [.set grid-row-count.]                    
                     DGV.CellValueNeeded  -= DGV_CellValueNeeded;
                     DGV.CellFormatting   -= DGV_CellFormatting;
                     DGV.SelectionChanged -= DGV_SelectionChanged;
@@ -403,6 +404,7 @@ namespace m3u8.download.manager.ui
                         DGV.SelectionChanged += DGV_SelectionChanged;
                         DGV.CellPainting     += DGV_CellPainting;
                     }
+                    #endregion
 
                     #region [.restore selected row.]
                     try

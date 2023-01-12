@@ -34,7 +34,7 @@ namespace m3u8.download.manager.models
 
         public LogRow AddRow( LogRow row ) => base.Add( new LogRow( this, base._Fire_RowPropertiesChangedEventHandler, row ) );
 
-        public void RemoveRows( IEnumerable< LogRow > rows ) => base.RemoveRows_Internal( rows );              
+        public void RemoveRows( IReadOnlyList< LogRow > rows ) => base.RemoveRows_Internal( rows );              
 
     }
 }

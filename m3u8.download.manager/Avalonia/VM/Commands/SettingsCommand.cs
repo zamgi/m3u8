@@ -24,22 +24,24 @@ namespace m3u8.download.manager
             {
                 var settings = _VM.SettingsController.Settings;
 
-                f.AttemptRequestCountByPart             = settings.AttemptRequestCountByPart;
-                f.RequestTimeoutByPart                  = settings.RequestTimeoutByPart;
-                f.ShowOnlyRequestRowsWithErrors         = settings.ShowOnlyRequestRowsWithErrors;
-                f.UniqueUrlsOnly                        = settings.UniqueUrlsOnly;
-                f.ShowDownloadStatisticsInMainFormTitle = settings.ShowDownloadStatisticsInMainFormTitle;
-                f.OutputFileExtension                   = settings.OutputFileExtension;
+                f.AttemptRequestCountByPart              = settings.AttemptRequestCountByPart;
+                f.RequestTimeoutByPart                   = settings.RequestTimeoutByPart;
+                f.ShowOnlyRequestRowsWithErrors          = settings.ShowOnlyRequestRowsWithErrors;
+                f.ShowDownloadStatisticsInMainFormTitle  = settings.ShowDownloadStatisticsInMainFormTitle;
+                f.ShowAllDownloadsCompleted_Notification = settings.ShowAllDownloadsCompleted_Notification;
+                f.OutputFileExtension                    = settings.OutputFileExtension;
+                f.UniqueUrlsOnly                         = settings.UniqueUrlsOnly;
 
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
-                    settings.AttemptRequestCountByPart             = f.AttemptRequestCountByPart;
-                    settings.RequestTimeoutByPart                  = f.RequestTimeoutByPart;
-                    settings.ShowOnlyRequestRowsWithErrors         = f.ShowOnlyRequestRowsWithErrors;
-                    settings.UniqueUrlsOnly                        = f.UniqueUrlsOnly;
-                    settings.ShowDownloadStatisticsInMainFormTitle = f.ShowDownloadStatisticsInMainFormTitle;
-                    settings.OutputFileExtension                   = f.OutputFileExtension;
+                    settings.AttemptRequestCountByPart              = f.AttemptRequestCountByPart;
+                    settings.RequestTimeoutByPart                   = f.RequestTimeoutByPart;
+                    settings.ShowOnlyRequestRowsWithErrors          = f.ShowOnlyRequestRowsWithErrors;
+                    settings.ShowDownloadStatisticsInMainFormTitle  = f.ShowDownloadStatisticsInMainFormTitle;
+                    settings.ShowAllDownloadsCompleted_Notification = f.ShowAllDownloadsCompleted_Notification;
+                    settings.OutputFileExtension                    = f.OutputFileExtension;
+                    settings.UniqueUrlsOnly                         = f.UniqueUrlsOnly;
                     settings.SaveNoThrow();
                 }
             }            

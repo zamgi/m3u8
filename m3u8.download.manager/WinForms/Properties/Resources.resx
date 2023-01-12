@@ -126,6 +126,9 @@
   <data name="M3U8_EXTENSION" xml:space="preserve">
     <value>.m3u8</value>
   </data>
+  <data name="ALL_DOWNLOADS_COMPLETED_NOTIFICATION" xml:space="preserve">
+    <value>All downloads completed/finished.</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="i1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\roller\i1.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

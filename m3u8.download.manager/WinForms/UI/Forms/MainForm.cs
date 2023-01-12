@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -40,6 +39,7 @@ namespace m3u8.download.manager.ui
         private Action< DownloadRow, string >    _DownloadListModel_RowPropertiesChangedAction;
         private bool                             _ShowDownloadStatistics;
         private HashSet< string >                _ExternalProgQueue;
+        private NotifyIcon                       _NotifyIcon;
 #if NETCOREAPP
         private static string _APP_TITLE_ => Resources.APP_TITLE__NET_CORE;
 #else
@@ -66,6 +66,7 @@ namespace m3u8.download.manager.ui
             _SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
             SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle) );
             SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ExternalProgCaption) );
+            SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ShowAllDownloadsCompleted_Notification) );
 
             logUC.SetSettingsController( _SettingsController );
             logUC.SetLogRowsHeightStorer( _LogRowsHeightStorer );
@@ -79,7 +80,7 @@ namespace m3u8.download.manager.ui
             statusBarUC.SetSettingsController( _SettingsController );
             statusBarUC.TrackItemsCount( downloadListUC );
 
-            _ReceivedInputParamsArrayEventHandler = ((string m3u8FileUrl, bool autoStartDownload)[] array) => AddNewDownloads( array );
+            _ReceivedInputParamsArrayEventHandler = AddNewDownloads;
             _ReceivedSend2FirstCopyEventHandler   = ReceivedSend2FirstCopy;
             PipeIPC.NamedPipeServer__in.ReceivedInputParamsArray += NamedPipeServer__in_ReceivedInputParamsArray;
             PipeIPC.NamedPipeServer__in.ReceivedSend2FirstCopy   += NamedPipeServer__in_ReceivedSend2FirstCopy;
@@ -101,6 +102,7 @@ namespace m3u8.download.manager.ui
             _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
         }
         public MainForm( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
+
         protected override void Dispose( bool disposing )
         {
             if ( disposing )
@@ -109,6 +111,7 @@ namespace m3u8.download.manager.ui
 
                 _DownloadController.Dispose();
                 _SettingsController.Dispose();
+                _NotifyIcon?.Dispose();
             }
             base.Dispose( disposing );
         }
@@ -383,7 +386,15 @@ namespace m3u8.download.manager.ui
 
                 case nameof(Settings.MaxSpeedThresholdInMbps):
                     speedThresholdToolButton.Value = settings.MaxSpeedThresholdInMbps;
-                break;
+                    break;
+
+                case nameof(Settings.ShowAllDownloadsCompleted_Notification):
+                    _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
+                    if ( settings.ShowAllDownloadsCompleted_Notification )
+                    {
+                        _DownloadController.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
+                    }
+                    break;
             }
         }
         private void ShowDownloadStatisticsInTitle()
@@ -432,17 +443,6 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void downloadListUC_UpdatedSingleRunningRow( DownloadRow row )
-        {
-            if ( _ShowDownloadStatistics )
-            {
-                this.Text = $"{DownloadListUC.GetDownloadInfoText( row )},  [{_APP_TITLE_}]";
-            }
-            //else if ( this.Text != _APP_TITLE_ )
-            //{
-            //    this.Text = _APP_TITLE_;
-            //}
-        }
         private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
         {
             if ( changedType != _CollectionChangedTypeEnum_.Sort )
@@ -457,7 +457,7 @@ namespace m3u8.download.manager.ui
 
                 switch ( changedType )
                 {
-                    case _CollectionChangedTypeEnum_.BulkUpdate:
+                    //case _CollectionChangedTypeEnum_.BulkUpdate:
                     case _CollectionChangedTypeEnum_.Remove:                    
                         _LogRowsHeightStorer.LeaveOnly( (from _row in _DownloadListModel.GetRows() select _row.Log) );
                         if ( changedType == _CollectionChangedTypeEnum_.Remove )
@@ -511,7 +511,9 @@ namespace m3u8.download.manager.ui
                     if ( row.IsFinished()/*.IsFinishedOrError()*/ && Extensions.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
                     {
                         _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
-                        if ( 0 < new FileInfo( outputFileName ).Length ) //NonZeroLength
+
+                        const long MIN_NON_ZERO_FILE_LENGTH_IN_BYTES = 1_024 * 100; //100KB
+                        if ( MIN_NON_ZERO_FILE_LENGTH_IN_BYTES <= new FileInfo( outputFileName ).Length ) //NonZeroLength
                         {
                             ExternalProg_Run_IfExists( Settings.Default.ExternalProgFilePath, $"\"{outputFileName}\"" );
                         }
@@ -522,6 +524,40 @@ namespace m3u8.download.manager.ui
             }
         }
 
+        private void DownloadController_IsDownloadingChanged( bool isDownloading )
+        {
+            if ( isDownloading ) 
+            {
+                if ( _NotifyIcon != null ) _NotifyIcon.Visible = false;
+            }
+            else
+            {
+                if ( _NotifyIcon == null )
+                {
+                    _NotifyIcon = new NotifyIcon() { Visible = true, Icon = Resources.m3u8_32x36, Text = _APP_TITLE_ };
+                    var eventHandler = new EventHandler( (_, _) => _NotifyIcon.Visible = false );
+                    _NotifyIcon.BalloonTipClicked += eventHandler;
+                    _NotifyIcon.BalloonTipClosed  += eventHandler;
+                }
+                else
+                {
+                    _NotifyIcon.Visible = true;
+                }
+                _NotifyIcon.ShowBalloonTip( 2_500, _APP_TITLE_, Resources.ALL_DOWNLOADS_COMPLETED_NOTIFICATION, ToolTipIcon.Info );
+            }
+        }
+
+        private void downloadListUC_UpdatedSingleRunningRow( DownloadRow row )
+        {
+            if ( _ShowDownloadStatistics )
+            {
+                this.Text = $"{DownloadListUC.GetDownloadInfoText( row )},  [{_APP_TITLE_}]";
+            }
+            //else if ( this.Text != _APP_TITLE_ )
+            //{
+            //    this.Text = _APP_TITLE_;
+            //}
+        }
         private void downloadListUC_SelectionChanged( DownloadRow row )
         {
             if ( !mainSplitContainer.Panel2Collapsed )
@@ -722,7 +758,7 @@ namespace m3u8.download.manager.ui
 
                 #region [.variant #2.]
                 _DownloadController.CancelAll( rows );
-                _DownloadListModel.RemoveAll( rows );
+                _DownloadListModel.RemoveRows( rows );
                 _ExternalProgQueue.Remove( rows.SelectMany( row => row.GetOutputFullFileNames() ) );
 
                 SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
@@ -778,20 +814,6 @@ namespace m3u8.download.manager.ui
             return (false);
         }
 
-        #region [.allowed Command by current status.]
-        [M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Created ) ||
-                                                                                                           (status == DownloadStatus.Paused  ) ||
-                                                                                                           (status == DownloadStatus.Canceled) ||
-                                                                                                           (status == DownloadStatus.Finished) ||
-                                                                                                           (status == DownloadStatus.Error   );
-        [M(O.AggressiveInlining)] private static bool CancelDownload_IsAllowed( DownloadStatus status ) => (status == DownloadStatus.Started ) ||
-                                                                                                           (status == DownloadStatus.Running ) ||
-                                                                                                           (status == DownloadStatus.Wait    ) ||
-                                                                                                           (status == DownloadStatus.Paused  );
-        [M(O.AggressiveInlining)] private static bool PauseDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Started ) ||
-                                                                                                           (status == DownloadStatus.Running );
-        #endregion
-
         private void AddNewDownloads( (string m3u8FileUrl, bool autoStartDownload)[] array )
         {
             var p = (m3u8FileUrls     : (from t in array select t.m3u8FileUrl).ToArray(), 
@@ -800,7 +822,7 @@ namespace m3u8.download.manager.ui
         }
         private void AddNewDownloads( in (IReadOnlyCollection< string > m3u8FileUrls, bool autoStartDownload) p ) //, bool forceShowEmptyDialog )
         {
-            if ( p.m3u8FileUrls.AnyEx() )
+            if ( p.m3u8FileUrls.AnyEx_() )
             {
                 if ( p.m3u8FileUrls.Count == 1 )
                 {
@@ -1407,6 +1429,21 @@ namespace m3u8.download.manager.ui
                 downloadListUC.Invalidate( true );
             }
         }
+        #endregion
+
+
+        #region [.allowed Command by current status.]
+        [M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Created ) ||
+                                                                                                           (status == DownloadStatus.Paused  ) ||
+                                                                                                           (status == DownloadStatus.Canceled) ||
+                                                                                                           (status == DownloadStatus.Finished) ||
+                                                                                                           (status == DownloadStatus.Error   );
+        [M(O.AggressiveInlining)] private static bool CancelDownload_IsAllowed( DownloadStatus status ) => (status == DownloadStatus.Started ) ||
+                                                                                                           (status == DownloadStatus.Running ) ||
+                                                                                                           (status == DownloadStatus.Wait    ) ||
+                                                                                                           (status == DownloadStatus.Paused  );
+        [M(O.AggressiveInlining)] private static bool PauseDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Started ) ||
+                                                                                                           (status == DownloadStatus.Running );
         #endregion
     }
 }
