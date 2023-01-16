@@ -458,7 +458,8 @@ namespace m3u8.download.manager.ui
                 switch ( changedType )
                 {
                     //case _CollectionChangedTypeEnum_.BulkUpdate:
-                    case _CollectionChangedTypeEnum_.Remove:                    
+                    case _CollectionChangedTypeEnum_.Remove:
+                    case _CollectionChangedTypeEnum_.Remove_Bulk:
                         _LogRowsHeightStorer.LeaveOnly( (from _row in _DownloadListModel.GetRows() select _row.Log) );
                         if ( changedType == _CollectionChangedTypeEnum_.Remove )
                         {

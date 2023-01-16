@@ -75,8 +75,10 @@ namespace m3u8.download.manager.ui
             switch ( changedType )
             {
                 case _CollectionChangedTypeEnum_.Add:
+                case _CollectionChangedTypeEnum_.Add_Bulk:
                 //case _CollectionChangedTypeEnum_.BulkUpdate:
                 case _CollectionChangedTypeEnum_.Remove:
+                case _CollectionChangedTypeEnum_.Remove_Bulk:
                 case _CollectionChangedTypeEnum_.Clear:
                     SetDataGridItems();
                 break;

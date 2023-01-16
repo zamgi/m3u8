@@ -34,7 +34,7 @@ namespace m3u8.download.manager.models
         /// <summary>
         /// 
         /// </summary>
-        public enum CollectionChangedTypeEnum { Add, Remove, Clear, /*BulkUpdate,*/ Sort }
+        public enum CollectionChangedTypeEnum { Add, Add_Bulk, Remove, Remove_Bulk, Clear, /*BulkUpdate,*/ Sort }
         /// <summary>
         /// 
         /// </summary>
@@ -71,11 +71,11 @@ namespace m3u8.download.manager.models
             var new_rowCount = this.RowsCount;            
             if ( rowCount < new_rowCount )
             {
-                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Add, null ); //CollectionChangedTypeEnum.BulkUpdate
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Add_Bulk, null ); //CollectionChangedTypeEnum.BulkUpdate
             }
             else if ( new_rowCount < rowCount )
             {
-                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Remove, null );
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Remove_Bulk, null );
             }
         }
 

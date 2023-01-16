@@ -37,7 +37,7 @@ namespace m3u8.download.manager.models
         /// <summary>
         /// 
         /// </summary>
-        public enum CollectionChangedTypeEnum { Add, Remove, Clear, /*BulkUpdate,*/ Sort }
+        public enum CollectionChangedTypeEnum { Add, Add_Bulk, Remove, Remove_Bulk, Clear, /*BulkUpdate,*/ Sort }
         /// <summary>
         /// 
         /// </summary>
@@ -73,11 +73,11 @@ namespace m3u8.download.manager.models
             var new_RowsCount = this.RowsCount;
             if ( rowCount < new_RowsCount )
             {
-                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Add, null ); //CollectionChangedTypeEnum.BulkUpdate
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Add_Bulk, null ); //CollectionChangedTypeEnum.BulkUpdate
             }
             else if ( new_RowsCount < rowCount )
             {
-                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Remove, null );
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Remove_Bulk, null );
             }
         }
 
@@ -115,7 +115,7 @@ namespace m3u8.download.manager.models
 #endif
             if ( row != null )
             {                
-                var success = _Rows.Remove( row );
+                var suc = _Rows.Remove( row );
 
                 #region [.re-calculate '_RowsVisibleIndexes'.]
                 _RowsVisibleIndexes.Remove( row.Id );
@@ -124,9 +124,9 @@ namespace m3u8.download.manager.models
 
                 if ( !_UpdtTup.InUpdate )
                 {
-                    CollectionChanged?.Invoke( CollectionChangedTypeEnum.Remove, (success ? row : null) );
+                    CollectionChanged?.Invoke( CollectionChangedTypeEnum.Remove, (suc ? row : null) );
                 }
-                return (success);
+                return (suc);
             }
             return (false);
         }

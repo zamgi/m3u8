@@ -343,7 +343,9 @@ namespace m3u8.download.manager.ui
                         Set_DGV_RowCount();
                         break;
 
+                    case _CollectionChangedTypeEnum_.Add_Bulk:
                     case _CollectionChangedTypeEnum_.Remove:
+                    case _CollectionChangedTypeEnum_.Remove_Bulk:
                         SetDataGridItems();
                         AdjustColumnsWidthSprain_And_ScrollToLastRow();
                         DGV.ClearSelection();

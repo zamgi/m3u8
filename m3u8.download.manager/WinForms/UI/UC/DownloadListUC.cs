@@ -326,7 +326,7 @@ namespace m3u8.download.manager.ui
             _Model.CollectionChanged    += Model_CollectionChanged;
             _Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
             _Model.RowPropertiesChanged += Model_RowPropertiesChanged;
-            Model_CollectionChanged( _CollectionChangedTypeEnum_.Add, null );
+            Model_CollectionChanged( _CollectionChangedTypeEnum_.Add_Bulk, null );
         }
         private void DetachModel()
         {
@@ -367,6 +367,7 @@ namespace m3u8.download.manager.ui
                 break;
 
                 case _CollectionChangedTypeEnum_.Add:
+                case _CollectionChangedTypeEnum_.Add_Bulk:
                 {
                     var b = _UserMade_DGV_SelectionChanged;
                     DGV.RowCount = _Model.RowsCount;
@@ -380,6 +381,7 @@ namespace m3u8.download.manager.ui
                 break;
 
                 case _CollectionChangedTypeEnum_.Remove:
+                case _CollectionChangedTypeEnum_.Remove_Bulk:
                 case _CollectionChangedTypeEnum_.Clear:
                 //case _CollectionChangedTypeEnum_.BulkUpdate:
                 {
@@ -415,7 +417,8 @@ namespace m3u8.download.manager.ui
                         if ( hasRows )
                         {
                             var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), rowCount - 1 );
-                            SelectLonelyRow( visibleIndex, forceSelect: (changedType == _CollectionChangedTypeEnum_.Remove)/*true*/ );
+                            var forceSelect  = (changedType == _CollectionChangedTypeEnum_.Remove) || (changedType == _CollectionChangedTypeEnum_.Remove_Bulk)/*true*/;
+                            SelectLonelyRow( visibleIndex, forceSelect );
                         }
                         else
                         {                            

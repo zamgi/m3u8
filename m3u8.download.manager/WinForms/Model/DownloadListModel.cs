@@ -41,7 +41,17 @@ namespace m3u8.download.manager.models
             _Urls.Add( row.Url );
         }
 
-        public void RemoveRows( IReadOnlyList< DownloadRow > rows ) => base.RemoveRows_Internal( rows );
+        public void RemoveRows( IReadOnlyList< DownloadRow > rows )
+        {
+            base.RemoveRows_Internal( rows );
+            if ( rows.AnyEx() )
+            {
+                foreach ( var row in rows )
+                {
+                    _Urls.Remove( (row?.Url ?? string.Empty) );
+                }
+            }
+        }
         public bool RemoveRow( DownloadRow row )
         {
             row?._Remove_RowPropertiesChangedEventHandler();
