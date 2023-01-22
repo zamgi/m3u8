@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 
 namespace m3u8.download.manager.ui
 {
@@ -16,12 +17,13 @@ namespace m3u8.download.manager.ui
     {
         #region [.fields.]
         private RowNumbersPainter _RPN;
+        private _SC_ _SC;
         #endregion
 
         #region [.ctor().]
-        public static bool TryEdit( IReadOnlyCollection< string > excludesWords, out IList< string > resultExcludesWords )
+        public static bool TryEdit( IReadOnlyCollection< string > excludesWords, _SC_ sc, out IList< string > resultExcludesWords )
         {
-            using ( var f = new FileNameExcludesWordsEditor( excludesWords ) )
+            using ( var f = new FileNameExcludesWordsEditor( excludesWords, sc ) )
             {
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
@@ -39,8 +41,10 @@ namespace m3u8.download.manager.ui
 
             _RPN = RowNumbersPainter.Create( DGV, useSelectedBackColor: false );
         }
-        public FileNameExcludesWordsEditor( IEnumerable< string > excludesWords ) : this()
+        public FileNameExcludesWordsEditor( IEnumerable< string > excludesWords, _SC_ sc ) : this()
         {
+            _SC = sc;
+
             var rows = DGV.Rows;
             foreach ( var w in excludesWords )
             {
@@ -83,19 +87,19 @@ namespace m3u8.download.manager.ui
         {
             base.OnLoad( e );
 
-            if ( !base.DesignMode )
+            if ( !base.DesignMode && (_SC != null) )
             {
-                FormPositionStorer.Load( this, Settings.Default.FileNameExcludesWordsEditorPositionJson );
+                FormPositionStorer.Load( this, _SC.Settings.FileNameExcludesWordsEditorPositionJson );
             }
         }
         protected override void OnClosed( EventArgs e )
         {
             base.OnClosed( e );
 
-            if ( !base.DesignMode )
+            if ( !base.DesignMode && (_SC != null) )
             {
-                Settings.Default.FileNameExcludesWordsEditorPositionJson = FormPositionStorer.SaveOnlyPos( this );
-                Settings.Default.SaveNoThrow();
+                _SC.Settings.FileNameExcludesWordsEditorPositionJson = FormPositionStorer.SaveOnlyPos( this );
+                _SC.SaveNoThrow_IfAnyChanged();
             }
         }
         protected override void OnShown( EventArgs e )

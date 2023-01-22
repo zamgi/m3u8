@@ -17,7 +17,7 @@ namespace m3u8.download.manager.ipc
         /// <summary>
         /// 
         /// </summary>
-        internal static class NamedPipeServer__in
+        internal static class NamedPipeServer__Input
         {
             /// <summary>
             /// 
@@ -79,7 +79,7 @@ namespace m3u8.download.manager.ipc
         /// <summary>
         /// 
         /// </summary>
-        internal static class NamedPipeClient__out
+        internal static class NamedPipeClient__Output
         {
             private static NamedPipeClientStream Create_NamedPipeClientStream( string pipeName ) => new NamedPipeClientStream( ".", pipeName, PipeDirection.Out );
 

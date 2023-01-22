@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 
-//using _LogModel_ = m3u8.download.manager.models.LogListModel;
-using _LogModel_ = m3u8.download.manager.models.ListModel< m3u8.download.manager.models.LogRow >;
+using _LogRowsModel_ = m3u8.download.manager.models.ListModel< m3u8.download.manager.models.LogRow >;
 
 namespace m3u8.download.manager.ui
 {
@@ -12,10 +11,10 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed class LogRowsHeightStorer
     {
-        private Dictionary< _LogModel_, Dictionary< int, int > > _Dict;
-        public LogRowsHeightStorer() => _Dict = new Dictionary< _LogModel_, Dictionary< int, int > >();
+        private Dictionary< _LogRowsModel_, Dictionary< int, int > > _Dict;
+        public LogRowsHeightStorer() => _Dict = new Dictionary< _LogRowsModel_, Dictionary< int, int > >();
 
-        public void StoreRowHeight( _LogModel_ model, DataGridViewRow row )
+        public void StoreRowHeight( _LogRowsModel_ model, DataGridViewRow row )
         {
             if ( !_Dict.TryGetValue( model, out var modelDict ) )
             {
@@ -25,7 +24,7 @@ namespace m3u8.download.manager.ui
 
             modelDict[ row.Index ] = row.Height;
         }
-        public bool TryGetStorerByModel( _LogModel_ model, out IReadOnlyDictionary< int, int > dict )
+        public bool TryGetStorerByModel( _LogRowsModel_ model, out IReadOnlyDictionary< int, int > dict )
         {
             if ( _Dict.TryGetValue( model, out var modelDict ) )
             {
@@ -35,9 +34,9 @@ namespace m3u8.download.manager.ui
             dict = null;
             return (false);
         }
-        public bool ContainsModel( _LogModel_ model ) => _Dict.ContainsKey( model );
+        public bool ContainsModel( _LogRowsModel_ model ) => _Dict.ContainsKey( model );
 
-        public void LeaveOnly( IEnumerable< _LogModel_ > models )
+        public void RemoveAllExcept( IEnumerable< _LogRowsModel_ > models )
         {
             var hs = models?.ToHashSet();
             if ( hs.AnyEx() )

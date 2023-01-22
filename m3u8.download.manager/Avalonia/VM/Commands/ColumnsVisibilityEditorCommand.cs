@@ -27,6 +27,7 @@ namespace m3u8.download.manager
                 if ( f.Success )
                 {
                     Debug.WriteLine( "apply columns visibility" );
+                    _MainWindow.SaveDownloadListColumnsInfo();
                 }
             }
         }

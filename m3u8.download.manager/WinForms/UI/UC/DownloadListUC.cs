@@ -10,11 +10,13 @@ using System.Windows.Forms;
 
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using CellStyle   = System.Windows.Forms.DataGridViewCellStyle;
 using HitTestInfo = System.Windows.Forms.DataGridView.HitTestInfo;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+using System.Runtime;
 
 namespace m3u8.download.manager.ui
 {
@@ -91,7 +93,7 @@ namespace m3u8.download.manager.ui
         private SortInfo          _LastSortInfo;
         private Action            _RestoreSortIfNeedAction;
         private Timer             _CommonUpdateTimer;
-        private Settings          _Settings;
+        private _SC_              _SC;
         private ContextMenuStrip  _ColumnsContextMenu;
         #endregion
 
@@ -101,8 +103,8 @@ namespace m3u8.download.manager.ui
             InitializeComponent();
             //----------------------------------------//
 
-            _Settings = Settings.Default;
-            _LastSortInfo = SortInfo.FromJson( _Settings.LastSortInfoJson );
+//_Settings = Settings.Default;
+//_LastSortInfo = SortInfo.FromJson( _Settings.LastSortInfoJson );
 
             _RestoreSortIfNeedAction = new Action( RestoreSortIfNeed );
             _CommonUpdateTimer = new Timer() { Interval = 1_000, Enabled = false };
@@ -315,8 +317,12 @@ namespace m3u8.download.manager.ui
         public bool HasFocus => (DGV.Focused || this.Focused);
 
         public DownloadListModel Model => _Model;
-        public void SetModel( DownloadListModel model )
-        {
+        public void SetModel_And_SettingsController( DownloadListModel model, _SC_ sc )
+        {         
+            _SC = sc;
+            _LastSortInfo = SortInfo.FromJson( _SC.Settings.LastSortInfoJson );
+            //--------------------------------//
+
             if ( _Model == model ) return;
 
             DetachModel();
@@ -350,6 +356,11 @@ namespace m3u8.download.manager.ui
                 }
                 #endregion
             }
+        }
+
+        public void SetSettingsController(  )
+        {
+;
         }
 
         private void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
@@ -1067,8 +1078,8 @@ namespace m3u8.download.manager.ui
 
                 RestoreSortIfNeed();
 
-                _Settings.LastSortInfoJson = _LastSortInfo.ToJson();
-                _Settings.SaveNoThrow();
+                _SC.Settings.LastSortInfoJson = _LastSortInfo.ToJson();
+                _SC.SaveNoThrow_IfAnyChanged();
             }
             else if ( e.Button == MouseButtons.Right )
             {

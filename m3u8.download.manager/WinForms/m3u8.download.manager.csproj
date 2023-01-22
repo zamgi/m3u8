@@ -92,6 +92,7 @@
     </Compile>
     <Compile Include="Infrastructure\Color2ColorTransition.cs" />
     <Compile Include="Infrastructure\FileDeleter.cs" />
+    <Compile Include="Infrastructure\ObjAsDict_JsonSerializer.cs" />
     <Compile Include="Model\DownloadRow.cs" />
     <Compile Include="Model\DownloadListModel.cs" />
     <Compile Include="Model\_more.cs" />

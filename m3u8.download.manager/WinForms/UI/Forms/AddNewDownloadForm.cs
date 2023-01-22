@@ -26,6 +26,7 @@ namespace m3u8.download.manager.ui
         #region [.fields.]
         private LogListModel      _Model;
         private bool              _DownloadLater;
+        private _SC_              _SC;
         private Settings          _Settings;
         private DownloadListModel _DownloadListModel;
         private FileNameCleaner.Processor _FNCP;
@@ -49,6 +50,7 @@ namespace m3u8.download.manager.ui
         }
         public AddNewDownloadForm( _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo = null ) : this()
         {
+            _SC                = sc;
             _Settings          = sc.Settings;
             _DownloadListModel = dc?.Model;
 
@@ -189,7 +191,7 @@ namespace m3u8.download.manager.ui
                     _Settings.LiveStreamMaxSingleFileSizeInMb = this.LiveStreamMaxFileSizeInMb;
                     _Settings.IsLiveStream                    = this.IsLiveStream;
                 }
-                _Settings.SaveNoThrow();
+                _SC.SaveNoThrow_IfAnyChanged();
             }
         }
         private IntPtr _LastForegroundWnd;
@@ -221,7 +223,7 @@ namespace m3u8.download.manager.ui
                     m3u8FileUrlTextBox.FocusAndBlinkBackColor();
                 }
                 else
-                if ( _Settings.UniqueUrlsOnly && ( _DownloadListModel?.ContainsUrl( this.M3u8FileUrl )).GetValueOrDefault() )
+                if ( _Settings.UniqueUrlsOnly && (_DownloadListModel?.ContainsUrl( this.M3u8FileUrl )).GetValueOrDefault() )
                 {
                     e.Cancel = true;
                     this.MessageBox_ShowError( $"Url already exists in list:\n '{this.M3u8FileUrl}'", this.Text );
@@ -441,7 +443,7 @@ namespace m3u8.download.manager.ui
             using ( var cts = new CancellationTokenSource() )
             using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1_500 ) )
             {
-                var t = await _DC_.GetFileTextContent( x.m3u8FileUrl /*this.M3u8FileUrl*/, cts ); //all possible exceptions are thrown within inside
+                var t = await _DC_.GetFileTextContent( x.m3u8FileUrl, _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
                 if ( cts.IsCancellationRequested )
                 {
                     ;

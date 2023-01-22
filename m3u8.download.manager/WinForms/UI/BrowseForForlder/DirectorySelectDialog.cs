@@ -2,6 +2,10 @@
 
 using m3u8.download.manager.Properties;
 
+#if !NETCOREAPP
+using Microsoft.WindowsAPICodePack.Dialogs;
+#endif
+
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -19,7 +23,7 @@ namespace m3u8.download.manager.ui
                                                                : Show_Classic( owner, initialDirectory, descr, out selectedDirectory );
         public static bool Show_AsFileSelectDialog( IWin32Window owner, string initialDirectory, string descr, out string selectedDirectory )
         {
-            using ( var dlg = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog()
+            using ( var dlg = new CommonOpenFileDialog()
             {
                 InitialDirectory = initialDirectory,
                 IsFolderPicker   = true,
@@ -28,7 +32,7 @@ namespace m3u8.download.manager.ui
             {
                 if ( !descr.IsNullOrWhiteSpace() ) dlg.Title = descr;
                 var r = (owner != null) ? dlg.ShowDialog( owner.Handle ) : dlg.ShowDialog();
-                if ( r == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok )
+                if ( r == CommonFileDialogResult.Ok )
                 {
                     selectedDirectory = dlg.FileName;
                     return (true);

@@ -22,22 +22,22 @@ namespace m3u8.download.manager
         {
             var f = new ParallelismForm( _VM.DownloadController );
             {
-                var settings = _VM.SettingsController.Settings;
+                var st = _VM.SettingsController.Settings;
 
-                f.UseCrossDownloadInstanceParallelism = settings.UseCrossDownloadInstanceParallelism;
-                f.MaxDegreeOfParallelism              = settings.MaxDegreeOfParallelism;
-                f.SetMaxCrossDownloadInstance( settings.MaxCrossDownloadInstance, settings.MaxCrossDownloadInstanceSaved );
-                f.MaxSpeedThresholdInMbps             = settings.MaxSpeedThresholdInMbps;
+                f.UseCrossDownloadInstanceParallelism = st.UseCrossDownloadInstanceParallelism;
+                f.MaxDegreeOfParallelism              = st.MaxDegreeOfParallelism;
+                f.SetMaxCrossDownloadInstance( st.MaxCrossDownloadInstance, st.MaxCrossDownloadInstanceSaved );
+                f.MaxSpeedThresholdInMbps             = st.MaxSpeedThresholdInMbps;
 
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
-                    settings.UseCrossDownloadInstanceParallelism = f.UseCrossDownloadInstanceParallelism;
-                    settings.MaxDegreeOfParallelism              = f.MaxDegreeOfParallelism;
-                    settings.MaxCrossDownloadInstance            = f.MaxCrossDownloadInstance;
-                    settings.MaxCrossDownloadInstanceSaved       = f.MaxCrossDownloadInstanceSaved;
-                    settings.MaxSpeedThresholdInMbps             = f.MaxSpeedThresholdInMbps;
-                    settings.SaveNoThrow();
+                    st.UseCrossDownloadInstanceParallelism = f.UseCrossDownloadInstanceParallelism;
+                    st.MaxDegreeOfParallelism              = f.MaxDegreeOfParallelism;
+                    st.MaxCrossDownloadInstance            = f.MaxCrossDownloadInstance;
+                    st.MaxCrossDownloadInstanceSaved       = f.MaxCrossDownloadInstanceSaved;
+                    st.MaxSpeedThresholdInMbps             = f.MaxSpeedThresholdInMbps;
+                    _VM.SettingsController.SaveNoThrow_IfAnyChanged();
                 }
             }            
         }

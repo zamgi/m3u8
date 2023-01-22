@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
 using CellStyle = System.Windows.Forms.DataGridViewCellStyle;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -45,7 +44,7 @@ namespace m3u8.download.manager.ui
         private bool              _ShowOnlyRequestRowsWithErrors;
         private ToolStripMenuItem _ScrollToLastRowMenuItem;
         private bool              _ScrollToLastRow;
-        private SettingsPropertyChangeController _SettingsController;
+        private _SC_ _SettingsController;
 
         private LogListModel     _Model;
         private List_WithIndex< LogRow > _DGVRows;
@@ -111,7 +110,7 @@ namespace m3u8.download.manager.ui
             _Rsp_CellStyleSmallFont_2      = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, ForeColor = fc_suc, BackColor = bc_suc, Alignment = alg };
 
             //----------------------------------------------//
-            var st = SettingsPropertyChangeController.SettingsDefault;
+            var st = _SC_.SettingsDefault;
             _ShowOnlyRequestRowsWithErrors = st.ShowOnlyRequestRowsWithErrors;
             _ShowOnlyRequestRowsWithErrorsMenuItem = new ToolStripMenuItem( "Show only request rows with errors", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = _ShowOnlyRequestRowsWithErrors };
 
@@ -144,7 +143,7 @@ namespace m3u8.download.manager.ui
             get => _ShowOnlyRequestRowsWithErrors;
             set
             {
-                var st = (_SettingsController?.Settings ?? SettingsPropertyChangeController.SettingsDefault);
+                var st = (_SettingsController?.Settings ?? _SC_.SettingsDefault);
                 if ( st.ShowOnlyRequestRowsWithErrors != value )
                 {
                     st.ShowOnlyRequestRowsWithErrors = value;
@@ -157,7 +156,7 @@ namespace m3u8.download.manager.ui
             get => _ScrollToLastRow;
             set
             {
-                var st = (_SettingsController?.Settings ?? SettingsPropertyChangeController.SettingsDefault);
+                var st = (_SettingsController?.Settings ?? _SC_.SettingsDefault);
                 if ( st.ScrollToLastRow != value )
                 {
                     st.ScrollToLastRow = value;
@@ -227,7 +226,7 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        public void SetSettingsController( SettingsPropertyChangeController sc )
+        public void SetSettingsController( _SC_ sc )
         {
             DetachSettingsController();
 

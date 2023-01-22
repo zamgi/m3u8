@@ -8,17 +8,19 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
-using m3u8.download.manager.controllers;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
+
+using _DC_ = m3u8.download.manager.controllers.DownloadController;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
+using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
+using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
-using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__in.ReceivedInputParamsArrayEventHandler;
-using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__in.ReceivedSend2FirstCopyEventHandler;
-using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 
 namespace m3u8.download.manager.ui
 {
@@ -32,14 +34,14 @@ namespace m3u8.download.manager.ui
         private _ReceivedInputParamsArrayEventHandler_ _ReceivedInputParamsArrayEventHandler;
         private _ReceivedSend2FirstCopyEventHandler_   _ReceivedSend2FirstCopyEventHandler;        
 
-        private DownloadListModel                _DownloadListModel;
-        private DownloadController               _DownloadController;
-        private SettingsPropertyChangeController _SettingsController;
-        private LogRowsHeightStorer              _LogRowsHeightStorer;
-        private Action< DownloadRow, string >    _DownloadListModel_RowPropertiesChangedAction;
-        private bool                             _ShowDownloadStatistics;
-        private HashSet< string >                _ExternalProgQueue;
-        private NotifyIcon                       _NotifyIcon;
+        private DownloadListModel             _DownloadListModel;
+        private _DC_                          _DC;
+        private _SC_                          _SC;
+        private LogRowsHeightStorer           _LogRowsHeightStorer;
+        private Action< DownloadRow, string > _DownloadListModel_RowPropertiesChangedAction;
+        private bool                          _ShowDownloadStatistics;
+        private HashSet< string >             _ExternalProgQueue;
+        private NotifyIcon                    _NotifyIcon;
 #if NETCOREAPP
         private static string _APP_TITLE_ => Resources.APP_TITLE__NET_CORE;
 #else
@@ -56,48 +58,49 @@ namespace m3u8.download.manager.ui
 
             _DownloadListModel_RowPropertiesChangedAction = new Action< DownloadRow, string >( DownloadListModel_RowPropertiesChanged );
 
-            _SettingsController = new SettingsPropertyChangeController();
+            _SC = new _SC_();
             _LogRowsHeightStorer = new LogRowsHeightStorer();
 
             _DownloadListModel  = new DownloadListModel();
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;            
-            _DownloadController = new DownloadController( _DownloadListModel, _SettingsController );
+            _DC = new _DC_( _DownloadListModel, _SC );
 
-            _SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
-            SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle) );
-            SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ExternalProgCaption) );
-            SettingsController_PropertyChanged( _SettingsController.Settings, nameof(Settings.ShowAllDownloadsCompleted_Notification) );
+            _SC.SettingsPropertyChanged += SettingsController_PropertyChanged;
+            SettingsController_PropertyChanged( _SC.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle) );
+            SettingsController_PropertyChanged( _SC.Settings, nameof(Settings.ExternalProgCaption) );
+            SettingsController_PropertyChanged( _SC.Settings, nameof(Settings.ShowAllDownloadsCompleted_Notification) );
 
-            logUC.SetSettingsController( _SettingsController );
+            logUC.SetSettingsController( _SC );
             logUC.SetLogRowsHeightStorer( _LogRowsHeightStorer );
 
-            downloadListUC.SetModel( _DownloadListModel );
+            downloadListUC.SetModel_And_SettingsController( _DownloadListModel, _SC );
             downloadListUC.KeyDown += (s, e) => this.OnKeyDown( e );
             downloadListUC.MouseClickRightButton   += downloadListUC_MouseClickRightButton;
             downloadListUC.UpdatedSingleRunningRow += downloadListUC_UpdatedSingleRunningRow;
             downloadListUC.DoubleClickEx           += openOutputFileMenuItem_Click;
-            statusBarUC.SetDownloadController( _DownloadController );
-            statusBarUC.SetSettingsController( _SettingsController );
+            statusBarUC.SetDownloadController( _DC );
+            statusBarUC.SetSettingsController( _SC );
             statusBarUC.TrackItemsCount( downloadListUC );
+            statusBarUC.SettingsChanged += statusBarUC_SettingsChanged;
 
             _ReceivedInputParamsArrayEventHandler = AddNewDownloads;
             _ReceivedSend2FirstCopyEventHandler   = ReceivedSend2FirstCopy;
-            PipeIPC.NamedPipeServer__in.ReceivedInputParamsArray += NamedPipeServer__in_ReceivedInputParamsArray;
-            PipeIPC.NamedPipeServer__in.ReceivedSend2FirstCopy   += NamedPipeServer__in_ReceivedSend2FirstCopy;
+            PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArray += NamedPipeServer__Input_ReceivedInputParamsArray;
+            PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopy   += NamedPipeServer__Input_ReceivedSend2FirstCopy;
 
-            NameCleaner.ResetExcludesWords( _SettingsController.NameCleanerExcludesWords );
+            NameCleaner.ResetExcludesWords( _SC.NameCleanerExcludesWords );
 
-            showLogToolButton.Checked = _SettingsController.ShowLog;
+            showLogToolButton.Checked = _SC.ShowLog;
             showLogToolButton_Click( showLogToolButton, EventArgs.Empty );
 
-            downloadInstanceToolButton.Visible = _SettingsController.MaxCrossDownloadInstance.HasValue;
-            if ( _SettingsController.MaxCrossDownloadInstance.HasValue )
+            downloadInstanceToolButton.Visible = _SC.MaxCrossDownloadInstance.HasValue;
+            if ( _SC.MaxCrossDownloadInstance.HasValue )
             {
-                downloadInstanceToolButton.Value = _SettingsController.MaxCrossDownloadInstance.Value;
+                downloadInstanceToolButton.Value = _SC.MaxCrossDownloadInstance.Value;
             }
             //degreeOfParallelismToolButton.Visible = ;
-            degreeOfParallelismToolButton.Value = _SettingsController.MaxDegreeOfParallelism;
-            speedThresholdToolButton     .Value = _SettingsController.MaxSpeedThresholdInMbps;
+            degreeOfParallelismToolButton.Value = _SC.MaxDegreeOfParallelism;
+            speedThresholdToolButton     .Value = _SC.MaxSpeedThresholdInMbps;
 
             _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
         }
@@ -109,8 +112,8 @@ namespace m3u8.download.manager.ui
             {
                 components?.Dispose();
 
-                _DownloadController.Dispose();
-                _SettingsController.Dispose();
+                _DC.Dispose();
+                _SC.Dispose();
                 _NotifyIcon?.Dispose();
             }
             base.Dispose( disposing );
@@ -124,8 +127,8 @@ namespace m3u8.download.manager.ui
 
             if ( !base.DesignMode )
             {
-                FormPositionStorer.Load( this, _SettingsController.MainFormPositionJson );
-                _DownloadListModel.AddRows( DownloadRowsSerializer.FromJSON( _SettingsController.DownloadRowsJson ) );
+                FormPositionStorer.Load( this, _SC.MainFormPositionJson );
+                _DownloadListModel.AddRows( _SC.GetDownloadRows() /*DownloadRowsSerializer.FromJSON( _SettingsController.DownloadRowsJson )*/ );
             }
 #if DEBUG
             if ( _DownloadListModel.RowsCount == 0 )
@@ -142,9 +145,9 @@ namespace m3u8.download.manager.ui
 
             if ( !base.DesignMode )
             {
-                _SettingsController.MainFormPositionJson = FormPositionStorer.Save( this );
-                _SettingsController.DownloadRowsJson     = DownloadRowsSerializer.ToJSON( _DownloadListModel.GetRows() );
-                _SettingsController.SaveNoThrow();
+                _SC.MainFormPositionJson = FormPositionStorer.Save( this );
+                _SC.SetDownloadRows( _DownloadListModel.GetRows() );
+                _SC.SaveNoThrow_IfAnyChanged();
             }
         }
         protected override void OnShown( EventArgs e )
@@ -178,7 +181,7 @@ namespace m3u8.download.manager.ui
             #endregion
 
             //still downloading?
-            if ( _DownloadController.IsDownloading )
+            if ( _DC.IsDownloading )
             {
                 if ( this.WindowState == FormWindowState.Minimized )
                 {
@@ -192,10 +195,10 @@ namespace m3u8.download.manager.ui
                     //waiting for all canceled and becomes finished
                     for ( var sw = Stopwatch.StartNew(); ; )
                     {
-                        _DownloadController.CancelAll();
+                        _DC.CancelAll();
                         Application.DoEvents();
 
-                        if ( !_DownloadController.IsDownloading || (WAIT_Milliseconds <= sw.ElapsedMilliseconds) )
+                        if ( !_DC.IsDownloading || (WAIT_Milliseconds <= sw.ElapsedMilliseconds) )
                         {
                             break;
                         }
@@ -338,9 +341,9 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region [.private methods.]
-        private void NamedPipeServer__in_ReceivedInputParamsArray( (string m3u8FileUrl, bool autoStartDownload)[] array ) => this.BeginInvoke( _ReceivedInputParamsArrayEventHandler, array );
-        private void NamedPipeServer__in_ReceivedSend2FirstCopy() => this.BeginInvoke( _ReceivedSend2FirstCopyEventHandler );
+        #region [.event handlers methods.]
+        private void NamedPipeServer__Input_ReceivedInputParamsArray( (string m3u8FileUrl, bool autoStartDownload)[] array ) => this.BeginInvoke( _ReceivedInputParamsArrayEventHandler, array );
+        private void NamedPipeServer__Input_ReceivedSend2FirstCopy() => this.BeginInvoke( _ReceivedSend2FirstCopyEventHandler );
         private void ReceivedSend2FirstCopy()
         {
             if ( this.WindowState == FormWindowState.Minimized )
@@ -355,6 +358,7 @@ namespace m3u8.download.manager.ui
 
         private void SettingsController_PropertyChanged( Settings settings, string propertyName )
         {
+            var is_need_save = false;
             switch ( propertyName )
             {
                 case nameof(Settings.ShowDownloadStatisticsInMainFormTitle):
@@ -374,27 +378,35 @@ namespace m3u8.download.manager.ui
                     {
                         downloadInstanceToolButton.Value = settings.MaxCrossDownloadInstance.Value;
                     }
+                    is_need_save = true;
                     break;
 
                 case nameof(Settings.MaxDegreeOfParallelism):
                     degreeOfParallelismToolButton.Value = settings.MaxDegreeOfParallelism;
+                    is_need_save = true;
+                    break;
+
+                case nameof(Settings.MaxSpeedThresholdInMbps):
+                    speedThresholdToolButton.Value = settings.MaxSpeedThresholdInMbps;
+                    is_need_save = true;
                     break;
 
                 case nameof(Settings.ExternalProgCaption):
                     openOutputFilesWithExternalMenuItem.Text = $"    Open with '{settings.ExternalProgCaption}'";
                     break;
 
-                case nameof(Settings.MaxSpeedThresholdInMbps):
-                    speedThresholdToolButton.Value = settings.MaxSpeedThresholdInMbps;
-                    break;
-
                 case nameof(Settings.ShowAllDownloadsCompleted_Notification):
-                    _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
+                    _DC.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
                     if ( settings.ShowAllDownloadsCompleted_Notification )
                     {
-                        _DownloadController.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
+                        _DC.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
                     }
                     break;
+            }
+
+            if ( is_need_save )
+            {
+                _SC.SaveNoThrow_IfAnyChanged();
             }
         }
         private void ShowDownloadStatisticsInTitle()
@@ -445,41 +457,42 @@ namespace m3u8.download.manager.ui
 
         private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
         {
-            if ( changedType != _CollectionChangedTypeEnum_.Sort )
+            if ( changedType == _CollectionChangedTypeEnum_.Sort ) return;
+
+            if ( this.InvokeRequired )
             {
-                if ( this.InvokeRequired )
-                {
-                    this.BeginInvoke( DownloadListModel_CollectionChanged, changedType, row );
-                    return;
-                }
-
-                ShowDownloadStatisticsInTitle();
-
-                switch ( changedType )
-                {
-                    //case _CollectionChangedTypeEnum_.BulkUpdate:
-                    case _CollectionChangedTypeEnum_.Remove:
-                    case _CollectionChangedTypeEnum_.Remove_Bulk:
-                        _LogRowsHeightStorer.LeaveOnly( (from _row in _DownloadListModel.GetRows() select _row.Log) );
-                        if ( changedType == _CollectionChangedTypeEnum_.Remove )
-                        {
-                            _ExternalProgQueue.Remove( row?.GetOutputFullFileNames() );
-                        }
-                    break;
-
-                    case _CollectionChangedTypeEnum_.Clear:
-                        _LogRowsHeightStorer.Clear();
-                        _ExternalProgQueue  .Clear();
-                    break;
-
-                    case _CollectionChangedTypeEnum_.Add:
-                        if ( Settings.Default.ExternalProgApplyByDefault )
-                        {
-                            _ExternalProgQueue.AddIf( row?.GetOutputFullFileName() /*(from _row in _DownloadListModel.GetRows() select _row.GetOutputFullFileName())*/ );
-                        }
-                    break;
-                }
+                this.BeginInvoke( DownloadListModel_CollectionChanged, changedType, row );
+                return;
             }
+
+            ShowDownloadStatisticsInTitle();
+
+            switch ( changedType )
+            {
+                //case _CollectionChangedTypeEnum_.BulkUpdate:
+                case _CollectionChangedTypeEnum_.Remove:
+                case _CollectionChangedTypeEnum_.Remove_Bulk:
+                    _LogRowsHeightStorer.RemoveAllExcept( (from _row in _DownloadListModel.GetRows() select _row.Log) );
+                    if ( changedType == _CollectionChangedTypeEnum_.Remove )
+                    {
+                        _ExternalProgQueue.Remove( row?.GetOutputFullFileNames() );
+                    }
+                break;
+
+                case _CollectionChangedTypeEnum_.Clear:
+                    _LogRowsHeightStorer.Clear();
+                    _ExternalProgQueue  .Clear();
+                break;
+
+                case _CollectionChangedTypeEnum_.Add:
+                    if ( _SC.Settings.ExternalProgApplyByDefault )
+                    {
+                        _ExternalProgQueue.AddIf( row?.GetOutputFullFileName() /*(from _row in _DownloadListModel.GetRows() select _row.GetOutputFullFileName())*/ );
+                    }
+                break;
+            }
+
+            _SC.SetDownloadRows_WithSaveIfChanged( _DownloadListModel.GetRows() );
         }
         private void DownloadListModel_RowPropertiesChanged( DownloadRow row, string propertyName )
         {
@@ -516,7 +529,7 @@ namespace m3u8.download.manager.ui
                         const long MIN_NON_ZERO_FILE_LENGTH_IN_BYTES = 1_024 * 100; //100KB
                         if ( MIN_NON_ZERO_FILE_LENGTH_IN_BYTES <= new FileInfo( outputFileName ).Length ) //NonZeroLength
                         {
-                            ExternalProg_Run_IfExists( Settings.Default.ExternalProgFilePath, $"\"{outputFileName}\"" );
+                            ExternalProg_Run_IfExists( _SC.Settings.ExternalProgFilePath, $"\"{outputFileName}\"" );
                         }
                     }
                     #endregion
@@ -582,6 +595,15 @@ namespace m3u8.download.manager.ui
         }
         private bool downloadListUC_IsDrawCheckMark( DownloadRow row ) => _ExternalProgQueue.Contains( row.GetOutputFullFileName() );
 
+        private void statusBarUC_SettingsChanged( object sender, EventArgs e )
+        {
+            //"apply columns visibility" & possible other settings
+            _SC.MainFormPositionJson = FormPositionStorer.Save( this );
+            _SC.SaveNoThrow_IfAnyChanged();
+        }
+        #endregion
+
+        #region [.private methods.]
         /// <summary>
         /// 
         /// </summary>
@@ -603,19 +625,19 @@ namespace m3u8.download.manager.ui
                 switch ( downloadCommand )
                 {
                     case DownloadCommandEnum.Start:
-                        _DownloadController.Start( row );
+                        _DC.Start( row );
                         break;
 
                     case DownloadCommandEnum.Pause:
-                        _DownloadController.Pause( row );
+                        _DC.Pause( row );
                         break;
 
                     case DownloadCommandEnum.Cancel:
-                        _DownloadController.Cancel( row );
+                        _DC.Cancel( row );
                         break;
 
                     case DownloadCommandEnum.Delete:
-                        _DownloadController.Cancel   ( row );
+                        _DC.Cancel   ( row );
                         _DownloadListModel .RemoveRow( row );
                         row = downloadListUC.GetSelectedDownloadRow();
                         break;
@@ -677,7 +699,7 @@ namespace m3u8.download.manager.ui
                     using ( var cts = new CancellationTokenSource() )
                     using ( WaitBannerUC.Create( this, cts, "delete files...", visibleDelayInMilliseconds: 2_000 ) )
                     {
-                        await _DownloadController.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token,
+                        await _DC.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token,
                             (row, ct) => FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
                             (row) =>
                             {
@@ -758,7 +780,7 @@ namespace m3u8.download.manager.ui
                 #endregion
 
                 #region [.variant #2.]
-                _DownloadController.CancelAll( rows );
+                _DC.CancelAll( rows );
                 _DownloadListModel.RemoveRows( rows );
                 _ExternalProgQueue.Remove( rows.SelectMany( row => row.GetOutputFullFileNames() ) );
 
@@ -852,17 +874,17 @@ namespace m3u8.download.manager.ui
         {
             if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() && FileNameCleaner.TryGetOutputFileNameByUrl( p.m3u8FileUrl, out var outputFileName ) )
             {
-                if ( !_SettingsController.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
+                if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
                 {
-                    var row = _DownloadListModel.AddRow( (p.m3u8FileUrl, outputFileName, _SettingsController.OutputFileDirectory/*, IsLiveStream: false, default*/) );
+                    var row = _DownloadListModel.AddRow( (p.m3u8FileUrl, outputFileName, _SC.OutputFileDirectory/*, IsLiveStream: false, default*/) );
                     await downloadListUC.SelectDownloadRowDelay( row );
-                    _DownloadController.Start( row );
+                    _DC.Start( row );
                 }
                 return;
             }
 
             #region [.AddNewDownloadForm as top-always-owner-form.]
-            AddNewDownloadForm.Show( this, _DownloadController, _SettingsController, p.m3u8FileUrl, seriesInfo, async f =>
+            AddNewDownloadForm.Show( this, _DC, _SC, p.m3u8FileUrl, seriesInfo, async f =>
             {
                 if ( f.DialogResult == DialogResult.OK )
                 {
@@ -870,7 +892,7 @@ namespace m3u8.download.manager.ui
                     await downloadListUC.SelectDownloadRowDelay( row );
                     if ( f.AutoStartDownload )
                     {
-                        _DownloadController.Start( row );
+                        _DC.Start( row );
                     }
                 }
 
@@ -943,7 +965,7 @@ namespace m3u8.download.manager.ui
         private void showLogToolButton_Click( object sender, EventArgs e )
         {
             var showLog = showLogToolButton.Checked;
-            _SettingsController.ShowLog = showLog;
+            _SC.ShowLog = showLog;
             mainSplitContainer.Panel2Collapsed = !showLog; //m3u8FileResultUC.Visible = showLog;
             logUC.SetModel( (showLog ? downloadListUC.GetSelectedDownloadRow()?.Log : null) );
         }
@@ -1010,13 +1032,13 @@ namespace m3u8.download.manager.ui
 
         private void downloadInstanceToolButton_ValueChanged( int downloadInstanceValue )
         {
-            if ( _SettingsController.UseCrossDownloadInstanceParallelism )
+            if ( _SC.UseCrossDownloadInstanceParallelism )
             {
-                _SettingsController.Settings.MaxCrossDownloadInstance = downloadInstanceValue;
+                _SC.Settings.MaxCrossDownloadInstance = downloadInstanceValue;
             }
         }
-        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SettingsController.Settings.MaxDegreeOfParallelism = value;
-        private void speedThrottlerToolButton_ValueChanged( double? value ) => _SettingsController.Settings.MaxSpeedThresholdInMbps = value; 
+        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SC.Settings.MaxDegreeOfParallelism = value;
+        private void speedThrottlerToolButton_ValueChanged( double? value ) => _SC.Settings.MaxSpeedThresholdInMbps = value; 
         #endregion
 
         #region [.context menu.]
@@ -1148,7 +1170,7 @@ namespace m3u8.download.manager.ui
         }
         private void openOutputFilesWithExternalMenuItem_Click( object sender, EventArgs e )
         {            
-            var externalProgFilePath = Settings.Default.ExternalProgFilePath;
+            var externalProgFilePath = _SC.Settings.ExternalProgFilePath;
             if ( !File.Exists( externalProgFilePath ) )
             {
                 this.MessageBox_ShowError( $"External program file doesn't exists: '{externalProgFilePath}'", _APP_TITLE_ );
@@ -1257,7 +1279,7 @@ namespace m3u8.download.manager.ui
                 var status = row.Status;
                 if ( StartDownload_IsAllowed( status ) && !status.IsFinished() )
                 {
-                    _DownloadController.Start( row );
+                    _DC.Start( row );
                 }
             }
         }
@@ -1267,7 +1289,7 @@ namespace m3u8.download.manager.ui
             {
                 if ( PauseDownload_IsAllowed( row.Status ) )
                 {
-                    _DownloadController.Pause( row );
+                    _DC.Pause( row );
                 }
             }
         }
@@ -1277,7 +1299,7 @@ namespace m3u8.download.manager.ui
             {
                 if ( CancelDownload_IsAllowed( row.Status ) )
                 {
-                    _DownloadController.Cancel( row );
+                    _DC.Cancel( row );
                 }
             }
         }
@@ -1289,7 +1311,7 @@ namespace m3u8.download.manager.ui
         #region [.change OutputFileName & OutputDirectory.]
         private void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
-            if ( ChangeOutputFileForm.TryChangeOutputFile( this, row, out var outputFileName ) )
+            if ( ChangeOutputFileForm.TryChangeOutputFile( this, row, _SC, out var outputFileName ) )
             {
                 ChangeOutputFileName( row, outputFileName );
                 downloadListUC.Invalidate( true );

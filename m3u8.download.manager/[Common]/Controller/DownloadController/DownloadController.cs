@@ -102,7 +102,7 @@ namespace m3u8.download.manager.controllers
         #endregion
 
         #region [.static 'GetFileTextContent'.]
-        public static Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( string m3u8FileUrlText, CancellationTokenSource cts = null )
+        public static Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( string m3u8FileUrlText, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
         {
             #region [.url.]
             if ( !Extensions.TryGetM3u8FileUrl( m3u8FileUrlText?.Trim(), out var t ) )
@@ -111,11 +111,11 @@ namespace m3u8.download.manager.controllers
             }
             #endregion
 
-            return (GetFileTextContent( t.m3u8FileUrl, cts ));
+            return (GetFileTextContent( t.m3u8FileUrl, requestTimeoutByPart, cts ));
         }
-        public static async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( Uri m3u8FileUrl, CancellationTokenSource cts = null )
+        public static async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( Uri m3u8FileUrl, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
         {
-            using ( var mc = m3u8_client_factory.Create( SettingsPropertyChangeController.SettingsDefault.RequestTimeoutByPart, attemptRequestCountByPart: 1 ) )
+            using ( var mc = m3u8_client_factory.Create( requestTimeoutByPart, attemptRequestCountByPart: 1 ) )
             {
                 try
                 {

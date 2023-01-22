@@ -21,9 +21,9 @@ namespace m3u8.download.manager
         {
             _VM = vm;
 
-            PipeIPC.NamedPipeServer__in.ReceivedInputParamsArray += NamedPipeServer__in_ReceivedInputParamsArray;
+            PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArray += NamedPipeServer__Input_ReceivedInputParamsArray;
         }
-        private async void NamedPipeServer__in_ReceivedInputParamsArray( (string m3u8FileUrl, bool autoStartDownload)[] array )
+        private async void NamedPipeServer__Input_ReceivedInputParamsArray( (string m3u8FileUrl, bool autoStartDownload)[] array )
             => await Dispatcher.UIThread.InvokeAsync( () => AddNewDownloads( array ) );     
 
         #region [.ICommand.]

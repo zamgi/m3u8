@@ -130,7 +130,7 @@ namespace m3u8.download.manager
 
                     var mainform = new MainForm( inputParamsArray );
 
-                    PipeIPC.NamedPipeServer__in.RunListener( sca.MutexName );
+                    PipeIPC.NamedPipeServer__Input.RunListener( sca.MutexName );
 
                     Application.Run( mainform );
                 }
@@ -138,12 +138,12 @@ namespace m3u8.download.manager
                 {
                     //disallowed async/await => don't work Drag-N-Drop
                     //---await PipeIPC.NamedPipeClient__out.Send_Async( sca.MutexName, inputParamsArray ).CAX();
-                    PipeIPC.NamedPipeClient__out.Send_Async( sca.MutexName, inputParamsArray ).Wait();
+                    PipeIPC.NamedPipeClient__Output.Send_Async( sca.MutexName, inputParamsArray ).Wait();
                 }
                 else
                 {
                     //await PipeIPC.NamedPipeClient__out.Send2FirstCopy_Async( sca.MutexName ).CAX();
-                    PipeIPC.NamedPipeClient__out.Send2FirstCopy_Async( sca.MutexName ).Wait();
+                    PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).Wait();
                 }
                 #endregion
             }

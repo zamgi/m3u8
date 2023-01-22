@@ -123,7 +123,7 @@ namespace m3u8.download.manager
                     #endregion
 
                     App._InputParamsArray = inputParamsArray;
-                    PipeIPC.NamedPipeServer__in.RunListener( sca.MutexName );
+                    PipeIPC.NamedPipeServer__Input.RunListener( sca.MutexName );
                     
                     try
                     {                        
@@ -137,11 +137,11 @@ namespace m3u8.download.manager
                 }
                 else if ( success )
                 {
-                    await PipeIPC.NamedPipeClient__out.Send_Async( sca.MutexName, inputParamsArray ).CAX();
+                    await PipeIPC.NamedPipeClient__Output.Send_Async( sca.MutexName, inputParamsArray ).CAX();
                 }
                 else
                 {
-                    await PipeIPC.NamedPipeClient__out.Send2FirstCopy_Async( sca.MutexName ).CAX();
+                    await PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).CAX();
                 }
                 #endregion
             }

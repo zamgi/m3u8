@@ -79,7 +79,7 @@ namespace m3u8.download.manager.ui
 #if DEBUG
             this.AttachDevTools();
 #endif
-            PipeIPC.NamedPipeServer__in.ReceivedSend2FirstCopy += NamedPipeServer__in_ReceivedSend2FirstCopy;
+            PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopy += NamedPipeServer__Input_ReceivedSend2FirstCopy;
         }
         public MainWindow( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
         private void InitializeComponent()
@@ -166,6 +166,12 @@ namespace m3u8.download.manager.ui
         }
 
         public void Dispose() => _VM.Dispose_NoThrow();
+
+        public void SaveDownloadListColumnsInfo()
+        {
+            _VM.SettingsController.SetDownloadListColumnsInfoJson( downloadListUC.GetColumnsInfoJson() );
+            _VM.SettingsController.SaveNoThrow_IfAnyChanged();
+        }
         #endregion
 
         #region [.public/internal.]
@@ -201,7 +207,7 @@ namespace m3u8.download.manager.ui
                     _VM.AddCommand.AddNewDownload( (m3u8FileUrls.FirstOrDefault(), false) );
                 }
             }
-            _VM.DownloadListModel.AddRows( DownloadRowsSerializer.FromJSON( _VM.SettingsController.DownloadRowsJson ) );
+            _VM.DownloadListModel.AddRows( _VM.SettingsController.GetDownloadRows() /*DownloadRowsSerializer.FromJSON( _VM.SettingsController.DownloadRowsJson )*/ );
 #if DEBUG
             if ( _VM.DownloadListModel.RowsCount == 0 )
             {
@@ -218,8 +224,8 @@ namespace m3u8.download.manager.ui
             #region [.save settings.]
             _VM.SettingsController.MainFormPositionJson = this.GetBounds().ToJSON();
             _VM.SettingsController.SetDownloadListColumnsInfoJson( downloadListUC.GetColumnsInfoJson() );
-            _VM.SettingsController.DownloadRowsJson = DownloadRowsSerializer.ToJSON( _VM.DownloadListModel.GetRows() );
-            _VM.SettingsController.SaveNoThrow();
+            _VM.SettingsController.SetDownloadRows( _VM.DownloadListModel.GetRows() ); //_VM.SettingsController.DownloadRowsJson = DownloadRowsSerializer.ToJSON( _VM.DownloadListModel.GetRows() );
+            _VM.SettingsController.SaveNoThrow_IfAnyChanged();
             #endregion
 
             _HostWindow_4_Notification?.Close();
@@ -396,8 +402,8 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region [.private methods.]
-        private async void NamedPipeServer__in_ReceivedSend2FirstCopy() => await Dispatcher.UIThread.InvokeAsync( () => ReceivedSend2FirstCopy() );
+        #region [.event handlers methods.]
+        private async void NamedPipeServer__Input_ReceivedSend2FirstCopy() => await Dispatcher.UIThread.InvokeAsync( () => ReceivedSend2FirstCopy() );
         private void ReceivedSend2FirstCopy()
         {
             if ( this.WindowState == WindowState.Minimized )
@@ -409,6 +415,7 @@ namespace m3u8.download.manager.ui
 
         private void SettingsController_PropertyChanged( Settings settings, string propertyName )
         {
+            var is_need_save = false;
             switch ( propertyName )
             {
                 case nameof(Settings.ShowDownloadStatisticsInMainFormTitle ):
@@ -422,20 +429,23 @@ namespace m3u8.download.manager.ui
                     ShowDownloadStatisticsInTitle();
                     break;
 
-                case nameof(Settings.MaxCrossDownloadInstance ): // nameof(Settings.UseCrossDownloadInstanceParallelism):
+                case nameof(Settings.MaxCrossDownloadInstance): // nameof(Settings.UseCrossDownloadInstanceParallelism):
                     downloadInstanceToolButton.IsVisible = settings.MaxCrossDownloadInstance.HasValue;
                     if ( settings.MaxCrossDownloadInstance.HasValue )
                     {
                         downloadInstanceToolButton.Value = settings.MaxCrossDownloadInstance.Value;
                     }
+                    is_need_save = true;
                     break;
 
-                case nameof(Settings.MaxDegreeOfParallelism ):
+                case nameof(Settings.MaxDegreeOfParallelism):
                     degreeOfParallelismToolButton.Value = settings.MaxDegreeOfParallelism;
+                    is_need_save = true;
                     break;
 
-                case nameof(Settings.MaxSpeedThresholdInMbps ):
+                case nameof(Settings.MaxSpeedThresholdInMbps):
                     speedThresholdToolButton.Value = settings.MaxSpeedThresholdInMbps;
+                    is_need_save = true;
                     break;
 
                 case nameof(Settings.ShowAllDownloadsCompleted_Notification):
@@ -445,6 +455,11 @@ namespace m3u8.download.manager.ui
                         _VM.DownloadController.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
                     }
                     break;
+            }
+
+            if ( is_need_save )
+            {
+                _VM.SettingsController.SaveNoThrow_IfAnyChanged();
             }
         }
         private async void DownloadListModel_RowPropertiesChanged( DownloadRow row, string propertyName )
@@ -463,24 +478,25 @@ namespace m3u8.download.manager.ui
         }
         private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow _ )
         {
-            if ( changedType != _CollectionChangedTypeEnum_.Sort )
-            {
-                ShowDownloadStatisticsInTitle();
+            if ( changedType == _CollectionChangedTypeEnum_.Sort ) return;
 
-                #region comm.
-                //switch ( collectionChangedType )
-                //{
-                //    case _CollectionChangedTypeEnum_.BulkUpdate:
-                //    case _CollectionChangedTypeEnum_.Remove:                    
-                //        _LogRowsHeightStorer.LeaveOnly( (from row in _VM.DownloadListModel.GetRows() select row.Log) );
-                //    break;
+            ShowDownloadStatisticsInTitle();
 
-                //    case _CollectionChangedTypeEnum_.Clear:
-                //        _LogRowsHeightStorer.Clear();
-                //    break;
-                //} 
-                #endregion
-            }
+            #region comm.
+            //switch ( collectionChangedType )
+            //{
+            //    case _CollectionChangedTypeEnum_.BulkUpdate:
+            //    case _CollectionChangedTypeEnum_.Remove:                    
+            //        _LogRowsHeightStorer.LeaveOnly( (from row in _VM.DownloadListModel.GetRows() select row.Log) );
+            //          break;
+
+            //    case _CollectionChangedTypeEnum_.Clear:
+            //        _LogRowsHeightStorer.Clear();
+            //          break;
+            //} 
+            #endregion
+
+            _VM.SettingsController.SetDownloadRows_WithSaveIfChanged( _VM.DownloadListModel.GetRows() );
         }
         private void DownloadController_IsDownloadingChanged( bool isDownloading )
         {
@@ -545,6 +561,9 @@ namespace m3u8.download.manager.ui
                 this.Title = $"{DownloadListUC.GetDownloadInfoText( row )},  [{_Resources_.APP_TITLE}]";
             }
         }
+        #endregion
+
+        #region [.private methods.]
         private void SetDownloadToolButtonsStatus( DownloadRow row )
         {
             if ( row == null )

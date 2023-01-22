@@ -5,6 +5,8 @@ using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
 
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
 namespace m3u8.download.manager
 {
     /// <summary>
@@ -12,8 +14,8 @@ namespace m3u8.download.manager
     /// </summary>
     internal sealed class FileNameExcludesWordsEditorCommand : ICommand
     {
-        private Settings _Settings;
-        public FileNameExcludesWordsEditorCommand( MainVM vm ) => _Settings = vm.SettingsController.Settings;
+        private _SC_ _SC;
+        public FileNameExcludesWordsEditorCommand( MainVM vm ) => _SC = vm.SettingsController;
 
 #pragma warning disable CS0067
         public event EventHandler CanExecuteChanged;
@@ -28,8 +30,8 @@ namespace m3u8.download.manager
                 if ( f.Success )
                 {
                     NameCleaner.ResetExcludesWords( f.GetFileNameExcludesWords() );
-                    _Settings.ResetNameCleanerExcludesWords( NameCleaner.ExcludesWords );
-                    _Settings.SaveNoThrow();
+                    _SC.Settings.ResetNameCleanerExcludesWords( NameCleaner.ExcludesWords );
+                    _SC.SaveNoThrow_IfAnyChanged();
                 }
             }            
         }

@@ -14,7 +14,8 @@ using Avalonia.Media;
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
-using m3u8.download.manager.Properties;
+
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _AvaColor_   = Avalonia.Media.Color;
 using _AvaBrushes_ = Avalonia.Media.Brushes;
 
@@ -42,7 +43,7 @@ namespace m3u8.download.manager.ui
         #region [.fields.]
         private LogListModel      _Model;
         private bool              _DownloadLater;
-        private Settings          _Settings;
+        private _SC_              _SC;
         private DownloadListModel _DownloadListModel;
         private FileNameCleaner.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
@@ -82,13 +83,13 @@ namespace m3u8.download.manager.ui
         {
             this.DataContext = new AddNewDownloadFormVM( this );
 
-            _Settings          = vm.SettingsController.Settings;
+            _SC = vm.SettingsController;
             _DownloadListModel = vm.DownloadController?.Model;
             
             this.M3u8FileUrl = m3u8FileUrl;
-            this.OutputDirectory           = _Settings.OutputFileDirectory;            
-            this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
-            //this.IsLiveStream              = _Settings.IsLiveStream;
+            this.OutputDirectory           = _SC.Settings.OutputFileDirectory;            
+            this.LiveStreamMaxFileSizeInMb = _SC.Settings.LiveStreamMaxSingleFileSizeInMb;
+            //this.IsLiveStream              = _SC.Settings.IsLiveStream;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
@@ -134,10 +135,10 @@ namespace m3u8.download.manager.ui
 
             if ( this.Success )
             {
-                _Settings.OutputFileDirectory             = this.OutputDirectory;
-                _Settings.LiveStreamMaxSingleFileSizeInMb = this.LiveStreamMaxFileSizeInMb;
-                _Settings.IsLiveStream                    = this.IsLiveStream;
-                _Settings.SaveNoThrow();
+                _SC.Settings.OutputFileDirectory             = this.OutputDirectory;
+                _SC.Settings.LiveStreamMaxSingleFileSizeInMb = this.LiveStreamMaxFileSizeInMb;
+                _SC.Settings.IsLiveStream                    = this.IsLiveStream;
+                _SC.SaveNoThrow_IfAnyChanged();
             }
         }
         protected override void OnClosing( CancelEventArgs e )
@@ -205,7 +206,7 @@ namespace m3u8.download.manager.ui
         private async void outputFileNameSelectButton_Click( object sender, RoutedEventArgs e )
         {
             var sfd = new SaveFileDialog() { Directory        = this.OutputDirectory,
-                                             DefaultExtension = _Settings.OutputFileExtension,
+                                             DefaultExtension = _SC.Settings.OutputFileExtension,
                                              InitialFileName  = FileNameCleaner.GetOutputFileName( this.OutputFileName ),
                                              /*AddExtension     = true,*/ };
             {
@@ -291,7 +292,7 @@ namespace m3u8.download.manager.ui
                 return (false);
             }
             else
-            if ( _Settings.UniqueUrlsOnly && ( _DownloadListModel?.ContainsUrl( this.M3u8FileUrl )).GetValueOrDefault() )
+            if ( _SC.Settings.UniqueUrlsOnly && (_DownloadListModel?.ContainsUrl( this.M3u8FileUrl )).GetValueOrDefault() )
             {
                 await Extensions.MessageBox_ShowError( $"Url already exists in list:\n '{this.M3u8FileUrl}'\n", this.Title );
                 m3u8FileUrlTextBox.FocusAndBlinkBackColor();
@@ -346,7 +347,7 @@ namespace m3u8.download.manager.ui
             using ( WaitBannerForm.CreateAndShow( this, cts, visibleDelayInMilliseconds: 1_500 ) )
             {
 //await Task.Delay( 10_000 );
-                var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl, cts ); //all possible exceptions are thrown within inside
+                var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl, _SC.Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
                 if ( cts.IsCancellationRequested )
                 {
                     ;

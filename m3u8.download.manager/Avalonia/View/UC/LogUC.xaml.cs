@@ -9,9 +9,9 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 
-using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
 
 namespace m3u8.download.manager.ui
@@ -23,7 +23,7 @@ namespace m3u8.download.manager.ui
     {
         #region [.field's.]
         private DataGrid DGV;
-        private SettingsPropertyChangeController _SettingsController;
+        private _SC_     _SettingsController;
         private bool     _ShowOnlyRequestRowsWithErrors;
         private CheckBox _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox;
         private bool     _ScrollToLastRow;
@@ -54,7 +54,7 @@ namespace m3u8.download.manager.ui
 
             //this.Styles.Add( GlobalStyles.Dark );
 
-            var st = SettingsPropertyChangeController.SettingsDefault;
+            var st = _SC_.SettingsDefault;
             _ShowOnlyRequestRowsWithErrors = st.ShowOnlyRequestRowsWithErrors;
             _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox.IsChecked = _ShowOnlyRequestRowsWithErrors;
             _ScrollToLastRow = st.ScrollToLastRow;
@@ -64,7 +64,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.Model.]
-        internal void SetSettingsController( SettingsPropertyChangeController sc )
+        internal void SetSettingsController( _SC_ sc )
         {
             DetachSettingsController();
 
@@ -303,12 +303,12 @@ namespace m3u8.download.manager.ui
         public bool ShowOnlyRequestRowsWithErrors
         {
             get => _ShowOnlyRequestRowsWithErrors;
-            set => (_SettingsController?.Settings ?? SettingsPropertyChangeController.SettingsDefault).ShowOnlyRequestRowsWithErrors = value;
+            set => (_SettingsController?.Settings ?? _SC_.SettingsDefault).ShowOnlyRequestRowsWithErrors = value;
         }
         public bool ScrollToLastRow
         {
             get => _ScrollToLastRow;
-            set => (_SettingsController?.Settings ?? SettingsPropertyChangeController.SettingsDefault).ScrollToLastRow = value;
+            set => (_SettingsController?.Settings ?? _SC_.SettingsDefault).ScrollToLastRow = value;
         }        
         public void ClearSelection() => DGV.SelectedItem = null;
         #endregion

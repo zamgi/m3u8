@@ -4,8 +4,8 @@ using System.Windows.Forms;
 
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
-using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 
 namespace m3u8.download.manager.ui
 {
@@ -15,13 +15,14 @@ namespace m3u8.download.manager.ui
     internal sealed partial class ChangeOutputFileForm : Form
     {
         #region [.field's.]
-        private FileNameCleaner.Processor _FNCP; 
+        private FileNameCleaner.Processor _FNCP;
+        private _SC_ _SC;
         #endregion
 
         #region [.ctor().]
-        internal static bool TryChangeOutputFile( IWin32Window owner, DownloadRow row, out string outputFileName )
+        internal static bool TryChangeOutputFile( IWin32Window owner, DownloadRow row, _SC_ sc, out string outputFileName )
         {
-            using ( var f = new ChangeOutputFileForm( row ) )
+            using ( var f = new ChangeOutputFileForm( row, sc ) )
             {
                 if ( (f.ShowDialog( owner ) == DialogResult.OK) &&
                      FileNameCleaner.TryGetOutputFileName( f.OutputFileName, out outputFileName )
@@ -40,9 +41,10 @@ namespace m3u8.download.manager.ui
 
             _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
         }
-        internal ChangeOutputFileForm( DownloadRow row ) : this()
+        internal ChangeOutputFileForm( DownloadRow row, _SC_ sc ) : this()
         {
             (Row, this.OutputFileName) = (row, row.OutputFileName);
+            _SC = sc;
 
             set_outputFileNameTextBox_Selection_Position( this.OutputFileName );
             _FNCP.FileNameTextBox_TextChanged( outputFileName => set_outputFileNameTextBox_Selection_Position( outputFileName ) );
@@ -81,19 +83,19 @@ namespace m3u8.download.manager.ui
         {
             base.OnLoad( e );
 
-            if ( !base.DesignMode )
+            if ( !base.DesignMode && (_SC != null) )
             {
-                FormPositionStorer.LoadAllExcludeHeight( this, Settings.Default.ChangeOutputFileFormPositionJson, 200, 70 );
+                FormPositionStorer.LoadAllExcludeHeight( this, _SC.Settings.ChangeOutputFileFormPositionJson, 200, 70 );
             }
         }
         protected override void OnClosed( EventArgs e )
         {
             base.OnClosed( e );
 
-            if ( !base.DesignMode )
+            if ( !base.DesignMode && (_SC != null) )
             {
-                Settings.Default.ChangeOutputFileFormPositionJson = FormPositionStorer.SaveOnlyPos( this );
-                Settings.Default.SaveNoThrow();
+                _SC.Settings.ChangeOutputFileFormPositionJson = FormPositionStorer.SaveOnlyPos( this );
+                _SC.SaveNoThrow_IfAnyChanged();
             }
         }
         protected override void OnFormClosing( FormClosingEventArgs e )

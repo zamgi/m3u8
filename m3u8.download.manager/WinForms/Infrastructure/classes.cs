@@ -385,7 +385,15 @@ namespace m3u8.download.manager.ui
         }
 
         public static string ToJSON( IEnumerable< DownloadRow > rows ) => rows.Select( r => new DownloadRow_4_Serialize( r ) ).ToJSON();
-        public static IEnumerable< (DateTime CreatedOrStartedDateTime, string Url, string OutputFileName, string OutputDirectory, DownloadStatus Status, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) > FromJSON( string json )
+        public static IEnumerable< 
+            (DateTime CreatedOrStartedDateTime, 
+             string Url, 
+             string OutputFileName, 
+             string OutputDirectory,
+             DownloadStatus Status,
+             bool IsLiveStream,
+             long LiveStreamMaxFileSizeInBytes) 
+            > FromJSON( string json )
         {
             if ( !json.IsNullOrWhiteSpace() )
             {
