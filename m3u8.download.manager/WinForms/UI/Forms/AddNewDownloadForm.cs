@@ -133,7 +133,12 @@ namespace m3u8.download.manager.ui
             var json = _Settings.AddNewDownloadFormPositionLogVisibleJson;
             if ( !json.IsNullOrEmpty() )
             {
+                var saved_height = this.Height;
                 FormPositionStorer.LoadOnlyHeight( this, json );
+                if ( (this.Height - saved_height) < 50 )
+                {
+                    this.Height = saved_height + 250;
+                }
             }
             else
             {
