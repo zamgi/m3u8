@@ -45,7 +45,7 @@ namespace m3u8.download.manager.ui
         private bool              _DownloadLater;
         private _SC_              _SC;
         private DownloadListModel _DownloadListModel;
-        private FileNameCleaner.Processor _FNCP;
+        private FileNameCleaner4UI.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private (int n, int total) _SeriesInfo;
         #endregion
@@ -71,7 +71,7 @@ namespace m3u8.download.manager.ui
             this.Find< Button >( "loadM3u8FileContentButton"   ).Click += loadM3u8FileContentButton_Click;
             isLiveStreamCheckBox.Click += isLiveStreamCheckBox_Click;
 
-            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
+            _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
 
             m3u8FileUrlTextBox_SubscribeDisposable    = m3u8FileUrlTextBox   .GetObservable( TextBox.TextProperty ).Subscribe( m3u8FileUrlTextBox_TextChanged    );
             outputFileNameTextBox_SubscribeDisposable = outputFileNameTextBox.GetObservable( TextBox.TextProperty ).Subscribe( outputFileNameTextBox_TextChanged );
@@ -207,7 +207,7 @@ namespace m3u8.download.manager.ui
         {
             var sfd = new SaveFileDialog() { Directory        = this.OutputDirectory,
                                              DefaultExtension = _SC.Settings.OutputFileExtension,
-                                             InitialFileName  = FileNameCleaner.GetOutputFileName( this.OutputFileName ),
+                                             InitialFileName  = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName ),
                                              /*AddExtension     = true,*/ };
             {
                 var fileName = await sfd.ShowAsync( this );
@@ -244,7 +244,7 @@ namespace m3u8.download.manager.ui
             }
             _Last_m3u8FileUrlText = m3u8FileUrlText;
 
-            await FileNameCleaner.SetOutputFileNameByUrl_Async( m3u8FileUrlText, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
+            await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
 
             setFocus2outputFileNameTextBox();
         }
@@ -390,7 +390,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public  string GetOutputFileName() => FileNameCleaner.GetOutputFileName( this.OutputFileName );
+        public  string GetOutputFileName() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  bool   IsLiveStream
         { 

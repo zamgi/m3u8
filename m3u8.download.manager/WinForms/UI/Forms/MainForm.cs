@@ -872,7 +872,7 @@ namespace m3u8.download.manager.ui
         }
         private async void AddNewDownload( (string m3u8FileUrl, bool autoStartDownload) p, (int n, int total)? seriesInfo = null )
         {
-            if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() && FileNameCleaner.TryGetOutputFileNameByUrl( p.m3u8FileUrl, out var outputFileName ) )
+            if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() && FileNameCleaner4UI.TryGetOutputFileNameByUrl( p.m3u8FileUrl, out var outputFileName ) )
             {
                 if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
                 {

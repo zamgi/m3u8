@@ -15,7 +15,7 @@ namespace m3u8.download.manager.ui
     internal sealed partial class ChangeOutputFileForm : Form
     {
         #region [.field's.]
-        private FileNameCleaner.Processor _FNCP;
+        private FileNameCleaner4UI.Processor _FNCP;
         private _SC_ _SC;
         #endregion
 
@@ -25,7 +25,7 @@ namespace m3u8.download.manager.ui
             using ( var f = new ChangeOutputFileForm( row, sc ) )
             {
                 if ( (f.ShowDialog( owner ) == DialogResult.OK) &&
-                     FileNameCleaner.TryGetOutputFileName( f.OutputFileName, out outputFileName )
+                     FileNameCleaner4UI.TryGetOutputFileName( f.OutputFileName, out outputFileName )
                    )
                 {
                     return (true);
@@ -39,7 +39,7 @@ namespace m3u8.download.manager.ui
         {
             InitializeComponent();
 
-            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
+            _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
         }
         internal ChangeOutputFileForm( DownloadRow row, _SC_ sc ) : this()
         {
@@ -104,7 +104,7 @@ namespace m3u8.download.manager.ui
 
             if ( DialogResult == DialogResult.OK )
             {
-                var fn = FileNameCleaner.GetOutputFileName( this.OutputFileName );
+                var fn = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
                 if ( fn.IsNullOrWhiteSpace() || (Path.GetExtension( fn ) == fn) )
                 {
                     e.Cancel = true;

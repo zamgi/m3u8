@@ -20,9 +20,11 @@ namespace m3u8.download.manager
                 _Dict_2.Add( ei.Name    , encoding );
             }
 
-            if ( !_Dict_2.ContainsKey( "utf8" ) && _Dict_2.TryGetValue( "utf-8", out var _encoding ) )
+            const string UTF8  = "utf8";
+            const string UTF_8 = "utf-8";
+            if ( !_Dict_2.ContainsKey( UTF8 ) && _Dict_2.TryGetValue( UTF_8, out var utf8_encoding ) )
             {
-                _Dict_2.Add( "utf8", _encoding );
+                _Dict_2.Add( UTF8, utf8_encoding );
             }
         }
         public override Encoding GetEncoding( string name ) => (_Dict_2.TryGetValue( name, out var encoding ) ? encoding : default);

@@ -29,7 +29,7 @@ namespace m3u8.download.manager.ui
         private _SC_              _SC;
         private Settings          _Settings;
         private DownloadListModel _DownloadListModel;
-        private FileNameCleaner.Processor _FNCP;
+        private FileNameCleaner4UI.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private (int n, int total) _SeriesInfo;
         private string             _Initial_M3u8FileUrl;
@@ -46,7 +46,7 @@ namespace m3u8.download.manager.ui
             logPanel.VisibleChanged += logPanel_VisibleChanged;
             logUC.ShowResponseColumn = false;
 
-            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
+            _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
         }
         public AddNewDownloadForm( _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo = null ) : this()
         {
@@ -302,7 +302,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public  string GetOutputFileName() => FileNameCleaner.GetOutputFileName( this.OutputFileName );
+        public  string GetOutputFileName() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  bool IsLiveStream
         { 
@@ -374,7 +374,7 @@ namespace m3u8.download.manager.ui
             }
             _Last_m3u8FileUrlText = m3u8FileUrlText;
 
-            await FileNameCleaner.SetOutputFileNameByUrl_Async( m3u8FileUrlText, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
+            await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
 
             setFocus2outputFileNameTextBox();
         }
@@ -393,7 +393,7 @@ namespace m3u8.download.manager.ui
                                                      DefaultExt       = _Settings.OutputFileExtension,
                                                      AddExtension     = true, } )
             {
-                sfd.FileName = FileNameCleaner.GetOutputFileName( this.OutputFileName );
+                sfd.FileName = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
                 if ( sfd.ShowDialog( this ) == DialogResult.OK )
                 {
                     var outputFullFileName = sfd.FileName;

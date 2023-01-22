@@ -37,14 +37,20 @@
     <Compile Include="..\[Common]\Controller\DownloadController\dc_models.cs" Link="Controller\DownloadController\dc_models.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController\DownloadController.cs" Link="Controller\DownloadController\DownloadController.cs" />
     <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
-    <Compile Include="..\WinForms\Infrastructure\classes.cs" Link="Infrastructure\classes.cs" />
     <Compile Include="..\WinForms\Infrastructure\Color2ColorTransition.cs" Link="Infrastructure\Color2ColorTransition.cs" />
     <Compile Include="..\WinForms\Infrastructure\FileDeleter.cs" Link="Infrastructure\FileDeleter.cs" />    
     <Compile Include="..\WinForms\Infrastructure\Extensions.cs" Link="Infrastructure\Extensions.cs" />
     <Compile Include="..\WinForms\Infrastructure\FormPositionStorer.cs" Link="Infrastructure\FormPositionStorer.cs" />
-    <Compile Include="..\WinForms\Infrastructure\NameCleaner.cs" Link="Infrastructure\NameCleaner.cs" />
+    <Compile Include="..\WinForms\Infrastructure\NameAndPathCleaner.cs" Link="Infrastructure\NameAndPathCleaner.cs" />
+    <Compile Include="..\WinForms\Infrastructure\FileNameCleaner4UI.cs" Link="Infrastructure\FileNameCleaner4UI.cs" />
     <Compile Include="..\WinForms\Infrastructure\ObjAsDict_JsonSerializer.cs" Link="Infrastructure\ObjAsDict_JsonSerializer.cs" />
+    <Compile Include="..\WinForms\Infrastructure\AssemblyInfoHelper.cs" Link="Infrastructure\AssemblyInfoHelper.cs" />
+    <Compile Include="..\WinForms\Infrastructure\DownloadRowsSerializer.cs" Link="Infrastructure\DownloadRowsSerializer.cs" />
+    <Compile Include="..\WinForms\Infrastructure\BlinkManager.cs" Link="Infrastructure\BlinkManager.cs" />
+    <Compile Include="..\WinForms\Infrastructure\RowNumbersPainter.cs" Link="Infrastructure\RowNumbersPainter.cs" />
+    <Compile Include="..\WinForms\Infrastructure\SortInfo.cs" Link="Infrastructure\SortInfo.cs" />
     <Compile Include="..\WinForms\Infrastructure\WinApi.cs" Link="Infrastructure\WinApi.cs" />
+    
     <Compile Include="..\WinForms\Model\_more.cs" Link="Model\_more.cs" />
     <Compile Include="..\WinForms\Model\DownloadListModel.cs" Link="Model\DownloadListModel.cs" />
     <Compile Include="..\WinForms\Model\DownloadRow.cs" Link="Model\DownloadRow.cs" />

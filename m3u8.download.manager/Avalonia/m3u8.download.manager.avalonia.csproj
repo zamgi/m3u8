@@ -53,6 +53,9 @@
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
     <Compile Include="..\WinForms\Infrastructure\FileDeleter.cs" Link="Infrastructure\FileDeleter.cs" />
     <Compile Include="..\WinForms\Infrastructure\ObjAsDict_JsonSerializer.cs" Link="Infrastructure\ObjAsDict_JsonSerializer.cs" />
+    <Compile Include="..\WinForms\Infrastructure\AssemblyInfoHelper.cs" Link="Infrastructure\AssemblyInfoHelper.cs" />
+    <Compile Include="..\WinForms\Infrastructure\DownloadRowsSerializer.cs" Link="Infrastructure\DownloadRowsSerializer.cs" />
+    <Compile Include="..\WinForms\Infrastructure\NameAndPathCleaner.cs" Link="Infrastructure\NameAndPathCleaner.cs" />
     <Compile Include="..\[Common]\[-= m3u8.client =-]\m3u8_processor_v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_v2.cs" />
     <Compile Include="..\[Common]\[-= m3u8.client =-]\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />

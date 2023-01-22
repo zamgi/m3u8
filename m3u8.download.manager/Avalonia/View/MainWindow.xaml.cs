@@ -1086,7 +1086,7 @@ namespace m3u8.download.manager.ui
             using var f = new ChangeOutputFileForm( row );
             {
                 await f.ShowDialog( this );
-                if ( f.Success && FileNameCleaner.TryGetOutputFileName( f.OutputFileName, out var outputFileName ) )
+                if ( f.Success && FileNameCleaner4UI.TryGetOutputFileName( f.OutputFileName, out var outputFileName ) )
                 {
                     f.Row.SetOutputFileName( outputFileName );
                 }

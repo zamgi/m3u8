@@ -23,7 +23,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.fields.]
-        private FileNameCleaner.Processor _FNCP;
+        private FileNameCleaner4UI.Processor _FNCP;
         #endregion
 
         #region [.ctor().]
@@ -51,7 +51,7 @@ namespace m3u8.download.manager.ui
             this.Find< Button >( "okButton"                  ).Click += (s, e) => OkButtonProcess();
             this.Find< Button >( "cancelButton"              ).Click += (s, e)  => this.Close();
 
-            _FNCP = new FileNameCleaner.Processor( outputFileNameTextBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
+            _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
 
             outputFileNameTextBox_SubscribeDisposable = outputFileNameTextBox.GetObservable( TextBox.TextProperty ).Subscribe( outputFileNameTextBox_TextChanged );
         }
@@ -96,7 +96,7 @@ namespace m3u8.download.manager.ui
 
         private bool IsValid()
         {
-            var fn = FileNameCleaner.GetOutputFileName( this.OutputFileName );
+            var fn = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
             if ( fn.IsNullOrWhiteSpace() || (Path.GetExtension( fn ) == fn) )
             {                
                 outputFileNameTextBox.FocusAndBlinkBackColor();

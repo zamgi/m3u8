@@ -90,8 +90,13 @@
     <Compile Include="..\[Common]\[-= m3u8.client =-]\throttler_by_speed.cs">
       <Link>[-= m3u8.client =-]\throttler_by_speed.cs</Link>
     </Compile>
+    <Compile Include="Infrastructure\AssemblyInfoHelper.cs" />
+    <Compile Include="Infrastructure\SortInfo.cs" />
+    <Compile Include="Infrastructure\BlinkManager.cs" />
     <Compile Include="Infrastructure\Color2ColorTransition.cs" />
+    <Compile Include="Infrastructure\DownloadRowsSerializer.cs" />
     <Compile Include="Infrastructure\FileDeleter.cs" />
+    <Compile Include="Infrastructure\FileNameCleaner4UI.cs" />
     <Compile Include="Infrastructure\ObjAsDict_JsonSerializer.cs" />
     <Compile Include="Model\DownloadRow.cs" />
     <Compile Include="Model\DownloadListModel.cs" />
@@ -177,7 +182,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\Extensions.cs" />
-    <Compile Include="Infrastructure\NameCleaner.cs" />
+    <Compile Include="Infrastructure\NameAndPathCleaner.cs" />
     <Compile Include="Infrastructure\WinApi.cs" />
     <Compile Include="Model\ListModel[T].cs" />
     <Compile Include="UI\Forms\AddNewDownloadForm.cs">
@@ -225,7 +230,7 @@
     <Compile Include="UI\WaitBanner\WaitBannerUC.designer.cs">
       <DependentUpon>WaitBannerUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\classes.cs" />
+    <Compile Include="Infrastructure\RowNumbersPainter.cs" />
     <Compile Include="Program\_Program_.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\WaitBanner\BitmapHolder.cs" />
