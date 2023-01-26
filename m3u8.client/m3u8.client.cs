@@ -196,6 +196,31 @@ namespace m3u8
         }
 
         internal static string TrimFromBegin( this string s, int maxLength ) => ((maxLength < s.Length) ? s.Substring( s.Length - maxLength ) : s);
+
+        [M(O.AggressiveInlining)] internal static Uri GetPartUrl( this in m3u8_part_ts part, Uri baseAddress )
+        {
+            //var ub = new UriBuilder( new Uri( baseAddress, part.RelativeUrlName ) );
+            //if ( ub.Query.IsNullOrEmpty() )
+            //{
+            //    var baseQuery = baseAddress.Query;
+            //    if ( !baseQuery.IsNullOrEmpty() && (1 < baseQuery.Length) )
+            //    {
+            //        ub.Query = baseQuery.Substring( 1 );
+            //    }
+            //}
+            //return (ub.Uri);
+
+            var url = new Uri( baseAddress, part.RelativeUrlName );
+            if ( url.Query.IsNullOrEmpty() )
+            {
+                var baseQuery = baseAddress.Query;
+                if ( !baseQuery.IsNullOrEmpty() && (1 < baseQuery.Length) )
+                {
+                    url = new Uri( url, baseQuery );
+                }
+            }
+            return (url);
+        }
     }
 
     /// <summary>
@@ -314,8 +339,8 @@ namespace m3u8
             if ( part.RelativeUrlName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(part.RelativeUrlName) ));
             //----------------------------------------------------------------------------------------------------------------//
 
-            var url = new Uri( baseAddress, part.RelativeUrlName );
-            var ct = cancellationToken.GetValueOrDefault( CancellationToken.None );
+            var url = part.GetPartUrl( baseAddress );
+            var ct  = cancellationToken.GetValueOrDefault( CancellationToken.None );
             var attemptRequestCountByPart = InitParams.AttemptRequestCount.GetValueOrDefault( 1 );
 
             for ( var attemptRequestCount = attemptRequestCountByPart; 0 < attemptRequestCount; attemptRequestCount-- )
@@ -345,6 +370,16 @@ namespace m3u8
                             }
 
                             var bytes = await content.ReadAsByteArrayAsync().CAX();
+                            /*
+                            {
+                                var key_bytes = File.ReadAllBytes( @"E:\enc.key" );
+                                using var aes = System.Security.Cryptography.Aes.Create( "AES" );
+                                using var d = aes.CreateDecryptor( key_bytes, key_bytes );
+                                var bytes_d = new byte[ bytes.Length ];
+                                var cnt = d.TransformBlock( bytes, 0, bytes.Length, bytes_d, 0 );
+                                bytes = bytes_d;
+                            }
+                            //*/
                             part.SetBytes( bytes );
                             return (part);
                         }

@@ -76,8 +76,8 @@ namespace m3u8
                             ip.RequestStepAction?.Invoke( rq );
 
                             ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
-                                    .ContinueWith( continuationTask =>
-                                    {
+                                 .ContinueWith( continuationTask =>
+                                 {
                                     var rsp = new ResponseStepActionParams( totalPatrs, instantaneousSpeedInMbps );
 
                                     if ( continuationTask.IsFaulted )
@@ -119,8 +119,8 @@ namespace m3u8
                                             canExtractPartEvent.Set();
                                         }
                                     }
-                                    }
-                                    , /*ct*/ joinedCts.Token );
+                                 }
+                                 , /*ct*/ joinedCts.Token );
                         }
                     }
                     catch ( Exception ex )
