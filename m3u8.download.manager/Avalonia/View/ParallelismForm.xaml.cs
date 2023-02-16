@@ -111,6 +111,7 @@ namespace m3u8.download.manager.ui
             get => useCrossDownloadInstanceParallelismCheckBox.IsChecked.GetValueOrDefault();
             set => useCrossDownloadInstanceParallelismCheckBox.IsChecked = value;
         }
+
         public int? MaxCrossDownloadInstance      => (useMaxCrossDownloadInstanceCheckBox.IsChecked.GetValueOrDefault() ? Convert.ToInt32( maxCrossDownloadInstanceNUD.Value ) : ((int?) null));
         public int  MaxCrossDownloadInstanceSaved => Convert.ToInt32( maxCrossDownloadInstanceNUD.Value );
         public void SetMaxCrossDownloadInstance( int? maxCrossDownloadInstance, int maxCrossDownloadInstanceSaved )
@@ -119,18 +120,14 @@ namespace m3u8.download.manager.ui
             useMaxCrossDownloadInstanceCheckBox.IsChecked = maxCrossDownloadInstance.HasValue;
             useMaxCrossDownloadInstanceCheckBox_Click( null, null ); // useMaxCrossDownloadInstanceCheckBox, new RoutedEventArgs() );
         }
-        public double? MaxSpeedThresholdInMbps
+
+        public double? MaxSpeedThresholdInMbps => (!isUnlimMaxSpeedThresholdCheckBox.IsChecked.GetValueOrDefault() ? MaxSpeedThresholdInMbpsSaved : null);
+        public double MaxSpeedThresholdInMbpsSaved => Math.Max( 0.1, maxSpeedThresholdNUD.Value );
+        public void SetMaxSpeedThresholdInMbps( double? maxSpeedThresholdInMbps, double maxSpeedThresholdInMbpsSaved )
         {
-            get => !isUnlimMaxSpeedThresholdCheckBox.IsChecked.GetValueOrDefault() ? Math.Max( 0.1, maxSpeedThresholdNUD.Value ) : null;
-            set
-            {
-                isUnlimMaxSpeedThresholdCheckBox.IsChecked = !value.HasValue;
-                if ( value.HasValue )
-                {
-                    maxSpeedThresholdNUD.Value = Math.Max( 0.1, value.Value );
-                }
-                isUnlimMaxSpeedThresholdCheckBox_Click( null, null );
-            }
+            maxSpeedThresholdNUD.Value = Math.Max( 0.1, maxSpeedThresholdInMbps.GetValueOrDefault( maxSpeedThresholdInMbpsSaved ) );
+            isUnlimMaxSpeedThresholdCheckBox.IsChecked = !maxSpeedThresholdInMbps.HasValue;
+            isUnlimMaxSpeedThresholdCheckBox_Click( null, null );
         }
         #endregion
 

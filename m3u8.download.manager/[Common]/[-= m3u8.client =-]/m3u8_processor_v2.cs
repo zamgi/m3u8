@@ -212,18 +212,18 @@ namespace m3u8
                     {
                         for ( var n = 1; sourceQueue.Count != 0; n++ )
                         {
-                            #region [.check 'waitIfPausedEvent'.]
+        #region [.check 'waitIfPausedEvent'.]
                             if ( !ip.WaitIfPausedEvent.IsSet )
                             {
                                 ip.WaitingIfPaused?.Invoke();
                                 ip.WaitIfPausedEvent.Wait( joinedCts.Token );
                                 throttlerBySpeed_User.Restart();
                             }
-                            #endregion
+        #endregion
 
-                            #region [.throttler by speed.]                            
+        #region [.throttler by speed.]                            
                             var instantaneousSpeedInMbps = throttlerBySpeed_User.Throttle( joinedCts.Token );
-                            #endregion
+        #endregion
 
                             ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
                             var part = sourceQueue.Dequeue();
@@ -232,8 +232,8 @@ namespace m3u8
                             ip.RequestStepAction?.Invoke( rq );
 
                             ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
-                                    .ContinueWith( continuationTask =>
-                                    {
+                                 .ContinueWith( continuationTask =>
+                                 {
                                     var rsp = new ResponseStepActionParams( totalPatrs, instantaneousSpeedInMbps );
 
                                     if ( continuationTask.IsFaulted )
@@ -275,8 +275,8 @@ namespace m3u8
                                             canExtractPartEvent.Set();
                                         }
                                     }
-                                    }
-                                    , /*ct*/ joinedCts.Token );
+                                 }
+                                 , /*ct*/ joinedCts.Token );
                         }
                     }
                     catch ( Exception ex )

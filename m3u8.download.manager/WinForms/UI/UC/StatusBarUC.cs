@@ -158,7 +158,7 @@ namespace m3u8.download.manager.ui
                 f.Parallelism.MaxDegreeOfParallelism              = st.MaxDegreeOfParallelism;                
                 f.Parallelism.UseCrossDownloadInstanceParallelism = st.UseCrossDownloadInstanceParallelism;                
                 f.Parallelism.SetMaxCrossDownloadInstance( st.MaxCrossDownloadInstance, st.MaxCrossDownloadInstanceSaved );
-                f.Parallelism.MaxSpeedThresholdInMbps             = st.MaxSpeedThresholdInMbps;
+                f.Parallelism.SetMaxSpeedThresholdInMbps ( st.MaxSpeedThresholdInMbps , st.MaxSpeedThresholdInMbpsSaved  );
 
                 f.Other.AttemptRequestCountByPart              = st.AttemptRequestCountByPart;
                 f.Other.RequestTimeoutByPart                   = st.RequestTimeoutByPart;
@@ -179,6 +179,7 @@ namespace m3u8.download.manager.ui
                     st.MaxCrossDownloadInstance            = f.Parallelism.MaxCrossDownloadInstance;
                     st.MaxCrossDownloadInstanceSaved       = f.Parallelism.MaxCrossDownloadInstanceSaved;
                     st.MaxSpeedThresholdInMbps             = f.Parallelism.MaxSpeedThresholdInMbps;
+                    st.MaxSpeedThresholdInMbpsSaved        = f.Parallelism.MaxSpeedThresholdInMbpsSaved;
 
                     st.AttemptRequestCountByPart              = f.Other.AttemptRequestCountByPart;
                     st.RequestTimeoutByPart                   = f.Other.RequestTimeoutByPart;

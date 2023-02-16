@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Reflection;
 
 using m3u8.download.manager.models;
-using m3u8.download.manager.ui;
 
 using _Settings_ = m3u8.download.manager.Properties.Settings;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -63,6 +62,7 @@ namespace m3u8.download.manager.controllers
         public int     MaxDegreeOfParallelism              { [M(O.AggressiveInlining)] get => Settings.MaxDegreeOfParallelism;   [M(O.AggressiveInlining)] set => Settings.MaxDegreeOfParallelism   = value; }
         public int?    MaxCrossDownloadInstance            { [M(O.AggressiveInlining)] get => Settings.MaxCrossDownloadInstance; [M(O.AggressiveInlining)] set => Settings.MaxCrossDownloadInstance = value; }
         public double? MaxSpeedThresholdInMbps             { [M(O.AggressiveInlining)] get => Settings.MaxSpeedThresholdInMbps;  [M(O.AggressiveInlining)] set => Settings.MaxSpeedThresholdInMbps  = value; }
+        public double  MaxSpeedThresholdInMbpsSaved        { [M(O.AggressiveInlining)] get => Settings.MaxSpeedThresholdInMbpsSaved;  /*[M(O.AggressiveInlining)] set => Settings.MaxSpeedThresholdInMbpsSaved = value;*/ }
         public bool    ShowLog                             { [M(O.AggressiveInlining)] get => Settings.ShowLog; [M(O.AggressiveInlining)] set => Settings.ShowLog = value; }
         //public string  DownloadRowsJson                    { [M(O.AggressiveInlining)] get => Settings.DownloadRowsJson; /*[M(O.AggressiveInlining)] set => Settings.DownloadRowsJson = value;*/ }
         public IEnumerable<

@@ -30,7 +30,10 @@
     </Setting>
     <Setting Name="MaxSpeedThresholdInMbps" Type="System.Nullable&lt;System.Double&gt;" Scope="User">
       <!--<Value Profile="(Default)">null</Value>-->
-    </Setting>    
+    </Setting>
+    <Setting Name="MaxSpeedThresholdInMbpsSaved" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">55</Value>
+    </Setting>
     <Setting Name="NameCleanerExcludesWords" Type="System.Collections.Specialized.StringCollection" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

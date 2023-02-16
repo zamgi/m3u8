@@ -93,14 +93,9 @@ namespace m3u8.download.manager.ui
             showLogToolButton.Checked = _SC.ShowLog;
             showLogToolButton_Click( showLogToolButton, EventArgs.Empty );
 
-            downloadInstanceToolButton.Visible = _SC.MaxCrossDownloadInstance.HasValue;
-            if ( _SC.MaxCrossDownloadInstance.HasValue )
-            {
-                downloadInstanceToolButton.Value = _SC.MaxCrossDownloadInstance.Value;
-            }
-            //degreeOfParallelismToolButton.Visible = ;
+            downloadInstanceToolButton.SetValueAndVisible( _SC.MaxCrossDownloadInstance );
             degreeOfParallelismToolButton.Value = _SC.MaxDegreeOfParallelism;
-            speedThresholdToolButton     .Value = _SC.MaxSpeedThresholdInMbps;
+            speedThresholdToolButton     .ValueWithSaved = (_SC.MaxSpeedThresholdInMbps, _SC.MaxSpeedThresholdInMbpsSaved);
 
             _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
         }
@@ -373,11 +368,7 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case nameof(Settings.MaxCrossDownloadInstance): // nameof(Settings.UseCrossDownloadInstanceParallelism):
-                    downloadInstanceToolButton.Visible = settings.MaxCrossDownloadInstance.HasValue;
-                    if ( settings.MaxCrossDownloadInstance.HasValue )
-                    {
-                        downloadInstanceToolButton.Value = settings.MaxCrossDownloadInstance.Value;
-                    }
+                    downloadInstanceToolButton.SetValueAndVisible( settings.MaxCrossDownloadInstance );
                     is_need_save = true;
                     break;
 
@@ -1034,11 +1025,11 @@ namespace m3u8.download.manager.ui
         {
             if ( _SC.UseCrossDownloadInstanceParallelism )
             {
-                _SC.Settings.MaxCrossDownloadInstance = downloadInstanceValue;
+                _SC.MaxCrossDownloadInstance = downloadInstanceValue;
             }
         }
-        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SC.Settings.MaxDegreeOfParallelism = value;
-        private void speedThrottlerToolButton_ValueChanged( double? value ) => _SC.Settings.MaxSpeedThresholdInMbps = value; 
+        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SC.MaxDegreeOfParallelism = value;
+        private void speedThrottlerToolButton_ValueChanged( double? value ) => _SC.MaxSpeedThresholdInMbps = value; 
         #endregion
 
         #region [.context menu.]

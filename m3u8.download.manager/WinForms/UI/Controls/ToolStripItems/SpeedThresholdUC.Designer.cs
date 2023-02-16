@@ -27,9 +27,8 @@
             this.l1.Size = new System.Drawing.Size(33, 13);
             this.l1.TabIndex = 1;
             this.l1.Text = "Mbps";
+            //this.l1.BackColor = System.Drawing.Color.Transparent;
             this.l1.Click += new System.EventHandler(this.UC_Click);
-            this.l1.MouseEnter += new System.EventHandler(this.L1_MouseEnter);
-            this.l1.MouseLeave += new System.EventHandler(this.L1_MouseLeave);
             // 
             // speedThresholdNumericUpDownEx
             // 

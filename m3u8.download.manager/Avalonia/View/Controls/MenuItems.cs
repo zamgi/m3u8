@@ -158,6 +158,13 @@ namespace m3u8.download.manager.ui
             }
             this.Items = subMenuItems;
         }
+
+
+        public void SetValueAndIsVisible( int? maxCrossDownloadInstance )
+        {
+            this.IsVisible = maxCrossDownloadInstance.HasValue;
+            if ( maxCrossDownloadInstance.HasValue ) this.Value = maxCrossDownloadInstance.Value;
+        }
     }
 
     /// <summary>
@@ -265,6 +272,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+
 
         protected override void FillDropDownItems()
         {

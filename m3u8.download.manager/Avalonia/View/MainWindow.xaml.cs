@@ -155,13 +155,9 @@ namespace m3u8.download.manager.ui
             SetDownloadToolButtonsStatus( null );
             NameCleaner.ResetExcludesWords( _VM.SettingsController.NameCleanerExcludesWords );
 
-            downloadInstanceToolButton.IsVisible = _VM.SettingsController.MaxCrossDownloadInstance.HasValue;
-            if ( _VM.SettingsController.MaxCrossDownloadInstance.HasValue )
-            {
-                downloadInstanceToolButton.Value = _VM.SettingsController.MaxCrossDownloadInstance.Value;
-            }
+            downloadInstanceToolButton.SetValueAndIsVisible( _VM.SettingsController.MaxCrossDownloadInstance );
             degreeOfParallelismToolButton.Value = _VM.SettingsController.MaxDegreeOfParallelism;
-            speedThresholdToolButton.Value      = _VM.SettingsController.MaxSpeedThresholdInMbps;
+            speedThresholdToolButton     .Value = _VM.SettingsController.MaxSpeedThresholdInMbps;
             #endregion
         }
 
@@ -430,11 +426,7 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case nameof(Settings.MaxCrossDownloadInstance): // nameof(Settings.UseCrossDownloadInstanceParallelism):
-                    downloadInstanceToolButton.IsVisible = settings.MaxCrossDownloadInstance.HasValue;
-                    if ( settings.MaxCrossDownloadInstance.HasValue )
-                    {
-                        downloadInstanceToolButton.Value = settings.MaxCrossDownloadInstance.Value;
-                    }
+                    downloadInstanceToolButton.SetValueAndIsVisible( settings.MaxCrossDownloadInstance );
                     is_need_save = true;
                     break;
 

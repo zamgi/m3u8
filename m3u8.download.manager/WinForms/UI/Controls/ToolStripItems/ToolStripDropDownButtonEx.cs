@@ -125,6 +125,12 @@ namespace System.Windows.Forms
                 this.DropDownItems.Add( new ToolStripMenuItemEx( i, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } ); //, DisplayStyle = ToolStripItemDisplayStyle.Text } );
             }
         }
+
+        public void SetValueAndVisible( int? maxCrossDownloadInstance )
+        {
+            this.Visible = maxCrossDownloadInstance.HasValue;
+            if ( maxCrossDownloadInstance.HasValue ) this.Value = maxCrossDownloadInstance.Value;
+        }
     }
 
     /// <summary>
@@ -251,6 +257,25 @@ namespace System.Windows.Forms
                     }
 
                     Fire_ValueChanged();
+                }
+            }
+        }
+        public (double? value, double valueSaved) ValueWithSaved
+        {
+            get => (_Value, _Value.GetValueOrDefault( _ToolStripSpeedThreshold.Value ));
+            set
+            {
+                var (v, saved) = value;
+                this.Value = v;
+                if ( !v.HasValue || (v != saved) )
+                {
+                    var val_int = (int) saved;
+                    if ( _ToolStripSpeedThreshold.Value != val_int )
+                    {
+                        _ToolStripSpeedThreshold.SpeedThreshold_ValueChanged -= ToolStripSpeedThreshold_ValueChanged;
+                        _ToolStripSpeedThreshold.Value = val_int;
+                        _ToolStripSpeedThreshold.SpeedThreshold_ValueChanged += ToolStripSpeedThreshold_ValueChanged;
+                    }
                 }
             }
         }
