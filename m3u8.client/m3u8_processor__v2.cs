@@ -311,7 +311,7 @@ namespace m3u8
             using ( var pool                = new ObjectPoolDisposable< MemoryStream >( ip.maxDegreeOfParallelism, () => new MemoryStream( poolStreamCapacity ) ) )
             {
                 //-1-//
-                var task_download = Task.Run( async () =>
+                var task_download = Task.Run( () =>
                 {
                     for ( var n = 1; sourceQueue.Count != 0; n++ )
                     {
@@ -327,10 +327,10 @@ namespace m3u8
                         var rq = RequestStepActionParams.CreateSuccess( totalPatrs, n, part );
                         ip.requestStepAction?.Invoke( rq );
 
-                        var holder = await pool.GetHolderAsync( joinedCts.Token ).CAX();                        
+                        var holder = pool.GetHolder();                        
                         part.SetStreamHolder( holder );
 
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+//---#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         ip.mc.DownloadPart__v2( part, baseAddress, /*ct*/ joinedCts.Token )
                             .ContinueWith( continuationTask =>
                             {
@@ -374,7 +374,7 @@ namespace m3u8
                                     }
                                 }
                             }, /*ct*/ joinedCts.Token );
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+//---#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                     }
                 }, /*ct*/ joinedCts.Token );
 

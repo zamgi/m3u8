@@ -200,33 +200,10 @@ namespace m3u8.download.manager.controllers
             var tuples = await ph.PausedAll_Started_Running_and_GetThem().CAX();
 
             await _DownloadThreadsSemaphoreFactory.ResetMaxDegreeOfParallelism( maxDegreeOfParallelism ).CAX();
-            Change_StreamPool_when_changed_maxDegreeOfParallelism( maxDegreeOfParallelism );
+            _StreamPool.ChangeCapacity( maxDegreeOfParallelism );
 
             ph.ResetMaxDegreeOfParallelism_For_NonUseCrossDownloadInstanceParallelism_DownloadThreadsSemaphore( maxDegreeOfParallelism );
             ph.ContinueAll_Paused( tuples );
-        }
-        #endregion
-
-        #region [.Change '_StreamPool' when changed maxDegreeOfParallelism.]
-        private void/*async Task*/ Change_StreamPool_when_changed_maxDegreeOfParallelism( int maxDegreeOfParallelism )
-        {
-            //if has any downloads (in status: DownloadStatus.Started, DownloadStatus.Running, DownloadStatus.Paused, DownloadStatus.Wait, ...?)
-            if ( _Dict.Count != 0 )
-            {
-                #region comm.
-                //var suc_reset = await _StreamPool.ResetDengerous_WithWait4FullFreeSemaphore( maxDegreeOfParallelism ).CAX();
-                //if ( !suc_reset )
-                //{
-                //    Interlocked.Exchange( ref _StreamPool, CreateObjectPool( maxDegreeOfParallelism ) );
-                //} 
-                #endregion
-
-                Interlocked.Exchange( ref _StreamPool, CreateObjectPool( maxDegreeOfParallelism ) );
-            }
-            else
-            {
-                _StreamPool.ResetDengerous( maxDegreeOfParallelism );
-            }
         }
         #endregion
 

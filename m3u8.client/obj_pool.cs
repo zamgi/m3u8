@@ -1,9 +1,14 @@
-﻿using System;
+﻿#define USE_ConcurrentStack_With_Manual_Count
+
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
+
+#if (USE_ConcurrentStack_With_Manual_Count && NETCOREAPP)
+using System.Diagnostics.CodeAnalysis; 
+#endif
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -24,18 +29,59 @@ namespace m3u8
     internal class ObjectPool< T > : IDisposable
         where T : class
     {
-        private SemaphoreSlim        _Semaphore;
+#if USE_ConcurrentStack_With_Manual_Count
+        /// <summary>
+        /// 
+        /// </summary>
+        private sealed class ConcurrentStack_WithManualCount< X >
+        {
+            private int _Manual_Count;
+            private  ConcurrentStack< X > _Stack;
+            public ConcurrentStack_WithManualCount() => _Stack = new ConcurrentStack< X >();
+
+            public int Count => Volatile.Read( ref _Manual_Count );
+            public void Push( X x )
+            {
+                _Stack.Push( x );
+                Interlocked.Increment( ref _Manual_Count );
+            }
+#if NETCOREAPP
+            public bool TryPop( [MaybeNullWhen(false)] out X x )
+#else
+            public bool TryPop( out X x )
+#endif
+            {
+                if ( _Stack.TryPop( out x ) )
+                {
+                    Interlocked.Decrement( ref _Manual_Count );
+                    return (true);
+                }
+                return (false);
+            }
+            public void Clear()
+            {
+                Interlocked.Exchange( ref _Manual_Count, 0 );
+                _Stack.Clear();
+            }
+            public X[] ToArray() => _Stack.ToArray();
+        }
+
+        private ConcurrentStack_WithManualCount< T > _Stack;
+#else
         private ConcurrentStack< T > _Stack;
-        private int                  _ObjectInstanceCount;
-        private Func< T >            _ObjectConstructorFunc;
+#endif        
+        private int       _ObjectInstanceCount;
+        private Func< T > _ObjectConstructorFunc;
         public ObjectPool( int objectInstanceCount, Func< T > objectConstructorFunc )
         {
             if ( objectInstanceCount   <= 0    ) throw (new ArgumentException( nameof(objectInstanceCount) ));
             if ( objectConstructorFunc == null ) throw (new ArgumentNullException( nameof(objectConstructorFunc) ));
             //-----------------------------------------------//
-
-            _Semaphore = new SemaphoreSlim( objectInstanceCount, objectInstanceCount );
-            _Stack     = new ConcurrentStack< T >();
+#if USE_ConcurrentStack_With_Manual_Count
+            _Stack = new ConcurrentStack_WithManualCount< T >();
+#else
+            _Stack = new ConcurrentStack< T >();
+#endif
             for ( var i = 0; i < objectInstanceCount; i++ )
             {
                 _Stack.Push( objectConstructorFunc() );
@@ -43,20 +89,13 @@ namespace m3u8
             _ObjectInstanceCount   = objectInstanceCount;
             _ObjectConstructorFunc = objectConstructorFunc;
         }
-        ~ObjectPool() => Dispose();
         public void Dispose()
         {
-            GC.SuppressFinalize( this );
-            if ( _Semaphore != null )
-            {
-                _Semaphore.Dispose();
-                _Semaphore = null;
-            }
-
             DisposeInternal();
-
             _Stack.Clear();
         }
+
+        [M(O.AggressiveInlining)] private int Get_ObjectInstanceCount() => Volatile.Read( ref _ObjectInstanceCount )/*_ObjectInstanceCount*/;
 
         protected virtual void DisposeInternal() { }
         protected virtual void DisposeInternalT( T t ) { }
@@ -80,119 +119,42 @@ namespace m3u8
             public T Value { get; private set; }
         }
 
-        [M(O.AggressiveInlining)] public T Get( CancellationToken ct = default )
+        [M(O.AggressiveInlining)] public T Get()
         {
-            _Semaphore.Wait( ct );
-
-            for (; ; )
+            if ( !_Stack.TryPop( out var t ) )
             {
-                if ( _Stack.TryPop( out var t ) )
-                {
-                    return (t);
-                }
+                t = _ObjectConstructorFunc();
             }
-        }
-        [M(O.AggressiveInlining)] public async Task< T > GetAsync( CancellationToken ct = default )
-        {
-            await _Semaphore.WaitAsync( ct ).ConfigureAwait( false );
-
-            for (; ; )
-            {
-                if ( _Stack.TryPop( out var t ) )
-                {
-                    return (t);
-                }
-            }
+            return (t);
         }
         [M(O.AggressiveInlining)] public void Release( T t )
-        {
+        {            
             Debug.Assert( t != null );
-            //if ( t != null )
-            //{
+
+            if ( _Stack.Count < Get_ObjectInstanceCount()  )
+            {
                 _Stack.Push( t );
-                _Semaphore.Release();
-            //}            
+            }
+            else
+            {
+                DisposeInternalT( t );
+            }
         }
 
-        public IObjectHolder< T > GetHolder( CancellationToken ct = default )
+        public IObjectHolder< T > GetHolder() => new Releaser( this, Get() );
+
+        public int CurrentCount_Stack       => _Stack.Count;
+        public int CurrentManualCount_Stack => _Stack.Count;
+        public int ObjectInstanceCount      => Get_ObjectInstanceCount();
+
+        public void ChangeCapacity( int objInstCnt )
         {
-            _Semaphore.Wait( ct );
-
-            for (; ; )
+            objInstCnt = Math.Max( 1, objInstCnt );
+            if ( Get_ObjectInstanceCount() != objInstCnt )
             {
-                if ( _Stack.TryPop( out var t ) )
-                {
-                    return (new Releaser( this, t ));
-                }
+                Interlocked.Exchange( ref _ObjectInstanceCount, objInstCnt );
             }
         }
-        public async Task< IObjectHolder< T > > GetHolderAsync( CancellationToken ct = default )
-        {
-            await _Semaphore.WaitAsync( ct ).ConfigureAwait( false );
-
-            for (; ; )
-            {
-                if ( _Stack.TryPop( out var t ) )
-                {
-                    return (new Releaser( this, t ));
-                }
-            }
-        }
-
-        public int CurrentCount_Semaphore => _Semaphore.CurrentCount;
-        public int CurrentCount_Stack     => _Stack.Count;
-        public int ObjectInstanceCount    => _ObjectInstanceCount;
-
-        public void ResetDengerous( int objInstCnt, bool collectGarbage = true )
-        {
-            if ( _ObjectInstanceCount == objInstCnt ) return;
-            
-            if ( _Stack.Count < objInstCnt )
-            {
-                for (; _Stack.Count < objInstCnt; )
-                {
-                    _Stack.Push( _ObjectConstructorFunc() );
-                }
-            }
-            else if ( objInstCnt < _Stack.Count )
-            {
-                for ( ; objInstCnt < _Stack.Count; )
-                {
-                    if ( _Stack.TryPop( out var t ) )
-                    {
-                        DisposeInternalT( t );
-                    }
-                }
-
-                if ( collectGarbage )
-                {
-                    GC.Collect( GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true );
-                    GC.WaitForPendingFinalizers();
-                    GC.Collect( GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true );
-                }
-            }
-
-            using var semaphore_disp = _Semaphore;
-            Interlocked.Exchange( ref _Semaphore, new SemaphoreSlim( objInstCnt, objInstCnt ) );
-            Interlocked.Exchange( ref _ObjectInstanceCount, objInstCnt );
-        }
-        /*public async Task< bool > ResetDengerous_WithWait4FullFreeSemaphore( int objInstCnt, int millisecondsDelay = 50, CancellationToken ct = default )
-        {
-            if ( _ObjectInstanceCount == objInstCnt ) return (true);
-
-            //wait 4 full free semaphore
-            for ( var i = 7_000 / Math.Max( 1, millisecondsDelay ); (0 < i) && (_Semaphore.CurrentCount != _ObjectInstanceCount); i-- )
-            {
-                await Task.Delay( millisecondsDelay, ct ).ConfigureAwait( false );
-            }
-            var suc = (_Semaphore.CurrentCount == _ObjectInstanceCount);
-            if ( suc )
-            {
-                ResetDengerous( objInstCnt );
-            }
-            return (suc);
-        }
-        //*/
     }
 
     /// <summary>
@@ -202,7 +164,6 @@ namespace m3u8
         where T : class, IDisposable
     {
         public ObjectPoolDisposable( int objectInstanceCount, Func< T > objectConstructorFunc ) : base( objectInstanceCount, objectConstructorFunc ) { }
-        ~ObjectPoolDisposable() => Dispose();
         protected override void DisposeInternal()
         {
             foreach ( var t in base.GetObjects() )
