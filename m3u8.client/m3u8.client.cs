@@ -88,8 +88,9 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
-        public struct comparer: IComparer< m3u8_part_ts >
+        public readonly struct comparer: IComparer< m3u8_part_ts >
         {
+            public static comparer Inst { get; } = new comparer();
             public int Compare( m3u8_part_ts x, m3u8_part_ts y ) => (x.OrderNumber - y.OrderNumber);
         }
 
@@ -104,7 +105,7 @@ namespace m3u8
         public Exception Error { get; private set; }
         public void SetError( Exception error ) => Error = error;
 #if DEBUG
-        public override string ToString() => ($"{OrderNumber}, '{RelativeUrlName}'");
+        public override string ToString() => $"{OrderNumber}, '{RelativeUrlName}'";
 #endif
     }
 
@@ -133,7 +134,84 @@ namespace m3u8
             };
             return (o);
         }
+#if DEBUG
+        public override string ToString() => $"Parts: {Parts?.Count.ToString() ?? "-"}";
+#endif
     }
+    //----------------------------------------------//
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public struct m3u8_part_ts__v2 : IDisposable
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public readonly struct comparer: IComparer< m3u8_part_ts__v2 >
+        {
+            public static comparer Inst { get; } = new comparer();
+            public int Compare( m3u8_part_ts__v2 x, m3u8_part_ts__v2 y ) => (x.OrderNumber - y.OrderNumber);
+        }
+
+        public m3u8_part_ts__v2( string relativeUrlName, int orderNumber ) : this() => (RelativeUrlName, OrderNumber) = (relativeUrlName, orderNumber);
+        public void Dispose()
+        {
+            if ( _Holder != null )
+            {
+                _Holder.Dispose();
+                _Holder = null;
+            }
+        }
+
+        public string RelativeUrlName { get; }
+        public int    OrderNumber     { get; }
+
+        private IObjectHolder< Stream > _Holder;
+        public Stream Stream { get; private set; }
+        public void SetStreamHolder( IObjectHolder< Stream > holder )
+        {
+            _Holder = holder;
+            Stream  = holder.Value;
+            Stream.SetLength( 0 );
+        }
+
+        public Exception Error { get; private set; }
+        public void SetError( Exception error ) => Error = error;
+#if DEBUG
+        public override string ToString() => $"{OrderNumber}, '{RelativeUrlName}'" +
+                                             ((Error != null) ? $", Error: {Error}" : null) + 
+                                             ((Stream != null) ? $", Stream: {Stream.Length}"   : null);
+#endif
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public struct m3u8_file_t__v2
+    {
+        public IReadOnlyList< m3u8_part_ts__v2 > Parts { get; private set; }
+        public Uri BaseAddress { get; private set; }
+        public string RawText { get; private set; }
+
+        public static m3u8_file_t__v2 Parse( string content, Uri baseAddress ) => Parse( m3u8_file_t.Parse( content, baseAddress ) );
+        public static m3u8_file_t__v2 Parse( in m3u8_file_t mf )
+        {
+            var parts = new List< m3u8_part_ts__v2 >( mf.Parts.Count );
+                parts.AddRange( mf.Parts.Select( p => new m3u8_part_ts__v2( p.RelativeUrlName, p.OrderNumber ) ) );
+            var o = new m3u8_file_t__v2()
+            {
+                Parts       = parts.AsReadOnly(),
+                BaseAddress = mf.BaseAddress,
+                RawText     = mf.RawText,
+            };
+            return (o);
+        }
+#if DEBUG
+        public override string ToString() => $"Parts: {Parts?.Count.ToString() ?? "-"}";
+#endif
+    }
+    //----------------------------------------------//
 
     /// <summary>
     /// 
@@ -197,20 +275,11 @@ namespace m3u8
 
         internal static string TrimFromBegin( this string s, int maxLength ) => ((maxLength < s.Length) ? s.Substring( s.Length - maxLength ) : s);
 
-        [M(O.AggressiveInlining)] internal static Uri GetPartUrl( this in m3u8_part_ts part, Uri baseAddress )
+        [M(O.AggressiveInlining)] internal static Uri GetPartUrl( this in m3u8_part_ts part, Uri baseAddress ) => baseAddress.GetPartUrl( part.RelativeUrlName );
+        [M(O.AggressiveInlining)] internal static Uri GetPartUrl( this in m3u8_part_ts__v2 part, Uri baseAddress ) => baseAddress.GetPartUrl( part.RelativeUrlName );
+        [M(O.AggressiveInlining)] private static Uri GetPartUrl( this Uri baseAddress, string relativeUrlName )
         {
-            //var ub = new UriBuilder( new Uri( baseAddress, part.RelativeUrlName ) );
-            //if ( ub.Query.IsNullOrEmpty() )
-            //{
-            //    var baseQuery = baseAddress.Query;
-            //    if ( !baseQuery.IsNullOrEmpty() && (1 < baseQuery.Length) )
-            //    {
-            //        ub.Query = baseQuery.Substring( 1 );
-            //    }
-            //}
-            //return (ub.Uri);
-
-            var url = new Uri( baseAddress, part.RelativeUrlName );
+            var url = new Uri( baseAddress, relativeUrlName );
             if ( url.Query.IsNullOrEmpty() )
             {
                 var baseQuery = baseAddress.Query;
@@ -237,6 +306,7 @@ namespace m3u8
     {        
         public m3u8_Exception( string message ) : base( message ) { }
     }
+    //----------------------------------------------//
 
     /// <summary>
     /// 
@@ -250,18 +320,26 @@ namespace m3u8
         {
             public int?  AttemptRequestCount { get; set; }
             public bool? ConnectionClose     { get; set; }
+            public HttpCompletionOption? HttpCompletionOption { get; set; }
         }
 
         #region [.field's.]
         private HttpClient  _HttpClient;
         private IDisposable _DisposableObj;
+        private bool?       _ConnectionClose;
+        private int         _AttemptRequestCount;
+        private HttpCompletionOption _HttpCompletionOption;
         #endregion
 
         #region [.ctor().]
         public m3u8_client( HttpClient httpClient, in init_params ip )
         {
             _HttpClient = httpClient ?? throw (new ArgumentNullException( nameof(httpClient) ));
-            InitParams  = ip;            
+            InitParams  = ip;
+            _ConnectionClose      = ip.ConnectionClose;
+            _AttemptRequestCount  = ip.AttemptRequestCount.GetValueOrDefault( 1 );
+            _HttpCompletionOption = ip.HttpCompletionOption.GetValueOrDefault( HttpCompletionOption.ResponseHeadersRead );
+
         }
         internal m3u8_client( in (HttpClient httpClient, IDisposable disposableObj) t, in init_params ip ) : this( t.httpClient, in ip )
         {
@@ -282,45 +360,57 @@ namespace m3u8
 #if M3U8_CLIENT_TESTS
         public HttpClient HttpClient => _HttpClient;
 #endif
-        public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken? cancellationToken = null )
+        private static async Task< m3u8_Exception > create_m3u8_Exception( HttpResponseMessage resp, CancellationToken ct )
+        {
+            var responseText = default(string);
+            try
+            {
+#if NETCOREAPP
+                responseText = await resp.Content.ReadAsStringAsync( ct ).CAX();
+#else
+                responseText = await resp.Content.ReadAsStringAsync( /*ct*/ ).CAX();
+#endif                
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+                resp.EnsureSuccessStatusCode();
+            }
+            return (new m3u8_Exception( resp.CreateExceptionMessage( responseText ) ));
+        }
+        private HttpRequestMessage CreateRequstGet( Uri url )
+        {
+            var req = new HttpRequestMessage( HttpMethod.Get, url );
+            req.Headers.ConnectionClose = _ConnectionClose;
+            return (req);
+        }
+
+        public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default )
         {
             if ( url == null ) throw (new m3u8_ArgumentException( nameof(url) ));
             //------------------------------------------------------------------//
 
-            var ct = cancellationToken.GetValueOrDefault( CancellationToken.None );
-            var attemptRequestCountByPart = InitParams.AttemptRequestCount.GetValueOrDefault( 1 );
-
-            for ( var attemptRequestCount = attemptRequestCountByPart; 0 < attemptRequestCount; attemptRequestCount-- )
+            for ( var attemptRequestCount = _AttemptRequestCount; 0 < attemptRequestCount; attemptRequestCount-- )
             {
                 try
                 {
-                    using ( var requestMsg = new HttpRequestMessage( HttpMethod.Get, url ) )
+                    using ( var requestMsg  = CreateRequstGet( url ) )
+                    using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, _HttpCompletionOption, ct ).CAX() )
+                    using ( var content     = responseMsg.Content )
                     {
-                        requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
-
-                        using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, ct ).CAX() )
-                        using ( var content     = responseMsg.Content )
+                        if ( responseMsg.IsSuccessStatusCode )
                         {
-                            if ( !responseMsg.IsSuccessStatusCode )
-                            {
-                                var responseText = default(string);
-                                try
-                                {
-                                    responseText = await content.ReadAsStringAsync().CAX();
-                                }
-                                catch ( Exception ex )
-                                {
-                                    Debug.WriteLine( ex );
-                                    responseMsg.EnsureSuccessStatusCode();
-                                }
-                                throw (new m3u8_Exception( responseMsg.CreateExceptionMessage( responseText ) ));
-                            }
-
-                            var text = await content.ReadAsStringAsync().CAX();
+#if NETCOREAPP
+                            var text = await content.ReadAsStringAsync( ct ).CAX();
+#else
+                            var text = await content.ReadAsStringAsync( /*ct*/ ).CAX();
+#endif
                             var m3u8File = m3u8_file_t.Parse( text, url );
                             return (m3u8File);
                         }
-                    }                    
+
+                        throw (await create_m3u8_Exception( responseMsg, ct ).CAX());
+                    }
                 }
                 catch ( Exception /*ex*/ )
                 {
@@ -331,58 +421,36 @@ namespace m3u8
                 }
             }
 
-            throw (new m3u8_Exception( $"No content found while {attemptRequestCountByPart} attempt requests" ));
+            throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
         }
-        public async Task< m3u8_part_ts > DownloadPart( m3u8_part_ts part, Uri baseAddress, CancellationToken? cancellationToken = null )
+        public async Task< m3u8_part_ts > DownloadPart( m3u8_part_ts part, Uri baseAddress, CancellationToken ct = default )
         {
             if ( baseAddress == null )                       throw (new m3u8_ArgumentException( nameof(baseAddress) ));
             if ( part.RelativeUrlName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(part.RelativeUrlName) ));
             //----------------------------------------------------------------------------------------------------------------//
 
             var url = part.GetPartUrl( baseAddress );
-            var ct  = cancellationToken.GetValueOrDefault( CancellationToken.None );
-            var attemptRequestCountByPart = InitParams.AttemptRequestCount.GetValueOrDefault( 1 );
 
-            for ( var attemptRequestCount = attemptRequestCountByPart; 0 < attemptRequestCount; attemptRequestCount-- )
+            for ( var attemptRequestCount = _AttemptRequestCount; 0 < attemptRequestCount; attemptRequestCount-- )
             {
                 try
                 {
-                    using ( var requestMsg = new HttpRequestMessage( HttpMethod.Get, url ) )
+                    using ( var requestMsg  = CreateRequstGet( url ) )
+                    using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, _HttpCompletionOption, ct ).CAX() )
+                    using ( var content     = responseMsg.Content )
                     {
-                        requestMsg.Headers.ConnectionClose = InitParams.ConnectionClose; //true => //.KeepAlive = false, .Add("Connection", "close");
-
-                        using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, ct ).CAX() )
-                        using ( var content     = responseMsg.Content )
+                        if ( responseMsg.IsSuccessStatusCode )
                         {
-                            if ( !responseMsg.IsSuccessStatusCode )
-                            {
-                                var responseText = default(string);
-                                try
-                                {
-                                    responseText = await content.ReadAsStringAsync().CAX();
-                                }
-                                catch ( Exception ex )
-                                {
-                                    Debug.WriteLine( ex );
-                                    responseMsg.EnsureSuccessStatusCode();
-                                }
-                                throw (new m3u8_Exception( responseMsg.CreateExceptionMessage( responseText ) ));
-                            }
-
-                            var bytes = await content.ReadAsByteArrayAsync().CAX();
-                            /*
-                            {
-                                var key_bytes = File.ReadAllBytes( @"E:\enc.key" );
-                                using var aes = System.Security.Cryptography.Aes.Create( "AES" );
-                                using var d = aes.CreateDecryptor( key_bytes, key_bytes );
-                                var bytes_d = new byte[ bytes.Length ];
-                                var cnt = d.TransformBlock( bytes, 0, bytes.Length, bytes_d, 0 );
-                                bytes = bytes_d;
-                            }
-                            //*/
+#if NETCOREAPP
+                            var bytes = await content.ReadAsByteArrayAsync( ct ).CAX();
+#else
+                            var bytes = await content.ReadAsByteArrayAsync( /*ct*/ ).CAX();
+#endif
                             part.SetBytes( bytes );
                             return (part);
                         }
+
+                        throw (await create_m3u8_Exception( responseMsg, ct ).CAX());
                     }
                 }
                 catch ( Exception ex )
@@ -395,7 +463,54 @@ namespace m3u8
                 }
             }
 
-            throw (new m3u8_Exception( $"No content found while {attemptRequestCountByPart} attempt requests" ));
+            throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
+        }
+
+        //public async Task< m3u8_file_t__v2 > DownloadFile__v2( Uri url, CancellationToken ct = default )
+        //{
+        //    var mf = await DownloadFile( url, ct ).CAX();
+        //    return (m3u8_file_t__v2.Parse( mf ));
+        //}
+        public async Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress, CancellationToken ct = default )
+        {
+            if ( baseAddress == null )                       throw (new m3u8_ArgumentException( nameof(baseAddress) ));
+            if ( part.Stream == null )                       throw (new m3u8_ArgumentException( nameof(part.Stream) ));
+            if ( part.RelativeUrlName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(part.RelativeUrlName) ));            
+            //----------------------------------------------------------------------------------------------------------------//
+
+            var url = part.GetPartUrl( baseAddress );
+
+            for ( var attemptRequestCount = _AttemptRequestCount; 0 < attemptRequestCount; attemptRequestCount-- )
+            {
+                try
+                {
+                    using ( var req  = CreateRequstGet( url ) )
+                    using ( var resp = await _HttpClient.SendAsync( req, _HttpCompletionOption, ct ).CAX() )
+                    {
+                        if ( resp.IsSuccessStatusCode )
+                        {
+#if NETCOREAPP
+                            await resp.Content.CopyToAsync( part.Stream, ct ).CAX();
+#else
+                            await resp.Content.CopyToAsync( part.Stream/*, ct*/ ).CAX();
+#endif
+                            return (part);
+                        }
+
+                        throw (await create_m3u8_Exception( resp, ct ).CAX());
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    if ( (attemptRequestCount == 1) || ct.IsCancellationRequested )
+                    {
+                        part.SetError( ex );
+                        return (part);
+                    }
+                }
+            }
+
+            throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
         }
     }
 }

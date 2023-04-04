@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace m3u8
                 var baseAddress = m3u8_file.BaseAddress;
                 var totalPatrs  = m3u8_file.Parts.Count;
                 var globalPartNumber = 0;
-                var downloadPartsSet = new SortedSet< m3u8_part_ts >( new m3u8_part_ts.comparer() );
+                var downloadPartsSet = new SortedSet< m3u8_part_ts >( m3u8_part_ts.comparer.Inst );
 
                 using ( DefaultConnectionLimitSaver.Create( maxDegreeOfParallelism ) )
                 {                 
@@ -144,7 +145,7 @@ namespace m3u8
                 var expectedPartNumber  = parts.FirstOrDefault().OrderNumber;
                 var maxPartNumber       = parts.LastOrDefault ().OrderNumber;
                 var sourceQueue         = new Queue< m3u8_part_ts >( parts );
-                var downloadPartsSet    = new SortedSet< m3u8_part_ts >( new m3u8_part_ts.comparer() );
+                var downloadPartsSet    = new SortedSet< m3u8_part_ts >( m3u8_part_ts.comparer.Inst );
                 var downloadPartsResult = new LinkedList< m3u8_part_ts >();
 
                 using ( DefaultConnectionLimitSaver.Create( maxDegreeOfParallelism ) )
@@ -297,7 +298,7 @@ namespace m3u8
                 var expectedPartNumber = m3u8_file.Parts.FirstOrDefault().OrderNumber;
                 var maxPartNumber      = m3u8_file.Parts.LastOrDefault ().OrderNumber;
                 var sourceQueue        = new Queue< m3u8_part_ts >( m3u8_file.Parts );
-                var downloadPartsSet   = new SortedSet< m3u8_part_ts >( new m3u8_part_ts.comparer() );
+                var downloadPartsSet   = new SortedSet< m3u8_part_ts >( m3u8_part_ts.comparer.Inst );
 
                 using ( DefaultConnectionLimitSaver.Create( maxDegreeOfParallelism ) )
                 using ( var canExtractPartEvent = new AutoResetEvent( false ) )
@@ -443,18 +444,39 @@ namespace m3u8
         /// </summary>
         private static class v3
         {
-            public static async Task run( string m3u8FileUrl, string outputFileName, CancellationTokenSource cts )
+            public static async Task run( string m3u8FileUrl, string outputFileName, CancellationToken ct )
             {
                 var p = new m3u8_processor.DownloadFileAndSaveInputParams()
                 {
-                    Cts                = cts,
+                    CancellationToken  = ct,
                     m3u8FileUrl        = m3u8FileUrl,
                     OutputFileName     = outputFileName,
                     NetParams          = new m3u8_client.init_params() { AttemptRequestCount = 1, },
                     ResponseStepAction = new m3u8_processor.ResponseStepActionDelegate( t => CONSOLE.WriteLine( $"{t.Part.OrderNumber} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),                    
                 };
 
-                await m3u8_processor.DownloadFileAndSave_Async( p );
+                await m3u8_processor.DownloadFileAndSave_Async( p ).CAX();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static class next__v2
+        {
+            public static async Task run( string m3u8FileUrl, string outputFileName, CancellationToken ct )
+            {
+                var p = new m3u8_processor__v2.DownloadFileAndSaveInputParams()
+                {
+                    CancellationToken  = ct,
+                    m3u8FileUrl        = m3u8FileUrl,
+                    OutputFileName     = outputFileName,
+                    NetParams          = new m3u8_client.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead },
+                    ResponseStepAction = new m3u8_processor__v2.ResponseStepActionDelegate( t => CONSOLE.WriteLine( $"{t.Part.OrderNumber + 1} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),
+                    //MaxDegreeOfParallelism = 8,
+                };
+
+                await m3u8_processor__v2.DownloadFileAndSave( p ).CAX();
             }
         }
 
@@ -486,7 +508,7 @@ namespace m3u8
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( M3U8_FILE_URL ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                    await v3.run( M3U8_FILE_URL, outputFileName, cts ).ConfigureAwait( false ); //.WaitForTaskEndsOrKeyboardBreak( cts );
+                    await next__v2.run( M3U8_FILE_URL, outputFileName, cts.Token ).CAX(); //.WaitForTaskEndsOrKeyboardBreak( cts );
                 }                    
             }
             catch ( Exception ex )

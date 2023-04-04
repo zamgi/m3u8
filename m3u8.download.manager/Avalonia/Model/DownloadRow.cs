@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
+//using _m3u8_processor_ = m3u8.m3u8_processor_adv;
+using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -192,7 +194,7 @@ namespace m3u8.download.manager.models
             Log.RemoveRows( logRows4Removing );
             _CreatedOrStartedDateTime_4_LastPartOfLiveStream = DateTime.Now;
         }
-        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in m3u8_processor_v2.ResponseStepActionParams p )
+        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in _m3u8_processor_.ResponseStepActionParams p )
         {
             var call__Fire_PropertyChanged_Events = false;
             lock ( this )

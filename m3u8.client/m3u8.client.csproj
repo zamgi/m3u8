@@ -40,7 +40,13 @@
   <ItemGroup>
     <Compile Include="m3u8.client.cs" />
     <Compile Include="m3u8.client.factory.cs" />
+    <Compile Include="m3u8_processor.cs" />
+    <Compile Include="m3u8_processor_adv.cs" />
+    <Compile Include="m3u8_processor_adv__v2.cs" />
+    <Compile Include="m3u8_processor__v2.cs" />
+    <Compile Include="obj_pool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="throttler_by_speed.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig">

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 
+//using _m3u8_processor_ = m3u8.m3u8_processor_adv;
+using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -180,7 +182,7 @@ namespace m3u8.download.manager.models
         }
 
 
-        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in m3u8_processor_v2.ResponseStepActionParams p )
+        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in _m3u8_processor_.ResponseStepActionParams p )
         {
             var call__RowPropertiesChanged = false;
             lock ( this )
@@ -244,6 +246,8 @@ namespace m3u8.download.manager.models
                             _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength = 0;
                             CreatedOrStartedDateTime           = DateTime.Now;
                             _InstantaneousSpeedInMbps          = null;
+                            TotalParts           = 0;
+                            SuccessDownloadParts = 0;
                             break;
 
                         case DownloadStatus.Running:

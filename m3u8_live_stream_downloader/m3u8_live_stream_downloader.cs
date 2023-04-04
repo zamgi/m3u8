@@ -261,11 +261,11 @@ namespace m3u8
 #else
                             using var s = await _HttpClient.GetStreamAsync( part_url/*, ct*/ ).CAX();
 #endif
-                            await s.CopyToAsync( fs/*, ct */).CAX();
+                            await s.CopyToAsync( fs, bufferSize: 81920, ct ).CAX();
 
                             if ( (++n % 10) == 0 )
                             {
-                                await fs.FlushAsync(/*ct*/).CAX();
+                                await fs.FlushAsync( ct ).CAX();
                             }
 
                             fi.Refresh();
@@ -328,11 +328,11 @@ namespace m3u8
 #else
                         using var s = await _HttpClient.GetStreamAsync( part_url/*, ct*/ ).CAX();
 #endif
-                        await s.CopyToAsync( fs/*, ct */).CAX();
+                        await s.CopyToAsync( fs, bufferSize: 81920, ct ).CAX();
 
                         if ( (++n % 10) == 0 )
                         {
-                            await fs.FlushAsync(/*ct*/).CAX();
+                            await fs.FlushAsync( ct ).CAX();
                         }
 
                         fi.Refresh();
@@ -454,5 +454,15 @@ namespace m3u8
                 }
             }
         }
+
+
+//        [M(O.AggressiveInlining)] public static Task< Stream > GetStreamAsync_Ex( this HttpClient hc, string requestUri )
+//        {
+//#if NETCOREAPP
+//            return (hc.GetStreamAsync( part_url, ct ));
+//#else
+//            return (hc.GetStreamAsync( requestUri/*, ct*/ ));
+//#endif
+//        }
     }
 }

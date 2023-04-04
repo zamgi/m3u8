@@ -73,8 +73,11 @@
     <Compile Include="..\m3u8.client\m3u8.client.factory.cs">
       <Link>[-= m3u8.client =-]\m3u8.client.factory.cs</Link>
     </Compile>
-    <Compile Include="..\m3u8.downloader\[-= m3u8.client =-]\m3u8_processor.cs">
+    <Compile Include="..\m3u8.client\m3u8_processor.cs">
       <Link>[-= m3u8.client =-]\m3u8_processor.cs</Link>
+    </Compile>
+    <Compile Include="..\m3u8.client\obj_pool.cs">
+      <Link>[-= m3u8.client =-]\obj_pool.cs</Link>
     </Compile>
     <Compile Include="Program.cs" />
   </ItemGroup>

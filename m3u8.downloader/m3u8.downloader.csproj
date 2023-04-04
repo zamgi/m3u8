@@ -59,6 +59,9 @@
     <Compile Include="..\m3u8.client\m3u8.client.factory.cs">
       <Link>[-= m3u8.client =-]\m3u8.client.factory.cs</Link>
     </Compile>
+    <Compile Include="..\m3u8.client\obj_pool.cs">
+      <Link>[-= m3u8.client =-]\obj_pool.cs</Link>
+    </Compile>
     <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Infrastructure\FormPositionStorer.cs" />
     <Compile Include="Infrastructure\NameCleaner.cs" />
@@ -121,7 +124,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\WaitBanner\BitmapHolder.cs" />
-    <Compile Include="[-= m3u8.client =-]\m3u8_processor.cs" />
+    <Compile Include="..\m3u8.client\m3u8_processor.cs">
+      <Link>[-= m3u8.client =-]\m3u8_processor.cs</Link>
+    </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

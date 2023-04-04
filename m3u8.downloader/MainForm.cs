@@ -630,7 +630,7 @@ namespace m3u8.downloader
                                 mc                                     = _Mc,
                                 m3u8File                               = m3u8File,
                                 OutputFileName                         = _OutputFileName,
-                                Cts                                    = _Cts,
+                                CancellationToken                      = _Cts.Token,
                                 MaxDegreeOfParallelism                 = Settings.Default.MaxDegreeOfParallelism,
                                 RequestStepAction                      = requestStepAction,
                                 ResponseStepAction                     = responseStepAction,

@@ -26,7 +26,7 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal static class m3u8_processor_v2
+    internal static class m3u8_processor_adv
     {
         private static IEnumerable< m3u8_part_ts > download_m3u8File_parts_parallel( DownloadPartsAndSaveInputParams ip )
         {
@@ -42,7 +42,7 @@ namespace m3u8
             var expectedPartNumber = m3u8File.Parts.FirstOrDefault().OrderNumber;
             var maxPartNumber      = m3u8File.Parts.LastOrDefault ().OrderNumber;
             var sourceQueue        = new Queue< m3u8_part_ts >( m3u8File.Parts );
-            var downloadPartsSet   = new SortedSet< m3u8_part_ts >( new m3u8_part_ts.comparer() );
+            var downloadPartsSet   = new SortedSet< m3u8_part_ts >( m3u8_part_ts.comparer.Inst );
             
             using ( var throttlerBySpeed_User = ThrottlerBySpeed_InDownloadProcessUser.Start( ip.ThrottlerBySpeed ) )
             using ( var innerCts            = new CancellationTokenSource() )
@@ -133,7 +133,7 @@ namespace m3u8
 
                 //-2-//
                 for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.MaxDegreeOfParallelism ) );
-                            expectedPartNumber <= maxPartNumber; )
+                          expectedPartNumber <= maxPartNumber; )
                 {
                     var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, } );
                     if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
@@ -198,7 +198,7 @@ namespace m3u8
             var expectedPartNumber = m3u8File.Parts.FirstOrDefault().OrderNumber;
             var maxPartNumber      = m3u8File.Parts.LastOrDefault ().OrderNumber;
             var sourceQueue        = new Queue< m3u8_part_ts >( m3u8File.Parts );
-            var downloadPartsSet   = new SortedSet< m3u8_part_ts >( new m3u8_part_ts.comparer() );
+            var downloadPartsSet   = new SortedSet< m3u8_part_ts >( m3u8_part_ts.comparer.Inst );
 
             using ( var throttlerBySpeed_User = ThrottlerBySpeed_InDownloadProcessUser.Start( ip.ThrottlerBySpeed ) )
             using ( var innerCts            = new CancellationTokenSource() )
@@ -444,10 +444,8 @@ namespace m3u8
 
             //-3.1-//
             var directoryName = Path.GetDirectoryName( ip.OutputFileName );
-            if ( !Directory.Exists( directoryName ) )
-            {
-                Directory.CreateDirectory( directoryName );
-            }
+            if ( !Directory.Exists( directoryName ) ) Directory.CreateDirectory( directoryName );
+            
             //-3.2-//
             using ( var fs = Extensions.File_Open4Write( ip.OutputFileName ) )
             {
