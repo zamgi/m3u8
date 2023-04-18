@@ -42,8 +42,8 @@ namespace m3u8
             public int Count => Volatile.Read( ref _Manual_Count );
             public void Push( X x )
             {
-                _Stack.Push( x );
                 Interlocked.Increment( ref _Manual_Count );
+                _Stack.Push( x );                
             }
 #if NETCOREAPP
             public bool TryPop( [MaybeNullWhen(false)] out X x )
