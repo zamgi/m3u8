@@ -5,15 +5,15 @@
         xmlns:local-ui="clr-namespace:m3u8.download.manager.ui"
         mc:Ignorable="d" 
         x:Class="m3u8.download.manager.ui.SettingsForm"
-        d:DesignWidth="350" d:DesignHeight="400"
-        Width="350" Height="400"
+        d:DesignWidth="350" d:DesignHeight="500"
+        Width="350" Height="500"
         Title="settings"
         WindowStartupLocation="CenterOwner"
         Icon="/Resources/m3u8_32x36.ico"
         Background="WhiteSmoke"
         ShowInTaskbar="False"
         >
-  <Grid RowDefinitions="auto,auto,15,auto,auto,15,auto,15,auto,10,auto,auto,*,auto" 
+  <Grid RowDefinitions="auto,auto,15,auto,auto,15,auto,15,auto,10,auto,auto,10,auto,auto,*,auto" 
         ColumnDefinitions="*,auto,auto,*" Margin="15"
         >
     <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"
@@ -56,8 +56,15 @@
         <CheckBox x:Name="showAllDownloadsCompleted_NotificationCheckBox" Background="White" Cursor="Hand">show all downloads completed notification</CheckBox>
       </StackPanel>
     </Border>
-    
-    <DockPanel Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+
+    <TextBlock Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="4" Foreground="DarkGray">GC</TextBlock>
+    <Border Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
+      <StackPanel Margin="20,10">
+        <Button x:Name="collectGarbageButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Collect Garbage</Button>
+      </StackPanel>
+    </Border>
+
+    <DockPanel Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Bottom">
       <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
       <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
     </DockPanel>

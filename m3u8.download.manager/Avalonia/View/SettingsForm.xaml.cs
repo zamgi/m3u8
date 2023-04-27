@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
 using m3u8.download.manager.controllers;
@@ -28,7 +29,8 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.fields.]
-        private DownloadController _DownloadController;
+        private DownloadController    _DownloadController;
+        private CollectGarbageCommand _CollectGarbageCommand;
         #endregion
 
         #region [.ctor().]
@@ -39,13 +41,15 @@ namespace m3u8.download.manager.ui
             this.AttachDevTools();
 #endif
         }
-        internal SettingsForm( DownloadController dc ) : this()
-        {
-            _DownloadController = dc ?? throw (new ArgumentNullException( nameof(dc) ));
+        internal SettingsForm( MainVM vm ) : this()
+        {            
+            _DownloadController = vm?.DownloadController ?? throw (new ArgumentNullException( nameof(vm.DownloadController) ));
             _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
             _DownloadController.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
 
             DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
+
+            _CollectGarbageCommand = vm.CollectGarbageCommand ?? throw (new ArgumentNullException( nameof(vm.CollectGarbageCommand) ));
         }
         private void InitializeComponent()
         {
@@ -62,6 +66,7 @@ namespace m3u8.download.manager.ui
             showDownloadStatisticsInMainFormTitleCheckBox  = this.Find< CheckBox      >( nameof(showDownloadStatisticsInMainFormTitleCheckBox) );
             showAllDownloadsCompleted_NotificationCheckBox = this.Find< CheckBox      >( nameof(showAllDownloadsCompleted_NotificationCheckBox) );
 
+            this.Find< Button >( "collectGarbageButton" ).Click += collectGarbageButton_Ckick;
             this.Find< Button >( "okButton"     ).Click += (s, e) => OkButtonProcess();
             this.Find< Button >( "cancelButton" ).Click += (s, e) => this.Close();
         }
@@ -179,6 +184,25 @@ namespace m3u8.download.manager.ui
         {
             only4NotRunLabel1.IsVisible =
                 only4NotRunLabel2.IsVisible = isDownloading;
+        }
+
+
+        private /*async*/ void collectGarbageButton_Ckick( object s, RoutedEventArgs e )
+        {
+            var btn = (Button) s;
+            btn.Content = "...";
+            btn.IsEnabled = false;
+
+            //_CollectGarbageCommand?.Execute( null );
+            CollectGarbageCommand.Collect_Garbage( out var totalMemoryBytes );
+            //var totalMemoryBytes = await Task.Run( () => { CollectGarbageCommand.Collect_Garbage( out var totalMemoryBytes_ ); return (totalMemoryBytes_); } );
+
+            var text        = $"{(totalMemoryBytes / (1024.0 * 1024)):N2} MB";
+            var toolTipText = $"Collect Garbage. Total Memory: {text}.";
+           
+            btn.Content = text;
+            btn.SetValue( ToolTip.TipProperty, toolTipText );
+            btn.IsEnabled = true;
         }
         #endregion
     }

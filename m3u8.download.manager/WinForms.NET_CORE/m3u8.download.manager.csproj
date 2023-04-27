@@ -53,6 +53,7 @@
     <Compile Include="..\WinForms\Infrastructure\RowNumbersPainter.cs" Link="Infrastructure\RowNumbersPainter.cs" />
     <Compile Include="..\WinForms\Infrastructure\SortInfo.cs" Link="Infrastructure\SortInfo.cs" />
     <Compile Include="..\WinForms\Infrastructure\WinApi.cs" Link="Infrastructure\WinApi.cs" />
+    <Compile Include="..\WinForms\Infrastructure\CollectGarbage.cs" Link="Infrastructure\CollectGarbage.cs" />
     
     <Compile Include="..\WinForms\Model\_more.cs" Link="Model\_more.cs" />
     <Compile Include="..\WinForms\Model\DownloadListModel.cs" Link="Model\DownloadListModel.cs" />
@@ -104,7 +105,9 @@
     <Compile Include="..\WinForms\UI\UC\OtherSettingsUC.cs" Link="UI\UC\OtherSettingsUC.cs" />
     <Compile Include="..\WinForms\UI\UC\OtherSettingsUC.designer.cs" Link="UI\UC\OtherSettingsUC.designer.cs" />
     <Compile Include="..\WinForms\UI\UC\ParallelismSettingsUC.cs" Link="UI\UC\ParallelismSettingsUC.cs" />
-    <Compile Include="..\WinForms\UI\UC\ParallelismSettingsUC.designer.cs" Link="UI\UC\ParallelismSettingsUC.designer.cs" />   
+    <Compile Include="..\WinForms\UI\UC\ParallelismSettingsUC.designer.cs" Link="UI\UC\ParallelismSettingsUC.designer.cs" />
+    <Compile Include="..\WinForms\UI\UC\MoreSettingsUC.cs" Link="UI\UC\MoreSettingsUC.cs" />
+    <Compile Include="..\WinForms\UI\UC\MoreSettingsUC.designer.cs" Link="UI\UC\MoreSettingsUC.designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -20,7 +20,7 @@ namespace m3u8.download.manager
 
         public async void Execute( object parameter )
         {
-            var f = new SettingsForm( _VM.DownloadController );
+            var f = new SettingsForm( _VM );
             {
                 var st = _VM.SettingsController.Settings;
 

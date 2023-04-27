@@ -20,6 +20,8 @@
             this.parallelismSettingsUC = new m3u8.download.manager.ui.ParallelismSettingsUC();
             this.otherTabPage = new System.Windows.Forms.TabPage();
             this.otherSettingsUC = new m3u8.download.manager.ui.OtherSettingsUC();
+            this.moreTabPage = new System.Windows.Forms.TabPage();
+            this.moreSettingsUC = new m3u8.download.manager.ui.MoreSettingsUC();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
             tabControl = new System.Windows.Forms.TabControl();
@@ -27,6 +29,7 @@
             tabControl.SuspendLayout();
             this.parallelismTabPage.SuspendLayout();
             this.otherTabPage.SuspendLayout();
+            this.moreTabPage.SuspendLayout(); 
             bottomPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -34,12 +37,14 @@
             // 
             tabControl.Controls.Add(this.parallelismTabPage);
             tabControl.Controls.Add(this.otherTabPage);
+            tabControl.Controls.Add(this.moreTabPage);
             tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             tabControl.Location = new System.Drawing.Point(0, 0);
             tabControl.Size = new System.Drawing.Size(296, 457);
             tabControl.TabIndex = 0;
             tabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
             tabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.TabControl_DrawItem);
+            tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControl_Selected);
             // 
             // parallelismTabPage
             // 
@@ -76,6 +81,24 @@
             this.otherSettingsUC.Location = new System.Drawing.Point(3, 3);
             this.otherSettingsUC.Size = new System.Drawing.Size(282, 425);
             this.otherSettingsUC.TabIndex = 0;
+            // 
+            // moreTabPage
+            // 
+            this.moreTabPage.Controls.Add( this.moreSettingsUC );
+            this.moreTabPage.Location = new System.Drawing.Point( 4, 22 );
+            this.moreTabPage.Padding = new System.Windows.Forms.Padding( 3 );
+            this.moreTabPage.Size = new System.Drawing.Size( 288, 431 );
+            this.moreTabPage.TabIndex = 2;
+            this.moreTabPage.Text = "more";
+            this.moreTabPage.UseVisualStyleBackColor = true;
+            this.moreTabPage.BackColor = System.Drawing.Color.WhiteSmoke;
+            // 
+            // moreSettingsUC
+            // 
+            this.moreSettingsUC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.moreSettingsUC.Location = new System.Drawing.Point( 3, 3 );
+            this.moreSettingsUC.Size = new System.Drawing.Size( 282, 425 );
+            this.moreSettingsUC.TabIndex = 0;
             // 
             // bottomPanel
             // 
@@ -128,6 +151,7 @@
             tabControl.ResumeLayout(false);
             this.parallelismTabPage.ResumeLayout(false);
             this.otherTabPage.ResumeLayout(false);
+            this.moreTabPage.ResumeLayout(false);
             bottomPanel.ResumeLayout(false);
             this.ResumeLayout(false);
         }
@@ -135,9 +159,11 @@
 
         private m3u8.download.manager.ui.ParallelismSettingsUC parallelismSettingsUC;
         private m3u8.download.manager.ui.OtherSettingsUC otherSettingsUC;
+        private m3u8.download.manager.ui.MoreSettingsUC moreSettingsUC;
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.TabPage parallelismTabPage;
         private System.Windows.Forms.TabPage otherTabPage;
+        private System.Windows.Forms.TabPage moreTabPage;
     }
 }

@@ -24,6 +24,7 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_                 = m3u8.download.manager.Properties.Resources;
+using System.Runtime;
 
 namespace m3u8.download.manager.ui
 {
@@ -342,6 +343,13 @@ namespace m3u8.download.manager.ui
                         if ( downloadListUC.HasFocus )
                         {
                             openOutputFileMenuItem_Click( this, EventArgs.Empty );
+                        }
+                        break;
+
+                    case Key.G:
+                        if ( (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ) //Collect Garbage
+                        {
+                            _VM.CollectGarbageCommand.Execute( null );
                         }
                         break;
                 }
@@ -1112,5 +1120,7 @@ namespace m3u8.download.manager.ui
             }
         }
         #endregion
+
+
     }
 }

@@ -40,7 +40,8 @@ namespace m3u8.download.manager
                        "  Insert: Open add new download dialog" + Environment.NewLine +
                        "  Delete: Delete download (with or without output file)" + Environment.NewLine +
                        "  Enter:  Open rename output file dialog" + Environment.NewLine +
-                       "  F1:     About dialog" + Environment.NewLine;
+                       "  F1:     About dialog" + Environment.NewLine +
+                       "  (Ctrl+Shift+G:  Collect Garbage)" + Environment.NewLine;
 
             var fontFamilies = (from fn in FontManager.Current.GetInstalledFontFamilyNames()
                                 select new FontFamily( fn )

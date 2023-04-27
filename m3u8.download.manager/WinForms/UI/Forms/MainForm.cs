@@ -21,6 +21,7 @@ using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+using System.Runtime;
 
 namespace m3u8.download.manager.ui
 {
@@ -282,6 +283,13 @@ namespace m3u8.download.manager.ui
                         if ( downloadListUC.HasFocus )
                         {
                             openOutputFilesWithExternalMenuItem_Click( this, EventArgs.Empty );
+                        }
+                    break;
+
+                    case Keys.G:
+                        if ( e.Shift ) //Collect Garbage
+                        {
+                            Collect_Garbage();
                         }
                     break;
                 }
@@ -1011,7 +1019,8 @@ namespace m3u8.download.manager.ui
                        "  Insert:\t Open add new download dialog" + Environment.NewLine +
                        "  Delete:\t Delete download (with or without output file)" + Environment.NewLine +
                        "  Enter:\t Open rename output file dialog" + Environment.NewLine +
-                       "  F1:\t About dialog" + Environment.NewLine;
+                       "  F1:\t About dialog" + Environment.NewLine +
+                       "  (Ctrl+Shift+G:  Collect Garbage)" + Environment.NewLine;
             this.MessageBox_ShowInformation( text, "about" );
         }
 
@@ -1459,5 +1468,12 @@ namespace m3u8.download.manager.ui
         [M(O.AggressiveInlining)] private static bool PauseDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Started ) ||
                                                                                                            (status == DownloadStatus.Running );
         #endregion
+
+        private void Collect_Garbage()
+        {
+            CollectGarbage.Collect_Garbage( out var totalMemoryBytes );
+
+            statusBarUC.ShowDisappearingMessage( $"Collect Garbage. Total Memory: {(totalMemoryBytes / (1024.0 * 1024)):N2} MB." );
+        }
     }
 }

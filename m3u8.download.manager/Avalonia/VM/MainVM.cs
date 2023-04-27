@@ -26,6 +26,7 @@ namespace m3u8.download.manager
             AboutCommand                       = new AboutCommand();
             FileNameExcludesWordsEditorCommand = new FileNameExcludesWordsEditorCommand( this );
             ColumnsVisibilityEditorCommand     = new ColumnsVisibilityEditorCommand( mainWindow );
+            CollectGarbageCommand              = new CollectGarbageCommand();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -48,6 +49,7 @@ namespace m3u8.download.manager
         public AboutCommand                       AboutCommand                       { get; }
         public FileNameExcludesWordsEditorCommand FileNameExcludesWordsEditorCommand { get; }
         public ColumnsVisibilityEditorCommand     ColumnsVisibilityEditorCommand     { get; }
+        public CollectGarbageCommand              CollectGarbageCommand              { get; }
 
         public string ItemsCount => $"{DownloadListModel.RowsCount} Items";
     }

@@ -20,6 +20,7 @@ namespace m3u8.download.manager.ui
         {
             Parallelism,
             Other,
+            More,
         }
 
         #region [.ctor().]
@@ -35,6 +36,7 @@ namespace m3u8.download.manager.ui
                 {
                     case SettingsTabEnum.Parallelism: ((TabControl) parallelismTabPage.Parent).SelectedTab = parallelismTabPage; break;
                     case SettingsTabEnum.Other      : ((TabControl) otherTabPage      .Parent).SelectedTab = otherTabPage;       break;
+                    case SettingsTabEnum.More       : ((TabControl) moreTabPage       .Parent).SelectedTab = moreTabPage;        break;
                 }
             }
         }
@@ -70,7 +72,7 @@ namespace m3u8.download.manager.ui
             using var br = new SolidBrush( tabPage.BackColor );
             e.Graphics.FillRectangle( br, e.Bounds );
 
-            var color = (tabPage == parallelismTabPage) ? Brushes.DarkOliveGreen : Brushes.DarkOrange;
+            var color = (tabPage == parallelismTabPage) ? Brushes.DarkOliveGreen : ((tabPage == otherTabPage) ? Brushes.DarkOrange : Brushes.Silver);
 
             using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.None, FormatFlags = StringFormatFlags.NoWrap };
             using var ft = new Font( tabPage.Font, FontStyle.Underline );
@@ -88,6 +90,13 @@ namespace m3u8.download.manager.ui
             //    //e.DrawFocusRectangle();
             //}
             #endregion
+        }
+        private void TabControl_Selected( object sender, TabControlEventArgs e )
+        {
+            if ( e.TabPage == moreTabPage )
+            {
+                moreSettingsUC.StartShowTotalMemory();
+            }
         }
 
         #region [.public props.]
