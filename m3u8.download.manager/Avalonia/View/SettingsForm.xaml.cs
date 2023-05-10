@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 
+#if DEBUG
+using Avalonia;
+#endif
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -30,7 +32,7 @@ namespace m3u8.download.manager.ui
 
         #region [.fields.]
         private DownloadController    _DownloadController;
-        private CollectGarbageCommand _CollectGarbageCommand;
+        //private CollectGarbageCommand _CollectGarbageCommand;
         #endregion
 
         #region [.ctor().]
@@ -49,7 +51,7 @@ namespace m3u8.download.manager.ui
 
             DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
 
-            _CollectGarbageCommand = vm.CollectGarbageCommand ?? throw (new ArgumentNullException( nameof(vm.CollectGarbageCommand) ));
+            //_CollectGarbageCommand = vm.CollectGarbageCommand ?? throw (new ArgumentNullException( nameof(vm.CollectGarbageCommand) ));
         }
         private void InitializeComponent()
         {

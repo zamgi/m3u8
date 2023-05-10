@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 using Avalonia;
@@ -18,7 +20,7 @@ namespace m3u8.download.manager
     {
         private static async Task Main( string[] args )
         {
-            AppDomain.CurrentDomain.UnhandledException += async (sender, e) => await Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(),"AppDomain.CurrentDomain.UnhandledException"  );
+            AppDomain.CurrentDomain.UnhandledException += async (_, e) => await Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(),"AppDomain.CurrentDomain.UnhandledException"  );
 
             using ( var sca = SingleCopyApplication.Current )
             {
@@ -98,24 +100,7 @@ namespace m3u8.download.manager
                     #endregion
 
                     #region comm. [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Tls13 + Ssl3'.]
-                    /*
-                    void set_SecurityProtocol( SecurityProtocolType securityProtocolType )
-                    {
-                        try
-                        {
-                            ServicePointManager.SecurityProtocol |= securityProtocolType;
-                        }
-                        catch ( Exception ex )
-                        {
-                            Debug.WriteLine( ex );
-                        }
-                    };
-                    set_SecurityProtocol( SecurityProtocolType.Tls   );
-                    set_SecurityProtocol( SecurityProtocolType.Tls11 );
-                    set_SecurityProtocol( SecurityProtocolType.Tls12 );
-                    set_SecurityProtocol( SecurityProtocolType.Tls13 );
-                    //---set_SecurityProtocol( SecurityProtocolType.Ssl3 );
-                    */
+                    /*Set_SecurityProtocols();*/
                     #endregion
 
                     #region [.register encoding provider.]
@@ -154,5 +139,27 @@ namespace m3u8.download.manager
                                                                   //.UseSkia()
                                                                   //.UseReactiveUI()
                                                                   ;
+
+        private static void Set_SecurityProtocols()
+        {
+            #region comm. other vers.
+            //set_SecurityProtocol( SecurityProtocolType.Tls   );
+            //set_SecurityProtocol( SecurityProtocolType.Tls11 );
+            //set_SecurityProtocol( SecurityProtocolType.Tls12 );
+            //set_SecurityProtocol( SecurityProtocolType.Tls13 );
+            //set_SecurityProtocol( SecurityProtocolType.Ssl3  );                    
+            #endregion
+            foreach ( var spt in Enum.GetValues( typeof(SecurityProtocolType) ).Cast< SecurityProtocolType >() )
+            {
+                try
+                {
+                    ServicePointManager.SecurityProtocol |= spt;
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
+            }
+        }
     }
 }

@@ -21,8 +21,8 @@ namespace m3u8.download.manager
         /// </summary>
         [STAThread] private static void/*async Task*/ Main( string[] args )
         {
-            Application.ThreadException                  += (sender, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
-            AppDomain  .CurrentDomain.UnhandledException += (sender, e) => Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
+            Application.ThreadException                  += (_, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
+            AppDomain  .CurrentDomain.UnhandledException += (_, e) => Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
             Application.SetUnhandledExceptionMode( UnhandledExceptionMode.Automatic, true );
 
             using ( var sca = SingleCopyApplication.Current )
@@ -35,7 +35,8 @@ namespace m3u8.download.manager
                 var browserType = BrowserIPC.CommandLine.GetBrowserType( args );
                 switch ( browserType )
                 {
-                    case BrowserIPC.BrowserTypeEnum.Chrome:
+                    #region comm. [2023.05.10; Now chrome launches native application process just like firefox]
+                    /*case BrowserIPC.BrowserTypeEnum.Chrome:
                     {
                         var text = BrowserIPC.ReadFromStandardInput();
                         if ( !text.IsNullOrWhiteSpace() )
@@ -44,8 +45,10 @@ namespace m3u8.download.manager
                         }
                         BrowserIPC.WriteToStandardOutput( success );
                     }
-                    break;
+                    break;*/
+                    #endregion
 
+                    case BrowserIPC.BrowserTypeEnum.Chrome:
                     case BrowserIPC.BrowserTypeEnum.Firefox:
                     {
                         var text = BrowserIPC.ReadFromStandardInput();
@@ -99,28 +102,7 @@ namespace m3u8.download.manager
                     #endregion
 
                     #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
-                    static void set_SecurityProtocol( SecurityProtocolType spt )
-                    {
-                        try
-                        {
-                            ServicePointManager.SecurityProtocol |= spt;
-                        }
-                        catch ( Exception ex )
-                        {
-                            Debug.WriteLine( ex );
-                        }
-                    };
-                    #region comm. other vers.
-                    //set_SecurityProtocol( SecurityProtocolType.Tls   );
-                    //set_SecurityProtocol( SecurityProtocolType.Tls11 );
-                    //set_SecurityProtocol( SecurityProtocolType.Tls12 );
-                    //set_SecurityProtocol( SecurityProtocolType.Tls13 );
-                    //set_SecurityProtocol( SecurityProtocolType.Ssl3  );                    
-                    #endregion
-                    foreach ( var spt in Enum.GetValues( typeof(SecurityProtocolType) ).Cast< SecurityProtocolType >() )
-                    {
-                        set_SecurityProtocol( spt );
-                    }
+                    Set_SecurityProtocols();
                     #endregion
 #if NETCOREAPP
                     Application.SetHighDpiMode( HighDpiMode.SystemAware ); 
@@ -146,6 +128,28 @@ namespace m3u8.download.manager
                     PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).Wait();
                 }
                 #endregion
+            }
+        }
+
+        private static void Set_SecurityProtocols()
+        {
+            #region comm. other vers.
+            //set_SecurityProtocol( SecurityProtocolType.Tls   );
+            //set_SecurityProtocol( SecurityProtocolType.Tls11 );
+            //set_SecurityProtocol( SecurityProtocolType.Tls12 );
+            //set_SecurityProtocol( SecurityProtocolType.Tls13 );
+            //set_SecurityProtocol( SecurityProtocolType.Ssl3  );                    
+            #endregion
+            foreach ( var spt in Enum.GetValues( typeof(SecurityProtocolType) ).Cast< SecurityProtocolType >() )
+            {
+                try
+                {
+                    ServicePointManager.SecurityProtocol |= spt;
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
             }
         }
     }
