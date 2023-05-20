@@ -17,17 +17,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\m3u8.client\m3u8.client.cs"         Link="[-= m3u8.client =-]\m3u8.client.cs" />    
-    <Compile Include="..\m3u8.client\m3u8_processor.cs"      Link="[-= m3u8.client =-]\m3u8_processor.cs" />
+    <Compile Include="..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />    
+    <Compile Include="..\m3u8.client\m3u8_processor.cs" Link="[-= m3u8.client =-]\m3u8_processor.cs" />
     <Compile Include="..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
-    <Compile Include="..\m3u8.client\m3u8_processor_adv.cs"  Link="[-= m3u8.client =-]\m3u8_processor_adv.cs" />
-    <Compile Include="..\m3u8.client\throttler_by_speed.cs"  Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
-    <Compile Include="..\m3u8.client\obj_pool.cs"            Link="[-= m3u8.client =-]\obj_pool.cs" />
+    <Compile Include="..\m3u8.client\m3u8_processor_adv.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv.cs" />
+    <Compile Include="..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
+    <Compile Include="..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <!--<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />-->
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">

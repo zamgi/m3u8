@@ -49,12 +49,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\m3u8.client\m3u8.client.cs"             Link="[-= m3u8.client =-]\m3u8.client.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs"     Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8_processor_adv.cs"      Link="[-= m3u8.client =-]\m3u8_processor_adv.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs"  Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
-    <Compile Include="..\..\m3u8.client\throttler_by_speed.cs"      Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
-    <Compile Include="..\..\m3u8.client\obj_pool.cs"                Link="[-= m3u8.client =-]\obj_pool.cs" />
+    <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />
+    <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
+    <Compile Include="..\..\m3u8.client\m3u8_processor_adv.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv.cs" />
+    <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
+    <Compile Include="..\..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
+    <Compile Include="..\..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
     
     <Compile Include="..\WinForms\Infrastructure\FileDeleter.cs" Link="Infrastructure\FileDeleter.cs" />
@@ -69,19 +69,19 @@
   </ItemGroup>
      
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.19" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.19" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.19" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.19" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.19" />
+    <PackageReference Include="Avalonia" Version="0.10.21" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.21" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.21" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.21" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.21" />
     <PackageReference Include="MessageBox.Avalonia" Version="2.1.0" />    
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="System.Reactive" Version="5.0.0" />
-    <PackageReference Include="System.Reactive.Core" Version="5.0.0" />
-    <PackageReference Include="System.Reactive.Interfaces" Version="5.0.0" />
-    <PackageReference Include="System.Reactive.Linq" Version="5.0.0" />
-    <PackageReference Include="System.Reactive.PlatformServices" Version="5.0.0" />
+    <PackageReference Include="System.Reactive" Version="6.0.0" />
+    <PackageReference Include="System.Reactive.Core" Version="6.0.0" />
+    <PackageReference Include="System.Reactive.Interfaces" Version="6.0.0" />
+    <PackageReference Include="System.Reactive.Linq" Version="6.0.0" />
+    <PackageReference Include="System.Reactive.PlatformServices" Version="6.0.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
   </ItemGroup>
      
