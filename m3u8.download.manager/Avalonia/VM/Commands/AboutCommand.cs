@@ -3,7 +3,7 @@ using System.Linq;
 using System.Windows.Input;
 
 using Avalonia.Media;
-using MessageBox.Avalonia.Enums;
+using MsBox.Avalonia.Enums;
 
 namespace m3u8.download.manager
 {
@@ -43,9 +43,12 @@ namespace m3u8.download.manager
                        "  F1:     About dialog" + Environment.NewLine +
                        "  (Ctrl+Shift+G:  Collect Garbage)" + Environment.NewLine;
 
-            var fontFamilies = (from fn in FontManager.Current.GetInstalledFontFamilyNames()
-                                select new FontFamily( fn )
+            var fontFamilies = (from ff in FontManager.Current.SystemFonts
+                                select ff
                               ).ToArray();
+            //var fontFamilies = (from fn in FontManager.Current.GetInstalledFontFamilyNames()
+            //                    select new FontFamily( fn )
+            //                  ).ToArray();
 
             var fontFamily = (from f in fontFamilies
                               where (f.Name.EqualIgnoreCase( "Courier New"      )) || //Windows

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 
 using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Styling;
 
 namespace m3u8.download.manager.ui
 {
@@ -44,6 +46,19 @@ namespace m3u8.download.manager.ui
                     };
                 }
                 return (_Light);
+            }
+        }
+
+
+        public static void Add_NoThrow( this Styles styles, IStyle item )
+        {
+            try
+            {
+                styles.Add( item );
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
             }
         }
     }

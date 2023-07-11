@@ -7,10 +7,10 @@
         d:DesignWidth="261" d:DesignHeight="116"
         Width="261" Height="116"
         WindowStartupLocation="CenterOwner"
-        HasSystemDecorations="False"
+        SystemDecorations="None"
         Topmost="True"
         ShowInTaskbar="False"
-        >
+        ><!--HasSystemDecorations="False"-->
   <Grid ShowGridLines="False" Background="WhiteSmoke">
     <Grid.RowDefinitions>
       <RowDefinition Height="3" />

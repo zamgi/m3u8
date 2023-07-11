@@ -89,7 +89,8 @@ namespace m3u8.download.manager.ui
                 items.Add( new WordItem( col, isVisibleAlways: col.CellStyleClasses.Contains( "visible_always_sign" ) ) );
                 _SaveColumnIsVisibleDict[ col ] = col.IsVisible;
             }
-            DGV.Items = _DGVRows = new DataGridCollectionView( items );
+            //---DGV.Items = _DGVRows = new DataGridCollectionView( items );
+            DGV.ItemsSource = _DGVRows = new DataGridCollectionView( items );
             DGV.CellPointerPressed += DGV_CellPointerPressed;
         }
 
@@ -239,7 +240,8 @@ namespace m3u8.download.manager.ui
             if ( !(e.Column.GetCellContent( e.Row ) is CheckBox checkBox) ) return;
             if ( !IsAllowChange_DGV_SelectedItem( DGV.SelectedItem ) ) return;
 
-            var trb = checkBox.TransformedBounds;
+            //---var trb = checkBox.TransformedBounds;
+            var trb = checkBox.GetTransformedBounds();
             if ( trb.HasValue && trb.Value.Contains( p.Position ) )
             {
                 checkBox.IsChecked = !checkBox.IsChecked.GetValueOrDefault();

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
 
 using Avalonia;
@@ -13,7 +12,7 @@ namespace m3u8.download.manager
     public abstract class StoreBoundsWindowBase : Window
     {
         private PixelPoint _Position;
-        protected override void OnClosing( CancelEventArgs e )
+        protected override void OnClosing( WindowClosingEventArgs e )
         {
             _Position = this.Position;
 

@@ -1,23 +1,25 @@
 ﻿using System;
 
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Styling;
+using Avalonia.VisualTree;
+//using Avalonia.Styling;
 
 namespace m3u8.download.manager.ui
 {
     /// <summary>
     /// 
     /// </summary>
-    public abstract class MenuItemBase< T > : MenuItem, IStyleable
+    public abstract class MenuItemBase< T > : MenuItem//, IStyleable
     {
         /// <summary>
         /// 
         /// </summary>
-        protected sealed class SubMenuItem : MenuItem, IStyleable
+        protected sealed class SubMenuItem : MenuItem//, IStyleable
         {
             private Image _InnerImage;
             public SubMenuItem( T value, EventHandler< RoutedEventArgs > onClick ) : this( value, value.ToString(), onClick ){}
@@ -31,7 +33,8 @@ namespace m3u8.download.manager.ui
                 this.Text   = text;
             }
 
-            Type IStyleable.StyleKey => typeof(MenuItem);
+            //Type IStyleable.StyleKey => typeof(MenuItem);
+            protected override Type StyleKeyOverride => typeof(MenuItem);
             public string Text { get; }
 
             public T Value { get; }
@@ -49,10 +52,11 @@ namespace m3u8.download.manager.ui
 
         public event ValueChangedEventHandler ValueChanged;
 
-        Type IStyleable.StyleKey => typeof(MenuItem);
+        //Type IStyleable.StyleKey => typeof(MenuItem);
+        protected override Type StyleKeyOverride => typeof(MenuItem);
 
         protected abstract string  MainToolTipText    { get; }
-        protected abstract IBitmap MainImage          { get; }
+        protected abstract Bitmap  MainImage          { get; }
         protected abstract IBrush  MainForeground     { get; }
         protected abstract IBrush  SelectedBackground { get; }
 
@@ -61,13 +65,13 @@ namespace m3u8.download.manager.ui
         protected abstract bool IsEqual( T x, T y );
 
         protected TextBlock _InnerTextBlock;
-        private Image       _InnerImage;
+        private   Image     _InnerImage;
         public IImage Image
         {
             get => _InnerImage.Source;
             set => _InnerImage.Source = value;
         }
-        protected MenuItemBase() { }
+        protected MenuItemBase() { }        
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -75,8 +79,8 @@ namespace m3u8.download.manager.ui
             this.FontWeight = FontWeight.Bold;
             this.Foreground = MainForeground;
             var sp = new StackPanel();
-            _InnerTextBlock = new TextBlock() { Text = "-", HorizontalAlignment = HorizontalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
-            _InnerTextBlock.SetValue( ToolTip.TipProperty, MainToolTipText );
+            _InnerTextBlock = new TextBlock() { Text = "-", HorizontalAlignment = HorizontalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, Margin = new Thickness( 10, 0 ) };
+            SetTip4TopItem( MainToolTipText );
             sp.Children.Add( _InnerTextBlock );
             _InnerImage = new Image() { Source = MainImage };
             sp.Children.Add( _InnerImage );
@@ -85,6 +89,11 @@ namespace m3u8.download.manager.ui
             _Value = DefaultValue;
 
             FillDropDownItems();
+        }
+        protected void SetTip4TopItem( string txt )
+        {
+            ToolTip.SetTip( this, txt );
+            //this.SetValue( ToolTip.FontWeightProperty, FontWeight.Regular );
         }
 
         protected T _Value;
@@ -97,8 +106,10 @@ namespace m3u8.download.manager.ui
                 {
                     _Value = value;
 
-                    _InnerTextBlock.Text = $"   {value}   ";
-                    _InnerTextBlock.SetValue( ToolTip.TipProperty, MainToolTipText + ": " + value );
+                    var txt = (value?.ToString() ?? string.Empty);// $"   {value}   ";
+                    _InnerTextBlock.Text   = txt;                    
+                    _InnerTextBlock.Margin = new Thickness( (txt.Length <= 1) ? 14 : 10, 0 );
+                    SetTip4TopItem( MainToolTipText );
 
                     foreach ( SubMenuItem mi in this.Items )
                     {
@@ -108,6 +119,7 @@ namespace m3u8.download.manager.ui
                             mi.Foreground = this.Foreground;
                             mi.Image      = this.Image; //this.MainImage;
                             mi.FontWeight = this.FontWeight;
+                            SetTip4TopItem( MainToolTipText + ": " + mi.Text );
                         }
                         else
                         {
@@ -143,7 +155,7 @@ namespace m3u8.download.manager.ui
     {
         public DownloadInstanceMenuItem() { }
 
-        protected override IBitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/downloadInstance.ico" ) );
+        protected override Bitmap  MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/downloadInstance.ico" ) );
         protected override string  MainToolTipText    => "downloads instance count";
         protected override IBrush  MainForeground     => Brushes.DodgerBlue;
         protected override IBrush  SelectedBackground => Brushes.LightBlue;
@@ -156,7 +168,8 @@ namespace m3u8.download.manager.ui
             {
                 subMenuItems[ i ] = new SubMenuItem( i + 1, SubMenuItem_Click ) { FontWeight = FontWeight.Regular };
             }
-            this.Items = subMenuItems;
+            //this.Items = subMenuItems;
+            this.ItemsSource = subMenuItems;
         }
 
 
@@ -175,7 +188,7 @@ namespace m3u8.download.manager.ui
         public DegreeOfParallelismMenuItem() { }
 
         protected override string  MainToolTipText    => "degree of parallelism";
-        protected override IBitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/dop.ico" ) );
+        protected override Bitmap  MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/dop.ico" ) );
         protected override IBrush  MainForeground     => Brushes.Green;
         protected override IBrush  SelectedBackground => Brushes.LightGreen;
 
@@ -192,7 +205,8 @@ namespace m3u8.download.manager.ui
                 new SubMenuItem( 32, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
                 new SubMenuItem( 64, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
             };
-            this.Items = subMenuItems;
+            //this.Items = subMenuItems;
+            this.ItemsSource = subMenuItems;
         }
     }
     //------------------------------------------------------------------------------------------//
@@ -231,7 +245,7 @@ namespace m3u8.download.manager.ui
         public SpeedThresholdToolButton() { }
 
         protected override string  MainToolTipText    => "speed limit";
-        protected override IBitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_main_1.png" ) );
+        protected override Bitmap  MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_main_1.png" ) );
         protected override IBrush  MainForeground     => Brushes.CadetBlue;
         protected override IBrush  SelectedBackground => Brushes.LightGreen;
 
@@ -246,7 +260,7 @@ namespace m3u8.download.manager.ui
 
                     var t = (value.HasValue ? $"{value.Value} {MBPS}" : MAX_SPEED);
                     _InnerTextBlock.Text = t;
-                    _InnerTextBlock.SetValue( ToolTip.TipProperty, MainToolTipText + ": " + t );
+                    SetTip4TopItem( MainToolTipText + ": " + t );
                     this.Image = MainImage;
 
                     foreach ( SubMenuItem mi in this.Items )
@@ -259,7 +273,7 @@ namespace m3u8.download.manager.ui
                             this.Image           = mi.Image;
                             this.Foreground      = mi.Foreground;
                             _InnerTextBlock.Text = mi.Text;
-                            _InnerTextBlock.SetValue( ToolTip.TipProperty, MainToolTipText + ": " + mi.Text );
+                            SetTip4TopItem( MainToolTipText + ": " + mi.Text );
                         }
                         else
                         {
@@ -285,7 +299,8 @@ namespace m3u8.download.manager.ui
                 new SubMenuItem(    5, $"5 {MBPS}" , SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 252, 146,   0 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_4.ico" ) ) },
                 new SubMenuItem(    1, $"1 {MBPS}" , SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 178, 202,   0 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_5.ico" ) ) },
             };
-            this.Items = subMenuItems;
+            //this.Items = subMenuItems;
+            this.ItemsSource = subMenuItems;
 
             this.Value = null;
         }

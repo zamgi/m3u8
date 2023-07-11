@@ -202,9 +202,9 @@ namespace m3u8.download.manager.ui
             var text        = $"{(totalMemoryBytes / (1024.0 * 1024)):N2} MB";
             var toolTipText = $"Collect Garbage. Total Memory: {text}.";
            
-            btn.Content = text;
-            btn.SetValue( ToolTip.TipProperty, toolTipText );
+            btn.Content   = text;            
             btn.IsEnabled = true;
+            btn.SetValue( ToolTip.TipProperty, toolTipText );
         }
         #endregion
     }

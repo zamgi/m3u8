@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-using Avalonia.Platform;
+//using Avalonia.Platform;
 
 namespace m3u8.download.manager
 {
@@ -13,7 +13,8 @@ namespace m3u8.download.manager
         {
             switch ( PlatformHelper.GetOperatingSystemType() )
             {
-                case OperatingSystemType.WinNT: return (WinNT.IsShiftButtonPushed());
+                case PlatformHelper.OperatingSystemType_CUSTOM_.WinNT: return (WinNT.IsShiftButtonPushed());
+                //case OperatingSystemType.WinNT: return (WinNT.IsShiftButtonPushed());
 
                 default:
                     return (null);

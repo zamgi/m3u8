@@ -42,7 +42,7 @@
       <Setter Property="Foreground" Value="Gray" />
     </Style>  
   </UserControl.Styles>
-  
+
   <DataGrid x:Name="DGV"
             SelectionMode="Single"
             CanUserResizeColumns="True"
@@ -50,12 +50,13 @@
             CanUserSortColumns="False"
             IsReadOnly="True"
             GridLinesVisibility="Vertical"
-            VerticalGridLinesBrush="White" HorizontalGridLinesBrush="LightGray"
-            RowBackground="White" AlternatingRowBackground="WhiteSmoke"
+            VerticalGridLinesBrush="LightGray" HorizontalGridLinesBrush="LightGray"
+            RowBackground="White"
+            Background="LightGray"
             ClipboardCopyMode="None"
             VerticalScrollBarVisibility="Auto"
             HorizontalScrollBarVisibility="Auto"
-            >
+            > <!---->
     <DataGrid.Columns>
       <DataGridTemplateColumn Width="2.25*" CellStyleClasses="visible_always_sign">
         <DataGridTemplateColumn.Header>
@@ -64,7 +65,7 @@
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
             <DockPanel>
-              <TextBlock Text="{Binding OutputFileName}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{Binding OutputFileName}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Padding="5,0,0,0" />
               <Image Name="live_stream"
                      Source="/Resources/live_stream.png" Stretch="Fill" Width="16" Height="16" HorizontalAlignment="Right" Margin="0,0,5,0" Cursor="Hand"
                      IsVisible="{Binding IsLiveStream}" ToolTip.Tip="{Binding MySelf, Mode=OneWay, Converter={StaticResource LiveStreamMaxFileSizeInMb_ToolTip}}" />

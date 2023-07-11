@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-using Avalonia.Platform;
+//using Avalonia.Platform;
 
 namespace m3u8.download.manager.ipc
 {
@@ -16,7 +16,8 @@ namespace m3u8.download.manager.ipc
         {
             switch ( PlatformHelper.GetOperatingSystemType() )
             {
-                case OperatingSystemType.WinNT: return (WinNT.CreateAsBreakawayFromJob( commandLine ), null);
+                //case OperatingSystemType.WinNT: return (WinNT.CreateAsBreakawayFromJob( commandLine ), null);
+                case PlatformHelper.OperatingSystemType_CUSTOM_.WinNT: return (WinNT.CreateAsBreakawayFromJob( commandLine ), null);
 
                 default:
                     return (ProcessStart( executeFileName ), null);

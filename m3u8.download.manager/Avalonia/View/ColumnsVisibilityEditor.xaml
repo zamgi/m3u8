@@ -42,7 +42,8 @@
               VerticalGridLinesBrush="White" HorizontalGridLinesBrush="Black"
               BorderBrush="LightGray" BorderThickness="1"
               ClipboardCopyMode="None"
-              RowBackground="White" AlternatingRowBackground="WhiteSmoke"
+              RowBackground="White" 
+              Background="WhiteSmoke"
               >
       <DataGrid.Columns>
         <DataGridTextColumn Header="#" Binding="{Binding ViewOrderNumber, Mode=OneWay}" 
