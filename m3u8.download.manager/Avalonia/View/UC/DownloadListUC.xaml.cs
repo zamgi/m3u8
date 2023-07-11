@@ -19,7 +19,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class DownloadListUC : UserControl
+    public sealed partial class DownloadListUC : UserControl
     {
         /// <summary>
         /// 
@@ -47,8 +47,8 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
-        public DownloadListUC() => this.InitializeComponent();
-        private void InitializeComponent()
+        public DownloadListUC()  => this.InitializeComponent();
+        private void InitializeComponent()//__PREV()
         {
             AvaloniaXamlLoader.Load( this );
 
@@ -57,7 +57,7 @@ namespace m3u8.download.manager.ui
             DGV.CellPointerPressed += DGV_CellPointerPressed;
             DGV.DoubleTapped       += (s, e) => DoubleClickEx?.Invoke( s, e );
             DGV.PointerPressed     += DGV_PointerPressed;
-            //---DGV.KeyDown            += DGV_KeyDown;            
+            //---DGV.KeyDown            += DGV_KeyDown;
 
             #region comm.
             /*DGV.AddHandler(
@@ -80,7 +80,11 @@ namespace m3u8.download.manager.ui
             */
             #endregion
 
-            this.Styles.Add( GlobalStyles.Dark );
+            //this.Styles.Add_NoThrow( GlobalStyles.Dark );
+            //foreach ( var style in this.Styles )
+            //{
+            //    DGV.Styles.Add_NoThrow( style );
+            //}            
         }
         #endregion
 
@@ -182,7 +186,8 @@ namespace m3u8.download.manager.ui
                         var evnt = MouseClickRightButton;
                         if ( evnt != null )
                         {
-                            var row = (e.PointerPressedEventArgs.Source as IControl)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
+                            //---var row = (e.PointerPressedEventArgs.Source as IControl)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
+                            var row = (e.PointerPressedEventArgs.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
                             if ( row != null )
                             {
                                 DGV.SelectedIndex = row.GetIndex();
@@ -225,11 +230,13 @@ namespace m3u8.download.manager.ui
 
             if ( _Model == null )
             {
-                DGV.Items = null;
+                //---DGV.Items = null;
+                DGV.ItemsSource = null;
             }
             else
             {
-                DGV.Items = new DataGridCollectionView( _Model.GetRows() );
+                //---DGV.Items = new DataGridCollectionView( _Model.GetRows() );
+                DGV.ItemsSource = new DataGridCollectionView( _Model.GetRows() );
             }
         }
 
@@ -290,7 +297,8 @@ namespace m3u8.download.manager.ui
                 //_Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
                 _Model = null;
 
-                DGV.Items = null;
+                //---DGV.Items = null;
+                DGV.ItemsSource = null;
             }
         }
 

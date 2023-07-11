@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-using Avalonia;
+//using Avalonia;
 using Avalonia.Platform;
 
 namespace m3u8.download.manager.ui
@@ -12,19 +12,19 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed class ResourceLoader
     {
-        private string       _SelfAssemblyName;
-        private IAssetLoader _AssetLoader;
+        private string _SelfAssemblyName;
+        //---private IAssetLoader _AssetLoader;
         public ResourceLoader()
         {
             _SelfAssemblyName = Assembly.GetExecutingAssembly().GetName().Name;
-            _AssetLoader      = AvaloniaLocator.Current.GetService< IAssetLoader >();
+            //---_AssetLoader = AvaloniaLocator.Current.GetService< IAssetLoader >();
         }
 
         public Stream GetResource( string resourcePath )
         {
             const string RESOURCE_LOCATION_PREFIX = "/Resources/";
 
-            if ( resourcePath.IsNullOrEmpty() ) throw (new ArgumentNullException(  nameof(resourcePath) ));
+            if ( resourcePath.IsNullOrEmpty() ) throw (new ArgumentNullException( nameof(resourcePath) ));
 
             if ( resourcePath[ 0 ] != '/' )
             {
@@ -35,7 +35,8 @@ namespace m3u8.download.manager.ui
                 resourcePath = RESOURCE_LOCATION_PREFIX + resourcePath.TrimStart( '/' );
             }
 
-            var stream = _AssetLoader.Open( new Uri( $"avares://{_SelfAssemblyName}{resourcePath}" ) );
+            //---var stream = _AssetLoader.Open( new Uri( $"avares://{_SelfAssemblyName}{resourcePath}" ) );
+            var stream = AssetLoader.Open( new Uri( $"avares://{_SelfAssemblyName}{resourcePath}" ) );
             return (stream);
         }
 

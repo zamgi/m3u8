@@ -141,7 +141,7 @@ namespace m3u8.download.manager.ui
                 _SC.SaveNoThrow_IfAnyChanged();
             }
         }
-        protected override void OnClosing( CancelEventArgs e )
+        protected override void OnClosing( WindowClosingEventArgs e )
         {
             base.OnClosing( e );
 

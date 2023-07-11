@@ -38,11 +38,13 @@ namespace m3u8.download.manager.ui
         {
             if ( _Model == null )
             {
-                DGV.Items = null;
+                //---DGV.Items = null;
+                DGV.ItemsSource = null;
             }
             else 
             {
-                DGV.Items = new DataGridCollectionView( _Model.GetRows() ); 
+                //---DGV.Items = new DataGridCollectionView( _Model.GetRows() ); 
+                DGV.ItemsSource = new DataGridCollectionView( _Model.GetRows() );
             }
         }
 
@@ -66,7 +68,8 @@ namespace m3u8.download.manager.ui
                 _Model.CollectionChanged -= Model_CollectionChanged;
                 _Model = null;
 
-                DGV.Items = null;
+                //---DGV.Items = null;
+                DGV.ItemsSource = null;
             }
         }
 

@@ -45,6 +45,7 @@
             IsReadOnly="True"
             GridLinesVisibility="Vertical"
             VerticalGridLinesBrush="White"
+            Background="WhiteSmoke"
             >
       <DataGrid.Columns>
         <DataGridTextColumn Header="Request"  Binding="{Binding RequestText}"  Width="3.5*" CellStyleClasses="rrt" />

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -15,16 +13,15 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Threading;
-using MessageBox.Avalonia.Enums;
+using Avalonia.VisualTree;
+using MsBox.Avalonia.Enums;
 
-using m3u8.download.manager.controllers;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_                 = m3u8.download.manager.Properties.Resources;
-using System.Runtime;
 
 namespace m3u8.download.manager.ui
 {
@@ -89,41 +86,41 @@ namespace m3u8.download.manager.ui
             //----------------------------------------//
 
             #region [.user controls.]
-            downloadListUC = this.Find< DownloadListUC >( nameof(downloadListUC) );
-            logUC          = this.Find< LogUC >( nameof(logUC) );
+            downloadListUC = this.Find_Ex< DownloadListUC >( nameof(downloadListUC) );
+            logUC          = this.Find_Ex< LogUC >( nameof(logUC) );
             #endregion
 
             #region [.menu.]
-            startDownloadToolButton  = this.Find< MenuItem >( nameof(startDownloadToolButton)  ); startDownloadToolButton.Click  += startDownloadToolButton_Click;
-            pauseDownloadToolButton  = this.Find< MenuItem >( nameof(pauseDownloadToolButton)  ); pauseDownloadToolButton.Click  += pauseDownloadToolButton_Click;
-            cancelDownloadToolButton = this.Find< MenuItem >( nameof(cancelDownloadToolButton) ); cancelDownloadToolButton.Click += cancelDownloadToolButton_Click;
-            deleteDownloadToolButton = this.Find< MenuItem >( nameof(deleteDownloadToolButton) ); deleteDownloadToolButton.Click += deleteDownloadToolButton_Click;
-            deleteAllFinishedDownloadToolButton = this.Find< MenuItem >( nameof(deleteAllFinishedDownloadToolButton) ); deleteAllFinishedDownloadToolButton.Click += deleteAllFinishedDownloadToolButton_Click;
+            startDownloadToolButton  = this.Find_Ex< MenuItem >( nameof(startDownloadToolButton)  ); startDownloadToolButton.Click  += startDownloadToolButton_Click;
+            pauseDownloadToolButton  = this.Find_Ex< MenuItem >( nameof(pauseDownloadToolButton)  ); pauseDownloadToolButton.Click  += pauseDownloadToolButton_Click;
+            cancelDownloadToolButton = this.Find_Ex< MenuItem >( nameof(cancelDownloadToolButton) ); cancelDownloadToolButton.Click += cancelDownloadToolButton_Click;
+            deleteDownloadToolButton = this.Find_Ex< MenuItem >( nameof(deleteDownloadToolButton) ); deleteDownloadToolButton.Click += deleteDownloadToolButton_Click;
+            deleteAllFinishedDownloadToolButton = this.Find_Ex< MenuItem >( nameof(deleteAllFinishedDownloadToolButton) ); deleteAllFinishedDownloadToolButton.Click += deleteAllFinishedDownloadToolButton_Click;
 
-            showLogToolButton = this.Find< MenuItem >( nameof(showLogToolButton) ); showLogToolButton.Click += showLogToolButton_Click;
-            copyToolButton    = this.Find< MenuItem >( nameof(copyToolButton)    ); copyToolButton.Click    += copyToolButton_Click;
-            pasteToolButton   = this.Find< MenuItem >( nameof(pasteToolButton)   ); pasteToolButton.Click   += pasteToolButton_Click;
+            showLogToolButton = this.Find_Ex< MenuItem >( nameof(showLogToolButton) ); showLogToolButton.Click += showLogToolButton_Click;
+            copyToolButton    = this.Find_Ex< MenuItem >( nameof(copyToolButton)    ); copyToolButton.Click    += copyToolButton_Click;
+            pasteToolButton   = this.Find_Ex< MenuItem >( nameof(pasteToolButton)   ); pasteToolButton.Click   += pasteToolButton_Click;
 
-            degreeOfParallelismToolButton = this.Find< DegreeOfParallelismMenuItem >( nameof(degreeOfParallelismToolButton) ); degreeOfParallelismToolButton.ValueChanged += degreeOfParallelismToolButton_ValueChanged;
-            downloadInstanceToolButton    = this.Find< DownloadInstanceMenuItem    >( nameof(downloadInstanceToolButton)    ); downloadInstanceToolButton.ValueChanged    += downloadInstanceToolButton_ValueChanged;
-            speedThresholdToolButton      = this.Find< SpeedThresholdToolButton    >( nameof(speedThresholdToolButton)      ); speedThresholdToolButton.ValueChanged      += speedThresholdToolButton_ValueChanged;
+            degreeOfParallelismToolButton = this.Find_Ex< DegreeOfParallelismMenuItem >( nameof(degreeOfParallelismToolButton) ); degreeOfParallelismToolButton.ValueChanged += degreeOfParallelismToolButton_ValueChanged;
+            downloadInstanceToolButton    = this.Find_Ex< DownloadInstanceMenuItem    >( nameof(downloadInstanceToolButton)    ); downloadInstanceToolButton.ValueChanged    += downloadInstanceToolButton_ValueChanged;
+            speedThresholdToolButton      = this.Find_Ex< SpeedThresholdToolButton    >( nameof(speedThresholdToolButton)      ); speedThresholdToolButton.ValueChanged      += speedThresholdToolButton_ValueChanged;
             #endregion
 
             #region [.context menu.]
-            mainContextMenu                   = this.Find< ContextMenu >( nameof(mainContextMenu) ); //mainContextMenu.Styles.Add( GlobalStyles.Light );
-            startDownloadMenuItem             = this.Find< MenuItem >( nameof(startDownloadMenuItem) ); startDownloadMenuItem.Click += startDownloadMenuItem_Click;
-            pauseDownloadMenuItem             = this.Find< MenuItem >( nameof(pauseDownloadMenuItem) ); pauseDownloadMenuItem.Click += pauseDownloadMenuItem_Click;
-            cancelDownloadMenuItem            = this.Find< MenuItem >( nameof(cancelDownloadMenuItem) ); cancelDownloadMenuItem.Click += cancelDownloadMenuItem_Click;
-            deleteDownloadMenuItem            = this.Find< MenuItem >( nameof(deleteDownloadMenuItem) ); deleteDownloadMenuItem.Click += deleteDownloadMenuItem_Click;
-            deleteWithOutputFileMenuItem      = this.Find< MenuItem >( nameof(deleteWithOutputFileMenuItem) ); deleteWithOutputFileMenuItem.Click += deleteWithOutputFileMenuItem_Click;
-            browseOutputFileMenuItem          = this.Find< MenuItem >( nameof(browseOutputFileMenuItem) ); browseOutputFileMenuItem.Click += browseOutputFileMenuItem_Click;
-            openOutputFileMenuItem            = this.Find< MenuItem >( nameof(openOutputFileMenuItem) ); openOutputFileMenuItem.Click += openOutputFileMenuItem_Click;
-            deleteAllFinishedDownloadMenuItem = this.Find< MenuItem >( nameof(deleteAllFinishedDownloadMenuItem) ); deleteAllFinishedDownloadMenuItem.Click += deleteAllFinishedDownloadToolButton_Click;
-            startAllDownloadsMenuItem         = this.Find< MenuItem >( nameof(startAllDownloadsMenuItem) ); startAllDownloadsMenuItem.Click += startAllDownloadsMenuItem_Click;
-            cancelAllDownloadsMenuItem        = this.Find< MenuItem >( nameof(cancelAllDownloadsMenuItem) ); cancelAllDownloadsMenuItem.Click += cancelAllDownloadsMenuItem_Click;
-            pauseAllDownloadsMenuItem         = this.Find< MenuItem >( nameof(pauseAllDownloadsMenuItem) ); pauseAllDownloadsMenuItem.Click += pauseAllDownloadsMenuItem_Click;
-            deleteAllDownloadsMenuItem        = this.Find< MenuItem >( nameof(deleteAllDownloadsMenuItem) ); deleteAllDownloadsMenuItem.Click += deleteAllDownloadsMenuItem_Click;
-            deleteAllWithOutputFilesMenuItem  = this.Find< MenuItem >( nameof(deleteAllWithOutputFilesMenuItem) ); deleteAllWithOutputFilesMenuItem.Click += deleteAllWithOutputFilesMenuItem_Click;
+            mainContextMenu                   = this.Find_Ex< ContextMenu >( nameof(mainContextMenu) ); //mainContextMenu.Styles.Add( GlobalStyles.Light );
+            startDownloadMenuItem             = mainContextMenu.Find_MenuItem( nameof(startDownloadMenuItem) ); startDownloadMenuItem.Click += startDownloadMenuItem_Click;
+            pauseDownloadMenuItem             = mainContextMenu.Find_MenuItem( nameof(pauseDownloadMenuItem) ); pauseDownloadMenuItem.Click += pauseDownloadMenuItem_Click;
+            cancelDownloadMenuItem            = mainContextMenu.Find_MenuItem( nameof(cancelDownloadMenuItem) ); cancelDownloadMenuItem.Click += cancelDownloadMenuItem_Click;
+            deleteDownloadMenuItem            = mainContextMenu.Find_MenuItem( nameof(deleteDownloadMenuItem) ); deleteDownloadMenuItem.Click += deleteDownloadMenuItem_Click;
+            deleteWithOutputFileMenuItem      = mainContextMenu.Find_MenuItem( nameof(deleteWithOutputFileMenuItem) ); deleteWithOutputFileMenuItem.Click += deleteWithOutputFileMenuItem_Click;
+            browseOutputFileMenuItem          = mainContextMenu.Find_MenuItem( nameof(browseOutputFileMenuItem) ); browseOutputFileMenuItem.Click += browseOutputFileMenuItem_Click;
+            openOutputFileMenuItem            = mainContextMenu.Find_MenuItem( nameof(openOutputFileMenuItem) ); openOutputFileMenuItem.Click += openOutputFileMenuItem_Click;
+            deleteAllFinishedDownloadMenuItem = mainContextMenu.Find_MenuItem( nameof(deleteAllFinishedDownloadMenuItem) ); deleteAllFinishedDownloadMenuItem.Click += deleteAllFinishedDownloadToolButton_Click;
+            startAllDownloadsMenuItem         = mainContextMenu.Find_MenuItem( nameof(startAllDownloadsMenuItem) ); startAllDownloadsMenuItem.Click += startAllDownloadsMenuItem_Click;
+            cancelAllDownloadsMenuItem        = mainContextMenu.Find_MenuItem( nameof(cancelAllDownloadsMenuItem) ); cancelAllDownloadsMenuItem.Click += cancelAllDownloadsMenuItem_Click;
+            pauseAllDownloadsMenuItem         = mainContextMenu.Find_MenuItem( nameof(pauseAllDownloadsMenuItem) ); pauseAllDownloadsMenuItem.Click += pauseAllDownloadsMenuItem_Click;
+            deleteAllDownloadsMenuItem        = mainContextMenu.Find_MenuItem( nameof(deleteAllDownloadsMenuItem) ); deleteAllDownloadsMenuItem.Click += deleteAllDownloadsMenuItem_Click;
+            deleteAllWithOutputFilesMenuItem  = mainContextMenu.Find_MenuItem( nameof(deleteAllWithOutputFilesMenuItem) ); deleteAllWithOutputFilesMenuItem.Click += deleteAllWithOutputFilesMenuItem_Click;
             #endregion
             //----------------------------------------//
 
@@ -198,7 +195,7 @@ namespace m3u8.download.manager.ui
             }
             else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() )
             {
-                var (success, m3u8FileUrls) = await Extensions.TryGetM3u8FileUrlsFromClipboard();
+                var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard();
                 if ( success )
                 {
                     _VM.AddCommand.AddNewDownload( (m3u8FileUrls.FirstOrDefault(), false) );
@@ -227,7 +224,7 @@ namespace m3u8.download.manager.ui
 
             _HostWindow_4_Notification?.Close();
         }
-        protected async override void OnClosing( CancelEventArgs e )
+        protected async override void OnClosing( WindowClosingEventArgs e )
         {
             base.OnClosing( e );
 
@@ -279,7 +276,7 @@ namespace m3u8.download.manager.ui
                 switch ( e.Key )
                 {
                     case Key.V: //Paste
-                        var (success, m3u8FileUrls) = await Extensions.TryGetM3u8FileUrlsFromClipboard();
+                        var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard();
                         if ( success )
                         {
                             e.Handled = true;
@@ -298,7 +295,7 @@ namespace m3u8.download.manager.ui
                             if ( row != null )
                             {
                                 e.Handled = true;
-                                await Extensions.CopyM3u8FileUrlToClipboard( row.Url );
+                                await this.CopyM3u8FileUrlToClipboard( row.Url );
                                 return;
                             }
                         }
@@ -361,7 +358,7 @@ namespace m3u8.download.manager.ui
                     case Key.Insert: //add download dialog
                         {
                             e.Handled = true;
-                            var m3u8FileUrls = await Extensions.TryGetM3u8FileUrlsFromClipboardOrDefault();
+                            var m3u8FileUrls = await this.TryGetM3u8FileUrlsFromClipboardOrDefault();
                             _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
                         }
                         return;
@@ -510,7 +507,8 @@ namespace m3u8.download.manager.ui
                     Background                         = Brushes.Transparent,//null, //
                     TransparencyBackgroundFallback     = Brushes.Transparent,//null, //
                     SystemDecorations                  = SystemDecorations.None,
-                    TransparencyLevelHint              = WindowTransparencyLevel.Transparent,
+                    //---TransparencyLevelHint              = WindowTransparencyLevel.Transparent,
+                    TransparencyLevelHint              = new[] { WindowTransparencyLevel.Transparent },
                     ShowActivated                      = false,
                     CanResize                          = false,
                     IsTabStop                          = false,
@@ -518,7 +516,8 @@ namespace m3u8.download.manager.ui
                     ExtendClientAreaChromeHints        = ExtendClientAreaChromeHints.NoChrome,
                     ExtendClientAreaTitleBarHeightHint = -1,
                 };
-                var scr = this.Screens.ScreenFromWindow( this.PlatformImpl );
+                //---var scr = this.Screens.ScreenFromWindow( this.PlatformImpl );
+                var scr = this.Screens.ScreenFromWindow( this );
                 if ( scr != null )
                 {
                     const int W     = 370; const int H     = 200;
@@ -868,7 +867,7 @@ namespace m3u8.download.manager.ui
             var row = downloadListUC.GetSelectedDownloadRow();
             if ( row != null )
             {
-                await Extensions.CopyM3u8FileUrlToClipboard( row.Url );
+                await this.CopyM3u8FileUrlToClipboard( row.Url );
             }
             else
             {
@@ -877,7 +876,7 @@ namespace m3u8.download.manager.ui
         }
         private async void pasteToolButton_Click( object sender, EventArgs e )
         {
-            var (success, m3u8FileUrls) = await Extensions.TryGetM3u8FileUrlsFromClipboard();
+            var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard();
             if ( success )
             {
                 var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
@@ -930,7 +929,7 @@ namespace m3u8.download.manager.ui
 
                 mainContextMenu.HorizontalOffset = pt.X;
                 mainContextMenu.VerticalOffset   = pt.Y;
-                mainContextMenu.PlacementMode    = PlacementMode.Left;
+                mainContextMenu.Placement        = PlacementMode.Left;
                 mainContextMenu.Open( ctrl );
             }
         }
@@ -1120,7 +1119,6 @@ namespace m3u8.download.manager.ui
             }
         }
         #endregion
-
 
     }
 }

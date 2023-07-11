@@ -2,8 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-using Avalonia;
-using Avalonia.Platform;
+//using Avalonia.Platform;
 
 namespace m3u8.download.manager
 {
@@ -12,26 +11,52 @@ namespace m3u8.download.manager
     /// </summary>
     internal static class PlatformHelper
     {
-        public static OperatingSystemType GetOperatingSystemType()
+        //[NOT WOKING in Avalonia.11]//
+        //public static OperatingSystemType GetOperatingSystemType()
+        //{
+        //    var rp = AvaloniaLocator.Current.GetService< IRuntimePlatform >();
+        //    if ( rp != null )
+        //    {
+        //        return (rp.GetRuntimeInfo().OperatingSystem);
+        //    }
+        //    else
+        //    {
+        //        switch ( Environment.OSVersion.Platform )
+        //        {
+        //            case PlatformID.Win32NT: return (OperatingSystemType.WinNT);
+        //            case PlatformID.Unix   : return (OperatingSystemType.Linux);
+        //            case PlatformID.MacOSX : return (OperatingSystemType.OSX);
+        //            default                : return (OperatingSystemType.Unknown);
+        //        }
+        //    }
+        //}
+
+        //public static bool IsWinNT() => (GetOperatingSystemType() == OperatingSystemType.WinNT);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum OperatingSystemType_CUSTOM_
         {
-            var rp = AvaloniaLocator.Current.GetService< IRuntimePlatform >();
-            if ( rp != null )
-            {
-                return (rp.GetRuntimeInfo().OperatingSystem);
-            }
-            else
-            {
-                switch ( Environment.OSVersion.Platform )
-                {
-                    case PlatformID.Win32NT: return (OperatingSystemType.WinNT);
-                    case PlatformID.Unix   : return (OperatingSystemType.Linux);
-                    case PlatformID.MacOSX : return (OperatingSystemType.OSX);
-                    default                : return (OperatingSystemType.Unknown);
-                }
-            }            
+            Unknown,
+
+            WinNT,
+            Linux,
+            OSX,
         }
 
-        public static bool IsWinNT() => (GetOperatingSystemType() == OperatingSystemType.WinNT);
+        public static OperatingSystemType_CUSTOM_ GetOperatingSystemType()
+        {
+            switch ( Environment.OSVersion.Platform )
+            {
+                case PlatformID.Win32NT: return (OperatingSystemType_CUSTOM_.WinNT);
+                case PlatformID.Unix   : return (OperatingSystemType_CUSTOM_.Linux);
+                case PlatformID.MacOSX : return (OperatingSystemType_CUSTOM_.OSX);
+                default                : return (OperatingSystemType_CUSTOM_.Unknown);
+            }
+        }
+
+        public static bool IsWinNT() => (GetOperatingSystemType() == OperatingSystemType_CUSTOM_.WinNT);
 
         public static void TryMessageBox_ShowError( string text, string caption )
         {

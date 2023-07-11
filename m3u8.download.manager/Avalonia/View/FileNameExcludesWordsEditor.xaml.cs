@@ -69,7 +69,8 @@ namespace m3u8.download.manager.ui
         internal FileNameExcludesWordsEditor( IReadOnlyCollection< string > excludesWords ) : this() 
         {
             var items = (from s in excludesWords select new WordItem( s )).ToList();
-            DGV.Items = _DGVRows = new DataGridCollectionView( items );
+            //---DGV.Items = _DGVRows = new DataGridCollectionView( items );
+            DGV.ItemsSource = _DGVRows = new DataGridCollectionView( items );
             _DGVRows.CollectionChanged += (s, e) => SetHasChanges();
             _DGVRows.PropertyChanged   += (s, e) => SetHasChanges( (e.PropertyName == nameof(_DGVRows.IsEditingItem) && !_DGVRows.IsEditingItem) );
         }

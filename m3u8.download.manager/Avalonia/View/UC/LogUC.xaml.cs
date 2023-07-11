@@ -45,7 +45,8 @@ namespace m3u8.download.manager.ui
             _RemovedBeforeAddRows = new HashSet< LogRow >();
 
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
-            DGV.Items = _DGVRows.List;
+            //---DGV.Items = _DGVRows.List;
+            DGV.ItemsSource = _DGVRows.List;
 
             _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox = this.FindControl< CheckBox >( nameof(_ShowOnlyRequestRowsWithErrorsMenuItemCheckBox) );
             this.FindControl< MenuItem >( "_ShowOnlyRequestRowsWithErrorsMenuItem" ).Click += _ShowOnlyRequestRowsWithErrorsMenuItem_Click;

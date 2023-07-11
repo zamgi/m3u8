@@ -120,15 +120,16 @@
     </DockPanel>
     
     <local:DownloadListUC x:Name="downloadListUC" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
-    <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
-    <local:LogUC x:Name="logUC" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />    
+    <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" />
+    <local:LogUC x:Name="logUC" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />
   </Grid>
 
   <Window.Resources>
     <ResourceDictionary>
       <ContextMenu x:Key="mainContextMenu" x:Name="mainContextMenu">
         <ContextMenu.Styles>
-          <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml" />
+          <SimpleTheme />
+          <!--<StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml" />-->
         </ContextMenu.Styles>
 
         <MenuItem x:Name="startDownloadMenuItem" Header="Start       (Ctrl + S)" HotKey="Ctrl + S">
@@ -157,7 +158,7 @@
         <MenuItem Header="-" />
 
         <MenuItem x:Name="browseOutputFileMenuItem" Header="    Browse Output file  (Ctrl + B)" />
-        <MenuItem x:Name="openOutputFileMenuItem" Header="    Open Output file  (Ctrl + O), (Enter)" />
+        <MenuItem x:Name="openOutputFileMenuItem"   Header="    Open Output file  (Ctrl + O), (Enter)" />
         <MenuItem Header="-" />
 
         <MenuItem x:Name="deleteAllFinishedDownloadMenuItem" Header="Delete all finished downloads">

@@ -42,7 +42,7 @@
       <Setter Property="Foreground" Value="Gray" />
     </Style>  
   </UserControl.Styles>
-  
+
   <DataGrid x:Name="DGV"
             SelectionMode="Single"
             CanUserResizeColumns="True"
@@ -50,12 +50,13 @@
             CanUserSortColumns="False"
             IsReadOnly="True"
             GridLinesVisibility="Vertical"
-            VerticalGridLinesBrush="White" HorizontalGridLinesBrush="LightGray"
-            RowBackground="White" AlternatingRowBackground="WhiteSmoke"
+            VerticalGridLinesBrush="LightGray" HorizontalGridLinesBrush="LightGray"
+            RowBackground="White"
+            Background="WhiteSmoke"
             ClipboardCopyMode="None"
             VerticalScrollBarVisibility="Auto"
             HorizontalScrollBarVisibility="Auto"
-            >
+            > <!---->
     <DataGrid.Columns>
       <DataGridTemplateColumn Width="2.25*" CellStyleClasses="visible_always_sign">
         <DataGridTemplateColumn.Header>

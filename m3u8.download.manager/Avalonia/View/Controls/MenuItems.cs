@@ -1,23 +1,24 @@
 ﻿using System;
 
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.Styling;
+//using Avalonia.Styling;
 
 namespace m3u8.download.manager.ui
 {
     /// <summary>
     /// 
     /// </summary>
-    public abstract class MenuItemBase< T > : MenuItem, IStyleable
+    public abstract class MenuItemBase< T > : MenuItem//, IStyleable
     {
         /// <summary>
         /// 
         /// </summary>
-        protected sealed class SubMenuItem : MenuItem, IStyleable
+        protected sealed class SubMenuItem : MenuItem//, IStyleable
         {
             private Image _InnerImage;
             public SubMenuItem( T value, EventHandler< RoutedEventArgs > onClick ) : this( value, value.ToString(), onClick ){}
@@ -31,7 +32,8 @@ namespace m3u8.download.manager.ui
                 this.Text   = text;
             }
 
-            Type IStyleable.StyleKey => typeof(MenuItem);
+            //Type IStyleable.StyleKey => typeof(MenuItem);
+            protected override Type StyleKeyOverride => typeof(MenuItem);
             public string Text { get; }
 
             public T Value { get; }
@@ -49,10 +51,11 @@ namespace m3u8.download.manager.ui
 
         public event ValueChangedEventHandler ValueChanged;
 
-        Type IStyleable.StyleKey => typeof(MenuItem);
+        //Type IStyleable.StyleKey => typeof(MenuItem);
+        protected override Type StyleKeyOverride => typeof(MenuItem);
 
         protected abstract string  MainToolTipText    { get; }
-        protected abstract IBitmap MainImage          { get; }
+        protected abstract Bitmap  MainImage          { get; }
         protected abstract IBrush  MainForeground     { get; }
         protected abstract IBrush  SelectedBackground { get; }
 
@@ -75,7 +78,8 @@ namespace m3u8.download.manager.ui
             this.FontWeight = FontWeight.Bold;
             this.Foreground = MainForeground;
             var sp = new StackPanel();
-            _InnerTextBlock = new TextBlock() { Text = "-", HorizontalAlignment = HorizontalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis };
+            _InnerTextBlock = new TextBlock() { Text = "-", HorizontalAlignment = HorizontalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, 
+                Margin = new Thickness( 10, 0 ) };
             _InnerTextBlock.SetValue( ToolTip.TipProperty, MainToolTipText );
             sp.Children.Add( _InnerTextBlock );
             _InnerImage = new Image() { Source = MainImage };
@@ -97,8 +101,10 @@ namespace m3u8.download.manager.ui
                 {
                     _Value = value;
 
-                    _InnerTextBlock.Text = $"   {value}   ";
+                    var txt = (value?.ToString() ?? string.Empty);// $"   {value}   ";
+                    _InnerTextBlock.Text = txt;
                     _InnerTextBlock.SetValue( ToolTip.TipProperty, MainToolTipText + ": " + value );
+                    _InnerTextBlock.Margin = new Thickness( (txt.Length <= 1) ? 14 : 10, 0 );
 
                     foreach ( SubMenuItem mi in this.Items )
                     {
@@ -143,7 +149,7 @@ namespace m3u8.download.manager.ui
     {
         public DownloadInstanceMenuItem() { }
 
-        protected override IBitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/downloadInstance.ico" ) );
+        protected override Bitmap  MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/downloadInstance.ico" ) );
         protected override string  MainToolTipText    => "downloads instance count";
         protected override IBrush  MainForeground     => Brushes.DodgerBlue;
         protected override IBrush  SelectedBackground => Brushes.LightBlue;
@@ -156,7 +162,8 @@ namespace m3u8.download.manager.ui
             {
                 subMenuItems[ i ] = new SubMenuItem( i + 1, SubMenuItem_Click ) { FontWeight = FontWeight.Regular };
             }
-            this.Items = subMenuItems;
+            //this.Items = subMenuItems;
+            this.ItemsSource = subMenuItems;
         }
 
 
@@ -175,7 +182,7 @@ namespace m3u8.download.manager.ui
         public DegreeOfParallelismMenuItem() { }
 
         protected override string  MainToolTipText    => "degree of parallelism";
-        protected override IBitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/dop.ico" ) );
+        protected override Bitmap  MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/dop.ico" ) );
         protected override IBrush  MainForeground     => Brushes.Green;
         protected override IBrush  SelectedBackground => Brushes.LightGreen;
 
@@ -192,7 +199,8 @@ namespace m3u8.download.manager.ui
                 new SubMenuItem( 32, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
                 new SubMenuItem( 64, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
             };
-            this.Items = subMenuItems;
+            //this.Items = subMenuItems;
+            this.ItemsSource = subMenuItems;
         }
     }
     //------------------------------------------------------------------------------------------//
@@ -231,7 +239,7 @@ namespace m3u8.download.manager.ui
         public SpeedThresholdToolButton() { }
 
         protected override string  MainToolTipText    => "speed limit";
-        protected override IBitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_main_1.png" ) );
+        protected override Bitmap  MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_main_1.png" ) );
         protected override IBrush  MainForeground     => Brushes.CadetBlue;
         protected override IBrush  SelectedBackground => Brushes.LightGreen;
 
@@ -285,7 +293,8 @@ namespace m3u8.download.manager.ui
                 new SubMenuItem(    5, $"5 {MBPS}" , SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 252, 146,   0 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_4.ico" ) ) },
                 new SubMenuItem(    1, $"1 {MBPS}" , SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 178, 202,   0 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_5.ico" ) ) },
             };
-            this.Items = subMenuItems;
+            //this.Items = subMenuItems;
+            this.ItemsSource = subMenuItems;
 
             this.Value = null;
         }

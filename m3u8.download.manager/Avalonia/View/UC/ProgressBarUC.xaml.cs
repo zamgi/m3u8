@@ -63,7 +63,8 @@ namespace m3u8.download.manager.ui
             #endregion
 
             #region [.-2-.]
-            for ( IControl p = dockPanel; p != null; p = p.Parent )
+            //---for ( IControl p = dockPanel; p != null; p = p.Parent )
+            for ( Layoutable p = dockPanel; p != null; p = (Layoutable) p.GetVisualParent() )
             {
                 if ( !double.IsNaN( p.Width ) )
                 {
