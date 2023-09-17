@@ -1,4 +1,5 @@
-window.onload = async function () {
+window.addEventListener('load', async function (/*event*/) {
+
     let tabs  = await chrome.tabs.query({ active: true, currentWindow: true });
     let tabId = ((tabs && tabs.length) ? tabs[ 0 ].id : -1);
 
@@ -12,7 +13,7 @@ window.onload = async function () {
 
     let ch = document.getElementById('saveUrlListBetweenTabReload');
     ch.checked = !!res.saveUrlListBetweenTabReload;    
-    ch.addEventListener('click', async function (event) {
+    ch.addEventListener('click', async function (/*event*/) {
         await chrome.storage.local.set({ saveUrlListBetweenTabReload: this.checked });
     });
 
@@ -20,7 +21,7 @@ window.onload = async function () {
     ch = document.getElementById('directionRtl');
     ch.checked = (res.directionRtl !== undefined) ? !!res.directionRtl : (content.style.direction === 'rtl');
     content.style.direction = ch.checked ? 'rtl' : '';
-    ch.addEventListener('click', async function (event) {
+    ch.addEventListener('click', async function (/*event*/) {
         content.style.direction = this.checked ? 'rtl' : '';
         await chrome.storage.local.set({ directionRtl: this.checked });
     });
@@ -28,15 +29,14 @@ window.onload = async function () {
     if (m3u8_urls && m3u8_urls.length) {
         let bt = document.getElementById('clearUrlList');
         bt.style.display = '';
-        bt.addEventListener('click', async function (event) {
+        bt.addEventListener('click', async function (/*event*/) {
             await workInfo.deleteTabUrls(tabId, true);
 
             render_m3u8_urls();
             this.style.display = 'none';
         });
-    }    
-};
-
+    }
+});
 function render_m3u8_urls(m3u8_urls) {
     let content = document.getElementById('content');
 
