@@ -294,7 +294,7 @@ namespace m3u8.download.manager
         {
             try
             {
-                disposable.Dispose();
+                disposable?.Dispose();
             }
             catch ( Exception ex )
             {
@@ -311,9 +311,32 @@ namespace m3u8.download.manager
         #region [.MessageBox's.]
         public static IMsBox< ButtonResult > Create_MsBoxStandardWindow( string text, string caption, ButtonEnum buttons, Icon icon, FontFamily fontFamily = null )
         {
+            static ClickEnum get_EnterDefaultButton( ButtonEnum buttons ) => buttons switch
+            {
+                ButtonEnum.Ok          => ClickEnum.Ok,
+                ButtonEnum.YesNo       => ClickEnum.Yes,
+                ButtonEnum.OkCancel    => ClickEnum.Ok,
+                ButtonEnum.OkAbort     => ClickEnum.Ok,
+                ButtonEnum.YesNoCancel => ClickEnum.Yes,
+                ButtonEnum.YesNoAbort  => ClickEnum.Yes,
+                _ => ClickEnum.Ok,
+            };
+            static ClickEnum get_EscDefaultButton( ButtonEnum buttons ) => buttons switch
+            { 
+                ButtonEnum.Ok          => ClickEnum.Ok,
+                ButtonEnum.YesNo       => ClickEnum.No,
+                ButtonEnum.OkCancel    => ClickEnum.Cancel,
+                ButtonEnum.OkAbort     => ClickEnum.Abort,
+                ButtonEnum.YesNoCancel => ClickEnum.Cancel,
+                ButtonEnum.YesNoAbort  => ClickEnum.Abort,
+                _ => ClickEnum.Cancel,
+            };
+
             var p = new MessageBoxStandardParams()
             { 
                 ButtonDefinitions     = buttons,
+                EnterDefaultButton    = get_EnterDefaultButton( buttons ),
+                EscDefaultButton      = get_EscDefaultButton  ( buttons ),
                 Icon                  = icon,
                 ContentTitle          = caption,
                 ContentMessage        = text,
@@ -321,31 +344,27 @@ namespace m3u8.download.manager
                 WindowIcon            = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) ),
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
             };
-            /*---TENPORARY NOT COMPABILITY
-            if ( fontFamily != null )
-            {
-                p.FontFamily = fontFamily;
-            }
-            */
+            if ( fontFamily != null ) p.FontFamily = fontFamily;
+
             var msgbox = MessageBoxManager.GetMessageBoxStandard( p );
 
-            #region [.adjustment of the created window (through reflection).]
+            #region comm. not-allowed anymore. [.adjustment of the created window (through reflection).]
+            /*
             var window_field = msgbox.GetType().GetField( "_window", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic );
             if ( (window_field != null) && (window_field.GetValue( msgbox ) is Window window) )
             {
                 window.ShowInTaskbar = false;
                 #region comm.
-                /*
-                window.Opened += async (s, e) =>
-                {
-                    var w = window.Width;
-                    window.Width = w - 1;
-                    await Task.Delay( 1 );
-                    window.Width = w;
-                };
-                //*/
+                //window.Opened += async (s, e) =>
+                //{
+                //    var w = window.Width;
+                //    window.Width = w - 1;
+                //    await Task.Delay( 1 );
+                //    window.Width = w;
+                //};
                 #endregion
             }
+            //*/
             #endregion
 
             return (msgbox);

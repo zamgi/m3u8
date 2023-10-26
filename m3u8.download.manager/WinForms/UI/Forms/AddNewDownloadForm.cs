@@ -48,13 +48,28 @@ namespace m3u8.download.manager.ui
 
             _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
         }
-        public AddNewDownloadForm( _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo = null ) : this()
+        public AddNewDownloadForm( _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo = null, string outputFileName = null ) : this()
         {
             _SC                = sc;
             _Settings          = sc.Settings;
             _DownloadListModel = dc?.Model;
 
             _Initial_M3u8FileUrl = m3u8FileUrl;
+
+            #region [.if setted outputFileName.]
+            if ( !outputFileName.IsNullOrEmpty() )
+            {
+                //before 'this.M3u8FileUrl = m3u8FileUrl;'
+                m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
+                this.OutputFileName = outputFileName;
+
+                if ( !m3u8FileUrl.IsNullOrWhiteSpace() )
+                {
+                    this.Shown += (_, _) => setFocus2outputFileNameTextBox_Core( outputFileName );
+                }
+            }
+            #endregion
+
             this.M3u8FileUrl     = m3u8FileUrl;
             this.OutputDirectory = _Settings.OutputFileDirectory;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
@@ -74,7 +89,7 @@ namespace m3u8.download.manager.ui
             
             this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
             //this.IsLiveStream              = _Settings.IsLiveStream;
-            //if ( isLiveStreamCheckBox.Checked ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
+            //if ( isLiveStreamCheckBox.Checked ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );            
         }
 
         protected override void Dispose( bool disposing )
@@ -88,9 +103,9 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        public static bool ShowModalDialog( IWin32Window owner, _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo, Func< AddNewDownloadForm, Task > okAction )
+        public static bool ShowModalDialog( IWin32Window owner, _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo, string outputFileName, Func< AddNewDownloadForm, Task > okAction )
         {
-            using ( var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, seriesInfo ) )
+            using ( var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, seriesInfo, outputFileName ) )
             {
                 if ( f.ShowDialog( owner ) == DialogResult.OK )
                 {
@@ -100,9 +115,9 @@ namespace m3u8.download.manager.ui
             }
             return (false);
         }
-        public static void Show( IWin32Window owner, _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo, Func< AddNewDownloadForm, Task > formClosedAction )
+        public static void Show( IWin32Window owner, _DC_ dc, _SC_ sc, string m3u8FileUrl, in (int n, int total)? seriesInfo, string outputFileName, Func< AddNewDownloadForm, Task > formClosedAction )
         {
-            var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, seriesInfo );
+            var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, seriesInfo, outputFileName );
             f.FormClosed += (_, _) => formClosedAction?.Invoke( f );
             f.downloadStartButton.Click += (_, _) => f.Close();
             f.downloadLaterButton.Click += (_, _) => f.Close();
@@ -302,7 +317,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public  string GetOutputFileName() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
+        public  string GetOutputFileName( char? skipChar = null ) => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, skipChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  bool IsLiveStream
         { 
@@ -354,11 +369,22 @@ namespace m3u8.download.manager.ui
         private string _Last_m3u8FileUrlText;
         private string _LastManualInputed_outputFileNameText;
 
+        private bool setFocus2outputFileNameTextBox_Core( string outputFileName = null )
+        {
+            var suc = outputFileNameTextBox.Focus();
+            var i = (outputFileName ?? outputFileNameTextBox.Text).LastIndexOf( '.' );
+            if ( i != -1 )
+            {
+                outputFileNameTextBox.SelectionStart  = i;
+                outputFileNameTextBox.SelectionLength = 0;
+            }
+            return (suc);
+        }
         private void setFocus2outputFileNameTextBox()
         {
             if ( !_WasFocusSet2outputFileNameTextBoxAfterFirstChanges )
             {
-                _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = outputFileNameTextBox.Focus();
+                _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = setFocus2outputFileNameTextBox_Core();
             }
         }
         private async void m3u8FileUrlTextBox_TextChanged( object sender, EventArgs e )

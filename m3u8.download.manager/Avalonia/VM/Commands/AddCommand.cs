@@ -17,9 +17,11 @@ namespace m3u8.download.manager
     internal sealed class AddCommand : ICommand
     {
         private MainVM _VM;
+        private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
         public AddCommand( MainVM vm )
         {
             _VM = vm;
+            _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
 
             PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArray += NamedPipeServer__Input_ReceivedInputParamsArray;
         }
@@ -82,12 +84,15 @@ namespace m3u8.download.manager
                 return;
             }
 
-            var f = new AddNewDownloadForm( _VM, p.m3u8FileUrl, seriesInfo );
+            var f = new AddNewDownloadForm( _VM, p.m3u8FileUrl, seriesInfo, _OutputFileNamePatternProcessor.Get_Patterned_Last_OutputFileName() );
             {
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
-                    var row = _VM.DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
+                    outputFileName = f.GetOutputFileName( _OutputFileNamePatternProcessor.PatternChar );
+                    outputFileName = _OutputFileNamePatternProcessor.Process( outputFileName );
+
+                    var row = _VM.DownloadListModel.AddRow( (f.M3u8FileUrl, outputFileName/*f.GetOutputFileName()*/, f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
                     if ( f.AutoStartDownload )
                     {
                         _VM.DownloadController.Start( row );

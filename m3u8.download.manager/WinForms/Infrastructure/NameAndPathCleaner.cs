@@ -192,8 +192,12 @@ namespace m3u8.download.manager.infrastructure
             return (pathname);
         }
 
-        public static string CleanPathnameAndFilename( string pathnameAndFilename, string replacedPathChar = "--", char replacedNameChar = '-', bool trimStartDashes = true )
-        {            
+        public static string CleanPathnameAndFilename( string pathnameAndFilename
+            , string replacedPathChar = "--"
+            , char   replacedNameChar = '-'
+            , bool   trimStartDashes  = true
+            , char?  skipChar         = null )
+        {
             if ( pathnameAndFilename != null )
             {
                 var buf = new StringBuilder( pathnameAndFilename.Length + 10 );
@@ -202,7 +206,7 @@ namespace m3u8.download.manager.infrastructure
                     var ch = pathnameAndFilename[ i ];
                     if ( _InvalidPathChars.Contains( ch ) )
                     {
-                        buf.Append( replacedPathChar );
+                        buf.Append( (skipChar.HasValue && (ch == skipChar.Value)) ? ch : replacedPathChar );
                     }
                     else if ( _InvalidFileNameChars.Contains( ch ) )
                     {
@@ -210,13 +214,14 @@ namespace m3u8.download.manager.infrastructure
                         {
                             case '/':
                             case '\\':
-                                buf.Append( replacedPathChar );
+                                buf.Append( (skipChar.HasValue && (ch == skipChar.Value)) ? ch : replacedPathChar );
+                                //buf.Append( replacedPathChar );
                             break;
 
                             default:
-                                buf.Append( replacedNameChar );
+                                buf.Append( (skipChar.HasValue && (ch == skipChar.Value)) ? ch : replacedNameChar );
                             break;
-                        }                        
+                        }
                     }
                     else
                     {

@@ -89,7 +89,7 @@
             this.moreTabPage.Padding = new System.Windows.Forms.Padding( 3 );
             this.moreTabPage.Size = new System.Drawing.Size( 288, 431 );
             this.moreTabPage.TabIndex = 2;
-            this.moreTabPage.Text = "more";
+            this.moreTabPage.Text = "...";
             this.moreTabPage.UseVisualStyleBackColor = true;
             this.moreTabPage.BackColor = System.Drawing.Color.WhiteSmoke;
             // 

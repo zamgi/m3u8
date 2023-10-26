@@ -21,7 +21,6 @@ using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
-using System.Runtime;
 
 namespace m3u8.download.manager.ui
 {
@@ -35,14 +34,15 @@ namespace m3u8.download.manager.ui
         private _ReceivedInputParamsArrayEventHandler_ _ReceivedInputParamsArrayEventHandler;
         private _ReceivedSend2FirstCopyEventHandler_   _ReceivedSend2FirstCopyEventHandler;        
 
-        private DownloadListModel             _DownloadListModel;
-        private _DC_                          _DC;
-        private _SC_                          _SC;
-        private LogRowsHeightStorer           _LogRowsHeightStorer;
-        private Action< DownloadRow, string > _DownloadListModel_RowPropertiesChangedAction;
-        private bool                          _ShowDownloadStatistics;
-        private HashSet< string >             _ExternalProgQueue;
-        private NotifyIcon                    _NotifyIcon;
+        private DownloadListModel              _DownloadListModel;
+        private _DC_                           _DC;
+        private _SC_                           _SC;
+        private LogRowsHeightStorer            _LogRowsHeightStorer;
+        private Action< DownloadRow, string >  _DownloadListModel_RowPropertiesChangedAction;
+        private bool                           _ShowDownloadStatistics;
+        private HashSet< string >              _ExternalProgQueue;
+        private NotifyIcon                     _NotifyIcon;
+        private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
 #if NETCOREAPP
         private static string _APP_TITLE_ => Resources.APP_TITLE__NET_CORE;
 #else
@@ -99,6 +99,7 @@ namespace m3u8.download.manager.ui
             speedThresholdToolButton     .ValueWithSaved = (_SC.MaxSpeedThresholdInMbps, _SC.MaxSpeedThresholdInMbpsSaved);
 
             _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
+            _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
         }
         public MainForm( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
 
@@ -301,7 +302,11 @@ namespace m3u8.download.manager.ui
                     case Keys.Insert: //add download dialog
                     {
                         e.SuppressKeyPress = true;
-                        AddNewDownloads( (Extensions.TryGetM3u8FileUrlsFromClipboardOrDefault(), false) );
+                        var m3u8FileUrls = Extensions.TryGetM3u8FileUrlsFromClipboardOrDefault();
+#if DEBUG
+                        if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = new[] { $"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def" };
+#endif
+                        AddNewDownloads( (m3u8FileUrls, false) );
                     }
                     return;
 
@@ -797,7 +802,7 @@ namespace m3u8.download.manager.ui
                     return (AskDeleteDownloadDialog( rows[ 0 ], askOnlyOutputFileExists, deleteOutputFile ));
                 default:
                     var msg = $"Delete {rows.Count} downloads{(deleteOutputFile ? " with output file" : null)} ?";
-                    var r = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.OKCancel, MessageBoxDefaultButton.Button1 ) == DialogResult.OK);
+                    var r = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.YesNoCancel/*OKCancel*/, MessageBoxDefaultButton.Button1 ) == DialogResult.Yes/*OK*/);
                     return (r);
             }            
         }
@@ -829,8 +834,8 @@ namespace m3u8.download.manager.ui
                 {
                     outputFileNameText = $"\n\n        '{outputFullFileName}'";
                 }
-                var msg = $"Delete download{deleteOutputFileText}:\n '{row.Url}'    ?\n\nOutput file ({outputFileExistsText}):{outputFileNameText}";
-                var r = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.OKCancel, MessageBoxDefaultButton.Button1 ) == DialogResult.OK);
+                var msg = $"Delete download{deleteOutputFileText}:\n '{row.Url}' ?\n\nOutput file ({outputFileExistsText}):{outputFileNameText}";
+                var r = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.YesNoCancel/*OKCancel*/, MessageBoxDefaultButton.Button1 ) == DialogResult.Yes/*OK*/);
                 return (r);
             }
             return (false);
@@ -883,11 +888,14 @@ namespace m3u8.download.manager.ui
             }
 
             #region [.AddNewDownloadForm as top-always-owner-form.]
-            AddNewDownloadForm.Show( this, _DC, _SC, p.m3u8FileUrl, seriesInfo, async f =>
+            AddNewDownloadForm.Show( this, _DC, _SC, p.m3u8FileUrl, seriesInfo, _OutputFileNamePatternProcessor.Get_Patterned_Last_OutputFileName(), async f =>
             {
                 if ( f.DialogResult == DialogResult.OK )
                 {
-                    var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
+                    var outputFileName = f.GetOutputFileName( _OutputFileNamePatternProcessor.PatternChar );
+                        outputFileName = _OutputFileNamePatternProcessor.Process( outputFileName );
+
+                    var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, outputFileName, f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     if ( f.AutoStartDownload )
                     {
@@ -956,11 +964,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.menu.]
-#if DEBUG
-        private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => AddNewDownload( ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", false) );
-#else
         private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => AddNewDownload( (null, false) );
-#endif
         private void showLogToolButton_Click( object sender, EventArgs e )
         {
             var showLog = showLogToolButton.Checked;

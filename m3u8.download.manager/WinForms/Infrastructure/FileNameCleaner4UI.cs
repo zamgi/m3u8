@@ -97,10 +97,10 @@ namespace m3u8.download.manager.ui
             return (null);
         }
 
-        public static string GetOutputFileName( string inputOutputFileName ) => (TryGetOutputFileName( inputOutputFileName, out string outputFileName ) ? outputFileName : null);
-        public static bool TryGetOutputFileName( string inputOutputFileName, out string outputFileName )
+        public static string GetOutputFileName( string inputOutputFileName, char? skipChar = null ) => (TryGetOutputFileName( inputOutputFileName, out string outputFileName, skipChar ) ? outputFileName : null);
+        public static bool TryGetOutputFileName( string inputOutputFileName, out string outputFileName, char? skipChar = null )
         {
-            var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
+            var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName, skipChar: skipChar );
             if ( !fn.IsNullOrWhiteSpace() )
             {
                 outputFileName = fn.GetFileName_NoThrow()

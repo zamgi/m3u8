@@ -79,13 +79,27 @@ namespace m3u8.download.manager.ui
             this.AttachDevTools();
 #endif
         }
-        internal AddNewDownloadForm( MainVM vm, string m3u8FileUrl, (int n, int total)? seriesInfo = null ) : this()
+        internal AddNewDownloadForm( MainVM vm, string m3u8FileUrl, (int n, int total)? seriesInfo = null, string outputFileName = null ) : this()
         {
             this.DataContext = new AddNewDownloadFormVM( this );
 
             _SC = vm.SettingsController;
             _DownloadListModel = vm.DownloadController?.Model;
-            
+
+            #region [.if setted outputFileName.]
+            if ( !outputFileName.IsNullOrEmpty() )
+            {
+                //before 'this.M3u8FileUrl = m3u8FileUrl;'
+                m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
+                this.OutputFileName = outputFileName;
+
+                if ( !m3u8FileUrl.IsNullOrWhiteSpace() )
+                {
+                    this.Opened += (_, _) => setFocus2outputFileNameTextBox_Core( outputFileName );
+                }
+            }
+            #endregion
+
             this.M3u8FileUrl = m3u8FileUrl;
             this.OutputDirectory           = _SC.Settings.OutputFileDirectory;            
             this.LiveStreamMaxFileSizeInMb = _SC.Settings.LiveStreamMaxSingleFileSizeInMb;
@@ -186,13 +200,23 @@ namespace m3u8.download.manager.ui
         private string _LastManualInputed_outputFileNameText;
         private bool   _IsTurnOff__outputFileNameTextBox_TextChanged;
 
+
+        private void setFocus2outputFileNameTextBox_Core( string outputFileName = null )
+        {
+            outputFileNameTextBox.Focus();
+            var i = (outputFileName ?? outputFileNameTextBox.Text ?? string.Empty).LastIndexOf( '.' );
+            if ( i != -1 )
+            {
+                outputFileNameTextBox.SelectionStart = outputFileNameTextBox.SelectionEnd   = i;
+            }
+        }
         private void setFocus2outputFileNameTextBox()
-        {            
+        {
             if ( outputFileNameTextBox != null )
             {
                 if ( !_WasFocusSet2outputFileNameTextBoxAfterFirstChanges )
                 {
-                    outputFileNameTextBox.Focus();
+                    setFocus2outputFileNameTextBox_Core(); //outputFileNameTextBox.Focus();
                     _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = outputFileNameTextBox.IsFocused;
                 }
             }
@@ -252,6 +276,7 @@ namespace m3u8.download.manager.ui
         private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;
         private void outputFileNameTextBox_TextChanged( string value )
         {
+            /*
             if ( !_IsTurnOff__outputFileNameTextBox_TextChanged )
             {
                 var text = PathnameCleaner.CleanPathnameAndFilename( value?.Trim() );
@@ -278,6 +303,7 @@ namespace m3u8.download.manager.ui
                     _FNCP.FileNameTextBox_TextChanged( outputFileName => _LastManualInputed_outputFileNameText = outputFileName );
                 }                
             }
+            */
         }
         #endregion
 
@@ -390,7 +416,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public  string GetOutputFileName() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
+        public  string GetOutputFileName( char? skipChar = null ) => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, skipChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  bool   IsLiveStream
         { 

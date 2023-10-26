@@ -359,6 +359,9 @@ namespace m3u8.download.manager.ui
                         {
                             e.Handled = true;
                             var m3u8FileUrls = await this.TryGetM3u8FileUrlsFromClipboardOrDefault();
+#if DEBUG
+                            if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = new[] { $"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def" };
+#endif
                             _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
                         }
                         return;
@@ -809,9 +812,9 @@ namespace m3u8.download.manager.ui
                 {
                     outputFileNameText = $"\n\n        '{outputFullFileName}'";
                 }
-                var msg = $"Delete download{deleteOutputFileText}:\n '{row.Url}'    ?\n\nOutput file ({outputFileExistsText}):{outputFileNameText}";
-                var r = await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.OkCancel );
-                return (r == ButtonResult.Ok);
+                var msg = $"Delete download{deleteOutputFileText}:\n '{row.Url}' ?\n\nOutput file ({outputFileExistsText}):{outputFileNameText}";
+                var r = await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo );
+                return (r == ButtonResult.Yes);
             }
             return (false);
         }

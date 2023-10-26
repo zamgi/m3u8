@@ -97,6 +97,7 @@
       <Link>[-= m3u8.client =-]\throttler_by_speed.cs</Link>
     </Compile>
     <Compile Include="Infrastructure\AssemblyInfoHelper.cs" />
+    <Compile Include="Infrastructure\OutputFileNamePatternProcessor.cs" />
     <Compile Include="Infrastructure\CollectGarbage.cs" />
     <Compile Include="Infrastructure\SortInfo.cs" />
     <Compile Include="Infrastructure\BlinkManager.cs" />

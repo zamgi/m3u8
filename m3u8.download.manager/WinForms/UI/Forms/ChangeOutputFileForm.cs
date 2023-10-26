@@ -2,7 +2,6 @@
 using System.IO;
 using System.Windows.Forms;
 
-using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.ui.infrastructure;
 using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;

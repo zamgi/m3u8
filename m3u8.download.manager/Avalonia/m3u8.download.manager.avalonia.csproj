@@ -61,7 +61,8 @@
     <Compile Include="..\WinForms\Infrastructure\ObjAsDict_JsonSerializer.cs" Link="Infrastructure\ObjAsDict_JsonSerializer.cs" />
     <Compile Include="..\WinForms\Infrastructure\AssemblyInfoHelper.cs" Link="Infrastructure\AssemblyInfoHelper.cs" />
     <Compile Include="..\WinForms\Infrastructure\DownloadRowsSerializer.cs" Link="Infrastructure\DownloadRowsSerializer.cs" />
-    <Compile Include="..\WinForms\Infrastructure\NameAndPathCleaner.cs" Link="Infrastructure\NameAndPathCleaner.cs" />    
+    <Compile Include="..\WinForms\Infrastructure\NameAndPathCleaner.cs" Link="Infrastructure\NameAndPathCleaner.cs" />
+    <Compile Include="..\WinForms\Infrastructure\OutputFileNamePatternProcessor.cs" Link="Infrastructure\OutputFileNamePatternProcessor.cs" />    
     
     <Compile Include="..\[Common]\Controller\DownloadController\dc_models.cs" Link="Controller\DownloadController\dc_models.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController\DownloadController.cs" Link="Controller\DownloadController\DownloadController.cs" />
@@ -77,7 +78,7 @@
     <PackageReference Include="Avalonia.Themes.Simple" Version="11.0.5" />
     <!--<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />-->
     <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="11.0.5" />
-    <PackageReference Include="MessageBox.Avalonia" Version="3.1.4" />
+    <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Reactive" Version="6.0.0" />
