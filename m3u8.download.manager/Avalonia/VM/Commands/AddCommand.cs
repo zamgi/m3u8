@@ -84,15 +84,13 @@ namespace m3u8.download.manager
                 return;
             }
 
-            var f = new AddNewDownloadForm( _VM, p.m3u8FileUrl, seriesInfo, _OutputFileNamePatternProcessor.Get_Patterned_Last_OutputFileName() );
+            var f = new AddNewDownloadForm( _VM, p.m3u8FileUrl, _OutputFileNamePatternProcessor, seriesInfo );
             {
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
-                    outputFileName = f.GetOutputFileName( _OutputFileNamePatternProcessor.PatternChar );
-                    outputFileName = _OutputFileNamePatternProcessor.Process( outputFileName );
-
-                    var row = _VM.DownloadListModel.AddRow( (f.M3u8FileUrl, outputFileName/*f.GetOutputFileName()*/, f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
+                    var outputFileName_2 = f.GetOutputFileName();
+                    var row = _VM.DownloadListModel.AddRow( (f.M3u8FileUrl, outputFileName_2/*f.GetOutputFileName()*/, f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
                     if ( f.AutoStartDownload )
                     {
                         _VM.DownloadController.Start( row );

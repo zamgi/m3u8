@@ -888,13 +888,11 @@ namespace m3u8.download.manager.ui
             }
 
             #region [.AddNewDownloadForm as top-always-owner-form.]
-            AddNewDownloadForm.Show( this, _DC, _SC, p.m3u8FileUrl, seriesInfo, _OutputFileNamePatternProcessor.Get_Patterned_Last_OutputFileName(), async f =>
+            AddNewDownloadForm.Show( this, _DC, _SC, p.m3u8FileUrl, _OutputFileNamePatternProcessor, seriesInfo, async f =>
             {
                 if ( f.DialogResult == DialogResult.OK )
                 {
-                    var outputFileName = f.GetOutputFileName( _OutputFileNamePatternProcessor.PatternChar );
-                        outputFileName = _OutputFileNamePatternProcessor.Process( outputFileName );
-
+                    var outputFileName = f.GetOutputFileName();
                     var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, outputFileName, f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     if ( f.AutoStartDownload )

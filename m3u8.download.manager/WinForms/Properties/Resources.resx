@@ -121,7 +121,7 @@
     <value>.m3u8 file download manager</value>
   </data>
   <data name="APP_TITLE__NET_CORE" xml:space="preserve">
-    <value>.m3u8 file download manager (NET 6.0)</value>
+    <value>.m3u8 file download manager (NET 7.0)</value>
   </data>
   <data name="M3U8_EXTENSION" xml:space="preserve">
     <value>.m3u8</value>

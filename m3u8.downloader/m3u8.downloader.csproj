@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>m3u8</RootNamespace>
     <AssemblyName>m3u8.downloader</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -90,9 +90,7 @@
     <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultUCBase.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultDGV.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultDGV.cs" />
     <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultDGV.Designer.cs">
       <DependentUpon>M3u8FileResultDGV.cs</DependentUpon>
     </Compile>

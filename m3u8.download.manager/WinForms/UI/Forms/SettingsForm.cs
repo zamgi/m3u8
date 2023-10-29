@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -75,7 +74,8 @@ namespace m3u8.download.manager.ui
             var color = (tabPage == parallelismTabPage) ? Brushes.DarkOliveGreen : ((tabPage == otherTabPage) ? Brushes.DarkOrange : Brushes.Silver);
 
             using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.None, FormatFlags = StringFormatFlags.NoWrap };
-            using var ft = new Font( tabPage.Font, FontStyle.Underline );
+                  var fs = ((tabPage == moreTabPage) || ((e.State & DrawItemState.Selected) != DrawItemState.Selected)) ? FontStyle.Regular : FontStyle.Underline;
+            using var ft = new Font( tabPage.Font, fs );
             e.Graphics.DrawString( tabPage.Text, ft, color, e.Bounds, sf );
 
             #region comm.

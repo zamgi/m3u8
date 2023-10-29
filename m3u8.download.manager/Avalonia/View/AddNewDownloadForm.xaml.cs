@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +31,10 @@ namespace m3u8.download.manager.ui
         private TextBox outputDirectoryTextBox;
         private RequestLogUC logUC;
 
+        private TextBlock     patternOutputFileNameLabelCaption;
+        private TextBlock     patternOutputFileNameLabel;
+        private NumericUpDown patternOutputFileNameNumUpDn;
+
         private CheckBox      isLiveStreamCheckBox;
         private TextBlock     liveStreamMaxSizeInMbTextBlock;
         private NumericUpDown liveStreamMaxSizeInMbNumUpDn;
@@ -48,6 +51,7 @@ namespace m3u8.download.manager.ui
         private FileNameCleaner4UI.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private (int n, int total) _SeriesInfo;
+        private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
         #endregion
 
         #region [.ctor().]
@@ -58,6 +62,10 @@ namespace m3u8.download.manager.ui
             outputFileNameTextBox  = this.Find< TextBox >( nameof(outputFileNameTextBox)  ); 
             outputDirectoryTextBox = this.Find< TextBox >( nameof(outputDirectoryTextBox) );
             logUC                  = this.Find< RequestLogUC >( nameof(logUC) );
+
+            patternOutputFileNameLabelCaption = this.Find< TextBlock     >( nameof(patternOutputFileNameLabelCaption) );
+            patternOutputFileNameLabel        = this.Find< TextBlock     >( nameof(patternOutputFileNameLabel)        );
+            patternOutputFileNameNumUpDn      = this.Find< NumericUpDown >( nameof(patternOutputFileNameNumUpDn)      ); patternOutputFileNameNumUpDn.ValueChanged += patternOutputFileNameNumUpDn_ValueChanged;
 
             isLiveStreamCheckBox           = this.Find< CheckBox      >( nameof(isLiveStreamCheckBox)           );
             liveStreamMaxSizeInMbTextBlock = this.Find< TextBlock     >( nameof(liveStreamMaxSizeInMbTextBlock) );
@@ -79,25 +87,17 @@ namespace m3u8.download.manager.ui
             this.AttachDevTools();
 #endif
         }
-        internal AddNewDownloadForm( MainVM vm, string m3u8FileUrl, (int n, int total)? seriesInfo = null, string outputFileName = null ) : this()
+        internal AddNewDownloadForm( MainVM vm, string m3u8FileUrl, OutputFileNamePatternProcessor outputFileNamePatternProcessor, (int n, int total)? seriesInfo = null ) : this()
         {
             this.DataContext = new AddNewDownloadFormVM( this );
 
             _SC = vm.SettingsController;
             _DownloadListModel = vm.DownloadController?.Model;
+            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
 
             #region [.if setted outputFileName.]
-            if ( !outputFileName.IsNullOrEmpty() )
-            {
-                //before 'this.M3u8FileUrl = m3u8FileUrl;'
-                m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
-                this.OutputFileName = outputFileName;
-
-                if ( !m3u8FileUrl.IsNullOrWhiteSpace() )
-                {
-                    this.Opened += (_, _) => setFocus2outputFileNameTextBox_Core( outputFileName );
-                }
-            }
+            //before 'this.M3u8FileUrl = m3u8FileUrl;'
+            Process_use_OutputFileNamePatternProcessor_on_Init();
             #endregion
 
             this.M3u8FileUrl = m3u8FileUrl;
@@ -108,13 +108,15 @@ namespace m3u8.download.manager.ui
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
-            
+
+            #region [.seriesInfo.]
             if ( seriesInfo.HasValue )
             {
                 var x = seriesInfo.Value;
                 this.Title += $" ({x.n} of {x.total})";
             }
             _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
+            #endregion
         }
         public void Dispose()
         {
@@ -200,7 +202,6 @@ namespace m3u8.download.manager.ui
         private string _LastManualInputed_outputFileNameText;
         private bool   _IsTurnOff__outputFileNameTextBox_TextChanged;
 
-
         private void setFocus2outputFileNameTextBox_Core( string outputFileName = null )
         {
             outputFileNameTextBox.Focus();
@@ -229,6 +230,15 @@ namespace m3u8.download.manager.ui
         }
         private async void outputFileNameSelectButton_Click( object sender, RoutedEventArgs e )
         {
+            //var _ = await this.StorageProvider.SaveFilePickerAsync( new Avalonia.Platform.Storage.FilePickerSaveOptions()
+            //{
+            //    SuggestedFileName      = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName ),
+            //    SuggestedStartLocation = this.OutputDirectory,
+            //    //Directory        = this.OutputDirectory,
+            //    DefaultExtension = _SC.Settings.OutputFileExtension,
+            //    //InitialFileName  = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName )
+            //});
+
             var sfd = new SaveFileDialog() { Directory        = this.OutputDirectory,
                                              DefaultExtension = _SC.Settings.OutputFileExtension,
                                              InitialFileName  = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName ),
@@ -276,6 +286,7 @@ namespace m3u8.download.manager.ui
         private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;
         private void outputFileNameTextBox_TextChanged( string value )
         {
+            #region comm.
             /*
             if ( !_IsTurnOff__outputFileNameTextBox_TextChanged )
             {
@@ -304,6 +315,12 @@ namespace m3u8.download.manager.ui
                 }                
             }
             */
+            #endregion
+
+            if ( _IsTurnOff__outputFileNameTextBox_TextChanged ) return;
+            if ( _OutputFileNamePatternProcessor == null ) return; //then call from '.ctor()'
+
+            Process_use_OutputFileNamePatternProcessor();
         }
         #endregion
 
@@ -325,7 +342,7 @@ namespace m3u8.download.manager.ui
                 return (false);
             }
             else
-            if ( this.GetOutputFileName().IsNullOrWhiteSpace() )
+            if ( this.GetOutputFileName_Internal().IsNullOrWhiteSpace() )
             {
                 outputFileNameTextBox.FocusAndBlinkBackColor();
                 return (false);
@@ -399,6 +416,59 @@ namespace m3u8.download.manager.ui
             liveStreamMaxSizeInMbNumUpDn.IsVisible = liveStreamMaxSizeInMbTextBlock.IsVisible = isLiveStream;
             //this.mainLayoutPanel.Height = isLiveStream ? 90 : 60;
         }
+
+        private void Process_use_OutputFileNamePatternProcessor_on_Init()
+        {
+            if ( _OutputFileNamePatternProcessor.TryGet_Patterned_Last_OutputFileName( out var t ) )
+            {
+                m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
+                this.OutputFileName = t.Patterned_Last_OutputFileName;
+                patternOutputFileNameLabel  .Text  = t.Last_OutputFileName_As_Pattern; patternOutputFileNameLabel.SetValue( ToolTip.TipProperty, t.Last_OutputFileName_As_Pattern );
+                patternOutputFileNameNumUpDn.Value = t.Last_OutputFileName_Num;
+                patternOutputFileNameLabelCaption.IsVisible = patternOutputFileNameLabel.IsVisible = patternOutputFileNameNumUpDn.IsVisible = true;
+
+                if ( !this.M3u8FileUrl.IsNullOrWhiteSpace() )
+                {
+                    this.Opened += (_, _) => setFocus2outputFileNameTextBox_Core( t.Patterned_Last_OutputFileName );
+                }
+            }
+
+            //TEMP
+#if DEBUG
+            else //if ( !this.M3u8FileUrl.IsNullOrWhiteSpace() )
+            {
+                m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
+                this.Opened += (_, _) =>
+                {
+                    var txt = "Last_OutputFileName_Num - Last_OutputFileName_Num - Last_OutputFileName_Num - **.txt";
+                    this.OutputFileName = txt;
+                    setFocus2outputFileNameTextBox_Core( txt );
+                    outputFileNameTextBox_TextChanged( txt );
+                };
+            }
+#endif
+        }
+        private void Process_use_OutputFileNamePatternProcessor()
+        {
+            var outputFileName = this.OutputFileName;
+            var has = _OutputFileNamePatternProcessor.HasPatternChar( outputFileName );
+            if ( has )
+            {
+                patternOutputFileNameLabel  .Text  = outputFileName; patternOutputFileNameLabel.SetValue( ToolTip.TipProperty, outputFileName );
+                patternOutputFileNameNumUpDn.Value = _OutputFileNamePatternProcessor.IsEqualPattern( outputFileName ) ? _OutputFileNamePatternProcessor.Last_OutputFileName_Num : 1;
+                patternOutputFileNameNumUpDn_ValueChanged( null, null );
+            }
+            patternOutputFileNameLabelCaption.IsVisible = patternOutputFileNameLabel.IsVisible = patternOutputFileNameNumUpDn.IsVisible = has;
+        }
+        private void patternOutputFileNameNumUpDn_ValueChanged( object sender, RoutedEventArgs e )
+        {
+            _OutputFileNamePatternProcessor.Set_Last_OutputFileName_Num( (int) patternOutputFileNameNumUpDn.Value );
+
+            if ( _OutputFileNamePatternProcessor.HasLast_OutputFileName_As_Pattern )
+            {
+                this.OutputFileName = _OutputFileNamePatternProcessor.Get_Patterned_Last_OutputFileName();
+            }
+        }
         #endregion
 
         #region [.public methods.]
@@ -416,7 +486,14 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public  string GetOutputFileName( char? skipChar = null ) => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, skipChar );
+        //public  string GetOutputFileName( char? skipChar = null ) => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, skipChar );
+        public  string GetOutputFileName()
+        {
+            var outputFileName_1 = GetOutputFileName_Internal();
+            var outputFileName_2 = _OutputFileNamePatternProcessor.Process( outputFileName_1 );
+            return (outputFileName_2);
+        }
+        private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _OutputFileNamePatternProcessor.PatternChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  bool   IsLiveStream
         { 

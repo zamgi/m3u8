@@ -9,7 +9,8 @@ namespace System.Windows.Forms
     internal class NumericUpDownEx : NumericUpDown
     {
         public decimal? Increment_MouseWheel { get; set; }
-        public bool     Round2NextTenGroup   { get; set; }        
+        public bool     Round2NextTenGroup   { get; set; }
+        public int      ValueAsInt32         { get => (int) this.Value; set => this.Value = value; }
         protected override void OnMouseWheel( MouseEventArgs e )
         {
             if ( e is HandledMouseEventArgs hme )
@@ -20,14 +21,15 @@ namespace System.Windows.Forms
             if ( 0 < e.Delta )
             {
                 var v = GetValue( 1 );
-                this.Value = Math.Min( this.Maximum, v );
+                this.Value = Math.Max( this.Minimum,  Math.Min( this.Maximum, v ) );
             }
             else if ( e.Delta < 0 )
             {
                 var v = GetValue( -1 );
-                this.Value = Math.Max( this.Minimum, v );
+                this.Value = Math.Min( this.Maximum,  Math.Max( this.Minimum, v ) );
             }
         }
+        public void Set_Increment_MouseWheel( int v ) => Increment_MouseWheel = v;
         private decimal GetValue( int sign ) => GetValue( this.Value, sign * Increment_MouseWheel.GetValueOrDefault( this.Increment ), Round2NextTenGroup );
         private static decimal GetValue( decimal value, decimal increment, bool round2NextTenGroup )
         {
