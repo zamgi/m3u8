@@ -47,5 +47,5 @@ Temporary Items
 .apdisk
 
 *.suo
-/.vs/*
+.vs
 packages

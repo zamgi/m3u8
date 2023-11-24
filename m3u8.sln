@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.client", "m3u8.client\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.console.app", "m3u8.console.app\m3u8.console.app.csproj", "{B17C29AF-E052-413B-9149-4F49E5DA2571}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.downloader", "m3u8.downloader\m3u8.downloader.csproj", "{B4726081-D6C9-4183-99CF-D52913E25C85}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.downloader", "prev\m3u8.downloader\m3u8.downloader.csproj", "{B4726081-D6C9-4183-99CF-D52913E25C85}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-browser-extensions", "m3u8-browser-extensions", "{18F2AF0D-B182-4885-9B27-68F67E1E14A0}"
 EndProject

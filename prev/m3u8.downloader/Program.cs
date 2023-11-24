@@ -231,7 +231,7 @@ namespace m3u8.downloader
 
         public static bool CreateAsBreakawayFromJob( string cmdLine )
         {
-            var si = new STARTUPINFO() { cb = Marshal.SizeOf(typeof(STARTUPINFO)) };
+            var si = new STARTUPINFO() { cb = Marshal.SizeOf( typeof(STARTUPINFO) ) };
 
             var r = CreateProcess( null,
                                    cmdLine,
@@ -254,8 +254,8 @@ namespace m3u8.downloader
         {
            public IntPtr hProcess;
            public IntPtr hThread;
-           public int dwProcessId;
-           public int dwThreadId;
+           public int    dwProcessId;
+           public int    dwThreadId;
         }
 
         /// <summary>
@@ -264,20 +264,20 @@ namespace m3u8.downloader
         [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
         private struct STARTUPINFO
         {
-             public Int32 cb;
+             public int    cb;
              public string lpReserved;
              public string lpDesktop;
              public string lpTitle;
-             public Int32 dwX;
-             public Int32 dwY;
-             public Int32 dwXSize;
-             public Int32 dwYSize;
-             public Int32 dwXCountChars;
-             public Int32 dwYCountChars;
-             public Int32 dwFillAttribute;
-             public Int32 dwFlags;
-             public Int16 wShowWindow;
-             public Int16 cbReserved2;
+             public int    dwX;
+             public int    dwY;
+             public int    dwXSize;
+             public int    dwYSize;
+             public int    dwXCountChars;
+             public int    dwYCountChars;
+             public int    dwFillAttribute;
+             public int    dwFlags;
+             public short  wShowWindow;
+             public short  cbReserved2;
              public IntPtr lpReserved2;
              public IntPtr hStdInput;
              public IntPtr hStdOutput;
