@@ -480,14 +480,16 @@ namespace m3u8.download.manager.ui
             {
                 m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
                 this.OutputFileName = t.Patterned_Last_OutputFileName;
-                patternOutputFileNameLabel  .Text  = t.Last_OutputFileName_As_Pattern; toolTip.SetToolTip(patternOutputFileNameLabel, t.Last_OutputFileName_As_Pattern);
-                patternOutputFileNameNumUpDn.Value = t.Last_OutputFileName_Num;
+                Set_patternOutputFileNameLabel( t.Last_OutputFileName_As_Pattern );
+                patternOutputFileNameNumUpDn.ValueAsInt32 = t.Last_OutputFileName_Num;
                 patternOutputFileNameLabelCaption.Visible = patternOutputFileNameLabel.Visible = patternOutputFileNameNumUpDn.Visible = true;
                 Set_mainLayoutPanel_Height( true );
 
                 if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
                 {
-                    this.Shown += (_, _) => setFocus2outputFileNameTextBox_Core( t.Patterned_Last_OutputFileName );
+                    var shown = default(EventHandler);
+                    shown = (_, _) => { setFocus2outputFileNameTextBox_Core( t.Patterned_Last_OutputFileName ); this.Shown -= shown; };
+                    this.Shown += shown;
                 }
             }
 
@@ -496,13 +498,16 @@ namespace m3u8.download.manager.ui
             else if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
             {
                 m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
-                this.Shown += (_, _) =>
+                var shown = default(EventHandler);
+                shown = (_, _) =>
                 {
-                    var txt = "Last_OutputFileName_Num - Last_OutputFileName_Num - Last_OutputFileName_Num - **.txt";
+                    const string txt = "Last_OutputFileName_Num - **.txt";
                     this.OutputFileName = txt;
                     setFocus2outputFileNameTextBox_Core( txt );
                     outputFileNameTextBox_TextChanged( this, EventArgs.Empty );
+                    this.Shown -= shown;
                 };
+                this.Shown += shown;
             }
 #endif
         }
@@ -512,9 +517,21 @@ namespace m3u8.download.manager.ui
             var has = _OutputFileNamePatternProcessor.HasPatternChar( outputFileName );
             if ( has )
             {
-                patternOutputFileNameLabel  .Text  = outputFileName; toolTip.SetToolTip(patternOutputFileNameLabel, outputFileName );
-                patternOutputFileNameNumUpDn.Value = _OutputFileNamePatternProcessor.IsEqualPattern( outputFileName ) ? _OutputFileNamePatternProcessor.Last_OutputFileName_Num : 1;
-                patternOutputFileNameNumUpDn_ValueChanged( null, null );
+                Set_patternOutputFileNameLabel( outputFileName );
+                if ( _OutputFileNamePatternProcessor.IsEqualPattern( outputFileName ) )
+                {
+                    patternOutputFileNameNumUpDn.ValueAsInt32 = _OutputFileNamePatternProcessor.Last_OutputFileName_Num;
+                    patternOutputFileNameNumUpDn_ValueChanged( null, null );
+                }
+                else
+                {
+                    patternOutputFileNameNumUpDn.ValueAsInt32 = 1;
+                    _OutputFileNamePatternProcessor.Set_Last_OutputFileName_Num( patternOutputFileNameNumUpDn.ValueAsInt32 );
+                }
+
+                //---Set_patternOutputFileNameLabel( outputFileName );
+                //---patternOutputFileNameNumUpDn.ValueAsInt32 = _OutputFileNamePatternProcessor.IsEqualPattern( outputFileName ) ? _OutputFileNamePatternProcessor.Last_OutputFileName_Num : 1;
+                //---patternOutputFileNameNumUpDn_ValueChanged( null, null );
             }
             patternOutputFileNameLabelCaption.Visible = patternOutputFileNameLabel.Visible = patternOutputFileNameNumUpDn.Visible = has;
             Set_mainLayoutPanel_Height();
@@ -523,12 +540,19 @@ namespace m3u8.download.manager.ui
         {
             _OutputFileNamePatternProcessor.Set_Last_OutputFileName_Num( patternOutputFileNameNumUpDn.ValueAsInt32 );
 
-            if ( _OutputFileNamePatternProcessor.HasLast_OutputFileName_As_Pattern )
+            if ( _OutputFileNamePatternProcessor.HasLast_OutputFileName_As_Pattern && 
+                 _OutputFileNamePatternProcessor.IsEqualPattern( this.OutputFileName ) 
+               )
             {
                 this.OutputFileName = _OutputFileNamePatternProcessor.Get_Patterned_Last_OutputFileName();
             }
         }
         private void patternOutputFileNameLabel_VisibleChanged( object sender, EventArgs e ) => mainLayoutPanel.ColumnStyles[ 1 ].SizeType = patternOutputFileNameLabel.Visible ? SizeType.AutoSize : SizeType.Absolute;
+        private void Set_patternOutputFileNameLabel( string outputFileName )
+        {
+            patternOutputFileNameLabel.Text = outputFileName;
+            toolTip.SetToolTip( patternOutputFileNameLabel, outputFileName );
+        }
         #endregion
 
         #region [.loadM3u8FileContentButton.]

@@ -400,15 +400,20 @@ namespace m3u8.download.manager
             {
                 await msgbox.ShowAsync();
             }
-        }       
+        }
         #endregion
 
+        public static async Task< IReadOnlyCollection< string > > TryGetM3u8FileUrlsFromClipboardOrDefault( this Window window )
+        {
+            var t = await window.TryGetM3u8FileUrlsFromClipboard();
+            return (t.success ? t.m3u8FileUrls : new string[ 0 ]);
+        }
         public static async Task< (bool success, IReadOnlyCollection< string > m3u8FileUrls) > TryGetM3u8FileUrlsFromClipboard( this Window window )
         {
+            var M3U8_EXTENSION_Q = Resources.M3U8_EXTENSION + '?';
             try
             {
                 var text = (await window.Clipboard.GetTextAsync())?.Trim();
-                //var text = (await Application.Current.Clipboard.GetTextAsync())?.Trim();
                 if ( !text.IsNullOrEmpty() )
                 {
                     var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
@@ -416,16 +421,17 @@ namespace m3u8.download.manager
                     var m3u8FileUrls = new List< string >( array.Length );
                     foreach ( var a in array )
                     {
-                        if ( a.EndsWith( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( a ) )
+                        var u = a.Trim();
+                        if ( u.EndsWith( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( u ) )
                         {
-                            m3u8FileUrls.Add( a );
+                            m3u8FileUrls.Add( u );
                         }
                         else
                         {
-                            var i = a.IndexOf( Resources.M3U8_EXTENSION + '?', StringComparison.InvariantCultureIgnoreCase );
-                            if ( (10 < i) && hs.Add( a ) )
+                            var i = u.IndexOf( M3U8_EXTENSION_Q, StringComparison.InvariantCultureIgnoreCase );
+                            if ( (10 < i) && hs.Add( u ) )
                             {
-                                m3u8FileUrls.Add( a );
+                                m3u8FileUrls.Add( u );
                             }
                         }
                     }
@@ -439,13 +445,38 @@ namespace m3u8.download.manager
 
             return (false, default);
         }
-        public static async Task< IReadOnlyCollection< string > > TryGetM3u8FileUrlsFromClipboardOrDefault( this Window window )
+        public static async Task< (bool success, IReadOnlyCollection< string > m3u8FileUrls) > TryGetHttpUrlsFromClipboard( this Window window )
         {
-            var t = await window.TryGetM3u8FileUrlsFromClipboard();
-            return (t.success ? t.m3u8FileUrls : new string[ 0 ]);
+            const string HTTP  = "http://";
+            const string HTTPS = "https://";
+            try
+            {
+                var text = (await window.Clipboard.GetTextAsync())?.Trim();
+                if ( !text.IsNullOrEmpty() )
+                {
+                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var hs  = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
+                    var m3u8FileUrls = new List< string >( array.Length );
+                    foreach ( var a in array )
+                    {
+                        var u = a.Trim();
+                        if ( (u.StartsWith( HTTP, StringComparison.InvariantCultureIgnoreCase ) || 
+                              u.StartsWith( HTTPS, StringComparison.InvariantCultureIgnoreCase )) && hs.Add( u ) )
+                        {
+                            m3u8FileUrls.Add( u );
+                        }
+                    }
+                    return (m3u8FileUrls.Any(), m3u8FileUrls);
+                }
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+
+            return (false, default);
         }
-        //public static Task CopyM3u8FileUrlToClipboard( string m3u8FileUrl ) => Application.Current.Clipboard.SetTextAsync( m3u8FileUrl );
-        public static Task CopyM3u8FileUrlToClipboard( this Window window, string m3u8FileUrl ) => window.Clipboard.SetTextAsync( m3u8FileUrl );
+        public static Task CopyToClipboard( this Window window, string text ) => window.Clipboard.SetTextAsync( text );
 
         #region [.allowed Command by current status.]
         [M(O.AggressiveInlining)] public static bool StartDownload_IsAllowed ( this DownloadStatus status ) => (status == DownloadStatus.Created ) ||

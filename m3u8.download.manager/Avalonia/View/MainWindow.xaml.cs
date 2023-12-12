@@ -276,7 +276,7 @@ namespace m3u8.download.manager.ui
                 switch ( e.Key )
                 {
                     case Key.V: //Paste
-                        var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard();
+                        var (success, m3u8FileUrls) = await this.TryGetHttpUrlsFromClipboard()/*TryGetM3u8FileUrlsFromClipboard()*/;
                         if ( success )
                         {
                             e.Handled = true;
@@ -285,6 +285,10 @@ namespace m3u8.download.manager.ui
                             if ( !autoStartDownload ) m3u8FileUrls = m3u8FileUrls.Take( 50/*100*/ ).ToArray();
                             _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, autoStartDownload) );
                             return;
+                        }
+                        else
+                        {
+                            await this.MessageBox_ShowError( "Nothing for Paste from clipboard.", this.Title );
                         }
                         break;
 
@@ -295,8 +299,12 @@ namespace m3u8.download.manager.ui
                             if ( row != null )
                             {
                                 e.Handled = true;
-                                await this.CopyM3u8FileUrlToClipboard( row.Url );
+                                await this.CopyToClipboard( row.Url );
                                 return;
+                            }
+                            else
+                            {
+                                await this.MessageBox_ShowError( "Nothing for Copy to clipboard.", this.Title );
                             }
                         }
                         break;
@@ -870,16 +878,16 @@ namespace m3u8.download.manager.ui
             var row = downloadListUC.GetSelectedDownloadRow();
             if ( row != null )
             {
-                await this.CopyM3u8FileUrlToClipboard( row.Url );
+                await this.CopyToClipboard( row.Url );
             }
             else
             {
-                await this.MessageBox_ShowError( "Nothing for copy to clipboard.", this.Title );
+                await this.MessageBox_ShowError( "Nothing for Copy to clipboard.", this.Title );
             }
         }
         private async void pasteToolButton_Click( object sender, EventArgs e )
         {
-            var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard();
+            var (success, m3u8FileUrls) = await this.TryGetHttpUrlsFromClipboard()/*TryGetM3u8FileUrlsFromClipboard()*/;
             if ( success )
             {
                 var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
@@ -888,7 +896,7 @@ namespace m3u8.download.manager.ui
             }
             else
             {
-                await this.MessageBox_ShowError( "Nothing for paste from clipboard.", this.Title );
+                await this.MessageBox_ShowError( "Nothing for Paste from clipboard.", this.Title );
             }
         }
 

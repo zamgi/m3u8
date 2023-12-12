@@ -330,6 +330,7 @@ namespace m3u8.download.manager
 
         public static bool TryGetM3u8FileUrlsFromClipboard( out IReadOnlyCollection< string > m3u8FileUrls )
         {
+            var M3U8_EXTENSION_Q = Resources.M3U8_EXTENSION + '?';
             try
             {
                 var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
@@ -344,16 +345,17 @@ namespace m3u8.download.manager
                     var lst = new List< string >( array.Length );
                     foreach ( var a in array )
                     {
-                        if ( a.EndsWith( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( a ) )
+                        var u = a.Trim();
+                        if ( u.EndsWith( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( u ) )
                         {
-                            lst.Add( a );
+                            lst.Add( u );
                         }
                         else
                         {
-                            var i = a.IndexOf( Resources.M3U8_EXTENSION + '?', StringComparison.InvariantCultureIgnoreCase );
-                            if ( (10 < i) && hs.Add( a ) )
+                            var i = u.IndexOf( M3U8_EXTENSION_Q, StringComparison.InvariantCultureIgnoreCase );
+                            if ( (10 < i) && hs.Add( u ) )
                             {
-                                lst.Add( a );
+                                lst.Add( u );
                             }
                         }
                     }
@@ -369,8 +371,43 @@ namespace m3u8.download.manager
             m3u8FileUrls = default;
             return (false);
         }
+        public static bool TryGetHttpUrlsFromClipboard( out IReadOnlyCollection< string > urls )
+        {
+            const string HTTP  = "http://";
+            const string HTTPS = "https://";
+            try
+            {
+                var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
+                if ( text.IsNullOrEmpty() ) text = Clipboard.GetText( TextDataFormat.UnicodeText )?.Trim();
+
+                if ( !text.IsNullOrEmpty() )
+                {
+                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var hs  = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
+                    var lst = new List< string >( array.Length );
+                    foreach ( var a in array )
+                    {
+                        var u = a.Trim();
+                        if ( (u.StartsWith( HTTP , StringComparison.InvariantCultureIgnoreCase ) ||
+                              u.StartsWith( HTTPS, StringComparison.InvariantCultureIgnoreCase )) && hs.Add( u ) )
+                        {
+                            lst.Add( u );
+                        }
+                    }
+                    urls = lst;
+                    return (urls.Any());
+                }
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+
+            urls = default;
+            return (false);
+        }
         public static IReadOnlyCollection< string > TryGetM3u8FileUrlsFromClipboardOrDefault() => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) ? m3u8FileUrls : new string[ 0 ]);
-        public static void CopyM3u8FileUrlToClipboard( IEnumerable< DownloadRow > rows ) => Clipboard.SetText( string.Join( "\r\n", rows.Select( r => r.Url ) ), TextDataFormat.UnicodeText );
+        public static void CopyUrlsToClipboard( IEnumerable< DownloadRow > rows ) => Clipboard.SetText( string.Join( "\r\n", rows.Select( r => r.Url ) ), TextDataFormat.UnicodeText );
 
         public static string ToJSON< T >( this T t )
         {

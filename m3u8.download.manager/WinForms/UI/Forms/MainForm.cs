@@ -215,16 +215,20 @@ namespace m3u8.download.manager.ui
                 switch ( e.KeyCode )
                 {
                     case Keys.V: //Paste
-                        if ( Extensions.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) )
+                        if ( Extensions.TryGetHttpUrlsFromClipboard/*TryGetM3u8FileUrlsFromClipboard*/( out var urls ) )
                         {
                             e.SuppressKeyPress = true;
 
                             var autoStartDownload = e.Shift;
-                            if ( !autoStartDownload ) m3u8FileUrls = m3u8FileUrls.Take( 50/*100*/ ).ToArray();
-                            AddNewDownloads( (m3u8FileUrls, autoStartDownload) );
+                            if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToArray();
+                            AddNewDownloads( (urls, autoStartDownload) );
                             return;
                         }
-                    break;
+                        else
+                        {
+                            this.MessageBox_ShowError( "Nothing for Paste from clipboard.", this.Text );
+                        }
+                        break;
 
                     case Keys.C: //Copy
                         if ( downloadListUC.HasFocus )
@@ -233,8 +237,12 @@ namespace m3u8.download.manager.ui
                             if ( rows.Any() )
                             {
                                 e.SuppressKeyPress = true;
-                                Extensions.CopyM3u8FileUrlToClipboard( rows );
+                                Extensions.CopyUrlsToClipboard( rows );
                                 return;
+                            }
+                            else
+                            {
+                                this.MessageBox_ShowError( "Nothing for Copy to clipboard.", this.Text );
                             }
                         }
                     break;
@@ -975,24 +983,24 @@ namespace m3u8.download.manager.ui
             var rows = downloadListUC.GetSelectedDownloadRows();
             if ( rows.Any() )
             {
-                Extensions.CopyM3u8FileUrlToClipboard( rows );
+                Extensions.CopyUrlsToClipboard( rows );
             }
             else
             {
-                this.MessageBox_ShowError( "Nothing for copy to clipboard.", this.Text );
+                this.MessageBox_ShowError( "Nothing for Copy to clipboard.", this.Text );
             }
         }
         private void pasteToolButton_Click( object sender, EventArgs e )
         {
-            if ( Extensions.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) )
+            if ( Extensions.TryGetHttpUrlsFromClipboard/*TryGetM3u8FileUrlsFromClipboard*/( out var urls ) )
             {
                 var autoStartDownload = ((Control.ModifierKeys & Keys.Shift) == Keys.Shift);
-                if ( !autoStartDownload ) m3u8FileUrls = m3u8FileUrls.Take( 50/*100*/ ).ToArray();
-                AddNewDownloads( (m3u8FileUrls, autoStartDownload) );
+                if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToArray();
+                AddNewDownloads( (urls, autoStartDownload) );
             }
             else
             {
-                this.MessageBox_ShowError( "Nothing for paste from clipboard.", this.Text );
+                this.MessageBox_ShowError( "Nothing for Paste from clipboard.", this.Text );
             }
         }
         private void columnsVisibilityEditorToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_ColumnsVisibilityEditor( downloadListUC.GetDataGridColumns(), downloadListUC.GetAlwaysVisibleDataGridColumns() );
