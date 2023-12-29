@@ -1,11 +1,9 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Windows.Forms;
 
-namespace m3u8.download.manager.ui
+namespace System.Windows.Forms
 {
     /// <summary>
     /// 
@@ -52,20 +50,6 @@ namespace m3u8.download.manager.ui
             /// <summary>
             /// 
             /// </summary>
-            [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("00000002-0000-0000-c000-000000000046")]
-            public interface IMalloc
-            {
-                [PreserveSig] IntPtr Alloc( int cb );
-                [PreserveSig] IntPtr Realloc( IntPtr pv, int cb );
-                [PreserveSig] void Free( IntPtr pv );
-                [PreserveSig] int GetSize( IntPtr pv );
-                [PreserveSig] int DidAlloc( IntPtr pv );
-                [PreserveSig] void HeapMinimize();
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
             [Flags] public enum SFGAO : uint
             {
                 SFGAO_CANCOPY = 0x00000001,
@@ -105,16 +89,9 @@ namespace m3u8.download.manager.ui
                 SFGAO_PKEYSFGAOMASK = 0x81044000,
             }
 
-            [DllImport("shell32.dll", CharSet=CharSet.Auto)] public static extern IntPtr SHBrowseForFolder( [In] BROWSEINFO lpbi );
-            [DllImport("shell32.dll")] private static extern int SHGetMalloc( [Out, MarshalAs(UnmanagedType.LPArray)] IMalloc[] ppMalloc );
-            public static IMalloc SHGetMalloc()
-            {
-                var ppMalloc = new IMalloc[ 1 ];
-                SHGetMalloc( ppMalloc );
-                return (ppMalloc[ 0 ]);
-            }
-
-            [DllImport("shell32.dll", CharSet=CharSet.Auto)] private static extern bool SHGetPathFromIDList( IntPtr pidl, IntPtr pszPath );
+            private const string SHELL32_DLL = "shell32.dll";
+            [DllImport(SHELL32_DLL, CharSet=CharSet.Auto)] public static extern IntPtr SHBrowseForFolder( [In] BROWSEINFO lpbi );
+            [DllImport(SHELL32_DLL, CharSet=CharSet.Auto)] private static extern bool SHGetPathFromIDList( IntPtr pidl, IntPtr pszPath );
             public static bool SHGetPathFromIDList( IntPtr pidl, out string path )
             {
                 var pszPath = Marshal.AllocHGlobal( MAX_PATH * Marshal.SystemDefaultCharSize );
@@ -142,10 +119,9 @@ namespace m3u8.download.manager.ui
                     Marshal.FreeHGlobal( pszPath );
                 }     
             }
-            public static string SHGetPathFromIDList( IntPtr pidl ) => (SHGetPathFromIDList( pidl, out var path ) ? path : null);
 
-            [DllImport("shell32.dll")] public static extern int SHGetSpecialFolderLocation( IntPtr hwnd, int csidl, ref IntPtr ppidl );
-            [DllImport("shell32.dll")] public static extern int SHParseDisplayName( [MarshalAs(UnmanagedType.LPWStr)] string pszName, IntPtr pbc, ref IntPtr ppidl, SFGAO sfgaoIn, out SFGAO psfgaoOut );
+            [DllImport(SHELL32_DLL)] public static extern int SHGetSpecialFolderLocation( IntPtr hwnd, int csidl, ref IntPtr ppidl );
+            [DllImport(SHELL32_DLL)] public static extern int SHParseDisplayName( [MarshalAs(UnmanagedType.LPWStr)] string pszName, IntPtr pbc, ref IntPtr ppidl, SFGAO sfgaoIn, out SFGAO psfgaoOut );
             [DllImport("shlwapi.dll", CharSet=CharSet.Unicode, EntryPoint="PathMatchSpecW")][return:MarshalAs(UnmanagedType.Bool)] public static extern bool IsPathMatch( string pszFile, string pszSpec );
 
             private const int WM_USER  = 0x0400;
@@ -193,9 +169,23 @@ namespace m3u8.download.manager.ui
                 public int                iImage;
             }
 
-            [DllImport("user32.dll", CharSet=CharSet.Auto)] public static extern IntPtr SendMessage( HandleRef hWnd, int msg, int wParam, int lParam );
-            [DllImport("user32.dll", CharSet=CharSet.Auto)] public static extern IntPtr SendMessage( HandleRef hWnd, int msg, int wParam, string lParam );
-            [DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)][return:MarshalAs(UnmanagedType.Bool)] public static extern bool SetWindowText( IntPtr hwnd, string lpString );
+            private const string USER32_DLL = "user32.dll";
+            [DllImport(USER32_DLL, CharSet=CharSet.Auto)] public static extern IntPtr SendMessage( HandleRef hWnd, int msg, int wParam, int lParam );
+            [DllImport(USER32_DLL, CharSet=CharSet.Auto)] public static extern IntPtr SendMessage( HandleRef hWnd, int msg, int wParam, string lParam );
+            [DllImport(USER32_DLL, SetLastError=true, CharSet=CharSet.Auto)][return:MarshalAs(UnmanagedType.Bool)] public static extern bool SetWindowText( IntPtr hwnd, string lpString );
+
+            private const string OLE32_DLL = "ole32.dll";
+            [DllImport(OLE32_DLL)] private static extern IntPtr CoTaskMemAlloc( long cb );
+            [DllImport(OLE32_DLL)] private static extern void CoTaskMemFree( IntPtr pv );
+
+            public static void CoTaskMemFree_IfNotZero( IntPtr pv )
+            {
+                if ( pv != IntPtr.Zero ) CoTaskMemFree( pv );
+            }
+            public static void CoTaskMemFree_IfNotZero( ref IntPtr pv )
+            {
+                if ( pv != IntPtr.Zero ) { CoTaskMemFree( pv ); pv = IntPtr.Zero; }
+            }
         }
 
         #region comm.
@@ -208,11 +198,11 @@ namespace m3u8.download.manager.ui
 
         #region [.field's.]
         private string                    _DescriptionText;
-        private string                    _SelectedPath;
-        //private bool                      _SelectedPathNeedsCheck;
+        private string                    _SelectedPath;        
         private bool                      _SelectOnlyFiles;
         private Environment.SpecialFolder _RootFolder;
         private string                    _RootFolderPath;
+        //private bool                      _SelectedPathNeedsCheck;
         #endregion
 
         #region [.ctor().]
@@ -235,10 +225,8 @@ namespace m3u8.download.manager.ui
             get => ((_RootFolderPath == null) ? _RootFolder : (Environment.SpecialFolder?) null);
             set
             {
-                if ( !value.HasValue )
-                {
-                    throw (new ArgumentNullException());
-                }
+                if ( !value.HasValue ) throw (new ArgumentNullException());
+                
                 var t = value.Value;
                 if ( !Enum.IsDefined( typeof(Environment.SpecialFolder), t ) )
                 {
@@ -284,7 +272,6 @@ namespace m3u8.download.manager.ui
                 //_SelectedPathNeedsCheck = false;
             }
         }
-        public bool ShowNewFolderButton { get; set; }
         public BrowseInfoFlag Flags { get; set; }
         public bool ShowFiles
         {
@@ -344,7 +331,7 @@ namespace m3u8.download.manager.ui
             {
                 case WinApi.BFFM.BFFM_INITIALIZED:
                 {
-                    if ( !this.DialogTitle.IsNullOrEmpty() )
+                    if ( !string.IsNullOrEmpty( this.DialogTitle ) )
                     {
                         WinApi.SetWindowText( hwnd, this.DialogTitle );
                     }
@@ -353,7 +340,7 @@ namespace m3u8.download.manager.ui
                         WinApi.SetWindowText( hwnd, "Select only files" );
                     }
 
-                    if ( !_SelectedPath.IsNullOrEmpty() )
+                    if ( !string.IsNullOrEmpty( _SelectedPath ) )
                     {
                         WinApi.SendMessage( new HandleRef( null, hwnd ), WinApi.BFFM.BFFM_SETSELECTIONW, 1, _SelectedPath );                        
                     }
@@ -377,10 +364,9 @@ namespace m3u8.download.manager.ui
 
         public override void Reset()
         {
-            _RootFolder             = Environment.SpecialFolder.Desktop;
-            _DescriptionText        = string.Empty;
-            _SelectedPath           = string.Empty;
-            ShowNewFolderButton     = true;
+            _RootFolder      = Environment.SpecialFolder.Desktop;
+            _DescriptionText = string.Empty;
+            _SelectedPath    = string.Empty;
             //_SelectedPathNeedsCheck = false;
         }
         protected override bool RunDialog( IntPtr hWndOwner )
@@ -389,8 +375,6 @@ namespace m3u8.download.manager.ui
             {
                 throw (new ThreadStateException( "Application.OleRequired() != ApartmentState.STA (Thread must be STA)" ));
             }
-
-            WinApi.IMalloc malloc = WinApi.SHGetMalloc();
 
             #region [.obtain TEMIDLIST for root folder.]            
             var pidlRoot = IntPtr.Zero;
@@ -407,7 +391,7 @@ namespace m3u8.download.manager.ui
                 WinApi.SHGetSpecialFolderLocation( hWndOwner, 0, ref pidlRoot );
                 if ( pidlRoot == IntPtr.Zero )
                 {
-                    throw (new InvalidOperationException( $"Can't obtain TEMIDLIST for root folder: '{this.RootFolderPath}'" ));
+                    throw (new InvalidOperationException( $"Can't obtain TEMIDLIST for root folder: '{this.RootFolderPath}'." ));
                 }
             }
             #endregion
@@ -451,16 +435,13 @@ namespace m3u8.download.manager.ui
                     }
                     finally
                     {
-                        if ( pidl != IntPtr.Zero )
-                        {
-                            malloc.Free( pidl );
-                        }
+                        WinApi.CoTaskMemFree_IfNotZero( pidl );
                     }
                 }
             }
             finally
-            {                
-                malloc.Free( pidlRoot );
+            {
+                WinApi.CoTaskMemFree_IfNotZero( pidlRoot );
                 if ( hglobal != IntPtr.Zero )
                 {
                     Marshal.FreeHGlobal( hglobal );
@@ -471,9 +452,7 @@ namespace m3u8.download.manager.ui
 
         public static bool TrySelectPath( IWin32Window owner, string selectedPath, string description, out string outSelectedPath )
         {
-            using ( var d = new SHBrowser() { SelectedPath        = selectedPath,
-                                              Description         = description,
-                                              ShowNewFolderButton = true } )
+            using ( var d = new SHBrowser() { SelectedPath = selectedPath, Description = description } )
             {
                 if ( d.ShowDialog( owner ) == DialogResult.OK )
                 {

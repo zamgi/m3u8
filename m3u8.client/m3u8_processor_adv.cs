@@ -66,7 +66,7 @@ namespace m3u8
                             #endregion
 
                             #region [.throttler by speed.]                                
-                            var instantaneousSpeedInMbps = throttlerBySpeed_User.Throttle( joinedCts.Token );
+                            var instantSpeedInMbps = throttlerBySpeed_User.Throttle( joinedCts.Token );
                             #endregion
 
                             ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
@@ -78,7 +78,7 @@ namespace m3u8
                             ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
                                  .ContinueWith( continuationTask =>
                                  {
-                                    var rsp = new ResponseStepActionParams( totalPatrs, instantaneousSpeedInMbps );
+                                    var rsp = new ResponseStepActionParams( totalPatrs, instantSpeedInMbps );
 
                                     if ( continuationTask.IsFaulted )
                                     {
@@ -135,7 +135,7 @@ namespace m3u8
                 for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.MaxDegreeOfParallelism ) );
                           expectedPartNumber <= maxPartNumber; )
                 {
-                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, } );
+                    var idx = WaitHandle.WaitAny( [ canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, ] );
                     if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
                         break;
                     if ( idx != 0 ) //[canExtractPartEvent := 0]
@@ -212,18 +212,18 @@ namespace m3u8
                     {
                         for ( var n = 1; sourceQueue.Count != 0; n++ )
                         {
-        #region [.check 'waitIfPausedEvent'.]
+                            #region [.check 'waitIfPausedEvent'.]
                             if ( !ip.WaitIfPausedEvent.IsSet )
                             {
                                 ip.WaitingIfPaused?.Invoke();
                                 ip.WaitIfPausedEvent.Wait( joinedCts.Token );
                                 throttlerBySpeed_User.Restart();
                             }
-        #endregion
+                            #endregion
 
-        #region [.throttler by speed.]                            
-                            var instantaneousSpeedInMbps = throttlerBySpeed_User.Throttle( joinedCts.Token );
-        #endregion
+                            #region [.throttler by speed.]                            
+                            var instantSpeedInMbps = throttlerBySpeed_User.Throttle( joinedCts.Token );
+                            #endregion
 
                             ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
                             var part = sourceQueue.Dequeue();
@@ -234,7 +234,7 @@ namespace m3u8
                             ip.mc.DownloadPart( part, baseAddress, /*ct*/ joinedCts.Token )
                                  .ContinueWith( continuationTask =>
                                  {
-                                    var rsp = new ResponseStepActionParams( totalPatrs, instantaneousSpeedInMbps );
+                                    var rsp = new ResponseStepActionParams( totalPatrs, instantSpeedInMbps );
 
                                     if ( continuationTask.IsFaulted )
                                     {
@@ -291,7 +291,7 @@ namespace m3u8
                 for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.MaxDegreeOfParallelism ) );
                             expectedPartNumber <= maxPartNumber; )
                 {
-                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, } );
+                    var idx = WaitHandle.WaitAny( [ canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, ] );
                     if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
                         break;
                     if ( idx != 0 ) //[canExtractPartEvent := 0]
@@ -371,14 +371,14 @@ namespace m3u8
         /// </summary>
         public struct ResponseStepActionParams
         {
-            internal ResponseStepActionParams( int totalPartCount, double? instantaneousSpeedInMbps = null ) : this()
+            internal ResponseStepActionParams( int totalPartCount, double? instantSpeedInMbps = null )
             {
-                TotalPartCount           = totalPartCount;
-                InstantaneousSpeedInMbps = instantaneousSpeedInMbps;
+                TotalPartCount     = totalPartCount;
+                InstantSpeedInMbps = instantSpeedInMbps;
             }
 
             public int     TotalPartCount           { get; }
-            public double? InstantaneousSpeedInMbps { get; }
+            public double? InstantSpeedInMbps       { get; }
             public int     SuccessReceivedPartCount { get; internal set; }
             public int     FailedReceivedPartCount  { get; internal set; }
             public int     BytesLength              { get; internal set; }
@@ -412,8 +412,7 @@ namespace m3u8
         /// </summary>
         public struct DownloadPartsAndSaveResult
         {
-            internal DownloadPartsAndSaveResult( string outputFileName ) : this()
-                => OutputFileName = outputFileName;
+            internal DownloadPartsAndSaveResult( string outputFileName ) => OutputFileName = outputFileName;
 
             public string OutputFileName   { get; private set; }
 

@@ -582,15 +582,15 @@ namespace m3u8.download.manager
             field?.SetValue( t, doubleBuffered );
         }
 
-        public static string GetSpeedText( long downloadBytes, double elapsedSeconds, double? instantaneousSpeedInMbps )
+        public static string GetSpeedText( long downloadBytes, double elapsedSeconds, double? instantSpeedInMbps )
         {
             string speedText;
             //if ( downloadBytes < 1_024 ) speedText = GetSpeedInBps( downloadBytes, elapsedSeconds ).ToString("N2") + " bps"; //" bit/s";
             if ( downloadBytes < 100_024 ) speedText = GetSpeedInKbps( downloadBytes, elapsedSeconds ).ToString("N2") + " Kbps"; //" Kbit/s";
             else                           speedText = GetSpeedInMbps( downloadBytes, elapsedSeconds ).ToString("N1") + " Mbps"; //" Mbit/s";
-            if ( instantaneousSpeedInMbps.HasValue )
+            if ( instantSpeedInMbps.HasValue )
             {
-                speedText += $" (↑{instantaneousSpeedInMbps:N1} Mbps)";
+                speedText += $" (↑{instantSpeedInMbps:N1} Mbps)";
             }
             return (speedText);
         }
@@ -621,7 +621,10 @@ namespace m3u8.download.manager
 
         [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );
         [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable CAX( this Task task ) => task.ConfigureAwait( false );
-
+#if NETCOREAPP
+        [M(O.AggressiveInlining)] public static ConfiguredValueTaskAwaitable< T > CAX< T >( this in ValueTask< T > task ) => task.ConfigureAwait( false );
+        [M(O.AggressiveInlining)] public static ConfiguredValueTaskAwaitable CAX( this in ValueTask task ) => task.ConfigureAwait( false );
+#endif
         [M(O.AggressiveInlining)] public static void Invoke( this SynchronizationContext ctx, Action action ) => ctx.Send( _ => action(), null );
     }
 }

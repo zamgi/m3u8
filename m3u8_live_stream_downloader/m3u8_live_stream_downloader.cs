@@ -21,7 +21,7 @@ namespace m3u8
     {
         public delegate void DownloadContentDelegate( string part_url );
         public delegate void DownloadContentErrorDelegate( string m3u8_url, Exception ex );        
-        public delegate void DownloadPartDelegate( string part_url, long part_size_in_bytes, long total_in_bytes, double? instantaneousSpeedInMbps );
+        public delegate void DownloadPartDelegate( string part_url, long part_size_in_bytes, long total_in_bytes, double? instantSpeedInMbps );
         public delegate void DownloadPartErrorDelegate( string part_url, Exception ex );
         public delegate void DownloadCreateOutputFileDelegate( string output_file_name );
 
@@ -247,7 +247,7 @@ namespace m3u8
                         WaitIfPaused( ct );
 
                         #region [.throttler by speed.]
-                        var instantaneousSpeedInMbps = _ThrottlerBySpeed_User.Throttle( ct );
+                        var instantSpeedInMbps = _ThrottlerBySpeed_User.Throttle( ct );
                         #endregion
 
                         var p = _PartUrls.Take_Ex( ct );
@@ -275,7 +275,7 @@ namespace m3u8
 
                             _ThrottlerBySpeed_User.TakeIntoAccountDownloadedBytes( (int) partBytes );
 
-                            _IP.DownloadPart?.Invoke( p, partBytes, totalBytes, instantaneousSpeedInMbps );
+                            _IP.DownloadPart?.Invoke( p, partBytes, totalBytes, instantSpeedInMbps );
 
                             if ( get_max_output_file_size_func() <= totalBytes )
                             {
@@ -313,7 +313,7 @@ namespace m3u8
                     WaitIfPaused( ct );
 
                     #region [.throttler by speed.]
-                    var instantaneousSpeedInMbps = _ThrottlerBySpeed_User.Throttle( ct );
+                    var instantSpeedInMbps = _ThrottlerBySpeed_User.Throttle( ct );
                     #endregion
 
                     var p = _PartUrls.Take_Ex( ct );
@@ -344,7 +344,7 @@ namespace m3u8
 
                         _ThrottlerBySpeed_User.TakeIntoAccountDownloadedBytes( (int) partBytes );
 
-                        _IP.DownloadPart?.Invoke( p, partBytes, totalBytes, instantaneousSpeedInMbps );
+                        _IP.DownloadPart?.Invoke( p, partBytes, totalBytes, instantSpeedInMbps );
                     }
                     catch ( Exception ex )
                     {

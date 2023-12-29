@@ -55,20 +55,10 @@ namespace m3u8.download.manager.ui
                 {
                     lock ( typeof(BitmapHolder) )
                     {
-                        _IndicatorI = new BitmapHolder
-                        (
-                            new[]
-                            {
-                                Resources.i1,
-                                Resources.i2,
-                                Resources.i3,
-                                Resources.i4,
-                                Resources.i5,
-                                Resources.i6,
-                                Resources.i7,
-                                Resources.i8,
-                            }
-                        );
+                        if ( _IndicatorI == null )
+                        {
+                            _IndicatorI = new BitmapHolder( [ Resources.i1, Resources.i2, Resources.i3, Resources.i4, Resources.i5, Resources.i6, Resources.i7, Resources.i8, ] );
+                        }
                     }
                 }
                 return (_IndicatorI);

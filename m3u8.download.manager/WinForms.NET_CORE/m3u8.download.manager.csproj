@@ -22,6 +22,7 @@
   
   <PropertyGroup>
     <OutputPath>bin\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   
   <ItemGroup>
@@ -68,7 +69,8 @@
     <Compile Include="..\WinForms\Program\IPC\SingleCopyApplication.cs" Link="Program\IPC\SingleCopyApplication.cs" />
     <Compile Include="..\WinForms\Program\_Program_.cs" Link="Program\_Program_.cs" />
     <Compile Include="..\WinForms\UI\BrowseForForlder\SHBrowser.cs" Link="UI\BrowseForForlder\SHBrowser.cs" />
-    <Compile Include="..\WinForms\UI\BrowseForForlder\DirectorySelectDialog.cs" Link="UI\BrowseForForlder\DirectorySelectDialog.cs" />
+    <Compile Include="..\WinForms\UI\BrowseForForlder\FileStyleFolderDialog.cs" Link="UI\BrowseForForlder\FileStyleFolderDialog.cs" />
+    <Compile Include="..\WinForms\UI\BrowseForForlder\DirectorySelectDialog.cs" Link="UI\BrowseForForlder\DirectorySelectDialog.cs" />    
     <Compile Include="..\WinForms\UI\Controls\DataGridViewEx.cs" Link="UI\Controls\DataGridViewEx.cs" />
     <Compile Include="..\WinForms\UI\Controls\TextBoxEx.cs" Link="UI\Controls\TextBoxEx.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripStatusLabelEx.cs" Link="UI\Controls\ToolStripStatusLabelEx.cs" />

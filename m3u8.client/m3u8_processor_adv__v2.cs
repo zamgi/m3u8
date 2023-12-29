@@ -56,7 +56,7 @@ namespace m3u8
                             #endregion
 
                             #region [.throttler by speed.]
-                            var instantaneousSpeedInMbps = throttlerBySpeed_User.Throttle( joinedCts.Token );
+                            var instantSpeedInMbps = throttlerBySpeed_User.Throttle( joinedCts.Token );
                             #endregion
 
                             ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
@@ -72,7 +72,7 @@ namespace m3u8
                             ip.mc.DownloadPart__v2( part, baseAddress, /*ct*/ joinedCts.Token )
                                  .ContinueWith( continuationTask =>
                                  {
-                                    var rsp = new ResponseStepActionParams( totalPatrs, instantaneousSpeedInMbps );
+                                    var rsp = new ResponseStepActionParams( totalPatrs, instantSpeedInMbps );
 
                                     if ( continuationTask.IsFaulted )
                                     {
@@ -218,7 +218,7 @@ namespace m3u8
                             #endregion
 
                             #region [.throttler by speed.]                            
-                            var instantaneousSpeedInMbps = throttlerBySpeed_User.Throttle( joinedCts.Token );
+                            var instantSpeedInMbps = throttlerBySpeed_User.Throttle( joinedCts.Token );
                             #endregion
 
                             ip.DownloadThreadsSemaphore.Wait( /*ct*/ joinedCts.Token );
@@ -234,7 +234,7 @@ namespace m3u8
                             ip.mc.DownloadPart__v2( part, baseAddress, /*ct*/ joinedCts.Token )
                                  .ContinueWith( continuationTask =>
                                  {
-                                    var rsp = new ResponseStepActionParams( totalPatrs, instantaneousSpeedInMbps );
+                                    var rsp = new ResponseStepActionParams( totalPatrs, instantSpeedInMbps );
 
                                     if ( continuationTask.IsFaulted )
                                     {
@@ -292,7 +292,7 @@ namespace m3u8
                 for ( var localReadyParts = new Queue< m3u8_part_ts__v2 >( Math.Min( 0x1000, ip.MaxDegreeOfParallelism ) );
                           expectedPartNumber <= maxPartNumber; )
                 {
-                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, } );
+                    var idx = WaitHandle.WaitAny( [ canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, ] );
                     if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
                         break;
                     if ( idx != 0 ) //[canExtractPartEvent := 0]
@@ -347,7 +347,7 @@ namespace m3u8
 #if NETCOREAPP
             return (source.CopyToAsync( destination, ct ));
 #else
-            return (source.CopyToAsync( destination, bufferSize: 81920, ct ));
+            return (source.CopyToAsync( destination, bufferSize: 80 * 1_024/*81920*/, ct ));
 #endif
         }
         //-----------------------------------------------------------------------------//
@@ -381,14 +381,14 @@ namespace m3u8
         /// </summary>
         public struct ResponseStepActionParams
         {
-            internal ResponseStepActionParams( int totalPartCount, double? instantaneousSpeedInMbps = null ) : this()
+            internal ResponseStepActionParams( int totalPartCount, double? instantSpeedInMbps = null )
             {
-                TotalPartCount           = totalPartCount;
-                InstantaneousSpeedInMbps = instantaneousSpeedInMbps;
+                TotalPartCount     = totalPartCount;
+                InstantSpeedInMbps = instantSpeedInMbps;
             }
 
             public int     TotalPartCount           { get; }
-            public double? InstantaneousSpeedInMbps { get; }
+            public double? InstantSpeedInMbps       { get; }
             public int     SuccessReceivedPartCount { get; internal set; }
             public int     FailedReceivedPartCount  { get; internal set; }
             public int     BytesLength              { get; internal set; }

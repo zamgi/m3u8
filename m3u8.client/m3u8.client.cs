@@ -94,7 +94,7 @@ namespace m3u8
             public int Compare( m3u8_part_ts x, m3u8_part_ts y ) => (x.OrderNumber - y.OrderNumber);
         }
 
-        public m3u8_part_ts( string relativeUrlName, int orderNumber ) : this() => (RelativeUrlName, OrderNumber) = (relativeUrlName, orderNumber);
+        public m3u8_part_ts( string relativeUrlName, int orderNumber ) => (RelativeUrlName, OrderNumber) = (relativeUrlName, orderNumber);
 
         public string RelativeUrlName { get; }
         public int    OrderNumber     { get; }

@@ -49,7 +49,7 @@ namespace m3u8.infrastructure
     /// 
     /// </summary>
     [DebuggerTypeProxy( typeof(ICollectionDebugView<>) )]
-    [DebuggerDisplay( "Count = {Count}" )]
+    [DebuggerDisplay("Count = {Count}")]
     internal sealed class LRUCache< T > : ILRUCache< T >, ICollection< T >, IReadOnlyCollection< T >
     {
         /// <summary>

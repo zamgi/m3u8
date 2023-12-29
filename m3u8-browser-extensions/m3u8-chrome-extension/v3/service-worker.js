@@ -1,47 +1,45 @@
 self.importScripts('workInfoType.js');
 
 //------------------------------------------------------------------------------------------------//
+/*
+const KEEP_ALIVE_PORT = 'KEEP_ALIVE_PORT';
+const SECONDS = 1000;
 
-//let lifeline, keepAliveNum = 0;
-//keepAlive();
+const keepAliveer = {
+    alivePort: null,
+    lastCall : Date.now()
+};
+// -------------------------------------------------------
+setInterval(KeepAliveRoutine, 270 * SECONDS);
+KeepAliveRoutine();
+// -------------------------------------------------------
+async function KeepAliveRoutine() {
+    const age = Date.now() - keepAliveer.lastCall;
+    const convertNoDate = (long) => new Date(long).toISOString().slice(-13, -5); // HH:MM:SS
 
-//chrome.runtime.onConnect.addListener(port => {
-//    if (port.name === 'keepAlive') {
-//        console.log('keepAlive (for don\'t sleep): ' + (++keepAliveNum));
-//        lifeline = port;
-//        setTimeout(keepAliveForced, 30 * 1000); // (295e3) 5 minutes minus 5 seconds
-//        port.onDisconnect.addListener(keepAliveForced);
-//    }
-//});
-//chrome.runtime.onSuspend.addListener(async () => {
-//    console.log('onSuspend-unloading');
-//    await keepAliveForced();
-//});
+    console.log('(DEBUG KeepAliveRoutine) ------------- time elapsed from first start: ' + convertNoDate(age));
+    if (!keepAliveer.alivePort) {
+        keepAliveer.alivePort = chrome.runtime.connect({ name: KEEP_ALIVE_PORT });
 
-//async function keepAliveForced() {
-//    try { lifeline?.disconnect(); } catch (ex) { ; }
-//    lifeline = null;
-//    await keepAlive();
-//}
-
-//async function keepAlive() {
-//    if (lifeline) return;
-//    for (const tab of await chrome.tabs.query({ url: '*://*/*' })) {
-//        try {
-//            await chrome.scripting.executeScript({
-//                target: { tabId: tab.id },
-//                func: () => chrome.runtime.connect({ name: 'keepAlive' }),
-//            });
-//            chrome.tabs.onUpdated.removeListener(retryOnTabUpdate);
-//            return;
-//        } catch (ex) {
-//            ;
-//        }
-//    }
-//    chrome.tabs.onUpdated.addListener(retryOnTabUpdate);
-//}
-
-//async function retryOnTabUpdate(tabId, info, tab) { if (info.url && /^(http|https?):/.test(info.url)) await keepAlive(); }
+        keepAliveer.alivePort.onDisconnect.addListener(_ => {
+            if (chrome.runtime.lastError) {
+                console.log('(DEBUG KeepAliveRoutine) Expected disconnect (on error: "' + chrome.runtime.lastError.message + '"). SW should be still running.');
+            } else {
+                console.log('(DEBUG KeepAliveRoutine): port disconnected.');
+            }
+            keepAliveer.alivePort = null;
+        });
+    }
+    if (keepAliveer.alivePort) {
+        keepAliveer.alivePort.postMessage({ content: 'keep-alive' });
+        if (chrome.runtime.lastError) {
+            console.log('(DEBUG KeepAliveRoutine): postMessage error: "' + chrome.runtime.lastError.message + '".');
+        } else {
+            console.log('(DEBUG KeepAliveRoutine): "ping" sent through "' + keepAliveer.alivePort.name + '" port.');
+        }
+    }
+}
+*/
 
 //------------------------------------------------------------------------------------------------//
 
@@ -53,13 +51,6 @@ self.importScripts('workInfoType.js');
     } else {
         await get_workInfo(res.workInfo).removeEmptyTabs();
     }
-    chrome.storage.local.onChanged.addListener(async function () {
-        let res = await chrome.storage.local.get();
-        if (res.saved_from_out_service_worker) {            
-            let workInfo = get_workInfo(res.workInfo); //restore changes from 'm3u8.js'      
-            await chrome.storage.local.remove('saved_from_out_service_worker');
-        }        
-    });
 })();
 
 chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
@@ -71,13 +62,13 @@ chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
     }
     //else console.log('discarded => tabId: ' + d.tabId + ', url: ' + d.url );
 }, {
-    urls: ["<all_urls>"]
+    urls: ['<all_urls>']
 });
 
 // set handler to tabs
-chrome.tabs.onActivated.addListener(async function (info) { await get_workInfo().onActivateTab(info.tabId); });
+chrome.tabs.onActivated.addListener(async (info) => await get_workInfo().onActivateTab(info.tabId));
 
-chrome.tabs.onRemoved.addListener(async function (tabId) { await get_workInfo().onRemoveTab(tabId); });
+chrome.tabs.onRemoved.addListener(async (tabId) => await get_workInfo().onRemoveTab(tabId));
 
 // set handler to tabs
 chrome.tabs.onUpdated.addListener(async function (tabId, info, tab) {

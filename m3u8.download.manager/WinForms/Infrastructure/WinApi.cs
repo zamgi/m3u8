@@ -13,10 +13,12 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal static class WinApi
     {
+        private const string USER32_DLL = "user32.dll";
+
         #region [.SetForegroundWindow.]
-        [DllImport("user32.dll")] public static extern bool SetForegroundWindow( IntPtr hWnd );
+        [DllImport(USER32_DLL)] public static extern bool SetForegroundWindow( IntPtr hWnd );
         /*
-        [DllImport("user32.dll", ExactSpelling=true, CharSet=CharSet.Auto)] private static extern IntPtr GetParent( IntPtr hWnd );
+        [DllImport(USER32_DLL, ExactSpelling=true, CharSet=CharSet.Auto)] private static extern IntPtr GetParent( IntPtr hWnd );
         /// <summary>
         /// 
         /// </summary>
@@ -30,7 +32,7 @@ namespace m3u8.download.manager.ui
             GW_CHILD        = 5,
             GW_ENABLEDPOPUP = 6,
         }
-        [DllImport("user32.dll", SetLastError=true)] public static extern IntPtr GetWindow( IntPtr hWnd, GetWindowEnum uCmd );
+        [DllImport(USER32_DLL, SetLastError=true)] public static extern IntPtr GetWindow( IntPtr hWnd, GetWindowEnum uCmd );
         [M(O.AggressiveInlining)] private static IntPtr GetOwnerWindow( this IntPtr hWnd ) => GetWindow( hWnd, GetWindowEnum.GW_OWNER );
         [M(O.AggressiveInlining)] private static IntPtr GetParentWindow( this IntPtr hWnd ) => GetParent( hWnd );
         [M(O.AggressiveInlining)] public static bool IsZero( this IntPtr hWnd ) => (hWnd == IntPtr.Zero);
@@ -58,20 +60,19 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.SetForceForegroundWindow.]
-        [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow(); 
-        // When you don't want the ProcessId, use this overload and pass IntPtr.Zero for the second parameter
-        [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId( IntPtr hWnd, IntPtr ProcessId );
-        [DllImport("user32.dll")] private static extern bool AttachThreadInput( uint idAttach, uint idAttachTo, bool fAttach );
-        [DllImport("user32.dll", SetLastError=true)] private static extern bool BringWindowToTop( IntPtr hWnd );
-        [DllImport("user32.dll")] private static extern bool ShowWindow( IntPtr hWnd, uint nCmdShow );
+        [DllImport(USER32_DLL)] public static extern IntPtr GetForegroundWindow(); 
+        [DllImport(USER32_DLL)] private static extern uint GetWindowThreadProcessId( IntPtr hWnd, IntPtr processId );
+        [DllImport(USER32_DLL)] private static extern bool AttachThreadInput( uint idAttach, uint idAttachTo, bool fAttach );
+        [DllImport(USER32_DLL, SetLastError=true)] private static extern bool BringWindowToTop( IntPtr hWnd );
+        [DllImport(USER32_DLL)] private static extern bool ShowWindow( IntPtr hWnd, uint nCmdShow );
         [DllImport("kernel32.dll")] private static extern uint GetCurrentThreadId();
 
         private const uint SW_SHOW = 5;
 
-        public static void SetForceForegroundWindow( IntPtr hWnd, IntPtr foreWnd )
+        public static void SetForceForegroundWindow( IntPtr hWnd, IntPtr foregroundWnd )
         {
             //IntPtr foreWnd    = GetForegroundWindow();
-            uint foreThread = GetWindowThreadProcessId( foreWnd, IntPtr.Zero );
+            uint foreThread = GetWindowThreadProcessId( foregroundWnd, IntPtr.Zero );
             uint appThread  = GetCurrentThreadId();            
             if ( foreThread != appThread )
             {
@@ -89,8 +90,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.Redraw Suspend/Resume.]
-        [DllImport("user32.dll", EntryPoint="SendMessageA", ExactSpelling=true, CharSet=CharSet.Ansi, SetLastError=true)]
-        private static extern int SendMessage( IntPtr hwnd, int wMsg, int wParam, int lParam );
+        [DllImport(USER32_DLL, EntryPoint="SendMessageA", ExactSpelling=true, CharSet=CharSet.Ansi, SetLastError=true)] private static extern int SendMessage( IntPtr hwnd, int wMsg, int wParam, int lParam );
 
         private const int WM_SETREDRAW = 0xB;
 
@@ -106,7 +106,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region comm [.WINDOWPLACEMENT.]
+        #region [.WINDOWPLACEMENT.]
         /// <summary>
         /// 
         /// </summary>
@@ -125,7 +125,7 @@ namespace m3u8.download.manager.ui
             public static WINDOWPLACEMENT Create() => new WINDOWPLACEMENT() { length = Marshal.SizeOf( typeof(WINDOWPLACEMENT) ) };
         }
 
-        [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)] private static extern bool GetWindowPlacement( IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl );
+        [DllImport(USER32_DLL)][return: MarshalAs(UnmanagedType.Bool)] private static extern bool GetWindowPlacement( IntPtr hWnd, ref WINDOWPLACEMENT lpwndpl );
 
         public static WINDOWPLACEMENT? GetWindowPlacement( IntPtr hWnd )
         {

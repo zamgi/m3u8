@@ -392,7 +392,37 @@ namespace m3u8.download.manager.controllers
             public download_measure_t( long startMeasureDateTimeTicks ) => StartMeasureDateTimeTicks = startMeasureDateTimeTicks;
             public long StartMeasureDateTimeTicks { get; }
             public long GetTotalDownloadBytes() => Interlocked.Read( ref _TotalDownloadBytes );
-            public void AddTotalDownloadBytes( int downloadBytes ) => Interlocked.Add( ref _TotalDownloadBytes, downloadBytes );
+            //public void AddTotalDownloadBytes( int downloadBytes ) => Interlocked.Add( ref _TotalDownloadBytes, downloadBytes );
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            private sealed class last_measure_tuple_t
+            {
+                public long MeasureDateTimeTicks  { get; set; }
+                public long IntervalDateTimeTicks { get; set; }
+                public int  DownloadBytes         { get; set; }
+            }
+
+            private last_measure_tuple_t _LastMeasureTuple = new last_measure_tuple_t();
+            public void AddTotalDownloadBytes( long measureDateTimeTicks, int downloadBytes )
+            {
+                Interlocked.Add( ref _TotalDownloadBytes, downloadBytes );
+
+                var prev_MeasureDateTimeTicks = Interlocked.CompareExchange( ref _LastMeasureTuple, null, null ).MeasureDateTimeTicks;
+                var lmt = new last_measure_tuple_t()
+                { 
+                    IntervalDateTimeTicks = measureDateTimeTicks - prev_MeasureDateTimeTicks, 
+                    MeasureDateTimeTicks  = measureDateTimeTicks, 
+                    DownloadBytes         = downloadBytes 
+                };
+                Interlocked.Exchange( ref _LastMeasureTuple, lmt );
+            }
+            public (long intervalDateTimeTicks, int downloadBytes) GetLastDownloadBytes()
+            {
+                var lmt = Interlocked.CompareExchange( ref _LastMeasureTuple, null, null );
+                return (lmt.IntervalDateTimeTicks, lmt.DownloadBytes);
+            }
         }
 
         private double _Max_speed_threshold_in_Mbps;
@@ -468,8 +498,30 @@ namespace m3u8.download.manager.controllers
             var totalDownloadBytes = dm.GetTotalDownloadBytes();
             if ( totalDownloadBytes == 0 ) return (null);
 
-            var elapsedSeconds = new TimeSpan( DateTime.Now.Ticks - dm.StartMeasureDateTimeTicks ).TotalSeconds;
+            var nowTicks = DateTime.Now.Ticks;
+            var elapsedSeconds = new TimeSpan( nowTicks - dm.StartMeasureDateTimeTicks ).TotalSeconds;
             var secondsDelay   = (Extensions.GetMbps( totalDownloadBytes ) / GetMaxSpeedThreshold_Internal()) - elapsedSeconds;
+
+            var last = dm.GetLastDownloadBytes();
+            var last_elapsedSeconds = new TimeSpan( last.intervalDateTimeTicks ).TotalSeconds;
+            var instantSpeedInMbps  = Extensions.GetSpeedInMbps( last.downloadBytes, last_elapsedSeconds );
+
+            if ( 0 < secondsDelay )
+            {
+                Debug.WriteLine( $"(task: #{task.Id}), instant-speed_in_Mbps: {instantSpeedInMbps:N2}, elapsedSeconds: {elapsedSeconds}, currentDownloadBytes: {totalDownloadBytes:#,#} => secondsDelay: {secondsDelay:N2}" );
+
+                using var join_ct = CancellationTokenSource.CreateLinkedTokenSource( ct, Get_Cts().Token );
+                Delay( (int) (secondsDelay * 1_000), join_ct.Token );
+                Recreate_Cts_IfNeed();
+            }
+            else
+            {
+                Debug.WriteLine( $"(task: #{task.Id}), instant-speed_in_Mbps: {instantSpeedInMbps:N2}, elapsedSeconds: {elapsedSeconds}, currentDownloadBytes: {totalDownloadBytes:#,#}" );
+            }
+            return (instantSpeedInMbps);
+
+            #region comm. prev. total-speed_in_Mbps.
+            /*
             var speed_in_Mbps  = Extensions.GetSpeedInMbps( totalDownloadBytes, elapsedSeconds );
 
             if ( 0 < secondsDelay )
@@ -485,8 +537,11 @@ namespace m3u8.download.manager.controllers
                 Debug.WriteLine( $"(task: #{task.Id}), speed_in_Mbps: {speed_in_Mbps:N2}, elapsedSeconds: {elapsedSeconds}, currentDownloadBytes: {totalDownloadBytes:#,#}" );
             }
             return (speed_in_Mbps);
+            //*/
+            #endregion
         }
-        public void TakeIntoAccountDownloadedBytes( Task task, int downloadBytes ) => _DownloadMeasureDict.GetOrAdd( task, _Create__download_measure_t_func ).AddTotalDownloadBytes( downloadBytes );
+        public void TakeIntoAccountDownloadedBytes( Task task, int downloadBytes ) 
+            => _DownloadMeasureDict.GetOrAdd( task, _Create__download_measure_t_func ).AddTotalDownloadBytes( measureDateTimeTicks: DateTime.Now.Ticks, downloadBytes );
 #if DEBUG
         public override string ToString() => $"max_speed_threshold_in_Mbps: {GetMaxSpeedThreshold()} Mbps";
 #endif

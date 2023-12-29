@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -251,7 +250,7 @@ namespace m3u8
         /// </summary>
         private struct download_m3u8File_parts_parallel_params_t
         {
-            public download_m3u8File_parts_parallel_params_t( m3u8_client _mc, in m3u8_file_t _m3u8File, in DownloadFileAndSaveInputParams ip ) : this()
+            public download_m3u8File_parts_parallel_params_t( m3u8_client _mc, in m3u8_file_t _m3u8File, in DownloadFileAndSaveInputParams ip )
             {
                 mc                     = _mc;
                 m3u8File               = _m3u8File;
@@ -261,7 +260,7 @@ namespace m3u8
                 maxDegreeOfParallelism = ip.MaxDegreeOfParallelism;
                 useCrossAppInstanceDegreeOfParallelism = ip.UseCrossAppInstanceDegreeOfParallelism;
             }
-            public download_m3u8File_parts_parallel_params_t( in DownloadPartsAndSaveInputParams ip ) : this()
+            public download_m3u8File_parts_parallel_params_t( in DownloadPartsAndSaveInputParams ip )
             {
                 mc                     = ip.mc;
                 m3u8File               = ip.m3u8File;
@@ -452,7 +451,7 @@ namespace m3u8
         /// </summary>
         public struct ResponseStepActionParams
         {
-            internal ResponseStepActionParams( int totalPartCount ) : this() => TotalPartCount = totalPartCount;
+            internal ResponseStepActionParams( int totalPartCount ) => TotalPartCount = totalPartCount;
 
             public int TotalPartCount           { get; private  set; }
             public int SuccessReceivedPartCount { get; internal set; }
@@ -514,7 +513,7 @@ namespace m3u8
         /// </summary>
         public struct DownloadFileAndSaveResult
         {
-            internal DownloadFileAndSaveResult( DownloadFileAndSaveInputParams ip ) : this()
+            internal DownloadFileAndSaveResult( DownloadFileAndSaveInputParams ip )
             {
                 m3u8FileUrl    = ip.m3u8FileUrl;
                 OutputFileName = ip.OutputFileName;
@@ -601,8 +600,7 @@ namespace m3u8
         /// </summary>
         public struct DownloadPartsAndSaveResult
         {
-            internal DownloadPartsAndSaveResult( string outputFileName ) : this()
-                => OutputFileName = outputFileName;
+            internal DownloadPartsAndSaveResult( string outputFileName ) => OutputFileName = outputFileName;
 
             public string OutputFileName   { get; private set; }
 

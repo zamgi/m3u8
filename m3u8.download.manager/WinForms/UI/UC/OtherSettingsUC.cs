@@ -34,10 +34,10 @@ namespace m3u8.download.manager.ui
             _DownloadController.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
 
             DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
-#if NETCOREAPP
-            useDirectorySelectDialogModernCheckBox.Enabled = false;
-            useDirectorySelectDialogModernCheckBox.Text   += "\r\n(disabled for NETCOREAPP)";
-#endif
+//#if NETCOREAPP
+//            useDirectorySelectDialogModernCheckBox.Enabled = false;
+//            useDirectorySelectDialogModernCheckBox.Text   += "\r\n(disabled for NETCOREAPP)";
+//#endif
         }
 
         protected override void Dispose( bool disposing )
@@ -211,6 +211,18 @@ namespace m3u8.download.manager.ui
             else
             {
                 DirectorySelectDialog.Show_Classic( this, Environment.CurrentDirectory, this.toolTip.GetToolTip( testDirectorySelectDialog ), out var _ );
+            }
+        }
+        private void testDirectorySelectDialog_Paint( object sender, PaintEventArgs e )
+        {
+            var c  = (Control) sender;
+            var rc = e.ClipRectangle;
+            using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center };
+            e.Graphics.DrawString( "...", c.Font, Brushes.Black, rc, sf );
+            if ( c.Focused )
+            {
+                rc.Inflate( -1, -1 );
+                ControlPaint.DrawFocusRectangle( e.Graphics, rc );
             }
         }
 

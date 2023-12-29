@@ -43,7 +43,7 @@ namespace m3u8
             public void Push( X x )
             {
                 Interlocked.Increment( ref _Manual_Count );
-                _Stack.Push( x );                
+                _Stack.Push( x );
             }
 #if NETCOREAPP
             public bool TryPop( [MaybeNullWhen(false)] out X x )

@@ -13,8 +13,7 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
-        [DataContract]
-        private struct _4Json_
+        [DataContract] private struct _4Json_
         {
             [DataMember(EmitDefaultValue=false)]
             public int?       ColumnIndex { get; set; }
@@ -59,8 +58,8 @@ namespace m3u8.download.manager.ui
         {
             try
             {
-                var _ = Extensions.FromJSON<_4Json_>( json );
-                return (new SortInfo() { ColumnIndex = _.ColumnIndex, Order = _.Order });
+                var x = Extensions.FromJSON< _4Json_ >( json );
+                return (new SortInfo() { ColumnIndex = x.ColumnIndex, Order = x.Order });
             }
             catch ( Exception ex )
             {

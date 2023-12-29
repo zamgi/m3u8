@@ -34,12 +34,12 @@ namespace m3u8
                     M3u8Url        = M3U8_URL,
                     OutputFileName = OUTPUT_FILENAME,
 
-                    DownloadContent      = (p)                        => $"[ QUEUEED]: {p}".ToConsole( cts ),
-                    DownloadContentError = (p, ex)                    => $"[ QUEUEED]: {p} => {ex}".ToConsole( ConsoleColor.Red, cts ),
+                    DownloadContent      = (p)                  => $"[ QUEUEED]: {p}".ToConsole( cts ),
+                    DownloadContentError = (p, ex)              => $"[ QUEUEED]: {p} => {ex}".ToConsole( ConsoleColor.Red, cts ),
                     DownloadPart         = (p, partBytes, totalBytes, 
-                                            instantaneousSpeedInMbps) => $"[DOWNLOAD]: {p} => ok. (part-size: {(1.0 * partBytes / 1024):N2} KB, total-size: {(1.0 * totalBytes / (1024 * 1024)):N2} MB)".ToConsole( cts ),
-                    DownloadPartError    = (p, ex)                    => $"[DOWNLOAD]: {p} => {ex}".ToConsole( ConsoleColor.Red, cts ),
-                    DownloadCreateOutputFile = (fn)                   => $"Created output file: '{fn}'".ToConsole( cts )
+                                            instantSpeedInMbps) => $"[DOWNLOAD]: {p} => ok. (part-size: {(1.0 * partBytes / 1024):N2} KB, total-size: {(1.0 * totalBytes / (1024 * 1024)):N2} MB)".ToConsole( cts ),
+                    DownloadPartError    = (p, ex)              => $"[DOWNLOAD]: {p} => {ex}".ToConsole( ConsoleColor.Red, cts ),
+                    DownloadCreateOutputFile = (fn)             => $"Created output file: '{fn}'".ToConsole( cts )
                 };
 
                 var max_output_file_size = MAX_OUTPUT_FILE_SZIE_IN_MB * (1024 * 1024);

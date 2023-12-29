@@ -71,20 +71,20 @@ namespace m3u8.download.manager.models
         {
             _RowPropertiesChanged = r._RowPropertiesChanged ?? throw (new ArgumentNullException( nameof(r._RowPropertiesChanged) ));
 
-            Status                       = r.Status;
-            CreatedOrStartedDateTime     = r.CreatedOrStartedDateTime;
-            Url                          = r.Url;
-            OutputFileName               = r.OutputFileName;
-            OutputDirectory              = r.OutputDirectory;
-            IsLiveStream                 = r.IsLiveStream;
-            LiveStreamMaxFileSizeInBytes = r.LiveStreamMaxFileSizeInBytes;
-            TotalParts                   = r.TotalParts;
-            FailedDownloadParts          = r.FailedDownloadParts;
-            SuccessDownloadParts         = r.SuccessDownloadParts;
-            DownloadBytesLength          = r.DownloadBytesLength;
-            VeryFirstOutputFullFileName  = r.VeryFirstOutputFullFileName;
-            _InstantaneousSpeedInMbps    = r._InstantaneousSpeedInMbps;
-            _FinitaElapsed               = r._FinitaElapsed;
+            Status                             = r.Status;
+            CreatedOrStartedDateTime           = r.CreatedOrStartedDateTime;
+            Url                                = r.Url;
+            OutputFileName                     = r.OutputFileName;
+            OutputDirectory                    = r.OutputDirectory;
+            IsLiveStream                       = r.IsLiveStream;
+            LiveStreamMaxFileSizeInBytes       = r.LiveStreamMaxFileSizeInBytes;
+            TotalParts                         = r.TotalParts;
+            FailedDownloadParts                = r.FailedDownloadParts;
+            SuccessDownloadParts               = r.SuccessDownloadParts;
+            DownloadBytesLength                = r.DownloadBytesLength;
+            VeryFirstOutputFullFileName        = r.VeryFirstOutputFullFileName;
+            _InstantSpeedInMbps                = r._InstantSpeedInMbps;
+            _FinitaElapsed                     = r._FinitaElapsed;
             _PausedOrWaitElapsed               = r._PausedOrWaitElapsed;
             _DownloadBytesLength_BeforeRunning = r._DownloadBytesLength_BeforeRunning;
 
@@ -104,7 +104,7 @@ namespace m3u8.download.manager.models
         public int            FailedDownloadParts         { [M(O.AggressiveInlining)] get; private set; }
         public long           DownloadBytesLength         { [M(O.AggressiveInlining)] get; private set; }
         public DownloadStatus Status                      { [M(O.AggressiveInlining)] get; private set; }
-        private double?       _InstantaneousSpeedInMbps;
+        private double?       _InstantSpeedInMbps;
 
         public bool           IsLiveStream                 { [M(O.AggressiveInlining)] get; /*private set;*/ }
         public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; private set; }
@@ -118,9 +118,9 @@ namespace m3u8.download.manager.models
             var outputFullFileName = GetOutputFullFileName();
             if ( !VeryFirstOutputFullFileName.IsNullOrEmpty() && (outputFullFileName != VeryFirstOutputFullFileName) )
             {
-                return (new[] { VeryFirstOutputFullFileName, outputFullFileName });
+                return ([ VeryFirstOutputFullFileName, outputFullFileName ]);
             }
-            return (new[] { outputFullFileName });
+            return ([ outputFullFileName ]);
         }
         public void     SaveVeryFirstOutputFullFileName( string outputFullFileName ) => VeryFirstOutputFullFileName = outputFullFileName;
 
@@ -201,9 +201,9 @@ namespace m3u8.download.manager.models
                     }
                 }
 
-                if ( _InstantaneousSpeedInMbps != p.InstantaneousSpeedInMbps )
+                if ( _InstantSpeedInMbps != p.InstantSpeedInMbps )
                 {
-                    _InstantaneousSpeedInMbps = p.InstantaneousSpeedInMbps;
+                    _InstantSpeedInMbps = p.InstantSpeedInMbps;
                     call__RowPropertiesChanged = true;
                 }
             }
@@ -221,7 +221,7 @@ namespace m3u8.download.manager.models
             }
             _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
         }
-        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes, double? instantaneousSpeedInMbps )
+        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes, double? instantSpeedInMbps )
         {
             lock ( this )
             {
@@ -229,7 +229,7 @@ namespace m3u8.download.manager.models
                 SuccessDownloadParts++;
                 DownloadBytesLength = total_in_bytes;
 
-                if ( _InstantaneousSpeedInMbps != instantaneousSpeedInMbps ) _InstantaneousSpeedInMbps = instantaneousSpeedInMbps;
+                if ( _InstantSpeedInMbps != instantSpeedInMbps ) _InstantSpeedInMbps = instantSpeedInMbps;
             }
             _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
         }
@@ -245,15 +245,15 @@ namespace m3u8.download.manager.models
                         case DownloadStatus.Started:
                             _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength = 0;
                             CreatedOrStartedDateTime           = DateTime.Now;
-                            _InstantaneousSpeedInMbps          = null;
-                            TotalParts           = 0;
-                            SuccessDownloadParts = 0;
+                            _InstantSpeedInMbps                = null;
+                            TotalParts                         = 0;
+                            SuccessDownloadParts               = 0;
                             break;
 
                         case DownloadStatus.Running:
                             _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
                             CreatedOrStartedDateTime           = DateTime.Now;
-                            _InstantaneousSpeedInMbps          = null;
+                            _InstantSpeedInMbps                = null;
                             break;
 
                         case DownloadStatus.Canceled:
@@ -314,11 +314,11 @@ namespace m3u8.download.manager.models
                 return (this.DownloadBytesLength - _DownloadBytesLength_BeforeRunning);
             }
         }
-        [M(O.AggressiveInlining)] public double? GetInstantaneousSpeedInMbps()
+        [M(O.AggressiveInlining)] public double? GetInstantSpeedInMbps()
         {
             lock ( this )
             {
-                return (_InstantaneousSpeedInMbps);
+                return (_InstantSpeedInMbps);
             }
         }
 #if DEBUG

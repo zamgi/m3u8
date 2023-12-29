@@ -220,10 +220,7 @@
             this.toolTip.SetToolTip(this.testDirectorySelectDialog, "test directory select dialog" );
             this.testDirectorySelectDialog.UseVisualStyleBackColor = true;
             this.testDirectorySelectDialog.Click += new System.EventHandler(this.testDirectorySelectDialog_Click);
-            this.testDirectorySelectDialog.Text = "¨";
-            //this.testDirectorySelectDialog.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            //this.testDirectorySelectDialog.Image = new System.Drawing.Bitmap( Properties.Resources.browse, new System.Drawing.Size( 10, 10 ) );
-            this.testDirectorySelectDialog.Margin = new System.Windows.Forms.Padding(0);
+            this.testDirectorySelectDialog.Paint += new System.Windows.Forms.PaintEventHandler(this.testDirectorySelectDialog_Paint);
             // 
             // gb2
             // 

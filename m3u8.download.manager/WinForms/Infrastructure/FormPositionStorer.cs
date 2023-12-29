@@ -14,8 +14,7 @@ namespace m3u8.download.manager.ui.infrastructure
     /// <summary>
     /// 
     /// </summary>
-    [DataContract]
-    internal sealed class DGVColumnWidth
+    [DataContract] internal sealed class DGVColumnWidth
     {
         [DataMember(Name="t")]  public string Text         { get; set; }
         [DataMember(Name="w")]  public int    Width        { get; set; }
@@ -34,8 +33,7 @@ namespace m3u8.download.manager.ui.infrastructure
     /// <summary>
     /// 
     /// </summary>
-    [DataContract]
-    internal sealed class DGVColumnWidths
+    [DataContract] internal sealed class DGVColumnWidths
     {
         [DataMember(Name="n")]   public string Name { get; set; }
         [DataMember(Name="cws")] public List< DGVColumnWidth > ColumnWidths { get; set; }
@@ -83,8 +81,7 @@ namespace m3u8.download.manager.ui.infrastructure
     /// <summary>
     /// 
     /// </summary>
-    [DataContract]
-    internal sealed class SplitDistance
+    [DataContract] internal sealed class SplitDistance
     {
         [DataMember(Name="n")] public string Name     { get; set; }
         [DataMember(Name="d")] public int    Distance { get; set; }
@@ -96,8 +93,7 @@ namespace m3u8.download.manager.ui.infrastructure
     /// <summary>
     /// 
     /// </summary>
-    [DataContract]
-    internal sealed class FormData
+    [DataContract] internal sealed class FormData
     {
         [DataMember(Name="r")     ] public Rectangle       Rect        { get; set; }
         [DataMember(Name="ws")    ] public FormWindowState WindowState { get; set; }
@@ -129,10 +125,7 @@ namespace m3u8.download.manager.ui.infrastructure
                 return (false);
             }
 
-            if ( _dgvcws_Dict == null )
-            {
-                _dgvcws_Dict = DGVColumnWidths.GroupBy( o => o.Name ).ToDictionary( g => g.Key, g => g.First() );
-            }
+            if ( _dgvcws_Dict == null ) _dgvcws_Dict = DGVColumnWidths.GroupBy( o => o.Name ).ToDictionary( g => g.Key, g => g.First() );
             return (_dgvcws_Dict.TryGetValue( name, out dgvcws ));
         }
 
@@ -145,10 +138,7 @@ namespace m3u8.download.manager.ui.infrastructure
                 return (false);
             }
 
-            if ( _sds_Dict == null )
-            {
-                _sds_Dict = SplitDistances.GroupBy( o => o.Name ).ToDictionary( g => g.Key, g => g.First() );
-            }
+            if ( _sds_Dict == null ) _sds_Dict = SplitDistances.GroupBy( o => o.Name ).ToDictionary( g => g.Key, g => g.First() );
             return (_sds_Dict.TryGetValue( name, out sd ));
         }
 
@@ -166,22 +156,10 @@ namespace m3u8.download.manager.ui.infrastructure
         private static void CorrectPosition( this Form form, int? minWidth = null, int? minHeight = null )
         {
             var workingArea = Screen.GetWorkingArea( form );
-            if ( form.Top < workingArea.Top )
-            {
-                form.Top = workingArea.Top;
-            }
-            if ( form.Left < workingArea.Left )
-            {
-                form.Left = workingArea.Left;
-            }
-            if ( workingArea.Bottom < form.Bottom )
-            {
-                form.Height = workingArea.Bottom - form.Top;
-            }
-            if ( workingArea.Right < form.Right )
-            {
-                form.Width = workingArea.Right - form.Left;
-            }
+            if ( form.Top           < workingArea.Top  ) form.Top    = workingArea.Top;
+            if ( form.Left          < workingArea.Left ) form.Left   = workingArea.Left;
+            if ( workingArea.Bottom < form.Bottom      ) form.Height = workingArea.Bottom - form.Top;
+            if ( workingArea.Right  < form.Right       ) form.Width  = workingArea.Right - form.Left;
 
             var min_height = minHeight.GetValueOrDefault( MIN_HEIGHT );
             if ( form.Height < min_height )
@@ -203,8 +181,7 @@ namespace m3u8.download.manager.ui.infrastructure
         private static void save_Recurrent( this Control parent, FormData d )
         {
             #region [.DGV //-1-//.]
-            var dgv = parent as DataGridView;
-            if ( dgv != null )
+            if ( parent is DataGridView dgv)
             {
                 d.DGVColumnWidths.Add( new DGVColumnWidths( dgv ) );
                 goto NEXT;
@@ -212,8 +189,7 @@ namespace m3u8.download.manager.ui.infrastructure
             #endregion
 
             #region [.SplitContainer //-2-//.]
-            var sc = parent as SplitContainer;
-            if ( sc != null )
+            if ( parent is SplitContainer sc )
             {
                 d.SplitDistances.Add( new SplitDistance( sc ) );
                 goto NEXT;
@@ -229,8 +205,7 @@ namespace m3u8.download.manager.ui.infrastructure
         private static void load_Recurrent( this Control parent, FormData d )
         {
             #region [.DGV //-1-//.]
-            var dgv = parent as DataGridView;
-            if ( dgv != null )
+            if ( parent is DataGridView dgv )
             {
                 if ( d.TryGetDGVColumnWidths( dgv.Name, out var dgvcws ) )
                 {
@@ -241,8 +216,7 @@ namespace m3u8.download.manager.ui.infrastructure
             #endregion
 
             #region [.SplitContainer //-2-//.]
-            var sc = parent as SplitContainer;
-            if ( sc != null )
+            if ( parent is SplitContainer sc )
             {
                 if ( d.TryGetSplitDistance( sc.Name, out var sd ) )
                 {
@@ -279,6 +253,7 @@ namespace m3u8.download.manager.ui.infrastructure
                 {
                     form.SetBounds( d.Rect.X, d.Rect.Y, d.Rect.Width, d.Rect.Height, BoundsSpecified.Height );
                 }
+
                 if ( d.WindowState != FormWindowState.Minimized )
                 {
                     form.WindowState = d.WindowState;
@@ -315,6 +290,7 @@ namespace m3u8.download.manager.ui.infrastructure
                 {
                     form.SetBounds( d.Rect.X, d.Rect.Y, d.Rect.Width, d.Rect.Height, BoundsSpecified.Location | BoundsSpecified.Width );
                 }
+
                 if ( d.WindowState != FormWindowState.Minimized )
                 {
                     form.WindowState = d.WindowState;
@@ -350,10 +326,12 @@ namespace m3u8.download.manager.ui.infrastructure
                 {
                     form.SetBounds( d.Rect.X, d.Rect.Y, d.Rect.Width, d.Rect.Height, BoundsSpecified.All );
                 }
+
                 if ( d.WindowState != FormWindowState.Minimized )
                 {
                     form.WindowState = d.WindowState;
                 }
+
                 if ( form.WindowState == FormWindowState.Normal )
                 {
                     form.CorrectPosition();

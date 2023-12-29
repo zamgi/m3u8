@@ -16,14 +16,12 @@ namespace m3u8.download.manager.ipc
         /// <summary>
         /// 
         /// </summary>
-        [DataContract]
-        private struct ExtensionInputParamsArray
+        [DataContract] private struct ExtensionInputParamsArray
         {
             /// <summary>
             /// 
             /// </summary>
-            [DataContract]
-            public struct InputParams
+            [DataContract] public struct InputParams
             {
                 [DataMember(Name="m3u8_url", IsRequired=true)]
                 public string m3u8FileUrl { get; set; }
@@ -39,8 +37,7 @@ namespace m3u8.download.manager.ipc
         /// <summary>
         /// 
         /// </summary>
-        [DataContract]
-        private struct ExtensionOutputParams
+        [DataContract] private struct ExtensionOutputParams
         {
             [DataMember(Name="text", IsRequired=true)]
             public string Text { get; set; }

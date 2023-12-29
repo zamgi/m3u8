@@ -31,14 +31,14 @@ namespace m3u8.download.manager.controllers
         /// <summary>
         /// 
         /// </summary>
-        private struct tuple
+        private struct Tuple
         {
             [M(O.AggressiveInlining)]
-            public static tuple Create( m3u8_client mc, CancellationTokenSource cts
+            public static Tuple Create( m3u8_client mc, CancellationTokenSource cts
                                       , ManualResetEventSlim waitIfPausedEvent
                                       , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
                                       , int startOrderNumber ) 
-                => new tuple() { mc = mc, cts = cts
+                => new Tuple() { mc = mc, cts = cts
                                , waitIfPausedEvent        = waitIfPausedEvent
                                , downloadThreadsSemaphore = downloadThreadsSemaphore
                                , startOrderNumber         = startOrderNumber };
@@ -55,7 +55,7 @@ namespace m3u8.download.manager.controllers
         private const int STREAM_IN_POOL_CAPACITY                 = 1024 * 1024 * 5;
         private DownloadListModel                          _Model;
         private SettingsPropertyChangeController           _SettingsController;
-        private ConcurrentDictionary< DownloadRow, tuple > _Dict;
+        private ConcurrentDictionary< DownloadRow, Tuple > _Dict;
         private cross_download_instance_restriction        _CrossDownloadInstanceRestriction;
         private interlocked_lock                           _ProcessCrossDownloadInstanceRestrictionLock;
         private int                                        _RealRunningCount;
@@ -76,7 +76,7 @@ namespace m3u8.download.manager.controllers
             _SettingsController = sc ?? throw (new ArgumentNullException( nameof(sc) ));
             _SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
 
-            _Dict = new ConcurrentDictionary< DownloadRow, tuple >();
+            _Dict = new ConcurrentDictionary< DownloadRow, Tuple >();
 
             _CrossDownloadInstanceRestriction = new cross_download_instance_restriction( _SettingsController.MaxCrossDownloadInstance );
             _DownloadThreadsSemaphoreFactory  = new download_threads_semaphore_factory( _SettingsController.UseCrossDownloadInstanceParallelism,
@@ -170,7 +170,7 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-        private static void DisposeExistsTupleWhenAdd2Dict( tuple t )
+        private static void DisposeExistsTupleWhenAdd2Dict( Tuple t )
         {
 #if DEBUG
             if ( Debugger.IsAttached )
@@ -431,7 +431,7 @@ namespace m3u8.download.manager.controllers
             using ( var waitIfPausedEvent        = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore = _DownloadThreadsSemaphoreFactory.Get() )
             {
-                var tup = tuple.Create( mc, cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
+                var tup = Tuple.Create( mc, cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
                 try
@@ -591,7 +591,7 @@ namespace m3u8.download.manager.controllers
             using ( var waitIfPausedEvent        = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore = _DownloadThreadsSemaphoreFactory.Get() )
             {
-                var tup = tuple.Create( null/*mc*/, cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
+                var tup = Tuple.Create( null/*mc*/, cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
                 try
@@ -616,7 +616,7 @@ namespace m3u8.download.manager.controllers
                                   CreateDateTime: default(DateTime), 
                                   RowSaveState: default(DownloadRow), 
                                   CreatedOutpuFileLogRow: default(LogRow));
-                        var queueed_cnt     = 0;
+                        var queued_cnt      = 0;
                         var output_file_cnt = 0;
 
                         var downloadContentAction = new m3u8_live_stream_downloader.DownloadContentDelegate( part_url =>
@@ -624,7 +624,7 @@ namespace m3u8.download.manager.controllers
                             lock ( localLock )
                             {
                                 row.SetStatus( DownloadStatus.Running );
-                                rows_Dict[ part_url ] = row.Log.AddRequestRow( $"{++queueed_cnt}). [queueed]: {part_url}" );
+                                rows_Dict[ part_url ] = row.Log.AddRequestRow( $"{++queued_cnt}). [queued]: {part_url}" );
                             }
                         });
                         var downloadContentErrorAction = new m3u8_live_stream_downloader.DownloadContentErrorDelegate( (part_url, ex) =>
@@ -632,14 +632,14 @@ namespace m3u8.download.manager.controllers
                             lock ( localLock )
                             {
                                 anyErrorHappend = true;
-                                rows_Dict[ part_url ] = row.Log.AddResponseErrorRow( $"{++queueed_cnt}).[queueed]: {part_url}", ex.ToString() );
+                                rows_Dict[ part_url ] = row.Log.AddResponseErrorRow( $"{++queued_cnt}).[queued]: {part_url}", ex.ToString() );
                             }
                         });
-                        var downloadPartAction = new m3u8_live_stream_downloader.DownloadPartDelegate( (part_url, partBytes, totalBytes, instantaneousSpeedInMbps) =>
+                        var downloadPartAction = new m3u8_live_stream_downloader.DownloadPartDelegate( (part_url, partBytes, totalBytes, instantSpeedInMbps) =>
                         {
                             lock ( localLock )
                             {
-                                row.SetDownloadResponseStepParams( partBytes, totalBytes, instantaneousSpeedInMbps );
+                                row.SetDownloadResponseStepParams( partBytes, totalBytes, instantSpeedInMbps );
                                 if ( rows_Dict.RemoveEx( part_url, out var logRow ) )
                                 {
                                     logRow.SetResponseSuccess( "received" );
@@ -883,16 +883,16 @@ namespace m3u8.download.manager.controllers
             }
 
             #region [.field's.]
-            private ConcurrentDictionary< DownloadRow, tuple > _Dict;
+            private ConcurrentDictionary< DownloadRow, DownloadController.Tuple > _Dict;
             private CancellationToken _Ct;
             #endregion
 
             #region [.ctor().]
-            public PausedHelper( ConcurrentDictionary< DownloadRow, tuple > dict, CancellationToken ct ) => (_Dict, _Ct) = (dict, ct);
+            public PausedHelper( ConcurrentDictionary< DownloadRow, DownloadController.Tuple > dict, CancellationToken ct ) => (_Dict, _Ct) = (dict, ct);
             #endregion
 
             #region [.method's.]
-            private static Result PausedAll_ByStatus_GetThem( ConcurrentDictionary< DownloadRow, tuple > dict, params DownloadStatus[] statuses )
+            private static Result PausedAll_ByStatus_GetThem( ConcurrentDictionary< DownloadRow, DownloadController.Tuple > dict, params DownloadStatus[] statuses )
             {
                 var tuples = new List< Tuple >( dict.Count );
 

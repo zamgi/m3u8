@@ -92,7 +92,7 @@ namespace m3u8.download.manager.models
             SuccessDownloadParts         = r.SuccessDownloadParts;
             DownloadBytesLength          = r.DownloadBytesLength;
             VeryFirstOutputFullFileName  = r.VeryFirstOutputFullFileName;
-            _InstantaneousSpeedInMbps    = r._InstantaneousSpeedInMbps;
+            _InstantSpeedInMbps    = r._InstantSpeedInMbps;
             _FinitaElapsed               = r._FinitaElapsed;
             _PausedOrWaitElapsed               = r._PausedOrWaitElapsed;
             _DownloadBytesLength_BeforeRunning = r._DownloadBytesLength_BeforeRunning;
@@ -113,7 +113,7 @@ namespace m3u8.download.manager.models
         public int            FailedDownloadParts         { [M(O.AggressiveInlining)] get; private set; }
         public long           DownloadBytesLength         { [M(O.AggressiveInlining)] get; private set; }
         public DownloadStatus Status                      { [M(O.AggressiveInlining)] get; private set; }
-        private double?       _InstantaneousSpeedInMbps;
+        private double?       _InstantSpeedInMbps;
 
         public bool           IsLiveStream                 { [M(O.AggressiveInlining)] get; /*private set;*/ }
         public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; private set; }
@@ -213,9 +213,9 @@ namespace m3u8.download.manager.models
                     }
                 }
 
-                if ( _InstantaneousSpeedInMbps != p.InstantaneousSpeedInMbps )
+                if ( _InstantSpeedInMbps != p.InstantSpeedInMbps )
                 {
-                    _InstantaneousSpeedInMbps = p.InstantaneousSpeedInMbps;
+                    _InstantSpeedInMbps = p.InstantSpeedInMbps;
                     call__Fire_PropertyChanged_Events = true;
                 }
             }
@@ -234,7 +234,7 @@ namespace m3u8.download.manager.models
             }
             Fire_PropertyChanged_Events( nameof(MySelf) );
         }
-        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes, double? instantaneousSpeedInMbps )
+        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes, double? instantSpeedInMbps )
         {
             lock ( this )
             {
@@ -242,7 +242,7 @@ namespace m3u8.download.manager.models
                 SuccessDownloadParts++;
                 DownloadBytesLength = total_in_bytes;
 
-                if ( _InstantaneousSpeedInMbps != instantaneousSpeedInMbps ) _InstantaneousSpeedInMbps = instantaneousSpeedInMbps;
+                if ( _InstantSpeedInMbps != instantSpeedInMbps ) _InstantSpeedInMbps = instantSpeedInMbps;
             }
             Fire_PropertyChanged_Events( nameof(MySelf) );
         }
@@ -258,13 +258,13 @@ namespace m3u8.download.manager.models
                         case DownloadStatus.Started:
                             _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength = 0;
                             CreatedOrStartedDateTime           = DateTime.Now;
-                            _InstantaneousSpeedInMbps          = null;
+                            _InstantSpeedInMbps                = null;
                         break;
 
                         case DownloadStatus.Running:
                             _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
                             CreatedOrStartedDateTime           = DateTime.Now;
-                            _InstantaneousSpeedInMbps          = null;
+                            _InstantSpeedInMbps                = null;
                         break;
 
                         case DownloadStatus.Canceled:
@@ -326,11 +326,11 @@ namespace m3u8.download.manager.models
                 return (this.DownloadBytesLength - _DownloadBytesLength_BeforeRunning);
             }
         }
-        [M(O.AggressiveInlining)] public double? GetInstantaneousSpeedInMbps()
+        [M(O.AggressiveInlining)] public double? GetInstantSpeedInMbps()
         {
             lock ( this )
             {
-                return (_InstantaneousSpeedInMbps);
+                return (_InstantSpeedInMbps);
             }
         }
 #if DEBUG

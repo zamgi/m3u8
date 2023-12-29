@@ -10,7 +10,7 @@ namespace m3u8.download.manager.ipc
     {
         public static bool CreateAsBreakawayFromJob( string commandLine )
         {
-            var si = new STARTUPINFO() { cb = Marshal.SizeOf(typeof(STARTUPINFO)) };
+            var si = STARTUPINFO.Create();
 
             var r = CreateProcess( null, //Process.GetCurrentProcess().MainModule.FileName, 
                                    commandLine,
@@ -49,24 +49,27 @@ namespace m3u8.download.manager.ipc
         [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
         private struct STARTUPINFO
         {
-             public int    cb;
-             public string lpReserved;
-             public string lpDesktop;
-             public string lpTitle;
-             public int    dwX;
-             public int    dwY;
-             public int    dwXSize;
-             public int    dwYSize;
-             public int    dwXCountChars;
-             public int    dwYCountChars;
-             public int    dwFillAttribute;
-             public int    dwFlags;
-             public short  wShowWindow;
-             public short  cbReserved2;
-             public IntPtr lpReserved2;
-             public IntPtr hStdInput;
-             public IntPtr hStdOutput;
-             public IntPtr hStdError;
+            public int    cb;
+            public string lpReserved;
+            public string lpDesktop;
+            public string lpTitle;
+            public int    dwX;
+            public int    dwY;
+            public int    dwXSize;
+            public int    dwYSize;
+            public int    dwXCountChars;
+            public int    dwYCountChars;
+            public int    dwFillAttribute;
+            public int    dwFlags;
+            public short  wShowWindow;
+            public short  cbReserved2;
+            public IntPtr lpReserved2;
+            public IntPtr hStdInput;
+            public IntPtr hStdOutput;
+            public IntPtr hStdError;
+
+            public static int SizeOf => Marshal.SizeOf( typeof(STARTUPINFO) );
+            public static STARTUPINFO Create() => new STARTUPINFO() { cb = SizeOf };
         }
 
         [DllImport("kernel32.dll", SetLastError=true, CharSet=CharSet.Auto)]

@@ -51,7 +51,7 @@ namespace m3u8.download.manager.ipc
                         using ( var pipeServer = Create_NamedPipeServerStream( pipeName ) )
                         {
 #if DEBUG
-                            Debug.WriteLine( $"[SERVER] WaitForConnection... (Current TransmissionMode: '{pipeServer.TransmissionMode}')" ); 
+                            Debug.WriteLine( $"[SERVER] WaitForConnection... (Current TransmissionMode: '{pipeServer.TransmissionMode}')." ); 
 #endif
                             try
                             {
@@ -60,9 +60,13 @@ namespace m3u8.download.manager.ipc
                                 // Read user input and send that to the client process.
                                 using ( var sr = new StreamReader( pipeServer ) )
                                 {
+#if NETCOREAPP
+                                    var line = await sr.ReadLineAsync( ct ).CAX();
+#else
                                     var line = await sr.ReadLineAsync().CAX();
+#endif                                    
 #if DEBUG
-                                    Debug.WriteLine( $"[SERVER] Read from [CLIENT]: {line}" ); 
+                                    Debug.WriteLine( $"[SERVER] Read from [CLIENT]: {line}." ); 
 #endif
                                     if ( BrowserIPC.CommandLine.TryParse4PipeIPC_Multi( line, out var array ) )
                                     {
@@ -76,7 +80,7 @@ namespace m3u8.download.manager.ipc
                             }                            
                             catch ( Exception ex ) // Catch the IOException that is raised if the pipe is broken or disconnected.
                             {
-                                Debug.WriteLine( $"[SERVER] Error: '{ex.Message}'" );
+                                Debug.WriteLine( $"[SERVER] Error: '{ex.Message}'." );
                             }
                         }
                     }
@@ -96,14 +100,14 @@ namespace m3u8.download.manager.ipc
                 {
                     pipeClient.ConnectAsync( connectMillisecondsTimeout ).Wait( connectMillisecondsTimeout );
 #if DEBUG
-                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'" ); 
+                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'." ); 
 #endif
                     using ( var sw = new StreamWriter( pipeClient ) { AutoFlush = true } )
                     {
                         // Send a 'sync message' and wait for client to receive it.
                         var line = BrowserIPC.CommandLine.Create4PipeIPC( array ); // $"PID: '{Process.GetCurrentProcess().Id}' ('{Assembly.GetEntryAssembly().FullName}') => DateTime.Now: '{DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss.fff")}'";
 #if DEBUG
-                        Debug.WriteLine( $"[CLIENT] Send: {line}" ); 
+                        Debug.WriteLine( $"[CLIENT] Send: {line}." ); 
 #endif
                         sw.WriteLine( line );
                         pipeClient.WaitForPipeDrain_NoThrow();
@@ -119,14 +123,14 @@ namespace m3u8.download.manager.ipc
                 {
                     await pipeClient.ConnectAsync( connectMillisecondsTimeout ).CAX();
 #if DEBUG
-                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'" ); 
+                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'." ); 
 #endif
                     using ( var sw = new StreamWriter( pipeClient ) { AutoFlush = true } )
                     {
                         // Send a 'sync message' and wait for client to receive it.
                         var line = BrowserIPC.CommandLine.Create4PipeIPC( array ); // $"PID: '{Process.GetCurrentProcess().Id}' ('{Assembly.GetEntryAssembly().FullName}') => DateTime.Now: '{DateTime.Now.ToString("yyyy.MM.dd HH:mm:ss.fff")}'";                        
 #if DEBUG
-                        Debug.WriteLine( $"[CLIENT] Send: {line}" ); 
+                        Debug.WriteLine( $"[CLIENT] Send: {line}." ); 
 #endif
                         await sw.WriteLineAsync( line ).CAX();
                         pipeClient.WaitForPipeDrain_NoThrow();
@@ -143,12 +147,12 @@ namespace m3u8.download.manager.ipc
                 {
                     await pipeClient.ConnectAsync( connectMillisecondsTimeout ).CAX();
 #if DEBUG
-                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'" ); 
+                    Debug.WriteLine( $"[CLIENT] Current TransmissionMode: '{pipeClient.TransmissionMode}'." ); 
 #endif
                     using ( var sw = new StreamWriter( pipeClient ) { AutoFlush = true } )
                     {
 #if DEBUG
-                        Debug.WriteLine( $"[CLIENT] Send: {SEND_2_FIRST_COPY_MESSAGE}" ); 
+                        Debug.WriteLine( $"[CLIENT] Send: {SEND_2_FIRST_COPY_MESSAGE}." ); 
 #endif
                         await sw.WriteLineAsync( SEND_2_FIRST_COPY_MESSAGE ).CAX();
                         pipeClient.WaitForPipeDrain_NoThrow();
