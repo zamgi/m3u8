@@ -56,7 +56,7 @@ async function KeepAliveRoutine() {
 chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
     let ext = (d.url.split('?')[0].split('.').pop() || '').toLowerCase();
     if (ext === 'm3u8') {
-        //---console.log('addM3u8Urls() => tabId: ' + d.tabId + ', url: ' + d.url );
+        //console.log('addM3u8Urls() => tabId: ' + d.tabId + ', url: ' + d.url );
 
         await get_workInfo().addM3u8Urls(d.tabId, d.url);
     }

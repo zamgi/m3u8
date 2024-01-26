@@ -30,7 +30,7 @@ window.addEventListener('load', async function (/*event*/) {
         let bt = document.getElementById('clearUrlList');
         bt.style.display = '';
         bt.addEventListener('click', async function (/*event*/) {
-            await workInfo.deleteTabUrls(tabId, true);
+            await workInfo.deleteTabUrls(tabId);
 
             render_m3u8_urls();
             this.style.display = 'none';
@@ -129,7 +129,7 @@ function create_messageObject(m3u8_url, auto_start_download) {
 }
 async function send2host_single(m3u8_url, auto_start_download) { await send2host_multi( [ create_messageObject(m3u8_url, auto_start_download) ] ); }
 async function send2host_multi(messageObject) {
-    let HOST_NAME = 'm3u8.downloader.host';
+    const HOST_NAME = 'm3u8.downloader.host';
 
     let res = await chrome.runtime.sendNativeMessage(HOST_NAME, { array: messageObject });
     let message;
