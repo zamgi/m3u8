@@ -91,8 +91,11 @@ namespace m3u8
         }
         public void Dispose()
         {
-            DisposeInternal();
-            _Stack.Clear();
+            lock ( _Stack ) 
+            {
+                DisposeInternal();
+                _Stack.Clear();
+            }            
         }
 
         [M(O.AggressiveInlining)] private int Get_ObjectInstanceCount() => Volatile.Read( ref _ObjectInstanceCount )/*_ObjectInstanceCount*/;
@@ -131,13 +134,16 @@ namespace m3u8
         {            
             Debug.Assert( t != null );
 
-            if ( _Stack.Count < Get_ObjectInstanceCount()  )
+            lock ( _Stack )
             {
-                _Stack.Push( t );
-            }
-            else
-            {
-                DisposeInternalT( t );
+                if ( _Stack.Count < Get_ObjectInstanceCount() )
+                {
+                    _Stack.Push( t );
+                }
+                else
+                {
+                    DisposeInternalT( t );
+                }
             }
         }
 
