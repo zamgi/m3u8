@@ -4,7 +4,7 @@ window.addEventListener('load', async function (/*event*/) {
     let tabId = ((tabs && tabs.length) ? tabs[ 0 ].id : -1);
 
     let res = await chrome.storage.local.get();
-    let workInfo = get_workInfo(res.workInfo); // new workInfoType(res.workInfo);
+    let workInfo = conv_2_workInfo(res.workInfo);
 
     let m3u8_urls = workInfo.getM3u8Urls(tabId);
 

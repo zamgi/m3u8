@@ -47,9 +47,9 @@ async function KeepAliveRoutine() {
 (async () => {
     let res = await chrome.storage.local.get();
     if (!res.saveUrlListBetweenTabReload) {
-        await get_workInfo().clear();
+        await conv_2_workInfo().clear();
     } else {
-        await get_workInfo(res.workInfo).removeEmptyTabs();
+        await conv_2_workInfo(res.workInfo).removeEmptyTabs();
     }
 })();
 
@@ -58,7 +58,7 @@ chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
     if (ext === 'm3u8') {
         //console.log('addM3u8Urls() => tabId: ' + d.tabId + ', url: ' + d.url );
 
-        await get_workInfo().addM3u8Urls(d.tabId, d.url);
+        await (await load_workInfo()).addM3u8Urls(d.tabId, d.url);
     }
     //else console.log('discarded => tabId: ' + d.tabId + ', url: ' + d.url );
 }, {
@@ -66,9 +66,9 @@ chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
 });
 
 // set handler to tabs
-chrome.tabs.onActivated.addListener(async (info) => await get_workInfo().onActivateTab(info.tabId));
+chrome.tabs.onActivated.addListener(async (info) => await (await load_workInfo()).onActivateTab(info.tabId));
 
-chrome.tabs.onRemoved.addListener(async (tabId) => await get_workInfo().onRemoveTab(tabId));
+chrome.tabs.onRemoved.addListener(async (tabId) => await (await load_workInfo()).onRemoveTab(tabId));
 
 // set handler to tabs
 chrome.tabs.onUpdated.addListener(async function (tabId, info, tab) {
@@ -77,12 +77,12 @@ chrome.tabs.onUpdated.addListener(async function (tabId, info, tab) {
 
     // if user open empty tab or ftp protocol and etc.
     if (!tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
-        await get_workInfo().deleteTab(tabId);
+        await (await load_workInfo()).deleteTab(tabId);
     }
     else {
         let res = await chrome.storage.local.get();
         if (!res.saveUrlListBetweenTabReload) {
-            await get_workInfo(res.workInfo).deleteTabUrls(tabId);
+            await conv_2_workInfo(res.workInfo).deleteTabUrls(tabId);
         }
     }    
 });

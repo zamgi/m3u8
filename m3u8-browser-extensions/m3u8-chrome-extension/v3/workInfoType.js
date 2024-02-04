@@ -1,19 +1,20 @@
-function get_workInfo(saved_wi) { return (new workInfoType(saved_wi)); }
+var conv_2_workInfo = function (saved_wi) { return (new workInfoType(saved_wi)); }
+var load_workInfo = async function () {
+    let res = await chrome.storage.local.get();
+    return (new workInfoType(res.workInfo));
+}
 
 var workInfoType = function (saved_wi) {
     if (saved_wi && saved_wi.tabs) {
-        this.tabs = _Global_Tabs = saved_wi.tabs;
-    } else {
-        this.tabs = _Global_Tabs;
+        this.tabs = saved_wi.tabs;
     }
 };
 
-var _Global_Tabs = {};
 workInfoType.prototype = {
     tabs: {},
     save2Storage: async function () { await chrome.storage.local.set({ workInfo: this }); },
     clear: async function () {
-        this.tabs = _Global_Tabs = {};
+        this.tabs = {};
         await this.save2Storage();
     },
 
