@@ -150,12 +150,6 @@
     <Compile Include="UI\Controls\ToolStripItems\SpeedThresholdUC.designer.cs">
       <DependentUpon>SpeedThresholdUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\UC\MoreSettingsUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\UC\MoreSettingsUC.designer.cs">
-      <DependentUpon>MoreSettingsUC.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\UC\ParallelismSettingsUC.cs">
       <SubType>UserControl</SubType>
     </Compile>

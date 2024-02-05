@@ -18,8 +18,12 @@
             System.Windows.Forms.GroupBox gb1;
             System.Windows.Forms.GroupBox gb2;
             System.Windows.Forms.GroupBox gb3;
+            System.Windows.Forms.GroupBox gb4;
+            System.Windows.Forms.Label l1;
+            System.Windows.Forms.Label l2;
             System.Windows.Forms.Label l4;
             System.Windows.Forms.Label l3;
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.showOnlyRequestRowsWithErrorsCheckBox = new System.Windows.Forms.CheckBox();
             this.showDownloadStatisticsInMainFormTitleCheckBox = new System.Windows.Forms.CheckBox();
             this.showAllDownloadsCompleted_NotificationCheckBox = new System.Windows.Forms.CheckBox();
@@ -29,61 +33,63 @@
             this.externalProgFilePathTextBox = new System.Windows.Forms.TextBox();
             this.externalProgCaptionTextBox = new System.Windows.Forms.TextBox();
             this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox();
-            this.l1 = new System.Windows.Forms.Label();
-            this.l2 = new System.Windows.Forms.Label();
             this.requestTimeoutByPartDTP = new System.Windows.Forms.DateTimePicker();
             this.uniqueUrlsOnlyCheckBox = new System.Windows.Forms.CheckBox();
             this.only4NotRunLabel1 = new System.Windows.Forms.Label();
             this.only4NotRunLabel2 = new System.Windows.Forms.Label();
             this.outputFileExtensionLabel = new System.Windows.Forms.Label();
             this.outputFileExtensionTextBox = new System.Windows.Forms.TextBox();
-            this.attemptRequestCountByPartNUD = new System.Windows.Forms.NumericUpDownEx();
-            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.attemptRequestCountByPartNUD = new System.Windows.Forms.NumericUpDownEx();            
             this.externalProgResetButton = new System.Windows.Forms.Button();
+            this.collectGarbageButton = new System.Windows.Forms.Button();
+            this.currentMemoryLabel = new System.Windows.Forms.Label();
             gb1 = new System.Windows.Forms.GroupBox();
             gb2 = new System.Windows.Forms.GroupBox();
             gb3 = new System.Windows.Forms.GroupBox();
+            gb4 = new System.Windows.Forms.GroupBox();
+            l1 = new System.Windows.Forms.Label();
+            l2 = new System.Windows.Forms.Label();
             l4 = new System.Windows.Forms.Label();
             l3 = new System.Windows.Forms.Label();
             gb1.SuspendLayout();
             gb2.SuspendLayout();
             gb3.SuspendLayout();
+            gb4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attemptRequestCountByPartNUD)).BeginInit();
             this.SuspendLayout();
             // 
             // gb1
-            // 
-            gb1.Controls.Add(this.l1);
-            gb1.Controls.Add(this.attemptRequestCountByPartNUD);
-            gb1.Controls.Add(this.only4NotRunLabel1);
-            gb1.Controls.Add(this.l2);
-            gb1.Controls.Add(this.requestTimeoutByPartDTP);
-            gb1.Controls.Add(this.only4NotRunLabel2);
-            gb1.Controls.Add(this.outputFileExtensionLabel);
-            gb1.Controls.Add(this.outputFileExtensionTextBox);            
-            gb1.Controls.Add(this.uniqueUrlsOnlyCheckBox);
-            
+            //            
             gb1.Location = new System.Drawing.Point(13, 7);
             gb1.Size = new System.Drawing.Size(261, 150);
             gb1.TabIndex = 0;
             gb1.TabStop = false;
             gb1.Text = "Download params";
+            gb1.Controls.Add(l1);
+            gb1.Controls.Add(this.attemptRequestCountByPartNUD);
+            gb1.Controls.Add(this.only4NotRunLabel1);
+            gb1.Controls.Add(l2);
+            gb1.Controls.Add(this.requestTimeoutByPartDTP);
+            gb1.Controls.Add(this.only4NotRunLabel2);
+            gb1.Controls.Add(this.outputFileExtensionLabel);
+            gb1.Controls.Add(this.outputFileExtensionTextBox);
+            gb1.Controls.Add(this.uniqueUrlsOnlyCheckBox);
             // 
             // l1
             // 
-            this.l1.AutoSize = true;
-            this.l1.Location = new System.Drawing.Point(12, 20);
-            this.l1.Size = new System.Drawing.Size(148, 13);
-            this.l1.TabIndex = 0;
-            this.l1.Text = "attempt request count by part:";
+            l1.AutoSize = true;
+            l1.Location = new System.Drawing.Point(12, 20);
+            l1.Size = new System.Drawing.Size(148, 13);
+            l1.TabIndex = 0;
+            l1.Text = "attempt request count by part:";
             // 
             // l2
             // 
-            this.l2.AutoSize = true;
-            this.l2.Location = new System.Drawing.Point(43, 62);
-            this.l2.Size = new System.Drawing.Size(117, 13);
-            this.l2.TabIndex = 3;
-            this.l2.Text = "request timeout by part:";
+            l2.AutoSize = true;
+            l2.Location = new System.Drawing.Point(43, 62);
+            l2.Size = new System.Drawing.Size(117, 13);
+            l2.TabIndex = 3;
+            l2.Text = "request timeout by part:";
             // 
             // attemptRequestCountByPartNUD
             // 
@@ -156,16 +162,16 @@
             // 
             // gb2
             // 
-            gb2.Controls.Add(this.showOnlyRequestRowsWithErrorsCheckBox);
-            gb2.Controls.Add(this.showDownloadStatisticsInMainFormTitleCheckBox);
-            gb2.Controls.Add(this.showAllDownloadsCompleted_NotificationCheckBox);
-            gb2.Controls.Add(this.useDirectorySelectDialogModernCheckBox);
-            gb2.Controls.Add(this.testDirectorySelectDialog);
             gb2.Location = new System.Drawing.Point(13, 163);
             gb2.Size = new System.Drawing.Size(261, 140);
             gb2.TabIndex = 1;
             gb2.TabStop = false;
             gb2.Text = "UI / download log UI";
+            gb2.Controls.Add(this.showOnlyRequestRowsWithErrorsCheckBox);
+            gb2.Controls.Add(this.showDownloadStatisticsInMainFormTitleCheckBox);
+            gb2.Controls.Add(this.showAllDownloadsCompleted_NotificationCheckBox);
+            gb2.Controls.Add(this.useDirectorySelectDialogModernCheckBox);
+            gb2.Controls.Add(this.testDirectorySelectDialog);
             // 
             // showOnlyRequestRowsWithErrorsCheckBox
             // 
@@ -222,8 +228,13 @@
             this.testDirectorySelectDialog.Click += new System.EventHandler(this.testDirectorySelectDialog_Click);
             this.testDirectorySelectDialog.Paint += new System.Windows.Forms.PaintEventHandler(this.testDirectorySelectDialog_Paint);
             // 
-            // gb2
+            // gb3
             // 
+            gb3.Location = new System.Drawing.Point(285, 7);
+            gb3.Size = new System.Drawing.Size(261, 150);
+            gb3.TabIndex = 2;
+            gb3.TabStop = false;
+            gb3.Text = "External program";
             gb3.Controls.Add(this.externalProgResetButton);
             gb3.Controls.Add(this.externalProgFilePathButton);
             gb3.Controls.Add(this.externalProgFilePathTextBox);
@@ -231,11 +242,6 @@
             gb3.Controls.Add(this.externalProgApplyByDefaultCheckBox);
             gb3.Controls.Add(l3);
             gb3.Controls.Add(l4);
-            gb3.Location = new System.Drawing.Point(13, 308);
-            gb3.Size = new System.Drawing.Size(261, 150);
-            gb3.TabIndex = 2;
-            gb3.TabStop = false;
-            gb3.Text = "External program";
             // 
             // l3
             // 
@@ -307,19 +313,56 @@
             this.externalProgApplyByDefaultCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;            
             this.externalProgApplyByDefaultCheckBox.AutoSize = true;
             this.externalProgApplyByDefaultCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.externalProgApplyByDefaultCheckBox.Location = new System.Drawing.Point( 6, 115 );            
+            this.externalProgApplyByDefaultCheckBox.Location = new System.Drawing.Point(6, 115);            
             this.externalProgApplyByDefaultCheckBox.Text = "Apply to all new downloads by default";
             //this.externalProgApplyByDefaultCheckBox.Size = new System.Drawing.Size( 245, 18 );
-            //this.externalProgApplyByDefaultCheckBox.AutoEllipsis = true;         
+            //this.externalProgApplyByDefaultCheckBox.AutoEllipsis = true;
+            // 
+            // gb4
+            // 
+            gb4.Location = new System.Drawing.Point(285, 163);
+            gb4.Size = new System.Drawing.Size(261, 85);
+            gb4.TabIndex = 4;
+            gb4.TabStop = false;
+            gb4.Text = "GC";
+            gb4.Controls.Add(this.currentMemoryLabel);
+            gb4.Controls.Add(this.collectGarbageButton);
+            // 
+            // collectGarbageButton
+            // 
+            this.collectGarbageButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.collectGarbageButton.Location = new System.Drawing.Point(71, 22);
+            this.collectGarbageButton.Size = new System.Drawing.Size(119, 23);
+            this.collectGarbageButton.TabIndex = 0;
+            this.collectGarbageButton.Text = "Collect Garbage";
+            this.collectGarbageButton.UseVisualStyleBackColor = true;
+            this.collectGarbageButton.Click += new System.EventHandler(this.collectGarbageButton_Click);
+            // 
+            // currentMemoryLabel
+            // 
+            this.currentMemoryLabel.AutoEllipsis = true;
+            this.currentMemoryLabel.BackColor = System.Drawing.Color.White;
+            this.currentMemoryLabel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.currentMemoryLabel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.currentMemoryLabel.ForeColor = System.Drawing.Color.DimGray;
+            this.currentMemoryLabel.Location = new System.Drawing.Point(34, 52);
+            this.currentMemoryLabel.Margin = new System.Windows.Forms.Padding(0);
+            this.currentMemoryLabel.Size = new System.Drawing.Size(189, 18);
+            this.currentMemoryLabel.TabIndex = 1;
+            this.currentMemoryLabel.Text = "...";
+            this.currentMemoryLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.currentMemoryLabel.Visible = false;
             // 
             // OtherSettingsUC
             // 
+            this.AutoScroll = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(286, 470);
+            this.ClientSize = new System.Drawing.Size(560, 315);
             this.Controls.Add(gb1);
             this.Controls.Add(gb2);            
             this.Controls.Add(gb3);
+            this.Controls.Add(gb4);
             this.Text = "settings";
             gb1.ResumeLayout(false);
             gb1.PerformLayout();
@@ -327,14 +370,14 @@
             gb2.PerformLayout();
             gb3.ResumeLayout(false);
             gb3.PerformLayout();
+            gb4.ResumeLayout(false);
+            gb4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attemptRequestCountByPartNUD)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
         #endregion
 
-        private System.Windows.Forms.Label l1;
-        private System.Windows.Forms.Label l2;
         private System.Windows.Forms.NumericUpDownEx attemptRequestCountByPartNUD;
         private System.Windows.Forms.DateTimePicker requestTimeoutByPartDTP;
         private System.Windows.Forms.CheckBox showOnlyRequestRowsWithErrorsCheckBox;
@@ -349,9 +392,11 @@
         private System.Windows.Forms.TextBox outputFileExtensionTextBox;
         private System.Windows.Forms.TextBox externalProgFilePathTextBox;
         private System.Windows.Forms.TextBox externalProgCaptionTextBox;
-        private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;
-        private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;        
         private System.Windows.Forms.Button externalProgFilePathButton;
         private System.Windows.Forms.Button externalProgResetButton;
+        private System.Windows.Forms.Button collectGarbageButton;
+        private System.Windows.Forms.Label currentMemoryLabel;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

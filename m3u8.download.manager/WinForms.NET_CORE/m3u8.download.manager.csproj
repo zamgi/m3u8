@@ -109,8 +109,6 @@
     <Compile Include="..\WinForms\UI\UC\OtherSettingsUC.designer.cs" Link="UI\UC\OtherSettingsUC.designer.cs" />
     <Compile Include="..\WinForms\UI\UC\ParallelismSettingsUC.cs" Link="UI\UC\ParallelismSettingsUC.cs" />
     <Compile Include="..\WinForms\UI\UC\ParallelismSettingsUC.designer.cs" Link="UI\UC\ParallelismSettingsUC.designer.cs" />
-    <Compile Include="..\WinForms\UI\UC\MoreSettingsUC.cs" Link="UI\UC\MoreSettingsUC.cs" />
-    <Compile Include="..\WinForms\UI\UC\MoreSettingsUC.designer.cs" Link="UI\UC\MoreSettingsUC.designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -245,6 +245,19 @@ namespace m3u8.download.manager
             => MessageBox.Show( owner, text, caption, buttons, MessageBoxIcon.Question, defaultButton );
 
         public static void SetEnabledAllChildControls( this Control parentControl, bool enabled ) => parentControl.Controls.Cast< Control >().ToList().ForEach( c => c.Enabled = enabled );
+        public static bool IsSelected( this TabPage tabPage )
+        {
+            var tabControl = (TabControl) tabPage.Parent;
+            if ( tabControl != null )
+            {
+                var selIdx = tabControl.SelectedIndex;
+                if ( selIdx != -1 )
+                {
+                    return (tabControl.TabPages[ selIdx ] == tabPage);
+                }
+            }
+            return (false);
+        }
 
         [M(O.AggressiveInlining)] public static string TrimIfLongest( this string s, int maxLength ) => ((maxLength < s.Length) ? (s.Substring( 0, maxLength ) + "..." ) : s);
 

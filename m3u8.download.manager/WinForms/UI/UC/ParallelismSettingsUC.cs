@@ -4,6 +4,7 @@ using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
 using SETTINGS = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using B = System.ComponentModel.BrowsableAttribute;
 
 namespace m3u8.download.manager.ui
 {
@@ -51,18 +52,22 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public.]
+        [B(false)]
         public int  MaxDegreeOfParallelism
         {
             get => Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, Convert.ToInt32( maxDegreeOfParallelismNUD.Value ) ) );
             set => maxDegreeOfParallelismNUD.Value = Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, value ) );
         }
+        [B(false)]
         public bool UseCrossDownloadInstanceParallelism
         {
             get => useCrossDownloadInstanceParallelismCheckBox.Checked;
             set => useCrossDownloadInstanceParallelismCheckBox.Checked = value;
         }
 
+        [B(false)]
         public int? MaxCrossDownloadInstance      => (useMaxCrossDownloadInstanceCheckBox.Checked ? MaxCrossDownloadInstanceSaved : null);
+        [B(false)]
         public int  MaxCrossDownloadInstanceSaved => Math.Max( 1, Convert.ToInt32( maxCrossDownloadInstanceNUD.Value ) );
         public void SetMaxCrossDownloadInstance( int? maxCrossDownloadInstance, int maxCrossDownloadInstanceSaved )
         {
@@ -71,7 +76,9 @@ namespace m3u8.download.manager.ui
             useMaxCrossDownloadInstanceCheckBox_CheckedChanged( useMaxCrossDownloadInstanceCheckBox, EventArgs.Empty );
         }
 
+        [B(false)]
         public double? MaxSpeedThresholdInMbps => (!isUnlimMaxSpeedThresholdCheckBox.Checked ? MaxSpeedThresholdInMbpsSaved : null);
+        [B(false)]
         public double MaxSpeedThresholdInMbpsSaved => Math.Max( 0.1, Convert.ToDouble( maxSpeedThresholdNUD.Value ) );
         public void SetMaxSpeedThresholdInMbps( double? maxSpeedThresholdInMbps, double maxSpeedThresholdInMbpsSaved )
         {

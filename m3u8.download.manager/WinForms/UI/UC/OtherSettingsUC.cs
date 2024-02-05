@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.Properties;
+using B = System.ComponentModel.BrowsableAttribute;
 
 namespace m3u8.download.manager.ui
 {
@@ -17,6 +18,7 @@ namespace m3u8.download.manager.ui
         #region [.fields.]
         private DownloadController _DownloadController;
         private string _ExternalProgFilePath_InitValue;
+        private Timer _GetTotalMemoryTimer;
         #endregion
 
         #region [.ctor().]
@@ -25,6 +27,7 @@ namespace m3u8.download.manager.ui
             InitializeComponent();
 
             this.SetForeColor4ParentOnly< GroupBox >( Color.DodgerBlue );
+            currentMemoryLabel.ForeColor = Color.DimGray;
         }
         public OtherSettingsUC( DownloadController dc ) : this() => Init( dc );
         public void Init( DownloadController dc )
@@ -85,56 +88,67 @@ namespace m3u8.download.manager.ui
 
 
         #region [.public props.]
+        [B(false)]
         public int      AttemptRequestCountByPart
         {
             get => Convert.ToInt32( attemptRequestCountByPartNUD.Value );
             set => attemptRequestCountByPartNUD.Value = value;
         }
+        [B(false)]
         public TimeSpan RequestTimeoutByPart
         {
             get => requestTimeoutByPartDTP.Value.TimeOfDay; // TimeSpan.FromTicks( (requestTimeoutByPartDTP.Value.TimeOfDay - requestTimeoutByPartDTP.MinDate.Date).Ticks );
             set => requestTimeoutByPartDTP.Value = requestTimeoutByPartDTP.MinDate.Date + value;
         }
+        [B(false)]
         public bool     ShowOnlyRequestRowsWithErrors
         {
             get => showOnlyRequestRowsWithErrorsCheckBox.Checked;
             set => showOnlyRequestRowsWithErrorsCheckBox.Checked = value;
         }
+        [B(false)]
         public bool     ShowDownloadStatisticsInMainFormTitle
         {
             get => showDownloadStatisticsInMainFormTitleCheckBox.Checked;
             set => showDownloadStatisticsInMainFormTitleCheckBox.Checked = value;
         }
-        public bool ShowAllDownloadsCompleted_Notification
+        [B(false)]
+        public bool     ShowAllDownloadsCompleted_Notification
         {
             get => showAllDownloadsCompleted_NotificationCheckBox.Checked;
             set => showAllDownloadsCompleted_NotificationCheckBox.Checked = value;
         }        
+        [B(false)]
         public bool     UniqueUrlsOnly
         {
             get => uniqueUrlsOnlyCheckBox.Checked;
             set => uniqueUrlsOnlyCheckBox.Checked = value;
         }
+        [B(false)]
         public string   OutputFileExtension
         {
             get => CorrectOutputFileExtension( outputFileExtensionTextBox.Text );
             set => outputFileExtensionTextBox.Text = CorrectOutputFileExtension( value );
         }
+        [B(false)]
         public string   ExternalProgCaption
         {
             get => externalProgCaptionTextBox.Text?.Trim();
             set => externalProgCaptionTextBox.Text = value?.Trim();
         }
+        [B(false)]
         public string   ExternalProgFilePath
         {
             get => externalProgFilePathTextBox.Text?.Trim();
             set => externalProgFilePathTextBox.Text = value?.Trim();
         }
+        [B(false)]
         public bool     ExternalProgApplyByDefault
         {
             get => externalProgApplyByDefaultCheckBox.Checked;
             set => externalProgApplyByDefaultCheckBox.Checked = value;
         }
+        [B(false)]
         public bool     UseDirectorySelectDialogModern
         {
             get => useDirectorySelectDialogModernCheckBox.Checked;
@@ -247,6 +261,43 @@ namespace m3u8.download.manager.ui
             {
                 return (path);
             }
+        }
+        #endregion
+
+
+        public void StartShowTotalMemory()
+        {
+            if ( _GetTotalMemoryTimer == null )
+            {
+                var tick = new EventHandler((s, e) =>
+                {
+                    CollectGarbage.GetTotalMemory( out var totalMemoryBytes );
+                    currentMemoryLabel.Text    = $"Current Memory: {GetTotalMemoryFormatText( totalMemoryBytes )}.";
+                    currentMemoryLabel.Visible = true;
+                });
+                _GetTotalMemoryTimer = new Timer( components ) { Interval = 1_000, Enabled = true };
+                _GetTotalMemoryTimer.Tick += tick;
+                tick( _GetTotalMemoryTimer, EventArgs.Empty );
+            }            
+        }
+
+        #region [.private methods.]
+        private static string GetTotalMemoryFormatText( long totalMemoryBytes ) => $"{(totalMemoryBytes / (1024.0 * 1024)):N2} MB";
+        private void collectGarbageButton_Click( object sender, EventArgs e )
+        {
+            var btn = (Button) sender;
+            btn.Text = "...";
+            btn.Enabled = false;
+
+            CollectGarbage.Collect_Garbage( out var totalMemoryBytes );
+            //var totalMemoryBytes = await Task.Run( () => { CollectGarbage.Collect_Garbage( out var totalMemoryBytes_ ); return (totalMemoryBytes_); } );
+
+            var text        = GetTotalMemoryFormatText( totalMemoryBytes );
+            var toolTipText = $"Collect Garbage. Total Memory: {text}.";
+
+            btn.Text = text;
+            toolTip.SetToolTip( btn, toolTipText );
+            btn.Enabled = true;
         }
         #endregion
     }
