@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 
@@ -38,6 +38,8 @@ namespace m3u8.download.manager.ui
         private FileNameExcludesWordsEditor()
         {
             InitializeComponent();
+
+            DGV.DefaultCellStyle = DefaultColors.DGV.Create_Suc( DGV.DefaultCellStyle );
 
             _RPN = RowNumbersPainter.Create( DGV, useSelectedBackColor: false );
         }

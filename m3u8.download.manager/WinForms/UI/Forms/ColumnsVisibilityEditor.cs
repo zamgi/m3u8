@@ -23,6 +23,8 @@ namespace m3u8.download.manager.ui
         {
             InitializeComponent();
 
+            DGV.DefaultCellStyle = DefaultColors.DGV.Create_Suc( DGV.DefaultCellStyle );
+
             _RPN = RowNumbersPainter.Create( DGV, useSelectedBackColor: false );
         }
         internal ColumnsVisibilityEditor( IEnumerable< DataGridViewColumn > dataGridColumns, IEnumerable< DataGridViewColumn > immutableDataGridColumns = null ) : this() 

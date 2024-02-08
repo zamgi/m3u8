@@ -49,7 +49,8 @@
             cs1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.DGV.ColumnHeadersDefaultCellStyle = cs1;
             this.DGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[]
+            {
                 this.DGV_outputFileNameColumn,
                 this.DGV_outputDirectoryColumn,
                 this.DGV_statusColumn,
@@ -65,11 +66,13 @@
                 this.DGV_urlColumn
             });
             cs2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            cs2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            cs2.BackColor = System.Drawing.SystemColors.Window;
+            cs2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));            
+            
             cs2.ForeColor = System.Drawing.SystemColors.ControlText;
-            cs2.SelectionBackColor = System.Drawing.Color.CadetBlue;
+            cs2.BackColor = System.Drawing.SystemColors.Window;            
             cs2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            cs2.SelectionBackColor = DefaultColors.DGV.SelectionBackColor_Suc; //---System.Drawing.Color.CadetBlue;
+
             cs2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             this.DGV.DefaultCellStyle = cs2;
             this.DGV.Dock = System.Windows.Forms.DockStyle.Fill;

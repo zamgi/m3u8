@@ -118,7 +118,7 @@ namespace m3u8.download.manager.ui
 
                         const float VERGE = 15;
                         var circle_rc = new RectangleF( cb.X + cb.Width / 2.0f - VERGE / 2, cb.Y + cb.Height / 2.0f - VERGE / 2, VERGE, VERGE );
-                        gr.FillEllipse( Brushes.Blue, circle_rc );
+                        gr.FillEllipse( DefaultColors.DGV.SelectionBackBrush2_Suc/*Brushes.Blue*/, circle_rc );
 
                         circle_rc.Inflate( 0.5f, 0.5f );
                         gr.DrawEllipse( Pens.White, circle_rc );
@@ -145,7 +145,7 @@ namespace m3u8.download.manager.ui
                     gr.FillRectangle( _BackBrush, e.CellBounds );
 
                     var rc  = e.CellBounds; rc.Height -= 2; rc.Width -= 2;
-                    var pen = (e.State.IsSelected() ? Pens.DarkBlue : _BorderPen);
+                    var pen = (e.State.IsSelected() ? DefaultColors.DGV.SelectionBackPen_Suc/*Pens.DarkBlue*/ : _BorderPen);
                     gr.DrawRectangle( pen, rc );
 
                     gr.DrawString( (e.RowIndex + 1).ToString(), font, _TextBrush, e.CellBounds, _SF_RowNumbers );

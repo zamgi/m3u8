@@ -49,14 +49,14 @@
             CanUserReorderColumns="False"
             CanUserSortColumns="False"
             IsReadOnly="True"
-            GridLinesVisibility="Vertical"
+            GridLinesVisibility="All"
             VerticalGridLinesBrush="LightGray" HorizontalGridLinesBrush="LightGray"
             RowBackground="White"
             Background="LightGray"
             ClipboardCopyMode="None"
             VerticalScrollBarVisibility="Auto"
             HorizontalScrollBarVisibility="Auto"
-            > <!---->
+            >
     <DataGrid.Columns>
       <DataGridTemplateColumn Width="2.25*" CellStyleClasses="visible_always_sign">
         <DataGridTemplateColumn.Header>

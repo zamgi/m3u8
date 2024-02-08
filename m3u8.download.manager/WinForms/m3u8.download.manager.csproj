@@ -143,6 +143,7 @@
     <Compile Include="UI\Forms\SettingsForm.designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\DefaultColors.cs" />
     <Compile Include="UI\LogRowsHeightStorer.cs" />
     <Compile Include="UI\Controls\ToolStripItems\SpeedThresholdUC.cs">
       <SubType>UserControl</SubType>

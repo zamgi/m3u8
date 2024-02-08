@@ -264,7 +264,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-
+        #region [.Collect_Garbage.]
         public void StartShowTotalMemory()
         {
             if ( _GetTotalMemoryTimer == null )
@@ -281,7 +281,6 @@ namespace m3u8.download.manager.ui
             }            
         }
 
-        #region [.private methods.]
         private static string GetTotalMemoryFormatText( long totalMemoryBytes ) => $"{(totalMemoryBytes / (1024.0 * 1024)):N2} MB";
         private void collectGarbageButton_Click( object sender, EventArgs e )
         {

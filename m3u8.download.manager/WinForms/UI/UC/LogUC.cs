@@ -44,15 +44,15 @@ namespace m3u8.download.manager.ui
         private bool              _ShowOnlyRequestRowsWithErrors;
         private ToolStripMenuItem _ScrollToLastRowMenuItem;
         private bool              _ScrollToLastRow;
-        private _SC_ _SettingsController;
+        private _SC_              _SettingsController;
 
-        private LogListModel     _Model;
+        private LogListModel             _Model;
         private List_WithIndex< LogRow > _DGVRows;
         private ThreadSafeList< LogRow > _Model_CollectionChanged_AddChangedType_Buf;
         private Action< LogRow >  _RemoveRowAction;
         private HashSet< LogRow > _RemovedBeforeAddRows;
-        private Action< LogRow > _InvalidateRowAction;
-        private Action _Model_CollectionChanged_AddChangedType_Buf__UIRoutineAction;
+        private Action< LogRow >  _InvalidateRowAction;
+        private Action            _Model_CollectionChanged_AddChangedType_Buf__UIRoutineAction;
         private Action< _CollectionChangedTypeEnum_, LogRow > _Model_CollectionChangedAction;        
         private bool _WasAdjustColumnsWidthSprain; //_VScrollBarVisible;
 
@@ -79,35 +79,34 @@ namespace m3u8.download.manager.ui
             _SF  = new StringFormat( StringFormatFlags.LineLimit ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
 
             //----------------------------------------------//
-            var font   = DGV.Font;
-            var alg    = DataGridViewContentAlignment.TopLeft;
-            var wm     = DataGridViewTriState.True;
-            var dcs    = DGV.DefaultCellStyle;
-            var fc_suc = Color.DimGray;
-            var bc_suc = dcs.BackColor;
-            var fc_err = Color.Red;
-            var bc_err = Color.Yellow;
+            var font = DGV.Font;
+            var alg  = DataGridViewContentAlignment.TopLeft;
+            var wm   = DataGridViewTriState.True;
+            var dcs  = DGV.DefaultCellStyle;
+
+            DGV.DefaultCellStyle = DefaultColors.DGV.Create_Suc( dcs );
 
             //----------------------------------------------//
-            _DefaultCellStyle_4ResponseReceived = new CellStyle( dcs ) { WrapMode = wm, Alignment = alg, ForeColor = fc_suc };
+            _DefaultCellStyle_4ResponseReceived = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Alignment = alg } );
             //----------------------------------------------//
 
-            _Req_ReceivedCellStyle = new CellStyle( dcs ) { WrapMode = wm, Font = font, ForeColor = fc_suc, BackColor = bc_suc, Alignment = alg };
-            _Rsp_ReceivedCellStyle = new CellStyle( dcs ) { WrapMode = wm, Font = font, ForeColor = fc_suc, BackColor = bc_suc, Alignment = alg };
-            _Req_ErrorCellStyle    = new CellStyle( dcs ) { WrapMode = wm, Font = font, ForeColor = fc_err, BackColor = bc_err, Alignment = alg };
-            _Rsp_ErrorCellStyle    = new CellStyle( dcs ) { WrapMode = wm, Font = font, ForeColor = fc_err, BackColor = bc_err, Alignment = alg };
+            _Req_ReceivedCellStyle = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = font, Alignment = alg } );
+            _Rsp_ReceivedCellStyle = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = font, Alignment = alg } );
+            _Req_ErrorCellStyle    = DefaultColors.DGV.Create_Err( new CellStyle( dcs ) { WrapMode = wm, Font = font, Alignment = alg } );
+            _Rsp_ErrorCellStyle    = DefaultColors.DGV.Create_Err( new CellStyle( dcs ) { WrapMode = wm, Font = font, Alignment = alg } );
 
             var smallFont_1 = new Font( font.FontFamily       , font.Size        * 4 / 5 );
             var smallFont_2 = new Font( smallFont_1.FontFamily, smallFont_1.Size * 4 / 5 );
 
-            _Req_ErrorCellStyleSmallFont_1 = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_1, ForeColor = fc_err, BackColor = bc_err, Alignment = alg };
-            _Rsp_ErrorCellStyleSmallFont_1 = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_1, ForeColor = fc_err, BackColor = bc_err, Alignment = alg };
-            _Req_ErrorCellStyleSmallFont_2 = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, ForeColor = fc_err, BackColor = bc_err, Alignment = alg };
-            _Rsp_ErrorCellStyleSmallFont_2 = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, ForeColor = fc_err, BackColor = bc_err, Alignment = alg };
-            _Req_CellStyleSmallFont_1      = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_1, ForeColor = fc_suc, BackColor = bc_suc, Alignment = alg };
-            _Rsp_CellStyleSmallFont_1      = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_1, ForeColor = fc_suc, BackColor = bc_suc, Alignment = alg };
-            _Req_CellStyleSmallFont_2      = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, ForeColor = fc_suc, BackColor = bc_suc, Alignment = alg };
-            _Rsp_CellStyleSmallFont_2      = new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, ForeColor = fc_suc, BackColor = bc_suc, Alignment = alg };
+            _Req_ErrorCellStyleSmallFont_1 = DefaultColors.DGV.Create_Err( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_1, Alignment = alg } );
+            _Rsp_ErrorCellStyleSmallFont_1 = DefaultColors.DGV.Create_Err( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_1, Alignment = alg } );
+            _Req_ErrorCellStyleSmallFont_2 = DefaultColors.DGV.Create_Err( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, Alignment = alg } );
+            _Rsp_ErrorCellStyleSmallFont_2 = DefaultColors.DGV.Create_Err( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, Alignment = alg } );
+
+            _Req_CellStyleSmallFont_1      = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_1, Alignment = alg } );
+            _Rsp_CellStyleSmallFont_1      = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_1, Alignment = alg } );
+            _Req_CellStyleSmallFont_2      = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, Alignment = alg } );
+            _Rsp_CellStyleSmallFont_2      = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, Alignment = alg } );
 
             //----------------------------------------------//
             var st = _SC_.SettingsDefault;
@@ -674,31 +673,21 @@ namespace m3u8.download.manager.ui
             var row = _DGVRows[ e.RowIndex ];
             switch ( e.ColumnIndex )
             {
-                case 0:
+                case 0: //Request
                     switch ( row.RequestRowType )
                     {
                         case RequestRowTypeEnum.None:
-                        case RequestRowTypeEnum.Success:
-                            e.Value = Get_4_RequestColumn__text( row.RequestText );
-                        break;
-
-                        case RequestRowTypeEnum.Error:
-                            e.Value = GetError_4_RequestColumn__text( row.RequestText );
-                        break;
+                        case RequestRowTypeEnum.Success: e.Value = Get_4_RequestColumn__text( row.RequestText ); break;
+                        case RequestRowTypeEnum.Error  : e.Value = GetError_4_RequestColumn__text( row.RequestText ); break;
                     }
                 break;
 
-                case 1:
+                case 1: //Response
                     switch ( row.RequestRowType )
                     {
                         case RequestRowTypeEnum.None:
-                        case RequestRowTypeEnum.Success:
-                            e.Value = Get_4_RequestColumn__text( row.ResponseText );
-                        break;
-
-                        case RequestRowTypeEnum.Error:
-                            e.Value = GetError_4_ResponseColumn__text( row.ResponseText );
-                        break;
+                        case RequestRowTypeEnum.Success: e.Value = Get_4_RequestColumn__text( row.ResponseText ); break;
+                        case RequestRowTypeEnum.Error  : e.Value = GetError_4_ResponseColumn__text( row.ResponseText ); break;
                     }
                 break;
             }
@@ -709,40 +698,22 @@ namespace m3u8.download.manager.ui
             CellStyle cs;
             switch ( e.ColumnIndex )
             {
-                case 0:
+                case 0: //Request
                     switch ( row.RequestRowType )
                     {
-                        case RequestRowTypeEnum.None:
-                            cs = Get_4_RequestColumn__cellStyle( row.RequestText ); 
-                        break;
-
-                        case RequestRowTypeEnum.Success:
-                            cs = _DefaultCellStyle_4ResponseReceived; 
-                        break;
-
-                        case RequestRowTypeEnum.Error:
-                            cs = GetError_4_RequestColumn__cellStyle( row.RequestText ); 
-                        break;
-
+                        case RequestRowTypeEnum.None   : cs = Get_4_RequestColumn__cellStyle( row.RequestText ); break;
+                        case RequestRowTypeEnum.Success: cs = _DefaultCellStyle_4ResponseReceived; break;
+                        case RequestRowTypeEnum.Error  : cs = GetError_4_RequestColumn__cellStyle( row.RequestText ); break;
                         default: cs = null; break;
                     }
                 break;
 
-                case 1:
+                case 1: //Response
                     switch ( row.RequestRowType )
                     {
-                        case RequestRowTypeEnum.None:
-                            cs = Get_4_RequestColumn__cellStyle( row.ResponseText ); 
-                        break;
-
-                        case RequestRowTypeEnum.Success:
-                            cs = _Rsp_ReceivedCellStyle; 
-                        break;
-
-                        case RequestRowTypeEnum.Error:
-                            cs = (!row.ResponseText.IsNullOrEmpty() ? GetError_4_ResponseColumn__cellStyle( row.ResponseText ) : null); 
-                        break;
-
+                        case RequestRowTypeEnum.None   : cs = Get_4_RequestColumn__cellStyle( row.ResponseText ); break;
+                        case RequestRowTypeEnum.Success: cs = _Rsp_ReceivedCellStyle; break;
+                        case RequestRowTypeEnum.Error  : cs = GetError_4_ResponseColumn__cellStyle( row.ResponseText ); break;
                         default: cs = null; break;
                     }
                 break;

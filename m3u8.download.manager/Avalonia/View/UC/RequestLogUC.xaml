@@ -14,30 +14,31 @@
              -->
   
   <UserControl.Resources>
-    <local:RequestRowType2Foreground_Converter x:Key="RequestRowType2Foreground" />
-    <!--<SolidColorBrush x:Key="HighlightForegroundBrush" Color="White"></SolidColorBrush>-->
+    <local:RequestRowType_2_Foreground_Converter         x:Key="RRT_2_Foreground" />
+    <local:RequestRowType_2_SelectedForeground_Converter x:Key="RRT_2_SelectedForeground" />
+    <local:RequestRowType_2_Background_Converter         x:Key="RRT_2_Background" />
+    <local:RequestRowType_2_SelectedBackground_Converter x:Key="RRT_2_SelectedBackground" />
   </UserControl.Resources>
 
   <UserControl.Styles>
-    <Style Selector="DataGridCell.rrt">
-      <!--<Setter Property="FontWeight" Value="Bold" />-->      
-      <Setter Property="Foreground" Value="{Binding Path=RequestRowType, Mode=OneWay, Converter={StaticResource RequestRowType2Foreground}}" />
-    </Style>
-
-    <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
-      <Setter Property="Fill" Value="DodgerBlue" />
-    </Style>
     <Style Selector="DataGridRow TextBlock">
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
+    <Style Selector="DataGridRow">
+      <Setter Property="Background" Value="{Binding Path=RequestRowType, Mode=OneWay, Converter={StaticResource RRT_2_Background}}" />
+    </Style>
+    <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="{Binding Path=RequestRowType, Mode=OneWay, Converter={StaticResource RRT_2_Background}}" />
+    </Style>
+    <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="{Binding Path=RequestRowType, Mode=OneWay, Converter={StaticResource RRT_2_SelectedBackground}}" />
+    </Style>
+    <Style Selector="DataGridRow TextBlock">
+      <Setter Property="Foreground" Value="{Binding Path=RequestRowType, Mode=OneWay, Converter={StaticResource RRT_2_Foreground}}" />
+    </Style>
     <Style Selector="DataGridRow:selected TextBlock">
-      <Setter Property="Foreground" Value="White" />
+      <Setter Property="Foreground" Value="{Binding Path=RequestRowType, Mode=OneWay, Converter={StaticResource RRT_2_SelectedForeground}}" />
     </Style>
-    <!--
-    <Style Selector="DataGridCell > TextBlock">
-      <Setter Property="Foreground" Value="White" />
-    </Style>
-    -->
   </UserControl.Styles>
   
   <DataGrid x:Name="DGV"
@@ -45,10 +46,14 @@
             CanUserResizeColumns="True" 
             CanUserReorderColumns="False" 
             CanUserSortColumns="False"
-            IsReadOnly="True"              
+            IsReadOnly="True"
+            GridLinesVisibility="All"
+            VerticalGridLinesBrush="Silver"
+            HorizontalGridLinesBrush="Silver"
+            Background="LightGray"
             >
       <DataGrid.Columns>
-        <DataGridTextColumn Header="Request" Binding="{Binding RequestText}" Width="*" CellStyleClasses="rrt" />
+        <DataGridTextColumn Header="Request" Binding="{Binding RequestText}" Width="*" />
       </DataGrid.Columns>
     </DataGrid>
 </UserControl>

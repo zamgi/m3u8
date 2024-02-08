@@ -14,7 +14,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle cs1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle cs = new System.Windows.Forms.DataGridViewCellStyle();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
             this.DGV = new System.Windows.Forms.DataGridView_SaveSelectionByMouseDown();
@@ -52,14 +52,14 @@
             this.DGV.Location = new System.Drawing.Point(3, 0);
             this.DGV.Size = new System.Drawing.Size(302, 406);
             this.DGV.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            cs1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            cs1.BackColor = System.Drawing.SystemColors.Control;
-            cs1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            cs1.ForeColor = System.Drawing.SystemColors.WindowText;
-            cs1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            cs1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            cs1.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DGV.ColumnHeadersDefaultCellStyle = cs1;
+            cs.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            cs.BackColor = System.Drawing.SystemColors.Control;
+            cs.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            cs.ForeColor = System.Drawing.SystemColors.WindowText;
+            cs.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            cs.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            cs.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DGV.ColumnHeadersDefaultCellStyle = cs;
             this.DGV.AllowUserToAddRows = false;
             this.DGV.AllowUserToDeleteRows = false;
             this.DGV.AllowUserToResizeRows = false;

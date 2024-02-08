@@ -87,6 +87,7 @@
     <Compile Include="..\WinForms\UI\Forms\SettingsForm.cs" Link="UI\Forms\SettingsForm.cs" />
     <Compile Include="..\WinForms\UI\Forms\SettingsForm.designer.cs" Link="UI\Forms\SettingsForm.designer.cs" />
     <Compile Include="..\WinForms\UI\LogRowsHeightStorer.cs" Link="UI\LogRowsHeightStorer.cs" />
+    <Compile Include="..\WinForms\UI\DefaultColors.cs" Link="UI\DefaultColors.cs" />
     <Compile Include="..\WinForms\UI\Forms\MainForm.cs" Link="UI\Forms\MainForm.cs" />
     <Compile Include="..\WinForms\UI\Forms\MainForm.Designer.cs" Link="UI\Forms\MainForm.Designer.cs" />
     <Compile Include="..\WinForms\UI\Controls\ButtonWithFocusCues.cs" Link="UI\Controls\ButtonWithFocusCues.cs" />

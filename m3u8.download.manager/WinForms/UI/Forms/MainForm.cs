@@ -1145,9 +1145,10 @@ namespace m3u8.download.manager.ui
             {
                 startAllDownloadsMenuItem.Enabled =
                     cancelAllDownloadsMenuItem.Enabled =
-                        pauseAllDownloadsMenuItem.Enabled =
-                            deleteAllDownloadsMenuItem.Enabled =
-                                deleteAllWithOutputFilesMenuItem.Enabled = false;
+                        pauseAllDownloadsMenuItem.Enabled = false;
+
+                deleteAllDownloadsMenuItem      .Enabled = deleteDownloadMenuItem      .Enabled;
+                deleteAllWithOutputFilesMenuItem.Enabled = deleteWithOutputFileMenuItem.Enabled; 
             }
         }
 
@@ -1479,11 +1480,13 @@ namespace m3u8.download.manager.ui
                                                                                                            (status == DownloadStatus.Running );
         #endregion
 
+        #region [.Collect_Garbage.]
         private void Collect_Garbage()
         {
             CollectGarbage.Collect_Garbage( out var totalMemoryBytes );
 
             statusBarUC.ShowDisappearingMessage( $"Collect Garbage. Total Memory: {(totalMemoryBytes / (1024.0 * 1024)):N2} MB." );
         }
+        #endregion
     }
 }

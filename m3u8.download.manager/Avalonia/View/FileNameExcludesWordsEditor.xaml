@@ -12,13 +12,30 @@
         Background="WhiteSmoke"
         ShowInTaskbar="False"
         >
-  <Window.Styles>    
-    <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
-      <Setter Property="Fill" Value="DodgerBlue" />
-    </Style>
+  <Window.Styles>
     <Style Selector="DataGridRow TextBlock">
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />
     </Style>
+
+    <!-- Background -->
+    <Style Selector="DataGridRow">
+      <Setter Property="Background" Value="White" />
+    </Style>
+    <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="White" />
+    </Style>
+
+    <!-- Select-Background -->
+    <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="CadetBlue" />
+    </Style>
+
+    <!-- Foreground -->
+    <!--<Style Selector="DataGridRow TextBlock">
+      <Setter Property="Foreground" Value="Black" />
+    </Style>-->
+    
+    <!-- Select-Foreground -->
     <Style Selector="DataGridRow:selected TextBlock">
       <Setter Property="Foreground" Value="White" />
     </Style>
@@ -27,7 +44,7 @@
       <Setter Property="Foreground" Value="Silver" />
     </Style>
     <Style Selector="DataGridRow:selected DataGridCell.order_number TextBlock">
-      <Setter Property="Foreground" Value="Silver" />
+      <Setter Property="Foreground" Value="WhiteSmoke" /> <!--#393939-->
     </Style>
   </Window.Styles>
   
@@ -47,8 +64,8 @@
               CanUserReorderColumns="False"
               CanUserSortColumns="True"
               IsReadOnly="False"
-              GridLinesVisibility="Vertical" 
-              VerticalGridLinesBrush="White" HorizontalGridLinesBrush="Black"
+              GridLinesVisibility="All" 
+              VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver"
               BorderBrush="LightGray" BorderThickness="1"
               ClipboardCopyMode="None"
               Background="LightGray"
