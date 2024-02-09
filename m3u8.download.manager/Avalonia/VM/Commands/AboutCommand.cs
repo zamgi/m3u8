@@ -63,12 +63,12 @@ namespace m3u8.download.manager
             }
             if ( fontFamily != null )
             {
-                var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.Info, fontFamily );
+                var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.None/*Info*/, fontFamily );
                 await msgbox.ShowEx();
             }
             else
             {
-                await Extensions.MessageBox_ShowInformation( text, CAPTION );
+                await Extensions.MessageBox_Show( text, CAPTION, Icon.None/*Info*/ );
             }            
         }
     }

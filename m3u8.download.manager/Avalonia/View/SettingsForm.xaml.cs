@@ -73,6 +73,12 @@ namespace m3u8.download.manager.ui
             this.Find< Button >( "cancelButton" ).Click += (s, e) => this.Close();
         }
 
+        protected override void OnOpened( EventArgs e )
+        {
+            base.OnOpened( e );
+
+            this.Find< Button >( "collectGarbageButton" ).Focus();
+        }
         protected override void OnClosed( EventArgs e )
         {
             base.OnClosed( e );

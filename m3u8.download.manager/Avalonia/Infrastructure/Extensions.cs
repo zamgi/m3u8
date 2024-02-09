@@ -382,7 +382,7 @@ namespace m3u8.download.manager
             }
         }
 
-        public static Task MessageBox_ShowInformation( string text, string caption ) => MessageBox_ShowWithOkButton( text, caption, Icon.Info );
+        public static Task MessageBox_Show( string text, string caption, Icon icon ) => MessageBox_ShowWithOkButton( text, caption, icon );
         public static Task MessageBox_ShowError( string text, string caption ) => MessageBox_ShowWithOkButton( text, caption, Icon.Error );
         public static Task MessageBox_ShowError( this Exception ex, string caption ) => MessageBox_ShowError( ex.ToString(), caption );
         public static Task MessageBox_ShowInformation( this Window window, string text, string caption ) => Create_MsBoxStandardWindow( text, caption, ButtonEnum.Ok, Icon.Info ).ShowWindowDialogAsync( window );

@@ -93,6 +93,12 @@ namespace m3u8.download.manager.ui
             filterTextBox_SubscribeDisposable = filterTextBox.GetObservable( TextBox.TextProperty ).Subscribe( filterTextBox_TextChanged );
         }
 
+        protected override void OnOpened( EventArgs e )
+        {
+            base.OnOpened( e );
+
+            DGV.Focus();
+        }
         protected override void OnClosed( EventArgs e )
         {
             base.OnClosed( e );

@@ -13,7 +13,6 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Threading;
-using Avalonia.VisualTree;
 using MsBox.Avalonia.Enums;
 
 using m3u8.download.manager.infrastructure;
@@ -936,12 +935,12 @@ namespace m3u8.download.manager.ui
 
                 //pt = downloadListUC.TranslatePoint( pt, this ).GetValueOrDefault( pt );
 
-                var b1 = downloadListUC.Bounds;
-                var b2 = mainContextMenu.Bounds;
+                //var b1 = downloadListUC.Bounds;
+                //var b2 = mainContextMenu.Bounds;
 
-                mainContextMenu.HorizontalOffset = pt.X + (- b1.Width / 2) + b2.Width / 2;
-                mainContextMenu.VerticalOffset   = pt.Y + (- b1.Height); 
-                mainContextMenu.Placement        = PlacementMode.Pointer;
+                //mainContextMenu.HorizontalOffset = pt.X + (- b1.Width / 2) + b2.Width / 2;
+                //mainContextMenu.VerticalOffset   = pt.Y + (- b1.Height); 
+                //mainContextMenu.Placement        = PlacementMode.Pointer;
                 mainContextMenu.Open( downloadListUC );
             }
         }

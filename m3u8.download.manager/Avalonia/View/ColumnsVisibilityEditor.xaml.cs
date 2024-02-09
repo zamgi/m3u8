@@ -111,6 +111,7 @@ namespace m3u8.download.manager.ui
             base.OnOpened( e );
 
             CorrectCheckBoxesStyle();
+            DGV.Focus();
         }
         protected override void OnClosed( EventArgs e )
         {
