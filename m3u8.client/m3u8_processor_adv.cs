@@ -15,17 +15,6 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal interface I_download_threads_semaphore : IDisposable
-    {
-        bool UseCrossDownloadInstanceParallelism { get; }
-
-        void Wait( CancellationToken ct );
-        void Release();
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
     internal static class m3u8_processor_adv
     {
         private static IEnumerable< m3u8_part_ts > download_m3u8File_parts_parallel( DownloadPartsAndSaveInputParams ip )

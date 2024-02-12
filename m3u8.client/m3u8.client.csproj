@@ -38,6 +38,7 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="download_threads_semaphore.cs" />
     <Compile Include="m3u8.client.cs" />
     <Compile Include="m3u8.client.factory.cs" />
     <Compile Include="m3u8_processor.cs" />
