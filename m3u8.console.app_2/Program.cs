@@ -135,9 +135,9 @@ namespace m3u8
             private static IReadOnlyCollection< m3u8_part_ts > download_m3u8File_parallel__v1( m3u8_client mc, m3u8_file_t m3u8_file
                 , CancellationTokenSource cts = null, int maxDegreeOfParallelism = 64 )
             {
-                var ct = (cts?.Token).GetValueOrDefault( CancellationToken.None );
-                var baseAddress = m3u8_file.BaseAddress;
-                var totalPatrs  = m3u8_file.Parts.Count;
+                var ct                = (cts?.Token).GetValueOrDefault( CancellationToken.None );
+                var baseAddress       = m3u8_file.BaseAddress;
+                var totalPatrs        = m3u8_file.Parts.Count;
                 var successPartNumber = 0;
 
                 var parts = m3u8_file.Parts;
@@ -290,9 +290,9 @@ namespace m3u8
             private static IEnumerable< m3u8_part_ts > download_m3u8File_parallel__v2( m3u8_client mc, m3u8_file_t m3u8_file
                 , CancellationTokenSource cts = null, int maxDegreeOfParallelism = 64 )
             {
-                var ct = (cts?.Token).GetValueOrDefault( CancellationToken.None );
-                var baseAddress = m3u8_file.BaseAddress;
-                var totalPatrs  = m3u8_file.Parts.Count;
+                var ct                = (cts?.Token).GetValueOrDefault( CancellationToken.None );
+                var baseAddress       = m3u8_file.BaseAddress;
+                var totalPatrs        = m3u8_file.Parts.Count;
                 var successPartNumber = 0;
 
                 var expectedPartNumber = m3u8_file.Parts.FirstOrDefault().OrderNumber;

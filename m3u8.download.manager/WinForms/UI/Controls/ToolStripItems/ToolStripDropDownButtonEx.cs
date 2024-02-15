@@ -279,6 +279,7 @@ namespace System.Windows.Forms
                 }
             }
         }
+        public double ValueSaved => _ToolStripSpeedThreshold.Value;
 
         private _ToolStripSpeedThreshold_ _ToolStripSpeedThreshold;
         private void ToolStripSpeedThreshold_ValueChanged( object sender, EventArgs e ) => this.Value = ((_ToolStripSpeedThreshold_) sender).Value;

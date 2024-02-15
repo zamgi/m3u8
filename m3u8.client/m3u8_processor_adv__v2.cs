@@ -34,9 +34,9 @@ namespace m3u8
             //var poolStreamCapacity = ip.PoolStreamCapacity.GetValueOrDefault( 1024 * 1024 * 5 );
 
             using ( var throttlerBySpeed_User = ThrottlerBySpeed_InDownloadProcessUser.Start( ip.ThrottlerBySpeed ) )
-            using ( var innerCts            = new CancellationTokenSource() )
-            using ( var joinedCts           = CancellationTokenSource.CreateLinkedTokenSource( ip.CancellationToken, innerCts.Token ) )
-            using ( var canExtractPartEvent = new AutoResetEvent( false ) )
+            using ( var innerCts              = new CancellationTokenSource() )
+            using ( var joinedCts             = CancellationTokenSource.CreateLinkedTokenSource( ip.CancellationToken, innerCts.Token ) )
+            using ( var canExtractPartEvent   = new AutoResetEvent( false ) )
             //using ( var pool                = new ObjectPoolDisposable< MemoryStream >( ip.MaxDegreeOfParallelism, () => new MemoryStream( poolStreamCapacity ) ) )
             {
                 //-1-//
@@ -196,9 +196,9 @@ namespace m3u8
             //var poolStreamCapacity = ip.PoolStreamCapacity.GetValueOrDefault( 1024 * 1024 * 5 );
 
             using ( var throttlerBySpeed_User = ThrottlerBySpeed_InDownloadProcessUser.Start( ip.ThrottlerBySpeed ) )
-            using ( var innerCts            = new CancellationTokenSource() )
-            using ( var joinedCts           = CancellationTokenSource.CreateLinkedTokenSource( ip.CancellationToken, innerCts.Token ) )
-            using ( var canExtractPartEvent = new AutoResetEvent( false ) )
+            using ( var innerCts              = new CancellationTokenSource() )
+            using ( var joinedCts             = CancellationTokenSource.CreateLinkedTokenSource( ip.CancellationToken, innerCts.Token ) )
+            using ( var canExtractPartEvent   = new AutoResetEvent( false ) )
             //using ( var pool                = new ObjectPoolDisposable< MemoryStream >( ip.MaxDegreeOfParallelism, () => new MemoryStream( poolStreamCapacity ) ) )
             {
                 //-1-//

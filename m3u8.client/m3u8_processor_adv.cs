@@ -19,7 +19,7 @@ namespace m3u8
     {
         private static IEnumerable< m3u8_part_ts > download_m3u8File_parts_parallel( DownloadPartsAndSaveInputParams ip )
         {
-            var ct = (ip.Cts?.Token).GetValueOrDefault( CancellationToken.None );
+            var ct                       = (ip.Cts?.Token).GetValueOrDefault( CancellationToken.None );
             var m3u8File                 = ip.m3u8File;
             var baseAddress              = m3u8File.BaseAddress;
             var totalPatrs               = m3u8File.Parts.Count;
@@ -175,7 +175,7 @@ namespace m3u8
 #if NETCOREAPP
         private static async IAsyncEnumerable< m3u8_part_ts > download_m3u8File_parts_parallel_Async( DownloadPartsAndSaveInputParams ip )
         {
-            var ct = (ip.Cts?.Token).GetValueOrDefault( CancellationToken.None );
+            var ct                       = (ip.Cts?.Token).GetValueOrDefault( CancellationToken.None );
             var m3u8File                 = ip.m3u8File;
             var baseAddress              = m3u8File.BaseAddress;
             var totalPatrs               = m3u8File.Parts.Count;

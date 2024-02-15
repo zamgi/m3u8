@@ -21,12 +21,16 @@
             System.Windows.Forms.ToolStripSeparator s3 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s4 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s5 = new System.Windows.Forms.ToolStripSeparator();
-            //---System.Windows.Forms.ToolStripSeparator s6 = new System.Windows.Forms.ToolStripSeparator();
+            System.Windows.Forms.ToolStripSeparator s6 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s7 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s8 = new System.Windows.Forms.ToolStripSeparator();
-            System.Windows.Forms.ToolStripSeparator s9 = new System.Windows.Forms.ToolStripSeparator();
-            System.Windows.Forms.ToolStripSeparator s10 = new System.Windows.Forms.ToolStripSeparator();
-            System.Windows.Forms.ToolStripSeparator s11 = new System.Windows.Forms.ToolStripSeparator();
+
+            System.Windows.Forms.ToolStripSeparator s20 = new System.Windows.Forms.ToolStripSeparator();
+            System.Windows.Forms.ToolStripSeparator s21 = new System.Windows.Forms.ToolStripSeparator();
+            System.Windows.Forms.ToolStripSeparator s22 = new System.Windows.Forms.ToolStripSeparator();
+            System.Windows.Forms.ToolStripSeparator s23 = new System.Windows.Forms.ToolStripSeparator();
+            System.Windows.Forms.ToolStripSeparator s24 = new System.Windows.Forms.ToolStripSeparator();
+
             this.mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.addNewDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.startDownloadToolButton = new System.Windows.Forms.ToolStripButton();
@@ -93,9 +97,11 @@
                 this.pasteToolButton,
                 s5,
                 this.degreeOfParallelismToolButton,
+                s6,
                 this.downloadInstanceToolButton,
+                s7,
                 this.speedThresholdToolButton,
-                //---s6,
+                s8,
                 this.aboutToolButton,
                 this.otherSettingsToolButton,                
                 this.parallelismSettingsToolButton,
@@ -239,7 +245,7 @@
             // 
             // speedThrottlerToolButton
             //             
-            this.speedThresholdToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__DoubleValue.ValueChangedEventHandler(this.speedThrottlerToolButton_ValueChanged );            
+            this.speedThresholdToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__DoubleValue.ValueChangedEventHandler(this.speedThresholdToolButton_ValueChanged );            
             // 
             // mainSplitContainer
             // 
@@ -281,21 +287,21 @@
                 this.startDownloadMenuItem,
                 this.pauseDownloadMenuItem,
                 this.cancelDownloadMenuItem,
-                s7,
+                s20,
                 this.deleteDownloadMenuItem,
                 this.deleteWithOutputFileMenuItem,
-                s8,
+                s21,
                 this.browseOutputFileMenuItem,
                 this.openOutputFileMenuItem,
                 this.openOutputFilesWithExternalMenuItem,
                 this.changeOutputDirectoryMenuItem,
-                s9,
+                s22,
                 this.deleteAllFinishedDownloadMenuItem,
-                s10,
+                s23,
                 this.startAllDownloadsMenuItem,
                 this.pauseAllDownloadsMenuItem,
                 this.cancelAllDownloadsMenuItem,
-                s11,
+                s24,
                 this.deleteAllDownloadsMenuItem,
                 this.deleteAllWithOutputFilesMenuItem
             });

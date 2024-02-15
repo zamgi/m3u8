@@ -63,7 +63,7 @@ namespace m3u8.download.manager.ui
             _LogRowsHeightStorer = new LogRowsHeightStorer();
 
             _DownloadListModel  = new DownloadListModel();
-            _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;            
+            _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
             _DC = new _DC_( _DownloadListModel, _SC );
 
             _SC.SettingsPropertyChanged += SettingsController_PropertyChanged;
@@ -1048,7 +1048,7 @@ namespace m3u8.download.manager.ui
             }
         }
         private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SC.MaxDegreeOfParallelism = value;
-        private void speedThrottlerToolButton_ValueChanged( double? value ) => _SC.MaxSpeedThresholdInMbps = value; 
+        private void speedThresholdToolButton_ValueChanged( double? value ) => (_SC.MaxSpeedThresholdInMbps, _SC.MaxSpeedThresholdInMbpsSaved) = (value, speedThresholdToolButton.ValueSaved); 
         #endregion
 
         #region [.context menu.]

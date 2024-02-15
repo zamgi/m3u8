@@ -207,7 +207,18 @@ namespace m3u8.download.manager.ui
                     dtrow = srs[ 0 ];
                     break;
                 default:
-                    dtrow = srs.Cast< DataGridViewRow >().OrderBy( r => r.Index ).FirstOrDefault();
+                    var currentCell_RowIndex = DGV.CurrentCell.RowIndex;
+                    dtrow = default;
+                    for ( var i = srs.Count - 1; 0 <= i; i-- )
+                    {
+                        var r = srs[ i ];
+                        if ( r.Index == currentCell_RowIndex )
+                        {
+                            dtrow = r;
+                            break;
+                        }
+                    }
+                    //dtrow = srs.Cast< DataGridViewRow >().Where( r => r.Index == currentCell_RowIndex ).FirstOrDefault();
                     break;
             }
             var row = ((dtrow != null) && (dtrow.Index < _Model.RowsCount)) ? _Model[ dtrow.Index ] : null;

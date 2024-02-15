@@ -287,8 +287,8 @@ namespace m3u8
 
         private static IEnumerable< m3u8_part_ts > download_m3u8File_parts_parallel( download_m3u8File_parts_parallel_params_t ip )
         {
-            var baseAddress = ip.m3u8File.BaseAddress;
-            var totalPatrs  = ip.m3u8File.Parts.Count;
+            var baseAddress              = ip.m3u8File.BaseAddress;
+            var totalPatrs               = ip.m3u8File.Parts.Count;
             var successReceivedPartCount = 0;
             var failedReceivedPartCount  = 0;
 
@@ -372,7 +372,7 @@ namespace m3u8
                 for ( var localReadyParts = new Queue< m3u8_part_ts >( Math.Min( 0x1000, ip.maxDegreeOfParallelism ) );
                           expectedPartNumber <= maxPartNumber; )
                 {
-                    var idx = WaitHandle.WaitAny( new[] { canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/, } );
+                    var idx = WaitHandle.WaitAny( [ canExtractPartEvent /*0*/, /*ct*/ joinedCts.Token.WaitHandle /*1*/ ] );
                     if ( idx == 1 ) //[ct.IsCancellationRequested := 1]
                         break;
                     if ( idx != 0 ) //[canExtractPartEvent := 0]
