@@ -435,17 +435,17 @@ namespace m3u8.download.manager.ui
 
             //TEMP
 #if DEBUG
-            else //if ( !this.M3u8FileUrl.IsNullOrWhiteSpace() )
-            {
-                m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
-                this.Opened += (_, _) =>
-                {
-                    var txt = "Last_OutputFileName_Num - Last_OutputFileName_Num - Last_OutputFileName_Num - **.txt";
-                    this.OutputFileName = txt;
-                    setFocus2outputFileNameTextBox_Core( txt );
-                    outputFileNameTextBox_TextChanged( txt );
-                };
-            }
+            //else //if ( !this.M3u8FileUrl.IsNullOrWhiteSpace() )
+            //{
+            //    m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
+            //    this.Opened += (_, _) =>
+            //    {
+            //        var txt = "Last_OutputFileName_Num - Last_OutputFileName_Num - Last_OutputFileName_Num - **.txt";
+            //        this.OutputFileName = txt;
+            //        setFocus2outputFileNameTextBox_Core( txt );
+            //        outputFileNameTextBox_TextChanged( txt );
+            //    };
+            //}
 #endif
         }
         private void Process_use_OutputFileNamePatternProcessor()

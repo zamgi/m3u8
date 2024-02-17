@@ -131,9 +131,9 @@ namespace m3u8.download.manager.models
             var outputFullFileName = GetOutputFullFileName();
             if ( !VeryFirstOutputFullFileName.IsNullOrEmpty() && (outputFullFileName != VeryFirstOutputFullFileName) )
             {
-                return (new[] { VeryFirstOutputFullFileName, outputFullFileName });
+                return ([ VeryFirstOutputFullFileName, outputFullFileName ]);
             }
-            return (new[] { outputFullFileName });
+            return ([outputFullFileName ]);
         }
         public void     SaveVeryFirstOutputFullFileName( string outputFullFileName ) => VeryFirstOutputFullFileName = outputFullFileName;
 
