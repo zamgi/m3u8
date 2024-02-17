@@ -10,8 +10,9 @@
         WindowStartupLocation="CenterOwner"
         Icon="/Resources/m3u8_32x36.ico"
         Background="WhiteSmoke"
-        ShowInTaskbar="False"
-        >
+        ShowInTaskbar="False"        
+        > <!--ExtendClientAreaChromeHints="NoChrome" ExtendClientAreaToDecorationsHint="True"-->
+        
   <Window.Styles>
     <Style Selector="DataGridRow TextBlock">
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />

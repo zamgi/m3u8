@@ -9,9 +9,6 @@
              Foreground="{DynamicResource ThemeForegroundBrush}"             
              d:DesignWidth="600" d:DesignHeight="350"
              >
-             <!--
-
-             -->
   
   <UserControl.Resources>
     <local:RequestRowType_2_Foreground_Converter         x:Key="RRT_2_Foreground" />
@@ -48,8 +45,7 @@
             CanUserSortColumns="False"
             IsReadOnly="True"
             GridLinesVisibility="All"
-            VerticalGridLinesBrush="Silver"
-            HorizontalGridLinesBrush="Silver"
+            VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver"
             Background="LightGray"
             >
       <DataGrid.Columns>

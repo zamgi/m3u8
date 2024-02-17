@@ -104,7 +104,7 @@
     <Compile Include="..\WinForms\UI\UC\StatusBarUC.Designer.cs" Link="UI\UC\StatusBarUC.Designer.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\SpeedThresholdUC.cs" Link="UI\Controls\ToolStripItems\SpeedThresholdUC.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\SpeedThresholdUC.Designer.cs" Link="UI\Controls\ToolStripItems\SpeedThresholdUC.Designer.cs" />
-    <Compile Include="..\WinForms\UI\Controls\ToolStripItems\ToolStripDropDownButtonEx.cs" Link="UI\Controls\ToolStripItems\ToolStripDropDownButtonEx.cs" />
+    <Compile Include="..\WinForms\UI\Controls\ToolStripItems\_ToolStripDropDownButtons.cs" Link="UI\Controls\ToolStripItems\_ToolStripDropDownButtons.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\ToolStripNumericUpDownEx.cs" Link="UI\Controls\ToolStripItems\ToolStripNumericUpDownEx.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\ToolStripSpeedThreshold.cs" Link="UI\Controls\ToolStripItems\ToolStripSpeedThreshold.cs" />
     <Compile Include="..\WinForms\UI\WaitBanner\BitmapHolder.cs" Link="UI\WaitBanner\BitmapHolder.cs" />

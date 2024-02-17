@@ -1,8 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 
-#if DEBUG
 using Avalonia;
-#endif
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -104,6 +103,16 @@ namespace m3u8.download.manager.ui
             }
 
             base.OnKeyDown( e );
+        }
+        protected override async void OnPropertyChanged( AvaloniaPropertyChangedEventArgs e )
+        {
+            if ( (e.Property == Window.WindowStateProperty) && ((WindowState) e.NewValue == WindowState.Minimized) )
+            {
+                var state = (WindowState) e.OldValue;
+                await Task.Delay( 1 );
+                this.WindowState = state;
+            }
+            base.OnPropertyChanged( e );
         }
         #endregion
 

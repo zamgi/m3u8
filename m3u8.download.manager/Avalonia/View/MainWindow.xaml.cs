@@ -586,9 +586,9 @@ namespace m3u8.download.manager.ui
             else
             {
                 var status = row.Status;
-                startDownloadToolButton.IsEnabled = status.StartDownload_IsAllowed();
+                startDownloadToolButton .IsEnabled = status.StartDownload_IsAllowed();
                 cancelDownloadToolButton.IsEnabled = status.CancelDownload_IsAllowed();
-                pauseDownloadToolButton.IsEnabled = status.PauseDownload_IsAllowed();
+                pauseDownloadToolButton .IsEnabled = status.PauseDownload_IsAllowed();
 
                 deleteDownloadToolButton.IsEnabled = true;
                 deleteAllFinishedDownloadToolButton.IsEnabled = (status.IsFinished() || _VM.DownloadListModel.HasAnyFinished());

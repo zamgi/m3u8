@@ -1,12 +1,10 @@
 ﻿using System;
-using System.IO;
 
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 
-using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 
 namespace m3u8.download.manager.ui

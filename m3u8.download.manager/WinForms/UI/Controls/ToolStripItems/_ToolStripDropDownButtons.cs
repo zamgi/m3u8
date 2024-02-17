@@ -154,13 +154,14 @@ namespace System.Windows.Forms
             this.DropDownItems.Add( new ToolStripMenuItemEx(  8, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx( 12, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx( 16, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 24, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx( 32, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx( 64, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            /*for ( int i = 0; i <= 7; i++ )
-            {
-                var pow2 = (int) Math.Pow( 2, i );
-                this.DropDownItems.Add( new ToolStripMenuItemEx( pow2, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            }*/
+
+            //for ( int i = 0; i <= 7; i++ )
+            //{
+            //    this.DropDownItems.Add( new ToolStripMenuItemEx( (1 << 1), ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            //}
         }
     }
     //------------------------------------------------------------------------------------------//
@@ -286,9 +287,12 @@ namespace System.Windows.Forms
         protected override void FillDropDownItems()
         {            
             var font = new Font( this.Font, FontStyle.Regular );
+
             this.DropDownItems.Add( new ToolStripMenuItemEx( null, ToolStripMenuItemEx_EventHandler ) { Text = MAX_SPEED   , ForeColor = Color.FromArgb(  81, 189, 255 ), Image = _Resources_.speed_main_1      , Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx(   40, ToolStripMenuItemEx_EventHandler ) { Text = $"40 {MBPS}", ForeColor = Color.FromArgb( 190, 144, 255 ), Image = _Resources_.speed_1.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx(   20, ToolStripMenuItemEx_EventHandler ) { Text = $"20 {MBPS}", ForeColor = Color.FromArgb( 164, 110, 255 ), Image = _Resources_.speed_2.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx(   60, ToolStripMenuItemEx_EventHandler ) { Text = $"60 {MBPS}", ForeColor = Color.FromArgb(  20,   0,  47 ), Image = _Resources_.speed_1.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx(   50, ToolStripMenuItemEx_EventHandler ) { Text = $"50 {MBPS}", ForeColor = Color.FromArgb(  75,   0, 179 ), Image = _Resources_.speed_1.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx(   40, ToolStripMenuItemEx_EventHandler ) { Text = $"40 {MBPS}", ForeColor = Color.FromArgb( 164, 110, 255 ), Image = _Resources_.speed_1.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx(   20, ToolStripMenuItemEx_EventHandler ) { Text = $"20 {MBPS}", ForeColor = Color.FromArgb( 190, 144, 255 ), Image = _Resources_.speed_2.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx(   10, ToolStripMenuItemEx_EventHandler ) { Text = $"10 {MBPS}", ForeColor = Color.FromArgb( 234, 118,  33 ), Image = _Resources_.speed_3.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx(    5, ToolStripMenuItemEx_EventHandler ) { Text = $"5 {MBPS}" , ForeColor = Color.FromArgb( 252, 146,   0 ), Image = _Resources_.speed_4.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx(    1, ToolStripMenuItemEx_EventHandler ) { Text = $"1 {MBPS}" , ForeColor = Color.FromArgb( 178, 202,   0 ), Image = _Resources_.speed_5.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );

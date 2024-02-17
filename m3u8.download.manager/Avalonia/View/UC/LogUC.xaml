@@ -52,8 +52,7 @@
             CanUserSortColumns="False"
             IsReadOnly="True"
             GridLinesVisibility="All"
-            VerticalGridLinesBrush="Silver"
-            HorizontalGridLinesBrush="Silver"
+            VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver"
             Background="LightGray"
             >
       <DataGrid.Columns>

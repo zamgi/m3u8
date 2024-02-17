@@ -173,7 +173,7 @@
     <Compile Include="UI\Controls\ToolStripItems\ToolStripNumericUpDownEx.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\Controls\ToolStripItems\ToolStripDropDownButtonEx.cs">
+    <Compile Include="UI\Controls\ToolStripItems\_ToolStripDropDownButtons.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="UI\Controls\NumericUpDownEx.cs">

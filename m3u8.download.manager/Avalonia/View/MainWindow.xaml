@@ -11,6 +11,14 @@
         Title="m3u8.download.manager.avalonia"
         Icon="/Resources/m3u8_32x36.ico"
         >
+  <Window.Styles>
+    <Style Selector="Menu > Separator">
+      <Setter Property="Height"     Value="30" />
+      <Setter Property="Width"      Value="1" />
+      <Setter Property="Margin"     Value="2,0,2,0" />
+      <Setter Property="Background" Value="Silver" />
+    </Style>
+  </Window.Styles>
   
   <Grid ColumnDefinitions="*,auto">
     <Grid.RowDefinitions>
@@ -27,6 +35,7 @@
             <Image Source="/Resources/menu/plus.png" />
           </MenuItem.Header>
         </MenuItem>
+        <Separator/>
 
         <MenuItem x:Name="startDownloadToolButton" ToolTip.Tip="Start download  (Ctrl + S)" Padding="0"> <!-- Command="{Binding StartDownloadCommand}" CommandParameter="{Binding ElementName=downloadListUC, Path=SelectedDownloadRow}" -->
           <MenuItem.Header>
@@ -43,6 +52,7 @@
             <Image Source="/Resources/menu/control_cancel.png" />
           </MenuItem.Header>
         </MenuItem>
+        <Separator/>
 
         <MenuItem x:Name="deleteDownloadToolButton" Padding="0">
           <ToolTip.Tip>
@@ -60,12 +70,14 @@
             <Image Source="/Resources/menu/control_delete_all_finished.png" />
           </MenuItem.Header>
         </MenuItem>
-
+        <Separator/>
+        
         <MenuItem x:Name="showLogToolButton" ToolTip.Tip="Show/Hide download log" Padding="0" Margin="0,0,5,0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/log.png" />
           </MenuItem.Header>
         </MenuItem>
+        <Separator/>
 
         <MenuItem x:Name="copyToolButton" ToolTip.Tip="Copy  (Ctrl + C)" Padding="0">
           <MenuItem.Header>
@@ -77,15 +89,23 @@
             <Image Source="/Resources/menu/paste.png" />
           </MenuItem.Header>
         </MenuItem>
+        <Separator/>
 
         <local:DegreeOfParallelismMenuItem x:Name="degreeOfParallelismToolButton" Padding="0" />
+        <Separator/>
         <local:DownloadInstanceMenuItem    x:Name="downloadInstanceToolButton"    Padding="0" Margin="0,0,5,0" />
+        <Separator/>
         <local:SpeedThresholdToolButton    x:Name="speedThresholdToolButton"      Padding="0" Margin="0,0,5,0" />
+        <Separator/>
       </Menu>
     </DockPanel>
     <DockPanel Background="WhiteSmoke" Grid.Row="0" Grid.Column="1">      
       <Menu DockPanel.Dock="Top" Padding="2">
-        <Label Content="{Binding ItemsCount}" VerticalContentAlignment="Center" Foreground="Silver" IsEnabled="False" />
+        <MenuItem IsEnabled="False">
+          <MenuItem.Header>
+            <Label Content="{Binding ItemsCount}" VerticalContentAlignment="Center" />
+          </MenuItem.Header>
+        </MenuItem>
         
         <MenuItem Command="{Binding FileNameExcludesWordsEditorCommand}" ToolTip.Tip="file name excludes words editor" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
