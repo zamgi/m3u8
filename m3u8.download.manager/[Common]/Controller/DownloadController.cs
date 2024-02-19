@@ -7,12 +7,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using m3u8;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.ext;
 using m3u8.infrastructure;
 
-//using _m3u8_processor_ = m3u8.m3u8_processor_adv;
 using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -42,31 +42,58 @@ namespace m3u8.download.manager.controllers
                                , waitIfPausedEvent        = waitIfPausedEvent
                                , downloadThreadsSemaphore = downloadThreadsSemaphore
                                , startOrderNumber         = startOrderNumber };
+            [M(O.AggressiveInlining)]
+            public static Tuple Create( CancellationTokenSource cts
+                                      , ManualResetEventSlim waitIfPausedEvent
+                                      , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
+                                      , int startOrderNumber ) 
+                => new Tuple() { cts = cts
+                               , waitIfPausedEvent        = waitIfPausedEvent
+                               , downloadThreadsSemaphore = downloadThreadsSemaphore
+                               , startOrderNumber         = startOrderNumber };
+            [M(O.AggressiveInlining)]
+            public static Tuple Create( m3u8_client_next mc_next, CancellationTokenSource cts
+                                      , ManualResetEventSlim waitIfPausedEvent
+                                      , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
+                                      , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_2
+                                      , int startOrderNumber ) 
+                => new Tuple() { mc_next = mc_next, cts = cts
+                               , waitIfPausedEvent          = waitIfPausedEvent
+                               , downloadThreadsSemaphore   = downloadThreadsSemaphore
+                               , downloadThreadsSemaphore_2 = downloadThreadsSemaphore_2
+                               , startOrderNumber           = startOrderNumber };
 
-            public m3u8_client                 mc                       { [M(O.AggressiveInlining)] get; private set; }
-            public CancellationTokenSource     cts                      { [M(O.AggressiveInlining)] get; private set; }
-            public ManualResetEventSlim        waitIfPausedEvent        { [M(O.AggressiveInlining)] get; private set; }
-            public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore { [M(O.AggressiveInlining)] get; private set; }
-            public int                         startOrderNumber         { [M(O.AggressiveInlining)] get; private set; }
+            public m3u8_client                 mc                         { [M(O.AggressiveInlining)] get; private set; }
+            public m3u8_client_next            mc_next                    { [M(O.AggressiveInlining)] get; private set; }
+            public CancellationTokenSource     cts                        { [M(O.AggressiveInlining)] get; private set; }
+            public ManualResetEventSlim        waitIfPausedEvent          { [M(O.AggressiveInlining)] get; private set; }
+            public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore   { [M(O.AggressiveInlining)] get; private set; }
+            public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_2 { [M( O.AggressiveInlining )] get; private set; }
+            public int                         startOrderNumber           { [M(O.AggressiveInlining)] get; private set; }
         }
 
         #region [.fields.]
         private const int MILLISECONDSDELAY_M3U8FILE_OUTPUT_PAUSE = 500; //3_000;
-        private const int STREAM_IN_POOL_CAPACITY                 = 1024 * 1024 * 5;
+        private const int STREAM_IN_POOL_CAPACITY                 = 1_024 * 1_024 * 5;
+        private const int RESP_BUF_IN_POOL_CAPACITY               = 1_024 * 100;
         private DownloadListModel                          _Model;
         private SettingsPropertyChangeController           _SettingsController;
         private ConcurrentDictionary< DownloadRow, Tuple > _Dict;
         private cross_download_instance_restriction        _CrossDownloadInstanceRestriction;
         private interlocked_lock                           _ProcessCrossDownloadInstanceRestrictionLock;
         private int                                        _RealRunningCount;
-        private download_threads_semaphore_factory         _DownloadThreadsSemaphoreFactory;        
+        private download_threads_semaphore_factory         _DownloadThreadsSemaphoreFactory;
+        private download_threads_semaphore_factory         _DownloadThreadsSemaphoreFactory_2;
         private DefaultConnectionLimitSaver                _DefaultConnectionLimitSaver;
-        private throttler_by_speed_holder                  _ThrottlerBySpeed;
+        private I_throttler_by_speed_t                     _ThrottlerBySpeed;
         private ObjectPoolDisposable< Stream >             _StreamPool;
+        private ObjectPool< byte[] >                       _RespBufPool;
         #endregion
 
-        private static ObjectPoolDisposable< Stream > CreateObjectPool( int maxDegreeOfParallelism, int streamInPoolCapacity = STREAM_IN_POOL_CAPACITY ) 
+        private static ObjectPoolDisposable< Stream > CreateStreamPool( int maxDegreeOfParallelism, int streamInPoolCapacity = STREAM_IN_POOL_CAPACITY ) 
             => new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
+        private static ObjectPool< byte[] > CreateRespBufPool( int maxDegreeOfParallelism, int bufInPoolCapacity = RESP_BUF_IN_POOL_CAPACITY ) 
+            => new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
 
         #region [.ctor().]
         public DownloadController( DownloadListModel model, SettingsPropertyChangeController sc )
@@ -81,10 +108,13 @@ namespace m3u8.download.manager.controllers
             _CrossDownloadInstanceRestriction = new cross_download_instance_restriction( _SettingsController.MaxCrossDownloadInstance );
             _DownloadThreadsSemaphoreFactory  = new download_threads_semaphore_factory( _SettingsController.UseCrossDownloadInstanceParallelism,
                                                                                         _SettingsController.MaxDegreeOfParallelism );
+            _DownloadThreadsSemaphoreFactory_2 = new download_threads_semaphore_factory( _SettingsController.UseCrossDownloadInstanceParallelism,
+                                                                                         _SettingsController.MaxDegreeOfParallelism );
 
             _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( _SettingsController.MaxDegreeOfParallelism );
-            _ThrottlerBySpeed            = new throttler_by_speed_holder( _SettingsController.MaxSpeedThresholdInMbps );
-            _StreamPool                  = CreateObjectPool( _SettingsController.MaxDegreeOfParallelism );
+            _ThrottlerBySpeed            = new throttler_by_speed_impl( _SettingsController.MaxSpeedThresholdInMbps );
+            _StreamPool                  = CreateStreamPool( _SettingsController.MaxDegreeOfParallelism );
+            _RespBufPool                 = CreateRespBufPool( _SettingsController.MaxDegreeOfParallelism );
         }
 
         public void Dispose()
@@ -99,6 +129,11 @@ namespace m3u8.download.manager.controllers
             {
                 _DownloadThreadsSemaphoreFactory.Dispose();
                 _DownloadThreadsSemaphoreFactory = null;
+            }
+            if ( _DownloadThreadsSemaphoreFactory_2 != null )
+            {
+                _DownloadThreadsSemaphoreFactory_2.Dispose();
+                _DownloadThreadsSemaphoreFactory_2 = null;
             }
             if ( _SettingsController != null )
             {
@@ -152,6 +187,7 @@ namespace m3u8.download.manager.controllers
                 case nameof(Settings.UseCrossDownloadInstanceParallelism):
                 {
                     _DownloadThreadsSemaphoreFactory.UseCrossDownloadInstanceParallelism = settings.UseCrossDownloadInstanceParallelism;
+                    _DownloadThreadsSemaphoreFactory_2.UseCrossDownloadInstanceParallelism = settings.UseCrossDownloadInstanceParallelism;
                 }
                 break;
 
@@ -184,10 +220,12 @@ namespace m3u8.download.manager.controllers
 #endif
             t.cts.Cancel_NoThrow();
             t.cts.Dispose_NoThrow();
-            t.mc .Dispose_NoThrow();
+            t.mc?.Dispose_NoThrow();
+            t.mc_next?.Dispose_NoThrow();
             t.waitIfPausedEvent.Set_NoThrow();
             t.waitIfPausedEvent.Dispose_NoThrow();        
             t.downloadThreadsSemaphore.Dispose_NoThrow();
+            t.downloadThreadsSemaphore_2?.Dispose_NoThrow();
         }
         [M(O.AggressiveInlining)] private void Fire_IsDownloadingChanged() => IsDownloadingChanged?.Invoke( (_Dict.Count != 0) );
 
@@ -200,7 +238,9 @@ namespace m3u8.download.manager.controllers
             var tuples = await ph.PausedAll_Started_Running_and_GetThem().CAX();
 
             await _DownloadThreadsSemaphoreFactory.ResetMaxDegreeOfParallelism( maxDegreeOfParallelism ).CAX();
+            await _DownloadThreadsSemaphoreFactory_2.ResetMaxDegreeOfParallelism( maxDegreeOfParallelism ).CAX();
             _StreamPool.ChangeCapacity( maxDegreeOfParallelism );
+            _RespBufPool.ChangeCapacity( maxDegreeOfParallelism );
 
             ph.ResetMaxDegreeOfParallelism_For_NonUseCrossDownloadInstanceParallelism_DownloadThreadsSemaphore( maxDegreeOfParallelism );
             ph.ContinueAll_Paused( tuples );
@@ -424,7 +464,7 @@ namespace m3u8.download.manager.controllers
             await ProcessCrossDownloadInstanceRestriction( _CrossDownloadInstanceRestriction.GetMaxCrossDownloadInstance() );
             #endregion
         }
-        private async Task StartRoutine( DownloadRow row, Uri m3u8FileUrl )
+        private async Task StartRoutine__PREV( DownloadRow row, Uri m3u8FileUrl )
         {
             using ( var mc                       = m3u8_client_factory.Create( _SettingsController.GetCreateM3u8ClientParams() ) )
             using ( var cts                      = new CancellationTokenSource() )
@@ -493,8 +533,7 @@ namespace m3u8.download.manager.controllers
                             }
                         });
 
-                        var veryFirstOutputFullFileName = row.GetOutputFullFileName();
-                        row.SaveVeryFirstOutputFullFileName( veryFirstOutputFullFileName );
+                        var veryFirstOutputFullFileName = row.SaveVeryFirstOutputFullFileName();
 
                         var ip = new _m3u8_processor_.DownloadPartsAndSaveInputParams()
                         {
@@ -581,6 +620,206 @@ namespace m3u8.download.manager.controllers
                 }
             }
         }
+        private async Task StartRoutine( DownloadRow row, Uri m3u8FileUrl )
+        {
+            using ( var mc                         = m3u8_client_next_factory.Create( _SettingsController.GetCreateM3u8ClientParams() ) )
+            using ( var cts                        = new CancellationTokenSource() )
+            using ( var waitIfPausedEvent          = new ManualResetEventSlim( true, 0 ) )
+            using ( var downloadThreadsSemaphore   = _DownloadThreadsSemaphoreFactory.Get() )
+            using ( var downloadThreadsSemaphore_2 = _DownloadThreadsSemaphoreFactory_2.Get() )
+            {
+                var tup = Tuple.Create( mc, cts, waitIfPausedEvent, downloadThreadsSemaphore, downloadThreadsSemaphore_2, _Dict.Count );
+                _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
+
+                try
+                {
+                    var sw = Stopwatch.StartNew();
+
+                    //-1-//
+                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts.Token );
+
+                    row.SetTotalParts( m3u8File.Parts.Count );
+                    row.Log.Output( m3u8File );
+
+                    //-2-//
+                    await Task.Delay( MILLISECONDSDELAY_M3U8FILE_OUTPUT_PAUSE, cts.Token );
+                    row.Log.Clear();
+
+                    //-3-//
+                    var anyErrorHappend = false;
+                    var dpsr = await Task.Run(
+#if NETCOREAPP
+                    async
+#endif
+                    () =>
+                    {
+                        var start_ts  = Stopwatch.GetTimestamp();
+                        var rows_Dict = new Dictionary< int, LogRow >( m3u8File.Parts.Count );
+
+                        var requestStepAction  = new m3u8_processor_next.RequestStepActionDelegate( p =>
+                        {
+                            row.SetStatus( DownloadStatus.Running );
+
+                            var requestText = $"#{p.PartOrderNumber} of {p.TotalPartCount}). '{p.Part.RelativeUrlName}'...";
+                            if ( p.Success )
+                            {
+                                var logRow = row.Log.AddRequestRow( requestText, responseText: "/starting/..." );
+                                rows_Dict.Add( p.Part.OrderNumber, logRow );
+                            }
+                            else
+                            {
+                                anyErrorHappend = true;
+                                row.Log.AddResponseErrorRow( requestText, p.Error.ToString() );
+                            }
+                        });
+                        var responseStepAction = new m3u8_processor_next.ResponseStepActionDelegate( p =>
+                        {
+                            row.SetDownloadResponseStepParams( p );
+
+                            if ( rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
+                            {
+                                rows_Dict.Remove( p.Part.OrderNumber );
+                                if ( p.Part.Error != null )
+                                {
+                                    anyErrorHappend = true;
+                                    logRow.SetResponseError( p.Part.Error.ToString() );
+                                }
+                                else
+                                {
+                                    logRow.SetResponseSuccess( $"received, ({Extensions.GetSizeFormatted( p.Part.Stream.Length )})" );
+                                }
+                            }
+                        });
+                        var downloadPartStepAction = new m3u8_client_next.DownloadPartStepActionDelegate( (in m3u8_client_next.DownloadPartStepActionParams p) =>
+                        {
+                            var ts = Stopwatch.GetTimestamp();
+                            var raiseRowPropertiesChangedEvent = InterlockedExtension.ExchangeIfNewValueBigger( ref start_ts, ts, ts - (100 * InterlockedExtension.TicksPerMillisecond) );
+                            row.SetDownloadPartStepParams( p, raiseRowPropertiesChangedEvent );
+
+                            if ( raiseRowPropertiesChangedEvent && rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
+                            {
+                                if ( p.Part.Error != null )
+                                {
+                                    rows_Dict.Remove( p.Part.OrderNumber );
+                                    anyErrorHappend = true;
+                                    logRow.SetResponseError( p.Part.Error.ToString() );
+                                }
+                                else
+                                {
+                                    logRow.SetResponse( Extensions.GetSizeFormatted( p.TotalBytesReaded ) );
+                                }
+                            }
+                        });
+                        var waitingIfPausedAction   = new Action( () => row.SetStatus( DownloadStatus.Paused ) );
+                        var waitingIfPausedBefore_2 = new Action< m3u8_part_ts__v2 >( part =>
+                        {
+                            waitingIfPausedAction();
+                            if ( rows_Dict.TryGetValue( part.OrderNumber, out var logRow ) )
+                            {
+                                logRow.SetResponse( logRow.ResponseText + ", /paused/" );
+                            }
+                        });
+                        var waitingIfPausedAfter_2  = new Action< m3u8_part_ts__v2 >( part =>
+                        {
+                            row.SetStatus( DownloadStatus.Running );
+                            if ( rows_Dict.TryGetValue( part.OrderNumber, out var logRow ) )
+                            {
+                                logRow.SetResponse( "/continue/..." );
+                            }
+                        });
+
+                        var veryFirstOutputFullFileName = row.SaveVeryFirstOutputFullFileName();
+
+                        var ip = new m3u8_processor_next.DownloadPartsAndSaveInputParams()
+                        {
+                            mc                         = mc,
+                            m3u8File                   = m3u8_file_t__v2.Parse( m3u8File ),
+                            OutputFileName             = veryFirstOutputFullFileName,
+                            CancellationToken          = cts.Token,
+                            RequestStepAction          = requestStepAction,
+                            ResponseStepAction         = responseStepAction,
+                            MaxDegreeOfParallelism     = _SettingsController.MaxDegreeOfParallelism,                            
+                            DownloadThreadsSemaphore   = downloadThreadsSemaphore,
+                            DownloadThreadsSemaphore_2 = downloadThreadsSemaphore_2,
+                            WaitIfPausedEvent          = waitIfPausedEvent,
+                            WaitingIfPaused            = waitingIfPausedAction,
+                            WaitingIfPausedBefore_2    = waitingIfPausedBefore_2,
+                            WaitingIfPausedAfter_2     = waitingIfPausedAfter_2,
+                            ThrottlerBySpeed           = _ThrottlerBySpeed,
+                            StreamPool                 = _StreamPool,
+                            RespBufPool                = _RespBufPool,
+                            DownloadPartStepAction     = downloadPartStepAction,
+                        };
+#if NETCOREAPP
+                        var result = await m3u8_processor_next.DownloadPartsAndSave_Async( ip ).CAX();
+#else
+                        var result = m3u8_processor_next.DownloadPartsAndSave( ip );
+#endif
+                        return (result);
+                    });
+
+                    //-4-//
+                    _Dict.Remove( row ); Fire_IsDownloadingChanged();
+
+                    #region [.remane output file if changed.]
+                    var renameOutputFileException = default(Exception);
+
+                    var desiredOutputFullFileName = row.GetOutputFullFileName();
+                    if ( dpsr.OutputFileName != desiredOutputFullFileName )
+                    {
+                        try
+                        {
+                            if ( !dpsr.OutputFileName.EqualIgnoreCase( desiredOutputFullFileName ) )
+                            {
+                                Extensions.DeleteFile_NoThrow( desiredOutputFullFileName );
+                            }
+                            File.Move( dpsr.OutputFileName, desiredOutputFullFileName );
+                            dpsr.ResetOutputFileName( desiredOutputFullFileName );
+                        }
+                        catch ( Exception ex )
+                        {
+                            renameOutputFileException = ex;
+                        }
+                    }
+                    #endregion
+
+                    row.StatusFinished( dpsr, sw.StopAndElapsed() );
+
+                    #region [.error rename output-file happen.]
+                    if ( renameOutputFileException != null )
+                    {
+                        row.StatusErrorIfRenameOutputFile( renameOutputFileException );
+                    }
+                    #endregion
+
+                    #region [.any error happen.]
+                    if ( anyErrorHappend )
+                    {
+                        row.StatusErrorWithNoLog();
+                    }
+                    #endregion
+                }
+                catch ( Exception ex )
+                {
+                    _Dict.Remove( row ); Fire_IsDownloadingChanged();
+
+                    if ( cts.IsCancellationRequested )
+                    {
+                        Extensions.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        row.StatusCanceled();
+                    }
+                    else if ( ex is m3u8_Exception mex )
+                    {
+                        Extensions.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        row.StatusError( ex.Message );
+                    }
+                    else
+                    {
+                        row.StatusError( ex );
+                    }
+                }
+            }
+        }
         private async Task StartLiveStreamRoutine( DownloadRow row, Uri m3u8FileUrl )
         {
             var (timeout, _) = _SettingsController.GetCreateM3u8ClientParams();
@@ -591,7 +830,7 @@ namespace m3u8.download.manager.controllers
             using ( var waitIfPausedEvent        = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore = _DownloadThreadsSemaphoreFactory.Get() )
             {
-                var tup = Tuple.Create( null/*mc*/, cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
+                var tup = Tuple.Create( /*mc,*/ cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
                 try
@@ -970,6 +1209,10 @@ namespace m3u8.download.manager.controllers
                     {
                         t.downloadThreadsSemaphore.ResetSemaphore( maxDegreeOfParallelism );
                     }
+                    if ( (t.downloadThreadsSemaphore_2 != null) && !t.downloadThreadsSemaphore_2.UseCrossDownloadInstanceParallelism )
+                    {
+                        t.downloadThreadsSemaphore_2.ResetSemaphore( maxDegreeOfParallelism );
+                    }
                 }
             }
             #endregion
@@ -1049,6 +1292,17 @@ namespace m3u8.download.manager.controllers
         }
         public static void StatusWait( this DownloadRow row ) => row.SetStatus( DownloadStatus.Wait );
         public static void StatusFinished( this DownloadRow row, in _m3u8_processor_.DownloadPartsAndSaveResult dpsr, TimeSpan elapsed )
+        {
+            row.SetStatus( DownloadStatus.Finished );
+            var log = row.Log;
+            log.AddEmptyRow();
+            log.AddRequestRow( $" downloaded & writed parts {dpsr.PartsSuccessCount} of {dpsr.TotalParts}" );
+            log.AddEmptyRow();
+            log.AddRequestRow( $" elapsed: {elapsed}" );
+            log.AddRequestRow( $"         file: '{dpsr.OutputFileName}'" );
+            log.AddRequestRow( $"       size: {Extensions.GetSizeInMbFormatted( dpsr.TotalBytes )} mb" );
+        }
+        public static void StatusFinished( this DownloadRow row, in m3u8_processor_next.DownloadPartsAndSaveResult dpsr, TimeSpan elapsed )
         {
             row.SetStatus( DownloadStatus.Finished );
             var log = row.Log;

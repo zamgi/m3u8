@@ -258,6 +258,16 @@ namespace m3u8.download.manager
             }
             return (false);
         }
+        public static void SetCursor( this SplitContainer splitContainer, Cursor cursor )
+        {
+            if ( splitContainer.Cursor != cursor )
+            {
+                var saved_cursor = splitContainer.Cursor;
+                splitContainer.Cursor = cursor;
+                foreach ( var c in splitContainer.Panel1.Controls.Cast< Control >() ) c.Cursor = saved_cursor;
+                foreach ( var c in splitContainer.Panel2.Controls.Cast< Control >() ) c.Cursor = saved_cursor;
+            }
+        }
 
         [M(O.AggressiveInlining)] public static string TrimIfLongest( this string s, int maxLength ) => ((maxLength < s.Length) ? (s.Substring( 0, maxLength ) + "..." ) : s);
 
@@ -611,6 +621,22 @@ namespace m3u8.download.manager
         public static double GetSpeedInMbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_048_576); //" Mbps"; //" Mbit/s";
         public static double GetSpeedInKbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_024); //" Kbps"; //" Kbit/s";
         public static double GetSpeedInBps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds)); //" bps"; //" bit/s";
+        public static string GetSizeFormatted( long sizeInBytes )
+        {
+            static string to_text( float f ) => f.ToString( (f == Math.Ceiling( f )) ? "N0" : "N2" );
+
+            const float KILOBYTE = 1024;
+            const float MEGABYTE = KILOBYTE * KILOBYTE;
+            const float GIGABYTE = MEGABYTE * KILOBYTE;
+
+            if ( GIGABYTE < sizeInBytes )
+                return (to_text( sizeInBytes / GIGABYTE ) + " GB");
+            if ( MEGABYTE < sizeInBytes )
+                return (to_text( sizeInBytes / MEGABYTE) + " MB");
+            if ( KILOBYTE < sizeInBytes )
+                return (to_text( sizeInBytes / KILOBYTE) + " KB");
+            return (sizeInBytes.ToString("#,#"/*"N0"*/) + " bytes");
+        }
 
         public static string GetSizeInMbFormatted( long sizeInBytes )
         {

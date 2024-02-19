@@ -169,7 +169,8 @@
             this.logUC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logUC.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.logUC.Location = new System.Drawing.Point(0, 0);
-            this.logUC.ShowOnlyRequestRowsWithErrors = true;
+            this.logUC.ShowOnlyRequestRowsWithErrors = false;
+            this.logUC.ScrollToLastRow = true;
             this.logUC.ShowResponseColumn = true;
             this.logUC.Size = new System.Drawing.Size(803, 0);
             this.logUC.TabIndex = 0;

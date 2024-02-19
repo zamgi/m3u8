@@ -65,11 +65,17 @@
     <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs">
       <Link>[-= m3u8.client =-]\m3u8_processor_adv__v2.cs</Link>
     </Compile>
+    <Compile Include="..\..\m3u8.client\m3u8_processor_next.cs">
+      <Link>[-= m3u8.client =-]\m3u8_processor_next.cs</Link>
+    </Compile>
     <Compile Include="..\..\m3u8.client\obj_pool.cs">
       <Link>[-= m3u8.client =-]\obj_pool.cs</Link>
     </Compile>
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs">
       <Link>[-= m3u8.client =-]\m3u8_live_stream_downloader.cs</Link>
+    </Compile>
+    <Compile Include="..\[Common]\Controller\Sync_primitives.cs">
+      <Link>Controller\Sync_primitives.cs</Link>
     </Compile>
     <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs">
       <Link>Controller\throttler_by_speed_impl.cs</Link>

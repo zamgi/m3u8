@@ -33,6 +33,9 @@ namespace m3u8.download.manager.models
         internal static LogRow CreateRequest( string requestText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
             => new LogRow( model, rowPropertiesChanged ) { RequestText = requestText };
 
+        internal static LogRow CreateRequest( string requestText, string responseText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
+            => new LogRow( model, rowPropertiesChanged ) { RequestText = requestText, ResponseText = responseText };
+
         internal static LogRow CreateRequestError( string requestErrorText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
             => new LogRow( model, rowPropertiesChanged ) { RequestRowType = RequestRowTypeEnum.Error, RequestText = requestErrorText };
 
@@ -43,6 +46,12 @@ namespace m3u8.download.manager.models
         public string RequestText  { [M(O.AggressiveInlining)] get; private set; }
         public string ResponseText { [M(O.AggressiveInlining)] get; private set; }
 
+        [M(O.AggressiveInlining)] public void SetResponse( string responseText )
+        {
+            ResponseText = responseText;
+
+            _RowPropertiesChanged.Invoke( this, nameof(ResponseText/*RequestRowType*/) );
+        }
         [M(O.AggressiveInlining)] public void SetResponseSuccess( string responseText )
         {
             ResponseText   = responseText;

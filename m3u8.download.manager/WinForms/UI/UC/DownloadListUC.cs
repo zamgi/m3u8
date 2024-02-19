@@ -956,8 +956,8 @@ namespace m3u8.download.manager.ui
 
             #region [.-1- bottom & right lines.]
             var rc = e.CellBounds; rc.Width--; rc.Height--;
-            gr.DrawLines( Pens.DimGray, new[] { new Point( rc.X    , rc.Bottom ), new Point( rc.Right, rc.Bottom ),
-                                                new Point( rc.Right, rc.Y      ), new Point( rc.Right, rc.Bottom ), } );
+            gr.DrawLines( DefaultColors.DGV.GridLinesPen, new[] { new Point( rc.X    , rc.Bottom ), new Point( rc.Right, rc.Bottom ),
+                                                                  new Point( rc.Right, rc.Y      ), new Point( rc.Right, rc.Bottom ), } );
             #endregion
             #region [.-2- fill background.]
             var backColor = (e.State.IsSelected() ? e.CellStyle.SelectionBackColor : e.CellStyle.BackColor);

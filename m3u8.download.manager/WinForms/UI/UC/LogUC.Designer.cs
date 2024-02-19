@@ -30,6 +30,8 @@
             //
             this.DGV.AllowUserToAddRows = false;
             this.DGV.AllowUserToDeleteRows = false;
+            this.DGV.GridColor = DefaultColors.DGV.GridLinesColor;
+            this.DGV.BorderStyle = System.Windows.Forms.BorderStyle.None;
             cs1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.DGV.AlternatingRowsDefaultCellStyle = cs1;
             cs2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;

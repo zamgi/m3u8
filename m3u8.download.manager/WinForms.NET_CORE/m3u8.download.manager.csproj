@@ -30,10 +30,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />
+    <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />    
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
     <Compile Include="..\..\m3u8.client\m3u8_processor_adv.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv.cs" />
     <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
+    <Compile Include="..\..\m3u8.client\m3u8_processor_next.cs" Link="[-= m3u8.client =-]\m3u8_processor_next.cs" />
     <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
     <Compile Include="..\..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
     <Compile Include="..\..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
@@ -44,6 +45,7 @@
     <Compile Include="..\[Common]\Controller\interlocked_lock.cs" Link="Controller\interlocked_lock.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController.cs" Link="Controller\DownloadController.cs" />
     <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
+    <Compile Include="..\[Common]\Controller\Sync_primitives.cs" Link="Controller\Sync_primitives.cs" />
     
     <Compile Include="..\WinForms\Infrastructure\Color2ColorTransition.cs" Link="Infrastructure\Color2ColorTransition.cs" />
     <Compile Include="..\WinForms\Infrastructure\FileDeleter.cs" Link="Infrastructure\FileDeleter.cs" />    

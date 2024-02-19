@@ -68,6 +68,17 @@ namespace m3u8.download.manager.controllers
 
             semaphore.Wait( ct );  //thrown 'System.OperationCanceledException'
         }
+        [M(O.AggressiveInlining)] public Task WaitAsync( CancellationToken ct )
+        {
+            SemaphoreSlim semaphore;
+            _RWLS.EnterReadLock();
+            {
+                semaphore = _Semaphore;
+            }
+            _RWLS.ExitReadLock();
+
+            return (semaphore.WaitAsync( ct ));  //thrown 'System.OperationCanceledException'
+        }
         [M(O.AggressiveInlining)] public int Release()
         {
             _RWLS.EnterReadLock();
@@ -179,6 +190,24 @@ namespace m3u8.download.manager.controllers
                 Thread.EndCriticalRegion();
             }
         }
+        public async Task WaitAsync( CancellationToken ct )
+        {
+            //--!!!-- required here (because the calling context (task) is interrupted by the ct-CancellationToken --!!!--//
+            Thread.BeginCriticalRegion();
+            try
+            {
+                try { }
+                finally
+                {
+                    await _SemaphoreHolder.WaitAsync( ct ).CAX();
+                    Interlocked.Increment( ref _WaitAcquireCount );
+                }
+            }
+            finally
+            {
+                Thread.EndCriticalRegion();
+            }
+        }
         public void Release()
         {
             //--!!!-- non-required here (because calling context not-interrupted) --!!!--//
@@ -239,6 +268,7 @@ namespace m3u8.download.manager.controllers
         }
 
         [M(O.AggressiveInlining)] public void Wait( CancellationToken ct ) => _SemaphoreHolder.Wait( ct );
+        [M(O.AggressiveInlining)] public Task WaitAsync( CancellationToken ct ) => _SemaphoreHolder.WaitAsync( ct );
         [M(O.AggressiveInlining)] public void Release() => _SemaphoreHolder.Release();
     }
 
@@ -260,6 +290,7 @@ namespace m3u8.download.manager.controllers
             [M(O.AggressiveInlining)] public void ResetSemaphore( int degreeOfParallelism ) { }
 
             [M(O.AggressiveInlining)] public void Wait( CancellationToken ct ) { }
+            [M(O.AggressiveInlining)] public Task WaitAsync( CancellationToken ct ) => Task.CompletedTask;
             [M(O.AggressiveInlining)] public void Release() { }
         }
 

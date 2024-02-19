@@ -26,6 +26,7 @@ namespace m3u8.download.manager.models
         public LogRow AddEmptyRow() => base.Add( LogRow.CreateRequestFinish( " ", this, base._Fire_RowPropertiesChangedEventHandler ) );
 
         public LogRow AddRequestRow( string requestText ) => base.Add( LogRow.CreateRequest( requestText, this, base._Fire_RowPropertiesChangedEventHandler ) );
+        public LogRow AddRequestRow( string requestText, string responseText ) => base.Add( LogRow.CreateRequest( requestText, responseText, this, base._Fire_RowPropertiesChangedEventHandler ) );
         public LogRow AddRequestRowSuccess( string requestText ) => base.Add( LogRow.CreateRequestSuccess( requestText, this, base._Fire_RowPropertiesChangedEventHandler ) );
         public LogRow AddRequestRowFinish( string requestText ) => base.Add( LogRow.CreateRequestFinish( requestText, this, base._Fire_RowPropertiesChangedEventHandler ) );
 

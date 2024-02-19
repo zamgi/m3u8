@@ -288,11 +288,11 @@ namespace m3u8.infrastructure
                 return (h);
             };
             
-            var handler = CreateSocketsHttpHandler( in timeout );
+            var handler    = CreateSocketsHttpHandler( in timeout );
             var httpClient = new HttpClient( handler, true );
 #else
             var httpClient = new HttpClient();
-#endif            
+#endif
             if ( timeout.HasValue )
             {
                 httpClient.Timeout = timeout.Value;

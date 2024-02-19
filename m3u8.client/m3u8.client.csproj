@@ -44,6 +44,7 @@
     <Compile Include="m3u8_processor.cs" />
     <Compile Include="m3u8_processor_adv.cs" />
     <Compile Include="m3u8_processor_adv__v2.cs" />
+    <Compile Include="m3u8_processor_next.cs" />
     <Compile Include="m3u8_processor__v2.cs" />
     <Compile Include="obj_pool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

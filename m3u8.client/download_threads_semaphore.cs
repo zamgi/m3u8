@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace m3u8
 {
@@ -11,6 +12,7 @@ namespace m3u8
         bool UseCrossDownloadInstanceParallelism { get; }
 
         void Wait( CancellationToken ct );
+        Task WaitAsync( CancellationToken ct );
         void Release();
     }
 }

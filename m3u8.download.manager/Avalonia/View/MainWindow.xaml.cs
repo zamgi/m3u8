@@ -13,12 +13,14 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using MsBox.Avalonia.Enums;
 
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_                 = m3u8.download.manager.Properties.Resources;
 
@@ -183,6 +185,8 @@ namespace m3u8.download.manager.ui
             }
             downloadListUC.RestoreColumnsInfoFromJson( _VM.SettingsController.GetDownloadListColumnsInfoJson() );
             downloadListUC.Focus();
+
+            Set_LogUC_RowDefinition_Height( _VM.SettingsController.Settings.LogUC_RowDefinition_Height );
             #endregion
 
             if ( !_VM.SettingsController.ShowLog ) showLogToolButton_Click( showLogToolButton, EventArgs.Empty );
@@ -218,6 +222,7 @@ namespace m3u8.download.manager.ui
             _VM.SettingsController.MainFormPositionJson = this.GetBounds().ToJSON();
             _VM.SettingsController.SetDownloadListColumnsInfoJson( downloadListUC.GetColumnsInfoJson() );
             _VM.SettingsController.SetDownloadRows( _VM.DownloadListModel.GetRows() ); //_VM.SettingsController.DownloadRowsJson = DownloadRowsSerializer.ToJSON( _VM.DownloadListModel.GetRows() );
+            _VM.SettingsController.Settings.LogUC_RowDefinition_Height = Get_LogUC_RowDefinition_Height();
             _VM.SettingsController.SaveNoThrow_IfAnyChanged();
             #endregion
 
@@ -827,16 +832,41 @@ namespace m3u8.download.manager.ui
         }
 
         private bool IsWaitBannerShown() => !this.IsEnabled;
+
+        private double? Get_LogUC_RowDefinition_Height()
+        {
+            UserControl uc = logUC; //downloadListUC;
+            var rowDef = uc.GetValue( Grid.RowProperty );
+            var grid   = uc.FindAncestorOfType< Grid >();
+            if ( (grid != null) && (0 <= rowDef) && (rowDef < grid.RowDefinitions.Count) )
+            {
+                return (grid.RowDefinitions[ rowDef ].ActualHeight);
+            }
+            return (null);
+        }
+        private void Set_LogUC_RowDefinition_Height( double? logUC_RowDefinition_Height )
+        {
+            try
+            {
+                if ( logUC_RowDefinition_Height.HasValue )
+                {
+                    UserControl uc = logUC; //downloadListUC;
+                    var rowDef = uc.GetValue( Grid.RowProperty );
+                    var grid   = uc.FindAncestorOfType< Grid >();
+                    if ( (grid != null) && (0 <= rowDef) && (rowDef < grid.RowDefinitions.Count) )
+                    {
+                        grid.RowDefinitions[ rowDef ].Height = new GridLength( logUC_RowDefinition_Height.Value );
+                    }
+                }
+            }
+            catch ( Exception ex)
+            {
+                Debug.WriteLine( ex );
+            }
+        }
         #endregion
 
         #region [.menu.]
-//#if DEBUG
-//        private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => _VM.AddCommand.AddNewDownload( ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", false) );
-//#else
-//        private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => _VM.AddCommand.AddNewDownload( (null, false) );
-//#endif
-        //private void aboutToolButton_Click( object sender, EventArgs e ) => _VM.AboutCommand.Execute( null );
-
         private GridLength? _Last_logUC_row_Height;
         private void showLogToolButton_Click( object sender, EventArgs e )
         {
@@ -857,7 +887,7 @@ namespace m3u8.download.manager.ui
                     _VM.SettingsController.ShowLog = showLog;
                     if ( showLog )
                     {
-                        row.Height    = _Last_logUC_row_Height.GetValueOrDefault( new GridLength( default, GridUnitType.Star ) );
+                        row.Height    = _Last_logUC_row_Height.GetValueOrDefault( new GridLength( 1, GridUnitType.Star ) );
                         row.MinHeight = 70;
                         showLogToolButton.Opacity = 1;
                     }

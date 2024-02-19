@@ -55,6 +55,8 @@ namespace m3u8.download.manager.ui
             // 
             this.DGV.AllowUserToResizeRows = false;
             this.DGV.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.DGV.GridColor = DefaultColors.DGV.GridLinesColor;
+            this.DGV.BorderStyle = System.Windows.Forms.BorderStyle.None;
             cs1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             cs1.BackColor = System.Drawing.SystemColors.Control;
             cs1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));            

@@ -12,7 +12,7 @@ namespace m3u8.download.manager.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.4.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.9.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -392,6 +392,17 @@ namespace m3u8.download.manager.Properties {
             }
             set {
                 this["ShowAllDownloadsCompleted_Notification"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Nullable<System.Double> LogUC_RowDefinition_Height {
+            get {
+                return ((global::System.Nullable<System.Double>)(this["LogUC_RowDefinition_Height"]));
+            }
+            set {
+                this["LogUC_RowDefinition_Height"] = value;
             }
         }
     }

@@ -140,7 +140,7 @@
     </DockPanel>
     
     <local:DownloadListUC x:Name="downloadListUC" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
-    <GridSplitter Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" />
+    <GridSplitter Height="3" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" />
     <local:LogUC x:Name="logUC" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" />
   </Grid>
 

@@ -55,6 +55,7 @@ namespace m3u8.download.manager.ui
         {
             InitializeComponent();
             this.Text = _APP_TITLE_;
+            mainSplitContainer.SetCursor( Cursors.SizeNS );
             //----------------------------------------//
 
             _DownloadListModel_RowPropertiesChangedAction = new Action< DownloadRow, string >( DownloadListModel_RowPropertiesChanged );
@@ -71,7 +72,7 @@ namespace m3u8.download.manager.ui
             SettingsController_PropertyChanged( _SC.Settings, nameof(Settings.ExternalProgCaption) );
             SettingsController_PropertyChanged( _SC.Settings, nameof(Settings.ShowAllDownloadsCompleted_Notification) );
 
-            logUC.SetSettingsController( _SC );
+            //logUC.SetSettingsController( _SC );
             logUC.SetLogRowsHeightStorer( _LogRowsHeightStorer );
 
             downloadListUC.SetModel_And_SettingsController( _DownloadListModel, _SC );
@@ -126,6 +127,8 @@ namespace m3u8.download.manager.ui
             {
                 FormPositionStorer.Load( this, _SC.MainFormPositionJson );
                 _DownloadListModel.AddRows( _SC.GetDownloadRows() /*DownloadRowsSerializer.FromJSON( _SettingsController.DownloadRowsJson )*/ );
+                logUC.ShowOnlyRequestRowsWithErrors = _SC.Settings.ShowOnlyRequestRowsWithErrors;
+                logUC.ScrollToLastRow               = _SC.Settings.ScrollToLastRow;
             }
 #if DEBUG
             if ( _DownloadListModel.RowsCount == 0 )
@@ -144,6 +147,8 @@ namespace m3u8.download.manager.ui
             {
                 _SC.MainFormPositionJson = FormPositionStorer.Save( this );
                 _SC.SetDownloadRows( _DownloadListModel.GetRows() );
+                _SC.Settings.ShowOnlyRequestRowsWithErrors = logUC.ShowOnlyRequestRowsWithErrors;
+                _SC.Settings.ScrollToLastRow               = logUC.ScrollToLastRow;
                 _SC.SaveNoThrow_IfAnyChanged();
             }
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -6,15 +7,13 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Avalonia.VisualTree;
-//using Avalonia.Styling;
 
 namespace m3u8.download.manager.ui
 {
     /// <summary>
     /// 
     /// </summary>
-    public abstract class MenuItemBase< T > : MenuItem//, IStyleable
+    public abstract class _MenuItemEx_Base< T > : MenuItem//, IStyleable
     {
         /// <summary>
         /// 
@@ -71,7 +70,7 @@ namespace m3u8.download.manager.ui
             get => _InnerImage.Source;
             set => _InnerImage.Source = value;
         }
-        protected MenuItemBase() { }        
+        protected _MenuItemEx_Base() { }        
         protected override void OnInitialized()
         {
             base.OnInitialized();
@@ -142,7 +141,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public abstract class MenuItemBase__IntValue : MenuItemBase< int >
+    public abstract class _MenuItemEx__IntValue : _MenuItemEx_Base< int >
     {
         protected override int DefaultValue => -1;
         protected override bool IsEqual( int x, int y ) => (x == y);
@@ -151,7 +150,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class DownloadInstanceMenuItem : MenuItemBase__IntValue
+    public sealed class DownloadInstanceMenuItem : _MenuItemEx__IntValue
     {
         public DownloadInstanceMenuItem() { }
 
@@ -162,13 +161,11 @@ namespace m3u8.download.manager.ui
 
         protected override void FillDropDownItems()
         {
-            const int ITEMS_COUNT = 10;
-            var subMenuItems = new SubMenuItem[ ITEMS_COUNT ];
-            for ( var i = 0; i < ITEMS_COUNT; i++ )
+            var subMenuItems = new List< SubMenuItem >( 10 );
+            for ( var i = 1; i <= 10; i++ )
             {
-                subMenuItems[ i ] = new SubMenuItem( i + 1, SubMenuItem_Click ) { FontWeight = FontWeight.Regular };
+                subMenuItems.Add( new SubMenuItem( i, SubMenuItem_Click ) { FontWeight = FontWeight.Regular } );
             }
-            //this.Items = subMenuItems;
             this.ItemsSource = subMenuItems;
         }
 
@@ -183,7 +180,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class DegreeOfParallelismMenuItem : MenuItemBase__IntValue
+    public sealed class DegreeOfParallelismMenuItem : _MenuItemEx__IntValue
     {
         public DegreeOfParallelismMenuItem() { }
 
@@ -194,18 +191,11 @@ namespace m3u8.download.manager.ui
 
         protected override void FillDropDownItems()
         {
-            var subMenuItems = new[]
+            var subMenuItems = new List< SubMenuItem >( 10 );
+            foreach ( var i in new[] { 1, 2, 4, 8, 12, 16, 24, 32, 64 } )
             {
-                new SubMenuItem(  1, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
-                new SubMenuItem(  2, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
-                new SubMenuItem(  4, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
-                new SubMenuItem(  8, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
-                new SubMenuItem( 12, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
-                new SubMenuItem( 16, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
-                new SubMenuItem( 32, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
-                new SubMenuItem( 64, SubMenuItem_Click ) { FontWeight = FontWeight.Regular },
-            };
-            //this.Items = subMenuItems;
+                subMenuItems.Add( new SubMenuItem( i, SubMenuItem_Click ) { FontWeight = FontWeight.Regular } );
+            }
             this.ItemsSource = subMenuItems;
         }
     }
@@ -214,7 +204,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public abstract class MenuItemBase__DoubleValue : MenuItemBase< double? >
+    public abstract class _MenuItemEx__DoubleValue : _MenuItemEx_Base< double? >
     {
         protected override double? DefaultValue => -1;
         protected override bool IsEqual( double? x, double? y ) //=> (Math.Abs( x - y ) <= double.Epsilon);
@@ -237,7 +227,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class SpeedThresholdToolButton : MenuItemBase__DoubleValue
+    public sealed class SpeedThresholdToolButton : _MenuItemEx__DoubleValue
     {
         private const string MAX_SPEED = "Max (unlim)";
         private const string MBPS      = "Mbps";
@@ -301,7 +291,6 @@ namespace m3u8.download.manager.ui
                 new SubMenuItem(    5, $"5 {MBPS}" , SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 252, 146,   0 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_4.ico" ) ) },
                 new SubMenuItem(    1, $"1 {MBPS}" , SubMenuItem_Click ) { FontWeight = FontWeight.Regular, Foreground = new SolidColorBrush( Color.FromRgb( 178, 202,   0 ) ), Image = new Bitmap( ResourceLoader._GetResource_( "/Resources/speed/speed_5.ico" ) ) },
             };
-            //this.Items = subMenuItems;
             this.ItemsSource = subMenuItems;
 
             this.Value = null;

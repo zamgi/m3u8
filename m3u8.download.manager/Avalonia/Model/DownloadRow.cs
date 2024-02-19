@@ -136,6 +136,7 @@ namespace m3u8.download.manager.models
             return ([outputFullFileName ]);
         }
         public void     SaveVeryFirstOutputFullFileName( string outputFullFileName ) => VeryFirstOutputFullFileName = outputFullFileName;
+        public string   SaveVeryFirstOutputFullFileName() => VeryFirstOutputFullFileName = GetOutputFullFileName();
 
         public void SetOutputFileName ( string outputFileName )
         {
@@ -223,6 +224,69 @@ namespace m3u8.download.manager.models
             {
                 Fire_PropertyChanged_Events( nameof(MySelf) );
                 //---Fire_PropertyChanged_Events( "DownloadParts-&-DownloadBytesLength" );
+            }
+        }
+        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in m3u8_processor_next.ResponseStepActionParams p )
+        {
+            var call__RowPropertiesChanged = false;
+            lock ( this )
+            {
+                if ( 0 < p.BytesLength )
+                {
+                    var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
+                    var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
+                    if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
+                    {
+                        SuccessDownloadParts = sdp;
+                        FailedDownloadParts  = fdp;
+                        //--DownloadBytesLength += p.BytesLength;
+
+                        call__RowPropertiesChanged = true;
+                    }
+                }
+
+                //if ( _InstantSpeedInMbps != p.InstantSpeedInMbps )
+                //{
+                //    _InstantSpeedInMbps = p.InstantSpeedInMbps;
+                //    call__RowPropertiesChanged = true;
+                //}
+            }
+            if ( call__RowPropertiesChanged )
+            {
+                Fire_PropertyChanged_Events( nameof(MySelf) );
+            }
+        }
+        [M(O.AggressiveInlining)] internal void SetDownloadPartStepParams( in m3u8_client_next.DownloadPartStepActionParams p, bool raiseRowPropertiesChangedEvent )
+        {
+            if ( raiseRowPropertiesChangedEvent )
+            {
+                var call__RowPropertiesChanged = false;
+                lock ( this )
+                {
+                    if ( 0 < p.BytesReaded )
+                    {
+                        DownloadBytesLength += p.BytesReaded;
+                        call__RowPropertiesChanged = true;
+                    }
+
+                    if ( _InstantSpeedInMbps != p.InstantSpeedInMbps )
+                    {
+                        _InstantSpeedInMbps = p.InstantSpeedInMbps;
+                        call__RowPropertiesChanged = true;
+                    }
+                }
+                if ( call__RowPropertiesChanged )
+                {
+                    Fire_PropertyChanged_Events( nameof(MySelf) );
+                }
+            }
+            else
+            {
+                lock ( this )
+                {
+                    DownloadBytesLength += p.BytesReaded;
+                    _InstantSpeedInMbps = p.InstantSpeedInMbps;
+                }
             }
         }
         [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams_Error()

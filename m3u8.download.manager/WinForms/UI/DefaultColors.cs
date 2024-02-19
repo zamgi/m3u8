@@ -10,6 +10,10 @@ namespace m3u8.download.manager.ui
     {
         public static class DGV
         {
+            private static Pen _GridLinesPen;
+            public static Color GridLinesColor = Color.FromKnownColor( KnownColor.ControlDark );
+            public static Pen   GridLinesPen   = (_GridLinesPen ??= new Pen( GridLinesColor ));
+
             private static Brush _SelectionBackBrush2_Suc;
             public static Color ForeColor_Suc          => Color.DimGray;
             public static Color BackColor_Suc          => Color.White;

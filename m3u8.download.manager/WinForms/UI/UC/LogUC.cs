@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.models;
-using m3u8.download.manager.Properties;
 
-using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
-using CellStyle = System.Windows.Forms.DataGridViewCellStyle;
+using CellStyle                   = System.Windows.Forms.DataGridViewCellStyle;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -44,7 +42,6 @@ namespace m3u8.download.manager.ui
         private bool              _ShowOnlyRequestRowsWithErrors;
         private ToolStripMenuItem _ScrollToLastRowMenuItem;
         private bool              _ScrollToLastRow;
-        private _SC_              _SettingsController;
 
         private LogListModel             _Model;
         private List_WithIndex< LogRow > _DGVRows;
@@ -109,11 +106,10 @@ namespace m3u8.download.manager.ui
             _Rsp_CellStyleSmallFont_2      = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, Alignment = alg } );
 
             //----------------------------------------------//
-            var st = _SC_.SettingsDefault;
-            _ShowOnlyRequestRowsWithErrors = st.ShowOnlyRequestRowsWithErrors;
+            _ShowOnlyRequestRowsWithErrors = true;
             _ShowOnlyRequestRowsWithErrorsMenuItem = new ToolStripMenuItem( "Show only request rows with errors", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = _ShowOnlyRequestRowsWithErrors };
 
-            _ScrollToLastRow = st.ScrollToLastRow;
+            _ScrollToLastRow = true;
             _ScrollToLastRowMenuItem = new ToolStripMenuItem( "Scroll to last row", null, _ScrollToLastRow_Click ) { Checked = _ScrollToLastRow };
 
             _ContextMenu = new ContextMenuStrip();
@@ -128,7 +124,6 @@ namespace m3u8.download.manager.ui
                 components?.Dispose();
                 _RNP.Dispose();
                 _SF.Dispose();
-                DetachSettingsController();
                 DetachLogRowsHeightStorer();
                 DetachModel();
             }
@@ -136,16 +131,16 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region [.public.]        
+        #region [.public.]
         public bool ShowOnlyRequestRowsWithErrors
         {
             get => _ShowOnlyRequestRowsWithErrors;
             set
             {
-                var st = (_SettingsController?.Settings ?? _SC_.SettingsDefault);
-                if ( st.ShowOnlyRequestRowsWithErrors != value )
+                if ( _ShowOnlyRequestRowsWithErrors != value )
                 {
-                    st.ShowOnlyRequestRowsWithErrors = value;
+                    _ShowOnlyRequestRowsWithErrorsMenuItem.Checked = _ShowOnlyRequestRowsWithErrors = value; 
+                    SetDataGridItems(); 
                     AdjustColumnsWidthSprain();
                 }
             }
@@ -155,17 +150,16 @@ namespace m3u8.download.manager.ui
             get => _ScrollToLastRow;
             set
             {
-                var st = (_SettingsController?.Settings ?? _SC_.SettingsDefault);
-                if ( st.ScrollToLastRow != value )
+                if ( _ScrollToLastRow != value )
                 {
-                    st.ScrollToLastRow = value;
+                    _ScrollToLastRowMenuItem.Checked = _ScrollToLastRow = value;
                     if ( value )
                     {
                         ScrollToLastRow_UI();
                     }
                 }
             }
-        }        
+        }
         public bool ShowResponseColumn
         {
             get => DGV_responseColumn.Visible;
@@ -222,24 +216,6 @@ namespace m3u8.download.manager.ui
             {
                 DGV.RowHeightChanged -= DGV_RowHeightChanged;
                 _LogRowsHeightStorer = null;
-            }
-        }
-
-        public void SetSettingsController( _SC_ sc )
-        {
-            DetachSettingsController();
-
-            _SettingsController = sc ?? throw (new ArgumentNullException( nameof(sc) ));
-            _SettingsController.SettingsPropertyChanged -= SettingsController_PropertyChanged;
-            _SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
-
-        }
-        private void DetachSettingsController()
-        {
-            if ( _SettingsController != null )
-            {
-                _SettingsController.SettingsPropertyChanged -= SettingsController_PropertyChanged;
-                _SettingsController = null;
             }
         }
 
@@ -369,28 +345,6 @@ namespace m3u8.download.manager.ui
             {
                 InvalidateRow_UI( row );
             }            
-        }
-        private void SettingsController_PropertyChanged( Settings settings, string propertyName )
-        {
-            switch ( propertyName )
-            {
-                case nameof(Settings.ShowOnlyRequestRowsWithErrors):
-                    _ShowOnlyRequestRowsWithErrors = settings.ShowOnlyRequestRowsWithErrors;
-
-                    _ShowOnlyRequestRowsWithErrorsMenuItem.Checked = _ShowOnlyRequestRowsWithErrors;
-                    SetDataGridItems();
-                    break;
-
-                case nameof(Settings.ScrollToLastRow):
-                    _ScrollToLastRow = settings.ScrollToLastRow;
-
-                    _ScrollToLastRowMenuItem.Checked = _ScrollToLastRow;
-                    if ( _ScrollToLastRow )
-                    {
-                        ScrollToLastRow_UI();
-                    }
-                    break;
-            }
         }
         #endregion
 
@@ -577,7 +531,7 @@ namespace m3u8.download.manager.ui
 
         private int GetColumnsResizeDiff() => (DGV.RowHeadersVisible ? DGV.RowHeadersWidth : 0) + 
                                               (IsVerticalScrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0) + //3 + 
-                                              ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : 0);
+                                              ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : SystemInformation.BorderSize.Width);
 
         private void DGV_RowHeightChanged( object sender, DataGridViewRowEventArgs e ) => _LogRowsHeightStorer.StoreRowHeight( _Model, e.Row );
         private void DGV_ColumnWidthChanged( object sender, DataGridViewColumnEventArgs e )

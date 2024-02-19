@@ -81,7 +81,8 @@
             // 
             this.mainToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.mainToolStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
-            this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] 
+            {
                 this.addNewDownloadToolButton,
                 s1,
                 this.startDownloadToolButton,
@@ -245,13 +246,13 @@
             // 
             // speedThrottlerToolButton
             //             
-            this.speedThresholdToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__DoubleValue.ValueChangedEventHandler(this.speedThresholdToolButton_ValueChanged );            
+            this.speedThresholdToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__DoubleValue.ValueChangedEventHandler(this.speedThresholdToolButton_ValueChanged );
             // 
             // mainSplitContainer
             // 
-            this.mainSplitContainer.BackColor = System.Drawing.SystemColors.AppWorkspace;
+            this.mainSplitContainer.BackColor = System.Drawing.Color.Gainsboro;// System.Drawing.SystemColors.AppWorkspace;
             this.mainSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.mainSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;            
             // 
             // mainSplitContainer.Panel1
             // 
@@ -262,7 +263,7 @@
             // 
             this.mainSplitContainer.Panel2.BackColor = System.Drawing.SystemColors.Control;
             this.mainSplitContainer.Panel2.Controls.Add(this.logUC);
-            this.mainSplitContainer.SplitterDistance = 230;
+            this.mainSplitContainer.SplitterDistance = 330;
             this.mainSplitContainer.TabIndex = 1;
             // 
             // downloadListUC
@@ -449,9 +450,9 @@
         private System.Windows.Forms.ToolStripButton fileNameExcludesWordsEditorToolButton;
         private System.Windows.Forms.ToolStripButton parallelismSettingsToolButton;
         private System.Windows.Forms.ToolStripButton otherSettingsToolButton;
-        private System.Windows.Forms.ToolStripButton aboutToolButton;
-        private System.Windows.Forms.SplitContainer mainSplitContainer;
+        private System.Windows.Forms.ToolStripButton aboutToolButton;        
         private DownloadListUC downloadListUC;
+        private System.Windows.Forms.SplitContainer mainSplitContainer;
         private LogUC logUC;
         private StatusBarUC statusBarUC;
 

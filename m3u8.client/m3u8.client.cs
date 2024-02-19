@@ -466,11 +466,6 @@ namespace m3u8
             throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
         }
 
-        //public async Task< m3u8_file_t__v2 > DownloadFile__v2( Uri url, CancellationToken ct = default )
-        //{
-        //    var mf = await DownloadFile( url, ct ).CAX();
-        //    return (m3u8_file_t__v2.Parse( mf ));
-        //}
         public async Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress, CancellationToken ct = default )
         {
             if ( baseAddress == null )                       throw (new m3u8_ArgumentException( nameof(baseAddress) ));
