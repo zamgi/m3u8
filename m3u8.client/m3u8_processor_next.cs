@@ -25,9 +25,9 @@ namespace m3u8
         /// </summary>
         public struct init_params
         {
-            public int? AttemptRequestCount { get; set; }
-            public bool? ConnectionClose { get; set; }
             public HttpCompletionOption? HttpCompletionOption { get; set; }
+            public int?                  AttemptRequestCount  { get; set; }
+            public bool?                 ConnectionClose      { get; set; }
         }
 
         #region [.field's.]
@@ -69,7 +69,7 @@ namespace m3u8
 #endif
         private static async Task< m3u8_Exception > create_m3u8_Exception( HttpResponseMessage resp, CancellationToken ct )
         {
-            var responseText = default( string );
+            var responseText = default(string);
             try
             {
 #if NETCOREAPP
@@ -158,6 +158,7 @@ namespace m3u8
             public DownloadPartStepActionDelegate           DownloadPartStepAction { [M(O.AggressiveInlining)] get; set; }
 
             public I_download_threads_semaphore             DownloadThreadsSemaphore { [M(O.AggressiveInlining)] get; set; }
+        
             public ManualResetEventSlim                     WaitIfPausedEvent        { [M(O.AggressiveInlining)] get; set; }
             public Action< m3u8_part_ts__v2 >               WaitingIfPausedBefore    { [M(O.AggressiveInlining)] get; set; }
             public Action< m3u8_part_ts__v2 >               WaitingIfPausedAfter     { [M(O.AggressiveInlining)] get; set; }
@@ -172,7 +173,7 @@ namespace m3u8
             if ( ip.ThrottlerBySpeed_User    == null ) throw (new m3u8_ArgumentException( nameof(ip.ThrottlerBySpeed_User) ));
             if ( ip.RespBufPool              == null ) throw (new m3u8_ArgumentException( nameof(ip.RespBufPool) ));
             if ( ip.DownloadThreadsSemaphore == null ) throw (new m3u8_ArgumentException( nameof(ip.DownloadThreadsSemaphore) ));
-            if ( ip.WaitIfPausedEvent        == null ) throw (new m3u8_ArgumentException( nameof(ip.WaitIfPausedEvent) ));
+            //if ( ip.WaitIfPausedEvent        == null ) throw (new m3u8_ArgumentException( nameof(ip.WaitIfPausedEvent) ));
             //----------------------------------------------------------------------------------------------------------------//
 
             var url = part.GetPartUrl( baseAddress );
@@ -196,14 +197,14 @@ namespace m3u8
                             var buf = holder.Value;
                             for ( var totalBytesReaded = 0L; ; )
                             {
-                                #region [.check 'waitIfPausedEvent'.]
-                                if ( !ip.WaitIfPausedEvent.IsSet )
-                                {
-                                    ip.WaitingIfPausedBefore?.Invoke( part );
-                                    ip.WaitIfPausedEvent.Wait( ct );
-                                    ip.WaitingIfPausedAfter?.Invoke( part );
-                                    ip.ThrottlerBySpeed_User.Restart();
-                                }
+                                #region comm, because fall off by timeout. [.check 'waitIfPausedEvent'.]
+                                //if ( !ip.WaitIfPausedEvent.IsSet )
+                                //{
+                                //    ip.WaitingIfPausedBefore?.Invoke( part );
+                                //    ip.WaitIfPausedEvent.Wait( ct );
+                                //    ip.WaitingIfPausedAfter?.Invoke( part );
+                                //    ip.ThrottlerBySpeed_User.Restart();
+                                //}
                                 #endregion
 
                                 #region [.throttler by speed.]
@@ -644,7 +645,7 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
-        public delegate void RequestStepActionDelegate( RequestStepActionParams p );
+        public delegate void RequestStepActionDelegate( in RequestStepActionParams p );
         /// <summary>
         /// 
         /// </summary>
@@ -666,7 +667,7 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
-        public delegate void ResponseStepActionDelegate( ResponseStepActionParams p );
+        public delegate void ResponseStepActionDelegate( in ResponseStepActionParams p );
         //-----------------------------------------------------------------------------//
 
         /// <summary>

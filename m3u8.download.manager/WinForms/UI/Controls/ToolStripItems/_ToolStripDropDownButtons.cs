@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Linq;
 
-using _Resources_ = m3u8.download.manager.Properties.Resources;
+using _Resources_               = m3u8.download.manager.Properties.Resources;
 using _ToolStripSpeedThreshold_ = m3u8.download.manager.ui.ToolStripSpeedThreshold;
 
 namespace System.Windows.Forms
@@ -9,7 +9,7 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal abstract class ToolStripDropDownButtonEx< T > : ToolStripDropDownButton
+    internal abstract class _ToolStripDropDownButtonEx_Base< T > : ToolStripDropDownButton
     {
         /// <summary>
         /// 
@@ -36,7 +36,7 @@ namespace System.Windows.Forms
         protected abstract T DefaultValue { get; }
         protected abstract bool IsEqual( T x, T y );
 
-        protected ToolStripDropDownButtonEx()
+        protected _ToolStripDropDownButtonEx_Base()
         {
             this.Font                  = new Font( "Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, ((byte) (204)) );
             this.ForeColor             = MainForeColor;
@@ -99,7 +99,7 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal abstract class ToolStripDropDownButtonEx__IntValue : ToolStripDropDownButtonEx< int >
+    internal abstract class _ToolStripDropDownButtonEx__IntValue : _ToolStripDropDownButtonEx_Base< int >
     {
         protected override int DefaultValue => -1;
         protected override bool IsEqual( int x, int y ) => (x == y);
@@ -108,7 +108,7 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class DownloadInstanceToolButton : ToolStripDropDownButtonEx__IntValue
+    internal sealed class DownloadInstanceToolButton : _ToolStripDropDownButtonEx__IntValue
     {
         public DownloadInstanceToolButton() { }
 
@@ -136,7 +136,7 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class DegreeOfParallelismToolButton : ToolStripDropDownButtonEx__IntValue
+    internal sealed class DegreeOfParallelismToolButton : _ToolStripDropDownButtonEx__IntValue
     {
         public DegreeOfParallelismToolButton() { }
 
@@ -169,7 +169,7 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal abstract class ToolStripDropDownButtonEx__DoubleValue : ToolStripDropDownButtonEx< double? >
+    internal abstract class _ToolStripDropDownButtonEx__DoubleValue : _ToolStripDropDownButtonEx_Base< double? >
     {
         protected override double? DefaultValue => -1;
         protected override bool IsEqual( double? x, double? y ) //=> (Math.Abs( x - y ) <= double.Epsilon);
@@ -192,7 +192,7 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class SpeedThresholdToolButton : ToolStripDropDownButtonEx__DoubleValue
+    internal sealed class SpeedThresholdToolButton : _ToolStripDropDownButtonEx__DoubleValue
     {
         private const string MAX_SPEED = "Max (unlim)";
         private const string MBPS      = "Mbps";
@@ -207,87 +207,113 @@ namespace System.Windows.Forms
         public override double? Value 
         { 
             get => _Value;
-            set
+            set => SetValue( value );
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private enum SetValueState
+        {
+            NoChanged,
+            SettedPredefineValue,
+            SettedCustomValue,
+        }
+        private SetValueState SetValue( double? value, bool raiseValueChangedEvent = true )
+        {
+            var state = SetValueState.NoChanged;
+
+            if ( !IsEqual( _Value, value ) )
             {
-                if ( !IsEqual( _Value, value ) )
+                _Value = value;
+
+                var t = (value.HasValue ? $"{value.Value} {MBPS}" : MAX_SPEED);
+                this.Text = t;
+                this.ToolTipText = MainToolTipText + ": " + t;
+                this.Image = MainImage;
+
+                var font = new Font( this.Font, FontStyle.Regular );
+                var was_found_mi = false;
+                foreach ( var mi in this.DropDownItems.Cast<ToolStripItem>().OfType<ToolStripMenuItemEx>() )
                 {
-                    _Value = value;
-
-                    var t = (value.HasValue ? $"{value.Value} {MBPS}" : MAX_SPEED);
-                    this.Text        = t;
-                    this.ToolTipText = MainToolTipText + ": " + t;
-                    this.Image       = MainImage;
-
-                    var font = new Font( this.Font, FontStyle.Regular );
-                    var was_find_mi = false;
-                    foreach ( var mi in this.DropDownItems.Cast< ToolStripItem >().OfType< ToolStripMenuItemEx >() )
+                    if ( IsEqual( mi.Value, value ) )
                     {
-                        if ( IsEqual( mi.Value, value ) )
-                        {
-                            mi.BackColor = this.SelectedBackColor;
-                            mi.Font      = this.Font;
+                        mi.BackColor = this.SelectedBackColor;
+                        mi.Font = this.Font;
 
-                            this.Image       = mi.Image;
-                            this.ForeColor   = mi.ForeColor;
-                            this.Text        = mi.Text;
-                            this.ToolTipText = MainToolTipText + ": " + mi.Text;
-                            was_find_mi = true;
-                        }
-                        else
-                        {
-                            mi.BackColor = this.BackColor;
-                            mi.Font      = font;
-                        }
-                    }
-
-                    if ( !was_find_mi && _Value.HasValue )
-                    {
-                        _ToolStripSpeedThreshold.BackColor = this.SelectedBackColor;
-                        //_ToolStripSpeedThreshold.Font = this.Font;
-
-                        var val_int = (int) _Value.Value;
-                        if ( _ToolStripSpeedThreshold.Value != val_int )
-                        {
-                            _ToolStripSpeedThreshold.Value = val_int;
-                        }
+                        this.Image = mi.Image;
+                        this.ForeColor = mi.ForeColor;
+                        this.Text = mi.Text;
+                        this.ToolTipText = MainToolTipText + ": " + mi.Text;
+                        was_found_mi = true;
                     }
                     else
                     {
-                        _ToolStripSpeedThreshold.BackColor = this.BackColor;
-                        //_ToolStripSpeedThreshold.Font = font;
+                        mi.BackColor = this.BackColor;
+                        mi.Font = font;
                     }
+                }
 
+                if ( was_found_mi )
+                {
+                    _ToolStripSpeedThreshold.BackColor = this.BackColor;
+                    //_ToolStripSpeedThreshold.Font = font;
+
+                    state = SetValueState.SettedPredefineValue;
+                }
+                else if ( _Value.HasValue )
+                {
+                    _ToolStripSpeedThreshold.BackColor = this.SelectedBackColor;
+                    //_ToolStripSpeedThreshold.Font = this.Font;
+
+                    var val_int = (int) _Value.Value;
+                    if ( _ToolStripSpeedThreshold._Value != val_int )
+                    {
+                        _ToolStripSpeedThreshold._Value = val_int;                        
+                    }
+                    state = SetValueState.SettedCustomValue;
+                }
+
+                if ( (state != SetValueState.NoChanged) && raiseValueChangedEvent )
+                {
+                    Fire_ValueChanged();
+                }
+            }
+
+            return (state);
+        }
+
+        public (double? value, double valueSaved) ValueWithSaved
+        {
+            get => (_Value, _ToolStripSpeedThreshold._Value);
+            set
+            {
+                var (v, saved) = value;
+                var state = SetValue( v, raiseValueChangedEvent: false );
+                if ( state != SetValueState.SettedCustomValue )
+                {
+                    var val_int = (int) saved;
+                    if ( _ToolStripSpeedThreshold._Value != val_int )
+                    {
+                        _ToolStripSpeedThreshold.SpeedThreshold_ValueChanged -= ToolStripSpeedThreshold_ValueChanged;
+                        _ToolStripSpeedThreshold._Value = val_int;
+                        _ToolStripSpeedThreshold.SpeedThreshold_ValueChanged += ToolStripSpeedThreshold_ValueChanged;
+                    }
+                }
+                if ( state != SetValueState.NoChanged )
+                {
                     Fire_ValueChanged();
                 }
             }
         }
-        public (double? value, double valueSaved) ValueWithSaved
-        {
-            get => (_Value, _Value.GetValueOrDefault( _ToolStripSpeedThreshold.Value ));
-            set
-            {
-                var (v, saved) = value;
-                this.Value = v;
-                if ( !v.HasValue || (v != saved) )
-                {
-                    var val_int = (int) saved;
-                    if ( _ToolStripSpeedThreshold.Value != val_int )
-                    {
-                        _ToolStripSpeedThreshold.SpeedThreshold_ValueChanged -= ToolStripSpeedThreshold_ValueChanged;
-                        _ToolStripSpeedThreshold.Value = val_int;
-                        _ToolStripSpeedThreshold.SpeedThreshold_ValueChanged += ToolStripSpeedThreshold_ValueChanged;
-                    }
-                }
-            }
-        }
-        public double ValueSaved => _ToolStripSpeedThreshold.Value;
+        public double ValueSaved => _ToolStripSpeedThreshold._Value;
+
 
         private _ToolStripSpeedThreshold_ _ToolStripSpeedThreshold;
-        private void ToolStripSpeedThreshold_ValueChanged( object sender, EventArgs e ) => this.Value = ((_ToolStripSpeedThreshold_) sender).Value;
+        private void ToolStripSpeedThreshold_ValueChanged( object sender, EventArgs e ) => this.Value = ((_ToolStripSpeedThreshold_) sender)._Value;
         protected override void FillDropDownItems()
         {            
             var font = new Font( this.Font, FontStyle.Regular );
-
             this.DropDownItems.Add( new ToolStripMenuItemEx( null, ToolStripMenuItemEx_EventHandler ) { Text = MAX_SPEED   , ForeColor = Color.FromArgb(  81, 189, 255 ), Image = _Resources_.speed_main_1      , Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx(   60, ToolStripMenuItemEx_EventHandler ) { Text = $"60 {MBPS}", ForeColor = Color.FromArgb(  20,   0,  47 ), Image = _Resources_.speed_1.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx(   50, ToolStripMenuItemEx_EventHandler ) { Text = $"50 {MBPS}", ForeColor = Color.FromArgb(  75,   0, 179 ), Image = _Resources_.speed_1.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );

@@ -32,7 +32,7 @@
   <ItemGroup>
     <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />    
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8_processor_adv.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv.cs" />
+    <!--<Compile Include="..\..\m3u8.client\m3u8_processor_adv.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv.cs" />-->
     <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
     <Compile Include="..\..\m3u8.client\m3u8_processor_next.cs" Link="[-= m3u8.client =-]\m3u8_processor_next.cs" />
     <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
@@ -104,8 +104,8 @@
     <Compile Include="..\WinForms\UI\UC\LogUC.Designer.cs" Link="UI\UC\LogUC.Designer.cs" />
     <Compile Include="..\WinForms\UI\UC\StatusBarUC.cs" Link="UI\UC\StatusBarUC.cs" />
     <Compile Include="..\WinForms\UI\UC\StatusBarUC.Designer.cs" Link="UI\UC\StatusBarUC.Designer.cs" />
-    <Compile Include="..\WinForms\UI\Controls\ToolStripItems\SpeedThresholdUC.cs" Link="UI\Controls\ToolStripItems\SpeedThresholdUC.cs" />
-    <Compile Include="..\WinForms\UI\Controls\ToolStripItems\SpeedThresholdUC.Designer.cs" Link="UI\Controls\ToolStripItems\SpeedThresholdUC.Designer.cs" />
+    <Compile Include="..\WinForms\UI\Controls\ToolStripItems\NumericUpDownUC.cs" Link="UI\Controls\ToolStripItems\NumericUpDownUC.cs" />
+    <Compile Include="..\WinForms\UI\Controls\ToolStripItems\NumericUpDownUC.Designer.cs" Link="UI\Controls\ToolStripItems\NumericUpDownUC.Designer.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\_ToolStripDropDownButtons.cs" Link="UI\Controls\ToolStripItems\_ToolStripDropDownButtons.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\ToolStripNumericUpDownEx.cs" Link="UI\Controls\ToolStripItems\ToolStripNumericUpDownEx.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\ToolStripSpeedThreshold.cs" Link="UI\Controls\ToolStripItems\ToolStripSpeedThreshold.cs" />

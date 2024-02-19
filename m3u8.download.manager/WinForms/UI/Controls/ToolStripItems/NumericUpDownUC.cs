@@ -7,9 +7,9 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    internal sealed partial class SpeedThresholdUC : UserControl
+    internal sealed partial class NumericUpDownUC : UserControl
     {
-        public SpeedThresholdUC()
+        public NumericUpDownUC()
         {
             InitializeComponent();
 
@@ -24,22 +24,26 @@ namespace m3u8.download.manager.ui
             base.Dispose( disposing );
         }
 
-
-        public int SpeedThreshold_Value
+        public string _CaptionText
         {
-            get => Convert.ToInt32( speedThresholdNumericUpDownEx.Value );
-            set => speedThresholdNumericUpDownEx.Value = value;
+            get => captionLabel.Text;
+            set => captionLabel.Text = value;
+        }
+        public int _Value
+        {
+            get => Convert.ToInt32( numericUpDownEx.Value );
+            set => numericUpDownEx.Value = Math.Min( numericUpDownEx.Maximum, Math.Max( numericUpDownEx.Minimum, value ) );
         }
 
-        public event EventHandler SpeedThreshold_ValueChanged
+        public event EventHandler _ValueChanged
         {
-            add    => speedThresholdNumericUpDownEx.ValueChanged += value;
-            remove => speedThresholdNumericUpDownEx.ValueChanged -= value;
+            add    => numericUpDownEx.ValueChanged += value;
+            remove => numericUpDownEx.ValueChanged -= value;
         }
-        public event EventHandler SpeedThreshold_TextChanged
+        public event EventHandler _TextChanged
         {
-            add    => speedThresholdNumericUpDownEx.TextChanged += value;
-            remove => speedThresholdNumericUpDownEx.TextChanged -= value;
+            add    => numericUpDownEx.TextChanged += value;
+            remove => numericUpDownEx.TextChanged -= value;
         }
 
         protected override void OnPaint( PaintEventArgs e )
@@ -53,11 +57,11 @@ namespace m3u8.download.manager.ui
             //using var br2 = new SolidBrush( this.l1.ForeColor );
             //gr.DrawString( this.l1.Text, this.l1.Font, br2, this.l1.Location );
 
-            using var gr2 = Graphics.FromHwnd( this.l1.Handle );
-            gr2.FillRectangle( br, this.l1.DisplayRectangle );
+            using var gr2 = Graphics.FromHwnd( this.captionLabel.Handle );
+            gr2.FillRectangle( br, this.captionLabel.DisplayRectangle );
 
-            using var br2 = new SolidBrush( this.l1.ForeColor );
-            gr2.DrawString( this.l1.Text, this.l1.Font, br2, 1, 0 );
+            using var br2 = new SolidBrush( this.captionLabel.ForeColor );
+            gr2.DrawString( this.captionLabel.Text, this.captionLabel.Font, br2, 1, 0 );
         }
         private Color? _HighlightBackColor;
         public Color HighlightBackColor
@@ -69,7 +73,7 @@ namespace m3u8.download.manager.ui
                 {
                     _HighlightBackColor = value;
 
-                    this.l1.BackColor = _HighlightBackColor.GetValueOrDefault( this.BackColor );
+                    this.captionLabel.BackColor = _HighlightBackColor.GetValueOrDefault( this.BackColor );
 
                     //using var e = new PaintEventArgs( Graphics.FromHwnd( this.Handle ), Rectangle.Empty );
                     //OnPaint( e );
@@ -80,14 +84,14 @@ namespace m3u8.download.manager.ui
         
         public void PerformClick() => UC_Click( this, EventArgs.Empty );
 
-        private void SpeedThresholdNumericUpDownEx_KeyDown( object sender, KeyEventArgs e )
+        private void numericUpDownEx_KeyDown( object sender, KeyEventArgs e )
         {
             if ( e.KeyCode == Keys.Enter )
             {
                 UC_Click( sender, e );
             }
         }
-        private void SpeedThresholdNumericUpDownEx_GotFocus( object sender, EventArgs e ) => this.Parent?.Refresh();
+        private void numericUpDownEx_GotFocus( object sender, EventArgs e ) => this.Parent?.Refresh();
         private void UC_Click( object sender, EventArgs e )
         {
             var p = this.Parent;
@@ -96,7 +100,7 @@ namespace m3u8.download.manager.ui
                 p.Focus();
                 if ( p is ToolStripDropDownMenu toolStripDropDownMenu )
                 {
-                    speedThresholdNumericUpDownEx.Fire_ValueChanged();
+                    numericUpDownEx.Fire_ValueChanged();
                     toolStripDropDownMenu.Close();                    
                 }
             }

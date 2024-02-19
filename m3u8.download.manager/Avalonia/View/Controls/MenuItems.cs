@@ -21,7 +21,7 @@ namespace m3u8.download.manager.ui
         protected sealed class SubMenuItem : MenuItem//, IStyleable
         {
             private Image _InnerImage;
-            public SubMenuItem( T value, EventHandler< RoutedEventArgs > onClick ) : this( value, value.ToString(), onClick ){}
+            public SubMenuItem( T value, EventHandler< RoutedEventArgs > onClick ) : this( value, value.ToString(), onClick ) { }
             public SubMenuItem( T value, string text, EventHandler< RoutedEventArgs > onClick )
             {
                 this.Click += onClick;
@@ -118,7 +118,7 @@ namespace m3u8.download.manager.ui
                             mi.Foreground = this.Foreground;
                             mi.Image      = this.Image; //this.MainImage;
                             mi.FontWeight = this.FontWeight;
-                            SetTip4TopItem( MainToolTipText + ": " + mi.Text );
+                            SetTip4TopItem( $"{MainToolTipText}: {mi.Text}" );
                         }
                         else
                         {
@@ -248,9 +248,9 @@ namespace m3u8.download.manager.ui
                 {
                     _Value = value;
 
-                    var t = (value.HasValue ? $"{value.Value} {MBPS}" : MAX_SPEED);
-                    _InnerTextBlock.Text = t;
-                    SetTip4TopItem( MainToolTipText + ": " + t );
+                    var txt = (value.HasValue ? $"{value.Value} {MBPS}" : MAX_SPEED);
+                    _InnerTextBlock.Text = txt;
+                    SetTip4TopItem( $"{MainToolTipText}: {txt}" );
                     this.Image = MainImage;
 
                     foreach ( SubMenuItem mi in this.Items )
@@ -263,7 +263,7 @@ namespace m3u8.download.manager.ui
                             this.Image           = mi.Image;
                             this.Foreground      = mi.Foreground;
                             _InnerTextBlock.Text = mi.Text;
-                            SetTip4TopItem( MainToolTipText + ": " + mi.Text );
+                            SetTip4TopItem( $"{MainToolTipText}: {mi.Text}" );
                         }
                         else
                         {

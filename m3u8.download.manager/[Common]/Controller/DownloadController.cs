@@ -656,7 +656,7 @@ namespace m3u8.download.manager.controllers
                         var start_ts  = Stopwatch.GetTimestamp();
                         var rows_Dict = new Dictionary< int, LogRow >( m3u8File.Parts.Count );
 
-                        var requestStepAction  = new m3u8_processor_next.RequestStepActionDelegate( p =>
+                        var requestStepAction  = new m3u8_processor_next.RequestStepActionDelegate( (in m3u8_processor_next.RequestStepActionParams p) =>
                         {
                             row.SetStatus( DownloadStatus.Running );
 
@@ -672,7 +672,7 @@ namespace m3u8.download.manager.controllers
                                 row.Log.AddResponseErrorRow( requestText, p.Error.ToString() );
                             }
                         });
-                        var responseStepAction = new m3u8_processor_next.ResponseStepActionDelegate( p =>
+                        var responseStepAction = new m3u8_processor_next.ResponseStepActionDelegate( (in m3u8_processor_next.ResponseStepActionParams p ) =>
                         {
                             row.SetDownloadResponseStepParams( p );
 
@@ -690,7 +690,7 @@ namespace m3u8.download.manager.controllers
                                 }
                             }
                         });
-                        var downloadPartStepAction = new m3u8_client_next.DownloadPartStepActionDelegate( (in m3u8_client_next.DownloadPartStepActionParams p) =>
+                        var downloadPartStepAction  = new m3u8_client_next.DownloadPartStepActionDelegate( (in m3u8_client_next.DownloadPartStepActionParams p) =>
                         {
                             var ts = Stopwatch.GetTimestamp();
                             var raiseRowPropertiesChangedEvent = InterlockedExtension.ExchangeIfNewValueBigger( ref start_ts, ts, ts - (100 * InterlockedExtension.TicksPerMillisecond) );

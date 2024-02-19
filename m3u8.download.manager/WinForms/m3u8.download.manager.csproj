@@ -95,9 +95,6 @@
     <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs">
       <Link>Controller\SettingsPropertyChangeController.cs</Link>
     </Compile>
-    <Compile Include="..\..\m3u8.client\m3u8_processor_adv.cs">
-      <Link>[-= m3u8.client =-]\m3u8_processor_adv.cs</Link>
-    </Compile>
     <Compile Include="..\..\m3u8.client\throttler_by_speed.cs">
       <Link>[-= m3u8.client =-]\throttler_by_speed.cs</Link>
     </Compile>
@@ -155,11 +152,11 @@
     </Compile>
     <Compile Include="UI\DefaultColors.cs" />
     <Compile Include="UI\LogRowsHeightStorer.cs" />
-    <Compile Include="UI\Controls\ToolStripItems\SpeedThresholdUC.cs">
+    <Compile Include="UI\Controls\ToolStripItems\NumericUpDownUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UI\Controls\ToolStripItems\SpeedThresholdUC.designer.cs">
-      <DependentUpon>SpeedThresholdUC.cs</DependentUpon>
+    <Compile Include="UI\Controls\ToolStripItems\NumericUpDownUC.designer.cs">
+      <DependentUpon>NumericUpDownUC.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\UC\ParallelismSettingsUC.cs">
       <SubType>UserControl</SubType>

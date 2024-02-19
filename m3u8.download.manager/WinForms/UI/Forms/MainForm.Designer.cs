@@ -238,15 +238,15 @@
             // 
             // degreeOfParallelismToolButton
             // 
-            this.degreeOfParallelismToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__IntValue.ValueChangedEventHandler(this.degreeOfParallelismToolButton_ValueChanged);
+            this.degreeOfParallelismToolButton.ValueChanged += new System.Windows.Forms._ToolStripDropDownButtonEx__IntValue.ValueChangedEventHandler(this.degreeOfParallelismToolButton_ValueChanged);
             // 
             // downloadInstanceToolButton
             //             
-            this.downloadInstanceToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__IntValue.ValueChangedEventHandler(this.downloadInstanceToolButton_ValueChanged);
+            this.downloadInstanceToolButton.ValueChanged += new System.Windows.Forms._ToolStripDropDownButtonEx__IntValue.ValueChangedEventHandler(this.downloadInstanceToolButton_ValueChanged);
             // 
             // speedThrottlerToolButton
             //             
-            this.speedThresholdToolButton.ValueChanged += new System.Windows.Forms.ToolStripDropDownButtonEx__DoubleValue.ValueChangedEventHandler(this.speedThresholdToolButton_ValueChanged );
+            this.speedThresholdToolButton.ValueChanged += new System.Windows.Forms._ToolStripDropDownButtonEx__DoubleValue.ValueChangedEventHandler(this.speedThresholdToolButton_ValueChanged );
             // 
             // mainSplitContainer
             // 

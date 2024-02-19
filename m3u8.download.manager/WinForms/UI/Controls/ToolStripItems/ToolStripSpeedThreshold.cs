@@ -10,7 +10,7 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed class ToolStripSpeedThreshold : ToolStripControlHost
     {
-        public ToolStripSpeedThreshold() : base( new SpeedThresholdUC() { /*Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right*/ /*Dock = DockStyle.Fill*/ } ) { }
+        public ToolStripSpeedThreshold() : base( new NumericUpDownUC() { _CaptionText = "Mbps" /*Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right*/ /*Dock = DockStyle.Fill*/ } ) { }
         public ToolStripSpeedThreshold( EventHandler speedThreshold_ValueChanged ) : this() => SpeedThreshold_ValueChanged += speedThreshold_ValueChanged;
         protected override void Dispose( bool disposing )
         {
@@ -18,29 +18,29 @@ namespace m3u8.download.manager.ui
             base.Dispose( disposing );
         }
 
-        public SpeedThresholdUC GetSpeedThresholdUC() => (SpeedThresholdUC) Control;
+        public NumericUpDownUC GetSpeedThresholdUC() => (NumericUpDownUC) Control;
 
-        public int Value
+        public int _Value
         {
-            get => GetSpeedThresholdUC().SpeedThreshold_Value;
-            set => GetSpeedThresholdUC().SpeedThreshold_Value = value;
+            get => GetSpeedThresholdUC()._Value;
+            set => GetSpeedThresholdUC()._Value = value;
         }
 
         protected override void OnSubscribeControlEvents( Control c )
         {
             base.OnSubscribeControlEvents( c );
 
-            var x = (SpeedThresholdUC) c;
-            x.SpeedThreshold_TextChanged  += new EventHandler( OnTextChanged );
-            x.SpeedThreshold_ValueChanged += new EventHandler( OnValueChanged );
+            var x = (NumericUpDownUC) c;
+            x._TextChanged  += new EventHandler( OnTextChanged );
+            x._ValueChanged += new EventHandler( OnValueChanged );
         }
         protected override void OnUnsubscribeControlEvents( Control c )
         {
             base.OnUnsubscribeControlEvents( c );
 
-            var x = (SpeedThresholdUC) c;
-            x.SpeedThreshold_TextChanged  -= new EventHandler( OnTextChanged );
-            x.SpeedThreshold_ValueChanged -= new EventHandler( OnValueChanged );
+            var x = (NumericUpDownUC) c;
+            x._TextChanged  -= new EventHandler( OnTextChanged );
+            x._ValueChanged -= new EventHandler( OnValueChanged );
         }
         protected override void OnParentChanged( ToolStrip oldParent, ToolStrip newParent )
         {
@@ -115,7 +115,7 @@ namespace m3u8.download.manager.ui
                 if ( _Timer.Enabled )
                 {
                     _Timer.Stop();
-                    Debug.WriteLine( "_Timer.Stop" );
+                    Debug.WriteLine( "ToolStripSpeedThreshold => _Timer.Stop" );
                 }
             }
         }
@@ -131,7 +131,7 @@ namespace m3u8.download.manager.ui
             else if ( !_Timer.Enabled )
             {
                 _Timer.Start();
-                Debug.WriteLine( "_Timer.Start" );
+                Debug.WriteLine( "ToolStripSpeedThreshold => _Timer.Start" );
             }
         }
         private void Parent_MouseClick( object sender, MouseEventArgs e )

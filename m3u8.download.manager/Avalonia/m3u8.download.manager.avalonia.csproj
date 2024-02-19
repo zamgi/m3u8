@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8_processor_adv.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv.cs" />
     <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
     <Compile Include="..\..\m3u8.client\m3u8_processor_next.cs" Link="[-= m3u8.client =-]\m3u8_processor_next.cs" />
     <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />

@@ -480,7 +480,11 @@ namespace m3u8.download.manager.ui
             {
                 if ( downloadListUC.GetSelectedDownloadRow() == row )
                 {
-                    await Dispatcher.UIThread.InvokeAsync( () => { SetDownloadToolButtonsStatus( row ); ShowDownloadStatisticsInTitle(); } );
+                    await Dispatcher.UIThread.InvokeAsync( () => 
+                    {
+                        SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
+                        ShowDownloadStatisticsInTitle();
+                    });
                 }
                 else
                 {
