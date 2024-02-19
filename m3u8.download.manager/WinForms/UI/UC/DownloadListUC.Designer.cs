@@ -16,8 +16,7 @@
         {
             System.Windows.Forms.DataGridViewCellStyle cs1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle cs2 = new System.Windows.Forms.DataGridViewCellStyle();
-            this.DGV = new System.Windows.Forms.DataGridViewEx();
-            this.DGV_urlColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV = new System.Windows.Forms.DataGridViewEx();            
             this.DGV_outputFileNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_outputDirectoryColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_statusColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -30,6 +29,7 @@
             this.DGV_approxTotalBytesColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_isLiveStreamColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_liveStreamMaxFileSizeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_urlColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolTip = new System.Windows.Forms.ToolTip();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
@@ -106,35 +106,6 @@
             this.DGV.StartDrawSelectRect += new System.EventHandler(this.DGV_StartDrawSelectRect);
             this.DGV.EndDrawSelectRect += new System.EventHandler(this.DGV_EndDrawSelectRect);
             // 
-            // DGV_urlColumn
-            // 
-            this.DGV_urlColumn.FillWeight = 120F;
-            this.DGV_urlColumn.Width = 120;
-            this.DGV_urlColumn.HeaderText = "Url";
-            this.DGV_urlColumn.Name = "DGV_urlColumn";
-            this.DGV_urlColumn.ReadOnly = true;
-            this.DGV_urlColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            // 
-            // DGV_isLiveStreamColumn
-            // 
-            this.DGV_isLiveStreamColumn.FillWeight = 8120F;
-            this.DGV_isLiveStreamColumn.Width = 80;
-            this.DGV_isLiveStreamColumn.HeaderText = "Is Live Stream";
-            this.DGV_isLiveStreamColumn.Name = "DGV_isLiveStreamColumn";
-            this.DGV_isLiveStreamColumn.ReadOnly = true;
-            this.DGV_isLiveStreamColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            this.DGV_isLiveStreamColumn.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            // 
-            // DGV_liveStreamMaxFileSizeColumn
-            // 
-            this.DGV_liveStreamMaxFileSizeColumn.FillWeight = 90F;
-            this.DGV_liveStreamMaxFileSizeColumn.Width = 90;
-            this.DGV_liveStreamMaxFileSizeColumn.HeaderText = "Live Stream Max File Size";
-            this.DGV_liveStreamMaxFileSizeColumn.Name = "DGV_liveStreamMaxFileSizeColumn";
-            this.DGV_liveStreamMaxFileSizeColumn.ReadOnly = true;
-            this.DGV_liveStreamMaxFileSizeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-            //---this.DGV_liveStreamMaxFileSizeColumn.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            // 
             // DGV_outputFileNameColumn
             // 
             this.DGV_outputFileNameColumn.FillWeight = 180F;
@@ -155,6 +126,8 @@
             // 
             // DGV_statusColumn
             // 
+            this.DGV_downloadProgressColumn.FillWeight = 80F;
+            this.DGV_downloadProgressColumn.Width = 80;
             this.DGV_statusColumn.HeaderText = "Status";
             this.DGV_statusColumn.Name = "DGV_statusColumn";
             this.DGV_statusColumn.ReadOnly = true;
@@ -222,7 +195,35 @@
             this.DGV_approxTotalBytesColumn.Name = "DGV_approxTotalBytesColumn";
             this.DGV_approxTotalBytesColumn.ReadOnly = true;
             this.DGV_approxTotalBytesColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
-
+            // 
+            // DGV_isLiveStreamColumn
+            // 
+            this.DGV_isLiveStreamColumn.FillWeight = 80F;
+            this.DGV_isLiveStreamColumn.Width = 80;
+            this.DGV_isLiveStreamColumn.HeaderText = "Is Live Stream";
+            this.DGV_isLiveStreamColumn.Name = "DGV_isLiveStreamColumn";
+            this.DGV_isLiveStreamColumn.ReadOnly = true;
+            this.DGV_isLiveStreamColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            this.DGV_isLiveStreamColumn.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            // 
+            // DGV_liveStreamMaxFileSizeColumn
+            // 
+            this.DGV_liveStreamMaxFileSizeColumn.FillWeight = 90F;
+            this.DGV_liveStreamMaxFileSizeColumn.Width = 90;
+            this.DGV_liveStreamMaxFileSizeColumn.HeaderText = "Live Stream Max File Size";
+            this.DGV_liveStreamMaxFileSizeColumn.Name = "DGV_liveStreamMaxFileSizeColumn";
+            this.DGV_liveStreamMaxFileSizeColumn.ReadOnly = true;
+            this.DGV_liveStreamMaxFileSizeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            //---this.DGV_liveStreamMaxFileSizeColumn.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            // 
+            // DGV_urlColumn
+            // 
+            this.DGV_urlColumn.FillWeight = 800F;
+            this.DGV_urlColumn.Width = 800;
+            this.DGV_urlColumn.HeaderText = "Url";
+            this.DGV_urlColumn.Name = "DGV_urlColumn";
+            this.DGV_urlColumn.ReadOnly = true;
+            this.DGV_urlColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             // 
             // DownloadListUC
             // 
@@ -237,7 +238,6 @@
         #endregion
 
         private System.Windows.Forms.DataGridViewEx DGV;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_urlColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_outputFileNameColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_outputDirectoryColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_statusColumn;
@@ -252,6 +252,7 @@
 
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_isLiveStreamColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_liveStreamMaxFileSizeColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_urlColumn;
 
         private System.Windows.Forms.ToolTip toolTip;
     }

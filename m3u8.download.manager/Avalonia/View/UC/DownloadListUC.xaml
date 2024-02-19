@@ -55,10 +55,10 @@
             Background="LightGray"
             ClipboardCopyMode="None"
             VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Auto"            
             >
     <DataGrid.Columns>
-      <DataGridTemplateColumn Width="2.25*" CellStyleClasses="visible_always_sign">
+      <DataGridTemplateColumn Width="180" CellStyleClasses="visible_always_sign">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Output file name" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
         </DataGridTemplateColumn.Header>
@@ -74,7 +74,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="1.125*">
+      <DataGridTemplateColumn Width="90">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Output directory" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>        
@@ -85,7 +85,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="1.25*">
+      <DataGridTemplateColumn Width="80">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Status" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -99,7 +99,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="1.5625*">
+      <DataGridTemplateColumn Width="125">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Progress" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -118,7 +118,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="*">
+      <DataGridTemplateColumn Width="80">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Time" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -130,7 +130,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="*">
+      <DataGridTemplateColumn Width="80">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Time Remained ~" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -142,7 +142,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="*">
+      <DataGridTemplateColumn Width="80">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Speed (↑Instant)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -154,7 +154,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="*">
+      <DataGridTemplateColumn Width="80">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Received (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -166,7 +166,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="*">
+      <DataGridTemplateColumn Width="80">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Remained ~ (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -178,7 +178,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>      
       
-      <DataGridTemplateColumn Width="*">
+      <DataGridTemplateColumn Width="80">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Total ~ (Size)" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
         </DataGridTemplateColumn.Header>
@@ -190,7 +190,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
         
-      <DataGridTemplateColumn Width="*" IsVisible="False">
+      <DataGridTemplateColumn Width="80" IsVisible="False">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Is Live Stream" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -202,7 +202,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
         
-      <DataGridTemplateColumn Width="*" IsVisible="False">
+      <DataGridTemplateColumn Width="90" IsVisible="False">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Live Stream Max File Size" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
@@ -214,7 +214,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="1.5*" IsVisible="False">
+      <DataGridTemplateColumn Width="800" IsVisible="False">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Url" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>
