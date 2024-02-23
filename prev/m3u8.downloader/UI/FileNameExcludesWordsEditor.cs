@@ -98,7 +98,9 @@ namespace m3u8.downloader
         private void DGV_Resize( object sender, EventArgs e )
         {
             var vscrollBarVisible = DGV.Controls.OfType< VScrollBar >().First().Visible;
-            DGV_excludesWordsColumn.Width = DGV.Width - DGV.RowHeadersWidth - 3 - (vscrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0);
+            DGV_excludesWordsColumn.Width = DGV.Width - DGV.RowHeadersWidth //- 3 
+                - (vscrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0)
+                - ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : SystemInformation.BorderSize.Width);
         }
         private void DGV_CellPainting( object sender, DataGridViewCellPaintingEventArgs e )
         {

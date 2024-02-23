@@ -85,14 +85,22 @@ namespace m3u8
             }
             return (new m3u8_Exception( resp.CreateExceptionMessage( responseText ) ));
         }
-        private HttpRequestMessage CreateRequstGet( Uri url )
+        private HttpRequestMessage CreateRequstGet( Uri url, IDictionary< string, string > requestHeaders = null )
         {
             var req = new HttpRequestMessage( HttpMethod.Get, url );
             req.Headers.ConnectionClose = _ConnectionClose;
+            if ( requestHeaders != null )
+            {
+                foreach ( var header in requestHeaders )
+                {
+                    var suc = req.Headers.TryAddWithoutValidation( header.Key, header.Value );
+                    Debug.Assert( suc );
+                }
+            }            
             return (req);
         }
 
-        public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default )
+        public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null )
         {
             if ( url == null ) throw (new m3u8_ArgumentException( nameof(url) ));
             //------------------------------------------------------------------//
@@ -101,7 +109,7 @@ namespace m3u8
             {
                 try
                 {
-                    using ( var req  = CreateRequstGet( url ) )
+                    using ( var req  = CreateRequstGet( url, requestHeaders ) )
                     using ( var resp = await _HttpClient.SendAsync( req, _HttpCompletionOption, ct ).CAX() )
                     using ( var content = resp.Content )
                     {
@@ -165,7 +173,7 @@ namespace m3u8
         }
 
         public async Task< m3u8_part_ts__v2 > DownloadPart( m3u8_part_ts__v2 part, Uri baseAddress
-            , DownloadPartInputParams ip, CancellationToken ct = default )
+            , DownloadPartInputParams ip, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null )
         {
             if ( baseAddress == null ) throw (new m3u8_ArgumentException( nameof(baseAddress) ));
             if ( part.Stream == null ) throw (new m3u8_ArgumentException( nameof(part.Stream) ));
@@ -183,7 +191,7 @@ namespace m3u8
             {
                 try
                 {
-                    using ( var req  = CreateRequstGet( url ) )
+                    using ( var req  = CreateRequstGet( url, requestHeaders ) )
                     using ( var resp = await _HttpClient.SendAsync( req, _HttpCompletionOption, ct ).CAX() )
                     {
                         if ( resp.IsSuccessStatusCode )
@@ -277,7 +285,7 @@ namespace m3u8
     /// </summary>
     internal static class m3u8_processor_next
     {
-        private static IEnumerable< m3u8_part_ts__v2 > download_m3u8File_parts_parallel( DownloadPartsAndSaveInputParams ip )
+        private static IEnumerable< m3u8_part_ts__v2 > download_m3u8File_parts_parallel( DownloadPartsAndSaveInputParams ip, IDictionary< string, string > requestHeaders = null )
         {
             var m3u8File                 = ip.m3u8File;
             var baseAddress              = m3u8File.BaseAddress;
@@ -333,7 +341,7 @@ namespace m3u8
                             part.SetStreamHolder( ip.StreamPool.GetHolder() );
 
 //---#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                            ip.mc.DownloadPart( part, baseAddress, t, /*ct*/ joinedCts.Token )
+                            ip.mc.DownloadPart( part, baseAddress, t, /*ct*/ joinedCts.Token, requestHeaders )
                                  .ContinueWith( continuationTask =>
                                  {
                                      //#region [.throttler by speed.]
@@ -444,7 +452,7 @@ namespace m3u8
             ip.CancellationToken.ThrowIfCancellationRequested();
         }
 #if NETCOREAPP
-        private static async IAsyncEnumerable< m3u8_part_ts__v2 > download_m3u8File_parts_parallel_Async( DownloadPartsAndSaveInputParams ip )
+        private static async IAsyncEnumerable< m3u8_part_ts__v2 > download_m3u8File_parts_parallel_Async( DownloadPartsAndSaveInputParams ip, IDictionary< string, string > requestHeaders = null )
         {
             var m3u8File                 = ip.m3u8File;
             var baseAddress              = m3u8File.BaseAddress;
@@ -500,7 +508,7 @@ namespace m3u8
                             part.SetStreamHolder( ip.StreamPool.GetHolder() );
 
 //---#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                            ip.mc.DownloadPart( part, baseAddress, t,/*ct*/ joinedCts.Token )
+                            ip.mc.DownloadPart( part, baseAddress, t,/*ct*/ joinedCts.Token, requestHeaders )
                                  .ContinueWith( continuationTask =>
                                  {
                                      //#region [.throttler by speed.]
@@ -711,7 +719,7 @@ namespace m3u8
             public bool IsEmpty() => ((OutputFileName == null) && (PartsSuccessCount == 0) && (PartsErrorCount == 0) && (TotalBytes == 0UL));
         }
 
-        public static async Task< DownloadPartsAndSaveResult > DownloadPartsAndSave( DownloadPartsAndSaveInputParams ip )
+        public static async Task< DownloadPartsAndSaveResult > DownloadPartsAndSave( DownloadPartsAndSaveInputParams ip, IDictionary< string, string > requestHeaders = null )
         {            
             if ( ip.mc == null )                          throw (new m3u8_ArgumentException( nameof(ip.mc) ));
             if ( !ip.m3u8File.Parts.AnyEx() )             throw (new m3u8_ArgumentException( nameof(ip.m3u8File) ));
@@ -727,7 +735,7 @@ namespace m3u8
             var res = new DownloadPartsAndSaveResult( ip.OutputFileName );
 
             //-2-//
-            var downloadParts = download_m3u8File_parts_parallel( ip );
+            var downloadParts = download_m3u8File_parts_parallel( ip, requestHeaders );
 
             //-3.1-//
             var directoryName = Path.GetDirectoryName( ip.OutputFileName );
@@ -757,7 +765,7 @@ namespace m3u8
             return (res);
         }
 #if NETCOREAPP
-        public static async Task< DownloadPartsAndSaveResult > DownloadPartsAndSave_Async( DownloadPartsAndSaveInputParams ip )
+        public static async Task< DownloadPartsAndSaveResult > DownloadPartsAndSave_Async( DownloadPartsAndSaveInputParams ip, IDictionary< string, string > requestHeaders = null )
         {            
             if ( ip.mc == null )                           throw (new m3u8_ArgumentException( nameof(ip.mc) ));
             if ( !ip.m3u8File.Parts.AnyEx() )              throw (new m3u8_ArgumentException( nameof(ip.m3u8File) ));
@@ -771,7 +779,7 @@ namespace m3u8
             var res = new DownloadPartsAndSaveResult( ip.OutputFileName );
 
             //-2-//
-            var downloadParts = download_m3u8File_parts_parallel_Async( ip );
+            var downloadParts = download_m3u8File_parts_parallel_Async( ip, requestHeaders );
 
             //-3.1-//
             var directoryName = Path.GetDirectoryName( ip.OutputFileName );

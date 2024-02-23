@@ -462,7 +462,7 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
-        private static class next__v2
+        private static class v4
         {
             public static async Task run( string m3u8FileUrl, string outputFileName, CancellationToken ct )
             {
@@ -477,6 +477,99 @@ namespace m3u8
                 };
 
                 await m3u8_processor__v2.DownloadFileAndSave( p ).CAX();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static class next
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            private sealed class download_threads_semaphore_impl : I_download_threads_semaphore
+            {
+                private SemaphoreSlim _Semaphore;
+                public download_threads_semaphore_impl( int maxDegreeOfParallelism ) => _Semaphore = new SemaphoreSlim( maxDegreeOfParallelism, maxDegreeOfParallelism );
+                public void Dispose() => _Semaphore.Dispose();
+                public bool UseCrossDownloadInstanceParallelism => false;
+                public void Release() => _Semaphore.Release();
+                public void Wait( CancellationToken ct ) => _Semaphore.Wait( ct );
+                public Task WaitAsync( CancellationToken ct ) => _Semaphore.WaitAsync( ct );
+            }
+            /// <summary>
+            /// 
+            /// </summary>
+            private sealed class throttler_by_speed_impl : I_throttler_by_speed_t
+            {
+                public void ChangeMaxSpeedThreshold( double? max_speed_threshold_in_Mbps ) { }
+                public void Dispose() { }
+                public void End( Task task ) { }
+                public double? GetMaxSpeedThreshold() => null;
+                public void Restart( Task task ) { }
+                public void Start( Task task ) { }
+                public void TakeIntoAccountDownloadedBytes( Task task, int downloadedBytes ) { }
+                public double? Throttle( Task task, CancellationToken ct ) => null;
+            }
+
+            public static async Task run( string m3u8FileUrl, string outputFileName, CancellationToken ct, IDictionary< string, string > requestHeaders = null )
+            {
+                using var mc = m3u8_client_next_factory.Create( new m3u8_client_next.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead } );
+
+                var m3u8File = await mc.DownloadFile( new Uri( m3u8FileUrl ), ct, requestHeaders ).CAX();
+
+                var maxDegreeOfParallelism = 8;
+                var streamInPoolCapacity   = 1_024 * 1_024 * 5;
+                var bufInPoolCapacity      = 1_024 * 100;
+                using var waitIfPausedEvent  = new ManualResetEventSlim( true, 0 );
+                using var dts                = new download_threads_semaphore_impl( maxDegreeOfParallelism );
+                using var dts_2              = new download_threads_semaphore_impl( maxDegreeOfParallelism );
+                using var throttler_by_speed = new throttler_by_speed_impl();
+                using var streamPool         = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
+                using var respBufPool        = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
+
+                #region comm.
+                //var requestStepAction      = new m3u8_processor_next.RequestStepActionDelegate( (in m3u8_processor_next.RequestStepActionParams p) =>
+                //{
+                //    var requestText = $"#{p.PartOrderNumber} of {p.TotalPartCount}). '{p.Part.RelativeUrlName}'...";
+                //    if ( p.Success )
+                //    {
+                //        var logRow = row.Log.AddRequestRow( requestText, responseText: "/starting/..." );
+                //        rows_Dict.Add( p.Part.OrderNumber, logRow );
+                //    }
+                //    else
+                //    {
+                //        anyErrorHappend = true;
+                //        row.Log.AddResponseErrorRow( requestText, p.Error.ToString() );
+                //    }
+                //});
+                #endregion
+                var responseStepAction = new m3u8_processor_next.ResponseStepActionDelegate( (in m3u8_processor_next.ResponseStepActionParams p) => CONSOLE.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );                
+                //var downloadPartStepAction = new m3u8_client_next.DownloadPartStepActionDelegate( (in m3u8_client_next.DownloadPartStepActionParams p) => );
+
+                var p = new m3u8_processor_next.DownloadPartsAndSaveInputParams()
+                {
+                    mc                         = mc,
+                    m3u8File                   = m3u8_file_t__v2.Parse( m3u8File ),
+                    OutputFileName             = outputFileName,
+                    CancellationToken          = ct,
+                    //RequestStepAction          = requestStepAction,
+                    ResponseStepAction         = responseStepAction,
+                    //DownloadPartStepAction     = downloadPartStepAction,
+                    MaxDegreeOfParallelism = maxDegreeOfParallelism,
+                    DownloadThreadsSemaphore   = dts,
+                    DownloadThreadsSemaphore_2 = dts_2,
+                    WaitIfPausedEvent          = waitIfPausedEvent,
+                    //WaitingIfPaused            = , //public Action
+                    //WaitingIfPausedBefore_2    = , //public Action< m3u8_part_ts__v2 >   
+                    //WaitingIfPausedAfter_2     = , //public Action< m3u8_part_ts__v2 >   
+                    ThrottlerBySpeed           = throttler_by_speed,
+                    StreamPool                 = streamPool,
+                    RespBufPool                = respBufPool,                    
+                };
+
+                await m3u8_processor_next.DownloadPartsAndSave_Async( p, requestHeaders ).CAX();
             }
         }
 
@@ -504,16 +597,40 @@ namespace m3u8
                 //v1.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
                 //v2.run__1( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
                 //v2.run__2( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
+                //await v3.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, default ).CAX();
+                //await v4.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, default ).CAX();
+
+                var requestHeaders = new Dictionary< string, string >
+                {
+                    //{ "Accept", "*/*" },
+                    //{ "Accept-Encoding", "gzip, deflate, br" },
+                    //{ "Accept-Language", "ru,en-US;q=0.9,en;q=0.8" },
+                    
+                    //{ "Cache-Control", "no-cache" },
+                    //{ "Pragma", "no-cache" },
+                    //{ "Connection", "keep-alive" },
+                    //{ "Host", "09b-8c6-300g0.v.plground.live:10403" },
+                    { "Origin" , "https://ollo-as.newplayjj.com:9443"  },
+                    //{ "Referer", "https://ollo-as.newplayjj.com:9443/" },
+                    //{ "Sec-Fetch-Dest", "empty" },
+                    //{ "Sec-Fetch-Mode", "cors" },
+                    //{ "Sec-Fetch-Site", "cross-site" },
+                    //{ "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36" },
+                    
+                    //{ "sec-ch-ua", "\"Not A(Brand\";v=\"99\", \"Google Chrome\";v=\"121\", \"Chromium\";v=\"121\"" },
+                    //{ "sec-ch-ua-mobile", "?0" },
+                    //{ "sec-ch-ua-platform", "\"Windows\"" }
+                };
 
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( M3U8_FILE_URL ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                    await next__v2.run( M3U8_FILE_URL, outputFileName, cts.Token ).CAX(); //.WaitForTaskEndsOrKeyboardBreak( cts );
+                    await next.run( M3U8_FILE_URL, outputFileName, cts.Token, requestHeaders ).CAX(); //.WaitForTaskEndsOrKeyboardBreak( cts );
                 }                    
             }
             catch ( Exception ex )
             {
-                CONSOLE.WriteLineError( "ERROR: " + ex );
+                CONSOLE.WriteLineError( $"ERROR: {ex}" );
             }
             CONSOLE.WriteLine( "\r\n\r\n[.....finita fusking comedy.....]\r\n\r\n", ConsoleColor.DarkGray );
             CONSOLE.ReadLine();

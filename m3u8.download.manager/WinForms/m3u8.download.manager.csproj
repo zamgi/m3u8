@@ -144,6 +144,12 @@
     <Compile Include="UI\Forms\ColumnsVisibilityEditor.Designer.cs">
       <DependentUpon>ColumnsVisibilityEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\Forms\Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -157,6 +163,12 @@
     </Compile>
     <Compile Include="UI\Controls\ToolStripItems\NumericUpDownUC.designer.cs">
       <DependentUpon>NumericUpDownUC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\UC\RequestHeadersEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\UC\RequestHeadersEditor.Designer.cs">
+      <DependentUpon>RequestHeadersEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\UC\ParallelismSettingsUC.cs">
       <SubType>UserControl</SubType>
@@ -282,6 +294,7 @@
     <Content Include="Resources\dop_settings.ico" />
     <Content Include="Resources\downloadInstance.ico" />
     <None Include="Resources\reset.png" />
+    <Content Include="Resources\edit.png" />
     <Content Include="Resources\listbullets.png" />
     <Content Include="Resources\listcheck.png" />
     <Content Include="Resources\live_stream.png" />

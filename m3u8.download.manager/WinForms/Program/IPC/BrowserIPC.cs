@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -26,6 +27,9 @@ namespace m3u8.download.manager.ipc
                 [DataMember(Name="m3u8_url", IsRequired=true)]
                 public string m3u8FileUrl { get; set; }
 
+                [DataMember(Name="requestHeaders", IsRequired=false)]
+                public string requestHeaders { get; set; }
+
                 [DataMember(Name="auto_start_download", IsRequired=false)]
                 public bool autoStartDownload { get; set; }
             }
@@ -47,6 +51,67 @@ namespace m3u8.download.manager.ipc
             private const string SUCCESS        = "success";
             private const string MISSING_PARAMS = "missing_params";
             public static string CreateAsJson( bool hasParams ) => (new ExtensionOutputParams() { Text = (hasParams ? SUCCESS : MISSING_PARAMS) }).ToJson();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataContract] public struct ExtensionRequestHeader
+        {
+            [DataMember(Name="name", IsRequired=true)]
+            public string Name { get; set; }
+
+            [DataMember(Name="value", IsRequired=true)]
+            public string Value { get; set; }
+
+            public static bool Try2Dict( string json, out IDictionary< string, string > dict )
+            {
+                if ( !json.IsNullOrEmpty() )
+                {
+                    try
+                    {
+                        var array = Extensions.FromJSON< List< ExtensionRequestHeader > >( json );
+                        var group = array.GroupBy( a => a.Name );
+                        var sd = new SortedDictionary< string, string >();
+                        foreach ( var g in group )
+                        {
+                            sd.Add( g.Key, g.First().Value );
+                        }
+                        dict = sd;
+                        return (true);
+                    }
+                    catch ( Exception ex )
+                    {
+                        Debug.WriteLine( ex );
+                    }
+                }
+                dict = default;
+                return (false);
+            }
+            public static bool Try2Dict2( string json, out IDictionary< string, List< string > > dict )
+            {
+                if ( !json.IsNullOrEmpty() )
+                {
+                    try
+                    {
+                        var array = Extensions.FromJSON< List< ExtensionRequestHeader > >( json );
+                        var group = array.GroupBy( a => a.Name );
+                        var sd = new SortedDictionary< string, List< string > >();
+                        foreach ( var g in group )
+                        {
+                            sd.Add( g.Key, g.Select( a => a.Value ).OrderBy( _ => _ ).ToList() );
+                        }
+                        dict = sd;
+                        return (true);
+                    }
+                    catch ( Exception ex )
+                    {
+                        Debug.WriteLine( ex );
+                    }
+                }
+                dict = default;
+                return (false);
+            }
         }
 
         public static string ReadFromStandardInput( int millisecondsDelay  = 2_500 )
@@ -111,18 +176,18 @@ namespace m3u8.download.manager.ipc
             }
         }
 
-        public static bool TryParseAsExtensionInputParams( string json, out (string m3u8FileUrl, bool autoStartDownload)[] p )
+        public static bool TryParseAsExtensionInputParams( string json, out (string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[] p )
         {
             try
             {
                 var array = Extensions.FromJSON< ExtensionInputParamsArray >( json ).Array;
                 if ( array.AnyEx() )
                 {
-                    p = new (string m3u8FileUrl, bool autoStartDownload)[ array.Length ];
+                    p = new (string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[ array.Length ];
                     for ( var i = array.Length - 1; 0 <= i; i-- )
                     {
                         ref var a = ref array[ i ];
-                        p[ i ] = (a.m3u8FileUrl, a.autoStartDownload);
+                        p[ i ] = (a.m3u8FileUrl, a.requestHeaders, a.autoStartDownload);
                     }
                     return (true);
                 }
@@ -155,6 +220,7 @@ namespace m3u8.download.manager.ipc
             private const string FIREFOX_FILE_EXTENSION = ".json";
 
             private const string M3U8_FILE_URL__PARAM       = "m3u8FileUrl=";
+            private const string REQUEST_HEADERS__PARAM     = "requestHeaders=";
             private const string AUTO_START_DOWNLOAD__PARAM = "autoStartDownload=";
 
             public const string CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG = "CREATE_AS_BREAKAWAY_FROM_JOB";
@@ -174,15 +240,15 @@ namespace m3u8.download.manager.ipc
                 return (BrowserTypeEnum.NoBrowser);
             }
 
-            public static string Create4PipeIPC( (string m3u8FileUrl, bool autoStartDownload)[] array ) => string.Join( "\0\0", from p in array select $"{p.m3u8FileUrl}\0{p.autoStartDownload}" );
-            public static bool TryParse4PipeIPC_Multi( string pipeIpcCommandLine, out (string m3u8FileUrl, bool autoStartDownload)[] array )
+            public static string Create4PipeIPC( (string m3u8FileUrl, string requestHeaders, bool autoStartDownload )[] array ) => string.Join( "\0\0", from p in array select $"{p.m3u8FileUrl}\0{p.requestHeaders}\0{p.autoStartDownload}" );
+            public static bool TryParse4PipeIPC_Multi( string pipeIpcCommandLine, out (string m3u8FileUrl, string requestHeaders, bool autoStartDownload )[] array )
             {
                 if ( pipeIpcCommandLine != null )
                 {
                     var args = pipeIpcCommandLine.Split( new[] { "\0\0" }, StringSplitOptions.None );
                     if ( 0 < args.Length )
                     {
-                        array = new (string m3u8FileUrl, bool autoStartDownload)[ args.Length ];
+                        array = new (string m3u8FileUrl, string requestHeaders, bool autoStartDownload )[ args.Length ];
 
                         for ( var i = args.Length - 1; 0 <= i; i-- )
                         {
@@ -203,12 +269,12 @@ namespace m3u8.download.manager.ipc
             }
 
             //public static string Create4PipeIPC( in (string m3u8FileUrl, bool autoStartDownload) p ) => $"{p.m3u8FileUrl}\0{p.autoStartDownload}";
-            private static bool TryParse4PipeIPC_Single( string pipeIpcCommandLine, out (string m3u8FileUrl, bool autoStartDownload) p )
+            private static bool TryParse4PipeIPC_Single( string pipeIpcCommandLine, out (string m3u8FileUrl, string requestHeaders, bool autoStartDownload) p )
             {
                 var args = pipeIpcCommandLine.Split( '\0' );
-                if ( args.Length == 2 )
+                if ( args.Length == 3 )
                 {
-                    p = (args[ 0 ], args[ 1 ].Try2Bool());
+                    p = (args[ 0 ], args[ 1 ], args[ 2 ].Try2Bool());
                     return (!p.m3u8FileUrl.IsNullOrWhiteSpace());
                 }
                 p = default;
@@ -220,9 +286,10 @@ namespace m3u8.download.manager.ipc
             public static string Create( string executeFileName ) => $"\"{executeFileName}\"";            
             public static string Create_4_CreateAsBreakawayFromJob( string executeFileName ) => $"\"{executeFileName}\" {CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG}";
             public static bool Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() => (Environment.GetCommandLineArgs()?.Any( a => a == CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG )).GetValueOrDefault();
-            public static bool TryParse( string[] args, out (string m3u8FileUrl, bool autoStartDownload) p )
+            public static bool TryParse( string[] args, out (string m3u8FileUrl, string requestHeaders, bool autoStartDownload) p )
             {
                 p.m3u8FileUrl       = args.TryGetCmdArg( M3U8_FILE_URL__PARAM );
+                p.requestHeaders    = args.TryGetCmdArg( REQUEST_HEADERS__PARAM );
                 p.autoStartDownload = args.TryGetCmdArg( AUTO_START_DOWNLOAD__PARAM ).Try2Bool();
 
                 return (p.m3u8FileUrl != null);

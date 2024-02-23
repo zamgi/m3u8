@@ -52,16 +52,20 @@ workInfoType.prototype = {
         }
         if (need_save) await this.save2Storage();
     },
-    addM3u8Urls: async function (tabId, m3u8_url) {
+    addM3u8Urls: async function (tabId, m3u8_url, requestHeaders) {
         let o = this.tabs[tabId], need_save = true;
         if (!o) {
-            o = this.tabs[tabId] = { m3u8_urls: [m3u8_url] };
+            o = this.tabs[tabId] = { m3u8_urls: [m3u8_url], requestHeaders: { m3u8_url: requestHeaders } };
         }
         else if (!o.m3u8_urls) {
             o.m3u8_urls = [m3u8_url];
+            if (!o.requestHeaders) o.requestHeaders = {};
+            o.requestHeaders[m3u8_url] = requestHeaders;
         }
         else if (o.m3u8_urls.indexOf(m3u8_url) === -1) {
             o.m3u8_urls.push(m3u8_url);
+            if (!o.requestHeaders) o.requestHeaders = {};
+            o.requestHeaders[m3u8_url] = requestHeaders;
         } else {
             need_save = false;
         }
@@ -80,6 +84,7 @@ workInfoType.prototype = {
 
     getM3u8Urls: function (tabId) {
         let o = this.tabs[tabId];
-        return ((o && o.m3u8_urls) ? o.m3u8_urls : []);
+        //return ((o && o.m3u8_urls) ? o.m3u8_urls : []);
+        return ((o && o.m3u8_urls) ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
     }
 };

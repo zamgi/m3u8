@@ -68,6 +68,7 @@ namespace m3u8.download.manager.controllers
         public IEnumerable<
             (DateTime CreatedOrStartedDateTime,
              string Url,
+             IDictionary< string, string > RequestHeaders,
              string OutputFileName,
              string OutputDirectory,
              DownloadStatus Status,

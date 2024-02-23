@@ -120,6 +120,8 @@ namespace m3u8.download.manager.models
         //public int            LiveStreamMaxFileSizeInMb    { [M(O.AggressiveInlining)] get => (int) (LiveStreamMaxFileSizeInBytes >> 20); }
         private DateTime? _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
 
+        public Dictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; private set; }
+
         //--- USING FOR BINDING & UPDATE BINDING---//
         public DownloadRow MySelf { [M(O.AggressiveInlining)] get => this; }
 

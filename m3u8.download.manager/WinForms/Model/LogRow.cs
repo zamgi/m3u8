@@ -9,7 +9,7 @@ namespace m3u8.download.manager.models
     /// <summary>
     /// 
     /// </summary>
-    internal enum RequestRowTypeEnum { None, Success, Error };
+    internal enum RequestRowTypeEnum { None, Success, Error, RequestHeader };
 
     /// <summary>
     /// 
@@ -32,6 +32,9 @@ namespace m3u8.download.manager.models
 
         internal static LogRow CreateRequest( string requestText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
             => new LogRow( model, rowPropertiesChanged ) { RequestText = requestText };
+
+        internal static LogRow CreateRequestHeader( string requestText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
+            => new LogRow( model, rowPropertiesChanged ) { RequestRowType = RequestRowTypeEnum.RequestHeader, RequestText = requestText };
 
         internal static LogRow CreateRequest( string requestText, string responseText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
             => new LogRow( model, rowPropertiesChanged ) { RequestText = requestText, ResponseText = responseText };

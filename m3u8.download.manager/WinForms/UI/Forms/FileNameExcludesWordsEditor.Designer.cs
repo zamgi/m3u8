@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-
-namespace m3u8.download.manager.ui
+﻿namespace m3u8.download.manager.ui
 {
     partial class FileNameExcludesWordsEditor
     {

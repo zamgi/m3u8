@@ -23,7 +23,7 @@ namespace m3u8.download.manager.ipc
             /// <summary>
             /// 
             /// </summary>
-            public delegate void ReceivedInputParamsArrayEventHandler( (string m3u8FileUrl, bool autoStartDownload)[] array );
+            public delegate void ReceivedInputParamsArrayEventHandler( (string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[] array );
             /// <summary>
             /// 
             /// </summary>
@@ -94,7 +94,7 @@ namespace m3u8.download.manager.ipc
         {
             private static NamedPipeClientStream Create_NamedPipeClientStream( string pipeName ) => new NamedPipeClientStream( ".", pipeName, PipeDirection.Out, PipeOptions.None, TokenImpersonationLevel.None, HandleInheritability.Inheritable );
 
-            public static void Send( string pipeName, (string m3u8FileUrl, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 5_000 )
+            public static void Send( string pipeName, (string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 5_000 )
             {
                 using ( var pipeClient = Create_NamedPipeClientStream( pipeName ) )
                 {
@@ -117,7 +117,7 @@ namespace m3u8.download.manager.ipc
                 Debug.WriteLine( "[CLIENT] Client terminating.\r\n" ); 
 #endif
             }
-            public static async Task Send_Async( string pipeName, (string m3u8FileUrl, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 5_000 )
+            public static async Task Send_Async( string pipeName, (string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[] array, int connectMillisecondsTimeout = 5_000 )
             {
                 using ( var pipeClient = Create_NamedPipeClientStream( pipeName ) )
                 {

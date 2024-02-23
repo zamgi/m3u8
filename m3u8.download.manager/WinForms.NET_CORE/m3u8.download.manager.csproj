@@ -104,6 +104,8 @@
     <Compile Include="..\WinForms\UI\UC\LogUC.Designer.cs" Link="UI\UC\LogUC.Designer.cs" />
     <Compile Include="..\WinForms\UI\UC\StatusBarUC.cs" Link="UI\UC\StatusBarUC.cs" />
     <Compile Include="..\WinForms\UI\UC\StatusBarUC.Designer.cs" Link="UI\UC\StatusBarUC.Designer.cs" />
+    <Compile Include="..\WinForms\UI\UC\RequestHeadersEditor.cs" Link="UI\UC\RequestHeadersEditor.cs" />
+    <Compile Include="..\WinForms\UI\UC\RequestHeadersEditor.Designer.cs" Link="UI\UC\RequestHeadersEditor.Designer.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\NumericUpDownUC.cs" Link="UI\Controls\ToolStripItems\NumericUpDownUC.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\NumericUpDownUC.Designer.cs" Link="UI\Controls\ToolStripItems\NumericUpDownUC.Designer.cs" />
     <Compile Include="..\WinForms\UI\Controls\ToolStripItems\_ToolStripDropDownButtons.cs" Link="UI\Controls\ToolStripItems\_ToolStripDropDownButtons.cs" />

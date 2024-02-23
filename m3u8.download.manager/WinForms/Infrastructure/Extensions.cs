@@ -429,7 +429,7 @@ namespace m3u8.download.manager
             urls = default;
             return (false);
         }
-        public static IReadOnlyCollection< string > TryGetM3u8FileUrlsFromClipboardOrDefault() => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) ? m3u8FileUrls : new string[ 0 ]);
+        public static IReadOnlyCollection< string > TryGetM3u8FileUrlsFromClipboardOrDefault() => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) ? m3u8FileUrls : Array.Empty< string >());
         public static void CopyUrlsToClipboard( IEnumerable< DownloadRow > rows ) => Clipboard.SetText( string.Join( "\r\n", rows.Select( r => r.Url ) ), TextDataFormat.UnicodeText );
 
         public static string ToJSON< T >( this T t )
@@ -665,5 +665,20 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static ConfiguredValueTaskAwaitable CAX( this in ValueTask task ) => task.ConfigureAwait( false );
 #endif
         [M(O.AggressiveInlining)] public static void Invoke( this SynchronizationContext ctx, Action action ) => ctx.Send( _ => action(), null );
+
+        public static string ToText( this IDictionary< string, string > requestHeaders, string separator = ": ", StringBuilder buf = null )
+        {
+            if ( requestHeaders.AnyEx() )
+            {
+                if ( buf == null ) buf = new StringBuilder(); else buf.Clear();
+                foreach ( var p in requestHeaders )
+                {
+                    if ( buf.Length != 0 ) buf.Append( /*"\\r\\n "*/"; " ).AppendLine();
+                    buf.Append( p.Key ).Append( separator ).Append( p.Value );
+                }
+                return (buf.ToString());
+            }
+            return (null);
+        }
     }
 }

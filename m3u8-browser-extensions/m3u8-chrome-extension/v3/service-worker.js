@@ -53,17 +53,33 @@ async function KeepAliveRoutine() {
     }
 })();
 
+var requestHeaders_by_url = {};
 chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
     let ext = (d.url.split('?')[0].split('.').pop() || '').toLowerCase();
     if (ext === 'm3u8') {
         //console.log('addM3u8Urls() => tabId: ' + d.tabId + ', url: ' + d.url );
 
-        await (await load_workInfo()).addM3u8Urls(d.tabId, d.url);
+        var requestHeaders = requestHeaders_by_url[d.url];
+        if (requestHeaders) delete requestHeaders_by_url[d.url];
+        await (await load_workInfo()).addM3u8Urls(d.tabId, d.url, requestHeaders);
     }
     //else console.log('discarded => tabId: ' + d.tabId + ', url: ' + d.url );
 }, {
     urls: ['<all_urls>']
 });
+
+chrome.webRequest.onBeforeSendHeaders.addListener(async function (d/*details*/) {
+    let ext = (d.url.split('?')[0].split('.').pop() || '').toLowerCase();
+    if (ext === 'm3u8') {
+        //console.log('onBeforeSendHeaders() => tabId: ' + d.tabId + ', url: ' + d.url );
+
+        requestHeaders_by_url[d.url] = JSON.stringify(d.requestHeaders);
+    }
+    //else console.log('discarded => tabId: ' + d.tabId + ', url: ' + d.url );
+}, {
+    urls: ['<all_urls>']
+}, ['requestHeaders', 'extraHeaders'] );
+
 
 // set handler to tabs
 chrome.tabs.onActivated.addListener(async (info) => await (await load_workInfo()).onActivateTab(info.tabId));

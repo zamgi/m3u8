@@ -144,7 +144,7 @@ namespace m3u8.download.manager.controllers
         #endregion
 
         #region [.static 'GetFileTextContent'.]
-        public static Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( string m3u8FileUrlText, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
+        public static Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( string m3u8FileUrlText, IDictionary< string, string > requestHeaders, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
         {
             #region [.url.]
             if ( !Extensions.TryGetM3u8FileUrl( m3u8FileUrlText?.Trim(), out var t ) )
@@ -153,15 +153,15 @@ namespace m3u8.download.manager.controllers
             }
             #endregion
 
-            return (GetFileTextContent( t.m3u8FileUrl, requestTimeoutByPart, cts ));
+            return (GetFileTextContent( t.m3u8FileUrl, requestHeaders, requestTimeoutByPart, cts ));
         }
-        public static async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( Uri m3u8FileUrl, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
+        public static async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( Uri m3u8FileUrl, IDictionary< string, string > requestHeaders, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
         {
-            using ( var mc = m3u8_client_factory.Create( requestTimeoutByPart, attemptRequestCountByPart: 1 ) )
+            using ( var mc = m3u8_client_next_factory.Create( requestTimeoutByPart, attemptRequestCountByPart: 1 ) )
             {
                 try
                 {
-                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts?.Token ?? default );
+                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts?.Token ?? default, requestHeaders );
 
                     return (m3u8File, null);
                 }
@@ -636,7 +636,7 @@ namespace m3u8.download.manager.controllers
                     var sw = Stopwatch.StartNew();
 
                     //-1-//
-                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts.Token );
+                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts.Token, row.RequestHeaders );
 
                     row.SetTotalParts( m3u8File.Parts.Count );
                     row.Log.Output( m3u8File );
@@ -644,6 +644,7 @@ namespace m3u8.download.manager.controllers
                     //-2-//
                     await Task.Delay( MILLISECONDSDELAY_M3U8FILE_OUTPUT_PAUSE, cts.Token );
                     row.Log.Clear();
+                    row.Log.Output( row.RequestHeaders );
 
                     //-3-//
                     var anyErrorHappend = false;
@@ -751,9 +752,9 @@ namespace m3u8.download.manager.controllers
                             DownloadPartStepAction     = downloadPartStepAction,
                         };
 #if NETCOREAPP
-                        var result = await m3u8_processor_next.DownloadPartsAndSave_Async( ip ).CAX();
+                        var result = await m3u8_processor_next.DownloadPartsAndSave_Async( ip, row.RequestHeaders ).CAX();
 #else
-                        var result = m3u8_processor_next.DownloadPartsAndSave( ip );
+                        var result = m3u8_processor_next.DownloadPartsAndSave( ip, row.RequestHeaders );
 #endif
                         return (result);
                     });
@@ -1242,6 +1243,21 @@ namespace m3u8.download.manager.controllers
             return (delete_task);
         }
 
+        public Task DeleteOutputFiles_Parallel( DownloadRow[] rows, CancellationToken ct, 
+            Action< DownloadRow, CancellationToken > deleteFilesAction, 
+            Action< DownloadRow > afterSuccesDeleteAction = null )
+        {
+            var delete_task = Task.Run(() =>
+            {
+                Parallel.ForEach( rows, new ParallelOptions() { CancellationToken = ct, MaxDegreeOfParallelism = rows.Length }, row =>
+                {
+                    deleteFilesAction( row, ct );
+                    afterSuccesDeleteAction?.Invoke( row );
+                });
+            });
+            return (delete_task);
+        }
+
         public async Task DeleteRowsWithOutputFiles_Consecutively( DownloadRow[] rows, CancellationToken ct,
             Func< DownloadRow, CancellationToken, Task > deleteFilesAction, 
             Action< DownloadRow > afterSuccesDeleteAction )
@@ -1253,7 +1269,7 @@ namespace m3u8.download.manager.controllers
                     await deleteFilesAction( row, ct );
                     statusTran.CommitStatus();
 
-                    afterSuccesDeleteAction( row );
+                    afterSuccesDeleteAction?.Invoke( row );
                 }
             }
         }
@@ -1284,6 +1300,58 @@ namespace m3u8.download.manager.controllers
                 }
                 log.EndUpdate();
             }
+        }
+        public static void Output( this LogListModel log, in m3u8_file_t m3u8File, IDictionary< string, string > requestHeaders )
+        {
+            var lines = m3u8File.RawText?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
+                                .Where( line => !line.IsNullOrWhiteSpace() )
+                                ;//.ToList();
+            if ( lines.AnyEx() )
+            {
+                log.BeginUpdate();
+                {
+                    log.Clear();
+                    if ( requestHeaders.AnyEx() )
+                    {
+                        log.OutputRequestHeaders( requestHeaders );
+                    }
+                    foreach ( var line in lines )
+                    {
+                        log.AddRequestRow( line );
+                    }
+                    log.AddEmptyRow();
+                    log.AddRequestRow( $" patrs count: {m3u8File.Parts.Count}" );
+                }
+                log.EndUpdate();
+            }
+        }
+        public static void Output( this LogListModel log, IDictionary< string, string > requestHeaders )
+        {
+            if ( requestHeaders.AnyEx() )
+            {
+                log.BeginUpdate();
+                {
+                    log.OutputRequestHeaders( requestHeaders );
+                }
+                log.EndUpdate();
+            }
+        }
+        private static void OutputRequestHeaders( this LogListModel log, IDictionary< string, string > requestHeaders )
+        {
+            log.AddRequestHeaderRow( $"/request headers: {requestHeaders.Count}/" );
+            var n = 0;
+            var max_key_len = requestHeaders.Max( p => p.Key.Length );
+            var max_n_len   = requestHeaders.Count.ToString().Length;
+            foreach ( var p in requestHeaders/*.OrderBy( p => p.Key )*/ )
+            {
+                //log.AddRequestHeaderRow( $"  ({++n}) {p.Key} = {p.Value}" );
+
+                var n_txt    = (++n).ToString();
+                var n_indent = new string( ' ', max_n_len   - n_txt.Length );
+                var indent   = new string( ' ', max_key_len - p.Key.Length );
+                log.AddRequestHeaderRow( $" {n_indent}({n_txt}) {p.Key}: {indent}{p.Value}" );
+            }
+            log.AddEmptyRow();
         }
         public static void StatusStarted( this DownloadRow row )
         {

@@ -66,7 +66,8 @@ namespace m3u8.download.manager.ui
         private const int APPROX_TOTAL_BYTES_COLUMN_INDEX        = 9;
         private const int IS_LIVE_STREAM_COLUMN_INDEX            = 10;
         private const int LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX = 11;
-        private const int URL_COLUMN_INDEX                       = 12;
+        private const int REQUEST_HEADERS_COLUMN_INDEX           = 12;
+        private const int URL_COLUMN_INDEX                       = 13;
         #endregion
 
         #region [.field's.]
@@ -366,11 +367,6 @@ namespace m3u8.download.manager.ui
                 }
                 #endregion
             }
-        }
-
-        public void SetSettingsController(  )
-        {
-;
         }
 
         private void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
@@ -723,6 +719,10 @@ namespace m3u8.download.manager.ui
                     comparison = (x, y) => string.Compare( x.Url, y.Url, true );
                 break;
 
+                case REQUEST_HEADERS_COLUMN_INDEX:
+                    comparison = (x, y) => string.Compare( x.RequestHeaders.ToText(), y.RequestHeaders.ToText(), true );
+                break;                
+
                 case IS_LIVE_STREAM_COLUMN_INDEX:
                     comparison = (x, y) => x.IsLiveStream.CompareTo( y.IsLiveStream );
                 break;
@@ -783,6 +783,7 @@ namespace m3u8.download.manager.ui
                 case APPROX_REMAINED_BYTES_COLUMN_INDEX    : e.Value = GetApproxRemainedBytesText( row );                     break;
                 case APPROX_TOTAL_BYTES_COLUMN_INDEX       : e.Value = GetApproxTotalBytesText   ( row );                     break;
                 case URL_COLUMN_INDEX                      : e.Value = row.Url;                                               break;
+                case REQUEST_HEADERS_COLUMN_INDEX          : e.Value = row.RequestHeaders.ToText(); break;
                 case IS_LIVE_STREAM_COLUMN_INDEX           : e.Value = row.IsLiveStream ? "YES" : "-"; break;
                 case LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX: e.Value = row.IsLiveStream ? $"{row.GetLiveStreamMaxFileSizeInMb()} mb" : "-"; break;
             }

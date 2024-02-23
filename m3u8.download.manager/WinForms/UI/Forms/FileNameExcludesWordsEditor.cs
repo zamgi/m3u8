@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -134,7 +133,9 @@ namespace m3u8.download.manager.ui
         private void DGV_Resize( object sender, EventArgs e )
         {
             var vscrollBarVisible = DGV.Controls.OfType< VScrollBar >().First().Visible;
-            DGV_excludesWordsColumn.Width = DGV.Width - DGV.RowHeadersWidth - 3 - (vscrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0);
+            DGV_excludesWordsColumn.Width = DGV.Width - DGV.RowHeadersWidth //- 3 
+                - (vscrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0)
+                - ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : SystemInformation.BorderSize.Width);
         }
 
         private void clearFilterButton_Click( object sender, EventArgs e ) => filterTextBox.Text = null;

@@ -35,7 +35,7 @@ namespace m3u8.download.manager.models
         private long                   _DownloadBytesLength_BeforeRunning;
         private _RowPropertiesChanged_ _RowPropertiesChanged;
 
-        private DownloadRow( string url, string outputFileName, string outputDirectory
+        private DownloadRow( string url, IDictionary< string, string > requestHeaders, string outputFileName, string outputDirectory
             , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )
         {
             _RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));
@@ -45,22 +45,23 @@ namespace m3u8.download.manager.models
             Url                      = url;
             OutputFileName           = outputFileName;
             OutputDirectory          = outputDirectory;
+            RequestHeaders           = requestHeaders;
 
             Log = new LogListModel();
         }
-        internal DownloadRow( in (string Url, string OutputFileName, string OutputDirectory) t
+        internal DownloadRow( in (string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory) t
             , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) 
-            : this( t.Url, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged ) { }
-        internal DownloadRow( in (string Url, string OutputFileName, string OutputDirectory, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t
+            : this( t.Url, t.RequestHeaders, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged ) { }
+        internal DownloadRow( in (string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t
             , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) 
-            : this( t.Url, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged )
+            : this( t.Url, t.RequestHeaders, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged )
         {
             IsLiveStream                 = t.IsLiveStream;
             LiveStreamMaxFileSizeInBytes = t.LiveStreamMaxFileSizeInBytes;
         }
-        internal DownloadRow( in (DateTime CreatedOrStartedDateTime, string Url, string OutputFileName, string OutputDirectory, DownloadStatus Status, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t
+        internal DownloadRow( in (DateTime CreatedOrStartedDateTime, string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, DownloadStatus Status, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t
             , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
-            : this( t.Url, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged )
+            : this( t.Url, t.RequestHeaders, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged )
         {
             //---Status                       = DownloadStatus.Created; //t.Status;
             CreatedOrStartedDateTime     = t.CreatedOrStartedDateTime;// DateTime.Now;
@@ -87,6 +88,7 @@ namespace m3u8.download.manager.models
             _FinitaElapsed                     = r._FinitaElapsed;
             _PausedOrWaitElapsed               = r._PausedOrWaitElapsed;
             _DownloadBytesLength_BeforeRunning = r._DownloadBytesLength_BeforeRunning;
+            RequestHeaders                     = r.RequestHeaders;
 
             //Log = rows.AnyEx() ? new LogListModel( rows ) : new LogListModel( r.Log );
             Log = rows.AnyEx() ? new LogListModel( rows ) : new LogListModel();
@@ -106,9 +108,11 @@ namespace m3u8.download.manager.models
         public DownloadStatus Status                      { [M(O.AggressiveInlining)] get; private set; }
         private double?       _InstantSpeedInMbps;
 
-        public bool           IsLiveStream                 { [M(O.AggressiveInlining)] get; /*private set;*/ }
+        public bool           IsLiveStream                 { [M(O.AggressiveInlining)] get; private set; }
         public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; private set; }
         private DateTime? _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
+
+        public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; private set; }
 
         public LogListModel Log { [M(O.AggressiveInlining)] get; }
 
@@ -182,6 +186,20 @@ namespace m3u8.download.manager.models
             _CreatedOrStartedDateTime_4_LastPartOfLiveStream = DateTime.Now;
         }
 
+        public bool Update( string m3u8FileUrl, IDictionary< string, string > requestHeaders, string outputFileName, string outputDirectory, bool isLiveStream, long liveStreamMaxFileSizeInBytes )
+        {
+            var allowed = !Status.IsRunningOrPaused();
+            if ( allowed )
+            {
+                Url             = m3u8FileUrl;
+                RequestHeaders  = requestHeaders;
+                OutputFileName  = outputFileName;
+                OutputDirectory = outputDirectory;
+                IsLiveStream    = isLiveStream;
+                LiveStreamMaxFileSizeInBytes = liveStreamMaxFileSizeInBytes;
+            }
+            return (allowed);
+        }
 
         [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in _m3u8_processor_.ResponseStepActionParams p )
         {

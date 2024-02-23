@@ -56,8 +56,11 @@
             this.startDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cancelDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editDownloadMenuItem_Separator = new System.Windows.Forms.ToolStripSeparator();
+            this.editDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteWithOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.onlyDeleteOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.browseOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputFilesWithExternalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -284,13 +287,18 @@
             // 
             // mainContextMenu
             // 
-            this.mainContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mainContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[]
+            {
                 this.startDownloadMenuItem,
                 this.pauseDownloadMenuItem,
                 this.cancelDownloadMenuItem,
+
+                this.editDownloadMenuItem_Separator,
+                this.editDownloadMenuItem,
                 s20,
                 this.deleteDownloadMenuItem,
                 this.deleteWithOutputFileMenuItem,
+                this.onlyDeleteOutputFileMenuItem,
                 s21,
                 this.browseOutputFileMenuItem,
                 this.openOutputFileMenuItem,
@@ -328,6 +336,13 @@
             this.cancelDownloadMenuItem.Text = "Cancel";
             this.cancelDownloadMenuItem.Click += new System.EventHandler(this.cancelDownloadMenuItem_Click);
             // 
+            // editDownloadMenuItem
+            // 
+            this.editDownloadMenuItem.Image = global::m3u8.download.manager.Properties.Resources.edit;
+            this.editDownloadMenuItem.ShortcutKeyDisplayString = "(Ctrl + E)";
+            this.editDownloadMenuItem.Text = "Edit...";
+            this.editDownloadMenuItem.Click += new System.EventHandler(this.editDownloadMenuItem_Click);
+            // 
             // deleteDownloadMenuItem
             // 
             this.deleteDownloadMenuItem.Image = global::m3u8.download.manager.Properties.Resources.delete;
@@ -340,6 +355,12 @@
             this.deleteWithOutputFileMenuItem.ShortcutKeyDisplayString = "(Shift + Del)";
             this.deleteWithOutputFileMenuItem.Text = "Delete with Output file";
             this.deleteWithOutputFileMenuItem.Click += new System.EventHandler(this.deleteWithOutputFileMenuItem_Click);
+            // 
+            // onlyDeleteOutputFileMenuItem
+            // 
+            this.onlyDeleteOutputFileMenuItem.ShortcutKeyDisplayString = "(Ctrl + Shift + Del)";
+            this.onlyDeleteOutputFileMenuItem.Text = "Only Delete Output file";
+            this.onlyDeleteOutputFileMenuItem.Click += new System.EventHandler(this.onlyDeleteOutputFileMenuItem_Click);
             // 
             // browseOutputFileMenuItem
             // 
@@ -355,7 +376,7 @@
             // 
             // openOutputFilesWithExternalMenuItem
             // 
-            this.openOutputFilesWithExternalMenuItem.ShortcutKeyDisplayString = "(Ctrl + E)";
+            this.openOutputFilesWithExternalMenuItem.ShortcutKeyDisplayString = "(Ctrl + T)";
             this.openOutputFilesWithExternalMenuItem.Text = "    Open with '%EXTERNAL-PROG%'";
             this.openOutputFilesWithExternalMenuItem.Click += new System.EventHandler(this.openOutputFilesWithExternalMenuItem_Click);
             // 
@@ -460,8 +481,11 @@
         private System.Windows.Forms.ToolStripMenuItem startDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cancelDownloadMenuItem;
+        private System.Windows.Forms.ToolStripSeparator editDownloadMenuItem_Separator;
+        private System.Windows.Forms.ToolStripMenuItem editDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteWithOutputFileMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem onlyDeleteOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem browseOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFilesWithExternalMenuItem;

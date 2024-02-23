@@ -193,7 +193,9 @@ namespace m3u8.download.manager.ui
         private void DGV_Resize( object sender, EventArgs e )
         {
             var vscrollBarVisible = DGV.Controls.OfType< VScrollBar >().First().Visible;
-            DGV_columnNameColumn.Width = DGV.Width - DGV_isVisibleColumn.Width - DGV.RowHeadersWidth - 3 - (vscrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0);
+            DGV_columnNameColumn.Width = DGV.Width - DGV_isVisibleColumn.Width - DGV.RowHeadersWidth //- 3
+                                - (vscrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0)
+                                - ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : SystemInformation.BorderSize.Width);
         }
         private void DGV_ColumnWidthChanged( object sender, DataGridViewColumnEventArgs e )
         {

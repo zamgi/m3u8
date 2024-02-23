@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-//using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.ipc;
@@ -21,6 +20,12 @@ namespace m3u8.download.manager
         /// </summary>
         [STAThread] private static void/*async Task*/ Main( string[] args )
         {
+            //Application.EnableVisualStyles();
+            //Application.SetCompatibleTextRenderingDefault( false );
+            //Application.Run( new Form1() );
+            //return;
+            //----------------------------------------------------//
+
             Application.ThreadException                  += (_, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
             AppDomain  .CurrentDomain.UnhandledException += (_, e) => Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
             Application.SetUnhandledExceptionMode( UnhandledExceptionMode.Automatic, true );
@@ -28,8 +33,8 @@ namespace m3u8.download.manager
             using ( var sca = SingleCopyApplication.Current )
             {
                 #region [.parse if opened from 'chrome-extension' || 'firefox-extension'.]
-                var inputParams      = default((string m3u8FileUrl, bool autoStartDownload));
-                var inputParamsArray = default((string m3u8FileUrl, bool autoStartDownload)[]);
+                var inputParams      = default((string m3u8FileUrl, string requestHeaders, bool autoStartDownload));
+                var inputParamsArray = default((string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[]);
                 var success = false;
 
                 var browserType = BrowserIPC.CommandLine.GetBrowserType( args );
@@ -89,7 +94,7 @@ namespace m3u8.download.manager
                 #region [.set/correct inputParams.]
                 if ( success && (inputParamsArray == null) )
                 {
-                    inputParamsArray = new[] { inputParams };
+                    inputParamsArray = [ inputParams ];
                 }
                 #endregion
 

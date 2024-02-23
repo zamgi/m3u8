@@ -37,6 +37,9 @@ namespace m3u8.download.manager.ui
         private CellStyle _Rsp_ErrorCellStyleSmallFont_2;
         private CellStyle _DefaultCellStyle_4ResponseReceived;
 
+        private CellStyle _ReqHeader_CellStyleSmallFont_1;
+        private CellStyle _ReqHeader_CellStyleSmallFont_2;
+
         private ContextMenuStrip  _ContextMenu;
         private ToolStripMenuItem _ShowOnlyRequestRowsWithErrorsMenuItem;
         private bool              _ShowOnlyRequestRowsWithErrors;
@@ -105,6 +108,10 @@ namespace m3u8.download.manager.ui
             _Req_CellStyleSmallFont_2      = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, Alignment = alg } );
             _Rsp_CellStyleSmallFont_2      = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_2, Alignment = alg } );
 
+            var smallFont_3 = new Font( FontFamily.GenericMonospace, smallFont_1.Size );
+            var smallFont_4 = new Font( FontFamily.GenericMonospace, smallFont_2.Size );
+            _ReqHeader_CellStyleSmallFont_1 = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_3, Alignment = alg } );
+            _ReqHeader_CellStyleSmallFont_2 = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_4, Alignment = alg } );
             //----------------------------------------------//
             _ShowOnlyRequestRowsWithErrors = true;
             _ShowOnlyRequestRowsWithErrorsMenuItem = new ToolStripMenuItem( "Show only request rows with errors", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = _ShowOnlyRequestRowsWithErrors };
@@ -153,10 +160,7 @@ namespace m3u8.download.manager.ui
                 if ( _ScrollToLastRow != value )
                 {
                     _ScrollToLastRowMenuItem.Checked = _ScrollToLastRow = value;
-                    if ( value )
-                    {
-                        ScrollToLastRow_UI();
-                    }
+                    ScrollToLastRow_UI();
                 }
             }
         }
@@ -474,14 +478,11 @@ namespace m3u8.download.manager.ui
                 _WasAdjustColumnsWidthSprain = true;
                 AdjustColumnsWidthSprain();
             }
-            if ( _ScrollToLastRow )
-            {
-                ScrollToLastRow_UI();
-            }
+            ScrollToLastRow_UI();
         }
         private void ScrollToLastRow_UI()
         {
-            if ( 0 < _DGVRows.Count )
+            if ( _ScrollToLastRow && (0 < _DGVRows.Count) )
             {
                 DGV.SetFirstDisplayedScrollingRowIndex( _DGVRows.Count - 1 );
             }
@@ -518,6 +519,15 @@ namespace m3u8.download.manager.ui
             var errorTextLength = Math.Min( maxLength, errorText.Length );
             var errorCellStyle = ((TEXT_LENGTH_250 < errorTextLength) ? ((TEXT_LENGTH_500 < errorTextLength) ? _Rsp_ErrorCellStyleSmallFont_2 : _Rsp_ErrorCellStyleSmallFont_1) : _Rsp_ErrorCellStyle);
             return (errorCellStyle);
+        }
+
+        [M(O.AggressiveInlining)] private static string Get_4_RequestHeaderColumn__text( string errorText, int maxLength = MAX_TEXT_LENGTH ) => errorText.TrimIfLongest( maxLength );
+        [M(O.AggressiveInlining)] private CellStyle     Get_4_RequestHeaderColumn__cellStyle( string text, int maxLength = MAX_TEXT_LENGTH )
+        {
+            var textLength = Math.Min( maxLength, text.Length );
+            //var cellStyle = ((TEXT_LENGTH_250 < textLength) ? ((TEXT_LENGTH_500 < textLength) ? _ReqHeader_CellStyleSmallFont_2 : _ReqHeader_CellStyleSmallFont_1) : null);
+            var cellStyle = (TEXT_LENGTH_500 < textLength) ? _ReqHeader_CellStyleSmallFont_2 : _ReqHeader_CellStyleSmallFont_1;
+            return (cellStyle);
         }
         #endregion
 
@@ -631,8 +641,9 @@ namespace m3u8.download.manager.ui
                     switch ( row.RequestRowType )
                     {
                         case RequestRowTypeEnum.None:
-                        case RequestRowTypeEnum.Success: e.Value = Get_4_RequestColumn__text( row.RequestText ); break;
-                        case RequestRowTypeEnum.Error  : e.Value = GetError_4_RequestColumn__text( row.RequestText ); break;
+                        case RequestRowTypeEnum.Success      : e.Value = Get_4_RequestColumn__text( row.RequestText ); break;
+                        case RequestRowTypeEnum.Error        : e.Value = GetError_4_RequestColumn__text( row.RequestText ); break;
+                        case RequestRowTypeEnum.RequestHeader: e.Value = Get_4_RequestHeaderColumn__text( row.RequestText ); break;
                     }
                 break;
 
@@ -640,8 +651,9 @@ namespace m3u8.download.manager.ui
                     switch ( row.RequestRowType )
                     {
                         case RequestRowTypeEnum.None:
-                        case RequestRowTypeEnum.Success: e.Value = Get_4_RequestColumn__text( row.ResponseText ); break;
-                        case RequestRowTypeEnum.Error  : e.Value = GetError_4_ResponseColumn__text( row.ResponseText ); break;
+                        case RequestRowTypeEnum.Success      : e.Value = Get_4_RequestColumn__text( row.ResponseText ); break;
+                        case RequestRowTypeEnum.Error        : e.Value = GetError_4_ResponseColumn__text( row.ResponseText ); break;
+                        case RequestRowTypeEnum.RequestHeader: e.Value = Get_4_RequestHeaderColumn__text( row.RequestText ); break;
                     }
                 break;
             }
@@ -655,9 +667,10 @@ namespace m3u8.download.manager.ui
                 case 0: //Request
                     switch ( row.RequestRowType )
                     {
-                        case RequestRowTypeEnum.None   : cs = Get_4_RequestColumn__cellStyle( row.RequestText ); break;
-                        case RequestRowTypeEnum.Success: cs = _DefaultCellStyle_4ResponseReceived; break;
-                        case RequestRowTypeEnum.Error  : cs = GetError_4_RequestColumn__cellStyle( row.RequestText ); break;
+                        case RequestRowTypeEnum.None         : cs = Get_4_RequestColumn__cellStyle( row.RequestText ); break;
+                        case RequestRowTypeEnum.Success      : cs = _DefaultCellStyle_4ResponseReceived; break;
+                        case RequestRowTypeEnum.Error        : cs = GetError_4_RequestColumn__cellStyle( row.RequestText ); break;
+                        case RequestRowTypeEnum.RequestHeader: cs = Get_4_RequestHeaderColumn__cellStyle( row.RequestText ); break;
                         default: cs = null; break;
                     }
                 break;
@@ -665,9 +678,10 @@ namespace m3u8.download.manager.ui
                 case 1: //Response
                     switch ( row.RequestRowType )
                     {
-                        case RequestRowTypeEnum.None   : cs = Get_4_RequestColumn__cellStyle( row.ResponseText ); break;
-                        case RequestRowTypeEnum.Success: cs = _Rsp_ReceivedCellStyle; break;
-                        case RequestRowTypeEnum.Error  : cs = GetError_4_ResponseColumn__cellStyle( row.ResponseText ); break;
+                        case RequestRowTypeEnum.None         : cs = Get_4_RequestColumn__cellStyle( row.ResponseText ); break;
+                        case RequestRowTypeEnum.Success      : cs = _Rsp_ReceivedCellStyle; break;
+                        case RequestRowTypeEnum.Error        : cs = GetError_4_ResponseColumn__cellStyle( row.ResponseText ); break;
+                        case RequestRowTypeEnum.RequestHeader: cs = Get_4_RequestHeaderColumn__cellStyle( row.RequestText ); break;
                         default: cs = null; break;
                     }
                 break;

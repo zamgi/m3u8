@@ -29,7 +29,8 @@
             this.DGV_approxTotalBytesColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_isLiveStreamColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_liveStreamMaxFileSizeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGV_urlColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_requestHeadersColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_urlColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();            
             this.toolTip = new System.Windows.Forms.ToolTip();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
@@ -65,6 +66,7 @@
                 this.DGV_approxTotalBytesColumn,
                 this.DGV_isLiveStreamColumn,
                 this.DGV_liveStreamMaxFileSizeColumn,
+                this.DGV_requestHeadersColumn,
                 this.DGV_urlColumn
             });
             cs2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -216,6 +218,15 @@
             this.DGV_liveStreamMaxFileSizeColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
             //---this.DGV_liveStreamMaxFileSizeColumn.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
             // 
+            // DGV_requestHeadersColumn
+            // 
+            this.DGV_requestHeadersColumn.FillWeight = 800F;
+            this.DGV_requestHeadersColumn.Width = 800;
+            this.DGV_requestHeadersColumn.HeaderText = "Request Headers";
+            this.DGV_requestHeadersColumn.Name = "DGV_requestHeadersColumn";
+            this.DGV_requestHeadersColumn.ReadOnly = true;
+            this.DGV_requestHeadersColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Programmatic;
+            // 
             // DGV_urlColumn
             // 
             this.DGV_urlColumn.FillWeight = 800F;
@@ -252,6 +263,7 @@
 
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_isLiveStreamColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_liveStreamMaxFileSizeColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_requestHeadersColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_urlColumn;
 
         private System.Windows.Forms.ToolTip toolTip;

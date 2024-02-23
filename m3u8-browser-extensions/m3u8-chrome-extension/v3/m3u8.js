@@ -6,10 +6,11 @@ window.addEventListener('load', async function (/*event*/) {
     let res = await chrome.storage.local.get();
     let workInfo = conv_2_workInfo(res.workInfo);
 
-    let m3u8_urls = workInfo.getM3u8Urls(tabId);
+    let t = workInfo.getM3u8Urls(tabId);
+    let m3u8_urls = t.m3u8_urls;
 
     // function render m3u8 urls list
-    render_m3u8_urls(m3u8_urls);
+    render_m3u8_urls(m3u8_urls, t.requestHeaders);
 
     let ch = document.getElementById('saveUrlListBetweenTabReload');
     ch.checked = !!res.saveUrlListBetweenTabReload;    
@@ -37,7 +38,7 @@ window.addEventListener('load', async function (/*event*/) {
         });
     }
 });
-function render_m3u8_urls(m3u8_urls) {
+function render_m3u8_urls(m3u8_urls, requestHeaders) {
     let content = document.getElementById('content');
 
     if (!m3u8_urls || !m3u8_urls.length) {
@@ -47,8 +48,8 @@ function render_m3u8_urls(m3u8_urls) {
     
     let trs = [];
     for (let i = 0, cnt = m3u8_urls.length; i < cnt; i++) {
-        let m3u8_url = m3u8_urls[i];
-        let a = document.createElement('a'); a.className = 'auto_start_download'; a.title = 'auto start download'; a.href = m3u8_url;
+        let m3u8_url = m3u8_urls[i], requestHeaders_4_url = requestHeaders[m3u8_url] || '';
+        let a = document.createElement('a'); a.className = 'auto_start_download'; a.title = 'auto start download'; a.href = m3u8_url; a.setAttribute('requestHeaders', requestHeaders_4_url);
 
         let img = document.createElement('img'); img.src = 'auto_start_download.png'; img.style.height = '16px';
         a.appendChild(img);
@@ -56,7 +57,7 @@ function render_m3u8_urls(m3u8_urls) {
         let td = document.createElement('td');
         td.appendChild(a);
 
-        let a2 = document.createElement('a'); a2.className = 'download'; a2.href = m3u8_url;
+        let a2 = document.createElement('a'); a2.className = 'download'; a2.href = m3u8_url; a2.setAttribute('requestHeaders', requestHeaders_4_url);
         a2.appendChild(document.createTextNode(m3u8_url));
 
         let td2 = document.createElement('td'); td2.className = 'content'; td2.title = m3u8_url;
@@ -79,7 +80,7 @@ function render_m3u8_urls(m3u8_urls) {
     let aa = content.querySelectorAll('a.download');
     for (i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (event) {
-            send2host_single(this.href);
+            send2host_single(this.href, this.getAttribute('requestHeaders') || '');
             event.preventDefault();
             return (false);
         });
@@ -88,7 +89,7 @@ function render_m3u8_urls(m3u8_urls) {
     aa = content.querySelectorAll('a.auto_start_download');
     for (i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (event) {
-            send2host_single(this.href, true);
+            send2host_single(this.href, this.getAttribute('requestHeaders') || '', true);
             event.preventDefault();
             return (false);
         });
@@ -99,7 +100,7 @@ function render_m3u8_urls(m3u8_urls) {
         aa[0].addEventListener('click', function (event) {
             let messageObject = [], bb = content.querySelectorAll('a.download');
             for (let j = 0; j < bb.length; j++) {
-                messageObject.push( create_messageObject(bb[j].href) );
+                messageObject.push( create_messageObject(bb[j].href, bb[j].getAttribute('requestHeaders') || '') );
             }
             send2host_multi(messageObject);
             event.preventDefault();
@@ -112,7 +113,7 @@ function render_m3u8_urls(m3u8_urls) {
         aa[0].addEventListener('click', function (event) {
             let messageObject = [], bb = content.querySelectorAll('a.auto_start_download');
             for (let j = 0; j < bb.length; j++) {
-                messageObject.push( create_messageObject(bb[j].href, true) );
+                messageObject.push( create_messageObject(bb[j].href, bb[j].getAttribute('requestHeaders') || '', true) );
             }
             send2host_multi(messageObject);
             event.preventDefault();
@@ -121,13 +122,14 @@ function render_m3u8_urls(m3u8_urls) {
     }
 }
 
-function create_messageObject(m3u8_url, auto_start_download) {
+function create_messageObject(m3u8_url, requestHeaders, auto_start_download) {
     return ({
         m3u8_url: m3u8_url,
+        requestHeaders: requestHeaders,
         auto_start_download: !!auto_start_download
     });
 }
-async function send2host_single(m3u8_url, auto_start_download) { await send2host_multi( [ create_messageObject(m3u8_url, auto_start_download) ] ); }
+async function send2host_single(m3u8_url, requestHeaders, auto_start_download) { await send2host_multi( [ create_messageObject(m3u8_url, requestHeaders, auto_start_download) ] ); }
 async function send2host_multi(messageObject) {
     const HOST_NAME = 'm3u8.downloader.host';
 

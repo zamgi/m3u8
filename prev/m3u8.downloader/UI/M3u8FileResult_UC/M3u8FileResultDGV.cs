@@ -100,7 +100,7 @@ namespace m3u8.downloader
         [M(O.AggressiveInlining)] private int AddRow_Fast( DataGridViewRow row ) => DGV.Rows.Add( row );
         private int GetColumnsResizeDiff() => (DGV.RowHeadersVisible ? DGV.RowHeadersWidth : 0) + 
                                               (IsVerticalScrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0) + //3 + 
-                                              ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : 0);
+                                              ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : SystemInformation.BorderSize.Width);
 
         private enum RequestRowTypeEnum { None, Success, Error };
         [M(O.AggressiveInlining)] private static bool TryGetRequestRowType( DataGridViewRow row, out RequestRowTypeEnum rt )
