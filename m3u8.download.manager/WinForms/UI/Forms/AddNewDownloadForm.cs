@@ -83,7 +83,7 @@ namespace m3u8.download.manager.ui
             statusBarUC.SetDownloadController( dc );
             statusBarUC.SetSettingsController( sc );  
         }
-        public AddNewDownloadForm( _DC_ dc, _SC_ sc
+        private AddNewDownloadForm( _DC_ dc, _SC_ sc
             , string m3u8FileUrl
             , IDictionary< string, string > requestHeaders
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
@@ -538,22 +538,22 @@ namespace m3u8.download.manager.ui
             }
 
             //TEMP
-//#if DEBUG
-//            else if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
-//            {
-//                m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
-//                var shown = default(EventHandler);
-//                shown = (_, _) =>
-//                {
-//                    const string txt = "Last_OutputFileName_Num - **.txt";
-//                    this.OutputFileName = txt;
-//                    setFocus2outputFileNameTextBox_Core( txt );
-//                    outputFileNameTextBox_TextChanged( this, EventArgs.Empty );
-//                    this.Shown -= shown;
-//                };
-//                this.Shown += shown;
-//            }
-//#endif
+#if DEBUG
+            //else if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
+            //{
+            //    m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
+            //    var shown = default(EventHandler);
+            //    shown = (_, _) =>
+            //    {
+            //        const string txt = "Last_OutputFileName_Num - **.txt";
+            //        this.OutputFileName = txt;
+            //        setFocus2outputFileNameTextBox_Core( txt );
+            //        outputFileNameTextBox_TextChanged( this, EventArgs.Empty );
+            //        this.Shown -= shown;
+            //    };
+            //    this.Shown += shown;
+            //}
+#endif
         }
         private void Process_use_OutputFileNamePatternProcessor()
         {

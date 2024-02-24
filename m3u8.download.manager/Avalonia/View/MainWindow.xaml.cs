@@ -21,6 +21,7 @@ using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
+using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_                 = m3u8.download.manager.Properties.Resources;
 
@@ -65,7 +66,7 @@ namespace m3u8.download.manager.ui
 
         #region [.field's.]
         private MainVM _VM;
-        private (string m3u8FileUrl, bool autoStartDownload)[] _InputParamsArray;
+        private X[] _InputParamsArray;
         private bool _ShowDownloadStatistics;
         private Window _HostWindow_4_Notification;
         private WindowNotificationManager _NotificationManager;
@@ -80,7 +81,7 @@ namespace m3u8.download.manager.ui
 #endif
             PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopy += NamedPipeServer__Input_ReceivedSend2FirstCopy;
         }
-        public MainWindow( in (string m3u8FileUrl, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
+        public MainWindow( in X[] array ) : this() => _InputParamsArray = array;
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load( this );
@@ -201,7 +202,7 @@ namespace m3u8.download.manager.ui
                 var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard();
                 if ( success )
                 {
-                    _VM.AddCommand.AddNewDownload( (m3u8FileUrls.FirstOrDefault(), false) );
+                    _VM.AddCommand.AddNewDownload( (m3u8FileUrls.FirstOrDefault(), null, false) );
                 }
             }
             _VM.DownloadListModel.AddRows( _VM.SettingsController.GetDownloadRows() /*DownloadRowsSerializer.FromJSON( _VM.SettingsController.DownloadRowsJson )*/ );
@@ -209,9 +210,9 @@ namespace m3u8.download.manager.ui
             if ( _VM.DownloadListModel.RowsCount == 0 )
             {
                 var dir = Settings.Default.OutputFileDirectory;
-                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , "xz-1", dir) );
-                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", "xz-2", dir) );
-                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", "xz-3", dir) );
+                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , null, "xz-1", dir) );
+                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", null, "xz-2", dir) );
+                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", null, "xz-3", dir) );
             }
 #endif
         }
@@ -281,14 +282,15 @@ namespace m3u8.download.manager.ui
                 switch ( e.Key )
                 {
                     case Key.V: //Paste
-                        var (success, m3u8FileUrls) = await this.TryGetHttpUrlsFromClipboard()/*TryGetM3u8FileUrlsFromClipboard()*/;
+                        var (success, urls) = await this.TryGetHttpUrlsFromClipboard()/*TryGetM3u8FileUrlsFromClipboard()*/;
                         if ( success )
                         {
                             e.Handled = true;
 
                             var autoStartDownload = ((e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift);
-                            if ( !autoStartDownload ) m3u8FileUrls = m3u8FileUrls.Take( 50/*100*/ ).ToArray();
-                            _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, autoStartDownload) );
+                            if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToArray();
+                            var urls2 = urls.Select( url => (url, (string) null) ).ToArray();
+                            _VM.AddCommand.AddNewDownloads( (urls2, autoStartDownload) );
                             return;
                         }
                         else
@@ -373,9 +375,10 @@ namespace m3u8.download.manager.ui
                             e.Handled = true;
                             var m3u8FileUrls = await this.TryGetM3u8FileUrlsFromClipboardOrDefault();
 #if DEBUG
-                            if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = new[] { $"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def" };
+                            if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ $"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def" ];
 #endif
-                            _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
+                            var urls = m3u8FileUrls.Select( url => (url, (string) null) ).ToArray();
+                            _VM.AddCommand.AddNewDownloads( (urls, false) );
                         }
                         return;
 
@@ -921,12 +924,13 @@ namespace m3u8.download.manager.ui
         }
         private async void pasteToolButton_Click( object sender, EventArgs e )
         {
-            var (success, m3u8FileUrls) = await this.TryGetHttpUrlsFromClipboard()/*TryGetM3u8FileUrlsFromClipboard()*/;
+            var (success, urls) = await this.TryGetHttpUrlsFromClipboard();
             if ( success )
             {
                 var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
-                if ( !autoStartDownload ) m3u8FileUrls = m3u8FileUrls.Take( 50/*100*/ ).ToArray();
-                _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, autoStartDownload) );
+                if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToArray();
+                var urls2 = urls.Select( url => (url, (string) null) ).ToArray();
+                _VM.AddCommand.AddNewDownloads( (urls2, autoStartDownload) );
             }
             else
             {

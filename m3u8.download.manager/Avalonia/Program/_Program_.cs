@@ -11,6 +11,8 @@ using m3u8.download.manager.ipc;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
 
+using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
+
 namespace m3u8.download.manager
 {
     /// <summary>
@@ -25,8 +27,8 @@ namespace m3u8.download.manager
             using ( var sca = SingleCopyApplication.Current )
             {
                 #region [.parse if opened from 'chrome-extension' || 'firefox-extension'.]
-                var inputParams      = default((string m3u8FileUrl, bool autoStartDownload));
-                var inputParamsArray = default((string m3u8FileUrl, bool autoStartDownload)[]);
+                var inputParams      = default(X);
+                var inputParamsArray = default(X[]);
                 var success = false;
 
                 var browserType = BrowserIPC.CommandLine.GetBrowserType( args );

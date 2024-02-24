@@ -43,6 +43,7 @@
    
   <ItemGroup>
     <None Remove=".gitignore" />
+    <None Remove="Resources\edit.png" />
     <None Remove="Resources\m3u.jpg" />
     <None Remove="Resources\m3u8.png" />
     <None Remove="Resources\m3u8_148x166.ico" />

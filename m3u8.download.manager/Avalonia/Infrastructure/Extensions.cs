@@ -246,6 +246,7 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool IsWait    ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Wait);
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Paused);
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadStatus status ) => (status     == DownloadStatus.Paused);
+        [M(O.AggressiveInlining)] public static bool IsRunningOrPaused( this DownloadStatus status ) => status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Paused => true, _ => false };
 
         [M(O.AggressiveInlining)] public static long? GetApproxRemainedBytes( this DownloadRow row )
         {
@@ -406,7 +407,7 @@ namespace m3u8.download.manager
         public static async Task< IReadOnlyCollection< string > > TryGetM3u8FileUrlsFromClipboardOrDefault( this Window window )
         {
             var t = await window.TryGetM3u8FileUrlsFromClipboard();
-            return (t.success ? t.m3u8FileUrls : new string[ 0 ]);
+            return (t.success ? t.m3u8FileUrls : Array.Empty< string >());
         }
         public static async Task< (bool success, IReadOnlyCollection< string > m3u8FileUrls) > TryGetM3u8FileUrlsFromClipboard( this Window window )
         {

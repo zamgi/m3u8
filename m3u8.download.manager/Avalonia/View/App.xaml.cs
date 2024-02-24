@@ -2,6 +2,8 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
+using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
+
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -9,7 +11,7 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed class App : Application
     {
-        public static (string m3u8FileUrl, bool autoStartDownload)[] _InputParamsArray;
+        public static X[] _InputParamsArray;
 
         public override void Initialize() => AvaloniaXamlLoader.Load( this );
         public override void OnFrameworkInitializationCompleted()
