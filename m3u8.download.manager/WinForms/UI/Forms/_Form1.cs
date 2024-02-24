@@ -6,9 +6,9 @@ using System.Windows.Forms;
 
 namespace m3u8.download.manager.ui
 {
-    public partial class Form1 : Form
+    public partial class _Form1 : Form
     {
-        public Form1()
+        public _Form1()
         {
             InitializeComponent();
         }

@@ -14,6 +14,7 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 
+using X    = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
 using _DC_ = m3u8.download.manager.controllers.DownloadController;
 using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
@@ -30,7 +31,7 @@ namespace m3u8.download.manager.ui
     internal sealed partial class MainForm : Form, IDisposable
     {
         #region [.fields.]
-        private (string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[] _InputParamsArray;
+        private X[] _InputParamsArray;
         private _ReceivedInputParamsArrayEventHandler_ _ReceivedInputParamsArrayEventHandler;
         private _ReceivedSend2FirstCopyEventHandler_   _ReceivedSend2FirstCopyEventHandler;        
 
@@ -102,7 +103,7 @@ namespace m3u8.download.manager.ui
             _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
             _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
         }
-        public MainForm( in (string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[] array ) : this() => _InputParamsArray = array;
+        public MainForm( in X[] array ) : this() => _InputParamsArray = array;
 
         protected override void Dispose( bool disposing )
         {
@@ -166,7 +167,8 @@ namespace m3u8.download.manager.ui
                        Extensions.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) 
                     )
             {
-                AddNewDownload( (m3u8FileUrls.FirstOrDefault(), null, false) );
+                var frt = m3u8FileUrls.FirstOrDefault();
+                AddNewDownload( (frt.url, frt.requestHeaders, false) );
             }
         }
         protected override void OnClosing( CancelEventArgs e )
@@ -226,9 +228,8 @@ namespace m3u8.download.manager.ui
                             e.SuppressKeyPress = true;
 
                             var autoStartDownload = e.Shift;
-                            if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToArray();
-                            var urls2 = urls.Select( url => (url, (string) null) ).ToArray();
-                            AddNewDownloads( (urls2, autoStartDownload) );
+                            if ( !autoStartDownload ) urls = urls.Take( 50 ).ToList( 50 );
+                            AddNewDownloads( (urls, autoStartDownload) );
                             return;
                         }
                         else
@@ -333,10 +334,9 @@ namespace m3u8.download.manager.ui
                         e.SuppressKeyPress = true;
                         var m3u8FileUrls = Extensions.TryGetM3u8FileUrlsFromClipboardOrDefault();
 #if DEBUG
-                        if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ $"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def" ];
+                        if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ];
 #endif
-                        var urls = m3u8FileUrls.Select( url => (url, (string) null) ).ToArray();
-                        AddNewDownloads( (urls, false) );
+                        AddNewDownloads( (m3u8FileUrls, false) );
                     }
                     return;
 
@@ -380,7 +380,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.event handlers methods.]
-        private void NamedPipeServer__Input_ReceivedInputParamsArray( (string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[] array ) => this.BeginInvoke( _ReceivedInputParamsArrayEventHandler, array );
+        private void NamedPipeServer__Input_ReceivedInputParamsArray( X[] array ) => this.BeginInvoke( _ReceivedInputParamsArrayEventHandler, array );
         private void NamedPipeServer__Input_ReceivedSend2FirstCopy() => this.BeginInvoke( _ReceivedSend2FirstCopyEventHandler );
         private void ReceivedSend2FirstCopy()
         {
@@ -914,7 +914,7 @@ namespace m3u8.download.manager.ui
             return (r);
         }
 
-        private void AddNewDownloads( (string m3u8FileUrl, string requestHeaders, bool autoStartDownload)[] array )
+        private void AddNewDownloads( X[] array )
         {
             var p = (m3u8FileUrls     : (from t in array select (t.m3u8FileUrl, t.requestHeaders)).ToArray(), 
                      autoStartDownload: array.FirstOrDefault().autoStartDownload);
@@ -931,8 +931,7 @@ namespace m3u8.download.manager.ui
                 }
                 else
                 {
-                    var action = new Action< (string m3u8FileUrl, string requestHeaders, bool autoStartDownload), (int n, int total) >( 
-                        ((string m3u8FileUrl, string requestHeaders, bool autoStartDownload) tp, (int n, int total) seriesInfo ) => AddNewDownload( tp, seriesInfo ) );
+                    var action = new Action< X, (int n, int total) >( (X tp, (int n, int total) seriesInfo) => AddNewDownload( tp, seriesInfo ) );
 
                     var n     = p.m3u8FileUrls.Count;
                     var count = n;
@@ -948,7 +947,7 @@ namespace m3u8.download.manager.ui
                 AddNewDownload( (null, null, false) );
             }
         }
-        private async void AddNewDownload( (string m3u8FileUrl, string requestHeaders, bool autoStartDownload) p, (int n, int total)? seriesInfo = null )
+        private async void AddNewDownload( X p, (int n, int total)? seriesInfo = null )
         {
             var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( p.requestHeaders, out var requestHeaders );
             Debug.Assert( suc || p.requestHeaders.IsNullOrEmpty() );
@@ -1075,9 +1074,8 @@ namespace m3u8.download.manager.ui
             if ( Extensions.TryGetHttpUrlsFromClipboard( out var urls ) )
             {
                 var autoStartDownload = ((Control.ModifierKeys & Keys.Shift) == Keys.Shift);
-                if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToArray();
-                var urls2 = urls.Select( url => (url, (string) null) ).ToArray();
-                AddNewDownloads( (urls2, autoStartDownload) );
+                if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToList( 50 );
+                AddNewDownloads( (urls, autoStartDownload) );
             }
             else
             {

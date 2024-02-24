@@ -1,6 +1,6 @@
 ﻿namespace m3u8.download.manager.ui
 {
-    partial class Form1
+    partial class _Form1
     {
         /// <summary>
         /// Required designer variable.
