@@ -96,14 +96,12 @@
         </DockPanel>
         </Grid>
       </TabItem>
-      <TabItem Header="request header">
-        <DockPanel LastChildFill="True" Margin="0" Background="Red">
+      <TabItem Header="request header" x:Name="requestHeadersTabItem">
+        <DockPanel LastChildFill="True" Margin="0">
           <local-ui:RequestHeadersEditor x:Name="requestHeadersEditor" />
         </DockPanel>
       </TabItem>
     </TabControl>
-    
-  
   </Grid>
   
 </Window>

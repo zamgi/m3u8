@@ -46,7 +46,8 @@ namespace m3u8.download.manager.ui
         private Button startDownloadButton;
         private Button laterDownloadButton;
 
-        private RequestHeadersEditor requestHeadersEditor;
+        private TabItem              requestHeadersTabItem;
+        private RequestHeadersEditor requestHeadersEditor;        
         #endregion
 
         #region [.fields.]
@@ -70,7 +71,8 @@ namespace m3u8.download.manager.ui
             outputFileNameTextBox  = this.Find< TextBox >( nameof(outputFileNameTextBox) );
             outputDirectoryTextBox = this.Find< TextBox >( nameof(outputDirectoryTextBox) );
             logUC                  = this.Find< RequestLogUC >( nameof(logUC) );
-            requestHeadersEditor   = this.Find< RequestHeadersEditor >( nameof(requestHeadersEditor) );
+            requestHeadersTabItem  = this.Find< TabItem      >( nameof(requestHeadersTabItem) );
+            requestHeadersEditor   = this.Find< RequestHeadersEditor >( nameof(requestHeadersEditor) ); requestHeadersEditor.OnRequestHeadersCountChanged += requestHeadersEditor_OnRequestHeadersCountChanged;
 
             patternOutputFileNameLabelCaption = this.Find< TextBlock     >( nameof(patternOutputFileNameLabelCaption) );
             patternOutputFileNameLabel        = this.Find< TextBlock     >( nameof(patternOutputFileNameLabel) );
@@ -238,9 +240,13 @@ namespace m3u8.download.manager.ui
             switch ( e.Key )
             {
                 case Key.Escape:
-                    e.Handled = true;
-                    this.Close();
-                    return;
+                    //if ( !requestHeadersTabItem.IsSelected )
+                    //{
+                        e.Handled = true;
+                        this.Close();
+                        return;
+                    //}
+                    //break;
 
                 case Key.Enter: //StartDownload
                     var button = (this.GetTemplateFocusTarget() as Button);
@@ -507,6 +513,9 @@ namespace m3u8.download.manager.ui
                 this.OutputFileName = _OutputFileNamePatternProcessor.Get_Patterned_Last_OutputFileName();
             }
         }
+
+        private void requestHeadersEditor_OnRequestHeadersCountChanged( int requestHeadersCount, int enabledCount )
+            => requestHeadersTabItem.Header = (requestHeadersCount == enabledCount) ? $"request headers ({requestHeadersCount})" : $"request headers ({enabledCount} of {requestHeadersCount})";
         #endregion
 
         #region [.public methods.]

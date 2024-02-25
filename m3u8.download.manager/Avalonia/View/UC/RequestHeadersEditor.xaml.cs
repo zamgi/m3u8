@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
-using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
@@ -32,6 +31,7 @@ namespace m3u8.download.manager.ui
         /// </summary>
         private sealed class RequestHeader : ReactiveObject
         {
+            public RequestHeader() => IsChecked = true;
             public RequestHeader( string name, string description, int? max_name_length = null )
             {
                 Name        = name;
@@ -89,65 +89,34 @@ namespace m3u8.download.manager.ui
         #region [.fields.]
         private DataGrid DGV;
         private DataGridCollectionView _DGVRows;
-        private bool _HasChanges;
+
+        private ContextMenu mainContextMenu;
+        private MenuItem    addRowMenuItem;
+        private MenuItem    deleteRowMenuItem;
         #endregion
 
         #region [.ctor().]
         public RequestHeadersEditor() => this.InitializeComponent();
-        //internal RequestHeadersEditor( DataGrid targetDGV ) : this() 
-        //{
-        //    _SaveColumnIsVisibleDict = new Dictionary< DataGridColumn, bool >( targetDGV.Columns.Count );
-        //    var items = new List< WordItem >( targetDGV.Columns.Count );
-        //    foreach ( var col in targetDGV.Columns )
-        //    {
-        //        items.Add( new WordItem( col, isVisibleAlways: col.CellStyleClasses.Contains( "visible_always_sign" ) ) );
-        //        _SaveColumnIsVisibleDict[ col ] = col.IsVisible;
-        //    }
-        //    DGV.ItemsSource = _DGVRows = new DataGridCollectionView( items );
-        //}
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load( this );
 
+            mainContextMenu   = this.Find_Ex< ContextMenu >( nameof(mainContextMenu) );
+            addRowMenuItem    = mainContextMenu.Find_MenuItem( nameof(addRowMenuItem)    ); addRowMenuItem   .Click += addRowMenuItem_Click;
+            deleteRowMenuItem = mainContextMenu.Find_MenuItem( nameof(deleteRowMenuItem) ); deleteRowMenuItem.Click += deleteRowMenuItem_Click;
+
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
-            DGV.LoadingRow         += DGV_LoadingRow;
+            DGV.LoadingRow         += DGV_LoadingRow;            
+            DGV.RowEditEnded       += DGV_RowEditEnded;
+            DGV.PointerPressed     += DGV_PointerPressed;
             DGV.CellPointerPressed += DGV_CellPointerPressed;
 
-            if ( DGV.Columns.OfType< DataGridCheckBoxColumn >().FirstOrDefault()?.Header is TextBlock tb )
+            if ( DGV.Columns.OfType< DataGridCheckBoxColumn >().FirstOrDefault()?.Header is TextBlock textBlock )
             {
-                tb.Text = "\u2713";
-                tb.PointerPressed += Tb_PointerPressed;
+                textBlock.PointerPressed += DGV_CheckBoxColumn_TextBlock_PointerPressed;
             }
-            DGV.ItemsSource = _DGVRows = new DataGridCollectionView( Array.Empty< RequestHeader >() );
-        }
-
-        private void Tb_PointerPressed( object sender, PointerPressedEventArgs e )
-        {
-            var rhs = _DGVRows.SourceCollection.Cast< RequestHeader >();
-
-            var row_0 = rhs.FirstOrDefault(); if ( row_0 == null ) return;
-            var isChecked = !row_0.IsChecked;
-
-            //DGV.CellValueChanged -= DGV_CellValueChanged;
-            //try
-            //{
-                foreach ( var rh in rhs )
-                {
-                    rh.IsChecked = isChecked;
-                }
-            //}
-            //finally
-            //{
-            //    DGV.CellValueChanged += DGV_CellValueChanged;
-            //}
-
-            //if ( DGV.IsCurrentCellInEditMode )
-            //{
-            //    DGV.EndEdit();
-            //}
-
-            Fire_OnRequestHeadersCountChanged();
+            DGV.ItemsSource = _DGVRows = new DataGridCollectionView( new List< RequestHeader >() );
         }
 
         protected override void OnLoaded( RoutedEventArgs e )
@@ -161,26 +130,24 @@ namespace m3u8.download.manager.ui
         {
             switch ( e.Key )
             {
-                case Key.Escape:
-                    if ( !_HasChanges )
-                    { 
-                        e.Handled = true;
-                        //this.Close(); 
-                    }
-                return;
-
-                case Key.Enter: //Ok
-                    //if ( OkButtonProcess() )
-                    //{
-                    //    e.Handled = true;
-                    //    return;
-                    //}
-                break;
-
                 case Key.Space:
                     if ( DGV.IsFocused )
                     {
                         TryCheckByKey();
+                    }
+                break;
+
+                case Key.Insert:
+                    if ( DGV.IsFocused )
+                    {
+                        addRowMenuItem_Click( null, EventArgs.Empty );
+                    }
+                break;
+
+                case Key.Delete:
+                    if ( DGV.IsFocused )
+                    {
+                        deleteRowMenuItem_Click( null, EventArgs.Empty );
                     }
                 break;
             }
@@ -237,12 +204,7 @@ namespace m3u8.download.manager.ui
                 }
                 DGV.ItemsSource = _DGVRows = new DataGridCollectionView( items );
             }
-            else
-            {
-                OnRequestHeadersCountChanged?.Invoke( 0, 0 );
-            }
-
-            //DGV_Resize( null, EventArgs.Empty );
+            Fire_OnRequestHeadersCountChanged();
         }
         public IDictionary< string, string > GetRequestHeaders()
         {
@@ -271,38 +233,13 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region [.private methods.]
-        private void SetHasChanges()
-        {
-            _HasChanges = false;
-            //foreach ( var rh in _DGVRows.SourceCollection.Cast< RequestHeader >() )
-            //{
-            //    if ( _SaveColumnIsVisibleDict.TryGetValue( rh.Column, out var isVisible ) && (rh.IsVisible != isVisible) )
-            //    {
-            //        _HasChanges = true;
-            //        break;
-            //    }
-            //}
-
-            //var lastChar = this.Title.LastOrDefault();
-            //if ( _HasChanges )
-            //{
-            //    if ( lastChar != '*' )
-            //    {
-            //        this.Title += " *";
-            //    }
-            //}
-            //else if ( lastChar == '*' )
-            //{
-            //    this.Title = this.Title.Substring( 0, this.Title.Length - 2 );
-            //}
-        }
+        #region [.private methods & DGV.]
         private void TryCheckByKey()
         {
             if ( TryGetCheckBox( DGV.SelectedItem, out var checkBox ) )
             {
                 checkBox.IsChecked = !checkBox.IsChecked.GetValueOrDefault();
-                SetHasChanges();
+                Fire_OnRequestHeadersCountChanged();
             }
         }
         private bool TryGetCheckBox( object selItem, out CheckBox checkBox )
@@ -314,11 +251,11 @@ namespace m3u8.download.manager.ui
         private void CorrectCheckBoxesStyle()
         {
             var brush = Brushes.Black;
-            foreach ( var w in _DGVRows.SourceCollection.Cast< RequestHeader >() )
+            foreach ( var rh in _DGVRows.SourceCollection.Cast< RequestHeader >() )
             {
-                if ( TryGetCheckBox( w, out var checkBox ) )
+                if ( TryGetCheckBox( rh, out var checkBox ) )
                 {
-                    //var brush = w.IsVisibleAlways ? Brushes.DimGray : Brushes.Black;
+                    //var brush = rh.IsVisibleAlways ? Brushes.DimGray : Brushes.Black;
                     foreach ( var vis in checkBox.GetVisualDescendants() )
                     {
                         switch ( vis )
@@ -332,18 +269,38 @@ namespace m3u8.download.manager.ui
             }
         }
 
+        private void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
+        {
+            var p = e.GetCurrentPoint( this/*null*/ );
+            if ( p.Properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed )
+            {
+                e.Pointer.Capture( null );
+                e.Handled = true;
+
+                open_mainContextMenu();
+            }
+        }
         private void DGV_CellPointerPressed( object sender, DataGridCellPointerPressedEventArgs e )
         {
             var p = e.PointerPressedEventArgs.GetCurrentPoint( null );
-            if ( p.Properties.PointerUpdateKind != PointerUpdateKind.LeftButtonPressed ) return;
+            switch ( p.Properties.PointerUpdateKind )
+            {
+                case PointerUpdateKind.RightButtonPressed: open_mainContextMenu(); return;
+                case PointerUpdateKind.LeftButtonPressed: break;
+                default: return;
+            }
             if ( !(e.Column.GetCellContent( e.Row ) is CheckBox checkBox) ) return;
 
-            //---var trb = checkBox.TransformedBounds;
-            var trb = checkBox.GetTransformedBounds();
-            if ( trb.HasValue && trb.Value.Contains( p.Position ) )
+            var bounds = checkBox.GetTransformedBounds();
+            if ( bounds.HasValue && bounds.Value.Contains( p.Position ) )
             {
-                checkBox.IsChecked = !checkBox.IsChecked.GetValueOrDefault();
-                SetHasChanges();
+                var isChecked = !checkBox.IsChecked.GetValueOrDefault();
+
+                var selItems = DGV.SelectedItems.Cast< RequestHeader >();
+                foreach ( var rh in selItems )
+                {
+                    rh.IsChecked = isChecked;
+                }
             }
         }
         private void DGV_LoadingRow( object sender, DataGridRowEventArgs e )
@@ -352,6 +309,89 @@ namespace m3u8.download.manager.ui
 
             var w = (RequestHeader) _DGVRows[ index ];
             w.ViewOrderNumber = index + 1;
+        }
+        private void DGV_RowEditEnded( object sender, DataGridRowEditEndedEventArgs e )
+        {
+            if ( e.EditAction == DataGridEditAction.Commit )
+            {
+                Fire_OnRequestHeadersCountChanged();
+            }
+        }
+
+        private void DGV_CheckBoxColumn_TextBlock_PointerPressed( object sender, PointerPressedEventArgs e )
+        {
+            var rhs = _DGVRows.SourceCollection.Cast< RequestHeader >();
+
+            var row_0 = rhs.FirstOrDefault(); if ( row_0 == null ) return;
+            var isChecked = !row_0.IsChecked;
+
+            //DGV.CellValueChanged -= DGV_CellValueChanged;
+            //try
+            //{
+                foreach ( var rh in rhs )
+                {
+                    rh.IsChecked = isChecked;
+                }
+            //}
+            //finally
+            //{
+            //    DGV.CellValueChanged += DGV_CellValueChanged;
+            //}
+
+            //if ( DGV.IsCurrentCellInEditMode )
+            //{
+            //    DGV.EndEdit();
+            //}
+
+            Fire_OnRequestHeadersCountChanged();
+        }
+        #endregion
+
+        #region [.context menu.]
+        private void open_mainContextMenu()
+        {
+            deleteRowMenuItem.IsEnabled = (DGV.SelectedItem != null);
+
+            mainContextMenu.Open( DGV );
+        }
+
+        private void addRowMenuItem_Click( object sender, EventArgs e ) 
+        {
+            if ( !_DGVRows.IsAddingNew && !_DGVRows.IsEditingItem )
+            {
+                try
+                {
+                    var t = _DGVRows.AddNew();
+                    _DGVRows.CommitNew();
+
+                    DGV.ScrollIntoView( t, DGV.Columns[ 1 ] );
+                    //_DGVRows.EditItem( t );
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
+            }
+        }
+        private void deleteRowMenuItem_Click( object sender, EventArgs e ) 
+        {
+            if ( _DGVRows.IsAddingNew   ) _DGVRows.CommitNew();
+            if ( _DGVRows.IsEditingItem ) _DGVRows.CommitEdit();
+
+            try
+            {
+                var selItems = DGV.SelectedItems.Cast< RequestHeader >().ToList( DGV.SelectedItems.Count );
+                foreach ( var rh in selItems )
+                {
+                    _DGVRows.Remove( rh );
+                }
+                _DGVRows.CommitEdit();
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+            Fire_OnRequestHeadersCountChanged();
         }
         #endregion
     }

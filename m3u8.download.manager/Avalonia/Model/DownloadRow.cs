@@ -211,6 +211,8 @@ namespace m3u8.download.manager.models
                 OutputDirectory = outputDirectory;
                 IsLiveStream    = isLiveStream;
                 LiveStreamMaxFileSizeInBytes = liveStreamMaxFileSizeInBytes;
+
+                Fire_PropertyChanged_Events( nameof(MySelf) );
             }
             return (allowed);
         }

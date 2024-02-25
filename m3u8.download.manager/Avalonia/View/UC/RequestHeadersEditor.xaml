@@ -61,7 +61,7 @@
         <DataGridCheckBoxColumn Binding="{Binding IsChecked, Mode=TwoWay}"                                
                                 Width="auto" IsReadOnly="True" CanUserSort="False">
           <DataGridCheckBoxColumn.Header>
-            <TextBlock ToolTip.Tip="check/unckeck all">\u2713</TextBlock>
+            <TextBlock ToolTip.Tip="check/unckeck all">&#2713;</TextBlock> <!--"\u2713"-->
           </DataGridCheckBoxColumn.Header>  
         </DataGridCheckBoxColumn>
 
@@ -73,4 +73,26 @@
       </DataGrid.Columns>
     </DataGrid>
   </Grid>
+
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <ContextMenu x:Key="mainContextMenu" x:Name="mainContextMenu">
+        <ContextMenu.Styles>
+          <SimpleTheme />
+        </ContextMenu.Styles>
+
+        <MenuItem x:Name="addRowMenuItem" Header="Add row     (Insert)" HotKey="Insert">
+          <MenuItem.Icon>
+            <Image Source="/Resources/menu/plus.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem x:Name="deleteRowMenuItem" Header="Delete row  (Del)" HotKey="Delete">
+          <MenuItem.Icon>
+            <Image Source="/Resources/contextMenu/delete.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+      </ContextMenu>
+    </ResourceDictionary>
+  </UserControl.Resources>
+
 </UserControl>

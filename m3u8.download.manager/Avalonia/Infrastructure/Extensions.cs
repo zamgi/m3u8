@@ -479,6 +479,9 @@ namespace m3u8.download.manager
 
         [M(O.AggressiveInlining)]
         public static T Find_Ex< T >( this Window window, string name ) where T : class => window.Find< T >( name ) ?? (window.TryFindResource( name, out var x ) ? (T) x : null);
+       
+        [M(O.AggressiveInlining)]
+        public static T Find_Ex< T >( this UserControl uc, string name ) where T : class => uc.Find< T >( name ) ?? (uc.TryFindResource( name, out var x ) ? (T) x : null);        
 
         [M(O.AggressiveInlining)]
         public static MenuItem Find_MenuItem( this ContextMenu contextMenu, string name ) => contextMenu.Items.Cast< MenuItem >().First( m => m.Name == name );
