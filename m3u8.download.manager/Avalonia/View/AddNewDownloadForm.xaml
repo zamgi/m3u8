@@ -29,7 +29,7 @@
   
   <Grid>
     <TabControl>
-      <TabItem Header=".m3u8 file url:">
+      <TabItem x:Name="mainTabItem" Header=".m3u8 file url:">
         <Grid RowDefinitions="auto,*,auto">
         <StackPanel Margin="5" Grid.Row="0">
           <!--<TextBlock Foreground="SteelBlue">.m3u8 file url:</TextBlock>-->
@@ -96,7 +96,7 @@
         </DockPanel>
         </Grid>
       </TabItem>
-      <TabItem Header="request header" x:Name="requestHeadersTabItem">
+      <TabItem x:Name="requestHeadersTabItem" Header="request header">
         <DockPanel LastChildFill="True" Margin="0">
           <local-ui:RequestHeadersEditor x:Name="requestHeadersEditor" />
         </DockPanel>

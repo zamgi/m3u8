@@ -2,12 +2,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local-ui="clr-namespace:m3u8.download.manager.ui"
         mc:Ignorable="d"
         x:Class="m3u8.download.manager.ui.RequestHeadersEditor"
         d:DesignWidth="350" d:DesignHeight="550"
         Background="WhiteSmoke"
         >
-
+  
   <UserControl.Styles>
     <Style Selector="DataGridRow TextBlock">
       <Setter Property="TextTrimming" Value="CharacterEllipsis" />
@@ -40,7 +41,8 @@
   </UserControl.Styles>
 
   <Grid RowDefinitions="*,auto" ColumnDefinitions="*" Margin="2">
-    <DataGrid x:Name="DGV" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+    <local-ui:DataGrid_Handled_PageDown_N_PageUp
+              x:Name="DGV" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
               SelectionMode="Extended"
               CanUserResizeColumns="True"
               CanUserReorderColumns="False"
@@ -53,16 +55,16 @@
               RowBackground="White"
               Background="LightGray"
               >
-      <DataGrid.Columns>
+      <local-ui:DataGrid_Handled_PageDown_N_PageUp.Columns>
         <DataGridTextColumn Header="#" Binding="{Binding ViewOrderNumber, Mode=OneWay}"
                             Width="auto" IsReadOnly="True" CanUserSort="False"
                             CellStyleClasses="order_number" />
 
-        <DataGridCheckBoxColumn Binding="{Binding IsChecked, Mode=TwoWay}"                                
+        <DataGridCheckBoxColumn Binding="{Binding IsChecked, Mode=TwoWay}"
                                 Width="auto" IsReadOnly="True" CanUserSort="False">
           <DataGridCheckBoxColumn.Header>
-            <TextBlock ToolTip.Tip="check/unckeck all">&#2713;</TextBlock> <!--"\u2713"-->
-          </DataGridCheckBoxColumn.Header>  
+            <TextBlock ToolTip.Tip="check/unckeck all">&#x2713;</TextBlock> <!--"\u2713"-->
+          </DataGridCheckBoxColumn.Header>
         </DataGridCheckBoxColumn>
 
         <DataGridTextColumn Header="key" Binding="{Binding Name, Mode=TwoWay}"
@@ -70,8 +72,8 @@
 
         <DataGridTextColumn Header="value" Binding="{Binding Value, Mode=TwoWay}"
                             Width="3*" CanUserSort="True" SortMemberPath="Value" />
-      </DataGrid.Columns>
-    </DataGrid>
+      </local-ui:DataGrid_Handled_PageDown_N_PageUp.Columns>
+    </local-ui:DataGrid_Handled_PageDown_N_PageUp>
   </Grid>
 
   <UserControl.Resources>

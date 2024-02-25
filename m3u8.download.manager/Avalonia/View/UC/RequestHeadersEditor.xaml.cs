@@ -10,6 +10,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.VisualTree;
 
 using ReactiveUI;
@@ -19,12 +20,39 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
+    public sealed class DataGrid_Handled_PageDown_N_PageUp : DataGrid
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void PageDown_N_PageUp_EventHandler();
+        public PageDown_N_PageUp_EventHandler OnPageDown_N_PageUp;
+
+        protected override Type StyleKeyOverride => typeof(DataGrid);
+        protected override void OnKeyDown( KeyEventArgs e )
+        {
+            var is_PageDown_N_PageUp = ((e.Key == Key.PageDown) || (e.Key == Key.PageUp)) && ((e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control);
+            e.Handled = is_PageDown_N_PageUp;
+
+            base.OnKeyDown( e );
+
+            if ( is_PageDown_N_PageUp ) OnPageDown_N_PageUp?.Invoke();
+        }        
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class RequestHeadersEditor : UserControl
     {
         /// <summary>
         /// 
         /// </summary>
         public delegate void RequestHeadersCountChangedEventHandler( int requestHeadersCount, int enabledCount );
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void PageDown_N_PageUp_EventHandler();
 
         /// <summary>
         /// 
@@ -32,22 +60,11 @@ namespace m3u8.download.manager.ui
         private sealed class RequestHeader : ReactiveObject
         {
             public RequestHeader() => IsChecked = true;
-            public RequestHeader( string name, string description, int? max_name_length = null )
-            {
-                Name        = name;
-                DisplayName = name;
-                Description = description;
-                if ( description != null )
-                {
-                    var indent = new string( ' ', 2 + (max_name_length.GetValueOrDefault( name.Length ) - name.Length) );
-                    DisplayName += indent + description;
-                }
-            }
-            public RequestHeader( string name, string value, bool isChecked )
+            public RequestHeader( string name, string value, bool isChecked = true, string description = null )
             {
                 Name        = name;                
-                DisplayName = name;
                 Value       = value;
+                Description = description;
                 IsChecked   = isChecked;
             }
 
@@ -80,14 +97,13 @@ namespace m3u8.download.manager.ui
             }
 
             public string Description { get; }
-            public string DisplayName { get; }
 #if DEBUG
-            public override string ToString() => DisplayName;
+            public override string ToString() => $"{(IsChecked ? "(+)" : "(-)")} {Name}: {Value}";
 #endif
         }
 
         #region [.fields.]
-        private DataGrid DGV;
+        private DataGrid_Handled_PageDown_N_PageUp DGV;
         private DataGridCollectionView _DGVRows;
 
         private ContextMenu mainContextMenu;
@@ -106,11 +122,12 @@ namespace m3u8.download.manager.ui
             addRowMenuItem    = mainContextMenu.Find_MenuItem( nameof(addRowMenuItem)    ); addRowMenuItem   .Click += addRowMenuItem_Click;
             deleteRowMenuItem = mainContextMenu.Find_MenuItem( nameof(deleteRowMenuItem) ); deleteRowMenuItem.Click += deleteRowMenuItem_Click;
 
-            DGV = this.FindControl< DataGrid >( nameof(DGV) );
-            DGV.LoadingRow         += DGV_LoadingRow;            
-            DGV.RowEditEnded       += DGV_RowEditEnded;
-            DGV.PointerPressed     += DGV_PointerPressed;
-            DGV.CellPointerPressed += DGV_CellPointerPressed;
+            DGV = this.FindControl< DataGrid_Handled_PageDown_N_PageUp >( nameof(DGV) );
+            DGV.LoadingRow          += DGV_LoadingRow;            
+            DGV.RowEditEnded        += DGV_RowEditEnded;
+            DGV.PointerPressed      += DGV_PointerPressed;
+            DGV.CellPointerPressed  += DGV_CellPointerPressed;
+            DGV.OnPageDown_N_PageUp += () => OnPageDown_N_PageUp?.Invoke();
 
             if ( DGV.Columns.OfType< DataGridCheckBoxColumn >().FirstOrDefault()?.Header is TextBlock textBlock )
             {
@@ -150,6 +167,11 @@ namespace m3u8.download.manager.ui
                         deleteRowMenuItem_Click( null, EventArgs.Empty );
                     }
                 break;
+
+                case Key.PageDown:
+                case Key.PageUp:
+                    e.Handled = ((e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control);
+                    return;
             }
 
             base.OnKeyDown( e );
@@ -157,7 +179,8 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public methods.]
-        public event RequestHeadersCountChangedEventHandler OnRequestHeadersCountChanged;
+        public event PageDown_N_PageUp_EventHandler OnPageDown_N_PageUp;
+        public event RequestHeadersCountChangedEventHandler OnRequestHeadersCountChanged;        
         private void Fire_OnRequestHeadersCountChanged() => OnRequestHeadersCountChanged?.Invoke( _DGVRows.Count, GetEnabledCount() );
 
         public void SetRequestHeaders( IDictionary< string, string > requestHeaders )
@@ -197,12 +220,12 @@ namespace m3u8.download.manager.ui
 
             if ( requestHeaders.AnyEx() )
             {
-                var items = new List< RequestHeader >( requestHeaders.Count );
+                var rhs = new List< RequestHeader >( requestHeaders.Count );
                 foreach ( var p in requestHeaders.OrderBy( p => p.Key ) )
                 {
-                    items.Add( new RequestHeader( p.Key, p.Value, isChecked: true ) );
+                    rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: true ) );
                 }
-                DGV.ItemsSource = _DGVRows = new DataGridCollectionView( items );
+                DGV.ItemsSource = _DGVRows = new DataGridCollectionView( rhs );
             }
             Fire_OnRequestHeadersCountChanged();
         }

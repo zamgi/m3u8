@@ -46,6 +46,7 @@ namespace m3u8.download.manager.ui
         private Button startDownloadButton;
         private Button laterDownloadButton;
 
+        private TabItem              mainTabItem;
         private TabItem              requestHeadersTabItem;
         private RequestHeadersEditor requestHeadersEditor;        
         #endregion
@@ -71,8 +72,11 @@ namespace m3u8.download.manager.ui
             outputFileNameTextBox  = this.Find< TextBox >( nameof(outputFileNameTextBox) );
             outputDirectoryTextBox = this.Find< TextBox >( nameof(outputDirectoryTextBox) );
             logUC                  = this.Find< RequestLogUC >( nameof(logUC) );
+            mainTabItem            = this.Find< TabItem      >( nameof(mainTabItem) );
             requestHeadersTabItem  = this.Find< TabItem      >( nameof(requestHeadersTabItem) );
-            requestHeadersEditor   = this.Find< RequestHeadersEditor >( nameof(requestHeadersEditor) ); requestHeadersEditor.OnRequestHeadersCountChanged += requestHeadersEditor_OnRequestHeadersCountChanged;
+            requestHeadersEditor   = this.Find< RequestHeadersEditor >( nameof(requestHeadersEditor) ); 
+            requestHeadersEditor.OnRequestHeadersCountChanged += requestHeadersEditor_OnRequestHeadersCountChanged;
+            requestHeadersEditor.OnPageDown_N_PageUp          += () => OnKeyDown( new KeyEventArgs() { Key = Key.PageDown, KeyModifiers = KeyModifiers.Control } );
 
             patternOutputFileNameLabelCaption = this.Find< TextBlock     >( nameof(patternOutputFileNameLabelCaption) );
             patternOutputFileNameLabel        = this.Find< TextBlock     >( nameof(patternOutputFileNameLabel) );
@@ -260,6 +264,15 @@ namespace m3u8.download.manager.ui
                             e.Handled = true;
                             return;
                         }
+                    }
+                    break;
+
+                case Key.PageDown:
+                case Key.PageUp:
+                    if ( (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control )
+                    {
+                        if ( mainTabItem.IsSelected ) requestHeadersTabItem.IsSelected = true;
+                        else mainTabItem.IsSelected = true;
                     }
                     break;
             }
