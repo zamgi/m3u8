@@ -84,7 +84,9 @@
     <Compile Include="UI\ButtonWithFocusCues.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultTextBox.cs" />
+    <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="UI\M3u8FileResult_UC\M3u8FileResultTextBox.Designer.cs">
       <DependentUpon>M3u8FileResultTextBox.cs</DependentUpon>
     </Compile>
