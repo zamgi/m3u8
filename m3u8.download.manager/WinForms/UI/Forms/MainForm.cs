@@ -163,9 +163,8 @@ namespace m3u8.download.manager.ui
                 AddNewDownloads( _InputParamsArray );
                 _InputParamsArray = null;
             }
-            else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() && 
-                       Extensions.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) 
-                    )
+            else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() &&
+                       ClipboardHelper.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) )
             {
                 var frt = m3u8FileUrls.FirstOrDefault();
                 AddNewDownload( (frt.url, frt.requestHeaders, false) );
@@ -223,7 +222,7 @@ namespace m3u8.download.manager.ui
                 switch ( e.KeyCode )
                 {
                     case Keys.V: //Paste
-                        if ( Extensions.TryGetHttpUrlsFromClipboard( out var urls ) )
+                        if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls ) )
                         {
                             e.SuppressKeyPress = true;
 
@@ -245,7 +244,7 @@ namespace m3u8.download.manager.ui
                             if ( rows.Any() )
                             {
                                 e.SuppressKeyPress = true;
-                                Extensions.CopyUrlsToClipboard( rows );
+                                ClipboardHelper.CopyUrlsToClipboard( rows );
                                 return;
                             }
                             else
@@ -332,7 +331,7 @@ namespace m3u8.download.manager.ui
                     case Keys.Insert: //add download dialog
                     {
                         e.SuppressKeyPress = true;
-                        var m3u8FileUrls = Extensions.TryGetM3u8FileUrlsFromClipboardOrDefault();
+                        var m3u8FileUrls = ClipboardHelper.TryGetM3u8FileUrlsFromClipboardOrDefault();
 #if DEBUG
                         if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ];
 #endif
@@ -933,8 +932,8 @@ namespace m3u8.download.manager.ui
                 {
                     var action = new Action< X, (int n, int total) >( (X tp, (int n, int total) seriesInfo) => AddNewDownload( tp, seriesInfo ) );
 
-                    var n     = p.m3u8FileUrls.Count;
-                    var count = n;
+                    var count = p.m3u8FileUrls.Count;
+                    var n     = count;
                     foreach ( var t in p.m3u8FileUrls.Reverse() )
                     {
                         var seriesInfo = (n--, count);
@@ -1062,7 +1061,7 @@ namespace m3u8.download.manager.ui
             var rows = downloadListUC.GetSelectedDownloadRows();
             if ( rows.Any() )
             {
-                Extensions.CopyUrlsToClipboard( rows );
+                ClipboardHelper.CopyUrlsToClipboard( rows );
             }
             else
             {
@@ -1071,7 +1070,7 @@ namespace m3u8.download.manager.ui
         }
         private void pasteToolButton_Click( object sender, EventArgs e )
         {
-            if ( Extensions.TryGetHttpUrlsFromClipboard( out var urls ) )
+            if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls ) )
             {
                 var autoStartDownload = ((Control.ModifierKeys & Keys.Shift) == Keys.Shift);
                 if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToList( 50 );

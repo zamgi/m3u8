@@ -21,6 +21,7 @@ namespace m3u8.download.manager
             DownloadController = new DownloadController( DownloadListModel, SettingsController );
 
             AddCommand                         = new AddCommand( this );
+            EditCommand                        = new EditCommand( this );
             ParallelismCommand                 = new ParallelismCommand( this );
             SettingsCommand                    = new SettingsCommand( this );
             AboutCommand                       = new AboutCommand();
@@ -44,6 +45,7 @@ namespace m3u8.download.manager
         public SettingsPropertyChangeController SettingsController { get; }
 
         public AddCommand                         AddCommand                         { get; }
+        public EditCommand                        EditCommand                        { get; }
         public ParallelismCommand                 ParallelismCommand                 { get; }
         public SettingsCommand                    SettingsCommand                    { get; }
         public AboutCommand                       AboutCommand                       { get; }

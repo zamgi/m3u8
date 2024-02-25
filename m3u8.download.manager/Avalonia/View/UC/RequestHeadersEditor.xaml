@@ -1,0 +1,76 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        x:Class="m3u8.download.manager.ui.RequestHeadersEditor"
+        d:DesignWidth="350" d:DesignHeight="550"
+        Background="WhiteSmoke"
+        >
+
+  <UserControl.Styles>
+    <Style Selector="DataGridRow TextBlock">
+      <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <!-- Background -->
+    <Style Selector="DataGridRow">
+      <Setter Property="Background" Value="White" />
+    </Style>
+    <Style Selector="DataGridRow /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="White" />
+    </Style>
+
+    <!-- Select-Background -->
+    <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+      <Setter Property="Fill" Value="CadetBlue" />
+    </Style>
+
+    <!-- Select-Foreground -->
+    <Style Selector="DataGridRow:selected TextBlock">
+      <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <Style Selector="DataGridCell.order_number">
+      <Setter Property="Foreground" Value="Silver" />
+    </Style>
+    <Style Selector="DataGridRow:selected DataGridCell.order_number TextBlock">
+      <Setter Property="Foreground" Value="Silver" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="*,auto" ColumnDefinitions="*" Margin="2">
+    <DataGrid x:Name="DGV" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+              SelectionMode="Extended"
+              CanUserResizeColumns="True"
+              CanUserReorderColumns="False"
+              CanUserSortColumns="True"
+              IsReadOnly="False"
+              GridLinesVisibility="All"
+              VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver"
+              BorderBrush="LightGray" BorderThickness="1"
+              ClipboardCopyMode="None"
+              RowBackground="White"
+              Background="LightGray"
+              >
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="#" Binding="{Binding ViewOrderNumber, Mode=OneWay}"
+                            Width="auto" IsReadOnly="True" CanUserSort="False"
+                            CellStyleClasses="order_number" />
+
+        <DataGridCheckBoxColumn Binding="{Binding IsChecked, Mode=TwoWay}"                                
+                                Width="auto" IsReadOnly="True" CanUserSort="False">
+          <DataGridCheckBoxColumn.Header>
+            <TextBlock ToolTip.Tip="check/unckeck all">\u2713</TextBlock>
+          </DataGridCheckBoxColumn.Header>  
+        </DataGridCheckBoxColumn>
+
+        <DataGridTextColumn Header="key" Binding="{Binding Name, Mode=TwoWay}"
+                            Width="*" CanUserSort="True" SortMemberPath="Name" />
+
+        <DataGridTextColumn Header="value" Binding="{Binding Value, Mode=TwoWay}"
+                            Width="3*" CanUserSort="True" SortMemberPath="Value" />
+      </DataGrid.Columns>
+    </DataGrid>
+  </Grid>
+</UserControl>

@@ -174,7 +174,7 @@
             <Image Source="/Resources/edit.png"/>
           </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="-" />
+        <MenuItem x:Name="editDownloadMenuItem_Separator" Header="-" />
 
         <MenuItem x:Name="deleteDownloadMenuItem" Header="Delete      (Del)">
           <MenuItem.Icon>

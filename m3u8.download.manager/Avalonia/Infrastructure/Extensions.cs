@@ -23,6 +23,7 @@ using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -403,81 +404,6 @@ namespace m3u8.download.manager
             }
         }
         #endregion
-
-        public static async Task< IReadOnlyCollection< string > > TryGetM3u8FileUrlsFromClipboardOrDefault( this Window window )
-        {
-            var t = await window.TryGetM3u8FileUrlsFromClipboard();
-            return (t.success ? t.m3u8FileUrls : Array.Empty< string >());
-        }
-        public static async Task< (bool success, IReadOnlyCollection< string > m3u8FileUrls) > TryGetM3u8FileUrlsFromClipboard( this Window window )
-        {
-            var M3U8_EXTENSION_Q = Resources.M3U8_EXTENSION + '?';
-            try
-            {
-                var text = (await window.Clipboard.GetTextAsync())?.Trim();
-                if ( !text.IsNullOrEmpty() )
-                {
-                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
-                    var hs  = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
-                    var m3u8FileUrls = new List< string >( array.Length );
-                    foreach ( var a in array )
-                    {
-                        var u = a.Trim();
-                        if ( u.EndsWith( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( u ) )
-                        {
-                            m3u8FileUrls.Add( u );
-                        }
-                        else
-                        {
-                            var i = u.IndexOf( M3U8_EXTENSION_Q, StringComparison.InvariantCultureIgnoreCase );
-                            if ( (10 < i) && hs.Add( u ) )
-                            {
-                                m3u8FileUrls.Add( u );
-                            }
-                        }
-                    }
-                    return (m3u8FileUrls.Any(), m3u8FileUrls);
-                }
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
-
-            return (false, default);
-        }
-        public static async Task< (bool success, IReadOnlyCollection< string > m3u8FileUrls) > TryGetHttpUrlsFromClipboard( this Window window )
-        {
-            const string HTTP  = "http://";
-            const string HTTPS = "https://";
-            try
-            {
-                var text = (await window.Clipboard.GetTextAsync())?.Trim();
-                if ( !text.IsNullOrEmpty() )
-                {
-                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
-                    var hs  = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
-                    var m3u8FileUrls = new List< string >( array.Length );
-                    foreach ( var a in array )
-                    {
-                        var u = a.Trim();
-                        if ( (u.StartsWith( HTTP, StringComparison.InvariantCultureIgnoreCase ) || 
-                              u.StartsWith( HTTPS, StringComparison.InvariantCultureIgnoreCase )) && hs.Add( u ) )
-                        {
-                            m3u8FileUrls.Add( u );
-                        }
-                    }
-                    return (m3u8FileUrls.Any(), m3u8FileUrls);
-                }
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
-
-            return (false, default);
-        }
-        public static Task CopyToClipboard( this Window window, string text ) => window.Clipboard.SetTextAsync( text );
 
         #region [.allowed Command by current status.]
         [M(O.AggressiveInlining)] public static bool StartDownload_IsAllowed ( this DownloadStatus status ) => (status == DownloadStatus.Created ) ||

@@ -66,6 +66,15 @@ namespace m3u8.download.manager.ipc
             [DataMember(Name="value", IsRequired=true)]
             public string Value { get; set; }
 
+            public static string ToJson( IDictionary< string, string > dict )
+            {
+                var json = default(string);
+                if ( dict.AnyEx() )
+                {
+                    json = dict.Select( p => new ExtensionRequestHeader() { Name = p.Key, Value = p.Value } ).ToJSON();                    
+                }
+                return (json);
+            }
             public static bool Try2Dict( string json, out IDictionary< string, string > dict )
             {
                 if ( !json.IsNullOrEmpty() )

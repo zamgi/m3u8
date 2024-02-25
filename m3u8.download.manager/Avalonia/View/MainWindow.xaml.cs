@@ -52,6 +52,8 @@ namespace m3u8.download.manager.ui
         private MenuItem startDownloadMenuItem;
         private MenuItem pauseDownloadMenuItem;
         private MenuItem cancelDownloadMenuItem;
+        private MenuItem editDownloadMenuItem;
+        private MenuItem editDownloadMenuItem_Separator;
         private MenuItem deleteDownloadMenuItem;
         private MenuItem deleteWithOutputFileMenuItem;
         private MenuItem browseOutputFileMenuItem;
@@ -113,6 +115,8 @@ namespace m3u8.download.manager.ui
             startDownloadMenuItem             = mainContextMenu.Find_MenuItem( nameof(startDownloadMenuItem) ); startDownloadMenuItem.Click += startDownloadMenuItem_Click;
             pauseDownloadMenuItem             = mainContextMenu.Find_MenuItem( nameof(pauseDownloadMenuItem) ); pauseDownloadMenuItem.Click += pauseDownloadMenuItem_Click;
             cancelDownloadMenuItem            = mainContextMenu.Find_MenuItem( nameof(cancelDownloadMenuItem) ); cancelDownloadMenuItem.Click += cancelDownloadMenuItem_Click;
+            editDownloadMenuItem              = mainContextMenu.Find_MenuItem( nameof(editDownloadMenuItem) ); editDownloadMenuItem.Click += editDownloadMenuItem_Click;
+            editDownloadMenuItem_Separator    = mainContextMenu.Find_MenuItem( nameof(editDownloadMenuItem_Separator) );
             deleteDownloadMenuItem            = mainContextMenu.Find_MenuItem( nameof(deleteDownloadMenuItem) ); deleteDownloadMenuItem.Click += deleteDownloadMenuItem_Click;
             deleteWithOutputFileMenuItem      = mainContextMenu.Find_MenuItem( nameof(deleteWithOutputFileMenuItem) ); deleteWithOutputFileMenuItem.Click += deleteWithOutputFileMenuItem_Click;
             browseOutputFileMenuItem          = mainContextMenu.Find_MenuItem( nameof(browseOutputFileMenuItem) ); browseOutputFileMenuItem.Click += browseOutputFileMenuItem_Click;
@@ -202,7 +206,8 @@ namespace m3u8.download.manager.ui
                 var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard();
                 if ( success )
                 {
-                    _VM.AddCommand.AddNewDownload( (m3u8FileUrls.FirstOrDefault(), null, false) );
+                    var frt = m3u8FileUrls.FirstOrDefault();
+                    _VM.AddCommand.AddNewDownload( (frt.url, frt.requestHeaders, false) );
                 }
             }
             _VM.DownloadListModel.AddRows( _VM.SettingsController.GetDownloadRows() /*DownloadRowsSerializer.FromJSON( _VM.SettingsController.DownloadRowsJson )*/ );
@@ -215,6 +220,7 @@ namespace m3u8.download.manager.ui
                 _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", null, "xz-3", dir) );
             }
 #endif
+            var suc = downloadListUC.DataGrid.Focus();
         }
         protected override void OnClosed( EventArgs e )
         {
@@ -282,15 +288,14 @@ namespace m3u8.download.manager.ui
                 switch ( e.Key )
                 {
                     case Key.V: //Paste
-                        var (success, urls) = await this.TryGetHttpUrlsFromClipboard()/*TryGetM3u8FileUrlsFromClipboard()*/;
+                        var (success, urls) = await this.TryGetHttpUrlsFromClipboard();
                         if ( success )
                         {
                             e.Handled = true;
 
                             var autoStartDownload = ((e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift);
-                            if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToArray();
-                            var urls2 = urls.Select( url => (url, (string) null) ).ToArray();
-                            _VM.AddCommand.AddNewDownloads( (urls2, autoStartDownload) );
+                            if ( !autoStartDownload ) urls = urls.Take( 50 ).ToList( 50 );
+                            _VM.AddCommand.AddNewDownloads( (urls, autoStartDownload) );
                             return;
                         }
                         else
@@ -306,7 +311,7 @@ namespace m3u8.download.manager.ui
                             if ( row != null )
                             {
                                 e.Handled = true;
-                                await this.CopyToClipboard( row.Url );
+                                await this.CopyToClipboard( row );
                                 return;
                             }
                             else
@@ -364,6 +369,13 @@ namespace m3u8.download.manager.ui
                             _VM.CollectGarbageCommand.Execute( null );
                         }
                         break;
+
+                    case Key.E: // [Ctrl + E]
+                        if ( downloadListUC.HasFocus )
+                        {
+                            _VM.EditCommand.EditDownload( downloadListUC.GetSelectedDownloadRow() );
+                        }
+                        break;
                 }
             }
             else
@@ -375,10 +387,9 @@ namespace m3u8.download.manager.ui
                             e.Handled = true;
                             var m3u8FileUrls = await this.TryGetM3u8FileUrlsFromClipboardOrDefault();
 #if DEBUG
-                            if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ $"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def" ];
+                            if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ];
 #endif
-                            var urls = m3u8FileUrls.Select( url => (url, (string) null) ).ToArray();
-                            _VM.AddCommand.AddNewDownloads( (urls, false) );
+                            _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
                         }
                         return;
 
@@ -915,7 +926,7 @@ namespace m3u8.download.manager.ui
             var row = downloadListUC.GetSelectedDownloadRow();
             if ( row != null )
             {
-                await this.CopyToClipboard( row.Url );
+                await this.CopyToClipboard( row );
             }
             else
             {
@@ -928,9 +939,8 @@ namespace m3u8.download.manager.ui
             if ( success )
             {
                 var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
-                if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToArray();
-                var urls2 = urls.Select( url => (url, (string) null) ).ToArray();
-                _VM.AddCommand.AddNewDownloads( (urls2, autoStartDownload) );
+                if ( !autoStartDownload ) urls = urls.Take( 50 ).ToList( 50 );
+                _VM.AddCommand.AddNewDownloads( (urls, autoStartDownload) );
             }
             else
             {
@@ -969,8 +979,11 @@ namespace m3u8.download.manager.ui
                 openOutputFileMenuItem           .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
                 deleteAllFinishedDownloadMenuItem.IsEnabled = deleteAllFinishedDownloadToolButton.IsEnabled;
 
-                var allowedAll = (row == null) || (1 < _VM.DownloadListModel.RowsCount);
-                SetAllDownloadsMenuItemsEnabled( allowedAll );
+                SetAllDownloadsMenuItemsEnabled( allowedAll: (row == null) || (1 < _VM.DownloadListModel.RowsCount) );
+
+                editDownloadMenuItem.IsVisible =
+                    editDownloadMenuItem_Separator.IsVisible = (row != null) && !row.Status.IsRunningOrPaused();
+
 
                 //pt = downloadListUC.TranslatePoint( pt, this ).GetValueOrDefault( pt );
 
@@ -1033,6 +1046,8 @@ namespace m3u8.download.manager.ui
         private void startDownloadMenuItem_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Start  );
         private void pauseDownloadMenuItem_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Pause  );
         private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Cancel );
+
+        private void editDownloadMenuItem_Click( object sender, EventArgs e ) => _VM.EditCommand.EditDownload( downloadListUC.GetSelectedDownloadRow() );
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
         private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRow(), deleteOutputFiles: true );
@@ -1143,8 +1158,7 @@ namespace m3u8.download.manager.ui
         }
         private async void downloadListUC_OutputDirectoryClick( DownloadRow row )
         {
-            var d = new OpenFolderDialog() { Directory = row.OutputDirectory,
-                                             Title     = $"Select output directory: '{row.OutputFileName}'" };
+            var d = new OpenFolderDialog() { Directory = row.OutputDirectory, Title = $"Select output directory: '{row.OutputFileName}'" };
             {
                 var directory = await d.ShowAsync( this );
                 if ( !directory.IsNullOrWhiteSpace() )
