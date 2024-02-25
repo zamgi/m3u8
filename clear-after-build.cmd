@@ -4,6 +4,8 @@ rem for /f "usebackq" %%f in (`"dir /ad/b/s bin"`) do rd "%%f" /S/Q
 for /f "usebackq" %%f in (`"dir /ad/b/s obj"`) do rd "%%f" /S/Q
 for /f "usebackq" %%f in (`"dir /ad/b/s .vs"`) do rd "%%f" /S/Q
 
+del "*.csproj.user" /S/Q
+
 rd "m3u8.client\bin" /S /Q
 rd "m3u8.client\obj" /S /Q
 
