@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using static m3u8.download.manager.ui.DefaultColors;
+
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -41,9 +43,7 @@ namespace m3u8.download.manager.ui
             public string Name        { get; }
             public string Description { get; }
             public string DisplayName { get; }
-#if DEBUG
             public override string ToString() => DisplayName;
-#endif
         }
 
         #region [.fields.]
@@ -226,6 +226,7 @@ namespace m3u8.download.manager.ui
             }
             return (dict);
         }
+        public bool InEditMode => DGV.IsCurrentCellInEditMode;
 
         private int GetEnabledCount()
         {
@@ -366,7 +367,19 @@ namespace m3u8.download.manager.ui
             }
         }
         //*/
-        
+        private void DGV_KeyDown( object sender, KeyEventArgs e )
+        {
+            switch ( e.KeyCode )
+            {
+                case Keys.Delete:
+                    foreach ( var cell in DGV.SelectedCells.Cast< DataGridViewCell >() )
+                    {
+                        if ( cell.ColumnIndex != CHECKED_CELL_IDX ) cell.Value = null;
+                    }
+                    break;
+            }
+        }
+
         private void DGV_EditingControlShowing( object sender, DataGridViewEditingControlShowingEventArgs e )
         {
             if ( e.Control is DataGridViewComboBoxEditingControl cbec )
@@ -376,14 +389,15 @@ namespace m3u8.download.manager.ui
                 if ( cbec.EditingControlDataGridView.Rows[ cbec.EditingControlRowIndex ].IsNewRow )
                 {
                     cbec.Text = null;
-                    if ( _DataGridViewComboBoxEditingControl != cbec )
-                    {
-                        _DataGridViewComboBoxEditingControl = cbec;
-                        cbec.PreviewKeyDown -= Cbec_PreviewKeyDown;
-                        cbec.PreviewKeyDown += Cbec_PreviewKeyDown;
-                        cbec.KeyDown -= Cbec_KeyDown;
-                        cbec.KeyDown += Cbec_KeyDown;
-                    }
+                }
+
+                if ( _DataGridViewComboBoxEditingControl != cbec )
+                {
+                    _DataGridViewComboBoxEditingControl = cbec;
+                    cbec.PreviewKeyDown -= Cbec_PreviewKeyDown;
+                    cbec.PreviewKeyDown += Cbec_PreviewKeyDown;
+                    cbec.KeyDown -= Cbec_KeyDown;
+                    cbec.KeyDown += Cbec_KeyDown;
                 }
             }
             else if ( e.Control is ComboBox cb )

@@ -721,7 +721,7 @@ namespace m3u8.download.manager.ui
 
                 case REQUEST_HEADERS_COLUMN_INDEX:
                     comparison = (x, y) => string.Compare( x.RequestHeaders.ToText(), y.RequestHeaders.ToText(), true );
-                break;                
+                break;
 
                 case IS_LIVE_STREAM_COLUMN_INDEX:
                     comparison = (x, y) => x.IsLiveStream.CompareTo( y.IsLiveStream );

@@ -332,9 +332,13 @@ namespace m3u8.download.manager.ui
             switch ( keyData )
             {
                 case Keys.Escape:
-                    DialogResult = DialogResult.Cancel;
-                    this.Close();
-                    return (true);
+                    if ( mainTabPage.IsSelected() || !requestHeadersEditor.InEditMode )
+                    {
+                        DialogResult = DialogResult.Cancel;
+                        this.Close();
+                        return (true);
+                    }
+                    break;
 
                 case Keys.Enter                 : //AutoStartDownload
                 case (Keys.Enter | Keys.Shift)  : //DownloadLater

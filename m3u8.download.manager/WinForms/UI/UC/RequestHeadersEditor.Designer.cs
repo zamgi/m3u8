@@ -40,6 +40,7 @@
             cs.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             cs.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             cs.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.DGV.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DGV_RowsAdded);
             this.DGV.ColumnHeadersDefaultCellStyle = cs;
             this.DGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] 
@@ -60,12 +61,11 @@
             this.DGV.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_CellContentClick);
             this.DGV.IsNeedSaveSelectionByMouseDown += new System.Windows.Forms.DataGridView_SaveSelectionByMouseDown.IsNeedSaveSelectionByMouseDownHandler(this.DGV_IsNeedSaveSelectionByMouseDown);
             this.DGV.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DGV_ColumnHeaderMouseClick);
-            this.DGV.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.DGV_RowsAdded);
             this.DGV.RowsRemoved += new System.Windows.Forms.DataGridViewRowsRemovedEventHandler(this.DGV_RowsRemoved);
             //---this.DGV.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.DGV_CellToolTipTextNeeded);
             this.DGV.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.DGV_EditingControlShowing);
             this.DGV.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DGV_DataError);
-
+            this.DGV.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DGV_KeyDown);
             // 
             // DGV_checkedColumn
             // 
