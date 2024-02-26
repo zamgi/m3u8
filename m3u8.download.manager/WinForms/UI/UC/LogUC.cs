@@ -653,7 +653,7 @@ namespace m3u8.download.manager.ui
                         case RequestRowTypeEnum.None:
                         case RequestRowTypeEnum.Success      : e.Value = Get_4_RequestColumn__text( row.ResponseText ); break;
                         case RequestRowTypeEnum.Error        : e.Value = GetError_4_ResponseColumn__text( row.ResponseText ); break;
-                        case RequestRowTypeEnum.RequestHeader: e.Value = Get_4_RequestHeaderColumn__text( row.RequestText ); break;
+                        case RequestRowTypeEnum.RequestHeader: e.Value = Get_4_RequestHeaderColumn__text( row.ResponseText ); break;
                     }
                 break;
             }
@@ -681,7 +681,7 @@ namespace m3u8.download.manager.ui
                         case RequestRowTypeEnum.None         : cs = Get_4_RequestColumn__cellStyle( row.ResponseText ); break;
                         case RequestRowTypeEnum.Success      : cs = _Rsp_ReceivedCellStyle; break;
                         case RequestRowTypeEnum.Error        : cs = GetError_4_ResponseColumn__cellStyle( row.ResponseText ); break;
-                        case RequestRowTypeEnum.RequestHeader: cs = Get_4_RequestHeaderColumn__cellStyle( row.RequestText ); break;
+                        case RequestRowTypeEnum.RequestHeader: cs = Get_4_RequestHeaderColumn__cellStyle( row.ResponseText ); break;
                         default: cs = null; break;
                     }
                 break;
