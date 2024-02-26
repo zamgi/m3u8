@@ -295,8 +295,7 @@ namespace m3u8.download.manager.ipc
                 p = default;
                 return (false);
             }
-
-            public static string Create( string executeFileName ) => $"\"{executeFileName}\"";            
+      
             public static string Create_4_CreateAsBreakawayFromJob( string executeFileName ) => $"\"{executeFileName}\" {CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG}";
             public static bool Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() => (Environment.GetCommandLineArgs()?.Any( a => a == CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG )).GetValueOrDefault();
             public static bool TryParse( string[] args, out X p )
