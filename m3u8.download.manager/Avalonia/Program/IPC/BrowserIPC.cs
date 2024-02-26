@@ -234,6 +234,10 @@ namespace m3u8.download.manager.ipc
             private const string REQUEST_HEADERS__PARAM     = "requestHeaders=";
             private const string AUTO_START_DOWNLOAD__PARAM = "autoStartDownload=";
 
+            private const string LINES_SEPARATOR       = "\0\0";
+            private const char   PARAMS_SEPARATOR      = '\0';
+            private const string EMPTY_REQUEST_HEADERS = "-";
+
             public const string CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG = "CREATE_AS_BREAKAWAY_FROM_JOB";
 
             public static BrowserTypeEnum GetBrowserType( string[] args )
@@ -251,15 +255,16 @@ namespace m3u8.download.manager.ipc
                 return (BrowserTypeEnum.NoBrowser);
             }
 
-            public static string Create4PipeIPC( (string m3u8FileUrl, string requestHeaders, bool autoStartDownload )[] array ) => string.Join( "\0\0", from p in array select $"{p.m3u8FileUrl}\0{p.requestHeaders}\0{p.autoStartDownload}" );
-            public static bool TryParse4PipeIPC_Multi( string pipeIpcCommandLine, out (string m3u8FileUrl, string requestHeaders, bool autoStartDownload )[] array )
+            public static string Create4PipeIPC( X[] array ) => string.Join( LINES_SEPARATOR, from p in array select Create4PipeIPC( p ) );
+            private static string Create4PipeIPC( in X p ) => $"{p.m3u8FileUrl}{PARAMS_SEPARATOR}{p.requestHeaders.GetValueIfNotNullOrWhiteSpaceOrDefault( EMPTY_REQUEST_HEADERS )}{PARAMS_SEPARATOR}{p.autoStartDownload}";
+            public static bool TryParse4PipeIPC_Multi( string pipeIpcCommandLine, out X[] array )
             {
                 if ( pipeIpcCommandLine != null )
                 {
-                    var args = pipeIpcCommandLine.Split( new[] { "\0\0" }, StringSplitOptions.None );
+                    var args = pipeIpcCommandLine.Split( new[] { LINES_SEPARATOR }, StringSplitOptions.None );
                     if ( 0 < args.Length )
                     {
-                        array = new (string m3u8FileUrl, string requestHeaders, bool autoStartDownload )[ args.Length ];
+                        array = new X[ args.Length ];
 
                         for ( var i = args.Length - 1; 0 <= i; i-- )
                         {
@@ -278,22 +283,19 @@ namespace m3u8.download.manager.ipc
                 array = default;
                 return (false);
             }
-
-            //public static string Create4PipeIPC( in (string m3u8FileUrl, bool autoStartDownload) p ) => $"{p.m3u8FileUrl}\0{p.autoStartDownload}";
             private static bool TryParse4PipeIPC_Single( string pipeIpcCommandLine, out X p )
             {
-                var args = pipeIpcCommandLine.Split( '\0' );
+                var args = pipeIpcCommandLine.Split( PARAMS_SEPARATOR );
                 if ( args.Length == 3 )
                 {
-                    p = (args[ 0 ], args[ 1 ], args[ 2 ].Try2Bool());
+                    var rh = args[ 1 ]; if ( rh == EMPTY_REQUEST_HEADERS ) rh = null;
+                    p = (args[ 0 ], rh, args[ 2 ].Try2Bool());
                     return (!p.m3u8FileUrl.IsNullOrWhiteSpace());
                 }
                 p = default;
                 return (false);
             }
 
-            //public static string Create( in (string m3u8FileUrl, bool autoStartDownload) p ) => $"{M3U8_FILE_URL__PARAM}\"{p.m3u8FileUrl}\" {AUTO_START_DOWNLOAD__PARAM}\"{p.autoStartDownload}\"";
-            //public static string Create( string executeFileName, in (string m3u8FileUrl, bool autoStartDownload) p ) => $"\"{executeFileName}\" {M3U8_FILE_URL__PARAM}\"{p.m3u8FileUrl}\" {AUTO_START_DOWNLOAD__PARAM}\"{p.autoStartDownload}\"";
             public static string Create( string executeFileName ) => $"\"{executeFileName}\"";
             public static string Create_4_CreateAsBreakawayFromJob( string executeFileName ) => $"\"{executeFileName}\" {CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG}";
             public static bool Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() => (Environment.GetCommandLineArgs()?.Any( a => a == CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG )).GetValueOrDefault();

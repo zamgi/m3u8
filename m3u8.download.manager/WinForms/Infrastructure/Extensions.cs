@@ -30,6 +30,7 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
         [M(O.AggressiveInlining)] public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
         [M(O.AggressiveInlining)] public static bool HasFirstCharNotDot( this string s ) => (s != null) && (0 < s.Length) && (s[ 0 ] != '.');
+        [M(O.AggressiveInlining)] public static string GetValueIfNotNullOrWhiteSpaceOrDefault( this string s, string defVal ) => (s.IsNullOrWhiteSpace() ? defVal : s);
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null) && seq.Any();
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IList< T > seq ) => (seq != null) && (0 < seq.Count);
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this ICollection< T > seq ) => (seq != null) && (0 < seq.Count);

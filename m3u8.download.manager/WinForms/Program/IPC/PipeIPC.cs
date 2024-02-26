@@ -68,6 +68,7 @@ namespace m3u8.download.manager.ipc
 #if DEBUG
                                     Debug.WriteLine( $"[SERVER] Read from [CLIENT]: {line}." ); 
 #endif
+//Debugger.Launch();
                                     if ( BrowserIPC.CommandLine.TryParse4PipeIPC_Multi( line, out var array ) )
                                     {
                                         ReceivedInputParamsArray?.Invoke( array );
