@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 
 using m3u8.download.manager.models;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
@@ -24,13 +26,12 @@ namespace m3u8.download.manager.ui
         #region [.ctor().]
         public RequestLogUC()
         {
-            this.InitializeComponent();
+            AvaloniaXamlLoader.Load( this );
 
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
 
-            //this.Styles.Add( GlobalStyles.Dark );
+            if ( FontHelper.TryGetMonospace( out var fontFamily ) ) DGV.FontFamily = fontFamily;
         }
-        private void InitializeComponent() => AvaloniaXamlLoader.Load( this );
         #endregion
 
         #region [.Model.]

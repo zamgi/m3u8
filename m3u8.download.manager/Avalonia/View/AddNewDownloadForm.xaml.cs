@@ -446,7 +446,7 @@ namespace m3u8.download.manager.ui
             using ( var cts = new CancellationTokenSource() )
             using ( WaitBannerForm.CreateAndShow( this, cts, visibleDelayInMilliseconds: 1_500 ) )
             {
-                //await Task.Delay( 10_000 );
+//await Task.Delay( 10_000 );
                 var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl, this.GetRequestHeaders(), _SC.Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
                 if ( cts.IsCancellationRequested )
                 {
@@ -458,7 +458,7 @@ namespace m3u8.download.manager.ui
                 }
                 else
                 {
-                    _Model.Output( in t.m3u8File );
+                    _Model.Output( t.m3u8File, this.GetRequestHeaders() );
                 }
                 await logUC.ScrollToLastRow();
             }

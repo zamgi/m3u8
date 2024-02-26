@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Threading;
 
 using m3u8.download.manager.models;
@@ -38,15 +39,15 @@ namespace m3u8.download.manager.ui
         #region [.ctor().]
         public LogUC()
         {
-            this.InitializeComponent();
+            AvaloniaXamlLoader.Load( this );
 
             _DGVRows = new ObservableCollection_WithIndex< LogRow >();
             _Model_CollectionChanged_AddChangedType_Buf = new ThreadSafeList< LogRow >();
             _RemovedBeforeAddRows = new HashSet< LogRow >();
 
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
-            //---DGV.Items = _DGVRows.List;
             DGV.ItemsSource = _DGVRows.List;
+            if ( FontHelper.TryGetMonospace( out var fontFamily ) ) DGV.FontFamily = fontFamily;
 
             _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox = this.FindControl< CheckBox >( nameof(_ShowOnlyRequestRowsWithErrorsMenuItemCheckBox) );
             this.FindControl< MenuItem >( "_ShowOnlyRequestRowsWithErrorsMenuItem" ).Click += _ShowOnlyRequestRowsWithErrorsMenuItem_Click;
@@ -61,7 +62,6 @@ namespace m3u8.download.manager.ui
             _ScrollToLastRow = st.ScrollToLastRow;
             _ScrollToLastRowMenuItemCheckBox.IsChecked = _ScrollToLastRow;
         }
-        private void InitializeComponent() => AvaloniaXamlLoader.Load( this );
         #endregion
 
         #region [.Model.]

@@ -59,6 +59,7 @@
         <DataGridTextColumn Header="Request"  Binding="{Binding RequestText}"  Width="3.5*" />
         <DataGridTextColumn Header="Response" Binding="{Binding ResponseText}" Width="*"    />
       </DataGrid.Columns>
+    
       <DataGrid.ContextMenu>
         <ContextMenu>
           <MenuItem x:Name="_ShowOnlyRequestRowsWithErrorsMenuItem"

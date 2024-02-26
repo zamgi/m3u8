@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Input;
 
 using Avalonia.Media;
@@ -43,33 +42,23 @@ namespace m3u8.download.manager
                        "  F1:     About dialog" + Environment.NewLine +
                        "  (Ctrl+Shift+G:  Collect Garbage)" + Environment.NewLine;
 
-            var fontFamilies = (from ff in FontManager.Current.SystemFonts
-                                select ff
-                              ).ToArray();
-            //var fontFamilies = (from fn in FontManager.Current.GetInstalledFontFamilyNames()
-            //                    select new FontFamily( fn )
-            //                  ).ToArray();
-
-            var fontFamily = (from f in fontFamilies
-                              where (f.Name.EqualIgnoreCase( "Courier New"      )) || //Windows
-                                    (f.Name.EqualIgnoreCase( "Consolas"         )) || //Windows
-                                    (f.Name.EqualIgnoreCase( "Book"             )) || //Linux
-                                    (f.Name.EqualIgnoreCase( "DejaVu Sans Mono" ))    //Linux
-                              select f
-                             ).FirstOrDefault();
-            if ( fontFamily == null )
+            if ( !FontHelper.TryGetMonospace( out var fontFamily ) )
             {
                 fontFamily = FontFamily.Default;
             }
-            if ( fontFamily != null )
-            {
-                var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.None/*Info*/, fontFamily );
-                await msgbox.ShowEx();
-            }
-            else
-            {
-                await Extensions.MessageBox_Show( text, CAPTION, Icon.None/*Info*/ );
-            }            
+
+            var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.None/*Info*/, fontFamily );
+            await msgbox.ShowEx();
+
+            //if (  fontFamily != null )
+            //{
+            //    var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.None/*Info*/, fontFamily );
+            //    await msgbox.ShowEx();
+            //}
+            //else
+            //{
+            //    await Extensions.MessageBox_Show( text, CAPTION, Icon.None/*Info*/ );
+            //}            
         }
     }
 }
