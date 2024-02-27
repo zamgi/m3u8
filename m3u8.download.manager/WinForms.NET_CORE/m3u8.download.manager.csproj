@@ -63,6 +63,7 @@
     <Compile Include="..\WinForms\Infrastructure\CollectGarbage.cs" Link="Infrastructure\CollectGarbage.cs" />
     <Compile Include="..\WinForms\Infrastructure\OutputFileNamePatternProcessor.cs" Link="Infrastructure\OutputFileNamePatternProcessor.cs" />
     <Compile Include="..\WinForms\Infrastructure\ClipboardHelper.cs" Link="Infrastructure\ClipboardHelper.cs" />
+    <Compile Include="..\WinForms\Infrastructure\Ellipsis.cs" Link="Infrastructure\Ellipsis.cs" />
 
     <Compile Include="..\WinForms\Model\_more.cs" Link="Model\_more.cs" />
     <Compile Include="..\WinForms\Model\DownloadListModel.cs" Link="Model\DownloadListModel.cs" />

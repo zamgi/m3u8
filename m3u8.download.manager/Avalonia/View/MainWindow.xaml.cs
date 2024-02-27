@@ -56,6 +56,7 @@ namespace m3u8.download.manager.ui
         private MenuItem editDownloadMenuItem_Separator;
         private MenuItem deleteDownloadMenuItem;
         private MenuItem deleteWithOutputFileMenuItem;
+        private MenuItem onlyDeleteOutputFileMenuItem;
         private MenuItem browseOutputFileMenuItem;
         private MenuItem openOutputFileMenuItem;
         private MenuItem deleteAllFinishedDownloadMenuItem;
@@ -119,6 +120,7 @@ namespace m3u8.download.manager.ui
             editDownloadMenuItem_Separator    = mainContextMenu.Find_MenuItem( nameof(editDownloadMenuItem_Separator) );
             deleteDownloadMenuItem            = mainContextMenu.Find_MenuItem( nameof(deleteDownloadMenuItem) ); deleteDownloadMenuItem.Click += deleteDownloadMenuItem_Click;
             deleteWithOutputFileMenuItem      = mainContextMenu.Find_MenuItem( nameof(deleteWithOutputFileMenuItem) ); deleteWithOutputFileMenuItem.Click += deleteWithOutputFileMenuItem_Click;
+            onlyDeleteOutputFileMenuItem      = mainContextMenu.Find_MenuItem( nameof(onlyDeleteOutputFileMenuItem) ); onlyDeleteOutputFileMenuItem.Click += onlyDeleteOutputFileMenuItem_Click;
             browseOutputFileMenuItem          = mainContextMenu.Find_MenuItem( nameof(browseOutputFileMenuItem) ); browseOutputFileMenuItem.Click += browseOutputFileMenuItem_Click;
             openOutputFileMenuItem            = mainContextMenu.Find_MenuItem( nameof(openOutputFileMenuItem) ); openOutputFileMenuItem.Click += openOutputFileMenuItem_Click;
             deleteAllFinishedDownloadMenuItem = mainContextMenu.Find_MenuItem( nameof(deleteAllFinishedDownloadMenuItem) ); deleteAllFinishedDownloadMenuItem.Click += deleteAllFinishedDownloadToolButton_Click;
@@ -283,7 +285,7 @@ namespace m3u8.download.manager.ui
 
         protected async override void OnKeyDown( KeyEventArgs e )
         {
-            if ( (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control )
+            if ( e.KeyModifiers.HasFlag( KeyModifiers.Control ) )
             {
                 switch ( e.Key )
                 {
@@ -293,7 +295,7 @@ namespace m3u8.download.manager.ui
                         {
                             e.Handled = true;
 
-                            var autoStartDownload = ((e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift);
+                            var autoStartDownload = e.KeyModifiers.HasFlag( KeyModifiers.Shift );
                             if ( !autoStartDownload ) urls = urls.Take( 50 ).ToList( 50 );
                             _VM.AddCommand.AddNewDownloads( (urls, autoStartDownload) );
                             return;
@@ -364,7 +366,7 @@ namespace m3u8.download.manager.ui
                         break;
 
                     case Key.G:
-                        if ( (e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift ) //Collect Garbage
+                        if ( e.KeyModifiers.HasFlag( KeyModifiers.Shift ) ) //Collect Garbage
                         {
                             _VM.CollectGarbageCommand.Execute( null );
                         }
@@ -374,6 +376,13 @@ namespace m3u8.download.manager.ui
                         if ( downloadListUC.HasFocus )
                         {
                             _VM.EditCommand.EditDownload( downloadListUC.GetSelectedDownloadRow() );
+                        }
+                        break;
+
+                    case Key.Delete: // [Ctrl + Shift + Del]
+                        if ( e.KeyModifiers.HasFlag( KeyModifiers.Shift ) && downloadListUC.HasFocus )
+                        {
+                            OnlyDeleteOutputFiles( downloadListUC.GetSelectedDownloadRow() );
                         }
                         break;
                 }
@@ -397,10 +406,10 @@ namespace m3u8.download.manager.ui
                         if ( downloadListUC.HasFocus )
                         {
                             var row = downloadListUC.GetSelectedDownloadRow();
-                            var shiftPushed = ((e.KeyModifiers & KeyModifiers.Shift) == KeyModifiers.Shift);
-                            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: false, deleteOutputFile: shiftPushed ) )
+                            var deleteOutputFiles = e.KeyModifiers.HasFlag( KeyModifiers.Shift );
+                            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: false, deleteOutputFiles ) )
                             {
-                                DeleteDownloads( row, deleteOutputFiles: shiftPushed );
+                                DeleteDownloads( row, deleteOutputFiles );
                             }
                         }
                         break;
@@ -723,7 +732,7 @@ namespace m3u8.download.manager.ui
         {
             if ( row != null )
             {
-                DeleteDownloads( new[] { row }, deleteOutputFiles );
+                DeleteDownloads( [ row ], deleteOutputFiles );
             }
         }
         private async void DeleteDownloads( DownloadRow[] rows, bool deleteOutputFiles )
@@ -850,6 +859,57 @@ namespace m3u8.download.manager.ui
             return (false);
         }
 
+        private void OnlyDeleteOutputFiles( DownloadRow row, bool ask = true )
+        {
+            if ( row != null )
+            {
+                OnlyDeleteOutputFiles( [ row ], ask );
+            }
+        }
+        private async void OnlyDeleteOutputFiles( DownloadRow[] rows, bool ask = true )
+        {
+            if ( !rows.AnyEx() )
+            {
+                return;
+            }
+            if ( ask && !(await AskOnlyDeleteOutputFilesDialog( rows )) ) 
+            { 
+                return; 
+            }
+
+            this.IsEnabled = false;
+            try
+            {
+                using ( var cts = new CancellationTokenSource() )
+                using ( WaitBannerForm.CreateAndShow( this, cts, "only delete files...", visibleDelayInMilliseconds: 2_000, out var wb ) )
+                {
+                    wb.SetTotalSteps( rows.Length );
+                    await _VM.DownloadController.DeleteOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token, (row, ct, syncCtx) => 
+                    {
+                        FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
+                        syncCtx.Invoke(() => wb.IncreaseSteps( null ));
+                    });
+                }
+            }
+            catch ( OperationCanceledException )
+            {
+                ;
+            }
+            finally
+            {
+                this.IsEnabled = true;
+            }        
+        }
+        private async Task< bool > AskOnlyDeleteOutputFilesDialog( DownloadRow[] rows )
+        {
+            var exists_fns = rows.SelectMany( r => r.GetOutputFullFileNames() ).Where( File.Exists ).ToList( rows.Length );
+            if ( exists_fns.Count == 0 ) return (false);
+
+            var msg = $"Only delete ({exists_fns.Count}) output files ? \r\n\r\n{string.Join( "\r\n", exists_fns )}";
+            var r = await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo );
+            return (r == ButtonResult.Yes);
+        }
+
         private bool IsWaitBannerShown() => !this.IsEnabled;
 
         private double? Get_LogUC_RowDefinition_Height()
@@ -970,19 +1030,24 @@ namespace m3u8.download.manager.ui
         {
             if ( (row != null) || (0 < _VM.DownloadListModel.RowsCount) )
             {
+                var selectedRow_AnyFileExists = false;
                 startDownloadMenuItem            .IsEnabled = startDownloadToolButton .IsEnabled;
                 cancelDownloadMenuItem           .IsEnabled = cancelDownloadToolButton.IsEnabled;
                 pauseDownloadMenuItem            .IsEnabled = pauseDownloadToolButton .IsEnabled;
                 deleteDownloadMenuItem           .IsEnabled = deleteDownloadToolButton.IsEnabled;
-                deleteWithOutputFileMenuItem     .IsEnabled = deleteDownloadToolButton.IsEnabled && Extensions.AnyFileExists( row?.GetOutputFullFileNames() );
+                deleteWithOutputFileMenuItem     .IsEnabled = deleteDownloadToolButton.IsEnabled && (selectedRow_AnyFileExists = Extensions.AnyFileExists( row?.GetOutputFullFileNames() ));
                 browseOutputFileMenuItem         .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
                 openOutputFileMenuItem           .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
                 deleteAllFinishedDownloadMenuItem.IsEnabled = deleteAllFinishedDownloadToolButton.IsEnabled;
 
                 SetAllDownloadsMenuItemsEnabled( allowedAll: (row == null) || (1 < _VM.DownloadListModel.RowsCount) );
 
+                var not_null_and_running = (row != null) && !row.Status.IsRunningOrPaused();
+
                 editDownloadMenuItem.IsVisible =
-                    editDownloadMenuItem_Separator.IsVisible = (row != null) && !row.Status.IsRunningOrPaused();
+                    editDownloadMenuItem_Separator.IsVisible = not_null_and_running;
+
+                onlyDeleteOutputFileMenuItem.IsEnabled = not_null_and_running && (selectedRow_AnyFileExists || Extensions.AnyFileExists( row.GetOutputFullFileNames() ));
 
 
                 //pt = downloadListUC.TranslatePoint( pt, this ).GetValueOrDefault( pt );
@@ -1051,6 +1116,7 @@ namespace m3u8.download.manager.ui
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
         private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRow(), deleteOutputFiles: true );
+        private void onlyDeleteOutputFileMenuItem_Click( object sender, EventArgs e ) => OnlyDeleteOutputFiles( downloadListUC.GetSelectedDownloadRow() );
 
         private async void browseOutputFileMenuItem_Click( object sender, EventArgs e )
         {

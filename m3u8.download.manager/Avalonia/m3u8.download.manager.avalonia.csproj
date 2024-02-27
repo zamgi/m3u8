@@ -64,8 +64,9 @@
     <Compile Include="..\WinForms\Infrastructure\AssemblyInfoHelper.cs" Link="Infrastructure\AssemblyInfoHelper.cs" />
     <Compile Include="..\WinForms\Infrastructure\DownloadRowsSerializer.cs" Link="Infrastructure\DownloadRowsSerializer.cs" />
     <Compile Include="..\WinForms\Infrastructure\NameAndPathCleaner.cs" Link="Infrastructure\NameAndPathCleaner.cs" />
-    <Compile Include="..\WinForms\Infrastructure\OutputFileNamePatternProcessor.cs" Link="Infrastructure\OutputFileNamePatternProcessor.cs" />    
-    
+    <Compile Include="..\WinForms\Infrastructure\OutputFileNamePatternProcessor.cs" Link="Infrastructure\OutputFileNamePatternProcessor.cs" />
+    <Compile Include="..\WinForms\Infrastructure\Ellipsis.cs" Link="Infrastructure\Ellipsis.cs" />
+
     <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs" Link="Controller\throttler_by_speed_impl.cs" />
     <Compile Include="..\[Common]\Controller\download_threads_semaphore_impl.cs" Link="Controller\download_threads_semaphore_impl.cs" />
     <Compile Include="..\[Common]\Controller\interlocked_lock.cs" Link="Controller\interlocked_lock.cs" />

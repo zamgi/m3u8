@@ -69,7 +69,7 @@
           <MenuItem.Header>
             <Image Source="/Resources/menu/control_delete_all_finished.png" />
           </MenuItem.Header>
-        </MenuItem>
+        </MenuItem>        
         <Separator/>
         
         <MenuItem x:Name="showLogToolButton" ToolTip.Tip="Show/Hide download log" Padding="0" Margin="0,0,5,0">
@@ -182,6 +182,7 @@
           </MenuItem.Icon>
         </MenuItem>
         <MenuItem x:Name="deleteWithOutputFileMenuItem" Header="Delete with Output file  (Shift + Del)" />
+        <MenuItem x:Name="onlyDeleteOutputFileMenuItem" Header="Only Delete Output file  (Ctrl + Shift + Del)" />
         <MenuItem Header="-" />
 
         <MenuItem x:Name="browseOutputFileMenuItem" Header="    Browse Output file  (Ctrl + B)" />

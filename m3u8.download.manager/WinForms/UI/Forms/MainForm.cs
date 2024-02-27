@@ -836,9 +836,14 @@ namespace m3u8.download.manager.ui
             try
             {
                 using ( var cts = new CancellationTokenSource() )
-                using ( WaitBannerUC.Create( this, cts, "only delete files...", visibleDelayInMilliseconds: 2_000 ) )
+                using ( var wb  = WaitBannerUC.Create( this, cts, "only delete files...", visibleDelayInMilliseconds: 2_000 ) )
                 {
-                    await _DC.DeleteOutputFiles_Parallel( rows, cts.Token, (row, ct) => FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct ));
+                    wb.SetTotalSteps( rows.Length );
+                    await _DC.DeleteOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token, (row, ct, syncCtx) => 
+                    {
+                        FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
+                        syncCtx.Invoke(() => wb.IncreaseSteps( null ));
+                    });
                 }
             }
             catch ( OperationCanceledException )
@@ -900,15 +905,10 @@ namespace m3u8.download.manager.ui
         }
         private bool AskOnlyDeleteOutputFilesDialog( IReadOnlyList< DownloadRow > rows )
         {
-            string msg;
-            switch ( rows.Count )
-            {
-                case 0 : return (false);
-                case 1 :
-                    var ofs = rows[ 0 ].GetOutputFullFileNames();
-                    msg = (ofs.Length == 1) ? $"Only delete '{ofs[ 0 ]}' output file ?" : $"Only delete '{string.Join("', '", ofs)}' output files ?"; break;
-                default: msg = $"Only delete {rows.Count} output files ?"; break;
-            }
+            var exists_fns = rows.SelectMany( r => r.GetOutputFullFileNames() ).Where( File.Exists ).ToList( rows.Count );
+            if ( exists_fns.Count == 0 ) return (false);
+
+            var msg = $"Only delete ({exists_fns.Count}) output files ? \r\n\r\n{string.Join( "\r\n", exists_fns )}";
             var r = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.YesNoCancel/*OKCancel*/, MessageBoxDefaultButton.Button1 ) == DialogResult.Yes/*OK*/);
             return (r);
         }

@@ -1222,6 +1222,22 @@ namespace m3u8.download.manager.controllers
 
 
         #region [.Delete rows with output-files.]
+        public Task DeleteOutputFiles_Parallel_UseSynchronizationContext( DownloadRow[] rows, CancellationToken ct, 
+            Action< DownloadRow, CancellationToken, SynchronizationContext > deleteFilesAction, 
+            Action< DownloadRow > afterSuccesDeleteAction = null )
+        {
+            var syncCtx = SynchronizationContext.Current;
+            var delete_task = Task.Run(() =>
+            {
+                Parallel.ForEach( rows, new ParallelOptions() { CancellationToken = ct, MaxDegreeOfParallelism = rows.Length }, row =>
+                {
+                    deleteFilesAction( row, ct, syncCtx );
+                    afterSuccesDeleteAction?.Invoke( row );
+                });
+            });
+            return (delete_task);
+        }
+
         public Task DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( DownloadRow[] rows, CancellationToken ct, 
             Action< DownloadRow, CancellationToken > deleteFilesAction, 
             Action< DownloadRow > afterSuccesDeleteAction )
@@ -1242,22 +1258,6 @@ namespace m3u8.download.manager.controllers
             });
             return (delete_task);
         }
-
-        public Task DeleteOutputFiles_Parallel( DownloadRow[] rows, CancellationToken ct, 
-            Action< DownloadRow, CancellationToken > deleteFilesAction, 
-            Action< DownloadRow > afterSuccesDeleteAction = null )
-        {
-            var delete_task = Task.Run(() =>
-            {
-                Parallel.ForEach( rows, new ParallelOptions() { CancellationToken = ct, MaxDegreeOfParallelism = rows.Length }, row =>
-                {
-                    deleteFilesAction( row, ct );
-                    afterSuccesDeleteAction?.Invoke( row );
-                });
-            });
-            return (delete_task);
-        }
-
         public async Task DeleteRowsWithOutputFiles_Consecutively( DownloadRow[] rows, CancellationToken ct,
             Func< DownloadRow, CancellationToken, Task > deleteFilesAction, 
             Action< DownloadRow > afterSuccesDeleteAction )

@@ -115,6 +115,8 @@ namespace m3u8.download.manager.ui
         private bool _IsInWaitingForOtherAppInstanceFinished;
         public void WaitingForOtherAppInstanceFinished() => _IsInWaitingForOtherAppInstanceFinished = true;
 
+        public void SetCaptionText( string captionText ) => _CaptionText = captionText;
+
         /// <summary>
         /// 
         /// </summary>
@@ -202,6 +204,24 @@ namespace m3u8.download.manager.ui
             //------------------------------------------------------------------------//
 
             var form = new WaitBannerForm()
+            {
+                _CancellationTokenSource    = cts,
+                _CaptionText                = captionText,
+                _VisibleDelayInMilliseconds = visibleDelayInMilliseconds,
+                Owner                       = owner,
+                WindowStartupLocation       = WindowStartupLocation.CenterOwner,
+            };
+            form.captionLabel.Text = captionText;
+
+            return (new WaitBannerFormHolder( form, owner, visibleDelayInMilliseconds ));
+        }
+        public static IDisposable CreateAndShow( Window owner, CancellationTokenSource cts, string captionText, int? visibleDelayInMilliseconds, out WaitBannerForm form )
+        {
+            if ( owner == null ) throw (new ArgumentNullException( nameof(owner) ));
+            if ( cts   == null ) throw (new ArgumentNullException( nameof(cts) ));
+            //------------------------------------------------------------------------//
+
+            form = new WaitBannerForm()
             {
                 _CancellationTokenSource    = cts,
                 _CaptionText                = captionText,
