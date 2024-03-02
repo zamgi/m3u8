@@ -737,10 +737,7 @@ namespace m3u8.download.manager.ui
         }
         private async void DeleteDownloads( DownloadRow[] rows, bool deleteOutputFiles )
         {
-            if ( !rows.AnyEx() )
-            {
-                return;
-            }
+            if ( !rows.AnyEx() ) return;
 
             if ( deleteOutputFiles )
             {
@@ -754,46 +751,6 @@ namespace m3u8.download.manager.ui
                             (row, ct) => FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
                             (row) => _VM.DownloadListModel.RemoveRow( row ) 
                         );
-
-                        #region [.parallel.]
-                        /*
-                        var syncCtx = SynchronizationContext.Current;
-                        await Task.Run(() =>
-                        {
-                            Parallel.ForEach( rows, new ParallelOptions() { CancellationToken = cts.Token, MaxDegreeOfParallelism = rows.Length }, row =>
-                            {
-                                using ( var statusTran = _VM.DownloadController.CancelIfInProgress_WithTransaction( row ) )
-                                {
-                                    FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), cts.Token );
-                                    statusTran.CommitStatus();
-
-                                    syncCtx.Invoke(() => _VM.DownloadListModel.RemoveRow( row ));
-                                }
-       
-                            });
-                        });
-                        */
-                        #endregion
-
-                        #region comm prev. [.consecutively.]
-                        //await _VM.DownloadController.DeleteRowsWithOutputFiles_Consecutively( rows, cts.Token,
-                        //    (row, ct) => FileDeleter.TryDeleteFiles_Async( row.GetOutputFullFileNames(), ct ),
-                        //    (row) => _VM.DownloadListModel.RemoveRow( row )
-                        //);
-
-                        /*
-                        foreach ( var row in rows )
-                        {
-                            using ( var statusTran = _VM.DownloadController.CancelIfInProgress_WithTransaction( row ) )
-                            {
-                                await FileDeleter.TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
-                                statusTran.CommitStatus();
-
-                                _VM.DownloadListModel.RemoveRow( row );
-                            }
-                        }
-                        //*/
-                        #endregion
                     }
                 }
                 catch ( OperationCanceledException )
@@ -809,19 +766,10 @@ namespace m3u8.download.manager.ui
             }
             else
             {
-                #region comm. version #1.
-                /*foreach ( var row in rows )
-                {
-                    ProcessDownloadCommand( DownloadCommandEnum.Delete, row );
-                }*/
-                #endregion
-
-                #region [.version #2.]
                 _VM.DownloadController.CancelAll( rows );
                 _VM.DownloadListModel.RemoveRows( rows );
 
                 SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
-                #endregion
             }
         }
         private async Task< bool > AskDeleteDownloadDialog( DownloadRow row, bool askOnlyOutputFileExists, bool deleteOutputFile )
@@ -832,13 +780,10 @@ namespace m3u8.download.manager.ui
                 var vfOutputFileExists  = (!outputFullFileName.EqualIgnoreCase( row.VeryFirstOutputFullFileName ) && File.Exists( row.VeryFirstOutputFullFileName ));
                 var outputFileExists    = File.Exists( outputFullFileName );
                 var anyOutputFileExists = (outputFileExists || vfOutputFileExists);
-                if ( !anyOutputFileExists && askOnlyOutputFileExists )
-                {
-                    return (true);
-                }
+                if ( !anyOutputFileExists && askOnlyOutputFileExists ) return (true);
                 var outputFileExistsText = (anyOutputFileExists ? "_exists_" : "no exists");
                 var deleteOutputFileText = ((deleteOutputFile && anyOutputFileExists) ? " with output file" : null);
-                var outputFileNameText   = default(string);
+                string outputFileNameText;
                 if ( vfOutputFileExists )
                 {
                     outputFileNameText = $"\n\n        '{row.VeryFirstOutputFullFileName}'";
@@ -853,8 +798,8 @@ namespace m3u8.download.manager.ui
                     outputFileNameText = $"\n\n        '{outputFullFileName}'";
                 }
                 var msg = $"Delete download{deleteOutputFileText}:\n '{row.Url}' ?\n\nOutput file ({outputFileExistsText}):{outputFileNameText}";
-                var r = await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo );
-                return (r == ButtonResult.Yes);
+                var yes = ((await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo )) == ButtonResult.Yes);
+                return (yes);
             }
             return (false);
         }
@@ -868,13 +813,16 @@ namespace m3u8.download.manager.ui
         }
         private async void OnlyDeleteOutputFiles( DownloadRow[] rows, bool ask = true )
         {
-            if ( !rows.AnyEx() )
+            if ( !rows.AnyEx() ) return;
+
+            var exists_fns = rows.SelectMany( r => r.GetOutputFullFileNames() ).Where( File.Exists ).ToList( rows.Length );
+            if ( exists_fns.Count == 0 ) return;
+
+            if ( ask ) 
             {
-                return;
-            }
-            if ( ask && !(await AskOnlyDeleteOutputFilesDialog( rows )) ) 
-            { 
-                return; 
+                var msg = $"Only delete ({exists_fns.Count}) output files ? \r\n\r\n{string.Join( "\r\n", exists_fns )}";
+                var yes = ((await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo )) == ButtonResult.Yes);
+                if ( !yes ) return;
             }
 
             this.IsEnabled = false;
@@ -883,11 +831,12 @@ namespace m3u8.download.manager.ui
                 using ( var cts = new CancellationTokenSource() )
                 using ( WaitBannerForm.CreateAndShow( this, cts, "only delete files...", visibleDelayInMilliseconds: 2_000, out var wb ) )
                 {
-                    wb.SetTotalSteps( rows.Length );
-                    await _VM.DownloadController.DeleteOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token, (row, ct, syncCtx) => 
+                    wb.SetTotalSteps( exists_fns.Count );
+                    await FileDeleter.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
                     {
-                        FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
+                        var suc = await FileDeleter.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
                         syncCtx.Invoke(() => wb.IncreaseSteps( null ));
+                        return (suc);
                     });
                 }
             }
@@ -899,15 +848,6 @@ namespace m3u8.download.manager.ui
             {
                 this.IsEnabled = true;
             }        
-        }
-        private async Task< bool > AskOnlyDeleteOutputFilesDialog( DownloadRow[] rows )
-        {
-            var exists_fns = rows.SelectMany( r => r.GetOutputFullFileNames() ).Where( File.Exists ).ToList( rows.Length );
-            if ( exists_fns.Count == 0 ) return (false);
-
-            var msg = $"Only delete ({exists_fns.Count}) output files ? \r\n\r\n{string.Join( "\r\n", exists_fns )}";
-            var r = await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo );
-            return (r == ButtonResult.Yes);
         }
 
         private bool IsWaitBannerShown() => !this.IsEnabled;

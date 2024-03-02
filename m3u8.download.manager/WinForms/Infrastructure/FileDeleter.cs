@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -108,6 +109,62 @@ namespace m3u8.download.manager.infrastructure
                 return (true);
             }, ct );
             return (task);
+        }
+
+        public static async Task< bool > TryDeleteFile( string fullFileName, CancellationToken ct, Action< string > tryDeleteFileAction, int millisecondsDelay = 100 )
+        {
+            for ( ; !ct.IsCancellationRequested; )
+            {
+                try
+                {
+                    if ( File.Exists( fullFileName ) )
+                    {
+                        tryDeleteFileAction?.Invoke( fullFileName );
+
+                        File.Delete( fullFileName );
+                    }
+                    return (true);
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                    await Task.Delay( millisecondsDelay, ct );
+                }
+            }
+            return (false);
+        }
+        public static async Task< bool > TryDeleteFile( string fullFileName, CancellationToken ct, int millisecondsDelay = 100 )
+        {
+            for ( ; !ct.IsCancellationRequested; )
+            {
+                try
+                {
+                    if ( File.Exists( fullFileName ) )
+                    {
+                        File.Delete( fullFileName );
+                    }
+                    return (true);
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                    await Task.Delay( millisecondsDelay, ct );
+                }
+            }
+            return (false);
+        }
+
+        public static Task DeleteFiles_UseSynchronizationContext( IList< string > fullFileNames, CancellationToken ct, 
+            Func< string, CancellationToken, SynchronizationContext, Task< bool > > deleteFilesAction, 
+            Action< string > afterSuccesDeleteAction = null )
+        {
+            var syncCtx = SynchronizationContext.Current;
+            var delete_task = fullFileNames.ForEachAsync( (Environment.ProcessorCount << 1), ct, async (fullFileName, ct) =>
+            {
+                var suc = await deleteFilesAction( fullFileName, ct, syncCtx );
+                if ( suc ) afterSuccesDeleteAction?.Invoke( fullFileName );
+            });
+            return (delete_task);
         }
     }
 }

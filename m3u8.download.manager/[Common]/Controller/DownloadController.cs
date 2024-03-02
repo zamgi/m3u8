@@ -1222,22 +1222,6 @@ namespace m3u8.download.manager.controllers
 
 
         #region [.Delete rows with output-files.]
-        public Task DeleteOutputFiles_Parallel_UseSynchronizationContext( DownloadRow[] rows, CancellationToken ct, 
-            Action< DownloadRow, CancellationToken, SynchronizationContext > deleteFilesAction, 
-            Action< DownloadRow > afterSuccesDeleteAction = null )
-        {
-            var syncCtx = SynchronizationContext.Current;
-            var delete_task = Task.Run(() =>
-            {
-                Parallel.ForEach( rows, new ParallelOptions() { CancellationToken = ct, MaxDegreeOfParallelism = rows.Length }, row =>
-                {
-                    deleteFilesAction( row, ct, syncCtx );
-                    afterSuccesDeleteAction?.Invoke( row );
-                });
-            });
-            return (delete_task);
-        }
-
         public Task DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( DownloadRow[] rows, CancellationToken ct, 
             Action< DownloadRow, CancellationToken > deleteFilesAction, 
             Action< DownloadRow > afterSuccesDeleteAction )
