@@ -447,7 +447,11 @@ namespace m3u8.download.manager.ui
             using ( WaitBannerForm.CreateAndShow( this, cts, visibleDelayInMilliseconds: 1_500 ) )
             {
 //await Task.Delay( 10_000 );
+                _Model.AddRequestRow( "url:" );
+                _Model.AddRequestRow( this.M3u8FileUrl );
                 var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl, this.GetRequestHeaders(), _SC.Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
+                _Model.OutputRequestHeaders( this.GetRequestHeaders() );
+
                 if ( cts.IsCancellationRequested )
                 {
                     ;
@@ -458,7 +462,7 @@ namespace m3u8.download.manager.ui
                 }
                 else
                 {
-                    _Model.Output( t.m3u8File, this.GetRequestHeaders() );
+                    _Model.Output( t.m3u8File );
                 }
                 await logUC.ScrollToLastRow();
             }

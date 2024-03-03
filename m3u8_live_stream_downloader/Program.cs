@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading;
@@ -44,8 +45,30 @@ namespace m3u8
 
                 var max_output_file_size = MAX_OUTPUT_FILE_SZIE_IN_MB * (1024 * 1024);
 
+                var requestHeaders = new Dictionary< string, string >
+                {
+                    //{ "Accept", "*/*" },
+                    //{ "Accept-Encoding", "gzip, deflate, br" },
+                    //{ "Accept-Language", "ru,en-US;q=0.9,en;q=0.8" },
+                    
+                    //{ "Cache-Control", "no-cache" },
+                    //{ "Pragma", "no-cache" },
+                    //{ "Connection", "keep-alive" },
+                    //{ "Host", "09b-8c6-300g0.v.plground.live:10403" },
+                    { "Origin" , "https://xz.com:123"  },
+                    //{ "Referer", "https://xz.com:2347/" },
+                    //{ "Sec-Fetch-Dest", "empty" },
+                    //{ "Sec-Fetch-Mode", "cors" },
+                    //{ "Sec-Fetch-Site", "cross-site" },
+                    //{ "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36" },
+                    
+                    //{ "sec-ch-ua", "\"Not A(Brand\";v=\"99\", \"Google Chrome\";v=\"121\", \"Chromium\";v=\"121\"" },
+                    //{ "sec-ch-ua-mobile", "?0" },
+                    //{ "sec-ch-ua-platform", "\"Windows\"" }
+                };
+
                 using var m = new m3u8_live_stream_downloader( p );
-                await m.Download( cts.Token, max_output_file_size ).CAX();
+                await m.Download( cts.Token, max_output_file_size, requestHeaders ).CAX();
                 //-------------------------------------------------------------------//
             }
             catch ( Exception ex )

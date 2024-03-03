@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -86,26 +87,26 @@ namespace m3u8
         }
         #endregion
 
-        public static async Task _Download_( string m3u8_url, string output_file_name, CancellationToken ct, long? max_output_file_size, int milliseconds_delay_between_request = 1_000 )
+        public static async Task _Download_( string m3u8_url, string output_file_name, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
         {
             using var m = new m3u8_live_stream_downloader( new InitParams() { M3u8Url = m3u8_url, OutputFileName = output_file_name } );
-            await m.Download( ct, max_output_file_size, milliseconds_delay_between_request ).CAX();
+            await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
         }
-        public static async Task _Download_( InitParams ip, CancellationToken ct, long? max_output_file_size, int milliseconds_delay_between_request = 1_000 )
+        public static async Task _Download_( InitParams ip, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
         {
             using var m = new m3u8_live_stream_downloader( ip );
-            await m.Download( ct, max_output_file_size, milliseconds_delay_between_request ).CAX();
+            await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
         }
-        public static async Task _Download_( InitParams ip, CancellationToken ct, Func< long > get_max_output_file_size_func, int milliseconds_delay_between_request = 1_000 )
+        public static async Task _Download_( InitParams ip, CancellationToken ct, Func< long > get_max_output_file_size_func, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
         {
             using var m = new m3u8_live_stream_downloader( ip );
-            await m.Download( ct, get_max_output_file_size_func, milliseconds_delay_between_request ).CAX();
+            await m.Download( ct, get_max_output_file_size_func, requestHeaders, milliseconds_delay_between_request ).CAX();
         }
 
         public string M3u8Url        { get; }
         public string OutputFileName { get; }
 
-        public async Task Download( CancellationToken ct, long? max_output_file_size, int milliseconds_delay_between_request = 1_000 )
+        public async Task Download( CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
         {
             var m3u8_url         = _IP.M3u8Url;
             var output_file_name = _IP.OutputFileName;
@@ -114,18 +115,18 @@ namespace m3u8
             var base_url = (i != -1) ? m3u8_url.Substring( 0, i + 1 ) : m3u8_url;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            var task_DownloadContent = RunDownloadContent( m3u8_url, ct, milliseconds_delay_between_request );
+            var task_DownloadContent = RunDownloadContent( m3u8_url, requestHeaders, ct, milliseconds_delay_between_request );
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             Task task_DownloadParts;
             if ( max_output_file_size.HasValue )
             {
-                task_DownloadParts = RunDownloadParts_LimitedFileSize( output_file_name, base_url, ct, max_output_file_size.Value );
+                task_DownloadParts = RunDownloadParts_LimitedFileSize( output_file_name, base_url, requestHeaders, ct, max_output_file_size.Value );
             }
             else
             {
-                task_DownloadParts = RunDownloadParts_NoLimitedFileSize( output_file_name, base_url, ct );
+                task_DownloadParts = RunDownloadParts_NoLimitedFileSize( output_file_name, base_url, requestHeaders, ct );
             }            
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
@@ -138,7 +139,7 @@ namespace m3u8
             task.GetAwaiter().GetResult();
             //---await task.ContinueWith( t => throw t.Exception, TaskContinuationOptions.OnlyOnFaulted ).CAX();
         }
-        public async Task Download( CancellationToken ct, Func< long > get_max_output_file_size_func, int milliseconds_delay_between_request = 1_000 )
+        public async Task Download( CancellationToken ct, Func< long > get_max_output_file_size_func, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
         {
             var m3u8_url         = _IP.M3u8Url;
             var output_file_name = _IP.OutputFileName;
@@ -147,11 +148,11 @@ namespace m3u8
             var base_url = (i != -1) ? m3u8_url.Substring( 0, i + 1 ) : m3u8_url;
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            var task_DownloadContent = RunDownloadContent( m3u8_url, ct, milliseconds_delay_between_request );
+            var task_DownloadContent = RunDownloadContent( m3u8_url, requestHeaders, ct, milliseconds_delay_between_request );
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            var task_DownloadParts = RunDownloadParts_LimitedFileSize( output_file_name, base_url, ct, get_max_output_file_size_func );
+            var task_DownloadParts = RunDownloadParts_LimitedFileSize( output_file_name, base_url, requestHeaders, ct, get_max_output_file_size_func );
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
             //---await Task.Delay( Timeout.Infinite, ct ).CAX();
@@ -164,7 +165,7 @@ namespace m3u8
             //---await task.ContinueWith( t => throw t.Exception, TaskContinuationOptions.OnlyOnFaulted ).CAX();
         }
 
-        private Task RunDownloadContent( string m3u8_url, CancellationToken ct, int milliseconds_delay )
+        private Task RunDownloadContent( string m3u8_url, IDictionary< string, string > requestHeaders, CancellationToken ct, int milliseconds_delay )
             => Task.Run( async () =>
             {
                 //var debug_hs = new HashSet< string >();
@@ -175,11 +176,7 @@ namespace m3u8
 
                     try
                     {
-#if NETCOREAPP
-                        var content = await _HttpClient.GetStringAsync( m3u8_url, ct ).CAX();
-#else
-                        var content = await _HttpClient.GetStringAsync( m3u8_url/*, ct*/ ).CAX();
-#endif
+                        var content = await _HttpClient.GetStringAsync_Ex( m3u8_url, requestHeaders, ct ).CAX();
                         var parts = content?.Split().Where( s => !s.StartsWith( "#" ) )
                                                     .Select( s => s.Trim() )
                                                     .Where( s => !s.IsNullOrEmpty() )
@@ -218,7 +215,7 @@ namespace m3u8
                 }
             }
             , ct );
-        private Task RunDownloadParts_LimitedFileSize( string output_file_name, string base_url, CancellationToken ct, Func< long > get_max_output_file_size_func )
+        private Task RunDownloadParts_LimitedFileSize( string output_file_name, string base_url, IDictionary< string, string > requestHeaders, CancellationToken ct, Func< long > get_max_output_file_size_func )
             => Task.Run( async () =>
             {
                 var dir = Path.GetDirectoryName( output_file_name );
@@ -256,12 +253,8 @@ namespace m3u8
                         try
                         {
                             Debug.WriteLine( p );
-#if NETCOREAPP
-                            using var s = await _HttpClient.GetStreamAsync( part_url, ct ).CAX();
-#else
-                            using var s = await _HttpClient.GetStreamAsync( part_url/*, ct*/ ).CAX();
-#endif
-                            await s.CopyToAsync( fs, bufferSize: 81920, ct ).CAX();
+                            using var x = await _HttpClient.GetStreamAsync_Ex( part_url, requestHeaders, ct ).CAX();
+                            await x.Stream.CopyToAsync( fs, bufferSize: 81920, ct ).CAX();
 
                             if ( (++n % 10) == 0 )
                             {
@@ -294,9 +287,9 @@ namespace m3u8
                 }
             }
             , ct );
-        private Task RunDownloadParts_LimitedFileSize( string output_file_name, string base_url, CancellationToken ct, long max_output_file_size )
-            => RunDownloadParts_LimitedFileSize( output_file_name, base_url, ct, () => max_output_file_size );
-        private Task RunDownloadParts_NoLimitedFileSize( string output_file_name, string base_url, CancellationToken ct )
+        private Task RunDownloadParts_LimitedFileSize( string output_file_name, string base_url, IDictionary< string, string > requestHeaders, CancellationToken ct, long max_output_file_size )
+            => RunDownloadParts_LimitedFileSize( output_file_name, base_url, requestHeaders, ct, () => max_output_file_size );
+        private Task RunDownloadParts_NoLimitedFileSize( string output_file_name, string base_url, IDictionary< string, string > requestHeaders, CancellationToken ct )
             => Task.Run( async () =>
             {
                 var dir = Path.GetDirectoryName( output_file_name );
@@ -323,12 +316,8 @@ namespace m3u8
                     {
                         //debug_lst.Add( p );
                         Debug.WriteLine( p );
-#if NETCOREAPP
-                        using var s = await _HttpClient.GetStreamAsync( part_url, ct ).CAX();
-#else
-                        using var s = await _HttpClient.GetStreamAsync( part_url/*, ct*/ ).CAX();
-#endif
-                        await s.CopyToAsync( fs, bufferSize: 81920, ct ).CAX();
+                        using var x = await _HttpClient.GetStreamAsync_Ex( part_url, requestHeaders, ct ).CAX();
+                        await x.Stream.CopyToAsync( fs, bufferSize: 81920, ct ).CAX();
 
                         if ( (++n % 10) == 0 )
                         {
@@ -382,6 +371,88 @@ namespace m3u8
     /// </summary>
     internal static class m3u8_live_stream_downloader_extensions
     {
+        private static HttpRequestMessage CreateRequstGet( Uri url, IDictionary< string, string > requestHeaders )
+        {
+            var req = new HttpRequestMessage( HttpMethod.Get, url );
+            //req.Headers.ConnectionClose = _ConnectionClose;
+            if ( requestHeaders != null )
+            {
+                foreach ( var header in requestHeaders )
+                {
+                    var suc = req.Headers.TryAddWithoutValidation( header.Key, header.Value );
+                    Debug.Assert( suc );
+                }
+            }            
+            return (req);
+        }
+        [M(O.AggressiveInlining)] public static async Task< string > GetStringAsync_Ex( this HttpClient hc,  string requestUri, IDictionary< string, string > requestHeaders, CancellationToken ct )
+        {
+            using ( var req  = CreateRequstGet( new Uri( requestUri ), requestHeaders ) )
+            using ( var resp = await hc.SendAsync( req, /*_HttpCompletionOption*/HttpCompletionOption.ResponseContentRead, ct ).CAX() )
+            using ( var content = resp.Content )
+            {
+#if NETCOREAPP
+                var text = await content.ReadAsStringAsync( ct ).CAX();
+#else
+                var text = await content.ReadAsStringAsync( /*ct*/ ).CAX();
+#endif
+                if ( resp.IsSuccessStatusCode )
+                {
+                    return (text);
+                }
+
+                throw (new HttpRequestException( text ));
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct GetStreamAsync_Ex_Result : IDisposable
+        {
+            private HttpResponseMessage _Resp;
+            private Stream _Stream;
+            public GetStreamAsync_Ex_Result( HttpResponseMessage resp, Stream stream )
+            {
+                _Resp   = resp;
+                _Stream = stream;
+            }
+            public void Dispose()
+            {
+                _Resp.Dispose();
+                _Stream.Dispose();
+            }
+            public Stream Stream => _Stream;
+        }
+        [M(O.AggressiveInlining)] public static async Task< GetStreamAsync_Ex_Result > GetStreamAsync_Ex( this HttpClient hc,  string requestUri, IDictionary< string, string > requestHeaders, CancellationToken ct )
+        {
+            using ( var req = CreateRequstGet( new Uri( requestUri ), requestHeaders ) )
+            {
+                var resp = await hc.SendAsync( req, /*_HttpCompletionOption*/HttpCompletionOption.ResponseContentRead, ct ).CAX();
+                //using ( var content = resp.Content )
+                {
+                    if ( resp.IsSuccessStatusCode )
+                    {
+#if NETCOREAPP
+                        var stream = await resp.Content.ReadAsStreamAsync( ct ).CAX();
+#else
+                        var stream = await resp.Content.ReadAsStreamAsync( /*ct*/ ).CAX();
+#endif
+                        return (new GetStreamAsync_Ex_Result( resp, stream ));
+                    }
+#if NETCOREAPP
+                    var text = await resp.Content.ReadAsStringAsync( ct ).CAX();
+#else
+                    var text = await resp.Content.ReadAsStringAsync( /*ct*/ ).CAX();
+#endif
+                    using ( resp )
+                    {
+                        throw (new HttpRequestException( text ));
+                    }
+                }
+            }
+        }
+
         [M(O.AggressiveInlining)] public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
         [M(O.AggressiveInlining)] public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
 

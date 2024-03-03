@@ -629,7 +629,11 @@ namespace m3u8.download.manager.ui
             using ( var cts = new CancellationTokenSource() )
             using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1_500 ) )
             {
+                _Model.AddRequestRow( "url:" );
+                _Model.AddRequestRow( this.M3u8FileUrl );
                 var t = await _DC_.GetFileTextContent( x.m3u8FileUrl, this.GetRequestHeaders(), _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
+                _Model.OutputRequestHeaders( this.GetRequestHeaders() );
+
                 if ( cts.IsCancellationRequested )
                 {
                     ;
@@ -640,9 +644,8 @@ namespace m3u8.download.manager.ui
                 }
                 else
                 {
-                    _Model.Output( t.m3u8File, this.GetRequestHeaders() );
+                    _Model.Output( t.m3u8File );
                 }
-
                 logUC.ClearSelection();
                 logUC.AdjustRowsHeightAndColumnsWidthSprain();
             }
