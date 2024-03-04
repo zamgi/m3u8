@@ -112,45 +112,6 @@ namespace m3u8.download.manager
         public static string GetDownloadListColumnsInfoJson( this SettingsPropertyChangeController settingsController ) => settingsController.Settings.DownloadListColumnsInfoJson;
         public static void SetDownloadListColumnsInfoJson( this SettingsPropertyChangeController settingsController, string json ) => settingsController.Settings.DownloadListColumnsInfoJson = json;
 
-        public static void DeleteFiles_NoThrow( string[] fileNames )
-        {
-            if ( fileNames.AnyEx() )
-            {
-                foreach ( var fileName in fileNames )
-                {
-                    DeleteFile_NoThrow( fileName );
-                }
-            }
-        }
-        public static void DeleteFile_NoThrow( string fileName )
-        {
-            try
-            {
-                File.Delete( fileName );
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
-        }
-        public static bool TryGetFirstFileExists( ICollection< string > fileNames, out string existsFileName )
-        {
-            if ( fileNames.AnyEx() )
-            {
-                foreach ( var fileName in fileNames )
-                {
-                    if ( (fileName != null) && File.Exists( fileName ) )
-                    {
-                        existsFileName = fileName;
-                        return (true);
-                    }
-                }
-            }
-            existsFileName = null;
-            return (false);
-        }
-        public static bool AnyFileExists( ICollection< string > fileNames ) => TryGetFirstFileExists( fileNames, out var _ );
-
         [M(O.AggressiveInlining)] public static string TrimIfLongest( this string s, int maxLength ) => ((maxLength < s.Length) ? (s.Substring( 0, maxLength ) + "..." ) : s);
 
         public static string ToJSON< T >( this T t )
@@ -478,13 +439,8 @@ namespace m3u8.download.manager
 
         [M(O.AggressiveInlining)] public static void Invoke( this SynchronizationContext ctx, Action action ) => ctx.Send( _ => action(), null );
 
-        [M(O.AggressiveInlining)]
-        public static T Find_Ex< T >( this Window window, string name ) where T : class => window.Find< T >( name ) ?? (window.TryFindResource( name, out var x ) ? (T) x : null);
-       
-        [M(O.AggressiveInlining)]
-        public static T Find_Ex< T >( this UserControl uc, string name ) where T : class => uc.Find< T >( name ) ?? (uc.TryFindResource( name, out var x ) ? (T) x : null);        
-
-        [M(O.AggressiveInlining)]
-        public static MenuItem Find_MenuItem( this ContextMenu contextMenu, string name ) => contextMenu.Items.Cast< MenuItem >().First( m => m.Name == name );
+        [M(O.AggressiveInlining)] public static T Find_Ex< T >( this Window window, string name ) where T : class => window.Find< T >( name ) ?? (window.TryFindResource( name, out var x ) ? (T) x : null);       
+        [M(O.AggressiveInlining)] public static T Find_Ex< T >( this UserControl uc, string name ) where T : class => uc.Find< T >( name ) ?? (uc.TryFindResource( name, out var x ) ? (T) x : null);        
+        [M(O.AggressiveInlining)] public static MenuItem Find_MenuItem( this ContextMenu contextMenu, string name ) => contextMenu.Items.Cast< MenuItem >().First( m => m.Name == name );
     }
 }

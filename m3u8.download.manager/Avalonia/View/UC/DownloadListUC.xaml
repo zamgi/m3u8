@@ -18,7 +18,7 @@
     <local:ApproxTotalBytesText_Converter      x:Key="ApproxTotalBytesText" />
     <local:StatusImage_Converter               x:Key="StatusImage" />
     <local:RequestHeaders_Converter            x:Key="RequestHeaders" />
-    <local:RequestHeaders_ToolTip_Converter    x:Key="RequestHeaders_ToolTip" />    
+    <local:RequestHeaders_ToolTip_Converter    x:Key="RequestHeaders_ToolTip" />
     <local:IsLiveStream_Converter              x:Key="IsLiveStream" />
     <local:LiveStreamMaxFileSizeInMb_Converter x:Key="LiveStreamMaxFileSizeInMb" />
     <local:LiveStreamMaxFileSizeInMb_ToolTip_Converter x:Key="LiveStreamMaxFileSizeInMb_ToolTip" />

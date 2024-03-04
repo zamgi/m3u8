@@ -48,7 +48,7 @@
     <Compile Include="..\[Common]\Controller\Sync_primitives.cs" Link="Controller\Sync_primitives.cs" />
     
     <Compile Include="..\WinForms\Infrastructure\Color2ColorTransition.cs" Link="Infrastructure\Color2ColorTransition.cs" />
-    <Compile Include="..\WinForms\Infrastructure\FileDeleter.cs" Link="Infrastructure\FileDeleter.cs" />    
+    <Compile Include="..\WinForms\Infrastructure\FileHelper.cs" Link="Infrastructure\FileHelper.cs" />    
     <Compile Include="..\WinForms\Infrastructure\Extensions.cs" Link="Infrastructure\Extensions.cs" />
     <Compile Include="..\WinForms\Infrastructure\FormPositionStorer.cs" Link="Infrastructure\FormPositionStorer.cs" />
     <Compile Include="..\WinForms\Infrastructure\NameAndPathCleaner.cs" Link="Infrastructure\NameAndPathCleaner.cs" />

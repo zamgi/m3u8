@@ -86,7 +86,7 @@ namespace m3u8.download.manager.ui
                     }
                 }
                 captionLabel .Text      = (_IsInWaitingForOtherAppInstanceFinished ? "...waiting for other app-instance finished..." : $"{_CaptionText}{_PercentSteps}%");
-                progressLabel.Text      = $"{_CurrentSteps} of {_TotalSteps}";            
+                progressLabel.Text      = $"{_CurrentSteps} of {_TotalSteps}";
                 elapsedLabel .Text      = '(' + ts.ToString( HH_MM_SS ) + ')';
                 speedLabel   .Text      = (_SpeedText.IsNullOrEmpty() ? null : ('[' + _SpeedText + ']'));
                 speedLabel   .IsVisible = !_SpeedText.IsNullOrEmpty();

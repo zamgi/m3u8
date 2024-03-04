@@ -256,7 +256,14 @@ namespace m3u8.download.manager.ui
             var trb = checkBox.GetTransformedBounds();
             if ( trb.HasValue && trb.Value.Contains( p.Position ) )
             {
-                checkBox.IsChecked = !checkBox.IsChecked.GetValueOrDefault();
+                //---checkBox.IsChecked = !checkBox.IsChecked.GetValueOrDefault();
+
+                var isChecked = !checkBox.IsChecked.GetValueOrDefault();
+                var selItems = DGV.SelectedItems.Cast< WordItem >();
+                foreach ( var rh in selItems )
+                {
+                    rh.IsVisible = isChecked;
+                }
                 SetHasChanges();
             }
         }

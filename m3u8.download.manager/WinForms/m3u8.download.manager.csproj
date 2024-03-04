@@ -101,13 +101,13 @@
     <Compile Include="Infrastructure\ClipboardHelper.cs" />
     <Compile Include="Infrastructure\AssemblyInfoHelper.cs" />
     <Compile Include="Infrastructure\Ellipsis.cs" />
+    <Compile Include="Infrastructure\FileHelper.cs" />
     <Compile Include="Infrastructure\OutputFileNamePatternProcessor.cs" />
     <Compile Include="Infrastructure\CollectGarbage.cs" />
     <Compile Include="Infrastructure\SortInfo.cs" />
     <Compile Include="Infrastructure\BlinkManager.cs" />
     <Compile Include="Infrastructure\Color2ColorTransition.cs" />
     <Compile Include="Infrastructure\DownloadRowsSerializer.cs" />
-    <Compile Include="Infrastructure\FileDeleter.cs" />
     <Compile Include="Infrastructure\FileNameCleaner4UI.cs" />
     <Compile Include="Infrastructure\ObjAsDict_JsonSerializer.cs" />
     <Compile Include="Model\DownloadRow.cs" />

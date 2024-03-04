@@ -748,7 +748,7 @@ namespace m3u8.download.manager.ui
                     using ( WaitBannerForm.CreateAndShow( this, cts, visibleDelayInMilliseconds: 2_000 ) )
                     {
                         await _VM.DownloadController.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token,
-                            (row, ct) => FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
+                            (row, ct) => FileHelper.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
                             (row) => _VM.DownloadListModel.RemoveRow( row ) 
                         );
                     }
@@ -832,9 +832,9 @@ namespace m3u8.download.manager.ui
                 using ( WaitBannerForm.CreateAndShow( this, cts, "only delete files...", visibleDelayInMilliseconds: 2_000, out var wb ) )
                 {
                     wb.SetTotalSteps( exists_fns.Count );
-                    await FileDeleter.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
+                    await FileHelper.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
                     {
-                        var suc = await FileDeleter.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
+                        var suc = await FileHelper.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
                         syncCtx.Invoke(() => wb.IncreaseSteps( null ));
                         return (suc);
                     });
@@ -975,7 +975,7 @@ namespace m3u8.download.manager.ui
                 cancelDownloadMenuItem           .IsEnabled = cancelDownloadToolButton.IsEnabled;
                 pauseDownloadMenuItem            .IsEnabled = pauseDownloadToolButton .IsEnabled;
                 deleteDownloadMenuItem           .IsEnabled = deleteDownloadToolButton.IsEnabled;
-                deleteWithOutputFileMenuItem     .IsEnabled = deleteDownloadToolButton.IsEnabled && (selectedRow_AnyFileExists = Extensions.AnyFileExists( row?.GetOutputFullFileNames() ));
+                deleteWithOutputFileMenuItem     .IsEnabled = deleteDownloadToolButton.IsEnabled && (selectedRow_AnyFileExists = FileHelper.AnyFileExists( row?.GetOutputFullFileNames() ));
                 browseOutputFileMenuItem         .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
                 openOutputFileMenuItem           .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
                 deleteAllFinishedDownloadMenuItem.IsEnabled = deleteAllFinishedDownloadToolButton.IsEnabled;
@@ -987,7 +987,7 @@ namespace m3u8.download.manager.ui
                 editDownloadMenuItem.IsVisible =
                     editDownloadMenuItem_Separator.IsVisible = not_null_and_running;
 
-                onlyDeleteOutputFileMenuItem.IsEnabled = not_null_and_running && (selectedRow_AnyFileExists || Extensions.AnyFileExists( row.GetOutputFullFileNames() ));
+                onlyDeleteOutputFileMenuItem.IsEnabled = not_null_and_running && (selectedRow_AnyFileExists || FileHelper.AnyFileExists( row.GetOutputFullFileNames() ));
 
 
                 //pt = downloadListUC.TranslatePoint( pt, this ).GetValueOrDefault( pt );
@@ -1013,7 +1013,7 @@ namespace m3u8.download.manager.ui
                     cancel += status.CancelDownload_IsAllowed() ? 1 : 0;
                     pause  += status.PauseDownload_IsAllowed()  ? 1 : 0;
                     delete++;
-                    if ( Extensions.AnyFileExists( row.GetOutputFullFileNames() ) )
+                    if ( FileHelper.AnyFileExists( row.GetOutputFullFileNames() ) )
                     {
                         deleteWithFiles++;
                     }
@@ -1063,7 +1063,7 @@ namespace m3u8.download.manager.ui
             if ( PlatformHelper.IsWinNT() )
             {
                 var row = downloadListUC.GetSelectedDownloadRow();
-                if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
+                if ( FileHelper.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
                 {
                     try
                     {
@@ -1086,7 +1086,7 @@ namespace m3u8.download.manager.ui
         private async void openOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( (row != null) && row.IsFinishedOrError() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( (row != null) && row.IsFinishedOrError() && FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
             {
                 try
                 {
@@ -1098,21 +1098,6 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        /*private void downloadListUC_EnterKeyDown( object sender, EventArgs e )
-        {
-            var row = downloadListUC.GetSelectedDownloadRow();
-            if ( row != null )
-            {
-                if ( row.IsFinished() )
-                {
-                    openOutputFileMenuItem_Click( this, e );
-                }
-                else
-                {
-                    downloadListUC_OutputFileNameClick( row );
-                }
-            }
-        }*/
 
         private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {

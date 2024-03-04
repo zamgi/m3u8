@@ -29,7 +29,6 @@ namespace m3u8.download.manager.ui
             AvaloniaXamlLoader.Load( this );
 
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
-
             if ( FontHelper.TryGetMonospace( out var fontFamily ) ) DGV.FontFamily = fontFamily;
         }
         #endregion

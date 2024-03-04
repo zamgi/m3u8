@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using m3u8;
+using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.ext;
@@ -618,7 +619,7 @@ namespace m3u8.download.manager.controllers
                         {
                             if ( !dpsr.OutputFileName.EqualIgnoreCase( desiredOutputFullFileName ) )
                             {
-                                Extensions.DeleteFile_NoThrow( desiredOutputFullFileName );
+                                FileHelper.DeleteFile_NoThrow( desiredOutputFullFileName );
                             }
                             File.Move( dpsr.OutputFileName, desiredOutputFullFileName );
                             dpsr.ResetOutputFileName( desiredOutputFullFileName );
@@ -652,12 +653,12 @@ namespace m3u8.download.manager.controllers
 
                     if ( cts.IsCancellationRequested )
                     {
-                        Extensions.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusCanceled();
                     }
                     else if ( ex is m3u8_Exception mex )
                     {
-                        Extensions.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusError( ex.Message );
                     }
                     else
@@ -846,12 +847,12 @@ namespace m3u8.download.manager.controllers
 
                     if ( cts.IsCancellationRequested )
                     {
-                        Extensions.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusCanceled();
                     }
                     else if ( ex is m3u8_Exception mex )
                     {
-                        Extensions.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusError( ex.Message );
                     }
                     else

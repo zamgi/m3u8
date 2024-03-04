@@ -555,7 +555,7 @@ namespace m3u8.download.manager.ui
                     ShowDownloadStatisticsInTitle();
 
                     #region [.run External progs if need.]                    
-                    if ( row.IsFinished()/*.IsFinishedOrError()*/ && Extensions.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
+                    if ( row.IsFinished()/*.IsFinishedOrError()*/ && FileHelper.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
                     {
                         _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
 
@@ -733,7 +733,7 @@ namespace m3u8.download.manager.ui
                     using ( WaitBannerUC.Create( this, cts, "delete files...", visibleDelayInMilliseconds: 2_000 ) )
                     {
                         await _DC.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token,
-                            (row, ct) => FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
+                            (row, ct) => FileHelper.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
                             (row) =>
                             {
                                 _DownloadListModel.RemoveRow( row );
@@ -842,9 +842,9 @@ namespace m3u8.download.manager.ui
                 using ( var wb  = WaitBannerUC.Create( this, cts, "only delete files...", visibleDelayInMilliseconds: 2_000 ) )
                 {
                     wb.SetTotalSteps( exists_fns.Count );
-                    await FileDeleter.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
+                    await FileHelper.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
                     {
-                        var suc = await FileDeleter.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
+                        var suc = await FileHelper.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
                         syncCtx.Invoke(() => wb.IncreaseSteps( null ));
                         return (suc);
                     });
@@ -1131,7 +1131,7 @@ namespace m3u8.download.manager.ui
                 cancelDownloadMenuItem             .Enabled = cancelDownloadToolButton.Enabled;
                 pauseDownloadMenuItem              .Enabled = pauseDownloadToolButton .Enabled;
                 deleteDownloadMenuItem             .Enabled = deleteDownloadToolButton.Enabled;
-                deleteWithOutputFileMenuItem       .Enabled = deleteDownloadToolButton.Enabled && (selectedRow_AnyFileExists = Extensions.AnyFileExists( selectedRow?.GetOutputFullFileNames() ));
+                deleteWithOutputFileMenuItem       .Enabled = deleteDownloadToolButton.Enabled && (selectedRow_AnyFileExists = FileHelper.AnyFileExists( selectedRow?.GetOutputFullFileNames() ));
                 browseOutputFileMenuItem           .Visible = deleteWithOutputFileMenuItem.Enabled;
                 openOutputFileMenuItem             .Visible = deleteWithOutputFileMenuItem.Enabled;     
                 deleteAllFinishedDownloadMenuItem  .Enabled = deleteAllFinishedDownloadToolButton.Enabled;
@@ -1169,7 +1169,7 @@ namespace m3u8.download.manager.ui
                     }
                     else
                     {
-                        var x = rows.Where( r => !r.Status.IsRunningOrPaused() ).FirstOrDefault( r => Extensions.AnyFileExists( r.GetOutputFullFileNames() ) );
+                        var x = rows.Where( r => !r.Status.IsRunningOrPaused() ).FirstOrDefault( r => FileHelper.AnyFileExists( r.GetOutputFullFileNames() ) );
                         onlyDeleteOutputFileMenuItem.Enabled = (x != null);
                     }
                     #endregion
@@ -1207,7 +1207,7 @@ namespace m3u8.download.manager.ui
                     cancel += CancelDownload_IsAllowed( status ) ? 1 : 0;
                     pause  += PauseDownload_IsAllowed ( status ) ? 1 : 0;
                     delete++;
-                    if ( Extensions.AnyFileExists( row.GetOutputFullFileNames() ) )
+                    if ( FileHelper.AnyFileExists( row.GetOutputFullFileNames() ) )
                     {
                         deleteWithFiles++;
                     }
@@ -1257,7 +1257,7 @@ namespace m3u8.download.manager.ui
         private void browseOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( Extensions.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( FileHelper.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
             {
                 using ( Process.Start( "explorer", "/e,/select," + outputFileName ) ) {; }
             }
@@ -1265,7 +1265,7 @@ namespace m3u8.download.manager.ui
         private void openOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( (row != null) && row.IsFinishedOrError() && Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( (row != null) && row.IsFinishedOrError() && FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
             {
 #if NETCOREAPP
                 using ( Process.Start( new ProcessStartInfo( outputFileName ) { UseShellExecute = true } ) ) {; }
@@ -1286,7 +1286,7 @@ namespace m3u8.download.manager.ui
             var rows = downloadListUC.GetSelectedDownloadRows();
             var outputFileNames = (from row in rows
                                    where row.IsFinishedOrError()
-                                   let t = Extensions.TryGetFirstFileExists( row.GetOutputFullFileNames() )
+                                   let t = FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames() )
                                    where t.success
                                    select t.outputFileName
                                   )
@@ -1408,7 +1408,7 @@ namespace m3u8.download.manager.ui
                 downloadListUC.Invalidate( true );
             }
         }
-        private string GetSelectedDirectory( DownloadRow row ) => Extensions.GetFirstExistsDirectory( _Last_ChangeOutputDirectory ) ?? row.OutputDirectory;
+        private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _Last_ChangeOutputDirectory ) ?? row.OutputDirectory;
 
         private void ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
         private void ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
@@ -1469,8 +1469,8 @@ namespace m3u8.download.manager.ui
             {
                 switch ( mode )
                 {
-                    case MoveFileByRenameModeEnum.OverwriteSilent: 
-                        Extensions.DeleteFile_NoThrow( new_outputFullFileName ); 
+                    case MoveFileByRenameModeEnum.OverwriteSilent:
+                        FileHelper.DeleteFile_NoThrow( new_outputFullFileName ); 
                         break;
                     case MoveFileByRenameModeEnum.OverwriteAsk: 
                         if ( File.Exists( new_outputFullFileName ) )
@@ -1479,7 +1479,7 @@ namespace m3u8.download.manager.ui
                             {
                                 return (MoveFileByRenameResultEnum.Canceled);
                             }
-                            Extensions.DeleteFile_NoThrow( new_outputFullFileName );
+                            FileHelper.DeleteFile_NoThrow( new_outputFullFileName );
                         }
                         break;
                     case MoveFileByRenameModeEnum.SkipIfAlreadyExists:

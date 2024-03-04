@@ -39,7 +39,7 @@
   </UserControl.Styles>
   
   <DataGrid x:Name="DGV"
-            SelectionMode="Single"
+            SelectionMode="Extended"
             CanUserResizeColumns="True" 
             CanUserReorderColumns="False" 
             CanUserSortColumns="False"

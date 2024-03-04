@@ -11,7 +11,7 @@ namespace m3u8.download.manager.infrastructure
     /// <summary>
     /// 
     /// </summary>
-    internal static class FileDeleter
+    internal static class FileHelper
     {
         public static bool TryDeleteFiles( string[] fullFileNames, CancellationToken ct, int millisecondsDelay = 100 )
         {
@@ -166,5 +166,57 @@ namespace m3u8.download.manager.infrastructure
             });
             return (delete_task);
         }
+
+        public static void DeleteFiles_NoThrow( string[] fileNames )
+        {
+            if ( fileNames.AnyEx() )
+            {
+                foreach ( var fileName in fileNames )
+                {
+                    DeleteFile_NoThrow( fileName );
+                }
+            }
+        }
+        public static void DeleteFile_NoThrow( string fileName )
+        {
+            try
+            {
+                File.Delete( fileName );
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+        }
+        public static string GetFirstExistsDirectory( string path )
+        {
+            for ( var dir = path; !dir.IsNullOrEmpty(); dir = Path.GetDirectoryName( dir ) )
+            {
+                if ( Directory.Exists( dir ) )
+                {
+                    return (dir);
+                }
+            }
+
+            return (null);
+        }
+        public static (bool success, string outputFileName) TryGetFirstFileExists( ICollection< string > fileNames ) => (TryGetFirstFileExists( fileNames, out var outputFileName ), outputFileName);
+        public static bool TryGetFirstFileExists( ICollection< string > fileNames, out string existsFileName )
+        {
+            if ( fileNames.AnyEx() )
+            {
+                foreach ( var fileName in fileNames )
+                {
+                    if ( (fileName != null) && File.Exists( fileName ) )
+                    {
+                        existsFileName = fileName;
+                        return (true);
+                    }
+                }
+            }
+            existsFileName = null;
+            return (false);
+        }
+        public static bool AnyFileExists( ICollection< string > fileNames ) => TryGetFirstFileExists( fileNames, out var _ );
     }
 }
