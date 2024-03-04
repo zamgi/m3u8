@@ -50,6 +50,7 @@
     <Compile Include="..\WinForms\Infrastructure\Color2ColorTransition.cs" Link="Infrastructure\Color2ColorTransition.cs" />
     <Compile Include="..\WinForms\Infrastructure\FileHelper.cs" Link="Infrastructure\FileHelper.cs" />    
     <Compile Include="..\WinForms\Infrastructure\Extensions.cs" Link="Infrastructure\Extensions.cs" />
+    <Compile Include="..\WinForms\Infrastructure\Extensions.WinForms.cs" Link="Infrastructure\Extensions.WinForms.cs" />
     <Compile Include="..\WinForms\Infrastructure\FormPositionStorer.cs" Link="Infrastructure\FormPositionStorer.cs" />
     <Compile Include="..\WinForms\Infrastructure\NameAndPathCleaner.cs" Link="Infrastructure\NameAndPathCleaner.cs" />
     <Compile Include="..\WinForms\Infrastructure\FileNameCleaner4UI.cs" Link="Infrastructure\FileNameCleaner4UI.cs" />

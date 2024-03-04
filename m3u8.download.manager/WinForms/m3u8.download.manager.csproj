@@ -101,6 +101,7 @@
     <Compile Include="Infrastructure\ClipboardHelper.cs" />
     <Compile Include="Infrastructure\AssemblyInfoHelper.cs" />
     <Compile Include="Infrastructure\Ellipsis.cs" />
+    <Compile Include="Infrastructure\Extensions.WinForms.cs" />
     <Compile Include="Infrastructure\FileHelper.cs" />
     <Compile Include="Infrastructure\OutputFileNamePatternProcessor.cs" />
     <Compile Include="Infrastructure\CollectGarbage.cs" />
