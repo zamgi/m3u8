@@ -345,26 +345,13 @@ namespace m3u8.download.manager.ui
         {
             var rhs = _DGVRows.SourceCollection.Cast< RequestHeader >();
 
-            var row_0 = rhs.FirstOrDefault(); if ( row_0 == null ) return;
-            var isChecked = !row_0.IsChecked;
+            var row = rhs.FirstOrDefault(); if ( row == null ) return;
+            var isChecked = !row.IsChecked;
 
-            //DGV.CellValueChanged -= DGV_CellValueChanged;
-            //try
-            //{
-                foreach ( var rh in rhs )
-                {
-                    rh.IsChecked = isChecked;
-                }
-            //}
-            //finally
-            //{
-            //    DGV.CellValueChanged += DGV_CellValueChanged;
-            //}
-
-            //if ( DGV.IsCurrentCellInEditMode )
-            //{
-            //    DGV.EndEdit();
-            //}
+            foreach ( var rh in rhs )
+            {
+                rh.IsChecked = isChecked;
+            }
 
             Fire_OnRequestHeadersCountChanged();
         }

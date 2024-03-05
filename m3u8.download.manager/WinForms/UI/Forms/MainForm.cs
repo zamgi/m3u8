@@ -1379,6 +1379,15 @@ namespace m3u8.download.manager.ui
                 downloadListUC.Invalidate( true );
             }
         }
+        private void downloadListUC_OutputDirectoryClick( DownloadRow row )
+        {
+            if ( DirectorySelectDialog.Show( this, GetSelectedDirectory( row ), $"Select output directory for file: '{row.OutputFileName}'", out var outputDirectory ) )
+            {
+                _Last_ChangeOutputDirectory = outputDirectory;
+                ChangeOutputDirectory( row, outputDirectory );
+                downloadListUC.Invalidate( true );
+            }
+        }
 
         private string _Last_ChangeOutputDirectory;
         private void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
@@ -1397,15 +1406,6 @@ namespace m3u8.download.manager.ui
                     }
                     downloadListUC.Invalidate( true );
                 }
-            }
-        }
-        private void downloadListUC_OutputDirectoryClick( DownloadRow row )
-        {
-            if ( DirectorySelectDialog.Show( this, GetSelectedDirectory( row ), $"Select output directory for file: '{row.OutputFileName}'", out var outputDirectory ) )
-            {
-                _Last_ChangeOutputDirectory = outputDirectory;
-                ChangeOutputDirectory( row, outputDirectory );
-                downloadListUC.Invalidate( true );
             }
         }
         private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _Last_ChangeOutputDirectory ) ?? row.OutputDirectory;

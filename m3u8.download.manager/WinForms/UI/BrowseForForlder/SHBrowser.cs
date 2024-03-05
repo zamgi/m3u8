@@ -52,41 +52,41 @@ namespace System.Windows.Forms
             /// </summary>
             [Flags] public enum SFGAO : uint
             {
-                SFGAO_CANCOPY = 0x00000001,
-                SFGAO_CANMOVE = 0x00000002,
-                SFGAO_CANLINK = 0x00000004,
-                SFGAO_STORAGE = 0x00000008,
-                SFGAO_CANRENAME = 0x00000010,
-                SFGAO_CANDELETE = 0x00000020,
-                SFGAO_HASPROPSHEET = 0x00000040,
-                SFGAO_DROPTARGET = 0x00000100,
-                SFGAO_CAPABILITYMASK = 0x00000177,
-                SFGAO_SYSTEM = 0x00001000,
-                SFGAO_ENCRYPTED = 0x00002000,
-                SFGAO_ISSLOW = 0x00004000,
-                SFGAO_GHOSTED = 0x00008000,
-                SFGAO_LINK = 0x00010000,
-                SFGAO_SHARE = 0x00020000,
-                SFGAO_READONLY = 0x00040000,
-                SFGAO_HIDDEN = 0x00080000,
-                SFGAO_DISPLAYATTRMASK = 0x000FC000,
-                SFGAO_NONENUMERATED = 0x00100000,
-                SFGAO_NEWCONTENT = 0x00200000,
+                SFGAO_CANCOPY          = 0x00000001,
+                SFGAO_CANMOVE          = 0x00000002,
+                SFGAO_CANLINK          = 0x00000004,
+                SFGAO_STORAGE          = 0x00000008,
+                SFGAO_CANRENAME        = 0x00000010,
+                SFGAO_CANDELETE        = 0x00000020,
+                SFGAO_HASPROPSHEET     = 0x00000040,
+                SFGAO_DROPTARGET       = 0x00000100,
+                SFGAO_CAPABILITYMASK   = 0x00000177,
+                SFGAO_SYSTEM           = 0x00001000,
+                SFGAO_ENCRYPTED        = 0x00002000,
+                SFGAO_ISSLOW           = 0x00004000,
+                SFGAO_GHOSTED          = 0x00008000,
+                SFGAO_LINK             = 0x00010000,
+                SFGAO_SHARE            = 0x00020000,
+                SFGAO_READONLY         = 0x00040000,
+                SFGAO_HIDDEN           = 0x00080000,
+                SFGAO_DISPLAYATTRMASK  = 0x000FC000,
+                SFGAO_NONENUMERATED    = 0x00100000,
+                SFGAO_NEWCONTENT       = 0x00200000,
                 //SFGAO_CANMONIKER = ,
                 //SFGAO_HASSTORAGE = ,
-                SFGAO_STREAM = 0x00400000,
+                SFGAO_STREAM          = 0x00400000,
                 SFGAO_STORAGEANCESTOR = 0x00800000,
-                SFGAO_VALIDATE = 0x01000000,
-                SFGAO_REMOVABLE = 0x02000000,
-                SFGAO_COMPRESSED = 0x04000000,
-                SFGAO_BROWSABLE = 0x08000000,
+                SFGAO_VALIDATE        = 0x01000000,
+                SFGAO_REMOVABLE       = 0x02000000,
+                SFGAO_COMPRESSED      = 0x04000000,
+                SFGAO_BROWSABLE       = 0x08000000,
                 SFGAO_FILESYSANCESTOR = 0x10000000,
-                SFGAO_FOLDER = 0x20000000,
-                SFGAO_FILESYSTEM = 0x40000000,
-                SFGAO_STORAGECAPMASK = 0x70C50008,
-                SFGAO_HASSUBFOLDER = 0x80000000,
-                SFGAO_CONTENTSMASK = 0x80000000,
-                SFGAO_PKEYSFGAOMASK = 0x81044000,
+                SFGAO_FOLDER          = 0x20000000,
+                SFGAO_FILESYSTEM      = 0x40000000,
+                SFGAO_STORAGECAPMASK  = 0x70C50008,
+                SFGAO_HASSUBFOLDER    = 0x80000000,
+                SFGAO_CONTENTSMASK    = 0x80000000,
+                SFGAO_PKEYSFGAOMASK   = 0x81044000,
             }
 
             private const string SHELL32_DLL = "shell32.dll";
@@ -124,28 +124,28 @@ namespace System.Windows.Forms
             [DllImport(SHELL32_DLL)] public static extern int SHParseDisplayName( [MarshalAs(UnmanagedType.LPWStr)] string pszName, IntPtr pbc, ref IntPtr ppidl, SFGAO sfgaoIn, out SFGAO psfgaoOut );
             [DllImport("shlwapi.dll", CharSet=CharSet.Unicode, EntryPoint="PathMatchSpecW")][return:MarshalAs(UnmanagedType.Bool)] public static extern bool IsPathMatch( string pszFile, string pszSpec );
 
-            private const int WM_USER  = 0x0400;
-            public  const int MAX_PATH = 260;
+            internal const int MAX_PATH = 260;
+            private  const int WM_USER  = 0x0400;
 
             /// <summary>
             /// message from browser
             /// </summary>
             public static class BFFM
             {
-                public const int BFFM_INITIALIZED       = 1;
-                public const int BFFM_SELCHANGED        = 2;
-                public const int BFFM_VALIDATEFAILEDA   = 3;   // lParam:szPath ret:1(cont),0(EndDialog)
-                public const int BFFM_VALIDATEFAILEDW   = 4;   // lParam:wzPath ret:1(cont),0(EndDialog)
-                public const int BFFM_IUNKNOWN          = 5;   // provides IUnknown to client. lParam: IUnknown*
+                public const int BFFM_INITIALIZED     = 1;
+                public const int BFFM_SELCHANGED      = 2;
+                public const int BFFM_VALIDATEFAILEDA = 3;   // lParam:szPath ret:1(cont),0(EndDialog)
+                public const int BFFM_VALIDATEFAILEDW = 4;   // lParam:wzPath ret:1(cont),0(EndDialog)
+                public const int BFFM_IUNKNOWN        = 5;   // provides IUnknown to client. lParam: IUnknown*
 
                 // messages to browser 2
-                public const int BFFM_SETSTATUSTEXTA    = (WM_USER + 100);
-                public const int BFFM_ENABLEOK          = (WM_USER + 101);
-                public const int BFFM_SETSELECTIONA     = (WM_USER + 102);
-                public const int BFFM_SETSELECTIONW     = (WM_USER + 103);
-                public const int BFFM_SETSTATUSTEXTW    = (WM_USER + 104);
-                public const int BFFM_SETOKTEXT         = (WM_USER + 105); // Unicode only
-                public const int BFFM_SETEXPANDED       = (WM_USER + 106); // Unicode only
+                public const int BFFM_SETSTATUSTEXTA  = (WM_USER + 100);
+                public const int BFFM_ENABLEOK        = (WM_USER + 101);
+                public const int BFFM_SETSELECTIONA   = (WM_USER + 102);
+                public const int BFFM_SETSELECTIONW   = (WM_USER + 103);
+                public const int BFFM_SETSTATUSTEXTW  = (WM_USER + 104);
+                public const int BFFM_SETOKTEXT       = (WM_USER + 105); // Unicode only
+                public const int BFFM_SETEXPANDED     = (WM_USER + 106); // Unicode only
             }
 
             /// <summary>
@@ -222,7 +222,7 @@ namespace System.Windows.Forms
         public string DialogTitle { get; set; }
         public Environment.SpecialFolder? RootFolder
         {
-            get => ((_RootFolderPath == null) ? _RootFolder : (Environment.SpecialFolder?) null);
+            get => ((_RootFolderPath == null) ? _RootFolder : null);
             set
             {
                 if ( !value.HasValue ) throw (new ArgumentNullException());

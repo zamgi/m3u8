@@ -185,8 +185,9 @@
         <MenuItem x:Name="onlyDeleteOutputFileMenuItem" Header="Only Delete Output file  (Ctrl + Shift + Del)" />
         <MenuItem Header="-" />
 
-        <MenuItem x:Name="browseOutputFileMenuItem" Header="    Browse Output file  (Ctrl + B)" />
-        <MenuItem x:Name="openOutputFileMenuItem"   Header="    Open Output file  (Ctrl + O), (Enter)" />
+        <MenuItem x:Name="browseOutputFileMenuItem"      Header="    Browse Output file  (Ctrl + B)" />
+        <MenuItem x:Name="openOutputFileMenuItem"        Header="    Open Output file  (Ctrl + O), (Enter)" />
+        <MenuItem x:Name="changeOutputDirectoryMenuItem" Header="    Change output directory" />
         <MenuItem Header="-" />
 
         <MenuItem x:Name="deleteAllFinishedDownloadMenuItem" Header="Delete all finished downloads">

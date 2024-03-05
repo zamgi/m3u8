@@ -109,10 +109,9 @@ namespace m3u8.download.manager
 
             return (false, default);
         }
-        public static Task CopyToClipboard( this Window window, DownloadRow row ) //IEnumerable< DownloadRow > rows )
+        public static Task CopyToClipboard( this Window window, IEnumerable< DownloadRow > rows )
         {
-            //var txt = string.Join( "\r\n", rows.Select( r => r.RequestHeaders.AnyEx() ? $"{r.Url}{CLIP_BRD__URL_REQ_HEAD_SEP_CHAR}{BrowserIPC.ExtensionRequestHeader.ToJson( r.RequestHeaders )}" : r.Url ) );
-            var txt = string.Join( "\r\n", row.RequestHeaders.AnyEx() ? $"{row.Url}{CLIP_BRD__URL_REQ_HEAD_SEP_CHAR}{BrowserIPC.ExtensionRequestHeader.ToJson( row.RequestHeaders )}" : row.Url );
+            var txt = string.Join( "\r\n", rows.Select( r => r.RequestHeaders.AnyEx() ? $"{r.Url}{CLIP_BRD__URL_REQ_HEAD_SEP_CHAR}{BrowserIPC.ExtensionRequestHeader.ToJson( r.RequestHeaders )}" : r.Url ) );
             return (window.Clipboard.SetTextAsync( txt ));
         }
     }

@@ -4,25 +4,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local-ui="clr-namespace:m3u8.download.manager.ui"
         x:Class="m3u8.download.manager.ui.AddNewDownloadForm"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="375"
-        Width="800" Height="375"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="800" Height="450"
         WindowStartupLocation="CenterScreen"
         Title="add new download"
         Icon="/Resources/m3u8_32x36.ico"
         ShowInTaskbar="False"
         >
-  <!--
-  <Window.KeyBindings>
-    <KeyBinding Gesture="Escape"      Command="{Binding CloseWindowCommand}" />
-    <KeyBinding Gesture="Enter"       Command="{Binding StartDownloadCommand}" />
-    <KeyBinding Gesture="Shift+Enter" Command="{Binding StartDownloadCommand}" CommandParameter="false" />
-  </Window.KeyBindings>
-  -->
-  
   <Window.Styles>
     <Style Selector="TabItem">
       <Setter Property="FontSize" Value="12" />
-      <Setter Property="Margin"   Value="0" />
+      <Setter Property="Margin"   Value="5,0,-1,0" />
       <Setter Property="Padding"  Value="5,3" />
     </Style>    
   </Window.Styles>
@@ -32,28 +24,27 @@
       <TabItem x:Name="mainTabItem" Header=".m3u8 file url:">
         <Grid RowDefinitions="auto,*,auto">
         <StackPanel Margin="5" Grid.Row="0">
-          <!--<TextBlock Foreground="SteelBlue">.m3u8 file url:</TextBlock>-->
           <TextBox x:Name="m3u8FileUrlTextBox" AcceptsReturn="True" TextWrapping="Wrap" Height="75"></TextBox>
     
-          <Grid RowDefinitions="auto,2,auto,2,auto" ColumnDefinitions="auto,auto,auto,*,auto,auto,auto"
+          <Grid RowDefinitions="auto,2,auto,2,auto" ColumnDefinitions="80,auto,auto,*,auto,auto,auto"
                 Margin="0,5,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                 >
             <!--=== output-file-name ===========================================-->
-            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="SteelBlue" Margin="5,0,5,0" TextAlignment="Right"
+            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="SteelBlue" Margin="0,0,5,0" TextAlignment="Right"
                        TextWrapping="Wrap" TextTrimming="CharacterEllipsis">
               output file name :
             </TextBlock>
-            <TextBox x:Name="outputFileNameTextBox"      Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="0.5"></TextBox>
-            <Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="4" Width="25" Cursor="Hand" Margin="0.5">x</Button>
-            <Button  x:Name="outputFileNameSelectButton" Grid.Row="0" Grid.Column="5" Width="25" Cursor="Hand" Margin="0.5">=</Button>
+            <TextBox x:Name="outputFileNameTextBox"      Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="0,0,3,0"></TextBox>
+            <Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="4" Width="25" Cursor="Hand" Margin="0,0,3,0">&#x26CC;</Button>
+            <Button  x:Name="outputFileNameSelectButton" Grid.Row="0" Grid.Column="5" Width="25" Cursor="Hand" Margin="0,0,3,0">=</Button>
             <!--=== pattern ===========================================-->
             <TextBlock x:Name="patternOutputFileNameLabelCaption" Grid.Row="2" Grid.Column="0" Foreground="DarkBlue" Margin="0,5,5,5" TextAlignment="Right"
-                       IsVisible="False"> <!--IsVisible="False"-->
+                       IsVisible="False">
               pattern :
             </TextBlock>
             <TextBlock x:Name="patternOutputFileNameLabel" Grid.Row="2" Grid.Column="1" Foreground="DimGray" Margin="0,5,5,5"
                        TextTrimming="CharacterEllipsis" MaxWidth="350"
-                       IsVisible="False"> <!--IsVisible="False"-->
+                       IsVisible="False">
               ...
             </TextBlock>
             <NumericUpDown x:Name="patternOutputFileNameNumUpDn" Grid.Row="2" Grid.Column="2" 
@@ -61,28 +52,28 @@
                            AllowSpin="True" ClipValueToMinMax="True" Foreground="DimGray"
                            HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0"
                            ToolTip.Tip="current pattern output file name count-number"
-                           IsVisible="False" /> <!--IsVisible="False"-->
+                           IsVisible="False" />
             <!--=== live-stream ===========================================-->
             <CheckBox x:Name="isLiveStreamCheckBox" Grid.Row="0" Grid.Column="6" Foreground="Silver" Cursor="Hand" Margin="5,0,0,0">this is a live stream</CheckBox>
             <TextBlock x:Name="liveStreamMaxSizeInMbTextBlock" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="3" 
                        Foreground="DimGray" Margin="0,5,5,5" TextAlignment="Right"
                        TextTrimming="CharacterEllipsis" TextWrapping="Wrap" MinWidth="100"
-                       IsVisible="False"> <!--IsVisible="False"-->
+                       IsVisible="False">
               max single output file size in mb :
             </TextBlock>
             <NumericUpDown x:Name="liveStreamMaxSizeInMbNumUpDn" Grid.Row="2" Grid.Column="6" 
                            Minimum="1" Maximum="10000000" Value="250" FormatString="0"
                            AllowSpin="True" ClipValueToMinMax="True"
                            HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0"
-                           IsVisible="False" /> <!--IsVisible="False"-->
+                           IsVisible="False" />
             <!--=== output-directory ===========================================-->
-            <TextBlock Grid.Row="4" Grid.Column="0" Foreground="SteelBlue" Margin="5,0,5,0" TextAlignment="Right"
+            <TextBlock Grid.Row="4" Grid.Column="0" Foreground="SteelBlue" Margin="0,0,5,0" TextAlignment="Right"
                        TextWrapping="Wrap" TextTrimming="CharacterEllipsis">
               output directory :
             </TextBlock>
-            <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" IsReadOnly="True" Margin="0.5"></TextBox>    
-            <Button  x:Name="outputDirectorySelectButton" Grid.Row="4" Grid.Column="5" Width="25" Cursor="Hand" Margin="0.5">=</Button>
-            <Button  x:Name="loadM3u8FileContentButton"   Grid.Row="4" Grid.Column="6" Cursor="Hand" Margin="0.5">(load .m3u8 file-content)</Button>    
+            <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" IsReadOnly="True" Margin="0,0,3,0"></TextBox>    
+            <Button  x:Name="outputDirectorySelectButton" Grid.Row="4" Grid.Column="5" Width="25" Cursor="Hand" Margin="0,0,3,0">=</Button>
+            <Button  x:Name="loadM3u8FileContentButton"   Grid.Row="4" Grid.Column="6" Cursor="Hand" Margin="0">(load .m3u8 file-content)</Button>    
           </Grid>
         </StackPanel>
 

@@ -129,6 +129,24 @@ namespace m3u8.download.manager.models
 
         public LogListModel Log { [M(O.AggressiveInlining)] get; }
 
+
+        public int VisibleOrderNumber { [M(O.AggressiveInlining)] get => base.GetVisibleIndex() + 1; }
+
+        private bool _IsFocusedAndSelected;
+        public bool IsFocusedAndSelected
+        {
+            get => _IsFocusedAndSelected;
+            set
+            {
+                if ( _IsFocusedAndSelected != value )
+                {
+                    _IsFocusedAndSelected = value;
+                    Fire_PropertyChanged_Events( nameof(IsFocusedAndSelected) );
+                }
+            }
+        }
+
+
         public string   GetOutputFullFileName() => Path.Combine( OutputDirectory, OutputFileName );
         public string[] GetOutputFullFileNames()
         {

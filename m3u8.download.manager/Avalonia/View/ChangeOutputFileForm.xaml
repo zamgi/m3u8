@@ -14,7 +14,7 @@
         >
   <Grid ColumnDefinitions="*,auto" RowDefinitions="auto,*,auto" Margin="15,25,15,15">
     <TextBox x:Name="outputFileNameTextBox"      Grid.Row="0" Grid.Column="0" Margin="0.5"></TextBox>
-    <Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="1" Width="25" Cursor="Hand" Margin="0.5">x</Button>
+    <Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="1" Width="25" Cursor="Hand" Margin="0.5">&#x26CC;</Button>
 
     <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Bottom">
       <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>

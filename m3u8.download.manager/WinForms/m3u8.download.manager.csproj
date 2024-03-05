@@ -98,6 +98,9 @@
     <Compile Include="..\..\m3u8.client\throttler_by_speed.cs">
       <Link>[-= m3u8.client =-]\throttler_by_speed.cs</Link>
     </Compile>
+    <Compile Include="..\[Common]\Extensions.cs">
+      <Link>Infrastructure\Extensions.cs</Link>
+    </Compile>
     <Compile Include="Infrastructure\ClipboardHelper.cs" />
     <Compile Include="Infrastructure\AssemblyInfoHelper.cs" />
     <Compile Include="Infrastructure\Ellipsis.cs" />
@@ -147,12 +150,6 @@
     <Compile Include="UI\Forms\ColumnsVisibilityEditor.Designer.cs">
       <DependentUpon>ColumnsVisibilityEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\Forms\_Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\_Form1.Designer.cs">
-      <DependentUpon>_Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="UI\Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -160,6 +157,10 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\DefaultColors.cs" />
+    <None Include="UI\Forms\_Form1.cs" />
+    <None Include="UI\Forms\_Form1.Designer.cs">
+      <DependentUpon>_Form1.cs</DependentUpon>
+    </None>
     <Compile Include="UI\LogRowsHeightStorer.cs" />
     <Compile Include="UI\Controls\ToolStripItems\NumericUpDownUC.cs">
       <SubType>UserControl</SubType>
@@ -208,7 +209,6 @@
     <Compile Include="UI\Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Infrastructure\NameAndPathCleaner.cs" />
     <Compile Include="Infrastructure\WinApi.cs" />
     <Compile Include="Model\ListModel[T].cs" />

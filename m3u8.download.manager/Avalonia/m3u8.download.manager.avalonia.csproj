@@ -58,15 +58,15 @@
     <Compile Include="..\..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
 
-    <Compile Include="..\WinForms\Infrastructure\Extensions.cs" Link="Infrastructure\Extensions.cs" />
     <Compile Include="..\WinForms\Infrastructure\FileHelper.cs" Link="Infrastructure\FileHelper.cs" />
     <Compile Include="..\WinForms\Infrastructure\ObjAsDict_JsonSerializer.cs" Link="Infrastructure\ObjAsDict_JsonSerializer.cs" />
     <Compile Include="..\WinForms\Infrastructure\AssemblyInfoHelper.cs" Link="Infrastructure\AssemblyInfoHelper.cs" />
     <Compile Include="..\WinForms\Infrastructure\DownloadRowsSerializer.cs" Link="Infrastructure\DownloadRowsSerializer.cs" />
     <Compile Include="..\WinForms\Infrastructure\NameAndPathCleaner.cs" Link="Infrastructure\NameAndPathCleaner.cs" />
     <Compile Include="..\WinForms\Infrastructure\OutputFileNamePatternProcessor.cs" Link="Infrastructure\OutputFileNamePatternProcessor.cs" />
-    <Compile Include="..\WinForms\Infrastructure\Ellipsis.cs" Link="Infrastructure\Ellipsis.cs" />    
+    <Compile Include="..\WinForms\Infrastructure\Ellipsis.cs" Link="Infrastructure\Ellipsis.cs" />
 
+    <Compile Include="..\[Common]\Extensions.cs" Link="Infrastructure\Extensions.cs" />
     <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs" Link="Controller\throttler_by_speed_impl.cs" />
     <Compile Include="..\[Common]\Controller\download_threads_semaphore_impl.cs" Link="Controller\download_threads_semaphore_impl.cs" />
     <Compile Include="..\[Common]\Controller\interlocked_lock.cs" Link="Controller\interlocked_lock.cs" />

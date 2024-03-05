@@ -56,7 +56,7 @@
              TextWrapping="NoWrap"
              />
     <Button x:Name="clearFilterButton" Grid.Row="0" Grid.Column="2"
-            Width="25" Cursor="Hand" IsVisible="False">x</Button>
+            Width="25" Cursor="Hand" IsVisible="False">&#x26CC;</Button>
 
     <DataGrid x:Name="DGV" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
               SelectionMode="Extended"

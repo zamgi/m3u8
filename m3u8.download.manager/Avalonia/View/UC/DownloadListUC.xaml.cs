@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Collections;
@@ -28,7 +30,7 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
-        public delegate void MouseClickRightButtonEventHandler( Point pt, DownloadRow row );
+        public delegate void MouseClickRightButtonEventHandler( in Point pt, DownloadRow row );
 
         #region [.field's.]
         public event DownloadRowEventHandler           SelectionChanged;
@@ -94,6 +96,21 @@ namespace m3u8.download.manager.ui
             var selectedDownloadRow = this.GetSelectedDownloadRow();
             SelectionChanged?.Invoke( selectedDownloadRow );
 
+            if ( 1 < DGV.SelectedItems.Count )
+            {
+                foreach ( var row in _Model.GetRows() )
+                {
+                    row.IsFocusedAndSelected = (selectedDownloadRow == row);
+                }
+            }
+            else
+            {
+                foreach ( var row in _Model.GetRows() )
+                {
+                    row.IsFocusedAndSelected = false;
+                }
+            }
+
             #region comm.
             //if ( (selectedDownloadRow != null) && !selectedDownloadRow.IsFinished() )
             //{
@@ -109,30 +126,46 @@ namespace m3u8.download.manager.ui
             //} 
             #endregion
         }
-        private void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
+        private async void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
         {
             var p = e.GetCurrentPoint( this/*null*/ );
-            if ( p.Properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed )
+            switch ( p.Properties.PointerUpdateKind )
             {
-                var evnt = MouseClickRightButton;
-                if ( evnt != null )
-                {
-                    e.Pointer.Capture( null );
-                    e.Handled = true;
-                    evnt( p.Position, row: null/*this.GetSelectedDownloadRow()*/ );
-                }
+                case PointerUpdateKind.LeftButtonPressed:
+                    var columnHeader = (e.Source as Control)?.GetSelfAndVisualAncestors().OfType<DataGridColumnHeader>().FirstOrDefault();
+                    if ( columnHeader == null )
+                    {
+                        DGV.SelectedItems.Clear();
+                    }
+                    else if ( DGV.Columns[ 0 ]?.Header == columnHeader.Content )
+                    {
+                        DGV.SelectedItems.Clear();
+                        await Task.Delay( 100 );
+                        DGV.SelectAll();
+                    }
+                    break;
+
+                case PointerUpdateKind.RightButtonPressed:
+                    var evnt = MouseClickRightButton;
+                    if ( evnt != null )
+                    {
+                        e.Pointer.Capture( null );
+                        e.Handled = true;
+                        evnt( p.Position, row: null/*this.GetSelectedDownloadRow()*/ );
+                    }
+                    break;
             }
         }
         private void DGV_CellPointerPressed( object sender, DataGridCellPointerPressedEventArgs e )
         {
-            const int OutputFileName_Column_DisplayIndex        = 0;
-            const int OutputDirectory_Column_DisplayIndex       = 1;
-            const int LiveStreamMaxFileSize_Column_DisplayIndex = 11;
+            const int OutputFileName_Column_DisplayIndex        = 1;
+            const int OutputDirectory_Column_DisplayIndex       = 2;
+            const int LiveStreamMaxFileSize_Column_DisplayIndex = 12;
 
             var p = e.PointerPressedEventArgs.GetCurrentPoint( this/*null*/ );
-            switch ( p.Properties.PointerUpdateKind ) //e.PointerPressedEventArgs.MouseButton )
+            switch ( p.Properties.PointerUpdateKind )
             {
-                case PointerUpdateKind.LeftButtonPressed: //MouseButton.Left:
+                case PointerUpdateKind.LeftButtonPressed:
                     var columnDisplayIndex = e.Column.DisplayIndex;
                     switch ( columnDisplayIndex )
                     {
@@ -140,6 +173,8 @@ namespace m3u8.download.manager.ui
                         case OutputDirectory_Column_DisplayIndex:
                         case LiveStreamMaxFileSize_Column_DisplayIndex:
                         {
+                            if ( DGV.SelectedItems.Count != 1 ) break;
+                                
                             bool is_valid( int rowIndex_, DownloadRow selectedDownloadRow_ ) => ((0 <= rowIndex_) && (rowIndex_ < _Model.RowsCount) && (_Model[ rowIndex_ ] == selectedDownloadRow_));
 
                             var selectedDownloadRow = this.GetSelectedDownloadRow();
@@ -181,17 +216,37 @@ namespace m3u8.download.manager.ui
                     }
                 break;
 
-                case PointerUpdateKind.RightButtonPressed: //MouseButton.Right:
+                case PointerUpdateKind.RightButtonPressed:
                     {
                         var evnt = MouseClickRightButton;
                         if ( evnt != null )
                         {
-                            //---var row = (e.PointerPressedEventArgs.Source as IControl)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
+                            if ( DGV.SelectedItems.Count == 1 )
+                            {
+                                var row = (e.PointerPressedEventArgs.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
+                                if ( row != null )
+                                {
+                                    DGV.SelectedIndex = row.GetIndex();
+                                }
+                            }
+                            #region comm. other var.
+                            /*
                             var row = (e.PointerPressedEventArgs.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
                             if ( row != null )
                             {
-                                DGV.SelectedIndex = row.GetIndex();
+                                var rowIdx = row.GetIndex();
+                                if ( DGV.SelectedIndex != rowIdx )
+                                {
+                                    var selRows = this.GetSelectedDownloadRows();
+                                    DGV.SelectedIndex = rowIdx;
+                                    foreach ( var selRow in selRows )
+                                    {
+                                        DGV.SelectedItems.Add( selRow );
+                                    }
+                                }
                             }
+                            //*/
+                            #endregion
 
                             e.PointerPressedEventArgs.Pointer.Capture( null );
                             e.PointerPressedEventArgs.Handled = true;
@@ -241,6 +296,16 @@ namespace m3u8.download.manager.ui
         }
 
         internal DownloadRow GetSelectedDownloadRow() => (DGV.SelectedItem as DownloadRow);
+        internal IReadOnlyList< DownloadRow > GetSelectedDownloadRows()
+        {
+            var srs = DGV.SelectedItems;
+            var lst = new List< DownloadRow >( srs.Count );
+            foreach ( var row in srs.Cast< DownloadRow >() )
+            {
+                lst.Add( row );
+            }
+            return (lst);
+        }
         internal bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );
         private bool SelectDownloadRowInternal( DownloadRow row ) //---, bool callAfterSort = false )
         {

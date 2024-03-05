@@ -24,6 +24,7 @@ using m3u8.download.manager.Properties;
 using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_                 = m3u8.download.manager.Properties.Resources;
+using System.Collections.Generic;
 
 namespace m3u8.download.manager.ui
 {
@@ -59,6 +60,7 @@ namespace m3u8.download.manager.ui
         private MenuItem onlyDeleteOutputFileMenuItem;
         private MenuItem browseOutputFileMenuItem;
         private MenuItem openOutputFileMenuItem;
+        private MenuItem changeOutputDirectoryMenuItem;
         private MenuItem deleteAllFinishedDownloadMenuItem;
         private MenuItem startAllDownloadsMenuItem;
         private MenuItem cancelAllDownloadsMenuItem;
@@ -123,6 +125,7 @@ namespace m3u8.download.manager.ui
             onlyDeleteOutputFileMenuItem      = mainContextMenu.Find_MenuItem( nameof(onlyDeleteOutputFileMenuItem) ); onlyDeleteOutputFileMenuItem.Click += onlyDeleteOutputFileMenuItem_Click;
             browseOutputFileMenuItem          = mainContextMenu.Find_MenuItem( nameof(browseOutputFileMenuItem) ); browseOutputFileMenuItem.Click += browseOutputFileMenuItem_Click;
             openOutputFileMenuItem            = mainContextMenu.Find_MenuItem( nameof(openOutputFileMenuItem) ); openOutputFileMenuItem.Click += openOutputFileMenuItem_Click;
+            changeOutputDirectoryMenuItem     = mainContextMenu.Find_MenuItem( nameof(changeOutputDirectoryMenuItem) ); changeOutputDirectoryMenuItem.Click += changeOutputDirectoryMenuItem_Click;
             deleteAllFinishedDownloadMenuItem = mainContextMenu.Find_MenuItem( nameof(deleteAllFinishedDownloadMenuItem) ); deleteAllFinishedDownloadMenuItem.Click += deleteAllFinishedDownloadToolButton_Click;
             startAllDownloadsMenuItem         = mainContextMenu.Find_MenuItem( nameof(startAllDownloadsMenuItem) ); startAllDownloadsMenuItem.Click += startAllDownloadsMenuItem_Click;
             cancelAllDownloadsMenuItem        = mainContextMenu.Find_MenuItem( nameof(cancelAllDownloadsMenuItem) ); cancelAllDownloadsMenuItem.Click += cancelAllDownloadsMenuItem_Click;
@@ -309,11 +312,11 @@ namespace m3u8.download.manager.ui
                     case Key.C: //Copy
                         if ( downloadListUC.HasFocus )
                         {
-                            var row = downloadListUC.GetSelectedDownloadRow();
-                            if ( row != null )
+                            var rows = downloadListUC.GetSelectedDownloadRows();
+                            if ( rows.Any() )
                             {
                                 e.Handled = true;
-                                await this.CopyToClipboard( row );
+                                await this.CopyToClipboard( rows );
                                 return;
                             }
                             else
@@ -326,21 +329,21 @@ namespace m3u8.download.manager.ui
                     case Key.S: //Start download
                         if ( downloadListUC.HasFocus )
                         {
-                            ProcessDownloadCommand( DownloadCommandEnum.Start );
+                            ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Start );
                         }
                         break;
 
                     case Key.P: //Pause download
                         if ( downloadListUC.HasFocus )
                         {
-                            ProcessDownloadCommand( DownloadCommandEnum.Pause );
+                            ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Pause );
                         }
                         break;
 
                     case Key.Z: //Cancel download
                         if ( downloadListUC.HasFocus )
                         {
-                            ProcessDownloadCommand( DownloadCommandEnum.Cancel );
+                            ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
                         }
                         break;
 
@@ -382,7 +385,7 @@ namespace m3u8.download.manager.ui
                     case Key.Delete: // [Ctrl + Shift + Del]
                         if ( e.KeyModifiers.HasFlag( KeyModifiers.Shift ) && downloadListUC.HasFocus )
                         {
-                            OnlyDeleteOutputFiles( downloadListUC.GetSelectedDownloadRow() );
+                            OnlyDeleteOutputFiles( downloadListUC.GetSelectedDownloadRows() );
                         }
                         break;
                 }
@@ -405,11 +408,11 @@ namespace m3u8.download.manager.ui
                     case Key.Delete: // Delete download
                         if ( downloadListUC.HasFocus )
                         {
-                            var row = downloadListUC.GetSelectedDownloadRow();
+                            var rows = downloadListUC.GetSelectedDownloadRows();
                             var deleteOutputFiles = e.KeyModifiers.HasFlag( KeyModifiers.Shift );
-                            if ( await AskDeleteDownloadDialog( row, askOnlyOutputFileExists: false, deleteOutputFiles ) )
+                            if ( await AskDeleteDownloadDialog( rows, askOnlyOutputFileExists: false, deleteOutputFiles ) )
                             {
-                                DeleteDownloads( row, deleteOutputFiles );
+                                DeleteDownloads( rows, deleteOutputFiles );
                             }
                         }
                         break;
@@ -688,6 +691,14 @@ namespace m3u8.download.manager.ui
         /// 
         /// </summary>
         private enum DownloadCommandEnum { Start, Pause, Cancel, Delete, DeleteAllFinished }
+        private void ProcessDownloadCommand4SelectedRows( DownloadCommandEnum downloadCommand )
+        {
+            var rows = downloadListUC.GetSelectedDownloadRows();
+            foreach ( var row in rows )
+            {
+                ProcessDownloadCommand( downloadCommand, row );
+            }
+        }
         private void ProcessDownloadCommand( DownloadCommandEnum downloadCommand, DownloadRow row = null )
         {
             if ( row == null ) row = downloadListUC.GetSelectedDownloadRow();
@@ -728,14 +739,7 @@ namespace m3u8.download.manager.ui
             SetDownloadToolButtonsStatus( row );
         }
 
-        private void DeleteDownloads( DownloadRow row, bool deleteOutputFiles )
-        {
-            if ( row != null )
-            {
-                DeleteDownloads( [ row ], deleteOutputFiles );
-            }
-        }
-        private async void DeleteDownloads( DownloadRow[] rows, bool deleteOutputFiles )
+        private async void DeleteDownloads( IReadOnlyList< DownloadRow > rows, bool deleteOutputFiles )
         {
             if ( !rows.AnyEx() ) return;
 
@@ -772,6 +776,20 @@ namespace m3u8.download.manager.ui
                 SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
             }
         }
+        private async Task< bool > AskDeleteDownloadDialog( IReadOnlyList< DownloadRow > rows, bool askOnlyOutputFileExists, bool deleteOutputFile )
+        {
+            switch ( rows.Count )
+            {
+                case 0:
+                    return (false);
+                case 1:
+                    return (await AskDeleteDownloadDialog( rows[ 0 ], askOnlyOutputFileExists, deleteOutputFile ));
+                default:
+                    var msg = $"Delete {rows.Count} downloads{(deleteOutputFile ? " with output file" : null)} ?";
+                    var yes = ((await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo )) == ButtonResult.Yes);
+                    return (yes);
+            }            
+        }
         private async Task< bool > AskDeleteDownloadDialog( DownloadRow row, bool askOnlyOutputFileExists, bool deleteOutputFile )
         {
             if ( row != null )
@@ -804,18 +822,11 @@ namespace m3u8.download.manager.ui
             return (false);
         }
 
-        private void OnlyDeleteOutputFiles( DownloadRow row, bool ask = true )
-        {
-            if ( row != null )
-            {
-                OnlyDeleteOutputFiles( [ row ], ask );
-            }
-        }
-        private async void OnlyDeleteOutputFiles( DownloadRow[] rows, bool ask = true )
+        private async void OnlyDeleteOutputFiles( IReadOnlyList< DownloadRow > rows, bool ask = true )
         {
             if ( !rows.AnyEx() ) return;
 
-            var exists_fns = rows.SelectMany( r => r.GetOutputFullFileNames() ).Where( File.Exists ).ToList( rows.Length );
+            var exists_fns = rows.SelectMany( r => r.GetOutputFullFileNames() ).Where( File.Exists ).ToList( rows.Count );
             if ( exists_fns.Count == 0 ) return;
 
             if ( ask ) 
@@ -923,10 +934,10 @@ namespace m3u8.download.manager.ui
         }
         private async void copyToolButton_Click( object sender, EventArgs e )
         {
-            var row = downloadListUC.GetSelectedDownloadRow();
-            if ( row != null )
+            var rows = downloadListUC.GetSelectedDownloadRows();
+            if ( rows.Any() )
             {
-                await this.CopyToClipboard( row );
+                await this.CopyToClipboard( rows );
             }
             else
             {
@@ -948,10 +959,10 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void startDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Start  );
-        private void pauseDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Pause  );
-        private void cancelDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Cancel );
-        private void deleteDownloadToolButton_Click( object sender, EventArgs e ) =>  DeleteDownloads( downloadListUC.GetSelectedDownloadRow(), deleteOutputFiles: KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false ) );
+        private void startDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Start  );
+        private void pauseDownloadToolButton_Click ( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Pause  );
+        private void cancelDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
+        private void deleteDownloadToolButton_Click( object sender, EventArgs e ) =>  DeleteDownloads( downloadListUC.GetSelectedDownloadRows(), deleteOutputFiles: KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false ) );
         private void deleteAllFinishedDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.DeleteAllFinished );
 
         private void downloadInstanceToolButton_ValueChanged( int downloadInstanceValue )
@@ -966,30 +977,55 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.context menu.]
-        private void downloadListUC_MouseClickRightButton( Point pt, DownloadRow row )
+        private void downloadListUC_MouseClickRightButton( in Point pt, DownloadRow row )
         {
-            if ( (row != null) || (0 < _VM.DownloadListModel.RowsCount) )
+            var selectedRow = row ?? downloadListUC.GetSelectedDownloadRow();
+            if ( (selectedRow != null) || (0 < _VM.DownloadListModel.RowsCount) )
             {
                 var selectedRow_AnyFileExists = false;
                 startDownloadMenuItem            .IsEnabled = startDownloadToolButton .IsEnabled;
                 cancelDownloadMenuItem           .IsEnabled = cancelDownloadToolButton.IsEnabled;
                 pauseDownloadMenuItem            .IsEnabled = pauseDownloadToolButton .IsEnabled;
                 deleteDownloadMenuItem           .IsEnabled = deleteDownloadToolButton.IsEnabled;
-                deleteWithOutputFileMenuItem     .IsEnabled = deleteDownloadToolButton.IsEnabled && (selectedRow_AnyFileExists = FileHelper.AnyFileExists( row?.GetOutputFullFileNames() ));
+                deleteWithOutputFileMenuItem     .IsEnabled = deleteDownloadToolButton.IsEnabled && (selectedRow_AnyFileExists = FileHelper.AnyFileExists( selectedRow?.GetOutputFullFileNames() ));
                 browseOutputFileMenuItem         .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
                 openOutputFileMenuItem           .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
                 deleteAllFinishedDownloadMenuItem.IsEnabled = deleteAllFinishedDownloadToolButton.IsEnabled;
 
-                SetAllDownloadsMenuItemsEnabled( allowedAll: (row == null) || (1 < _VM.DownloadListModel.RowsCount) );
+                changeOutputDirectoryMenuItem.IsVisible = (selectedRow != null);
 
-                var not_null_and_running = (row != null) && !row.Status.IsRunningOrPaused();
+                SetAllDownloadsMenuItemsEnabled( allowedAll: (selectedRow == null) || (1 < _VM.DownloadListModel.RowsCount) );
 
-                editDownloadMenuItem.IsVisible =
-                    editDownloadMenuItem_Separator.IsVisible = not_null_and_running;
+                if ( selectedRow != null )
+                {
+                    var rows = downloadListUC.GetSelectedDownloadRows();
 
-                onlyDeleteOutputFileMenuItem.IsEnabled = not_null_and_running && (selectedRow_AnyFileExists || FileHelper.AnyFileExists( row.GetOutputFullFileNames() ));
+                    #region [.onlyDeleteOutputFileMenuItem.]
+                    if ( selectedRow_AnyFileExists )
+                    {
+                        onlyDeleteOutputFileMenuItem.IsEnabled = !selectedRow.Status.IsRunningOrPaused();
+                    }
+                    else
+                    {
+                        var x = rows.Where( r => !r.Status.IsRunningOrPaused() ).FirstOrDefault( r => FileHelper.AnyFileExists( r.GetOutputFullFileNames() ) );
+                        onlyDeleteOutputFileMenuItem.IsEnabled = (x != null);
+                    }
+                    #endregion
 
+                    #region [.editDownloadMenuItem.]
+                    editDownloadMenuItem.IsVisible =
+                        editDownloadMenuItem_Separator.IsVisible = (rows.Count == 1) && !selectedRow.Status.IsRunningOrPaused();
+                    #endregion
+                }
+                else
+                {
+                    onlyDeleteOutputFileMenuItem.IsEnabled = false;
 
+                    editDownloadMenuItem.IsVisible =
+                        editDownloadMenuItem_Separator.IsVisible = false;
+                }
+
+                #region comm.
                 //pt = downloadListUC.TranslatePoint( pt, this ).GetValueOrDefault( pt );
 
                 //var b1 = downloadListUC.Bounds;
@@ -997,7 +1033,9 @@ namespace m3u8.download.manager.ui
 
                 //mainContextMenu.HorizontalOffset = pt.X + (- b1.Width / 2) + b2.Width / 2;
                 //mainContextMenu.VerticalOffset   = pt.Y + (- b1.Height); 
-                //mainContextMenu.Placement        = PlacementMode.Pointer;
+                //mainContextMenu.Placement        = PlacementMode.Pointer; 
+                #endregion
+
                 mainContextMenu.Open( downloadListUC );
             }
         }
@@ -1048,15 +1086,15 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void startDownloadMenuItem_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Start  );
-        private void pauseDownloadMenuItem_Click ( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Pause  );
-        private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.Cancel );
+        private void startDownloadMenuItem_Click ( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Start  );
+        private void pauseDownloadMenuItem_Click ( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Pause  );
+        private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
 
         private void editDownloadMenuItem_Click( object sender, EventArgs e ) => _VM.EditCommand.EditDownload( downloadListUC.GetSelectedDownloadRow() );
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
-        private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRow(), deleteOutputFiles: true );
-        private void onlyDeleteOutputFileMenuItem_Click( object sender, EventArgs e ) => OnlyDeleteOutputFiles( downloadListUC.GetSelectedDownloadRow() );
+        private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRows(), deleteOutputFiles: true );
+        private void onlyDeleteOutputFileMenuItem_Click( object sender, EventArgs e ) => OnlyDeleteOutputFiles( downloadListUC.GetSelectedDownloadRows() );
 
         private async void browseOutputFileMenuItem_Click( object sender, EventArgs e )
         {
@@ -1158,6 +1196,114 @@ namespace m3u8.download.manager.ui
                     //---downloadListUC.InvalidateVisual();
                 }
             }
+        }
+
+        private string _Last_ChangeOutputDirectory;
+        private async void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
+        {
+            var rows = downloadListUC.GetSelectedDownloadRows();
+            if ( rows.Any() )
+            {
+                var first_row = rows.First();
+                var descr = (rows.Count == 1) ? $"Select output directory for file: '{first_row.OutputFileName}'" : $"Select output directory for ({rows.Count}) files";
+                var d = new OpenFolderDialog() { Directory = GetSelectedDirectory( first_row ), Title = descr };
+                var outputDirectory = await d.ShowAsync( this );
+                if ( !outputDirectory.IsNullOrWhiteSpace() )
+                {
+                    _Last_ChangeOutputDirectory = outputDirectory;
+                    foreach ( var row in rows )
+                    {
+                        await ChangeOutputDirectory( row, outputDirectory );
+                    }
+                }
+            }
+        }
+        private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _Last_ChangeOutputDirectory ) ?? row.OutputDirectory;
+        private Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
+        private Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
+        private async Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
+        {
+            var prev_outputFullFileName = row.GetOutputFullFileName();
+
+            string prev_outputFileName_or_outputDirectory;
+            if ( change_outputDirectory )
+            {
+                prev_outputFileName_or_outputDirectory = row.OutputDirectory;
+                row.SetOutputDirectory( outputFileName_or_outputDirectory );
+            }
+            else
+            {
+                prev_outputFileName_or_outputDirectory = row.OutputFileName;
+                row.SetOutputFileName( outputFileName_or_outputDirectory );
+            }
+            var new_outputFullFileName = row.GetOutputFullFileName();
+
+            var res = await MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName );
+            switch ( res )
+            {
+                //case MoveFileByRenameResultEnum.Postponed: break;
+                //case MoveFileByRenameResultEnum.Suc: break;
+                case MoveFileByRenameResultEnum.Canceled:
+                case MoveFileByRenameResultEnum.Fail:
+                    //rollback
+                    if ( change_outputDirectory )
+                    {
+                        row.SetOutputDirectory( prev_outputFileName_or_outputDirectory );
+                    }
+                    else
+                    {
+                        row.SetOutputFileName( prev_outputFileName_or_outputDirectory );
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private enum MoveFileByRenameModeEnum { OverwriteAsk, OverwriteSilent, SkipIfAlreadyExists }
+        private enum MoveFileByRenameResultEnum { Postponed, Canceled, Suc, Fail }
+        private async Task< MoveFileByRenameResultEnum > MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
+            , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
+        {
+            if ( !row.Status.IsRunningOrPaused() && File.Exists( prev_outputFullFileName ) )
+            {
+                switch ( mode )
+                {
+                    case MoveFileByRenameModeEnum.OverwriteSilent:
+                        FileHelper.DeleteFile_NoThrow( new_outputFullFileName ); 
+                        break;
+                    case MoveFileByRenameModeEnum.OverwriteAsk: 
+                        if ( File.Exists( new_outputFullFileName ) )
+                        {
+                            var yes = ((await this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" )) != ButtonResult.Yes);
+                            if ( !yes )
+                            {
+                                return (MoveFileByRenameResultEnum.Canceled);
+                            }
+                            FileHelper.DeleteFile_NoThrow( new_outputFullFileName );
+                        }
+                        break;
+                    case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
+                        if ( File.Exists( new_outputFullFileName ) )
+                        {
+                            return (MoveFileByRenameResultEnum.Canceled);
+                        }
+                        break;
+                }
+                
+                try
+                {
+                    File.Move( prev_outputFullFileName, new_outputFullFileName /*?? row.GetOutputFullFileName()*/ );
+                    return (MoveFileByRenameResultEnum.Suc);
+                }
+                catch ( Exception ex )
+                {
+                    this.MessageBox_ShowError( ex.ToString(), "Move/Remane output file" );
+                    return  (MoveFileByRenameResultEnum.Fail);
+                }
+            }
+            return (MoveFileByRenameResultEnum.Postponed);
         }
         #endregion
 
