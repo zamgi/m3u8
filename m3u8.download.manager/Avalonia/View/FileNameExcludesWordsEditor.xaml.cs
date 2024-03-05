@@ -11,6 +11,8 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
+
 using ReactiveUI;
 
 namespace m3u8.download.manager.ui
@@ -80,7 +82,8 @@ namespace m3u8.download.manager.ui
             AvaloniaXamlLoader.Load( this );
 
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
-            DGV.LoadingRow += DGV_LoadingRow;
+            DGV.LoadingRow     += DGV_LoadingRow;
+            DGV.PointerPressed += DGV_PointerPressed;
             //---DGV.Styles.Add( GlobalStyles.Dark );
 
             filterTextBox     = this.Find< TextBox >( nameof(filterTextBox) );
@@ -237,7 +240,33 @@ namespace m3u8.download.manager.ui
             var t = (WordItem) _DGVRows[ index ];
             t.ViewOrderNumber = index + 1;
         }
+        private async void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
+        {
+            var p = e.GetCurrentPoint( this/*null*/ );
+            switch ( p.Properties.PointerUpdateKind )
+            {
+                case PointerUpdateKind.LeftButtonPressed:
+                    var columnHeader = (e.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridColumnHeader >().FirstOrDefault();
+                    if ( columnHeader == null )
+                    {
+                        DGV.SelectedItems.Clear();
+                    }
+                    else if ( DGV.Columns[ 0 ]?.Header == columnHeader.Content )
+                    {
+                        DGV.SelectedItems.Clear();
+                        await Task.Delay( 100 );
+                        DGV.SelectAll();
+                    }
+                    break;
 
+                //case PointerUpdateKind.RightButtonPressed:
+                //    e.Pointer.Capture( null );
+                //    e.Handled = true;
+                //
+                //    //---open_mainContextMenu();
+                //    break;
+            }
+        }
 
         private string _LastFilterText;
         private async void filterTextBox_TextChanged( string value )

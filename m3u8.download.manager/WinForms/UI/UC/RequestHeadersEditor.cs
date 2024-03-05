@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using static m3u8.download.manager.ui.DefaultColors;
-
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -208,6 +206,41 @@ namespace m3u8.download.manager.ui
 
             DGV_Resize( null, EventArgs.Empty );
         }
+        private void AppendRequestHeaders( IDictionary< string, string > requestHeaders )
+        {            
+            if ( !requestHeaders.AnyEx() )
+            {
+                return;
+            }
+
+            var hs_allRequestHeaders4DropDown = new HashSet< string >( 100 ) { _AllRequestHeaders4DropDown.Select( rh => rh.Name ) };
+
+            var cnt = _AllRequestHeaders4DropDown.Count;
+            foreach ( var key in requestHeaders.Keys )
+            {
+                if ( hs_allRequestHeaders4DropDown.Add( key ) )
+                {
+                    _AllRequestHeaders4DropDown.Add( new RequestHeader( key ) );
+                }
+            }
+            //-------------------------------------------------//
+
+            if ( cnt != _AllRequestHeaders4DropDown.Count )
+            {
+                _AllRequestHeaders4DropDown.Sort( (x, y) => string.Compare( x.DisplayName, y.DisplayName, true ) );
+                keyBindingSource.DataSource = _AllRequestHeaders4DropDown;
+            }
+            //-------------------------------------------------//
+
+            var rows = DGV.Rows;
+            foreach ( var p in requestHeaders )
+            {
+                rows.Add( true, p.Key, p.Value );
+            }
+            //-------------------------------------------------//
+
+            DGV_Resize( null, EventArgs.Empty );
+        }
         public IDictionary< string, string > GetRequestHeaders()
         {
             //var dict = new Dictionary< string, string >( DGV.RowCount - 1, StringComparer.InvariantCultureIgnoreCase );
@@ -375,6 +408,16 @@ namespace m3u8.download.manager.ui
                     foreach ( var cell in DGV.SelectedCells.Cast< DataGridViewCell >() )
                     {
                         if ( cell.ColumnIndex != CHECKED_CELL_IDX ) cell.Value = null;
+                    }
+                    break;
+
+                case Keys.V:
+                    if ( e.Control ) goto case Keys.Insert;
+                    break;
+                case Keys.Insert:
+                    if ( ClipboardHelper.TryGetHeadersFromClipboard( out var headers ) )
+                    {
+                        AppendRequestHeaders( headers );
                     }
                     break;
             }

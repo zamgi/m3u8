@@ -117,41 +117,39 @@ namespace m3u8.download.manager
             Clipboard.SetText( txt, TextDataFormat.UnicodeText );
         }
 
-        //public static bool TryGetHttpUrlsFromClipboard( out IReadOnlyCollection< string > urls )
-        //{
-        //    const string HTTP  = "http://";
-        //    const string HTTPS = "https://";
-        //    try
-        //    {
-        //        var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
-        //        if ( text.IsNullOrEmpty() ) text = Clipboard.GetText( TextDataFormat.UnicodeText )?.Trim();
+        public static bool TryGetHeadersFromClipboard( out IDictionary< string, string > headers )
+        {
+            const char COLON = ':';
+            try
+            {
+                var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
+                if ( text.IsNullOrEmpty() ) text = Clipboard.GetText( TextDataFormat.UnicodeText )?.Trim();
 
-        //        if ( !text.IsNullOrEmpty() )
-        //        {
-        //            var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
-        //            var hs  = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
-        //            var lst = new List< string >( array.Length );
-        //            foreach ( var a in array )
-        //            {
-        //                var u = a.Trim();
-        //                if ( (u.StartsWith( HTTP , StringComparison.InvariantCultureIgnoreCase ) ||
-        //                      u.StartsWith( HTTPS, StringComparison.InvariantCultureIgnoreCase )) && hs.Add( u ) )
-        //                {
-        //                    lst.Add( u );
-        //                }
-        //            }
-        //            urls = lst;
-        //            return (urls.Any());
-        //        }
-        //    }
-        //    catch ( Exception ex )
-        //    {
-        //        Debug.WriteLine( ex );
-        //    }
+                if ( !text.IsNullOrEmpty() )
+                {
+                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var dict  = new Dictionary< string, string >( array.Length, StringComparer.InvariantCultureIgnoreCase );
 
-        //    urls = default;
-        //    return (false);
-        //}        
-        //public static void CopyUrlsToClipboard( IEnumerable< DownloadRow > rows ) => Clipboard.SetText( string.Join( "\r\n", rows.Select( r => r.Url ) ), TextDataFormat.UnicodeText );
+                    foreach ( var a in array )
+                    {
+                        var s_row = a.Trim();
+                        var i     = s_row.IndexOf( COLON ); if ( i == -1 ) break;
+                        var name  = s_row.Substring( 0,  i ).Trim(); if ( name.IsNullOrEmpty() ) break;
+                        var value = s_row.Substring( i + 1 ).Trim();
+
+                        dict[ name ] = value;
+                    }
+                    headers = dict;
+                    return (dict.Any());
+                }
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+
+            headers = default;
+            return (false);
+        }
     }
 }

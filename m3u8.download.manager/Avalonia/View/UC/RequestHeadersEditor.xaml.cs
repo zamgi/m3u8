@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Avalonia.Collections;
 using Avalonia.Controls;
@@ -128,6 +129,7 @@ namespace m3u8.download.manager.ui
             DGV.PointerPressed      += DGV_PointerPressed;
             DGV.CellPointerPressed  += DGV_CellPointerPressed;
             DGV.OnPageDown_N_PageUp += () => OnPageDown_N_PageUp?.Invoke();
+            DGV.KeyDown             += DGV_KeyDown;
 
             if ( DGV.Columns.OfType< DataGridCheckBoxColumn >().FirstOrDefault()?.Header is TextBlock textBlock )
             {
@@ -229,6 +231,27 @@ namespace m3u8.download.manager.ui
             }
             Fire_OnRequestHeadersCountChanged();
         }
+        private void AppendRequestHeaders( IDictionary< string, string > requestHeaders )
+        {
+            if ( requestHeaders.AnyEx() && (_DGVRows.SourceCollection is List< RequestHeader > rhs) )
+            {
+                var hs = new HashSet< string >( 100 ) { rhs.Select( rh => rh.Name ) };
+                
+                var cnt = hs.Count;
+                foreach ( var p in requestHeaders.OrderBy( p => p.Key ) )
+                {
+                    if ( hs.Add( p.Key ) )
+                    {
+                        rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: true ) );
+                    }
+                }
+                if ( cnt != hs.Count )
+                {
+                    DGV.ItemsSource = _DGVRows = new DataGridCollectionView( rhs );
+                }
+            }
+            Fire_OnRequestHeadersCountChanged();
+        }
         public IDictionary< string, string > GetRequestHeaders()
         {
             var dict = new SortedDictionary< string, string >( StringComparer.InvariantCultureIgnoreCase );
@@ -292,15 +315,31 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
+        private async void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
         {
             var p = e.GetCurrentPoint( this/*null*/ );
-            if ( p.Properties.PointerUpdateKind == PointerUpdateKind.RightButtonPressed )
+            switch ( p.Properties.PointerUpdateKind )
             {
-                e.Pointer.Capture( null );
-                e.Handled = true;
+                case PointerUpdateKind.LeftButtonPressed:
+                    var columnHeader = (e.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridColumnHeader >().FirstOrDefault();
+                    if ( columnHeader == null )
+                    {
+                        DGV.SelectedItems.Clear();
+                    }
+                    else if ( DGV.Columns[ 0 ]?.Header == columnHeader.Content )
+                    {
+                        DGV.SelectedItems.Clear();
+                        await Task.Delay( 100 );
+                        DGV.SelectAll();
+                    }
+                    break;
 
-                open_mainContextMenu();
+                case PointerUpdateKind.RightButtonPressed:
+                    e.Pointer.Capture( null );
+                    e.Handled = true;
+
+                    open_mainContextMenu();
+                    break;
             }
         }
         private void DGV_CellPointerPressed( object sender, DataGridCellPointerPressedEventArgs e )
@@ -354,6 +393,26 @@ namespace m3u8.download.manager.ui
             }
 
             Fire_OnRequestHeadersCountChanged();
+        }
+
+        private async void DGV_KeyDown( object sender, KeyEventArgs e )
+        {
+            switch ( e.Key )
+            {
+                case Key.V:
+                    if ( (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control ) goto case Key.Insert;
+                    break;
+                case Key.Insert:
+                    if ( this.GetVisualRoot() is Window wnd )
+                    {
+                        var (suc, headers) = await wnd.TryGetHeadersFromClipboard();
+                        if ( suc )
+                        {
+                            AppendRequestHeaders( headers );
+                        }
+                    }
+                    break;
+            }
         }
         #endregion
 

@@ -92,6 +92,7 @@ namespace m3u8.download.manager.ui
             }
             //---DGV.Items = _DGVRows = new DataGridCollectionView( items );
             DGV.ItemsSource = _DGVRows = new DataGridCollectionView( items );
+            DGV.PointerPressed     += DGV_PointerPressed;
             DGV.CellPointerPressed += DGV_CellPointerPressed;
         }
 
@@ -245,6 +246,40 @@ namespace m3u8.download.manager.ui
             }
         }
 
+        private void DGV_LoadingRow( object sender, DataGridRowEventArgs e )
+        {
+            var index = e.Row.GetIndex();
+
+            var w = (WordItem) _DGVRows[ index ];
+            w.ViewOrderNumber = index + 1;
+        }
+        private async void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
+        {
+            var p = e.GetCurrentPoint( this/*null*/ );
+            switch ( p.Properties.PointerUpdateKind )
+            {
+                case PointerUpdateKind.LeftButtonPressed:
+                    var columnHeader = (e.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridColumnHeader >().FirstOrDefault();
+                    if ( columnHeader == null )
+                    {
+                        DGV.SelectedItems.Clear();
+                    }
+                    else if ( DGV.Columns[ 0 ]?.Header == columnHeader.Content )
+                    {
+                        DGV.SelectedItems.Clear();
+                        await Task.Delay( 100 );
+                        DGV.SelectAll();
+                    }
+                    break;
+
+                //case PointerUpdateKind.RightButtonPressed:
+                //    e.Pointer.Capture( null );
+                //    e.Handled = true;
+                //
+                //    //---open_mainContextMenu();
+                //    break;
+            }
+        }
         private void DGV_CellPointerPressed( object sender, DataGridCellPointerPressedEventArgs e )
         {
             var p = e.PointerPressedEventArgs.GetCurrentPoint( null );
@@ -266,13 +301,6 @@ namespace m3u8.download.manager.ui
                 }
                 SetHasChanges();
             }
-        }
-        private void DGV_LoadingRow( object sender, DataGridRowEventArgs e )
-        {
-            var index = e.Row.GetIndex();
-
-            var w = (WordItem) _DGVRows[ index ];
-            w.ViewOrderNumber = index + 1;
         }
         #endregion
     }

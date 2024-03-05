@@ -72,7 +72,7 @@
               >
       <DataGrid.Columns>
         <DataGridTextColumn Header="#" Binding="{Binding ViewOrderNumber, Mode=OneWay}" 
-                            Width="auto" IsReadOnly="True"
+                            Width="auto" IsReadOnly="True" CanUserSort="False"
                             CellStyleClasses="order_number" />
         <!--
         <DataGridTextColumn Header="Exclude word" Binding="{Binding Text, Mode=TwoWay}" 

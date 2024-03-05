@@ -114,5 +114,36 @@ namespace m3u8.download.manager
             var txt = string.Join( "\r\n", rows.Select( r => r.RequestHeaders.AnyEx() ? $"{r.Url}{CLIP_BRD__URL_REQ_HEAD_SEP_CHAR}{BrowserIPC.ExtensionRequestHeader.ToJson( r.RequestHeaders )}" : r.Url ) );
             return (window.Clipboard.SetTextAsync( txt ));
         }
+
+        public static async Task< (bool success, IDictionary< string, string > headers) > TryGetHeadersFromClipboard( this Window window )
+        {
+            const char COLON = ':';
+            try
+            {
+                var text = (await window.Clipboard.GetTextAsync())?.Trim();
+                if ( !text.IsNullOrEmpty() )
+                {
+                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var dict  = new Dictionary< string, string >( array.Length, StringComparer.InvariantCultureIgnoreCase );
+
+                    foreach ( var a in array )
+                    {
+                        var s_row = a.Trim();
+                        var i     = s_row.IndexOf( COLON ); if ( i == -1 ) break;
+                        var name  = s_row.Substring( 0,  i ).Trim(); if ( name.IsNullOrEmpty() ) break;
+                        var value = s_row.Substring( i + 1 ).Trim();
+
+                        dict[ name ] = value;
+                    }
+                    return (dict.Any(), headers: dict);
+                }
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+
+            return (false, default);
+        }
     }
 }
