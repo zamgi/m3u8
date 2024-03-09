@@ -481,17 +481,15 @@ namespace m3u8.download.manager.controllers
                     var sw = Stopwatch.StartNew();
 
                     //-1-//
+                    row.AddBeginRequest2Log();
                     var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts.Token, row.RequestHeaders );
 
                     row.SetTotalParts( m3u8File.Parts.Count );
-                    row.Log.Output( m3u8File, clear: true );
+                    row.Log.Output( m3u8File );
 
                     //-2-//
                     await Task.Delay( MILLISECONDSDELAY_M3U8FILE_OUTPUT_PAUSE, cts.Token );
-                    row.Log.Clear();
-                    row.Log.AddRequestRow( "url:" );
-                    row.Log.AddRequestRow( row.Url );
-                    row.Log.OutputRequestHeaders( row.RequestHeaders );
+                    row.AddBeginRequest2Log();
 
                     //-3-//
                     var anyErrorHappend = false;
@@ -684,10 +682,7 @@ namespace m3u8.download.manager.controllers
                 try
                 {
                     var sw = Stopwatch.StartNew();
-                    row.Log.Clear();
-                    row.Log.AddRequestRow( "url:" );
-                    row.Log.AddRequestRow( row.Url );
-                    row.Log.OutputRequestHeaders( row.RequestHeaders );
+                    row.AddBeginRequest2Log();
 
                     //-1-//
                     var anyErrorHappend = false;
@@ -1115,7 +1110,16 @@ namespace m3u8.download.manager.controllers
     /// </summary>
     internal static class DownloadControllerExtensions
     {
-        public static void Output( this LogListModel log, in m3u8_file_t m3u8File, bool clear = false )
+        public static void AddBeginRequest2Log( this DownloadRow row, bool clearLog = true ) => row.Log.AddBeginRequest2Log( row.Url, row.RequestHeaders, clearLog );
+        public static void AddBeginRequest2Log( this LogListModel log, string url, IDictionary< string, string > requestHeaders, bool clearLog = true )
+        {
+            if ( clearLog ) log.Clear();
+            log.AddRequestRow( "url:" );
+            log.AddRequestRow( url );
+            log.OutputRequestHeaders( requestHeaders );
+        }
+
+        public static void Output( this LogListModel log, in m3u8_file_t m3u8File )
         {
             var lines = m3u8File.RawText?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
                                 .Where( line => !line.IsNullOrWhiteSpace() )
@@ -1124,7 +1128,6 @@ namespace m3u8.download.manager.controllers
             {
                 log.BeginUpdate();
                 {
-                    if ( clear ) log.Clear();
                     foreach ( var line in lines )
                     {
                         log.AddRequestRow( line );
@@ -1135,42 +1138,22 @@ namespace m3u8.download.manager.controllers
                 log.EndUpdate();
             }
         }
-        //public static void Output( this LogListModel log, in m3u8_file_t m3u8File, IDictionary< string, string > requestHeaders )
-        //{
-        //    var lines = m3u8File.RawText?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
-        //                        .Where( line => !line.IsNullOrWhiteSpace() )
-        //                        ;//.ToList();
-        //    if ( lines.AnyEx() )
-        //    {
-        //        log.BeginUpdate();
-        //        {
-        //            log.Clear();
-        //            if ( requestHeaders.AnyEx() )
-        //            {
-        //                log.OutputRequestHeaders_Internal( requestHeaders );
-        //            }
-        //            foreach ( var line in lines )
-        //            {
-        //                log.AddRequestRow( line );
-        //            }
-        //            log.AddEmptyRow();
-        //            log.AddRequestRow( $" patrs count: {m3u8File.Parts.Count}" );
-        //        }
-        //        log.EndUpdate();
-        //    }
-        //}
-        public static void OutputRequestHeaders( this LogListModel log, IDictionary< string, string > requestHeaders )
+        public static void OutputRequestHeaders( this LogListModel log, IDictionary< string, string > requestHeaders, bool addEmptyRowAtEnd = true )
         {
             if ( requestHeaders.AnyEx() )
             {
                 log.BeginUpdate();
                 {
-                    log.OutputRequestHeaders_Internal( requestHeaders );
+                    log.OutputRequestHeaders_Internal( requestHeaders, addEmptyRowAtEnd );
                 }
                 log.EndUpdate();
             }
+            else if ( addEmptyRowAtEnd )
+            {
+                log.AddEmptyRow();
+            }
         }
-        private static void OutputRequestHeaders_Internal( this LogListModel log, IDictionary< string, string > requestHeaders )
+        private static void OutputRequestHeaders_Internal( this LogListModel log, IDictionary< string, string > requestHeaders, bool addEmptyRowAtEnd )
         {
             log.AddRequestHeaderRow( $"/request headers: {requestHeaders.Count}/" );
             var n = 0;
@@ -1185,7 +1168,7 @@ namespace m3u8.download.manager.controllers
                 var indent   = new string( ' ', max_key_len - p.Key.Length );
                 log.AddRequestHeaderRow( $" {n_indent}({n_txt}) {p.Key}: {indent}{p.Value}" );
             }
-            log.AddEmptyRow();
+            if ( addEmptyRowAtEnd ) log.AddEmptyRow();
         }
         public static void StatusStarted( this DownloadRow row )
         {

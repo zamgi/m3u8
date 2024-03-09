@@ -613,6 +613,7 @@ namespace m3u8.download.manager.ui
             }
 
             _Model.Clear();
+
             #region [.url.]
             if ( !Extensions.TryGetM3u8FileUrl( this.M3u8FileUrl, out var x ) )
             {
@@ -626,13 +627,13 @@ namespace m3u8.download.manager.ui
             this.SetEnabledAllChildControls( false );
             await Task.Delay( millisecondsDelay: 250 );
 
+            var requestHeaders = this.GetRequestHeaders();
+
             using ( var cts = new CancellationTokenSource() )
             using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1_500 ) )
-            {
-                _Model.AddRequestRow( "url:" );
-                _Model.AddRequestRow( this.M3u8FileUrl );
-                var t = await _DC_.GetFileTextContent( x.m3u8FileUrl, this.GetRequestHeaders(), _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
-                _Model.OutputRequestHeaders( this.GetRequestHeaders() );
+            {                
+                _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, clearLog: false );
+                var t = await _DC_.GetFileTextContent( x.m3u8FileUrl, requestHeaders, _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
 
                 if ( cts.IsCancellationRequested )
                 {
