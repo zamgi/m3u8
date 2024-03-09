@@ -10,14 +10,15 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 
-using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
-using _AvaColor_   = Avalonia.Media.Color;
 using _AvaBrushes_ = Avalonia.Media.Brushes;
+using _AvaColor_ = Avalonia.Media.Color;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 
 namespace m3u8.download.manager.ui
 {
@@ -316,32 +317,60 @@ namespace m3u8.download.manager.ui
         }
         private async void outputFileNameSelectButton_Click( object sender, RoutedEventArgs e )
         {
-            //var _ = await this.StorageProvider.SaveFilePickerAsync( new Avalonia.Platform.Storage.FilePickerSaveOptions()
-            //{
-            //    SuggestedFileName      = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName ),
-            //    SuggestedStartLocation = this.OutputDirectory,
-            //    //Directory        = this.OutputDirectory,
-            //    DefaultExtension = _SC.Settings.OutputFileExtension,
-            //    //InitialFileName  = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName )
-            //});
+            var sf = await this.StorageProvider.SaveFilePickerAsync( new FilePickerSaveOptions()
+            {
+                SuggestedStartLocation = await StorageProviderExtensions.TryGetFolderFromPathAsync( this.StorageProvider, this.OutputDirectory ),
+                DefaultExtension       = _SC.Settings.OutputFileExtension?.TrimStart('.'),
+                SuggestedFileName      = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName ),
+            });
+            if ( sf != null )
+            {
+                var fileName = sf.Path.LocalPath.ToString();
+                if ( !fileName.IsNullOrWhiteSpace() )
+                {
+                    this.OutputFileName  = Path.GetFileName( fileName );
+                    this.OutputDirectory = Path.GetDirectoryName( fileName );
+                }
+            }
 
-            var sfd = new SaveFileDialog() { Directory = this.OutputDirectory,
+            #region comm. prev.
+            /*
+            var sfd = new SaveFileDialog()
+            {
+                Directory        = this.OutputDirectory,
                 DefaultExtension = _SC.Settings.OutputFileExtension,
-                InitialFileName = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName ),
-                /*AddExtension     = true,*/
+                InitialFileName  = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName ),
+                //AddExtension     = true,
             };
             {
                 var fileName = await sfd.ShowAsync( this );
                 if ( !fileName.IsNullOrWhiteSpace() )
                 {
-                    var outputFullFileName = fileName;
-                    this.OutputFileName = Path.GetFileName( outputFullFileName );
-                    this.OutputDirectory = Path.GetDirectoryName( outputFullFileName );
+                    this.OutputFileName  = Path.GetFileName( fileName );
+                    this.OutputDirectory = Path.GetDirectoryName( fileName );
                 }
             }
+            //*/
+            #endregion
         }
         private async void outputDirectorySelectButton_Click( object sender, RoutedEventArgs e )
         {
+            var sf = await this.StorageProvider.OpenFolderPickerAsync( new FolderPickerOpenOptions()
+            {
+                SuggestedStartLocation = await StorageProviderExtensions.TryGetFolderFromPathAsync( this.StorageProvider, this.OutputDirectory ),
+                Title = "Select Output directory", AllowMultiple = false,
+            });
+            if ( sf.AnyEx() )
+            {
+                var directory = sf[ 0 ].Path.LocalPath.ToString();
+                if ( !directory.IsNullOrWhiteSpace() )
+                {
+                    this.OutputDirectory = directory;
+                }
+            }
+
+            #region comm. prev.            
+            /*
             var d = new OpenFolderDialog() { Directory = this.OutputDirectory, Title = "Select Output directory" };
             {
                 var directory = await d.ShowAsync( this );
@@ -350,6 +379,8 @@ namespace m3u8.download.manager.ui
                     this.OutputDirectory = directory;
                 }
             }
+            //*/
+            #endregion
         }
         private async void m3u8FileUrlTextBox_TextChanged( string value )
         {
@@ -377,6 +408,7 @@ namespace m3u8.download.manager.ui
             if ( _IsTurnOff__outputFileNameTextBox_TextChanged ) return;
             if ( _OutputFileNamePatternProcessor == null ) return; //then call from '.ctor()'
 
+            _LastManualInputed_outputFileNameText = value;
             Process_use_OutputFileNamePatternProcessor();
         }
         #endregion

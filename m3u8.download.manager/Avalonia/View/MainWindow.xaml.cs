@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,10 +22,10 @@ using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
-using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
-using _Resources_                 = m3u8.download.manager.Properties.Resources;
-using System.Collections.Generic;
+using _Resources_ = m3u8.download.manager.Properties.Resources;
+using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
+using Avalonia.Platform.Storage;
 
 namespace m3u8.download.manager.ui
 {
@@ -1187,15 +1188,32 @@ namespace m3u8.download.manager.ui
         }
         private async void downloadListUC_OutputDirectoryClick( DownloadRow row )
         {
+            var sf = await this.StorageProvider.OpenFolderPickerAsync( new FolderPickerOpenOptions()
+            {
+                SuggestedStartLocation = await StorageProviderExtensions.TryGetFolderFromPathAsync( this.StorageProvider, row.OutputDirectory ),
+                Title = $"Select output directory: '{row.OutputFileName}'", AllowMultiple = false,
+            });
+            if ( sf.AnyEx() )
+            {
+                var directory = sf[ 0 ].Path.LocalPath.ToString();
+                if ( !directory.IsNullOrWhiteSpace() )
+                {
+                    row.SetOutputDirectory( directory );
+                }
+            }
+
+            #region comm. prev.
+            /*
             var d = new OpenFolderDialog() { Directory = row.OutputDirectory, Title = $"Select output directory: '{row.OutputFileName}'" };
             {
                 var directory = await d.ShowAsync( this );
                 if ( !directory.IsNullOrWhiteSpace() )
                 {
                     row.SetOutputDirectory( directory );
-                    //---downloadListUC.InvalidateVisual();
                 }
             }
+            //*/
+            #endregion
         }
 
         private string _Last_ChangeOutputDirectory;
@@ -1206,6 +1224,27 @@ namespace m3u8.download.manager.ui
             {
                 var first_row = rows.First();
                 var descr = (rows.Count == 1) ? $"Select output directory for file: '{first_row.OutputFileName}'" : $"Select output directory for ({rows.Count}) files";
+
+                var sf = await this.StorageProvider.OpenFolderPickerAsync( new FolderPickerOpenOptions()
+                {
+                    SuggestedStartLocation = await StorageProviderExtensions.TryGetFolderFromPathAsync( this.StorageProvider, GetSelectedDirectory( first_row ) ),
+                    Title = descr, AllowMultiple = false,
+                });
+                if ( sf.AnyEx() )
+                {
+                    var outputDirectory = sf[ 0 ].Path.LocalPath.ToString();
+                    if ( !outputDirectory.IsNullOrWhiteSpace() )
+                    {
+                        _Last_ChangeOutputDirectory = outputDirectory;
+                        foreach ( var row in rows )
+                        {
+                            await ChangeOutputDirectory( row, outputDirectory );
+                        }
+                    }
+                }
+
+                #region comm. prev.
+                /*
                 var d = new OpenFolderDialog() { Directory = GetSelectedDirectory( first_row ), Title = descr };
                 var outputDirectory = await d.ShowAsync( this );
                 if ( !outputDirectory.IsNullOrWhiteSpace() )
@@ -1216,6 +1255,8 @@ namespace m3u8.download.manager.ui
                         await ChangeOutputDirectory( row, outputDirectory );
                     }
                 }
+                //*/
+                #endregion
             }
         }
         private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _Last_ChangeOutputDirectory ) ?? row.OutputDirectory;
@@ -1299,7 +1340,7 @@ namespace m3u8.download.manager.ui
                 }
                 catch ( Exception ex )
                 {
-                    this.MessageBox_ShowError( ex.ToString(), "Move/Remane output file" );
+                    await this.MessageBox_ShowError( ex.ToString(), "Move/Remane output file" );
                     return  (MoveFileByRenameResultEnum.Fail);
                 }
             }
