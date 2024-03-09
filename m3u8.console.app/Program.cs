@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -109,7 +109,7 @@ namespace m3u8
                         sw.Stop();
                         var totalBytes = downloadParts.Sum( p => (p.Bytes?.Length).GetValueOrDefault() );
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadParts.Count( p => p.Error == null )} of {downloadParts.Count}\r\n" + 
-                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {GetSizeInMbFormatted( totalBytes )} mb)\r\n" );
+                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {to_text_format( totalBytes >> 20 )} mb)\r\n" );
 
                     })
                     .ContinueWith( t =>
@@ -269,7 +269,7 @@ namespace m3u8
                         sw.Stop();
                         var totalBytes = downloadParts.Sum( p => (p.Bytes?.Length).GetValueOrDefault() );
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadParts.Count( p => p.Error == null )} of {downloadParts.Count}\r\n" + 
-                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {GetSizeInMbFormatted( totalBytes )} mb)\r\n" );
+                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {to_text_format( totalBytes >> 20 )} mb)\r\n" );
 
                     })
                     .ContinueWith( t =>
@@ -399,7 +399,7 @@ namespace m3u8
                         //-3-//
                         var downloadPartsSuccessCount = 0;
                         var downloadPartsErrorCount   = 0;
-                        var totalBytes                = 0;
+                        var totalBytes = 0;
 
                         var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.AbsolutePath ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
                         using ( var fs = Extensions.File_Open4Write( outputFileName ) )
@@ -421,7 +421,7 @@ namespace m3u8
 
                         sw.Stop();
                         CONSOLE.WriteLine( $"\r\nSuccess: downloaded & writed parts {downloadPartsSuccessCount} of {(downloadPartsErrorCount + downloadPartsSuccessCount)}\r\n" + 
-                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {GetSizeInMbFormatted( totalBytes )} mb)\r\n" );
+                                           $"(elapsed: {sw.Elapsed}, file: '{outputFileName}', size: {to_text_format( totalBytes >> 20 )} mb)\r\n" );
 
                     })
                     .ContinueWith( t =>
@@ -451,7 +451,8 @@ namespace m3u8
                     CancellationToken  = ct,
                     m3u8FileUrl        = m3u8FileUrl,
                     OutputFileName     = outputFileName,
-                    ResponseStepAction = new m3u8_processor.ResponseStepActionDelegate( t => CONSOLE.WriteLine( $"{t.Part.OrderNumber} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),
+                    NetParams          = new m3u8_client.init_params() { AttemptRequestCount = 1, },
+                    ResponseStepAction = new m3u8_processor.ResponseStepActionDelegate( t => CONSOLE.WriteLine( $"{t.Part.OrderNumber} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),                    
                 };
 
                 await m3u8_processor.DownloadFileAndSave_Async( p ).CAX();
@@ -567,22 +568,24 @@ namespace m3u8
                     StreamPool                 = streamPool,
                     RespBufPool                = respBufPool,                    
                 };
-
+#if NETCOREAPP
+                await m3u8_processor_next.DownloadPartsAndSave_Async( p, requestHeaders ).CAX();
+#else
                 await m3u8_processor_next.DownloadPartsAndSave( p, requestHeaders ).CAX();
+#endif
             }
         }
 
-        private static string GetSizeInMbFormatted( int sizeInBytes ) => GetSizeInMbFormatted( (ulong) sizeInBytes );
-        private static string GetSizeInMbFormatted( ulong sizeInBytes )
-        {
-            var sizeInMb = sizeInBytes >> 20;
-            return ((0 < sizeInMb) ? sizeInMb.ToString("0,0") : "0");
-        }
+        private static string to_text_format( int size ) => to_text_format( (ulong) size );
+        private static string to_text_format( ulong size ) => (0 < size) ? size.ToString("0,0") : "0";
 
         [STAThread] private static async Task Main( string[] args )
         {
             try
             {
+#if NETCOREAPP
+                Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
+#endif
                 #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
 #if NETCOREAPP
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13);
@@ -627,11 +630,11 @@ namespace m3u8
                 {
                     var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( M3U8_FILE_URL ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
                     await next1.run( M3U8_FILE_URL, outputFileName, cts.Token, requestHeaders ).CAX(); //.WaitForTaskEndsOrKeyboardBreak( cts );
-                }                  
+                }
             }
             catch ( Exception ex )
             {
-                CONSOLE.WriteLineError( "ERROR: " + ex );
+                CONSOLE.WriteLineError( $"ERROR: {ex}" );
             }
             CONSOLE.WriteLine( "\r\n\r\n[.....finita fusking comedy.....]\r\n\r\n", ConsoleColor.DarkGray );
             CONSOLE.ReadLine();

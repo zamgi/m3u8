@@ -102,7 +102,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "google-chrome", "google-chr
 		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.downloader.host.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.downloader.host.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.console.app_2", "m3u8.console.app_2\m3u8.console.app_2.csproj", "{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.console.app", "m3u8.console.app\m3u8.console.app.csproj", "{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8_live_stream_downloader", "m3u8_live_stream_downloader\m3u8_live_stream_downloader.csproj", "{B3EA7DC6-8C12-4A40-B437-9C737EC0EF28}"
 EndProject
