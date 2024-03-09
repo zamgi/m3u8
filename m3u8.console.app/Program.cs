@@ -482,7 +482,7 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
-        private static class next
+        private static class next1
         {
             /// <summary>
             /// 
@@ -626,7 +626,7 @@ namespace m3u8
                 using ( var cts = new CancellationTokenSource() )
                 {
                     var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( M3U8_FILE_URL ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                    await next.run( M3U8_FILE_URL, outputFileName, cts.Token, requestHeaders ).CAX(); //.WaitForTaskEndsOrKeyboardBreak( cts );
+                    await next1.run( M3U8_FILE_URL, outputFileName, cts.Token, requestHeaders ).CAX(); //.WaitForTaskEndsOrKeyboardBreak( cts );
                 }                  
             }
             catch ( Exception ex )
