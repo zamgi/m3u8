@@ -13,19 +13,19 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Platform;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using MsBox.Avalonia.Enums;
 
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+using MsBox.Avalonia.Enums;
 
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_ = m3u8.download.manager.Properties.Resources;
 using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
-using Avalonia.Platform.Storage;
 
 namespace m3u8.download.manager.ui
 {
