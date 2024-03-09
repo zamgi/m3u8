@@ -240,9 +240,9 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon downloadInstance {
+        internal static System.Drawing.Icon download_inst {
             get {
-                object obj = ResourceManager.GetObject("downloadInstance", resourceCulture);
+                object obj = ResourceManager.GetObject("download_inst", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

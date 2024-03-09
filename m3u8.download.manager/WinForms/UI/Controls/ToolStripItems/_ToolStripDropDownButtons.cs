@@ -113,7 +113,7 @@ namespace System.Windows.Forms
         public DownloadInstanceToolButton() { }
 
         protected override string MainToolTipText   => "downloads instance count";
-        protected override Image  MainImage         => _Resources_.downloadInstance.ToBitmap();
+        protected override Image  MainImage         => _Resources_.download_inst.ToBitmap();
         protected override Color  MainForeColor     => Color.DodgerBlue;
         protected override Color  SelectedBackColor => Color.LightBlue;
 
