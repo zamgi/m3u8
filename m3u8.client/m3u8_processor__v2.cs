@@ -300,7 +300,7 @@ namespace m3u8
             var expectedPartNumber = ip.m3u8File.Parts.FirstOrDefault().OrderNumber;
             var maxPartNumber      = ip.m3u8File.Parts.LastOrDefault ().OrderNumber;
             var sourceQueue        = new Queue< m3u8_part_ts__v2 >( ip.m3u8File.Parts );
-            var downloadPartsSet   = new SortedSet< m3u8_part_ts__v2 >( m3u8_part_ts__v2.comparer.Inst );
+            var downloadPartsSet   = new SortedSet< m3u8_part_ts__v2 >( m3u8_part_ts__v2.Comparer.Inst );
             var poolStreamCapacity = ip.poolStreamCapacity.GetValueOrDefault( 1024 * 1024 * 5 );
 
             using ( DefaultConnectionLimitSaver.Create( ip.maxDegreeOfParallelism ) )

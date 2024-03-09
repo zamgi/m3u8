@@ -206,19 +206,19 @@ namespace m3u8.infrastructure
         /// <summary>
         /// 
         /// </summary>
-        private sealed class tuple
+        private sealed class tuple_t
         {
             /// <summary>
             /// 
             /// </summary>
-            public struct EqualityComparer : IEqualityComparer< tuple >
+            public struct EqualityComparer : IEqualityComparer< tuple_t >
             {
-                public bool Equals( tuple x, tuple y ) => (x.Timeout == y.Timeout);
-                public int GetHashCode( tuple obj ) => obj.Timeout.GetHashCode();
+                public bool Equals( tuple_t x, tuple_t y ) => (x.Timeout == y.Timeout);
+                public int GetHashCode( tuple_t obj ) => obj.Timeout.GetHashCode();
             }
 
-            private tuple( TimeSpan timeout ) => Timeout = timeout;
-            public tuple( TimeSpan timeout, HttpClient httpClient ) => (Timeout, HttpClient, RefCount) = (timeout, httpClient, 0);
+            private tuple_t( TimeSpan timeout ) => Timeout = timeout;
+            public tuple_t( TimeSpan timeout, HttpClient httpClient ) => (Timeout, HttpClient, RefCount) = (timeout, httpClient, 0);
 
             public TimeSpan   Timeout    { get; }
             public HttpClient HttpClient { get; }
@@ -227,23 +227,23 @@ namespace m3u8.infrastructure
             public int IncrementRefCount() => ++RefCount;
             public int DecrementRefCount() => --RefCount;
 
-            public static tuple key( TimeSpan? timeout ) => new tuple( timeout.GetValueOrDefault( TimeSpan.Zero ) );
+            public static tuple_t key( TimeSpan? timeout ) => new tuple_t( timeout.GetValueOrDefault( TimeSpan.Zero ) );
 #if DEBUG
             public override string ToString() => $"{Timeout}, (ref: {RefCount})";
 #endif
         }
 
-        private static ILRUCache< tuple > _LRUCache;
+        private static ILRUCache< tuple_t > _LRUCache;
 
-        static HttpClientFactory_WithRefCount() => _LRUCache = LRUCache< tuple >.CreateWithLimitMaxValue( 0x10, new tuple.EqualityComparer() );
+        static HttpClientFactory_WithRefCount() => _LRUCache = LRUCache< tuple_t >.CreateWithLimitMaxValue( 0x10, new tuple_t.EqualityComparer() );
 
         /// <summary>
         /// 
         /// </summary>
         private struct free_tuple : IDisposable
         {
-            private tuple _tuple;
-            public free_tuple( tuple t ) => _tuple = t ?? throw (new ArgumentNullException( nameof(t) ));
+            private tuple_t _tuple;
+            public free_tuple( tuple_t t ) => _tuple = t ?? throw (new ArgumentNullException( nameof(t) ));
 
             public void Dispose()
             {
@@ -274,8 +274,8 @@ namespace m3u8.infrastructure
 
                 var h = new SocketsHttpHandler();
                     h.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-                    set_Protocol( h.SslOptions, SslProtocols.Tls   );
-                    set_Protocol( h.SslOptions, SslProtocols.Tls11 );
+                    //set_Protocol( h.SslOptions, SslProtocols.Tls   );
+                    //set_Protocol( h.SslOptions, SslProtocols.Tls11 );
                     set_Protocol( h.SslOptions, SslProtocols.Tls12 );
                 #pragma warning disable CS0618
                     set_Protocol( h.SslOptions, SslProtocols.Ssl2  );
@@ -303,12 +303,12 @@ namespace m3u8.infrastructure
         public static (HttpClient, IDisposable) Get( in init_params ip ) => Get( ip.Timeout );
         public static (HttpClient, IDisposable) Get( in TimeSpan? timeout = null )
         {
-            var key = tuple.key( timeout );
+            var key = tuple_t.key( timeout );
             lock ( _LRUCache )
             {
                 if ( !_LRUCache.TryGetValue( key, out var t ) )
                 {
-                    t = new tuple( key.Timeout, CreateHttpClient( in timeout ) );
+                    t = new tuple_t( key.Timeout, CreateHttpClient( in timeout ) );
                     _LRUCache.Add( t );
                 }
                 t.IncrementRefCount();
@@ -327,7 +327,7 @@ namespace m3u8.infrastructure
             }
         }
 
-        private static void Release( tuple t )
+        private static void Release( tuple_t t )
         {
             lock ( _LRUCache )
             {

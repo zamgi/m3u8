@@ -298,7 +298,7 @@ namespace m3u8
             var expectedPartNumber = m3u8File.Parts.FirstOrDefault().OrderNumber;
             var maxPartNumber      = m3u8File.Parts.LastOrDefault ().OrderNumber;
             var sourceQueue        = new Queue< m3u8_part_ts__v2 >( m3u8File.Parts );
-            var downloadPartsSet   = new SortedSet< m3u8_part_ts__v2 >( m3u8_part_ts__v2.comparer.Inst );
+            var downloadPartsSet   = new SortedSet< m3u8_part_ts__v2 >( m3u8_part_ts__v2.Comparer.Inst );
 
             using ( var throttlerBySpeed_User = ThrottlerBySpeed_InDownloadProcessUser.Start( ip.ThrottlerBySpeed ) )
             using ( var innerCts              = new CancellationTokenSource() )
@@ -465,7 +465,7 @@ namespace m3u8
             var expectedPartNumber = m3u8File.Parts.FirstOrDefault().OrderNumber;
             var maxPartNumber      = m3u8File.Parts.LastOrDefault ().OrderNumber;
             var sourceQueue        = new Queue< m3u8_part_ts__v2 >( m3u8File.Parts );
-            var downloadPartsSet   = new SortedSet< m3u8_part_ts__v2 >( m3u8_part_ts__v2.comparer.Inst );
+            var downloadPartsSet   = new SortedSet< m3u8_part_ts__v2 >( m3u8_part_ts__v2.Comparer.Inst );
 
             using ( var throttlerBySpeed_User = ThrottlerBySpeed_InDownloadProcessUser.Start( ip.ThrottlerBySpeed ) )
             using ( var innerCts              = new CancellationTokenSource() )

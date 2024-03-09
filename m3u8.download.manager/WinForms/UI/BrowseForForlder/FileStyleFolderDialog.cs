@@ -350,7 +350,7 @@ namespace System.Windows.Forms
     {
         // Defined on IModalWindow - repeated here due to requirements of COM interop layer
         // --------------------------------------------------------------------------------
-        [PreserveSig] int Show([In] IntPtr parent);
+        [PreserveSig] new int Show([In] IntPtr parent);
 
         [PreserveSig] int SetFileTypes( [In] uint cFileTypes,/* [size_is][in] */ /*COMDLG_FILTERSPEC* rgFilterSpec*/ IntPtr rgFilterSpec );
         [PreserveSig] int SetFileTypeIndex( [In] uint iFileType );

@@ -47,8 +47,8 @@ namespace m3u8.download.manager.ui
 #if NETCOREAPP
         private static string _APP_TITLE_ => Resources.APP_TITLE__NET_CORE;
 #else
-        private static string _APP_TITLE_ => Resources.APP_TITLE;
-#endif 
+        private static string _APP_TITLE_ => Resources.APP_TITLE__NET_FW;
+#endif
         #endregion
 
         #region [.ctor().]
@@ -1079,7 +1079,7 @@ namespace m3u8.download.manager.ui
         private void otherSettingsToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_OtherSettings();
         private void aboutToolButton_Click( object sender, EventArgs e )
         {
-            var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\"" + Environment.NewLine +
+        var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\" {AssemblyInfoHelper.FrameWorkName}" + Environment.NewLine +
                        AssemblyInfoHelper.AssemblyCopyright + Environment.NewLine +
                        Environment.NewLine +
                        $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})" +

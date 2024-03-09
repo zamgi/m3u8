@@ -86,5 +86,23 @@ namespace m3u8.download.manager.Properties {
                 return ResourceManager.GetString("M3U8_EXTENSION", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (NET 8.0).
+        /// </summary>
+        internal static string NET_CORE {
+            get {
+                return ResourceManager.GetString("NET_CORE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (NET 4.8.1).
+        /// </summary>
+        internal static string NET_FW {
+            get {
+                return ResourceManager.GetString("NET_FW", resourceCulture);
+            }
+        }
     }
 }

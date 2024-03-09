@@ -1,349 +1,128 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(TargetFrameworks);net481</TargetFrameworks>
+    <UseWindowsForms>true</UseWindowsForms>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!--<AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>-->
+    <LangVersion>latest</LangVersion>
+    
+    <StartupObject>m3u8.download.manager.Program</StartupObject>
+    <ApplicationIcon>Resources\m3u8_32x36.ico</ApplicationIcon>    
+
     <RootNamespace>m3u8.download.manager</RootNamespace>
     <AssemblyName>m3u8.download.manager</AssemblyName>
-    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\bin\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>latest</LangVersion>
-    <CodeAnalysisRuleSet>windows.ruleset</CodeAnalysisRuleSet>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\bin\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+
   <PropertyGroup>
-    <ApplicationIcon>Resources\m3u8_32x36.ico</ApplicationIcon>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <!--<RetainVMGarbageCollection>true</RetainVMGarbageCollection>-->
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net481' ">
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <ProjectConfigFileName>App.net481.config</ProjectConfigFileName>
+    <OutputPath>..\..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\bin\</OutputPath>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0-windows' ">
+    <ProjectConfigFileName>App.net8.0-windows.config</ProjectConfigFileName>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+ 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Condition=" '$(TargetFramework)' == 'net481' "
+          Command="copy /Y &quot;App.net481.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />
+    
+    <Exec Condition=" '$(TargetFramework)' == 'net8.0-windows' "
+          Command="copy /Y &quot;App.net8.0-windows.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />
+  </Target>
+
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
+    <None Remove=".gitignore" />
+    <None Remove="App.config" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="..\..\m3u8.client\m3u8.client.cs">
-      <Link>[-= m3u8.client =-]\m3u8.client.cs</Link>
-    </Compile>
-    <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs">
-      <Link>[-= m3u8.client =-]\m3u8.client.factory.cs</Link>
-    </Compile>
-    <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs">
-      <Link>[-= m3u8.client =-]\m3u8_processor_adv__v2.cs</Link>
-    </Compile>
-    <Compile Include="..\..\m3u8.client\m3u8_processor_next.cs">
-      <Link>[-= m3u8.client =-]\m3u8_processor_next.cs</Link>
-    </Compile>
-    <Compile Include="..\..\m3u8.client\obj_pool.cs">
-      <Link>[-= m3u8.client =-]\obj_pool.cs</Link>
-    </Compile>
-    <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs">
-      <Link>[-= m3u8.client =-]\m3u8_live_stream_downloader.cs</Link>
-    </Compile>
-    <Compile Include="..\[Common]\Controller\Sync_primitives.cs">
-      <Link>Controller\Sync_primitives.cs</Link>
-    </Compile>
-    <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs">
-      <Link>Controller\throttler_by_speed_impl.cs</Link>
-    </Compile>
-    <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs">
-      <Link>[-= m3u8.client =-]\download_threads_semaphore.cs</Link>
-    </Compile>
-    <Compile Include="..\[Common]\Controller\download_threads_semaphore_impl.cs">
-      <Link>Controller\download_threads_semaphore_impl.cs</Link>
-    </Compile>
-    <Compile Include="..\[Common]\Controller\interlocked_lock.cs">
-      <Link>Controller\interlocked_lock.cs</Link>
-    </Compile>
-    <Compile Include="..\[Common]\Controller\DownloadController.cs">
-      <Link>Controller\DownloadController.cs</Link>
-    </Compile>
-    <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs">
-      <Link>Controller\SettingsPropertyChangeController.cs</Link>
-    </Compile>
-    <Compile Include="..\..\m3u8.client\throttler_by_speed.cs">
-      <Link>[-= m3u8.client =-]\throttler_by_speed.cs</Link>
-    </Compile>
-    <Compile Include="..\[Common]\Extensions.cs">
-      <Link>Infrastructure\Extensions.cs</Link>
-    </Compile>
-    <Compile Include="Infrastructure\ClipboardHelper.cs" />
-    <Compile Include="Infrastructure\AssemblyInfoHelper.cs" />
-    <Compile Include="Infrastructure\Ellipsis.cs" />
-    <Compile Include="Infrastructure\Extensions.WinForms.cs" />
-    <Compile Include="Infrastructure\FileHelper.cs" />
-    <Compile Include="Infrastructure\OutputFileNamePatternProcessor.cs" />
-    <Compile Include="Infrastructure\CollectGarbage.cs" />
-    <Compile Include="Infrastructure\SortInfo.cs" />
-    <Compile Include="Infrastructure\BlinkManager.cs" />
-    <Compile Include="Infrastructure\Color2ColorTransition.cs" />
-    <Compile Include="Infrastructure\DownloadRowsSerializer.cs" />
-    <Compile Include="Infrastructure\FileNameCleaner4UI.cs" />
-    <Compile Include="Infrastructure\ObjAsDict_JsonSerializer.cs" />
-    <Compile Include="Model\DownloadRow.cs" />
-    <Compile Include="Model\DownloadListModel.cs" />
-    <Compile Include="Model\_more.cs" />
-    <Compile Include="Model\LogRow.cs" />
-    <Compile Include="Model\LogListModel.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
+    <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />    
+    <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
+    <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
+    <Compile Include="..\..\m3u8.client\m3u8_processor_next.cs" Link="[-= m3u8.client =-]\m3u8_processor_next.cs" />
+    <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
+    <Compile Include="..\..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
+    <Compile Include="..\..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
+    <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
+
+    <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs" Link="Controller\throttler_by_speed_impl.cs" />
+    <Compile Include="..\[Common]\Controller\download_threads_semaphore_impl.cs" Link="Controller\download_threads_semaphore_impl.cs" />
+    <Compile Include="..\[Common]\Controller\interlocked_lock.cs" Link="Controller\interlocked_lock.cs" />
+    <Compile Include="..\[Common]\Controller\DownloadController.cs" Link="Controller\DownloadController.cs" />
+    <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
+    <Compile Include="..\[Common]\Controller\Sync_primitives.cs" Link="Controller\Sync_primitives.cs" />
+    <Compile Include="..\[Common]\Extensions.cs" Link="Infrastructure\Extensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\m3u8_32x36.ico" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net481' ">
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="UI\BrowseForForlder\DirectorySelectDialog.cs" />
-    <Compile Include="UI\BrowseForForlder\FileStyleFolderDialog.cs" />
-    <Compile Include="UI\BrowseForForlder\SHBrowser.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\ToolStripStatusLabelEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\TextBoxEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\DataGridViewEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\ChangeLiveStreamMaxFileSizeForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\ChangeLiveStreamMaxFileSizeForm.Designer.cs">
-      <DependentUpon>ChangeLiveStreamMaxFileSizeForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Forms\ColumnsVisibilityEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\ColumnsVisibilityEditor.Designer.cs">
-      <DependentUpon>ColumnsVisibilityEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Forms\SettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\SettingsForm.designer.cs">
-      <DependentUpon>SettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\DefaultColors.cs" />
-    <None Include="UI\Forms\_Form1.cs" />
-    <None Include="UI\Forms\_Form1.Designer.cs">
-      <DependentUpon>_Form1.cs</DependentUpon>
-    </None>
-    <Compile Include="UI\LogRowsHeightStorer.cs" />
-    <Compile Include="UI\Controls\ToolStripItems\NumericUpDownUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\ToolStripItems\NumericUpDownUC.designer.cs">
-      <DependentUpon>NumericUpDownUC.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\UC\RequestHeadersEditor.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\UC\RequestHeadersEditor.Designer.cs">
-      <DependentUpon>RequestHeadersEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\UC\ParallelismSettingsUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\UC\ParallelismSettingsUC.Designer.cs">
-      <DependentUpon>ParallelismSettingsUC.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\UC\OtherSettingsUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\UC\OtherSettingsUC.designer.cs">
-      <DependentUpon>OtherSettingsUC.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\ToolStripItems\ToolStripSpeedThreshold.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\ToolStripItems\ToolStripNumericUpDownEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\ToolStripItems\_ToolStripDropDownButtons.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\Controls\NumericUpDownEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Infrastructure\FormPositionStorer.cs" />
-    <Compile Include="Program\IPC\BrowserIPC.cs" />
-    <Compile Include="Program\IPC\SingleCopyApplication.cs" />
-    <Compile Include="Program\IPC\PipeIPC.cs" />
-    <Compile Include="Program\IPC\ProcessCreator.cs" />
-    <Compile Include="UI\Forms\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Infrastructure\NameAndPathCleaner.cs" />
-    <Compile Include="Infrastructure\WinApi.cs" />
-    <Compile Include="Model\ListModel[T].cs" />
-    <Compile Include="UI\Forms\AddNewDownloadForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\AddNewDownloadForm.Designer.cs">
-      <DependentUpon>AddNewDownloadForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Forms\FileNameExcludesWordsEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\FileNameExcludesWordsEditor.Designer.cs">
-      <DependentUpon>FileNameExcludesWordsEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Forms\ChangeOutputFileForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UI\Forms\ChangeOutputFileForm.Designer.cs">
-      <DependentUpon>ChangeOutputFileForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\ButtonWithFocusCues.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="UI\UC\StatusBarUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\UC\StatusBarUC.Designer.cs">
-      <DependentUpon>StatusBarUC.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\UC\LogUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\UC\LogUC.Designer.cs">
-      <DependentUpon>LogUC.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\UC\DownloadListUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\UC\DownloadListUC.Designer.cs">
-      <DependentUpon>DownloadListUC.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UI\WaitBanner\WaitBannerUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UI\WaitBanner\WaitBannerUC.designer.cs">
-      <DependentUpon>WaitBannerUC.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Infrastructure\RowNumbersPainter.cs" />
-    <Compile Include="Program\_Program_.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UI\WaitBanner\BitmapHolder.cs" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\browse.png" />
-    <Content Include="Resources\contextMenu\cancel_all.png" />
-    <Content Include="Resources\contextMenu\cancel.png" />
-    <Content Include="Resources\contextMenu\delete_all.png" />
-    <Content Include="Resources\contextMenu\delete.png" />
-    <Content Include="Resources\contextMenu\pause_all.png" />
-    <Content Include="Resources\contextMenu\pause.png" />
-    <Content Include="Resources\contextMenu\start_all.png" />
-    <Content Include="Resources\contextMenu\start.png" />
-    <Content Include="Resources\dop.ico" />
-    <Content Include="Resources\dop_settings.ico" />
-    <Content Include="Resources\downloadInstance.ico" />
-    <None Include="Resources\reset.png" />
-    <Content Include="Resources\edit.png" />
-    <Content Include="Resources\listbullets.png" />
-    <Content Include="Resources\listcheck.png" />
-    <Content Include="Resources\live_stream.png" />
-    <Content Include="Resources\settings.png" />
-    <Content Include="Resources\speed\speed_1.ico" />
-    <Content Include="Resources\speed\speed_2.ico" />
-    <Content Include="Resources\speed\speed_3.ico" />
-    <Content Include="Resources\speed\speed_4.ico" />
-    <Content Include="Resources\speed\speed_5.ico" />
-    <Content Include="Resources\speed\speed_main_1.png" />
-    <Content Include="Resources\speed\speed_main_2.png" />
-    <Content Include="Resources\statuses\canceled.png" />
-    <None Include="Resources\settings.ico" />
-    <None Include="Resources\m3u8_32x36.ico" />
-    <Content Include="Resources\menu\control_delete.png" />
-    <Content Include="Resources\menu\control_delete_all_finished.png" />
-    <Content Include="Resources\menu\control_pause.png" />
-    <Content Include="Resources\menu\control_start.png" />
-    <Content Include="Resources\menu\control_cancel.png" />
-    <Content Include="Resources\menu\help.png" />
-    <Content Include="Resources\menu\log.png" />
-    <Content Include="Resources\menu\copy.png" />
-    <Content Include="Resources\menu\paste.png" />
-    <Content Include="Resources\menu\plus.png" />
-    <Content Include="Resources\statuses\created.png" />
-    <Content Include="Resources\statuses\error.png" />
-    <Content Include="Resources\statuses\wait.png" />
-    <Content Include="Resources\statuses\paused.png" />
-    <Content Include="Resources\statuses\running.png" />
-    <Content Include="Resources\statuses\finished.png" />
-    <Content Include="Resources\roller\i1.ico" />
-    <Content Include="Resources\roller\i2.ico" />
-    <Content Include="Resources\roller\i3.ico" />
-    <Content Include="Resources\roller\i4.ico" />
-    <Content Include="Resources\roller\i5.ico" />
-    <Content Include="Resources\roller\i6.ico" />
-    <Content Include="Resources\roller\i7.ico" />
-    <Content Include="Resources\roller\i8.ico" />
-  </ItemGroup>
-  <ItemGroup />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
+  
+  <!--
+  <UsingTask TaskName="TransformXml" AssemblyFile="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\Web\Microsoft.Web.Publishing.Tasks.dll" />
+  <Target AfterTargets="PostBuildEvent" Name="PostBuildEvent">
+    <TransformXml Source="app.config" Destination="$(IntermediateOutputPath)$(TargetFileName).config" Transform="app.$(TargetFramework).config" />
+    <ItemGroup>
+      <AppConfigWithTargetPath Remove="app.config" />
+      <AppConfigWithTargetPath Include="$(IntermediateOutputPath)$(TargetFileName).config">
+        <TargetPath>$(TargetFileName).config</TargetPath>
+      </AppConfigWithTargetPath>
+      <AppConfigWithTargetPath Include="$(IntermediateOutputPath)$(TargetFileName).config">
+        <TargetPath>$(TargetName).vshost$(TargetExt).config</TargetPath>
+      </AppConfigWithTargetPath>
+    </ItemGroup>
   </Target>
   -->
+  
 </Project>

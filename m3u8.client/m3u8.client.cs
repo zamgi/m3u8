@@ -88,9 +88,9 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
-        public readonly struct comparer: IComparer< m3u8_part_ts >
+        public readonly struct Comparer: IComparer< m3u8_part_ts >
         {
-            public static comparer Inst { get; } = new comparer();
+            public static Comparer Inst { get; } = new Comparer();
             public int Compare( m3u8_part_ts x, m3u8_part_ts y ) => (x.OrderNumber - y.OrderNumber);
         }
 
@@ -148,9 +148,9 @@ namespace m3u8
         /// <summary>
         /// 
         /// </summary>
-        public readonly struct comparer: IComparer< m3u8_part_ts__v2 >
+        public readonly struct Comparer: IComparer< m3u8_part_ts__v2 >
         {
-            public static comparer Inst { get; } = new comparer();
+            public static Comparer Inst { get; } = new Comparer();
             public int Compare( m3u8_part_ts__v2 x, m3u8_part_ts__v2 y ) => (x.OrderNumber - y.OrderNumber);
         }
 

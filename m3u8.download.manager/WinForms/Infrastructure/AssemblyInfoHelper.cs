@@ -3,6 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
+using m3u8.download.manager.Properties;
+
 namespace m3u8.download.manager
 {
     /// <summary>
@@ -10,6 +12,11 @@ namespace m3u8.download.manager
     /// </summary>
     internal static class AssemblyInfoHelper
     {
+#if NETCOREAPP
+        public static string FrameWorkName => Resources.NET_CORE;
+#else
+        public static string FrameWorkName => Resources.NET_FW;
+#endif
         public static string AssemblyTitle
         {
             get

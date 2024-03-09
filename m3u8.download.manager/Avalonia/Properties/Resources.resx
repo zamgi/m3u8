@@ -120,6 +120,12 @@
   <data name="APP_TITLE" xml:space="preserve">
     <value>.m3u8 file download manager</value>
   </data>
+  <data name="NET_FW" xml:space="preserve">
+    <value>(NET 4.8.1)</value>
+  </data>
+  <data name="NET_CORE" xml:space="preserve">
+    <value>(NET 8.0)</value>
+  </data>
   <data name="M3U8_EXTENSION" xml:space="preserve">
     <value>.m3u8</value>
   </data>

@@ -70,20 +70,20 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .m3u8 file download manager.
-        /// </summary>
-        internal static string APP_TITLE {
-            get {
-                return ResourceManager.GetString("APP_TITLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to .m3u8 file download manager (NET 8.0).
         /// </summary>
         internal static string APP_TITLE__NET_CORE {
             get {
                 return ResourceManager.GetString("APP_TITLE__NET_CORE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .m3u8 file download manager (NET 4.8.1).
+        /// </summary>
+        internal static string APP_TITLE__NET_FW {
+            get {
+                return ResourceManager.GetString("APP_TITLE__NET_FW", resourceCulture);
             }
         }
         
@@ -441,6 +441,24 @@ namespace m3u8.download.manager.Properties {
         internal static string M3U8_EXTENSION {
             get {
                 return ResourceManager.GetString("M3U8_EXTENSION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (NET 8.0).
+        /// </summary>
+        internal static string NET_CORE {
+            get {
+                return ResourceManager.GetString("NET_CORE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (NET 4.8.1).
+        /// </summary>
+        internal static string NET_FW {
+            get {
+                return ResourceManager.GetString("NET_FW", resourceCulture);
             }
         }
         
