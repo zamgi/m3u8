@@ -5,7 +5,7 @@ VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.client", "m3u8.client\m3u8.client.csproj", "{46961224-7B51-4115-BA59-53F8537CF7C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.console.app", "m3u8.console.app\m3u8.console.app.csproj", "{B17C29AF-E052-413B-9149-4F49E5DA2571}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.console.app", "m3u8.console.app\m3u8.console.app.csproj", "{B17C29AF-E052-413B-9149-4F49E5DA2571}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.downloader", "prev\m3u8.downloader\m3u8.downloader.csproj", "{B4726081-D6C9-4183-99CF-D52913E25C85}"
 EndProject
@@ -102,8 +102,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "google-chrome", "google-chr
 		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.downloader.host.json = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.avalonia.host\google-chrome\m3u8.downloader.host.json
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.console.app", "m3u8.console.app\m3u8.console.app.csproj", "{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8_live_stream_downloader", "m3u8_live_stream_downloader\m3u8_live_stream_downloader.csproj", "{B3EA7DC6-8C12-4A40-B437-9C737EC0EF28}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution_Items", "_Solution_Items", "{19F2164B-ECA9-451D-971F-D06C2A4C16B9}"
@@ -159,10 +157,6 @@ Global
 		{A2B632E6-8000-4B07-91D2-24B017C31232}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2B632E6-8000-4B07-91D2-24B017C31232}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2B632E6-8000-4B07-91D2-24B017C31232}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6FD8845D-3C2B-443D-9C52-D7A0F5F44CCE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3EA7DC6-8C12-4A40-B437-9C737EC0EF28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3EA7DC6-8C12-4A40-B437-9C737EC0EF28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3EA7DC6-8C12-4A40-B437-9C737EC0EF28}.Release|Any CPU.ActiveCfg = Release|Any CPU
