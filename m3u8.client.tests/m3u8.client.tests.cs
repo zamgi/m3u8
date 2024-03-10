@@ -75,7 +75,7 @@ namespace m3u8.client.tests
             {
                 var m3u8_file = await mc.DownloadFile( _M3u8Url );
 
-                _Assert_( in m3u8_file );
+                _Assert_( m3u8_file );
             }
         }
 
@@ -85,12 +85,12 @@ namespace m3u8.client.tests
             {
                 var m3u8_file = await mc.DownloadFile( _M3u8Url );
 
-                _Assert_( in m3u8_file );
+                _Assert_( m3u8_file );
 
                 var m3u8_part = m3u8_file.Parts.First();
                 var downloaded_m3u8_part = await mc.DownloadPart( m3u8_part, m3u8_file.BaseAddress );
 
-                _Assert_( in downloaded_m3u8_part );
+                _Assert_( downloaded_m3u8_part );
             }
         }
 
