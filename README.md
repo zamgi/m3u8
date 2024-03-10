@@ -1,3 +1,5 @@
+[![.NET](https://github.com/zamgi/m3u8/actions/workflows/main.yml/badge.svg)](https://github.com/zamgi/m3u8/actions/workflows/main.yml)
+
 # m3u8
 m3u8 file downloader library and chrome & firefox extensions/addOns
 
