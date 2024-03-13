@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using Avalonia.Media;
+
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
 using MsBox.Avalonia.Dto;
@@ -90,6 +93,28 @@ namespace m3u8.download.manager
                 #endregion
             }
             //*/
+            #endregion
+
+            #region [.by reflection get inner for KeyDown-event.]
+            var view_field = msgbox.GetType().GetField( "_view", BindingFlags.Instance | BindingFlags.NonPublic );
+            if ( (view_field != null) && (view_field.GetValue( msgbox ) is UserControl uc) )
+            {
+                uc.AttachedToVisualTree += (_s, _e) =>
+                {
+                    var wnd = (Window) _e.Root; //(Window) uc.GetVisualRoot();
+                    var keyDown = new EventHandler< KeyEventArgs >((s, e) =>
+                    {
+                        if ( e.Key == Key.Escape )
+                        {
+                            e.Handled = true; 
+                            wnd.Close();
+                        }
+                    });
+                    uc .KeyDown += keyDown;
+                    wnd.KeyDown += keyDown;
+                };
+
+            }
             #endregion
 
             return (msgbox);
