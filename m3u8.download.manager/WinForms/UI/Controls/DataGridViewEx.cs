@@ -42,6 +42,8 @@ namespace System.Windows.Forms
         public event EventHandler StartDrawSelectRect;
         public event EventHandler EndDrawSelectRect;
 
+        public bool IsInDrawSelectRect => _DrawSelectRect;
+
         #region [.draw select rows rect.]
         private bool  _DrawSelectRect;
         private Point _SelectLocation;
@@ -52,9 +54,11 @@ namespace System.Windows.Forms
 
         protected override void OnMouseDown( MouseEventArgs e )
         {
+            var modifierKeys = Control.ModifierKeys;
+
             //doesn't process base.OnMouseDown() for save multi-rows selection (else it disappear/stay one-row)
-            var srs = ((Control.ModifierKeys != Keys.None) ? this.SelectedRows : null);            
-            if ( (srs != null) && (1 < srs.Count) ) //---if ( (Control.ModifierKeys != Keys.None) && (1 < SelectedRows.Count) )
+            var srs = ((modifierKeys != Keys.None) ? this.SelectedRows : null);            
+            if ( (srs != null) && (1 < srs.Count) ) //---if ( (modifierKeys != Keys.None) && (1 < SelectedRows.Count) )
             {
                 var selRows = srs.ToArray();
                 base.OnMouseDown( e );
@@ -65,9 +69,9 @@ namespace System.Windows.Forms
                 base.OnMouseDown( e );
             }
 
-            if ( this.HitTest( e.X, e.Y ).Type == DataGridViewHitTestType.None )
+            if ( modifierKeys.HasFlag( Keys.Control ) || (this.HitTest( e.X, e.Y ).Type == DataGridViewHitTestType.None) )
             {
-                if ( e.Button == MouseButtons.Left )
+                if ( e.Button == MouseButtons.Left /*&& !modifierKeys.HasFlag( Keys.Shift )*/)
                 {
                     this.ClearSelection();
                     //this.CurrentCell = null;
@@ -206,22 +210,23 @@ namespace System.Windows.Forms
         public int ScrollDelayInMilliseconds { get; set; } = SCROLL_DELAY_IN_MILLISECONDS;
 
         private DateTime _LastScrollDateTime;
+        [M(O.AggressiveInlining)] private bool IsTimeElapsed4Scroll() => (TimeSpan.FromMilliseconds( ScrollDelayInMilliseconds ) < (DateTime.Now - _LastScrollDateTime));
         public bool ScrollIfNeed( in Point pt )
         {
-            if ( ShouldScrollUp( in pt ) )
+            if ( ShouldScrollUp( pt ) )
             {
                 var firstIdx = this.GetFirstDisplayedScrollingRowIndex();
-                if ( (0 < firstIdx) && (TimeSpan.FromMilliseconds( ScrollDelayInMilliseconds ) < (DateTime.Now - _LastScrollDateTime)) )
+                if ( (0 < firstIdx) && IsTimeElapsed4Scroll() )
                 {
                     this.SetFirstDisplayedScrollingRowIndex( firstIdx - 1 );
                     _LastScrollDateTime = DateTime.Now;
                     return (true);
                 }
             }
-            else if ( ShouldScrollDown( in pt ) )
+            else if ( ShouldScrollDown( pt ) )
             {
                 var firstIdx = this.GetFirstDisplayedScrollingRowIndex();
-                if ( (firstIdx < (this.RowCount - 1)) && (TimeSpan.FromMilliseconds( ScrollDelayInMilliseconds ) < (DateTime.Now - _LastScrollDateTime)) )
+                if ( (firstIdx < (this.RowCount - 1)) && IsTimeElapsed4Scroll() )
                 {
                     this.SetFirstDisplayedScrollingRowIndex( firstIdx + 1);
                     _LastScrollDateTime = DateTime.Now;

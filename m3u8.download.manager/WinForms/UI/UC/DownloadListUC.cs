@@ -438,7 +438,7 @@ namespace m3u8.download.manager.ui
                             SelectLonelyRow( visibleIndex, forceSelect );
                         }
                         else
-                        {                            
+                        {
                             SelectionChanged?.Invoke( null );
                         }
                     }
@@ -680,6 +680,7 @@ namespace m3u8.download.manager.ui
             if ( !_LastSortInfo.TryGetSorting( out var columnIndex, out var sortOrder ) )
             {
                 DGV.ClearHeaderSortGlyphDirection();
+                //SelectionChanged?.Invoke( GetSelectedDownloadRow() );
                 return;
             }
 
@@ -1084,7 +1085,9 @@ namespace m3u8.download.manager.ui
                 _LastSortInfo.SetSortOrderAndSaveCurrent( e.ColumnIndex );
                 if ( !_LastSortInfo.HasSorting )
                 {
+                    var row = GetSelectedDownloadRow();
                     _Model.Sort( SortHelper.CreateDefaultComparison() );
+                    SelectDownloadRowInternal( row, true );
                 }
 
                 RestoreSortIfNeed();
@@ -1114,7 +1117,18 @@ namespace m3u8.download.manager.ui
             if ( e.Button == MouseButtons.Left )
             {
                 _DGV_MouseDown_ButtonLeft_Location = e.Location;
+
+                DGV.MouseUp   -= DGV_MouseUp;
+                DGV.MouseMove -= DGV_MouseMove;
+
+                DGV.MouseUp   += DGV_MouseUp;
+                DGV.MouseMove += DGV_MouseMove;
             }
+        }
+        private void DGV_MouseUp( object sender, MouseEventArgs e )
+        {
+            DGV.MouseUp   -= DGV_MouseUp;
+            DGV.MouseMove -= DGV_MouseMove;
         }
         private void DGV_MouseClick( object sender, MouseEventArgs e )
         {
@@ -1124,15 +1138,12 @@ namespace m3u8.download.manager.ui
                 var allowed = (_DGV_MouseDown_HitTestInfo.RowIndex == ht.RowIndex) &&
                               ((_DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.Cell) || 
                                (_DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.RowHeader));
-                if ( allowed )
+                if ( allowed && (e.Button == MouseButtons.Right) )
                 {
-                    if ( e.Button == MouseButtons.Right )
-                    {
-                        //select actual row if current selected only one-or-zero row
-                        SelectLonelyRowIfCurrentSelectedOnlyOneOrZeroRow( ht.RowIndex );                        
+                    //select actual row if current selected only one-or-zero row
+                    SelectLonelyRowIfCurrentSelectedOnlyOneOrZeroRow( ht.RowIndex );                        
 
-                        MouseClickRightButton?.Invoke( e, GetSelectedDownloadRow(), outOfGridArea: false );
-                    }
+                    MouseClickRightButton?.Invoke( e, GetSelectedDownloadRow(), outOfGridArea: false );
                 }
             }
             else if ( (ht.Type == DataGridViewHitTestType.None) || (ht.Type == DataGridViewHitTestType.Cell) )
@@ -1141,7 +1152,7 @@ namespace m3u8.download.manager.ui
                 {
                     case MouseButtons.Right:
                         MouseClickRightButton?.Invoke( e, GetSelectedDownloadRow(), outOfGridArea: true );
-                    break;
+                        break;
                 }
             }
         }
@@ -1159,7 +1170,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_MouseMove( object sender, MouseEventArgs e )
         {
-            if ( e.Button != MouseButtons.Left ) return;
+            if ( (e.Button != MouseButtons.Left) || DGV.IsInDrawSelectRect ) return;
             var ht = DGV.HitTest( e.X, e.Y );
             if ( (ht.RowIndex < 0) || (ht.ColumnIndex < 0) ) return;
 
@@ -1245,7 +1256,7 @@ namespace m3u8.download.manager.ui
                     _DragOver_RowIndex = ht.RowIndex;
                     DGV.Invalidate();
                 }
-                DGV.ScrollIfNeed( in pt );
+                DGV.ScrollIfNeed( pt );
                 return;
             }
 
@@ -1255,7 +1266,7 @@ namespace m3u8.download.manager.ui
                 _DragOver_RowIndex = null;
                 DGV.Invalidate();
             }
-            DGV.ScrollIfNeed( in pt );
+            DGV.ScrollIfNeed( pt );
         }
         private void DGV_DragDrop_CellPainting( object sender, DataGridViewCellPaintingEventArgs e )
         {
