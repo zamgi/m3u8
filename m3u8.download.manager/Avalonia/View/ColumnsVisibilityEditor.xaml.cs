@@ -90,10 +90,11 @@ namespace m3u8.download.manager.ui
                 items.Add( new WordItem( col, isVisibleAlways: col.CellStyleClasses.Contains( "visible_always_sign" ) ) );
                 _SaveColumnIsVisibleDict[ col ] = col.IsVisible;
             }
-            //---DGV.Items = _DGVRows = new DataGridCollectionView( items );
             DGV.ItemsSource = _DGVRows = new DataGridCollectionView( items );
             DGV.PointerPressed     += DGV_PointerPressed;
             DGV.CellPointerPressed += DGV_CellPointerPressed;
+
+            DataGrid_SelectRect_Extension.Create( this, DGV, this.FindControl< Rectangle >( "selectRect" ), e => e.Column.DisplayIndex == 0, items );
         }
 
         private void InitializeComponent()
@@ -228,6 +229,9 @@ namespace m3u8.download.manager.ui
         }
         private void CorrectCheckBoxesStyle()
         {
+            //need for Visual-Form-Designer
+            if ( _DGVRows == null ) return;
+
             foreach ( var w in _DGVRows.SourceCollection.Cast< WordItem >() )
             {
                 if ( TryGetCheckBox( w, out var checkBox ) )

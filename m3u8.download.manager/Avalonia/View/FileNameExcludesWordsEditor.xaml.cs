@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -56,7 +57,6 @@ namespace m3u8.download.manager.ui
         private Button   clearFilterButton;
         private DataGridCollectionView _DGVRows;
         private bool _HasChanges;
-
         private IDisposable filterTextBox_SubscribeDisposable;
         #endregion
 
@@ -71,10 +71,11 @@ namespace m3u8.download.manager.ui
         internal FileNameExcludesWordsEditor( IReadOnlyCollection< string > excludesWords ) : this() 
         {
             var items = (from s in excludesWords select new WordItem( s )).ToList( excludesWords.Count );
-            //---DGV.Items = _DGVRows = new DataGridCollectionView( items );
             DGV.ItemsSource = _DGVRows = new DataGridCollectionView( items );
             _DGVRows.CollectionChanged += (s, e) => SetHasChanges();
             _DGVRows.PropertyChanged   += (s, e) => SetHasChanges( (e.PropertyName == nameof(_DGVRows.IsEditingItem) && !_DGVRows.IsEditingItem) );
+
+            DataGrid_SelectRect_Extension.Create( this, DGV, this.FindControl< Rectangle >( "selectRect" ), e => e.Column.DisplayIndex == 0, items );
         }
         public void Dispose() => filterTextBox_SubscribeDisposable.Dispose_NoThrow();
         private void InitializeComponent()

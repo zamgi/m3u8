@@ -5,15 +5,16 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.Threading;
 
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
-using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 
 namespace m3u8.download.manager.ui
 {
@@ -34,6 +35,7 @@ namespace m3u8.download.manager.ui
         private ObservableCollection_WithIndex< LogRow > _DGVRows;
         private ThreadSafeList< LogRow > _Model_CollectionChanged_AddChangedType_Buf;
         private HashSet< LogRow > _RemovedBeforeAddRows;
+        private DataGrid_SelectRect_Extension< LogRow > _SelectRectExtension;
         #endregion
 
         #region [.ctor().]
@@ -53,6 +55,8 @@ namespace m3u8.download.manager.ui
             this.FindControl< MenuItem >( "_ShowOnlyRequestRowsWithErrorsMenuItem" ).Click += _ShowOnlyRequestRowsWithErrorsMenuItem_Click;
             _ScrollToLastRowMenuItemCheckBox = this.FindControl< CheckBox >( nameof(_ScrollToLastRowMenuItemCheckBox) );
             this.FindControl< MenuItem >( "_ScrollToLastRowMenuItem" ).Click += _ScrollToLastRowMenuItem_Click;
+
+            _SelectRectExtension = new DataGrid_SelectRect_Extension< LogRow >( this, DGV, this.FindControl< Rectangle >( "selectRect" ) );
 
             //this.Styles.Add( GlobalStyles.Dark );
 
@@ -99,6 +103,8 @@ namespace m3u8.download.manager.ui
             }
 
             SetDataGridItems();
+
+            _SelectRectExtension.SetModel( model );
         }
         private void DetachModel()
         {

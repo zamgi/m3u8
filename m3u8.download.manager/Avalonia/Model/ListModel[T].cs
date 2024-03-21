@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace m3u8.download.manager.models
     /// <summary>
     /// 
     /// </summary>
-    public class ListModel< T > where T : RowBase< T >
+    public class ListModel< T > : IReadOnlyList< T > where T : RowBase< T >
     {
         /// <summary>
         /// 
@@ -219,5 +220,11 @@ namespace m3u8.download.manager.models
         public T this[ int i ] { [M(O.AggressiveInlining)] get => _Rows[ i ]; }
 
         [M(O.AggressiveInlining)] public /*IEnumerable*/IReadOnlyList< T > GetRows() => _Rows;
+
+        #region [.IReadOnlyList.]
+        public int Count => _Rows.Count;
+        public IEnumerator< T > GetEnumerator() => _Rows.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        #endregion
     }
 }

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 
 using m3u8.download.manager.models;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
@@ -21,6 +20,7 @@ namespace m3u8.download.manager.ui
         #region [.field's.]
         private DataGrid     DGV;
         private LogListModel _Model;
+        private DataGrid_SelectRect_Extension< LogRow > _SelectRectExtension;
         #endregion
 
         #region [.ctor().]
@@ -30,6 +30,8 @@ namespace m3u8.download.manager.ui
 
             DGV = this.FindControl< DataGrid >( nameof(DGV) );
             if ( FontHelper.TryGetMonospace( out var fontFamily ) ) DGV.FontFamily = fontFamily;
+
+            _SelectRectExtension = new DataGrid_SelectRect_Extension< LogRow >( this, DGV, this.FindControl< Rectangle >( "selectRect" ) );
         }
         #endregion
 
@@ -38,12 +40,10 @@ namespace m3u8.download.manager.ui
         {
             if ( _Model == null )
             {
-                //---DGV.Items = null;
                 DGV.ItemsSource = null;
             }
             else 
             {
-                //---DGV.Items = new DataGridCollectionView( _Model.GetRows() ); 
                 DGV.ItemsSource = new DataGridCollectionView( _Model.GetRows() );
             }
         }
@@ -60,6 +60,8 @@ namespace m3u8.download.manager.ui
             }
 
             SetDataGridItems();
+
+            _SelectRectExtension.SetModel( model );
         }
         private void DetachModel()
         {

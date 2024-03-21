@@ -110,6 +110,7 @@ namespace m3u8.download.manager.ui
         private ContextMenu mainContextMenu;
         private MenuItem    addRowMenuItem;
         private MenuItem    deleteRowMenuItem;
+        private DataGrid_SelectRect_Extension< RequestHeader > _SelectRectExtension;
         #endregion
 
         #region [.ctor().]
@@ -136,6 +137,8 @@ namespace m3u8.download.manager.ui
                 textBlock.PointerPressed += DGV_CheckBoxColumn_TextBlock_PointerPressed;
             }
             DGV.ItemsSource = _DGVRows = new DataGridCollectionView( new List< RequestHeader >() );
+
+            _SelectRectExtension = new DataGrid_SelectRect_Extension< RequestHeader >( this, DGV, this.FindControl< Rectangle >( "selectRect" ), e => e.Column.DisplayIndex == 0 );
         }
 
         protected override void OnLoaded( RoutedEventArgs e )
@@ -228,6 +231,7 @@ namespace m3u8.download.manager.ui
                     rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: true ) );
                 }
                 DGV.ItemsSource = _DGVRows = new DataGridCollectionView( rhs );
+                _SelectRectExtension.SetModel( rhs );
             }
             Fire_OnRequestHeadersCountChanged();
         }
@@ -248,6 +252,7 @@ namespace m3u8.download.manager.ui
                 if ( cnt != hs.Count )
                 {
                     DGV.ItemsSource = _DGVRows = new DataGridCollectionView( rhs );
+                    _SelectRectExtension.SetModel( rhs );
                 }
             }
             Fire_OnRequestHeadersCountChanged();

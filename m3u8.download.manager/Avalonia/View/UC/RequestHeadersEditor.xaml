@@ -41,6 +41,8 @@
   </UserControl.Styles>
 
   <Grid RowDefinitions="*,auto" ColumnDefinitions="*" Margin="2">
+    <Rectangle x:Name="selectRect" Stretch="Fill"
+               Stroke="DimGray" StrokeThickness="2" ZIndex="100" IsVisible="False" />
     <local-ui:DataGrid_Handled_PageDown_N_PageUp
               x:Name="DGV" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
               SelectionMode="Extended"

@@ -45,6 +45,9 @@
     </Style>
   </UserControl.Styles>
   
+  <Grid>
+  <Rectangle x:Name="selectRect" Stretch="Fill" 
+             Stroke="DimGray" StrokeThickness="2" ZIndex="100" IsVisible="False" />  
   <DataGrid x:Name="DGV"
             SelectionMode="Extended"
             CanUserResizeColumns="True" 
@@ -79,4 +82,5 @@
         </ContextMenu>
       </DataGrid.ContextMenu>
     </DataGrid>
+  </Grid>
 </UserControl>

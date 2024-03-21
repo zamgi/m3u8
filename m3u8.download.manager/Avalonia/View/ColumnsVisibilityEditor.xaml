@@ -48,6 +48,10 @@
     </Style>
   </Window.Styles>
   
+  <Grid>
+  <Rectangle x:Name="selectRect" Stretch="Fill" Grid.Row="0"
+             Stroke="DimGray" StrokeThickness="2" ZIndex="100" IsVisible="False" />
+    
   <Grid RowDefinitions="*,auto" ColumnDefinitions="auto,*,auto" Margin="15">
     <DataGrid x:Name="DGV" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
               SelectionMode="Extended"
@@ -84,4 +88,6 @@
       <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
     </DockPanel>
   </Grid>
+
+  </Grid>    
 </Window>

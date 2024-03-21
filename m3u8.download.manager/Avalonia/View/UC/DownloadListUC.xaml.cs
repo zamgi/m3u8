@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -46,11 +47,13 @@ namespace m3u8.download.manager.ui
 
         private DataGrid DGV;
         private DownloadListModel _Model;
+        private DataGrid_SelectRect_Extension< DownloadRow > _SelectRectExtension;
+        private DataGrid_DragDrop_Extension< DownloadRow > _DragDropExtension;
         #endregion
 
         #region [.ctor().]
         public DownloadListUC()  => this.InitializeComponent();
-        private void InitializeComponent()//__PREV()
+        private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load( this );
 
@@ -60,6 +63,19 @@ namespace m3u8.download.manager.ui
             DGV.DoubleTapped       += (s, e) => DoubleClickEx?.Invoke( s, e );
             DGV.PointerPressed     += DGV_PointerPressed;
             //---DGV.KeyDown            += DGV_KeyDown;
+
+            _SelectRectExtension = DataGrid_SelectRect_Extension.Create< DownloadRow >(
+                  this
+                , DGV
+                , this.FindControl< Rectangle >( "selectRect" )
+                , e => e.Column.DisplayIndex == 0/*#_Column_DisplayIndex*/ );
+
+            _DragDropExtension = DataGrid_DragDrop_Extension.Create< DownloadRow >( 
+                  DGV
+                , e => e.Column.DisplayIndex != 0/*#_Column_DisplayIndex*/
+                , r => r.GetOutputFullFileNames()
+                , r => _Model.GetVisibleIndex( r )
+                , (oldIndex, newIndex, r) => _Model.ChangeRowPosition( r, newIndex ) );
 
             #region comm.
             /*DGV.AddHandler(
@@ -82,11 +98,10 @@ namespace m3u8.download.manager.ui
             */
             #endregion
 
+            #region comm.
             //this.Styles.Add_NoThrow( GlobalStyles.Dark );
-            //foreach ( var style in this.Styles )
-            //{
-            //    DGV.Styles.Add_NoThrow( style );
-            //}            
+            //foreach ( var style in this.Styles ) DGV.Styles.Add_NoThrow( style );
+            #endregion
         }
         #endregion
 
@@ -162,7 +177,8 @@ namespace m3u8.download.manager.ui
             const int OutputDirectory_Column_DisplayIndex       = 2;
             const int LiveStreamMaxFileSize_Column_DisplayIndex = 12;
 
-            var p = e.PointerPressedEventArgs.GetCurrentPoint( this/*null*/ );
+            var pargs = e.PointerPressedEventArgs;
+            var p     = pargs.GetCurrentPoint( this );
             switch ( p.Properties.PointerUpdateKind )
             {
                 case PointerUpdateKind.LeftButtonPressed:
@@ -174,19 +190,19 @@ namespace m3u8.download.manager.ui
                         case LiveStreamMaxFileSize_Column_DisplayIndex:
                         {
                             if ( DGV.SelectedItems.Count != 1 ) break;
+                            var km = pargs.KeyModifiers;
+                            if ( km.HasFlag( KeyModifiers.Control ) || km.HasFlag( KeyModifiers.Shift ) || km.HasFlag( KeyModifiers.Alt ) ) break;
                                 
-                            bool is_valid( int rowIndex_, DownloadRow selectedDownloadRow_ ) => ((0 <= rowIndex_) && (rowIndex_ < _Model.RowsCount) && (_Model[ rowIndex_ ] == selectedDownloadRow_));
-
                             var selectedDownloadRow = this.GetSelectedDownloadRow();
                             var rowIndex            = e.Row.GetIndex();
-                            if ( is_valid( rowIndex, selectedDownloadRow ) )
+                            if ( IsValidRowIndex( rowIndex, selectedDownloadRow ) )
                             {
                                 var evnt = default(DownloadRowEventHandler);
                                 switch ( columnDisplayIndex )
                                 {                                    
                                     case OutputDirectory_Column_DisplayIndex: evnt = OutputDirectoryClick; break;
                                     case OutputFileName_Column_DisplayIndex:
-                                        if ( (e.PointerPressedEventArgs.Source is Image img) && (img.Name == "live_stream") && _Model[ rowIndex ].IsLiveStream )
+                                        if ( (pargs.Source is Image img) && (img.Name == "live_stream") && _Model[ rowIndex ].IsLiveStream )
                                         {
                                             evnt = LiveStreamMaxFileSizeClick;
                                         }
@@ -204,8 +220,8 @@ namespace m3u8.download.manager.ui
                                 }
                                 if ( evnt != null )
                                 {
-                                    e.PointerPressedEventArgs.Pointer.Capture( null );
-                                    e.PointerPressedEventArgs.Handled = true;
+                                    pargs.Pointer.Capture( null );
+                                    pargs.Handled = true;
                                     evnt( selectedDownloadRow );
                                     
                                     //Dispatcher.UIThread.Post( () => evnt( selectedDownloadRow ) );
@@ -223,7 +239,7 @@ namespace m3u8.download.manager.ui
                         {
                             if ( DGV.SelectedItems.Count == 1 )
                             {
-                                var row = (e.PointerPressedEventArgs.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
+                                var row = (pargs.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
                                 if ( row != null )
                                 {
                                     DGV.SelectedIndex = row.GetIndex();
@@ -231,7 +247,7 @@ namespace m3u8.download.manager.ui
                             }
                             #region comm. other var.
                             /*
-                            var row = (e.PointerPressedEventArgs.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
+                            var row = (pargs.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
                             if ( row != null )
                             {
                                 var rowIdx = row.GetIndex();
@@ -248,8 +264,8 @@ namespace m3u8.download.manager.ui
                             //*/
                             #endregion
 
-                            e.PointerPressedEventArgs.Pointer.Capture( null );
-                            e.PointerPressedEventArgs.Handled = true;
+                            pargs.Pointer.Capture( null );
+                            pargs.Handled = true;
                             evnt( p.Position, this.GetSelectedDownloadRow() );
                         }
                     }
@@ -294,6 +310,7 @@ namespace m3u8.download.manager.ui
                 DGV.ItemsSource = new DataGridCollectionView( _Model.GetRows() );
             }
         }
+        private bool IsValidRowIndex( int rowIndex, DownloadRow selectedRow ) => ((0 <= rowIndex) && (rowIndex < _Model.RowsCount) && (_Model[ rowIndex ] == selectedRow));
 
         internal DownloadRow GetSelectedDownloadRow() => (DGV.SelectedItem as DownloadRow);
         internal IReadOnlyList< DownloadRow > GetSelectedDownloadRows()
@@ -353,6 +370,9 @@ namespace m3u8.download.manager.ui
 
             //---Model_CollectionChanged( _CollectionChangedTypeEnum_.Add );
             SetDataGridItems();
+
+            _SelectRectExtension.SetModel( model );
+            _DragDropExtension  .SetModel( model );
         }
         private void DetachModel()
         {

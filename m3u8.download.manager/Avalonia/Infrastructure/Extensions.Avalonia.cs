@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 
 using MsBox.Avalonia;
 using MsBox.Avalonia.Base;
@@ -170,5 +172,43 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static T Find_Ex< T >( this Window window, string name ) where T : class => window.Find< T >( name ) ?? (window.TryFindResource( name, out var x ) ? (T) x : null);       
         [M(O.AggressiveInlining)] public static T Find_Ex< T >( this UserControl uc, string name ) where T : class => uc.Find< T >( name ) ?? (uc.TryFindResource( name, out var x ) ? (T) x : null);        
         [M(O.AggressiveInlining)] public static MenuItem Find_MenuItem( this ContextMenu contextMenu, string name ) => contextMenu.Items.Cast< MenuItem >().First( m => m.Name == name );
+
+        [M(O.AggressiveInlining)] public static Rect GetBoundsByTopAncestor( this Visual v, double? width = null )
+        {
+            var b_1 = v.Bounds;
+            var pt  = b_1.Position;
+            foreach ( var p in v.GetVisualAncestors() )
+            {
+                var b_2 = p.Bounds;
+                pt = new Point( pt.X + b_2.X, pt.Y + b_2.Y );
+            }
+            var sz = new Size( width.GetValueOrDefault( b_1.Size.Width ), b_1.Size.Height );
+            return (new Rect( pt, sz ));
+        }
+
+        [M(O.AggressiveInlining)] public static bool TryGet< T >( this IDataObject data, out T t )
+        {
+            if ( data.Get( nameof(T) ) is T _t )
+            {
+                t = _t;
+                return (true);
+            }
+            t = default;
+            return (false);
+        }
+        [M(O.AggressiveInlining)] public static void Set< T >( this DataObject data, T t ) => data.Set( nameof(T), t );
+
+
+        [M(O.AggressiveInlining)] public static T GetSelectedDownloadRow< T >( this DataGrid dgv ) where T : class => (dgv.SelectedItem as T);
+        [M(O.AggressiveInlining)] public static IReadOnlyList< T > GetSelectedDownloadRows< T >( this DataGrid dgv )
+        {
+            var srs = dgv.SelectedItems;
+            var lst = new List< T >( srs.Count );
+            foreach ( var row in srs.Cast< T >() )
+            {
+                lst.Add( row );
+            }
+            return (lst);
+        }
     }
 }
