@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -301,12 +302,10 @@ namespace m3u8.download.manager.ui
 
             if ( _Model == null )
             {
-                //---DGV.Items = null;
                 DGV.ItemsSource = null;
             }
             else
             {
-                //---DGV.Items = new DataGridCollectionView( _Model.GetRows() );
                 DGV.ItemsSource = new DataGridCollectionView( _Model.GetRows() );
             }
         }
@@ -323,38 +322,21 @@ namespace m3u8.download.manager.ui
             }
             return (lst);
         }
-        internal bool SelectDownloadRow( DownloadRow row ) => SelectDownloadRowInternal( row );
-        private bool SelectDownloadRowInternal( DownloadRow row ) //---, bool callAfterSort = false )
+        internal /*async Task*/void SelectDownloadRow( DownloadRow row, bool scrollIntoView = true )
         {
             if ( row != null )
             {
                 DGV.SelectedItem = row;
-                return (true);
+                if ( scrollIntoView )
+                {
+                    //await Task.Delay( 100 );
+                    //DGV.ScrollIntoView( row, null );
 
-                #region comm.
-                //var visibleIndex = row.GetVisibleIndex();
-                //if ( (0 <= visibleIndex) && (visibleIndex < DGV.RowCount) )
-                //{
-                //    var dtrow = DGV.Rows[ visibleIndex ];
-                //    if ( dtrow.Selected )
-                //    {
-                //        SelectionChanged?.Invoke( row );
-                //    }
-                //    else
-                //    {
-                //        dtrow.Selected = true;
-                //    }
-                //    if ( !callAfterSort )
-                //    {
-                //        _UserMade_DGV_SelectionChanged = false;
-                //    }
-                //    return (true);
-                //} 
-                #endregion
+                    Task.Delay( 10 ).ContinueWith( _ => DGV.ScrollIntoView( row, null ), TaskScheduler.FromCurrentSynchronizationContext() );
+                }
             }
-            return (false);
         }
-        internal bool HasFocus => (DGV.IsFocused || this.IsFocused);
+        internal bool HasFocus => this.IsFocused_SelfOrDescendants();
 
         internal void SetModel( DownloadListModel model )
         {
@@ -382,12 +364,11 @@ namespace m3u8.download.manager.ui
                 //_Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
                 _Model = null;
 
-                //---DGV.Items = null;
                 DGV.ItemsSource = null;
             }
         }
 
-        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow _ )
+        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
         {
             switch ( changedType )
             {
@@ -397,16 +378,43 @@ namespace m3u8.download.manager.ui
 
                 case _CollectionChangedTypeEnum_.Add:
                     SetDataGridItems();
+                    SelectDownloadRow( row );
                 break;
 
                 case _CollectionChangedTypeEnum_.Add_Bulk:
-                case _CollectionChangedTypeEnum_.Remove:
-                case _CollectionChangedTypeEnum_.Remove_Bulk:
                 case _CollectionChangedTypeEnum_.Clear:
-                //case _CollectionChangedTypeEnum_.BulkUpdate:
                     SetDataGridItems();
                     DGV.InvalidateVisual();
                 break;
+
+                case _CollectionChangedTypeEnum_.Remove:
+                case _CollectionChangedTypeEnum_.Remove_Bulk:
+                    #region [.save selected row.]
+                    var selRow = this.GetSelectedDownloadRow();
+                    var dgrow = DGV.GetVisualDescendants().OfType<DataGridRow>().First( r => r.DataContext == selRow );
+                    var selVisibleIndex = (dgrow?.GetIndex()).GetValueOrDefault( -1 );
+                    #endregion
+
+                    SetDataGridItems();
+                    DGV.InvalidateVisual();
+
+                    #region [.restore selected row.]
+                    try
+                    {
+                        var rowCount = _Model.RowsCount;
+                        var hasRows = (0 < rowCount);
+                        if ( hasRows )
+                        {
+                            var visibleIndex = Math.Min( Math.Max( 0, selVisibleIndex ), rowCount - 1 );
+                            SelectDownloadRow( _Model[ visibleIndex ] );
+                        }
+                    }
+                    catch ( Exception ex )
+                    {
+                        Debug.WriteLine( ex );
+                    }
+                    #endregion
+                    break;
             }
         }
         //private void Model_RowPropertiesChanged( DownloadRow row, string propertyName )

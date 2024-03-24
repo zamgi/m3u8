@@ -210,5 +210,7 @@ namespace m3u8.download.manager
             }
             return (lst);
         }
+
+        public static bool IsFocused_SelfOrDescendants( this Visual v ) => v.GetSelfAndVisualDescendants().OfType< InputElement >().Any( e => e.IsFocused );
     }
 }

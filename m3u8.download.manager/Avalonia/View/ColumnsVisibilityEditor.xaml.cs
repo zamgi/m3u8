@@ -147,7 +147,7 @@ namespace m3u8.download.manager.ui
                 break;
 
                 case Key.Space:
-                    if ( DGV.IsFocused )
+                    if ( DGV.IsFocused_SelfOrDescendants() )
                     {
                         TryCheckByKey();
                     }

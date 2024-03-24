@@ -255,7 +255,7 @@ namespace m3u8.download.manager.ui
 
                 case Key.Enter: //StartDownload
                     var button = (this.GetTemplateFocusTarget() as Button);
-                    if ( (button == null) || !button.IsFocused )
+                    if ( (button == null) || !button.IsFocused_SelfOrDescendants() )
                     {
                         var downloadLater = ((e.KeyModifiers & KeyModifiers.Alt)     == KeyModifiers.Alt ||
                                              (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control ||
@@ -305,7 +305,7 @@ namespace m3u8.download.manager.ui
                 if ( !_WasFocusSet2outputFileNameTextBoxAfterFirstChanges )
                 {
                     setFocus2outputFileNameTextBox_Core(); //outputFileNameTextBox.Focus();
-                    _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = outputFileNameTextBox.IsFocused;
+                    _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = outputFileNameTextBox.IsFocused_SelfOrDescendants();
                 }
             }
         }

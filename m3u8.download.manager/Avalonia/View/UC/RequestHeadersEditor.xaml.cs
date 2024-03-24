@@ -153,21 +153,21 @@ namespace m3u8.download.manager.ui
             switch ( e.Key )
             {
                 case Key.Space:
-                    if ( DGV.IsFocused )
+                    if ( DGV.IsFocused_SelfOrDescendants() )
                     {
                         TryCheckByKey();
                     }
                 break;
 
                 case Key.Insert:
-                    if ( DGV.IsFocused )
+                    if ( DGV.IsFocused_SelfOrDescendants() )
                     {
                         addRowMenuItem_Click( null, EventArgs.Empty );
                     }
                 break;
 
                 case Key.Delete:
-                    if ( DGV.IsFocused )
+                    if ( DGV.IsFocused_SelfOrDescendants() )
                     {
                         deleteRowMenuItem_Click( null, EventArgs.Empty );
                     }
