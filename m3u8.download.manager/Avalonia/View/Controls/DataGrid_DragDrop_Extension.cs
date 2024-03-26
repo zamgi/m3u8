@@ -221,7 +221,7 @@ namespace m3u8.download.manager.ui
                 var pt = e.GetPosition( _TopVisual );
 
                 var pt_4_scroll = _LastMove_Pos = e.GetPosition( DGV );
-                _ScrollHelper.MakeScroll_IfNeed_Now( pt_4_scroll );
+                _ScrollHelper.Scroll2ViewIfNeed_Now( pt_4_scroll );
 
                 var oldIndex = drft.FocusedRowIndex;
                 if ( oldIndex != -1 )
@@ -284,7 +284,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _IsInDragDrop )
             {
-                _ScrollHelper.MakeScroll_IfNeed_UseScrollDelay( _LastMove_Pos );
+                _ScrollHelper.Scroll2ViewIfNeed_UseScrollDelay( _LastMove_Pos );
             }
             else if ( _ScrollIfNeedTimer.Enabled )
             {

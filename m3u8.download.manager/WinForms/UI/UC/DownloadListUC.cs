@@ -1256,7 +1256,7 @@ namespace m3u8.download.manager.ui
                     _DragOver_RowIndex = ht.RowIndex;
                     DGV.Invalidate();
                 }
-                DGV.ScrollIfNeed( pt );
+                DGV.Scroll2ViewIfNeed( pt );
                 return;
             }
 
@@ -1266,7 +1266,7 @@ namespace m3u8.download.manager.ui
                 _DragOver_RowIndex = null;
                 DGV.Invalidate();
             }
-            DGV.ScrollIfNeed( pt );
+            DGV.Scroll2ViewIfNeed( pt );
         }
         private void DGV_DragDrop_CellPainting( object sender, DataGridViewCellPaintingEventArgs e )
         {

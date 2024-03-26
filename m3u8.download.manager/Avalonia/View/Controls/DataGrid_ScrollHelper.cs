@@ -109,40 +109,65 @@ namespace m3u8.download.manager.ui
 
         private DateTime _LastScrollDateTime;
         [M(O.AggressiveInlining)] private bool IsTimeElapsed4Scroll() => (TimeSpan.FromMilliseconds( ScrollDelayInMilliseconds ) < (DateTime.Now - _LastScrollDateTime));
-        [M(O.AggressiveInlining)] public bool MakeScroll_IfNeed_UseScrollDelay( in Point pt ) => MakeScroll_IfNeed( pt, true );
-        [M(O.AggressiveInlining)] public bool MakeScroll_IfNeed_Now( in Point pt ) => MakeScroll_IfNeed( pt, false );
-        public bool MakeScroll_IfNeed( in Point pt, bool useScrollDelay )
+        [M(O.AggressiveInlining)] public bool Scroll2ViewIfNeed_UseScrollDelay( in Point pt ) => Scroll2ViewIfNeed( pt, true );
+        [M(O.AggressiveInlining)] public bool Scroll2ViewIfNeed_Now( in Point pt ) => Scroll2ViewIfNeed( pt, false );
+        public bool Scroll2ViewIfNeed( in Point pt, bool useScrollDelay )
         {
             if ( _Model == null ) return (false);
 
-            if ( IsNeed_ScrollDown( pt ) )
+            switch ( GetScrollDirection( pt ) )
             {
-                var last_idx = _Model.Count - 1;
-                if ( TryGetBottomDataGridRowIndex( DGV, out var bottomIdx ) && (bottomIdx <= last_idx) && (!useScrollDelay || IsTimeElapsed4Scroll()) )
-                {
-                    if ( bottomIdx < last_idx ) bottomIdx++;
-                    DGV.ScrollIntoView( _Model[ bottomIdx ], null );
-                    _LastScrollDateTime = DateTime.Now;
-                    return (true);
-                }
-            }            
-            else if ( IsNeed_ScrollUp( pt ) )
-            {
-                if ( TryGetTopDataGridRowIndex( DGV, out var topIdx ) && (0 <= topIdx) && (!useScrollDelay || IsTimeElapsed4Scroll()) )
-                {
-                    if ( 0 < topIdx ) topIdx--;
-                    DGV.ScrollIntoView( _Model[ topIdx ], null );
-                    _LastScrollDateTime = DateTime.Now;
-                    return (true);
-                }
+                case ScrollDirectionEnum.Up:
+                    if ( TryGetTopDataGridRowIndex( DGV, out var topIdx ) && (0 <= topIdx) && (!useScrollDelay || IsTimeElapsed4Scroll()) )
+                    {
+                        if ( 0 < topIdx ) topIdx--;
+                        DGV.ScrollIntoView( _Model[ topIdx ], null );
+                        _LastScrollDateTime = DateTime.Now;
+                        return (true);
+                    }
+                    break;
+
+                case ScrollDirectionEnum.Down:
+                    var last_idx = _Model.Count - 1;
+                    if ( TryGetBottomDataGridRowIndex( DGV, out var bottomIdx ) && (bottomIdx <= last_idx) && (!useScrollDelay || IsTimeElapsed4Scroll()) )
+                    {
+                        if ( bottomIdx < last_idx ) bottomIdx++;
+                        DGV.ScrollIntoView( _Model[ bottomIdx ], null );
+                        _LastScrollDateTime = DateTime.Now;
+                        return (true);
+                    }
+                    break;
             }
             return (false);
         }        
 
+        /// <summary>
+        /// 
+        /// </summary>
+        private enum ScrollDirectionEnum
+        {
+            __UNDEFINED__,
 
-        private const int HEIGHT_THRESHOLD = 15;
-        [M(O.AggressiveInlining)] private bool IsNeed_ScrollUp( in Point pt ) => (pt.Y < (this.DGV_ColumnHeadersHeight + HEIGHT_THRESHOLD)) && (0 <= pt.X);
-        [M(O.AggressiveInlining)] private bool IsNeed_ScrollDown( in Point pt ) => ((DGV.Bounds.Height - HEIGHT_THRESHOLD) < pt.Y) && (0 <= pt.X);
+            Up,
+            Down,
+        }
+        private const int SCROLL_HEIGHT_THRESHOLD = 15;
+        [M(O.AggressiveInlining)] private ScrollDirectionEnum GetScrollDirection( in Point pt )
+        {
+            var to_up = (pt.Y < (this.DGV_ColumnHeadersHeight + SCROLL_HEIGHT_THRESHOLD)) && (0 <= pt.X);
+            if ( to_up )
+            {
+                return (ScrollDirectionEnum.Up);
+            }
+
+            var to_down = ((DGV.Bounds.Height - SCROLL_HEIGHT_THRESHOLD) < pt.Y) && (0 <= pt.X);
+            if ( to_down )
+            {
+                return (ScrollDirectionEnum.Down);
+            }
+            
+            return (ScrollDirectionEnum.__UNDEFINED__);
+        }
         #endregion
     }
 }

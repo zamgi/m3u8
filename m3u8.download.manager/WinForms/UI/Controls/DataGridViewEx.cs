@@ -198,7 +198,7 @@ namespace System.Windows.Forms
             }
 
             var pt = this.PointToClient( Control.MousePosition );
-            if ( this.ScrollIfNeed( pt ) )
+            if ( this.Scroll2ViewIfNeed( pt ) )
             {
                 ProcessDrawSelectRect( pt.X, pt.Y );
             }
@@ -206,50 +206,75 @@ namespace System.Windows.Forms
         #endregion
 
         #region [.Scroll if need to point.]
-        private const int SCROLL_DELAY_IN_MILLISECONDS = 10;
+        private const int SCROLL_DELAY_IN_MILLISECONDS = 20;
         public int ScrollDelayInMilliseconds { get; set; } = SCROLL_DELAY_IN_MILLISECONDS;
 
         private DateTime _LastScrollDateTime;
         [M(O.AggressiveInlining)] private bool IsTimeElapsed4Scroll() => (TimeSpan.FromMilliseconds( ScrollDelayInMilliseconds ) < (DateTime.Now - _LastScrollDateTime));
-        public bool ScrollIfNeed( in Point pt )
+        public bool Scroll2ViewIfNeed( in Point pt )
         {
-            if ( ShouldScrollUp( pt ) )
+            switch ( GetScrollDirection( pt ) )
             {
-                var firstIdx = this.GetFirstDisplayedScrollingRowIndex();
-                if ( (0 < firstIdx) && IsTimeElapsed4Scroll() )
-                {
-                    this.SetFirstDisplayedScrollingRowIndex( firstIdx - 1 );
-                    _LastScrollDateTime = DateTime.Now;
-                    return (true);
-                }
-            }
-            else if ( ShouldScrollDown( pt ) )
-            {
-                var firstIdx = this.GetFirstDisplayedScrollingRowIndex();
-                if ( (firstIdx < (this.RowCount - 1)) && IsTimeElapsed4Scroll() )
-                {
-                    this.SetFirstDisplayedScrollingRowIndex( firstIdx + 1);
-                    _LastScrollDateTime = DateTime.Now;
-                    return (true);
-                }
+                case ScrollDirectionEnum.Up:
+                    {
+                        var firstIdx = this.GetFirstDisplayedScrollingRowIndex();
+                        if ( (0 < firstIdx) && IsTimeElapsed4Scroll() )
+                        {
+                            this.SetFirstDisplayedScrollingRowIndex( firstIdx - 1 );
+                            _LastScrollDateTime = DateTime.Now;
+                            return (true);
+                        }
+                    }
+                    break;
+
+                case ScrollDirectionEnum.Down:
+                    {
+                        var firstIdx = this.GetFirstDisplayedScrollingRowIndex();
+                        if ( (firstIdx < (this.RowCount - 1)) && IsTimeElapsed4Scroll() )
+                        {
+                            this.SetFirstDisplayedScrollingRowIndex( firstIdx + 1 );
+                            _LastScrollDateTime = DateTime.Now;
+                            return (true);
+                        }
+                    }
+                    break;
             }
             return (false);
         }
-        [M(O.AggressiveInlining)] private bool ShouldScrollUp( in Point pt )
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private enum ScrollDirectionEnum
         {
-            var columnHeadersHeight = this.ColumnHeadersHeight;
-            return //pt.Y > columnHeadersHeight && //---remove column-up-edge---//
-                   pt.Y < columnHeadersHeight + 15
-                && pt.X >= 0
-                && pt.X <= this.Bounds.Width;
+            __UNDEFINED__,
+
+            Up,
+            Down,
         }
-        [M(O.AggressiveInlining)] private bool ShouldScrollDown( in Point pt )
+        private const int SCROLL_HEIGHT_THRESHOLD = 15;
+        [M(O.AggressiveInlining)] private ScrollDirectionEnum GetScrollDirection( in Point pt )
         {
-            var bounds = this.Bounds;
-            return pt.Y > bounds.Height - 15
-                && pt.Y < bounds.Height
-                && pt.X >= 0
-                && pt.X <= bounds.Width;
+            var bounds              = this.Bounds;
+            var columnHeadersHeight = this.ColumnHeadersHeight;
+
+            var to_up = //pt.Y > columnHeadersHeight && //---remove column-up-edge---//
+                        pt.Y < columnHeadersHeight + SCROLL_HEIGHT_THRESHOLD &&
+                        0 <= pt.X && pt.X <= bounds.Width;
+            if ( to_up )
+            {
+                return (ScrollDirectionEnum.Up);
+            }
+
+            var to_down = pt.Y > bounds.Height - SCROLL_HEIGHT_THRESHOLD &&
+                          pt.Y < bounds.Height &&
+                          pt.X >= 0 &&
+                          pt.X <= bounds.Width;
+            if ( to_down )
+            {
+                return (ScrollDirectionEnum.Down);
+            }
+            return (ScrollDirectionEnum.__UNDEFINED__);
         }
         #endregion
     }

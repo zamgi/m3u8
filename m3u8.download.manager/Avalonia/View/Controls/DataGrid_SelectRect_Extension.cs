@@ -266,7 +266,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _IsPointerPressed )
             {
-                if ( _LastMove.HasValue && _ScrollHelper.MakeScroll_IfNeed_UseScrollDelay( _LastMove.Value.Pos ) )
+                if ( _LastMove.HasValue && _ScrollHelper.Scroll2ViewIfNeed_UseScrollDelay( _LastMove.Value.Pos ) )
                 {
                     Process_SelectRect();
                 }
