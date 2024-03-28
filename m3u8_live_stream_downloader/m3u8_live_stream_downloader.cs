@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -177,10 +176,11 @@ namespace m3u8
                     try
                     {
                         var content = await _HttpClient.GetStringAsync_Ex( m3u8_url, requestHeaders, ct ).CAX();
-                        var parts = content?.Split().Where( s => !s.StartsWith( "#" ) )
-                                                    .Select( s => s.Trim() )
-                                                    .Where( s => !s.IsNullOrEmpty() )
-                                                    .ToFillHashSet( hs );
+                        var parts = content?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
+                                            .Where( s => !s.StartsWith( "#" ) )
+                                            .Select( s => s.Trim() )
+                                            .Where( s => !s.IsNullOrEmpty() )
+                                            .ToFillHashSet( hs );
                         if ( parts != null )
                         {
                             var new_parts = 0;
@@ -525,15 +525,5 @@ namespace m3u8
                 }
             }
         }
-
-
-//        [M(O.AggressiveInlining)] public static Task< Stream > GetStreamAsync_Ex( this HttpClient hc, string requestUri )
-//        {
-//#if NETCOREAPP
-//            return (hc.GetStreamAsync( part_url, ct ));
-//#else
-//            return (hc.GetStreamAsync( requestUri/*, ct*/ ));
-//#endif
-//        }
     }
 }
