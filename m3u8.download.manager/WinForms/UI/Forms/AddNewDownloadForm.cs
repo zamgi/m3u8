@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
-using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
@@ -159,6 +158,7 @@ namespace m3u8.download.manager.ui
             , Func< AddNewDownloadForm, Task > formClosedAction )
         {
             var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, seriesInfo );
+
             f.FormClosed += (_, _) => formClosedAction?.Invoke( f );
             var close = new EventHandler( (_, _) => f.Close() );
             f.downloadStartButton.Click += close;
@@ -513,12 +513,15 @@ namespace m3u8.download.manager.ui
         }
         private void Set_mainLayoutPanel_Height( bool? IsLiveStream_or_patternOutputFileName_visible = null )
         {
-            const int DEFAULT_HEIGHT_isLiveStream    = 30;
+            const int DEFAULT_HEIGHT_isLiveStream_1  = 90;
+            const int DEFAULT_HEIGHT_isLiveStream_2  = 30;
             const int DEFAULT_HEIGHT_mainLayoutPanel = 60;
             const int DEFAULT_HEIGHT_this            = 255;
 
-            var is_vis = IsLiveStream_or_patternOutputFileName_visible.GetValueOrDefault( this.IsLiveStream || patternOutputFileNameLabel.Visible );
-            mainLayoutPanel.Height = DEFAULT_HEIGHT_mainLayoutPanel + (is_vis ? DEFAULT_HEIGHT_isLiveStream : 0);
+            var is_vis                      = IsLiveStream_or_patternOutputFileName_visible.GetValueOrDefault( this.IsLiveStream || patternOutputFileNameLabel.Visible );
+            var DEFAULT_HEIGHT_isLiveStream = is_vis ? (logPanel.Visible ? DEFAULT_HEIGHT_isLiveStream_2 : DEFAULT_HEIGHT_isLiveStream_1) : 0;
+
+            mainLayoutPanel.Height = DEFAULT_HEIGHT_mainLayoutPanel + DEFAULT_HEIGHT_isLiveStream;
             if ( is_vis ) this.Height = Math.Max( DEFAULT_HEIGHT_this + DEFAULT_HEIGHT_isLiveStream, this.Height );
         }
 
@@ -673,7 +676,9 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
+        #region [.requestHeadersEditor.]
         private void requestHeadersEditor_OnRequestHeadersCountChanged( int requestHeadersCount, int enabledCount ) 
             => requestHeadersTabPage.Text = (requestHeadersCount == enabledCount) ? $"request headers ({requestHeadersCount})" : $"request headers ({enabledCount} of {requestHeadersCount})";
+        #endregion
     }
 }
