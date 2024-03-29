@@ -42,12 +42,15 @@
   </PropertyGroup>
  
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Condition=" '$(TargetFramework)' == 'net481' "
-          Command="copy /Y &quot;App.net481.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />
+    <Exec Condition=" '$(TargetFramework)' == 'net481' " Command="copy /Y &quot;App.net481.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />
     
-    <Exec Condition=" '$(TargetFramework)' == 'net8.0-windows' "
-          Command="copy /Y &quot;App.net8.0-windows.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />
+    <Exec Condition=" '$(TargetFramework)' == 'net8.0-windows' " Command="copy /Y &quot;App.net8.0-windows.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />
   </Target>
+ 
+  <ItemGroup>
+    <Compile Remove="UI\Forms\_Form1.cs" />
+    <Compile Remove="UI\Forms\_Form1.Designer.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove=".gitignore" />
@@ -79,6 +82,11 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net481' ">
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="UI\Forms\_Form1.cs" />
+    <None Include="UI\Forms\_Form1.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

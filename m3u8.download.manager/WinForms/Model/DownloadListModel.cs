@@ -70,7 +70,7 @@ namespace m3u8.download.manager.models
         public IReadOnlyDictionary< DownloadStatus, int > GetStatisticsByAllStatus()
         {
             var values = (DownloadStatus[]) Enum.GetValues( typeof(DownloadStatus) );
-            var dict = new Dictionary< DownloadStatus, int >( 11 /*values.Length*/ );
+            var dict   = new Dictionary< DownloadStatus, int >( values.Length );
             foreach ( var v in values )
             {
                 dict[ v ] = 0;

@@ -52,6 +52,36 @@ namespace m3u8.download.manager.ui
         /// 
         /// </summary>
         public delegate bool IsDrawCheckMarkDelegate( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
+        public readonly struct SummaryDownloadInfo
+        {
+            /// <summary>
+            /// 
+            /// </summary>
+            [Flags] public enum StateEmun
+            {
+                NOP = 0,
+
+                Downloading = (1 << 0),
+                HasError    = (1 << 1),
+                Paused      = (1 << 2),
+            }
+            public int       TotalProgressValue { get; init; }
+            public StateEmun State              { get; init; }
+#if DEBUG
+            public override string ToString() => $"{State}, ({TotalProgressValue} %)";
+#endif
+            public override bool Equals( object obj ) => (obj is SummaryDownloadInfo x) && (x == this);
+            public override int GetHashCode() => this.State.GetHashCode() ^ this.TotalProgressValue;
+            public static bool operator ==( in SummaryDownloadInfo x, in SummaryDownloadInfo y ) => (x.State == y.State) && (x.TotalProgressValue == y.TotalProgressValue);
+            public static bool operator !=( in SummaryDownloadInfo x, in SummaryDownloadInfo y ) => !(x == y);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void UpdatedSummaryDownloadInfoEventHandler( in SummaryDownloadInfo sdi );
 
         #region [.column index's.]
         private const int OUTPUTFILENAME_COLUMN_INDEX            = 0;
@@ -77,6 +107,7 @@ namespace m3u8.download.manager.ui
         public event LiveStreamMaxFileSizeClickEventHandler LiveStreamMaxFileSizeClick;
         public event MouseClickRightButtonEventHandler      MouseClickRightButton;
         public event UpdatedSingleRunningRowEventHandler    UpdatedSingleRunningRow;
+        public event UpdatedSummaryDownloadInfoEventHandler UpdatedSummaryDownloadInfo;
         public event EventHandler                           DoubleClickEx;
         public event IsDrawCheckMarkDelegate                IsDrawCheckMark;
 
@@ -440,6 +471,7 @@ namespace m3u8.download.manager.ui
                         else
                         {
                             SelectionChanged?.Invoke( null );
+                            Fire_UpdatedSummaryDownloadInfo();
                         }
                     }
                     catch ( Exception ex)
@@ -761,6 +793,43 @@ namespace m3u8.download.manager.ui
             {
                 UpdatedSingleRunningRow?.Invoke( singleRunningRow );
             }
+
+            Fire_UpdatedSummaryDownloadInfo();
+        }
+        private void Fire_UpdatedSummaryDownloadInfo()
+        {
+            //var stats = _Model.GetStatisticsByAllStatus();
+            var state           = SummaryDownloadInfo.StateEmun.NOP;
+            var totalParts      = 0;
+            var downloadedParts = 0;
+            foreach ( var row in _Model.GetRows() )
+            {
+                var st = row.Status;
+                switch ( st )
+                {
+                    case DownloadStatus.Started:
+                    case DownloadStatus.Running:
+                    case DownloadStatus.Paused:
+                        state |= SummaryDownloadInfo.StateEmun.Downloading; 
+                        totalParts      += row.TotalParts;
+                        downloadedParts += row.SuccessDownloadParts + row.FailedDownloadParts;
+                        if ( row.FailedDownloadParts != 0 ) state |= SummaryDownloadInfo.StateEmun.HasError;
+
+                        if ( st == DownloadStatus.Paused ) state |= SummaryDownloadInfo.StateEmun.Paused;
+                        break;
+
+                    case DownloadStatus.Error: 
+                        state |= SummaryDownloadInfo.StateEmun.HasError; 
+                        break;
+
+                    //case DownloadStatus.Paused:
+                    //    state |= SummaryDownloadInfo.StateEmun.Paused;
+                    //    break;
+                }
+            }
+            var totalProgressValue = (totalParts != 0) ? (int) (100.0 * downloadedParts / totalParts) : (state.HasFlag( SummaryDownloadInfo.StateEmun.Downloading ) ? 0 : 100);
+            var sdi = new SummaryDownloadInfo { TotalProgressValue = totalProgressValue, State = state };
+            UpdatedSummaryDownloadInfo?.Invoke( sdi );
         }
         #endregion
 

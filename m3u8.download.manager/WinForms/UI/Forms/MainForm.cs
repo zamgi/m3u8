@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Windows.Forms.Taskbar;
 
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
@@ -20,6 +21,7 @@ using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
 using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -78,9 +80,10 @@ namespace m3u8.download.manager.ui
 
             downloadListUC.SetModel_And_SettingsController( _DownloadListModel, _SC );
             downloadListUC.KeyDown += (s, e) => this.OnKeyDown( e );
-            downloadListUC.MouseClickRightButton   += downloadListUC_MouseClickRightButton;
-            downloadListUC.UpdatedSingleRunningRow += downloadListUC_UpdatedSingleRunningRow;
-            downloadListUC.DoubleClickEx           += openOutputFileMenuItem_Click;
+            downloadListUC.MouseClickRightButton      += downloadListUC_MouseClickRightButton;
+            downloadListUC.UpdatedSingleRunningRow    += downloadListUC_UpdatedSingleRunningRow;
+            downloadListUC.UpdatedSummaryDownloadInfo += downloadListUC_UpdatedSummaryDownloadInfo;
+            downloadListUC.DoubleClickEx              += openOutputFileMenuItem_Click;
             statusBarUC.SetDownloadController( _DC );
             statusBarUC.SetSettingsController( _SC );
             statusBarUC.TrackItemsCount( downloadListUC );
@@ -459,8 +462,8 @@ namespace m3u8.download.manager.ui
                 var finishedCount = stats[ DownloadStatus.Finished ];
                 var errorCount    = stats[ DownloadStatus.Error    ];
 
-                var finishedText  = ((0 < finishedCount) ? $", end: {finishedCount}"    : null);
-                var errorText     = ((0 < errorCount   ) ? $", err: {errorCount}"       : null);
+                var finishedText  = ((0 < finishedCount) ? $", end: {finishedCount}" : null);
+                var errorText     = ((0 < errorCount   ) ? $", err: {errorCount}"    : null);
 
                 var runningCount  = stats[ DownloadStatus.Started ] + stats[ DownloadStatus.Running ];
                 var waitCount     = stats[ DownloadStatus.Wait    ];
@@ -604,6 +607,20 @@ namespace m3u8.download.manager.ui
             //{
             //    this.Text = _APP_TITLE_;
             //}
+        }
+        private _SummaryDownloadInfo_ _Last_SummaryDownloadInfo;
+        private void downloadListUC_UpdatedSummaryDownloadInfo( in _SummaryDownloadInfo_ sdi )
+        {
+            if ( _Last_SummaryDownloadInfo == sdi ) return;
+            _Last_SummaryDownloadInfo = sdi;
+
+            var taskbarProgressBarState = TaskbarProgressBarState.NoProgress;
+                 if ( sdi.State.HasFlag( _SummaryDownloadInfo_.StateEmun.HasError    ) ) taskbarProgressBarState = TaskbarProgressBarState.Error;
+            else if ( sdi.State.HasFlag( _SummaryDownloadInfo_.StateEmun.Paused      ) ) taskbarProgressBarState = TaskbarProgressBarState.Paused;
+            else if ( sdi.State.HasFlag( _SummaryDownloadInfo_.StateEmun.Downloading ) ) taskbarProgressBarState = TaskbarProgressBarState.Normal;
+
+            TaskbarManager.Instance.SetProgressValue( sdi.TotalProgressValue, 100, this.Handle );
+            TaskbarManager.Instance.SetProgressState( taskbarProgressBarState, this.Handle );
         }
         private void downloadListUC_SelectionChanged( DownloadRow row )
         {
