@@ -235,8 +235,8 @@ namespace m3u8.download.manager.ui
             #region [.save settings.]
             _VM.SettingsController.MainFormPositionJson = this.GetBounds().ToJSON();
             _VM.SettingsController.SetDownloadListColumnsInfoJson( downloadListUC.GetColumnsInfoJson() );
-            _VM.SettingsController.SetDownloadRows( _VM.DownloadListModel.GetRows() ); //_VM.SettingsController.DownloadRowsJson = DownloadRowsSerializer.ToJSON( _VM.DownloadListModel.GetRows() );
-            _VM.SettingsController.Settings.LogUC_RowDefinition_Height = Get_LogUC_RowDefinition_Height();
+            _VM.SettingsController.SetDownloadRows( _VM.DownloadListModel.GetRows() );
+            if ( logUC.IsVisible ) _VM.SettingsController.Settings.LogUC_RowDefinition_Height = Get_LogUC_RowDefinition_Height();
             _VM.SettingsController.SaveNoThrow_IfAnyChanged();
             #endregion
 
@@ -924,6 +924,7 @@ namespace m3u8.download.manager.ui
                     }
                     else
                     {
+                        _VM.SettingsController.Settings.LogUC_RowDefinition_Height = Get_LogUC_RowDefinition_Height();
                         _Last_logUC_row_Height = row.Height;
                         row.Height    = new GridLength( 0, GridUnitType.Pixel );
                         row.MinHeight = 0;
