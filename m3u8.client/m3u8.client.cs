@@ -27,7 +27,7 @@ namespace m3u8.ext
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null) && seq.Any();
         [M(O.AggressiveInlining)] public static bool AnyEx< T >( this IReadOnlyList< T > seq ) => (seq != null) && (0 < seq.Count);
 
-        public static FileStream File_Open4Write( string fileName, FileShare fileShare = FileShare.Read )
+        public static FileStream File_Open4Write( string fileName, FileShare fileShare = /*FileShare.Read*/FileShare.Read | FileShare.Delete )
         {
             var fs = new FileStream( fileName, FileMode.OpenOrCreate, FileAccess.Write, fileShare ); //---var fs = File.OpenWrite( fileName );
             fs.SetLength( 0 );

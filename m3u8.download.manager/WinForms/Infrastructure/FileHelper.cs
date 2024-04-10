@@ -167,6 +167,16 @@ namespace m3u8.download.manager.infrastructure
             return (delete_task);
         }
 
+        public static bool IsSameDiskDrive( string fileName_1, string fileName_2 )
+        {
+            if ( (2 < fileName_1?.Length) && (2 < fileName_2?.Length) )
+            {
+                return (char.ToUpperInvariant( fileName_1[ 0 ] ) == char.ToUpperInvariant( fileName_2[ 0 ] ) &&
+                        char.ToUpperInvariant( fileName_1[ 1 ] ) == char.ToUpperInvariant( fileName_2[ 1 ] ));
+            }
+            return (false);
+        }
+
         public static void DeleteFiles_NoThrow( string[] fileNames )
         {
             if ( fileNames.AnyEx() )
@@ -186,6 +196,25 @@ namespace m3u8.download.manager.infrastructure
             catch ( Exception ex )
             {
                 Debug.WriteLine( ex );
+            }
+        }
+        public static bool TryMoveFile_NoThrow( string sourceFileName, string destFileName, out Exception error )
+        {
+            try
+            {
+#if NETCOREAPP
+                File.Move( sourceFileName, destFileName, overwrite: true );
+#else
+                FileHelper.DeleteFile_NoThrow( destFileName );
+                File.Move( sourceFileName, destFileName );
+#endif
+                error = default;
+                return (true);
+            }
+            catch ( Exception ex )
+            {
+                error = ex;
+                return (false);
             }
         }
         public static string GetFirstExistsDirectory( string path )

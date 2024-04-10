@@ -1453,7 +1453,9 @@ namespace m3u8.download.manager.ui
             switch ( res )
             {
                 //case MoveFileByRenameResultEnum.Postponed: break;
-                //case MoveFileByRenameResultEnum.Suc: break;
+                case MoveFileByRenameResultEnum.Suc:
+                    row.SaveVeryFirstOutputFullFileName( null );
+                    break;
                 case MoveFileByRenameResultEnum.Canceled:
                 case MoveFileByRenameResultEnum.Fail:
                     //rollback
@@ -1482,21 +1484,19 @@ namespace m3u8.download.manager.ui
         private MoveFileByRenameResultEnum MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
             , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
         {
-            if ( !row.Status.IsRunningOrPaused() && File.Exists( prev_outputFullFileName ) )
+            if ( (!row.Status.IsRunningOrPaused() || FileHelper.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
             {
                 switch ( mode )
                 {
                     case MoveFileByRenameModeEnum.OverwriteSilent:
-                        FileHelper.DeleteFile_NoThrow( new_outputFullFileName ); 
                         break;
-                    case MoveFileByRenameModeEnum.OverwriteAsk: 
+                    case MoveFileByRenameModeEnum.OverwriteAsk:
                         if ( File.Exists( new_outputFullFileName ) )
                         {
                             if ( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) != DialogResult.Yes )
                             {
                                 return (MoveFileByRenameResultEnum.Canceled);
                             }
-                            FileHelper.DeleteFile_NoThrow( new_outputFullFileName );
                         }
                         break;
                     case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
@@ -1506,16 +1506,15 @@ namespace m3u8.download.manager.ui
                         }
                         break;
                 }
-                
-                try
+
+                if ( FileHelper.TryMoveFile_NoThrow( prev_outputFullFileName, new_outputFullFileName, out var error ) )
                 {
-                    File.Move( prev_outputFullFileName, new_outputFullFileName /*?? row.GetOutputFullFileName()*/ );
                     return (MoveFileByRenameResultEnum.Suc);
                 }
-                catch ( Exception ex )
+                else
                 {
-                    this.MessageBox_ShowError( ex.ToString(), "Move/Remane output file" );
-                    return  (MoveFileByRenameResultEnum.Fail);
+                    this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" );
+                    return (MoveFileByRenameResultEnum.Fail);
                 }
             }
             return (MoveFileByRenameResultEnum.Postponed);

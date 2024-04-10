@@ -18,6 +18,9 @@
       <Setter Property="Margin"     Value="2,0,2,0" />
       <Setter Property="Background" Value="Silver" />
     </Style>
+    <Style Selector="MenuItem > Separator">
+      <Setter Property="Background" Value="#BDBDBD" />
+    </Style>    
   </Window.Styles>
   
   <Grid ColumnDefinitions="*,auto">

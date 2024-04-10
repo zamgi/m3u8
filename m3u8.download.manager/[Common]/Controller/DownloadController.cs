@@ -613,18 +613,11 @@ namespace m3u8.download.manager.controllers
                     var desiredOutputFullFileName = row.GetOutputFullFileName();
                     if ( dpsr.OutputFileName != desiredOutputFullFileName )
                     {
-                        try
+                        if ( row.VeryFirstOutputFullFileName.IsNullOrEmpty() /*dpsr.OutputFileName.EqualIgnoreCase( row.VeryFirstOutputFullFileName )*/ 
+                              || 
+                             FileHelper.TryMoveFile_NoThrow( dpsr.OutputFileName, desiredOutputFullFileName, out renameOutputFileException ) )
                         {
-                            if ( !dpsr.OutputFileName.EqualIgnoreCase( desiredOutputFullFileName ) )
-                            {
-                                FileHelper.DeleteFile_NoThrow( desiredOutputFullFileName );
-                            }
-                            File.Move( dpsr.OutputFileName, desiredOutputFullFileName );
                             dpsr.ResetOutputFileName( desiredOutputFullFileName );
-                        }
-                        catch ( Exception ex )
-                        {
-                            renameOutputFileException = ex;
                         }
                     }
                     #endregion

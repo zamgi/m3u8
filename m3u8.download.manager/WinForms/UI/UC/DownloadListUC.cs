@@ -989,20 +989,20 @@ namespace m3u8.download.manager.ui
                             }
                         }
                         
-                        if ( !row.IsFinished() )
-                        {
+                        //if ( !row.IsFinished() )
+                        //{
                             OutputFileNameClick?.Invoke( row );
-                        }
+                        //}
                     }
                     break;
 
                     case OUTPUTDIRECTORY_COLUMN_INDEX:
                     {
                         var row = _Model[ e.RowIndex ];
-                        if ( !row.IsFinished() )
-                        {
+                        //if ( !row.IsFinished() )
+                        //{
                             OutputDirectoryClick?.Invoke( row );
-                        }
+                        //}
                     }
                     break;
 
