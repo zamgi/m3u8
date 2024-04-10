@@ -923,9 +923,9 @@ namespace m3u8.download.manager.ui
                         showLogToolButton.Opacity = 1;
                     }
                     else
-                    {
-                        _VM.SettingsController.Settings.LogUC_RowDefinition_Height = Get_LogUC_RowDefinition_Height();
+                    {                        
                         _Last_logUC_row_Height = row.Height;
+                        _VM.SettingsController.Settings.LogUC_RowDefinition_Height = _Last_logUC_row_Height.GetValueOrDefault().Value; //Get_LogUC_RowDefinition_Height();
                         row.Height    = new GridLength( 0, GridUnitType.Pixel );
                         row.MinHeight = 0;
                         showLogToolButton.Opacity = 0.5;
