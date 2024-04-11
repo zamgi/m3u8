@@ -20,7 +20,7 @@
     </Style>
     <Style Selector="MenuItem > Separator">
       <Setter Property="Background" Value="#BDBDBD" />
-    </Style>    
+    </Style>
   </Window.Styles>
   
   <Grid ColumnDefinitions="*,auto">

@@ -159,8 +159,9 @@ namespace m3u8.download.manager.ui
             downloadListUC.LiveStreamMaxFileSizeClick += downloadListUC_LiveStreamMaxFileSizeClick;
             downloadListUC.UpdatedSingleRunningRow    += downloadListUC_UpdatedSingleRunningRow;
             downloadListUC.MouseClickRightButton      += downloadListUC_MouseClickRightButton;
+            downloadListUC.MouseClickColumnHeader     += downloadListUC_MouseClickColumnHeader;
             downloadListUC.DoubleClickEx              += openOutputFileMenuItem_Click;
-            //---downloadListUC.EnterKeyDown            += downloadListUC_EnterKeyDown;
+            //---downloadListUC.EnterKeyDown += downloadListUC_EnterKeyDown;
 
             SetDownloadToolButtonsStatus( null );
             NameCleaner.ResetExcludesWords( _VM.SettingsController.NameCleanerExcludesWords );
@@ -1040,6 +1041,13 @@ namespace m3u8.download.manager.ui
 
                 mainContextMenu.Open( downloadListUC );
             }
+        }
+        private void downloadListUC_MouseClickColumnHeader( in Point pt, PointerUpdateKind pointerKind, DataGridColumnHeader columnHeader )
+        {
+            Debug.WriteLine( $"{pt}, {pointerKind}, {columnHeader}" );
+
+            //var columnsContextMenu = this.Find_Ex< ContextMenu >( "columnsContextMenu" );
+            //columnsContextMenu.Open( downloadListUC );
         }
         private void SetAllDownloadsMenuItemsEnabled( bool allowedAll )
         {

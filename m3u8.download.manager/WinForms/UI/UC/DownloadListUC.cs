@@ -168,12 +168,12 @@ namespace m3u8.download.manager.ui
             _SF_Right  = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Far   , LineAlignment = StringAlignment.Center };
             //----------------------------------------//
 
-            CreateColumnsContextMenu();            
+            CreateColumnsContextMenu();
         }
         private void CreateColumnsContextMenu()
         {
             _ColumnsContextMenu = new ContextMenuStrip();
-            EventHandler menuItemClick = (s, e) =>
+            EventHandler menuItemClick = (s, _) =>
             {
                 var item = (ToolStripMenuItem) s;
                 ((DataGridViewColumn) item.Tag).Visible = item.Checked;
@@ -185,7 +185,7 @@ namespace m3u8.download.manager.ui
             //-------------------------------------------------//
 
             _ColumnsContextMenu.Items.Add( new ToolStripSeparator() );
-            EventHandler resetMenuItemClick = (s, e) =>
+            EventHandler resetMenuItemClick = (_, _) =>
             {
                 foreach ( var item in _ColumnsContextMenu.Items.OfType< ToolStripMenuItem >() )
                 {
@@ -200,7 +200,7 @@ namespace m3u8.download.manager.ui
             _ColumnsContextMenu.Items.Add( new ToolStripMenuItem( "Reset all columns", null, resetMenuItemClick ) );
             //-------------------------------------------------//
 
-            _ColumnsContextMenu.Opening += (s, e) =>
+            _ColumnsContextMenu.Opening += (_, _) =>
             {
                 foreach ( var item in _ColumnsContextMenu.Items.OfType< ToolStripMenuItem >() )
                 {

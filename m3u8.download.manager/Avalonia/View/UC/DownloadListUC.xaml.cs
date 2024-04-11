@@ -9,6 +9,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -33,27 +34,32 @@ namespace m3u8.download.manager.ui
         /// 
         /// </summary>
         public delegate void MouseClickRightButtonEventHandler( in Point pt, DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void MouseClickColumnHeaderEventHandler( in Point pt, PointerUpdateKind pointerKind, DataGridColumnHeader columnHeader );
 
         #region [.field's.]
-        public event DownloadRowEventHandler           SelectionChanged;
-        public event DownloadRowEventHandler           OutputFileNameClick;
-        public event DownloadRowEventHandler           OutputDirectoryClick;
-        public event DownloadRowEventHandler           LiveStreamMaxFileSizeClick;
-        public event MouseClickRightButtonEventHandler MouseClickRightButton;
-        public event EventHandler                      DoubleClickEx;
+        public event DownloadRowEventHandler            SelectionChanged;
+        public event DownloadRowEventHandler            OutputFileNameClick;
+        public event DownloadRowEventHandler            OutputDirectoryClick;
+        public event DownloadRowEventHandler            LiveStreamMaxFileSizeClick;
+        public event MouseClickRightButtonEventHandler  MouseClickRightButton;
+        public event MouseClickColumnHeaderEventHandler MouseClickColumnHeader;
+        public event EventHandler                       DoubleClickEx;
 #pragma warning disable CS0067
-        public event DownloadRowEventHandler           UpdatedSingleRunningRow;
+        public event DownloadRowEventHandler            UpdatedSingleRunningRow;
 #pragma warning restore CS0067
-        //---public event EventHandler                      EnterKeyDown;
 
         private DataGrid DGV;
         private DownloadListModel _Model;
         private DataGrid_SelectRect_Extension< DownloadRow > _SelectRectExtension;
-        private DataGrid_DragDrop_Extension< DownloadRow > _DragDropExtension;
+        private DataGrid_DragDrop_Extension< DownloadRow >   _DragDropExtension;
+        private ContextMenu _ColumnsContextMenu;
         #endregion
 
         #region [.ctor().]
-        public DownloadListUC()  => this.InitializeComponent();
+        public DownloadListUC() => this.InitializeComponent();
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load( this );
@@ -77,6 +83,9 @@ namespace m3u8.download.manager.ui
                 , r => r.GetOutputFullFileNames()
                 , r => _Model.GetVisibleIndex( r )
                 , (oldIndex, newIndex, r) => _Model.ChangeRowPosition( r, newIndex ) );
+            //------------------------------------------------------------------//
+
+            CreateColumnsContextMenu();
 
             #region comm.
             /*DGV.AddHandler(
@@ -103,6 +112,95 @@ namespace m3u8.download.manager.ui
             //this.Styles.Add_NoThrow( GlobalStyles.Dark );
             //foreach ( var style in this.Styles ) DGV.Styles.Add_NoThrow( style );
             #endregion
+        }
+        private void CreateColumnsContextMenu()
+        {
+            _ColumnsContextMenu = this.Find_Ex< ContextMenu >( "columnsContextMenu" );
+
+            EventHandler< RoutedEventArgs > menuItemClick = (s, _) =>
+            {
+                var item = (MenuItem) s;
+                var col  = (DataGridColumn) item.Tag;
+                var ch   = (CheckBox) item.Icon;
+                
+                ch.IsChecked = !ch.IsChecked.GetValueOrDefault();
+                col.IsVisible = ch.IsChecked.GetValueOrDefault();
+            };
+            EventHandler< RoutedEventArgs > checkBoxClick = (s, _) =>
+            {
+                var ch   = (CheckBox) s;
+                var item = (MenuItem) ch.Parent;
+                var col  = (DataGridColumn) item.Tag;
+
+                col.IsVisible = ch.IsChecked.GetValueOrDefault();
+                _ColumnsContextMenu.Close();
+            };
+            foreach ( var col in DGV.Columns.Cast< DataGridColumn >() )
+            {
+                var enabled = !col.CellStyleClasses.Contains( "visible_always_sign" );
+                var txt = (col.Header as TextBlock)?.Text;
+                var ch  = new CheckBox();
+                if ( enabled ) ch.Click += checkBoxClick;
+                var mi  = new MenuItem() { Icon = ch, Header = txt, IsEnabled = enabled, Tag = col };
+                if ( enabled ) mi.Click += menuItemClick;
+                _ColumnsContextMenu.Items.Add( mi );
+            }
+            //-------------------------------------------------//
+
+            _ColumnsContextMenu.Items.Add( new Separator() );
+            var rmi = new MenuItem() { Header = "Reset all columns" };
+            rmi.Click += (_, _) =>
+            {
+                foreach ( var item in _ColumnsContextMenu.Items.OfType< MenuItem >() )
+                {
+                    if ( item.Tag is DataGridColumn col )
+                    {
+                        col.IsVisible = true;
+                        foreach ( var cls in col.CellStyleClasses )
+                        {
+                            var i = cls.IndexOf( '=' ); if ( i == -1 ) continue;
+                            var n = cls.Substring( 0, i );
+                            var v = cls.Substring( i + 1 );
+                            switch ( n )
+                            {
+                                case "w":
+                                    if ( int.TryParse( v, out i ) && (0 < i) )
+                                    {
+                                        col.Width = new DataGridLength( i );
+                                    }
+                                    break;
+                                case "v": case "vis":
+                                    if ( bool.TryParse( v, out var b ) )
+                                    {
+                                        col.IsVisible = b;
+                                    }
+                                    break;
+                                case "di":
+                                    if ( int.TryParse( v, out i ) && (0 <= i) )
+                                    {
+                                        col.DisplayIndex = i;
+                                    }
+                                    break;
+                            }
+                        }
+                        //col.DisplayIndex = col.Index;
+                        //col.Width        = Convert.ToInt32( col.FillWeight );
+                    }
+                }
+            };
+            _ColumnsContextMenu.Items.Add( rmi );
+            //-------------------------------------------------//
+
+            _ColumnsContextMenu.Opened += (_, _) =>
+            {
+                foreach ( var item in _ColumnsContextMenu.Items.OfType< MenuItem >() )
+                {
+                    if ( (item.Tag is DataGridColumn col) && (item.Icon is CheckBox ch) )
+                    {
+                        ch.IsChecked = col.IsVisible;
+                    }
+                }
+            };
         }
         #endregion
 
@@ -144,11 +242,13 @@ namespace m3u8.download.manager.ui
         }
         private async void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
         {
+            DataGridColumnHeader columnHeader;
+
             var p = e.GetCurrentPoint( this/*null*/ );
             switch ( p.Properties.PointerUpdateKind )
             {
                 case PointerUpdateKind.LeftButtonPressed:
-                    var columnHeader = (e.Source as Control)?.GetSelfAndVisualAncestors().OfType<DataGridColumnHeader>().FirstOrDefault();
+                    columnHeader = (e.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridColumnHeader >().FirstOrDefault();
                     if ( columnHeader == null )
                     {
                         DGV.SelectedItems.Clear();
@@ -159,15 +259,52 @@ namespace m3u8.download.manager.ui
                         await Task.Delay( 100 );
                         DGV.SelectAll();
                     }
+                    else
+                    {
+                        var evnt = MouseClickColumnHeader;
+                        if ( evnt != null )
+                        {
+                            e.Pointer.Capture( null );
+                            e.Handled = true;
+                            evnt( p.Position, p.Properties.PointerUpdateKind, columnHeader );
+                        }
+                    }
                     break;
 
                 case PointerUpdateKind.RightButtonPressed:
-                    var evnt = MouseClickRightButton;
-                    if ( evnt != null )
+                    columnHeader = (e.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridColumnHeader >().FirstOrDefault();
+                    if ( columnHeader != null )
                     {
-                        e.Pointer.Capture( null );
-                        e.Handled = true;
-                        evnt( p.Position, row: null/*this.GetSelectedDownloadRow()*/ );
+                        _ColumnsContextMenu.Open( this );
+
+                        #region comm. MouseClickColumnHeader.
+                        //var evnt = MouseClickColumnHeader;
+                        //if ( evnt != null )
+                        //{
+                        //    e.Pointer.Capture( null );
+                        //    e.Handled = true;
+                        //    evnt( p.Position, p.Properties.PointerUpdateKind, columnHeader );
+                        //}
+                        #endregion
+                    }
+                    else
+                    {
+                        const int COLUMN_HEIGHT_THRESHOLD = 15;
+                        var columnHeadersHeight = DGV.GetVisualDescendants().OfType< DataGridColumnHeader >().Select( c => c.Bounds.Height ).First( h => h != 0 );
+                        if ( p.Position.Y <= (columnHeadersHeight + COLUMN_HEIGHT_THRESHOLD) )
+                        {
+                            _ColumnsContextMenu.Open( this );
+                        }
+                        else
+                        {
+                            var evnt = MouseClickRightButton;
+                            if ( evnt != null )
+                            {
+                                e.Pointer.Capture( null );
+                                e.Handled = true;
+                                evnt( p.Position, row: null/*this.GetSelectedDownloadRow()*/ );
+                            }
+                        }
                     }
                     break;
             }
@@ -238,7 +375,7 @@ namespace m3u8.download.manager.ui
                         var evnt = MouseClickRightButton;
                         if ( evnt != null )
                         {
-                            if ( DGV.SelectedItems.Count == 1 )
+                            if ( DGV.SelectedItems.Count <= 1 )
                             {
                                 var row = (pargs.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
                                 if ( row != null )
@@ -273,19 +410,6 @@ namespace m3u8.download.manager.ui
                 break;
             }
         }
-        /*--NOT WORKING--
-        private void DGV_KeyDown( object sender, KeyEventArgs e )
-        {
-            if ( (e.Key == Key.Enter) && (e.KeyModifiers == KeyModifiers.None) )
-            {
-                var ev = EnterKeyDown;
-                if ( ev != null )
-                {
-                    e.Handled = true;
-                    ev( sender, e );
-                }
-            }
-        }*/
         #endregion
 
         #region [.Model.]
