@@ -70,7 +70,7 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .m3u8 file download manager.
+        ///   Looks up a localized string similar to .m3u8 file download manager (Avalonia).
         /// </summary>
         internal static string APP_TITLE {
             get {

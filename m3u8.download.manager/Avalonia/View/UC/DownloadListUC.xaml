@@ -87,8 +87,7 @@
           <DataTemplate>
             <Panel>
               <Arc Stroke="Silver" StrokeThickness="1" StartAngle="0" SweepAngle="360" Stretch="None" Width="23.5" Height="23.5"
-                   IsVisible="{Binding IsFocusedAndSelected, Mode=OneWay}">
-                <!--Stretch="Fill" Margin="4"-->
+                   IsVisible="{Binding IsFocusedAndSelected, Mode=OneWay}"> <!--Stretch="Fill" Margin="4"-->
                 <Arc.Fill>
                   <SolidColorBrush Color="#008080" />
                 </Arc.Fill>
@@ -100,7 +99,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>      
       
-      <DataGridTemplateColumn Width="370" CellStyleClasses="visible_always_sign w=370">
+      <DataGridTemplateColumn Width="350" CellStyleClasses="visible_always_sign w=350">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Output file name" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" />
         </DataGridTemplateColumn.Header>
@@ -141,7 +140,7 @@
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
 
-      <DataGridTemplateColumn Width="170" CellStyleClasses="w=170">
+      <DataGridTemplateColumn Width="125" CellStyleClasses="w=125">
         <DataGridTemplateColumn.Header>
           <TextBlock Text="Progress" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
         </DataGridTemplateColumn.Header>

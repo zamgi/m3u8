@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -212,5 +213,37 @@ namespace m3u8.download.manager
         }
 
         public static bool IsFocused_SelfOrDescendants( this Visual v ) => v.GetSelfAndVisualDescendants().OfType< InputElement >().Any( e => e.IsFocused );
+
+        public static bool TryParse2DataGridLength( this string v, out DataGridLength gridLength, double displayValue = 0 )
+        {
+            if ( v.EqualIgnoreCase( "auto" ) )
+            {
+                gridLength = new DataGridLength( 1, DataGridLengthUnitType.Auto, desiredValue: 0, displayValue );
+                return (true);
+            }
+            if ( v.EqualIgnoreCase( "*" ) )
+            {
+                gridLength = new DataGridLength( 1, DataGridLengthUnitType.Star, desiredValue: 0, displayValue );
+                return (true);
+            }
+            if ( double.TryParse( v, out var d ) && (0 < d) )
+            {
+                gridLength = new DataGridLength( d, DataGridLengthUnitType.Pixel/*, desiredValue: 0, displayValue*/ );
+                return (true);
+            }
+            if ( v.EndsWith( "*" ) && double.TryParse( v.Substring( 0, v.Length - 1 ), out d ) && (0 < d) )
+            {
+                gridLength = new DataGridLength( d, DataGridLengthUnitType.Star, desiredValue: 0, displayValue );
+                return (true);
+            }
+#if DEBUG
+            else if ( Debugger.IsAttached )
+            {
+                Debugger.Break();
+            }
+#endif
+            gridLength = default;
+            return (false);
+        }
     }
 }

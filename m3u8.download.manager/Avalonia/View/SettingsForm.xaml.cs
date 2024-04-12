@@ -6,8 +6,10 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 
 using m3u8.download.manager.controllers;
+using _Timer_ = System.Timers.Timer;
 
 namespace m3u8.download.manager.ui
 {
@@ -27,11 +29,12 @@ namespace m3u8.download.manager.ui
         private CheckBox      showOnlyRequestRowsWithErrorsCheckBox;
         private CheckBox      showDownloadStatisticsInMainFormTitleCheckBox;
         private CheckBox      showAllDownloadsCompleted_NotificationCheckBox;
+        private TextBlock     currentMemoryTextBlock;
         #endregion
 
         #region [.fields.]
-        private DownloadController    _DownloadController;
-        //private CollectGarbageCommand _CollectGarbageCommand;
+        private DownloadController _DownloadController;
+        private _Timer_ _GetTotalMemoryTimer;
         #endregion
 
         #region [.ctor().]
@@ -50,7 +53,10 @@ namespace m3u8.download.manager.ui
 
             DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
 
-            //_CollectGarbageCommand = vm.CollectGarbageCommand ?? throw (new ArgumentNullException( nameof(vm.CollectGarbageCommand) ));
+            var getTotalMemoryTimer_Elapsed_Action = new Action( getTotalMemoryTimer_Elapsed );
+            _GetTotalMemoryTimer = new _Timer_() { Interval = 1_000, AutoReset = true, Enabled = true };
+            _GetTotalMemoryTimer.Elapsed += async (_, _) => await Dispatcher.UIThread.InvokeAsync( getTotalMemoryTimer_Elapsed_Action );
+            getTotalMemoryTimer_Elapsed();
         }
         private void InitializeComponent()
         {
@@ -66,6 +72,7 @@ namespace m3u8.download.manager.ui
             showOnlyRequestRowsWithErrorsCheckBox          = this.Find< CheckBox      >( nameof(showOnlyRequestRowsWithErrorsCheckBox) );
             showDownloadStatisticsInMainFormTitleCheckBox  = this.Find< CheckBox      >( nameof(showDownloadStatisticsInMainFormTitleCheckBox) );
             showAllDownloadsCompleted_NotificationCheckBox = this.Find< CheckBox      >( nameof(showAllDownloadsCompleted_NotificationCheckBox) );
+            currentMemoryTextBlock                         = this.Find< TextBlock     >( nameof(currentMemoryTextBlock) );
 
             this.Find< Button >( "collectGarbageButton" ).Click += collectGarbageButton_Ckick;
             this.Find< Button >( "okButton"     ).Click += (s, e) => OkButtonProcess();
@@ -82,6 +89,7 @@ namespace m3u8.download.manager.ui
         {
             base.OnClosed( e );
 
+            _GetTotalMemoryTimer.Enabled = false;
             _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
         }
         protected override void OnKeyDown( KeyEventArgs e )
@@ -144,7 +152,7 @@ namespace m3u8.download.manager.ui
             get => showDownloadStatisticsInMainFormTitleCheckBox.IsChecked.GetValueOrDefault();
             set => showDownloadStatisticsInMainFormTitleCheckBox.IsChecked = value;
         }
-        public bool ShowAllDownloadsCompleted_Notification
+        public bool     ShowAllDownloadsCompleted_Notification
         {
             get => showAllDownloadsCompleted_NotificationCheckBox.IsChecked.GetValueOrDefault();
             set => showAllDownloadsCompleted_NotificationCheckBox.IsChecked = value;
@@ -203,21 +211,24 @@ namespace m3u8.download.manager.ui
                 only4NotRunLabel2.IsVisible = isDownloading;
         }
 
-
+        private void getTotalMemoryTimer_Elapsed()
+        {
+            CollectGarbageCommand.Collect_Garbage( out var totalMemoryBytes );
+            currentMemoryTextBlock.Text = $"Current Memory: {GetTotalMemoryFormatText( totalMemoryBytes )}.";
+        }
+        private static string GetTotalMemoryFormatText( long totalMemoryBytes ) => $"{(totalMemoryBytes / (1024.0 * 1024)):N2} MB";
         private /*async*/ void collectGarbageButton_Ckick( object s, RoutedEventArgs e )
         {
             var btn = (Button) s;
             btn.Content = "...";
             btn.IsEnabled = false;
 
-            //_CollectGarbageCommand?.Execute( null );
             CollectGarbageCommand.Collect_Garbage( out var totalMemoryBytes );
-            //var totalMemoryBytes = await Task.Run( () => { CollectGarbageCommand.Collect_Garbage( out var totalMemoryBytes_ ); return (totalMemoryBytes_); } );
 
-            var text        = $"{(totalMemoryBytes / (1024.0 * 1024)):N2} MB";
+            var text        = GetTotalMemoryFormatText( totalMemoryBytes );
             var toolTipText = $"Collect Garbage. Total Memory: {text}.";
            
-            btn.Content   = text;            
+            btn.Content   = text;
             btn.IsEnabled = true;
             btn.SetValue( ToolTip.TipProperty, toolTipText );
         }

@@ -13,7 +13,7 @@
         ShowInTaskbar="False"
         >
   <Grid RowDefinitions="auto,auto,10,auto,auto,10,auto,auto,*,auto" Margin="15">
-    <TextBlock Grid.Row="0" Foreground="DarkGray">downloads parallelism</TextBlock>
+    <TextBlock Grid.Row="0" Foreground="DodgerBlue">downloads parallelism</TextBlock>
     <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
       <StackPanel>
         <TextBlock>max download threads:</TextBlock>
@@ -30,7 +30,7 @@
       </StackPanel>
     </Border>
 
-    <TextBlock Grid.Row="3" Foreground="DarkGray">download instances</TextBlock>
+    <TextBlock Grid.Row="3" Foreground="DodgerBlue">download instances</TextBlock>
     <Border Grid.Row="4" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
       <StackPanel>
         <CheckBox x:Name="useMaxCrossDownloadInstanceCheckBox" Background="White" Cursor="Hand" Margin="0,0,0,7">use downloads-instance</CheckBox>
@@ -42,7 +42,7 @@
       </StackPanel>
     </Border>
 
-    <TextBlock Grid.Row="6" Foreground="DarkGray">download speed limit</TextBlock>
+    <TextBlock Grid.Row="6" Foreground="DodgerBlue">download speed limit</TextBlock>
     <Border Grid.Row="7" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
       <StackPanel>
         <CheckBox x:Name="isUnlimMaxSpeedThresholdCheckBox" Background="White" Cursor="Hand" Margin="0,0,0,7">Max/Unlimited speed</CheckBox>

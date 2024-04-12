@@ -5,46 +5,61 @@
         xmlns:local-ui="clr-namespace:m3u8.download.manager.ui"
         mc:Ignorable="d" 
         x:Class="m3u8.download.manager.ui.SettingsForm"
-        d:DesignWidth="350" d:DesignHeight="500"
-        Width="350" Height="500"
+        d:DesignWidth="350" d:DesignHeight="530"
+        Width="350" Height="530"
         Title="settings"
         WindowStartupLocation="CenterOwner"
         Icon="/Resources/m3u8_32x36.ico"
         Background="WhiteSmoke"
         ShowInTaskbar="False"
         >
-  <Grid RowDefinitions="auto,auto,15,auto,auto,15,auto,15,auto,10,auto,auto,10,auto,auto,*,auto" 
-        ColumnDefinitions="*,auto,auto,*" Margin="15"
+  <Grid RowDefinitions="auto,auto,auto,auto,auto,auto,*,auto" 
+        ColumnDefinitions="*" Margin="15"
         >
-    <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"
-               VerticalAlignment="Center">attempt request count by part:</TextBlock>
-    <NumericUpDown x:Name="attemptRequestCountByPartNUD" Grid.Row="0" Grid.Column="2"
-                   Minimum="1" Maximum="100" Value="1"
-                   AllowSpin="True" ClipValueToMinMax="True"
-                   HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0" />
-    <TextBlock x:Name="only4NotRunLabel1" Grid.Row="1" Grid.Column="1"  HorizontalAlignment="Right"
-               VerticalAlignment="Center" Foreground="DarkGoldenrod">(only for not-running downloads)</TextBlock>
+    <TextBlock Grid.Row="0" Foreground="DodgerBlue">Download params</TextBlock>
+    <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
+      <Grid RowDefinitions="auto,auto,15,auto,auto,15,auto,15,auto"
+            ColumnDefinitions="*,auto,auto,*" 
+        >
+        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"
+                   VerticalAlignment="Center">attempt request count by part:</TextBlock>
+        <NumericUpDown Grid.Row="0" Grid.Column="2"
+                       x:Name="attemptRequestCountByPartNUD" 
+                       Minimum="1" Maximum="100" Value="1"
+                       AllowSpin="True" ClipValueToMinMax="True"
+                       HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0" />
+        <TextBlock Grid.Row="1" Grid.Column="1" 
+                   x:Name="only4NotRunLabel1" HorizontalAlignment="Right"
+                   VerticalAlignment="Center" Foreground="DarkGoldenrod">(only for not-running downloads)</TextBlock>
 
-    <TextBlock Grid.Row="3" Grid.Column="1" HorizontalAlignment="Right"
-               VerticalAlignment="Center">request timeout by part:</TextBlock>
-    <local-ui:TimePickerUC x:Name="requestTimeoutByPartDTP" Grid.Row="3" Grid.Column="2" 
-                           HorizontalAlignment="Left" Margin="10,0,0,0" MinWidth="90" 
+        <TextBlock Grid.Row="3" Grid.Column="1" 
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center">request timeout by part:</TextBlock>
+        <local-ui:TimePickerUC Grid.Row="3" Grid.Column="2"
+                               x:Name="requestTimeoutByPartDTP" 
+                               HorizontalAlignment="Left" Margin="10,0,0,0" MinWidth="90"
                            />
-    <TextBlock x:Name="only4NotRunLabel2" Grid.Row="4" Grid.Column="1"  HorizontalAlignment="Right"
-               VerticalAlignment="Center" Foreground="DarkGoldenrod">(only for not-running downloads)</TextBlock>
+        <TextBlock Grid.Row="4" Grid.Column="1"
+                   x:Name="only4NotRunLabel2" HorizontalAlignment="Right"
+                   VerticalAlignment="Center" Foreground="DarkGoldenrod">(only for not-running downloads)</TextBlock>
 
-    <CheckBox x:Name="uniqueUrlsOnlyCheckBox" Grid.Row="6" Grid.Column="1" HorizontalAlignment="Right" 
-              Background="White" Cursor="Hand">use unique urls only</CheckBox>
+        <CheckBox Grid.Row="6" Grid.Column="1"
+                  x:Name="uniqueUrlsOnlyCheckBox" HorizontalAlignment="Right"
+                  Background="White" Cursor="Hand">use unique urls only</CheckBox>
 
-    <TextBlock Grid.Row="8" Grid.Column="1" HorizontalAlignment="Right"
-               VerticalAlignment="Center">default output file extension:</TextBlock>
-    <TextBox x:Name="outputFileExtensionTextBox" Grid.Row="8" Grid.Column="2"
-             HorizontalAlignment="Left" Margin="10,0,0,0"
-             TextAlignment="Center" TextWrapping="NoWrap"
-             MinWidth="90" />
+        <TextBlock Grid.Row="8" Grid.Column="1" 
+                   HorizontalAlignment="Right"
+                   VerticalAlignment="Center">default output file extension:</TextBlock>
+        <TextBox Grid.Row="8" Grid.Column="2"
+                 x:Name="outputFileExtensionTextBox"
+                 HorizontalAlignment="Left" Margin="10,0,0,0"
+                 TextAlignment="Center" TextWrapping="NoWrap"
+                 MinWidth="90" />
+      </Grid>
+    </Border>
 
-    <TextBlock Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="4" Foreground="DarkGray">UI / download log UI</TextBlock>
-    <Border Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
+    <TextBlock Grid.Row="2" Foreground="DodgerBlue">UI / download log UI</TextBlock>
+    <Border Grid.Row="3" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
       <StackPanel Margin="20,10">
         <CheckBox x:Name="showOnlyRequestRowsWithErrorsCheckBox" Background="White" Cursor="Hand">show only request rows with errors</CheckBox>
         <CheckBox x:Name="showDownloadStatisticsInMainFormTitleCheckBox" Background="White" Cursor="Hand">
@@ -57,14 +72,27 @@
       </StackPanel>
     </Border>
 
-    <TextBlock Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="4" Foreground="DarkGray">GC</TextBlock>
-    <Border Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="4" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
-      <StackPanel Margin="20,10">
-        <Button x:Name="collectGarbageButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Collect Garbage</Button>
+    <TextBlock Grid.Row="4" Foreground="DodgerBlue">GC</TextBlock>
+    <Border Grid.Row="5" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10,14">
+      <StackPanel Margin="20,0">
+        <Button x:Name="collectGarbageButton" HorizontalAlignment="Center" 
+                Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0"
+                Background="LightGray"
+                >Collect Garbage</Button>
+        <Panel Margin="0,7,0,0">
+          <Rectangle Stroke="#BDBDBD" StrokeThickness="2" Stretch="Fill" />
+          <TextBlock x:Name="currentMemoryTextBlock"
+                     Padding="0,2"
+                     Background="White"
+                     TextWrapping="NoWrap"
+                     TextTrimming="CharacterEllipsis"
+                     TextAlignment="Center"
+                     Text="..." /> <!--IsVisible="False"-->
+        </Panel>
       </StackPanel>
     </Border>
 
-    <DockPanel Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+    <DockPanel Grid.Row="7" HorizontalAlignment="Center" VerticalAlignment="Bottom">
       <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
       <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
     </DockPanel>

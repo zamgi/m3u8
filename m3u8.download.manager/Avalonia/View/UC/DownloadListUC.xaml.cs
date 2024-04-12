@@ -153,38 +153,35 @@ namespace m3u8.download.manager.ui
             {
                 foreach ( var item in _ColumnsContextMenu.Items.OfType< MenuItem >() )
                 {
-                    if ( item.Tag is DataGridColumn col )
+                    if ( !(item.Tag is DataGridColumn col) ) continue;
+
+                    col.IsVisible = true;
+                    foreach ( var cls in col.CellStyleClasses )
                     {
-                        col.IsVisible = true;
-                        foreach ( var cls in col.CellStyleClasses )
+                        var i = cls.IndexOf( '=' ); if ( i == -1 ) continue;
+                        var n = cls.Substring( 0, i );
+                        var v = cls.Substring( i + 1 );
+                        switch ( n )
                         {
-                            var i = cls.IndexOf( '=' ); if ( i == -1 ) continue;
-                            var n = cls.Substring( 0, i );
-                            var v = cls.Substring( i + 1 );
-                            switch ( n )
-                            {
-                                case "w":
-                                    if ( int.TryParse( v, out i ) && (0 < i) )
-                                    {
-                                        col.Width = new DataGridLength( i );
-                                    }
-                                    break;
-                                case "v": case "vis":
-                                    if ( bool.TryParse( v, out var b ) )
-                                    {
-                                        col.IsVisible = b;
-                                    }
-                                    break;
-                                case "di":
-                                    if ( int.TryParse( v, out i ) && (0 <= i) )
-                                    {
-                                        col.DisplayIndex = i;
-                                    }
-                                    break;
-                            }
+                            case "w":
+                                if ( v.TryParse2DataGridLength( out var gridLength, col.Width.DisplayValue ) )
+                                {
+                                    col.Width = gridLength;
+                                }
+                                break;
+                            case "v": case "vis":
+                                if ( bool.TryParse( v, out var b ) )
+                                {
+                                    col.IsVisible = b;
+                                }
+                                break;
+                            case "di":
+                                if ( int.TryParse( v, out i ) && (0 <= i) )
+                                {
+                                    col.DisplayIndex = i;
+                                }
+                                break;
                         }
-                        //col.DisplayIndex = col.Index;
-                        //col.Width        = Convert.ToInt32( col.FillWeight );
                     }
                 }
             };

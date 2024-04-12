@@ -176,9 +176,9 @@ namespace m3u8.download.manager.ui
             EventHandler menuItemClick = (s, _) =>
             {
                 var item = (ToolStripMenuItem) s;
-                ((DataGridViewColumn) item.Tag).Visible = item.Checked;
+                ((DataGridViewTextBoxColumnEx) item.Tag).Visible = item.Checked;
             };
-            foreach ( var col in DGV.Columns.Cast< DataGridViewColumn >() )
+            foreach ( var col in DGV.Columns.Cast< DataGridViewTextBoxColumnEx >() )
             {
                 _ColumnsContextMenu.Items.Add( new ToolStripMenuItem( col.HeaderText, null, menuItemClick ) { CheckOnClick = true, Tag = col, Enabled = (col.Index != OUTPUTFILENAME_COLUMN_INDEX) } );
             }
@@ -189,11 +189,11 @@ namespace m3u8.download.manager.ui
             {
                 foreach ( var item in _ColumnsContextMenu.Items.OfType< ToolStripMenuItem >() )
                 {
-                    if ( item.Tag is DataGridViewColumn col )
+                    if ( item.Tag is DataGridViewTextBoxColumnEx col )
                     {
-                        col.Visible      = true;
+                        col.Visible      = col.Init_Visible;
+                        col.Width        = col.Init_Width; //Convert.ToInt32( col.FillWeight );
                         col.DisplayIndex = col.Index;
-                        col.Width        = Convert.ToInt32( col.FillWeight );                        
                     }
                 }
             };
@@ -204,7 +204,7 @@ namespace m3u8.download.manager.ui
             {
                 foreach ( var item in _ColumnsContextMenu.Items.OfType< ToolStripMenuItem >() )
                 {
-                    if ( item.Tag is DataGridViewColumn col )
+                    if ( item.Tag is DataGridViewTextBoxColumnEx col )
                     {
                         item.Checked = col.Visible;
                     }

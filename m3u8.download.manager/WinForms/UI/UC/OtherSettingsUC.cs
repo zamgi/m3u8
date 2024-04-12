@@ -37,10 +37,6 @@ namespace m3u8.download.manager.ui
             _DownloadController.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
 
             DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
-//#if NETCOREAPP
-//            useDirectorySelectDialogModernCheckBox.Enabled = false;
-//            useDirectorySelectDialogModernCheckBox.Text   += "\r\n(disabled for NETCOREAPP)";
-//#endif
         }
 
         protected override void Dispose( bool disposing )
@@ -269,7 +265,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _GetTotalMemoryTimer == null )
             {
-                var tick = new EventHandler((s, e) =>
+                var tick = new EventHandler((_, _) =>
                 {
                     CollectGarbage.GetTotalMemory( out var totalMemoryBytes );
                     currentMemoryLabel.Text    = $"Current Memory: {GetTotalMemoryFormatText( totalMemoryBytes )}.";
