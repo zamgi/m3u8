@@ -16,30 +16,30 @@ namespace System.Windows.Forms
         [Flags] public enum BrowseInfoFlag : uint
         {
             // Browsing for directory.
-            BIF_RETURNONLYFSDIRS =  0x0001,  // For finding a folder to start document searching
-            BIF_DONTGOBELOWDOMAIN = 0x0002,  // For starting the Find Computer
-            BIF_STATUSTEXT        = 0x0004,   // Top of the dialog has 2 lines of text for BROWSEINFO.lpszTitle and one line if
+            RETURN_ONLY_FS_DIRS  = 0x0001,  // For finding a folder to start document searching
+            DONT_GO_BELOW_DOMAIN = 0x0002,  // For starting the Find Computer
+            STATUS_TEXT          = 0x0004,   // Top of the dialog has 2 lines of text for BROWSEINFO.lpszTitle and one line if
                                         // this flag is set.  Passing the message BFFM_SETSTATUSTEXTA to the hwnd can set the
-                                        // rest of the text.  This is not used with BIF_USENEWUI and BROWSEINFO.lpszTitle gets
+                                        // rest of the text.  This is not used with USENEWUI and BROWSEINFO.lpszTitle gets
                                         // all three lines of text.
-            BIF_RETURNFSANCESTORS = 0x0008,
-            BIF_EDITBOX           = 0x0010,   // Add an editbox to the dialog
-            BIF_VALIDATE          = 0x0020,   // insist on valid result (or CANCEL)
+            RETURN_FS_ANCESTORS = 0x0008,
+            EDIT_BOX            = 0x0010,   // Add an editbox to the dialog
+            VALIDATE            = 0x0020,   // insist on valid result (or CANCEL)
 
-            BIF_NEWDIALOGSTYLE    = 0x0040,   // Use the new dialog layout with the ability to resize
+            NEW_DIALOG_STYLE    = 0x0040,   // Use the new dialog layout with the ability to resize
                                         // Caller needs to call OleInitialize() before using this API
 
-            BIF_USENEWUI          = (BIF_NEWDIALOGSTYLE | BIF_EDITBOX),
+            USE_NEW_UI          = (NEW_DIALOG_STYLE | EDIT_BOX),
 
-            BIF_BROWSEINCLUDEURLS = 0x0080,   // Allow URLs to be displayed or entered. (Requires BIF_USENEWUI)
-            BIF_UAHINT            = 0x0100,   // Add a UA hint to the dialog, in place of the edit box. May not be combined with BIF_EDITBOX
-            BIF_NONEWFOLDERBUTTON = 0x0200,   // Do not add the "New Folder" button to the dialog.  Only applicable with BIF_NEWDIALOGSTYLE.
-            BIF_NOTRANSLATETARGETS= 0x0400,   // don't traverse target as shortcut
+            BROWSE_INCLUDE_URLS  = 0x0080,   // Allow URLs to be displayed or entered. (Requires USENEWUI)
+            UA_HINT              = 0x0100,   // Add a UA hint to the dialog, in place of the edit box. May not be combined with EDITBOX
+            NONE_W_FOLDER_BUTTON = 0x0200,   // Do not add the "New Folder" button to the dialog.  Only applicable with NEWDIALOGSTYLE.
+            NO_TRANSLATE_TARGETS = 0x0400,   // don't traverse target as shortcut
 
-            BIF_BROWSEFORCOMPUTER = 0x1000,  // Browsing for Computers.
-            BIF_BROWSEFORPRINTER  = 0x2000,  // Browsing for Printers
-            BIF_BROWSEINCLUDEFILES= 0x4000,  // Browsing for Everything
-            BIF_SHAREABLE         = 0x8000  // sharable resources displayed (remote shares, requires BIF_USENEWUI)
+            BROWSE_FOR_COMPUTER  = 0x1000,  // Browsing for Computers.
+            BROWSE_FOR_PRINTER   = 0x2000,  // Browsing for Printers
+            BROWSE_INCLUDE_FILES = 0x4000,  // Browsing for Everything
+            SHAREABLE            = 0x8000  // sharable resources displayed (remote shares, requires USENEWUI)
         }
 
         /// <summary>
@@ -52,41 +52,41 @@ namespace System.Windows.Forms
             /// </summary>
             [Flags] public enum SFGAO : uint
             {
-                SFGAO_CANCOPY          = 0x00000001,
-                SFGAO_CANMOVE          = 0x00000002,
-                SFGAO_CANLINK          = 0x00000004,
-                SFGAO_STORAGE          = 0x00000008,
-                SFGAO_CANRENAME        = 0x00000010,
-                SFGAO_CANDELETE        = 0x00000020,
-                SFGAO_HASPROPSHEET     = 0x00000040,
-                SFGAO_DROPTARGET       = 0x00000100,
-                SFGAO_CAPABILITYMASK   = 0x00000177,
-                SFGAO_SYSTEM           = 0x00001000,
-                SFGAO_ENCRYPTED        = 0x00002000,
-                SFGAO_ISSLOW           = 0x00004000,
-                SFGAO_GHOSTED          = 0x00008000,
-                SFGAO_LINK             = 0x00010000,
-                SFGAO_SHARE            = 0x00020000,
-                SFGAO_READONLY         = 0x00040000,
-                SFGAO_HIDDEN           = 0x00080000,
-                SFGAO_DISPLAYATTRMASK  = 0x000FC000,
-                SFGAO_NONENUMERATED    = 0x00100000,
-                SFGAO_NEWCONTENT       = 0x00200000,
-                //SFGAO_CANMONIKER = ,
-                //SFGAO_HASSTORAGE = ,
-                SFGAO_STREAM          = 0x00400000,
-                SFGAO_STORAGEANCESTOR = 0x00800000,
-                SFGAO_VALIDATE        = 0x01000000,
-                SFGAO_REMOVABLE       = 0x02000000,
-                SFGAO_COMPRESSED      = 0x04000000,
-                SFGAO_BROWSABLE       = 0x08000000,
-                SFGAO_FILESYSANCESTOR = 0x10000000,
-                SFGAO_FOLDER          = 0x20000000,
-                SFGAO_FILESYSTEM      = 0x40000000,
-                SFGAO_STORAGECAPMASK  = 0x70C50008,
-                SFGAO_HASSUBFOLDER    = 0x80000000,
-                SFGAO_CONTENTSMASK    = 0x80000000,
-                SFGAO_PKEYSFGAOMASK   = 0x81044000,
+                CANCOPY          = 0x00000001,
+                CANMOVE          = 0x00000002,
+                CANLINK          = 0x00000004,
+                STORAGE          = 0x00000008,
+                CANRENAME        = 0x00000010,
+                CANDELETE        = 0x00000020,
+                HASPROPSHEET     = 0x00000040,
+                DROPTARGET       = 0x00000100,
+                CAPABILITYMASK   = 0x00000177,
+                SYSTEM           = 0x00001000,
+                ENCRYPTED        = 0x00002000,
+                ISSLOW           = 0x00004000,
+                GHOSTED          = 0x00008000,
+                LINK             = 0x00010000,
+                SHARE            = 0x00020000,
+                READONLY         = 0x00040000,
+                HIDDEN           = 0x00080000,
+                DISPLAYATTRMASK  = 0x000FC000,
+                NONENUMERATED    = 0x00100000,
+                NEWCONTENT       = 0x00200000,
+                //CANMONIKER = ,
+                //HASSTORAGE = ,
+                STREAM          = 0x00400000,
+                STORAGEANCESTOR = 0x00800000,
+                VALIDATE        = 0x01000000,
+                REMOVABLE       = 0x02000000,
+                COMPRESSED      = 0x04000000,
+                BROWSABLE       = 0x08000000,
+                FILESYSANCESTOR = 0x10000000,
+                FOLDER          = 0x20000000,
+                FILESYSTEM      = 0x40000000,
+                STORAGECAPMASK  = 0x70C50008,
+                HASSUBFOLDER    = 0x80000000,
+                CONTENTSMASK    = 0x80000000,
+                PKEYSFGAOMASK   = 0x81044000,
             }
 
             private const string SHELL32_DLL = "shell32.dll";
@@ -208,7 +208,7 @@ namespace System.Windows.Forms
         #region [.ctor().]
         public SHBrowser()
         {
-            Flags = BrowseInfoFlag.BIF_USENEWUI;
+            Flags = BrowseInfoFlag.USE_NEW_UI;
             Reset();
         } 
         #endregion
@@ -275,16 +275,16 @@ namespace System.Windows.Forms
         public BrowseInfoFlag Flags { get; set; }
         public bool ShowFiles
         {
-            get => ((Flags & BrowseInfoFlag.BIF_BROWSEINCLUDEFILES) == BrowseInfoFlag.BIF_BROWSEINCLUDEFILES);
+            get => ((Flags & BrowseInfoFlag.BROWSE_INCLUDE_FILES) == BrowseInfoFlag.BROWSE_INCLUDE_FILES);
             set
             {
                 if ( value )
                 {
-                    Flags |= BrowseInfoFlag.BIF_BROWSEINCLUDEFILES;
+                    Flags |= BrowseInfoFlag.BROWSE_INCLUDE_FILES;
                 }
                 else if ( ShowFiles )
                 {
-                    Flags ^= BrowseInfoFlag.BIF_BROWSEINCLUDEFILES;
+                    Flags ^= BrowseInfoFlag.BROWSE_INCLUDE_FILES;
                 }
             }
         }
@@ -296,7 +296,7 @@ namespace System.Windows.Forms
                 if ( value )
                 {
                     _SelectOnlyFiles = true;
-                    Flags |= BrowseInfoFlag.BIF_BROWSEINCLUDEFILES;
+                    Flags |= BrowseInfoFlag.BROWSE_INCLUDE_FILES;
                 }
                 else
                 {
@@ -384,7 +384,7 @@ namespace System.Windows.Forms
             }
             else
             {
-                WinApi.SHParseDisplayName( _RootFolderPath, IntPtr.Zero, ref pidlRoot, WinApi.SFGAO.SFGAO_FILESYSTEM | WinApi.SFGAO.SFGAO_FOLDER, out var psfgaoOut );
+                WinApi.SHParseDisplayName( _RootFolderPath, IntPtr.Zero, ref pidlRoot, WinApi.SFGAO.FILESYSTEM | WinApi.SFGAO.FOLDER, out var psfgaoOut );
             }
             if ( pidlRoot == IntPtr.Zero )
             {
