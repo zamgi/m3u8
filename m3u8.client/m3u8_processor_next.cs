@@ -85,6 +85,40 @@ namespace m3u8
             }
             return (new m3u8_Exception( resp.CreateExceptionMessage( responseText ) ));
         }
+        private static bool TryGetContentLength( HttpContent responseContent, out (string errorReason, long contentLength, string contentMediaType) t )
+        {
+            var rch = responseContent.Headers;
+
+            var contentRange = rch.ContentRange;
+            if ( (contentRange != null) && contentRange.HasLength )
+            {
+                var contentLength    = contentRange.Length.Value;
+                var contentMediaType = rch.ContentType?.MediaType;
+                t = (null, contentLength, contentMediaType);
+                return (true);
+            }
+            else
+            {
+                if ( rch.ContentLength.HasValue )
+                {
+                    var contentLength    = rch.ContentLength.Value;
+                    var contentMediaType = rch.ContentType?.MediaType;
+                    t = (null, contentLength, contentMediaType);
+                    return (true);
+                }
+
+                if ( contentRange == null )
+                {
+                    t = ("Content-Range (response-header) is null", 0, null);
+                    return (false);
+                }
+                //if ( !contentRange.HasLength )
+                //{
+                t = ("Content-Range (response-header) => not has length", 0, null);
+                return (false);
+                //}
+            }
+        }
         private HttpRequestMessage CreateRequstGet( Uri url, IDictionary< string, string > requestHeaders = null )
         {
             var req = new HttpRequestMessage( HttpMethod.Get, url );
@@ -147,7 +181,8 @@ namespace m3u8
         {
             public DownloadPartStepActionParams( in m3u8_part_ts__v2 part ) => Part = part;
             public m3u8_part_ts__v2 Part      { get; init; }
-            public long    TotalBytesReaded   { get; internal set; }
+            public long?   TotalContentLength { get; internal set; }
+            public long    TotalBytesReaded   { get; internal set; }            
             public int     BytesReaded        { get; internal set; }
             public double? InstantSpeedInMbps { get; internal set; }
         }
@@ -201,6 +236,8 @@ namespace m3u8
 #else
                             using var downloadStream = await resp.Content.ReadAsStreamAsync( /*ct*/ ).CAX();
 #endif
+                            dpsa.TotalContentLength = TryGetContentLength( resp.Content, out var x ) ? x.contentLength : null;
+
                             using var holder = ip.RespBufPool.GetHolder();
                             var buf = holder.Value;
                             for ( var totalBytesReaded = 0L; ; )

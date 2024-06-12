@@ -552,7 +552,9 @@ namespace m3u8.download.manager.controllers
                                 }
                                 else
                                 {
-                                    logRow.SetResponse( Extensions.GetSizeFormatted( p.TotalBytesReaded ) );
+                                    var msg = p.TotalContentLength.HasValue ? $"{Extensions.GetSizeFormatted( p.TotalBytesReaded )} of {Extensions.GetSizeFormatted( p.TotalContentLength.Value )}" 
+                                                                               : Extensions.GetSizeFormatted( p.TotalBytesReaded );
+                                    logRow.SetResponse( msg );
                                 }
                             }
                         });
