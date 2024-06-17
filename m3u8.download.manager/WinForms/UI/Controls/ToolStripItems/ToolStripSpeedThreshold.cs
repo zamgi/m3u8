@@ -10,8 +10,12 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed class ToolStripSpeedThreshold : ToolStripControlHost
     {
-        public ToolStripSpeedThreshold() : base( new NumericUpDownUC() { _CaptionText = "Mbps" /*Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right*/ /*Dock = DockStyle.Fill*/ } ) { }
-        public ToolStripSpeedThreshold( EventHandler speedThreshold_ValueChanged ) : this() => SpeedThreshold_ValueChanged += speedThreshold_ValueChanged;
+        public ToolStripSpeedThreshold( 
+            decimal minValue = 0.01M, decimal maxValue = 1_000_000M, int decimalPlaces = 2 ) 
+            : base( new NumericUpDownUC() { _CaptionText = "Mbps", _MinValue = minValue, _MaxValue = maxValue, _DecimalPlaces = decimalPlaces } ) { }
+        public ToolStripSpeedThreshold( EventHandler speedThreshold_ValueChanged, 
+            decimal minValue = 0.01M, decimal maxValue = 1_000_000M, int decimalPlaces = 2 ) 
+            : this( minValue, maxValue, decimalPlaces ) => SpeedThreshold_ValueChanged += speedThreshold_ValueChanged;
         protected override void Dispose( bool disposing )
         {
             if ( disposing ) _Timer?.Dispose();
@@ -20,10 +24,20 @@ namespace m3u8.download.manager.ui
 
         public NumericUpDownUC GetSpeedThresholdUC() => (NumericUpDownUC) Control;
 
-        public int _Value
+        public decimal _Value
         {
             get => GetSpeedThresholdUC()._Value;
             set => GetSpeedThresholdUC()._Value = value;
+        }
+        public decimal _MinValue
+        {
+            get => GetSpeedThresholdUC()._MinValue;
+            set => GetSpeedThresholdUC()._MinValue = value;
+        }
+        public decimal _MaxValue
+        {
+            get => GetSpeedThresholdUC()._MaxValue;
+            set => GetSpeedThresholdUC()._MaxValue = value;
         }
 
         protected override void OnSubscribeControlEvents( Control c )

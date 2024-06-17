@@ -29,10 +29,25 @@ namespace m3u8.download.manager.ui
             get => captionLabel.Text;
             set => captionLabel.Text = value;
         }
-        public int _Value
+        public decimal _Value
         {
-            get => Convert.ToInt32( numericUpDownEx.Value );
+            get => numericUpDownEx.Value;
             set => numericUpDownEx.Value = Math.Min( numericUpDownEx.Maximum, Math.Max( numericUpDownEx.Minimum, value ) );
+        }
+        public decimal _MinValue
+        {
+            get => numericUpDownEx.Minimum;
+            set => numericUpDownEx.Minimum = value;
+        }
+        public decimal _MaxValue
+        {
+            get => numericUpDownEx.Maximum;
+            set => numericUpDownEx.Maximum = value;
+        }
+        public int _DecimalPlaces
+        {
+            get => numericUpDownEx.DecimalPlaces;
+            set => numericUpDownEx.DecimalPlaces = value;
         }
 
         public event EventHandler _ValueChanged

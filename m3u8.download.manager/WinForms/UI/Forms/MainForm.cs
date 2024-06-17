@@ -1135,7 +1135,7 @@ namespace m3u8.download.manager.ui
             }
         }
         private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SC.MaxDegreeOfParallelism = value;
-        private void speedThresholdToolButton_ValueChanged( double? value ) => (_SC.MaxSpeedThresholdInMbps, _SC.MaxSpeedThresholdInMbpsSaved) = (value, speedThresholdToolButton.ValueSaved); 
+        private void speedThresholdToolButton_ValueChanged( decimal? value ) => (_SC.MaxSpeedThresholdInMbps, _SC.MaxSpeedThresholdInMbpsSaved) = (value, speedThresholdToolButton.ValueSaved); 
         #endregion
 
         #region [.context menu.]

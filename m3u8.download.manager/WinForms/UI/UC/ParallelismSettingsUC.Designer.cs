@@ -127,12 +127,14 @@
             // maxSpeedThresholdNUD
             // 
             this.maxSpeedThresholdNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.maxSpeedThresholdNUD.Location = new System.Drawing.Point(41, 75);
-            this.maxSpeedThresholdNUD.Minimum = new decimal( new int[] { 1, 0, 0, 0 } );
+            this.maxSpeedThresholdNUD.Location = new System.Drawing.Point(41, 75);            
             this.maxSpeedThresholdNUD.Size = new System.Drawing.Size(89, 16);
             this.maxSpeedThresholdNUD.TabIndex = 1;
             this.maxSpeedThresholdNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.maxSpeedThresholdNUD.Value = new decimal( new int[] { 20, 0, 0, 0 } );
+            this.maxSpeedThresholdNUD.Minimum = 0.01M;
+            this.maxSpeedThresholdNUD.Maximum = 1_000_000M;
+            this.maxSpeedThresholdNUD.DecimalPlaces = 2;
+            this.maxSpeedThresholdNUD.Value   = 1M;
 
             // 
             // gb1

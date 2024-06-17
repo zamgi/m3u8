@@ -28,10 +28,10 @@
     <Setting Name="MaxCrossDownloadInstanceSaved" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
-    <Setting Name="MaxSpeedThresholdInMbps" Type="System.Nullable&lt;System.Double&gt;" Scope="User">
+    <Setting Name="MaxSpeedThresholdInMbps" Type="System.Nullable&lt;System.Decimal&gt;" Scope="User">
       <!--<Value Profile="(Default)">null</Value>-->
     </Setting>
-    <Setting Name="MaxSpeedThresholdInMbpsSaved" Type="System.Double" Scope="User">
+    <Setting Name="MaxSpeedThresholdInMbpsSaved" Type="System.Decimal" Scope="User">
       <Value Profile="(Default)">55</Value>
     </Setting>
     <Setting Name="NameCleanerExcludesWords" Type="System.Collections.Specialized.StringCollection" Scope="User">

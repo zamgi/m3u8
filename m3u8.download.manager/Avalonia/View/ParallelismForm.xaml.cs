@@ -132,11 +132,11 @@ namespace m3u8.download.manager.ui
             useMaxCrossDownloadInstanceCheckBox_Click( null, null ); // useMaxCrossDownloadInstanceCheckBox, new RoutedEventArgs() );
         }
 
-        public double? MaxSpeedThresholdInMbps => (!isUnlimMaxSpeedThresholdCheckBox.IsChecked.GetValueOrDefault() ? MaxSpeedThresholdInMbpsSaved : null);
-        public double MaxSpeedThresholdInMbpsSaved => Math.Max( 0.1, (double) maxSpeedThresholdNUD.Value );
-        public void SetMaxSpeedThresholdInMbps( double? maxSpeedThresholdInMbps, double maxSpeedThresholdInMbpsSaved )
+        public decimal? MaxSpeedThresholdInMbps => (!isUnlimMaxSpeedThresholdCheckBox.IsChecked.GetValueOrDefault() ? MaxSpeedThresholdInMbpsSaved : null);
+        public decimal MaxSpeedThresholdInMbpsSaved => Math.Max( 0.01M, maxSpeedThresholdNUD.Value.GetValueOrDefault() );
+        public void SetMaxSpeedThresholdInMbps( decimal? maxSpeedThresholdInMbps, decimal maxSpeedThresholdInMbpsSaved )
         {
-            maxSpeedThresholdNUD.Value = Math.Max( 0.1M, (decimal) maxSpeedThresholdInMbps.GetValueOrDefault( maxSpeedThresholdInMbpsSaved ) );
+            maxSpeedThresholdNUD.Value = Math.Max( 0.01M, maxSpeedThresholdInMbps.GetValueOrDefault( maxSpeedThresholdInMbpsSaved ) );
             isUnlimMaxSpeedThresholdCheckBox.IsChecked = !maxSpeedThresholdInMbps.HasValue;
             isUnlimMaxSpeedThresholdCheckBox_Click( null, null );
         }

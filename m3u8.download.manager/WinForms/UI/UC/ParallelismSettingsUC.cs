@@ -77,12 +77,12 @@ namespace m3u8.download.manager.ui
         }
 
         [B(false)]
-        public double? MaxSpeedThresholdInMbps => (!isUnlimMaxSpeedThresholdCheckBox.Checked ? MaxSpeedThresholdInMbpsSaved : null);
+        public decimal? MaxSpeedThresholdInMbps => (!isUnlimMaxSpeedThresholdCheckBox.Checked ? MaxSpeedThresholdInMbpsSaved : null);
         [B(false)]
-        public double MaxSpeedThresholdInMbpsSaved => Math.Max( 0.1, Convert.ToDouble( maxSpeedThresholdNUD.Value ) );
-        public void SetMaxSpeedThresholdInMbps( double? maxSpeedThresholdInMbps, double maxSpeedThresholdInMbpsSaved )
+        public decimal MaxSpeedThresholdInMbpsSaved => Math.Max( 0.01M, maxSpeedThresholdNUD.Value );
+        public void SetMaxSpeedThresholdInMbps( decimal? maxSpeedThresholdInMbps, decimal maxSpeedThresholdInMbpsSaved )
         {
-            maxSpeedThresholdNUD.Value = Convert.ToDecimal( Math.Max( 0.1, maxSpeedThresholdInMbps.GetValueOrDefault( maxSpeedThresholdInMbpsSaved ) ) );
+            maxSpeedThresholdNUD.Value = Math.Max( 0.01M, maxSpeedThresholdInMbps.GetValueOrDefault( maxSpeedThresholdInMbpsSaved ) );
             isUnlimMaxSpeedThresholdCheckBox.Checked = !maxSpeedThresholdInMbps.HasValue;
             isUnlimMaxSpeedThresholdCheckBox_CheckedChanged( isUnlimMaxSpeedThresholdCheckBox, EventArgs.Empty );
         }

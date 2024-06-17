@@ -56,16 +56,18 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-        private double _Max_speed_threshold_in_Mbps;
+        private decimal _Max_speed_threshold_in_Mbps;
+        private SpinLock _Lock;
         private CancellationTokenSource __Cts__;
         private ConcurrentDictionary< Task, download_measure_t > _DownloadMeasureDict;
 
-        public throttler_by_speed_impl( double? max_speed_threshold_in_Mbps ) : this( max_speed_threshold_in_Mbps.GetValueOrDefault( double.MaxValue ) ) { }
-        public throttler_by_speed_impl( double max_speed_threshold_in_Mbps )
+        public throttler_by_speed_impl( decimal? max_speed_threshold_in_Mbps ) : this( max_speed_threshold_in_Mbps.GetValueOrDefault( decimal.MaxValue ) ) { }
+        public throttler_by_speed_impl( decimal max_speed_threshold_in_Mbps )
         {
             _Max_speed_threshold_in_Mbps = max_speed_threshold_in_Mbps;
             _DownloadMeasureDict = new ConcurrentDictionary< Task, download_measure_t >();
             __Cts__ = new CancellationTokenSource();
+            _Lock = new SpinLock();
         }
         public void Dispose()
         {
@@ -82,11 +84,39 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-        private double GetMaxSpeedThreshold_Internal() => Interlocked.CompareExchange( ref _Max_speed_threshold_in_Mbps, 0, 0 );
-        public double? GetMaxSpeedThreshold() => GetMaxSpeedThreshold_Internal();
-        public void ChangeMaxSpeedThreshold( double? max_speed_threshold_in_Mbps )
+        private decimal GetMaxSpeedThreshold_Internal() //=> Interlocked.CompareExchange( ref _Max_speed_threshold_in_Mbps, 0, 0 );
         {
-            Interlocked.Exchange( ref _Max_speed_threshold_in_Mbps, max_speed_threshold_in_Mbps.GetValueOrDefault( double.MaxValue ) );
+            var lockTaken = false;
+            try
+            {
+                _Lock.Enter( ref lockTaken );
+                return (_Max_speed_threshold_in_Mbps);
+            }
+            finally
+            {
+                if ( lockTaken )
+                {
+                    _Lock.Exit( true );
+                }
+            }
+        }
+        public decimal? GetMaxSpeedThreshold() => GetMaxSpeedThreshold_Internal();
+        public void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps )
+        {
+            var lockTaken = false;
+            try
+            {
+                _Lock.Enter( ref lockTaken );
+                _Max_speed_threshold_in_Mbps = max_speed_threshold_in_Mbps.GetValueOrDefault( decimal.MaxValue );
+            }
+            finally
+            {
+                if ( lockTaken )
+                {
+                    _Lock.Exit( true );
+                }
+            }
+            //Interlocked.Exchange( ref _Max_speed_threshold_in_Mbps, max_speed_threshold_in_Mbps.GetValueOrDefault( decimal.MaxValue ) );
             _DownloadMeasureDict.Clear();
             Get_Cts().Cancel_NoThrow();
         }
@@ -132,7 +162,7 @@ namespace m3u8.download.manager.controllers
 
             var nowTicks = Stopwatch.GetTimestamp();
             var elapsedSeconds = new TimeSpan( nowTicks - dm.StartMeasureDateTimeTicks ).TotalSeconds;
-            var secondsDelay   = (Extensions.GetMbps( totalDownloadBytes ) / GetMaxSpeedThreshold_Internal()) - elapsedSeconds;
+            var secondsDelay   = (Extensions.GetMbps( totalDownloadBytes ) / (double) GetMaxSpeedThreshold_Internal()) - elapsedSeconds;
 
             var last = dm.GetLastDownloadBytes();
             var last_elapsedSeconds = TimeSpan.FromTicks( last.intervalDateTimeTicks ).TotalSeconds;

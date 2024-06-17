@@ -9,8 +9,8 @@ namespace m3u8
     /// </summary>
     internal interface I_throttler_by_speed_t : IDisposable
     {
-        double? GetMaxSpeedThreshold();
-        void ChangeMaxSpeedThreshold( double? max_speed_threshold_in_Mbps );
+        decimal? GetMaxSpeedThreshold();
+        void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps );
         void Start( Task task );
         void Restart( Task task );
         public void End( Task task );

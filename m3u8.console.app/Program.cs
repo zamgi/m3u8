@@ -503,10 +503,10 @@ namespace m3u8
             /// </summary>
             private sealed class throttler_by_speed_impl : I_throttler_by_speed_t
             {
-                public void ChangeMaxSpeedThreshold( double? max_speed_threshold_in_Mbps ) { }
+                public void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps ) { }
                 public void Dispose() { }
                 public void End( Task task ) { }
-                public double? GetMaxSpeedThreshold() => null;
+                public decimal? GetMaxSpeedThreshold() => null;
                 public void Restart( Task task ) { }
                 public void Start( Task task ) { }
                 public void TakeIntoAccountDownloadedBytes( Task task, int downloadedBytes ) { }

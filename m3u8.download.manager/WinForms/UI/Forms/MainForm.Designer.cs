@@ -249,7 +249,7 @@
             // 
             // speedThrottlerToolButton
             //             
-            this.speedThresholdToolButton.ValueChanged += new System.Windows.Forms._ToolStripDropDownButtonEx__DoubleValue.ValueChangedEventHandler(this.speedThresholdToolButton_ValueChanged );
+            this.speedThresholdToolButton.ValueChanged += new System.Windows.Forms._ToolStripDropDownButtonEx__DecimalValue.ValueChangedEventHandler(this.speedThresholdToolButton_ValueChanged);
             // 
             // mainSplitContainer
             // 

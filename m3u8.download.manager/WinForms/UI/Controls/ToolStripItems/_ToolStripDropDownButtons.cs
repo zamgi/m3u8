@@ -17,7 +17,8 @@ namespace System.Windows.Forms
         protected sealed class ToolStripMenuItemEx : ToolStripMenuItem
         {
             public ToolStripMenuItemEx( T value, EventHandler onClick ) : base( value.ToString(), null, onClick ) => Value = value;
-            public T Value { get; }
+            public ToolStripMenuItemEx( T value, string suffix, EventHandler onClick ) : base( $"{value}{suffix}", null, onClick ) => Value = value;
+            public T Value { get; }            
         }
 
         /// <summary>
@@ -31,6 +32,7 @@ namespace System.Windows.Forms
         protected abstract Image  MainImage         { get; }
         protected abstract Color  MainForeColor     { get; }
         protected abstract Color  SelectedBackColor { get; }
+        protected virtual string  Suffix => null;
 
         protected abstract void FillDropDownItems();
         protected abstract T DefaultValue { get; }
@@ -64,11 +66,11 @@ namespace System.Windows.Forms
                 {
                     _Value = value;
 
-                    this.Text = $"   {value}   ";
-                    this.ToolTipText = MainToolTipText + ": " + value;
+                    this.Text        = $"{value}{Suffix}"; //$"   {value}{Suffix}   ";
+                    this.ToolTipText = $"{MainToolTipText}: {value}";
 
                     var font = new Font( this.Font, FontStyle.Regular );
-                    foreach ( ToolStripMenuItemEx mi in this.DropDownItems )
+                    foreach ( ToolStripMenuItemEx mi in this.DropDownItems.OfType< ToolStripMenuItemEx >() )
                     {
                         if ( IsEqual( mi.Value, value ) )
                         {
@@ -116,13 +118,14 @@ namespace System.Windows.Forms
         protected override Image  MainImage         => _Resources_.download_inst.ToBitmap();
         protected override Color  MainForeColor     => Color.DodgerBlue;
         protected override Color  SelectedBackColor => Color.LightBlue;
+        protected override string Suffix            => "  (inst)";
 
         protected override void FillDropDownItems()
         {
             var font = new Font( this.Font, FontStyle.Regular );
             for ( var i = 1; i <= 10; i++ )
             {
-                this.DropDownItems.Add( new ToolStripMenuItemEx( i, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } ); //, DisplayStyle = ToolStripItemDisplayStyle.Text } );
+                this.DropDownItems.Add( new ToolStripMenuItemEx( i, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } ); //, DisplayStyle = ToolStripItemDisplayStyle.Text } );
             }
         }
 
@@ -144,24 +147,20 @@ namespace System.Windows.Forms
         protected override Image  MainImage         => _Resources_.dop_16.ToBitmap();
         protected override Color  MainForeColor     => Color.Green;
         protected override Color  SelectedBackColor => Color.LightGreen;
+        protected override string Suffix            => "  (dop)";
 
         protected override void FillDropDownItems()
         {
             var font = new Font( this.Font, FontStyle.Regular );
-            this.DropDownItems.Add( new ToolStripMenuItemEx(  1, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx(  2, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx(  4, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx(  8, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx( 12, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx( 16, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx( 24, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx( 32, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            this.DropDownItems.Add( new ToolStripMenuItemEx( 64, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-
-            //for ( int i = 0; i <= 7; i++ )
-            //{
-            //    this.DropDownItems.Add( new ToolStripMenuItemEx( (1 << 1), ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            //}
+            this.DropDownItems.Add( new ToolStripMenuItemEx(  1, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx(  2, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx(  4, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx(  8, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 12, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 16, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 24, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 32, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 64, Suffix, ToolStripMenuItemEx_EventHandler ) { Font = font, ImageScaling = ToolStripItemImageScaling.None } );
         }
     }
     //------------------------------------------------------------------------------------------//
@@ -169,16 +168,16 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal abstract class _ToolStripDropDownButtonEx__DoubleValue : _ToolStripDropDownButtonEx_Base< double? >
+    internal abstract class _ToolStripDropDownButtonEx__DecimalValue : _ToolStripDropDownButtonEx_Base< decimal? >
     {
-        protected override double? DefaultValue => -1;
-        protected override bool IsEqual( double? x, double? y ) //=> (Math.Abs( x - y ) <= double.Epsilon);
+        protected override decimal? DefaultValue => -1;
+        protected override bool IsEqual( decimal? x, decimal? y )
         {
             if ( x.HasValue )
             {
                 if ( y.HasValue )
                 {
-                    return (Math.Abs( x.Value - y.Value ) <= double.Epsilon);
+                    return (x.Value == y.Value);
                 }
             }
             else if ( !y.HasValue )
@@ -192,7 +191,7 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class SpeedThresholdToolButton : _ToolStripDropDownButtonEx__DoubleValue
+    internal sealed class SpeedThresholdToolButton : _ToolStripDropDownButtonEx__DecimalValue
     {
         private const string MAX_SPEED = "Max (unlim)";
         private const string MBPS      = "Mbps";
@@ -204,7 +203,7 @@ namespace System.Windows.Forms
         protected override Color  MainForeColor     => Color.CadetBlue;
         protected override Color  SelectedBackColor => Color.LightGreen;
 
-        public override double? Value 
+        public override decimal? Value 
         { 
             get => _Value;
             set => SetValue( value );
@@ -219,7 +218,7 @@ namespace System.Windows.Forms
             SettedPredefineValue,
             SettedCustomValue,
         }
-        private SetValueState SetValue( double? value, bool raiseValueChangedEvent = true )
+        private SetValueState SetValue( decimal? value, bool raiseValueChangedEvent = true )
         {
             var state = SetValueState.NoChanged;
 
@@ -228,29 +227,29 @@ namespace System.Windows.Forms
                 _Value = value;
 
                 var t = (value.HasValue ? $"{value.Value} {MBPS}" : MAX_SPEED);
-                this.Text = t;
-                this.ToolTipText = MainToolTipText + ": " + t;
-                this.Image = MainImage;
+                this.Text        = t;
+                this.ToolTipText = $"{MainToolTipText}: {t}";
+                this.Image       = MainImage;
 
                 var font = new Font( this.Font, FontStyle.Regular );
                 var was_found_mi = false;
-                foreach ( var mi in this.DropDownItems.Cast<ToolStripItem>().OfType<ToolStripMenuItemEx>() )
+                foreach ( var mi in this.DropDownItems.Cast< ToolStripItem >().OfType< ToolStripMenuItemEx >() )
                 {
                     if ( IsEqual( mi.Value, value ) )
                     {
                         mi.BackColor = this.SelectedBackColor;
-                        mi.Font = this.Font;
+                        mi.Font      = this.Font;
 
-                        this.Image = mi.Image;
-                        this.ForeColor = mi.ForeColor;
-                        this.Text = mi.Text;
-                        this.ToolTipText = MainToolTipText + ": " + mi.Text;
+                        this.Image       = mi.Image;
+                        this.ForeColor   = mi.ForeColor;
+                        this.Text        = mi.Text;
+                        this.ToolTipText = $"{MainToolTipText}: {mi.Text}";
                         was_found_mi = true;
                     }
                     else
                     {
                         mi.BackColor = this.BackColor;
-                        mi.Font = font;
+                        mi.Font      = font;
                     }
                 }
 
@@ -266,10 +265,10 @@ namespace System.Windows.Forms
                     _ToolStripSpeedThreshold.BackColor = this.SelectedBackColor;
                     //_ToolStripSpeedThreshold.Font = this.Font;
 
-                    var val_int = (int) _Value.Value;
-                    if ( _ToolStripSpeedThreshold._Value != val_int )
+                    var val_dec = _Value.Value;
+                    if ( _ToolStripSpeedThreshold._Value != val_dec )
                     {
-                        _ToolStripSpeedThreshold._Value = val_int;                        
+                        _ToolStripSpeedThreshold._Value = val_dec;                        
                     }
                     state = SetValueState.SettedCustomValue;
                 }
@@ -283,7 +282,7 @@ namespace System.Windows.Forms
             return (state);
         }
 
-        public (double? value, double valueSaved) ValueWithSaved
+        public (decimal? value, decimal valueSaved) ValueWithSaved
         {
             get => (_Value, _ToolStripSpeedThreshold._Value);
             set
@@ -292,11 +291,10 @@ namespace System.Windows.Forms
                 var state = SetValue( v, raiseValueChangedEvent: false );
                 if ( state != SetValueState.SettedCustomValue )
                 {
-                    var val_int = (int) saved;
-                    if ( _ToolStripSpeedThreshold._Value != val_int )
+                    if ( _ToolStripSpeedThreshold._Value != saved )
                     {
                         _ToolStripSpeedThreshold.SpeedThreshold_ValueChanged -= ToolStripSpeedThreshold_ValueChanged;
-                        _ToolStripSpeedThreshold._Value = val_int;
+                        _ToolStripSpeedThreshold._Value = saved;
                         _ToolStripSpeedThreshold.SpeedThreshold_ValueChanged += ToolStripSpeedThreshold_ValueChanged;
                     }
                 }
@@ -306,7 +304,7 @@ namespace System.Windows.Forms
                 }
             }
         }
-        public double ValueSaved => _ToolStripSpeedThreshold._Value;
+        public decimal ValueSaved => _ToolStripSpeedThreshold._Value;
 
 
         private _ToolStripSpeedThreshold_ _ToolStripSpeedThreshold;
@@ -322,11 +320,18 @@ namespace System.Windows.Forms
             this.DropDownItems.Add( new ToolStripMenuItemEx(   10, ToolStripMenuItemEx_EventHandler ) { Text = $"10 {MBPS}", ForeColor = Color.FromArgb( 234, 118,  33 ), Image = _Resources_.speed_3.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx(    5, ToolStripMenuItemEx_EventHandler ) { Text = $"5 {MBPS}" , ForeColor = Color.FromArgb( 252, 146,   0 ), Image = _Resources_.speed_4.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
             this.DropDownItems.Add( new ToolStripMenuItemEx(    1, ToolStripMenuItemEx_EventHandler ) { Text = $"1 {MBPS}" , ForeColor = Color.FromArgb( 178, 202,   0 ), Image = _Resources_.speed_5.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
-            
+
+            this.DropDownItems.Add( new ToolStripSeparator() );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 0.7M, ToolStripMenuItemEx_EventHandler ) { Text = $"0.7 {MBPS}", ForeColor = Color.FromArgb( 0, 0, 0 ), Image = _Resources_.speed_6.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 0.5M, ToolStripMenuItemEx_EventHandler ) { Text = $"0.5 {MBPS}", ForeColor = Color.FromArgb( 0, 0, 0 ), Image = _Resources_.speed_6.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 0.3M, ToolStripMenuItemEx_EventHandler ) { Text = $"0.3 {MBPS}", ForeColor = Color.FromArgb( 0, 0, 0 ), Image = _Resources_.speed_6.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+            this.DropDownItems.Add( new ToolStripMenuItemEx( 0.1M, ToolStripMenuItemEx_EventHandler ) { Text = $"0.1 {MBPS}", ForeColor = Color.FromArgb( 0, 0, 0 ), Image = _Resources_.speed_6.ToBitmap(), Font = font, ImageScaling = ToolStripItemImageScaling.None } );
+
             this.DropDownItems.Add( new ToolStripSeparator() );
             this.DropDownItems.Add( _ToolStripSpeedThreshold = new _ToolStripSpeedThreshold_( ToolStripSpeedThreshold_ValueChanged ) { Font = font } );
 
             this.Value = null;
         }
     }
+    //------------------------------------------------------------------------------------------//
 }
