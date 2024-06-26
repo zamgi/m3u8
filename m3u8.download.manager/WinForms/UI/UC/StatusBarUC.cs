@@ -155,8 +155,8 @@ namespace m3u8.download.manager.ui
             var st = GetSettings();
             using ( var f = new SettingsForm( _DC, settingsTab ) )
             {
-                f.Parallelism.MaxDegreeOfParallelism              = st.MaxDegreeOfParallelism;                
-                f.Parallelism.UseCrossDownloadInstanceParallelism = st.UseCrossDownloadInstanceParallelism;                
+                f.Parallelism.MaxDegreeOfParallelism              = st.MaxDegreeOfParallelism;
+                f.Parallelism.UseCrossDownloadInstanceParallelism = st.UseCrossDownloadInstanceParallelism;
                 f.Parallelism.SetMaxCrossDownloadInstance( st.MaxCrossDownloadInstance, st.MaxCrossDownloadInstanceSaved );
                 f.Parallelism.SetMaxSpeedThresholdInMbps ( st.MaxSpeedThresholdInMbps , st.MaxSpeedThresholdInMbpsSaved  );
 

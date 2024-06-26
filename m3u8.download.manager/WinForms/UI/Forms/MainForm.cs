@@ -100,7 +100,7 @@ namespace m3u8.download.manager.ui
             showLogToolButton_Click( showLogToolButton, EventArgs.Empty );
 
             downloadInstanceToolButton.SetValueAndVisible( _SC.MaxCrossDownloadInstance );
-            degreeOfParallelismToolButton.Value = _SC.MaxDegreeOfParallelism;
+            degreeOfParallelismToolButton.ValueWithSaved = (_SC.MaxDegreeOfParallelism , _SC.MaxDegreeOfParallelismSaved);
             speedThresholdToolButton     .ValueWithSaved = (_SC.MaxSpeedThresholdInMbps, _SC.MaxSpeedThresholdInMbpsSaved);
 
             _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
@@ -1096,28 +1096,28 @@ namespace m3u8.download.manager.ui
         private void otherSettingsToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_OtherSettings();
         private void aboutToolButton_Click( object sender, EventArgs e )
         {
-        var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\" {AssemblyInfoHelper.FrameWorkName}" + Environment.NewLine +
-                       AssemblyInfoHelper.AssemblyCopyright + Environment.NewLine +
-                       Environment.NewLine +
-                       $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})" +
-                       Environment.NewLine +
-                       Environment.NewLine +
-                       "Shortcut's:" + Environment.NewLine +
-                       "  Ctrl+C:\t Copy selected download url to clipboard" + Environment.NewLine +
-                       "  Ctrl+B:\t Browse output file (if exists)" + Environment.NewLine +
-                       "  Ctrl+D:\t Minimized application window" + Environment.NewLine +
-                       "  Ctrl+E:\t Open with External program" + Environment.NewLine +
-                       "  Ctrl+O:\t Open output file (if exists)" + Environment.NewLine +
-                       "  Ctrl+P:\t Pause selected download" + Environment.NewLine +
-                       "  Ctrl+S:\t Start selected download" + Environment.NewLine +
-                       "  Ctrl+V:\t Paste download url from clipboard" + Environment.NewLine +
-                       "  Ctrl+W:\t Exit application" + Environment.NewLine +
-                       "  Ctrl+Z:\t Cancel selected download" + Environment.NewLine +
-                       "  Insert:\t Open add new download dialog" + Environment.NewLine +
-                       "  Delete:\t Delete download (with or without output file)" + Environment.NewLine +
-                       "  Enter:\t Open rename output file dialog" + Environment.NewLine +
-                       "  F1:\t About dialog" + Environment.NewLine +
-                       "  (Ctrl+Shift+G:  Collect Garbage)" + Environment.NewLine;
+            var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\" {AssemblyInfoHelper.FrameWorkName}" + Environment.NewLine +
+                           AssemblyInfoHelper.AssemblyCopyright + Environment.NewLine +
+                           Environment.NewLine +
+                           $"Version {AssemblyInfoHelper.AssemblyVersion}, ({AssemblyInfoHelper.AssemblyLastWriteTime})" +
+                           Environment.NewLine +
+                           Environment.NewLine +
+                           "Shortcut's:" + Environment.NewLine +
+                           "  Ctrl+C:\t Copy selected download url to clipboard" + Environment.NewLine +
+                           "  Ctrl+B:\t Browse output file (if exists)" + Environment.NewLine +
+                           "  Ctrl+D:\t Minimized application window" + Environment.NewLine +
+                           "  Ctrl+E:\t Open with External program" + Environment.NewLine +
+                           "  Ctrl+O:\t Open output file (if exists)" + Environment.NewLine +
+                           "  Ctrl+P:\t Pause selected download" + Environment.NewLine +
+                           "  Ctrl+S:\t Start selected download" + Environment.NewLine +
+                           "  Ctrl+V:\t Paste download url from clipboard" + Environment.NewLine +
+                           "  Ctrl+W:\t Exit application" + Environment.NewLine +
+                           "  Ctrl+Z:\t Cancel selected download" + Environment.NewLine +
+                           "  Insert:\t Open add new download dialog" + Environment.NewLine +
+                           "  Delete:\t Delete download (with or without output file)" + Environment.NewLine +
+                           "  Enter:\t Open rename output file dialog" + Environment.NewLine +
+                           "  F1:\t About dialog" + Environment.NewLine +
+                           "  (Ctrl+Shift+G:  Collect Garbage)" + Environment.NewLine;
             this.MessageBox_ShowInformation( text, "about" );
         }
 
@@ -1134,7 +1134,7 @@ namespace m3u8.download.manager.ui
                 _SC.MaxCrossDownloadInstance = downloadInstanceValue;
             }
         }
-        private void degreeOfParallelismToolButton_ValueChanged( int value ) => _SC.MaxDegreeOfParallelism = value;
+        private void degreeOfParallelismToolButton_ValueChanged( int value ) => (_SC.MaxDegreeOfParallelism, _SC.MaxDegreeOfParallelismSaved) = (value, degreeOfParallelismToolButton.ValueSaved);
         private void speedThresholdToolButton_ValueChanged( decimal? value ) => (_SC.MaxSpeedThresholdInMbps, _SC.MaxSpeedThresholdInMbpsSaved) = (value, speedThresholdToolButton.ValueSaved); 
         #endregion
 

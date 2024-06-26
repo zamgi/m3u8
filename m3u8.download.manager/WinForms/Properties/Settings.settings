@@ -22,6 +22,9 @@
     <Setting Name="MaxDegreeOfParallelism" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">8</Value>
     </Setting>
+    <Setting Name="MaxDegreeOfParallelismSaved" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2</Value>
+    </Setting>    
     <Setting Name="MaxCrossDownloadInstance" Type="System.Nullable&lt;System.Int32&gt;" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
