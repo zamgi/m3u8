@@ -243,6 +243,8 @@ namespace m3u8.download.manager.ui
         protected override IBrush  MainForeground     => Brushes.CadetBlue;
         protected override IBrush  SelectedBackground => Brushes.LightGreen;
 
+        public bool TrimTrailingDecimalsZero { get; set; } = true;
+        private string get_formatted( decimal d ) => TrimTrailingDecimalsZero ? d.ToString().TrimEnd( '0' ).TrimEnd( '.' ) : d.ToString();
         public override decimal? Value 
         { 
             get => _Value;
@@ -252,7 +254,7 @@ namespace m3u8.download.manager.ui
                 {
                     _Value = value;
 
-                    var txt = (value.HasValue ? $"{value.Value} {MBPS}" : MAX_SPEED);
+                    var txt = (value.HasValue ? $"{get_formatted( value.Value )} {MBPS}" : MAX_SPEED);
                     _InnerTextBlock.Text = txt;
                     SetTip4TopItem( $"{MainToolTipText}: {txt}" );
                     this.Image = MainImage;

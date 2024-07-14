@@ -4,7 +4,6 @@ using System.Linq;
 using _Resources_                    = m3u8.download.manager.Properties.Resources;
 using _ToolStripSpeedThreshold_      = m3u8.download.manager.ui.ToolStripSpeedThreshold;
 using _ToolStripDegreeOfParallelism_ = m3u8.download.manager.ui.ToolStripDegreeOfParallelism;
-using m3u8.download.manager.ui;
 
 namespace System.Windows.Forms
 {
@@ -335,6 +334,8 @@ namespace System.Windows.Forms
         protected override Color  MainForeColor     => Color.CadetBlue;
         protected override Color  SelectedBackColor => Color.LightGreen;
 
+        public bool TrimTrailingDecimalsZero { get; set; } = true;
+        private string get_formatted( decimal d ) => TrimTrailingDecimalsZero ? d.ToString().TrimEnd( '0' ).TrimEnd( '.' ) : d.ToString();
         public override decimal? Value 
         { 
             get => _Value;
@@ -358,7 +359,7 @@ namespace System.Windows.Forms
             {
                 _Value = value;
 
-                var t = (value.HasValue ? $"{value.Value} {MBPS}" : MAX_SPEED);
+                var t = (value.HasValue ? $"{get_formatted( value.Value )} {MBPS}" : MAX_SPEED);
                 this.Text        = t;
                 this.ToolTipText = $"{MainToolTipText}: {t}";
                 this.Image       = MainImage;
@@ -401,7 +402,7 @@ namespace System.Windows.Forms
                     var val_dec = _Value.Value;
                     if ( _ToolStripUC._Value != val_dec )
                     {
-                        _ToolStripUC._Value = val_dec;                        
+                        _ToolStripUC._Value = val_dec;
                     }
                     state = SetValueState.SettedCustomValue;
                 }
