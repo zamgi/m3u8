@@ -18,7 +18,7 @@
       <StackPanel>
         <TextBlock>max download threads:</TextBlock>
         <NumericUpDown x:Name="maxDegreeOfParallelismNUD" Minimum="1" Maximum="100" Value="1" 
-                       AllowSpin="True" ClipValueToMinMax="True"
+                       AllowSpin="True" ClipValueToMinMax="True" FormatString="0"
                        HorizontalAlignment="Center" Margin="0,5,35,0" Padding="0" />
         <CheckBox x:Name="useCrossDownloadInstanceParallelismCheckBox" Background="White" Cursor="Hand"
                   ToolTip.Tip="checked - share &quot;max download threads&quot; between all downloads-instance &#xA; unchecked - use &quot;max download threads&quot; per each downloads-instance">
@@ -37,7 +37,7 @@
         <TextBlock x:Name="maxCrossDownloadInstanceLabel1">max count of downloads-instance for</TextBlock>
         <TextBlock x:Name="maxCrossDownloadInstanceLabel2">simultaneously downloading data:</TextBlock>
         <NumericUpDown x:Name="maxCrossDownloadInstanceNUD" Minimum="1" Maximum="100" Value="1"
-                       AllowSpin="True" ClipValueToMinMax="True"
+                       AllowSpin="True" ClipValueToMinMax="True" FormatString="0"
                        HorizontalAlignment="Center" Margin="0,5,35,0" Padding="0" />
       </StackPanel>
     </Border>
@@ -48,7 +48,7 @@
         <CheckBox x:Name="isUnlimMaxSpeedThresholdCheckBox" Background="White" Cursor="Hand" Margin="0,0,0,7">Max/Unlimited speed</CheckBox>
         <TextBlock x:Name="maxSpeedThresholdLabel">max speed threshold (in Mbps):</TextBlock>
         <NumericUpDown x:Name="maxSpeedThresholdNUD" Minimum="1" Maximum="100" Value="20"
-                       AllowSpin="True" ClipValueToMinMax="True"
+                       AllowSpin="True" ClipValueToMinMax="True" FormatString="0"
                        HorizontalAlignment="Center" Margin="0,5,35,0" Padding="0" />
       </StackPanel>
     </Border>    

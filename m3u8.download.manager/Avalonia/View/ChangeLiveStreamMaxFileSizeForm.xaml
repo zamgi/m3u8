@@ -18,7 +18,7 @@
                (for live stream)</TextBlock>
     <NumericUpDown x:Name="liveStreamMaxSizeInMbNumUpDn" Grid.Row="0" Grid.Column="2"
                    Minimum="1" Maximum="10000000" Value="250"
-                   AllowSpin="True" ClipValueToMinMax="True"
+                   AllowSpin="True" ClipValueToMinMax="True" FormatString="0"
                    HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0" />      
 
     <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Bottom">

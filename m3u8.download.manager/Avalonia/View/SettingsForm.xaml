@@ -26,7 +26,7 @@
         <NumericUpDown Grid.Row="0" Grid.Column="2"
                        x:Name="attemptRequestCountByPartNUD" 
                        Minimum="1" Maximum="100" Value="1"
-                       AllowSpin="True" ClipValueToMinMax="True"
+                       AllowSpin="True" ClipValueToMinMax="True" FormatString="0"
                        HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0" />
         <TextBlock Grid.Row="1" Grid.Column="1" 
                    x:Name="only4NotRunLabel1" HorizontalAlignment="Right"
