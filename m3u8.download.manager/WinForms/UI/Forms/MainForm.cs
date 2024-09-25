@@ -570,14 +570,11 @@ namespace m3u8.download.manager.ui
                             ExternalProg_Run_IfExists( _SC.Settings.ExternalProgFilePath, $"\"{outputFileName}\"" );
                         }
                     }
-                        #endregion
+                    #endregion
 
-                    #region [..]
+                    #region [.show/hide NotifyIcon.]
                     var any_running = _DownloadListModel.GetRows().Any( row => row.Status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Wait => true, _ => false } );
-                    //if ( !any_running )
-                    //{
                     DownloadController_IsDownloadingChanged( isDownloading: any_running );
-                    //}
                     #endregion
                 }
                 break;
