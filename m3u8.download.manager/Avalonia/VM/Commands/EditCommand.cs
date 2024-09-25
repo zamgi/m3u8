@@ -29,7 +29,7 @@ namespace m3u8.download.manager
 
         public async void EditDownload( DownloadRow row )
         {
-            if ( row == null ) return;
+            if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
 
             var f = AddNewDownloadForm.Edit( _VM, row, _OutputFileNamePatternProcessor );
             {
