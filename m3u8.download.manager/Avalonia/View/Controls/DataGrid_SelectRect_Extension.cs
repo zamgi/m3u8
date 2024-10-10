@@ -9,6 +9,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -88,6 +89,8 @@ namespace m3u8.download.manager.ui
         private enum MoveDirectionEnum { __UNDEFINE__, Up, Down }
 
         private bool   _IsPointerPressed;
+        private bool   _IsPre_Begin_SelectRect;
+        private Point  _Pre_Begin_SelectRect_Point;
         private Point  _Press_Pos;
         private (Point Pos, MoveDirectionEnum MoveDirection)? _LastMove;
         private Rect   _Grid_Bounds;
@@ -96,20 +99,26 @@ namespace m3u8.download.manager.ui
 
         private void DGV_CellPointerPressed( object sender, DataGridCellPointerPressedEventArgs e )
         {
+            _IsPre_Begin_SelectRect = false;
+
             var pargs = e.PointerPressedEventArgs;
             var p     = pargs.GetCurrentPoint( _TopVisual );
             switch ( p.Properties.PointerUpdateKind )
             {
                 case PointerUpdateKind.LeftButtonPressed:
-                    if ( pargs.KeyModifiers.HasFlag( KeyModifiers.Control ) || _Allow_Begin_SelectRect( e ) )
+                    if ( !pargs.Handled && _Allow_Begin_SelectRect( e ) )
                     {
-                        Begin_SelectRect( pargs, p.Position );
+                        //---Begin_SelectRect( pargs, p.Position );
+                        _IsPre_Begin_SelectRect = true;
+                        Pre_Begin_SelectRect( pargs, p.Position );
                     }
                     break;
             }
         }
         private async void DGV_PointerPressed( object sender, PointerPressedEventArgs e )
         {
+            if ( e.Handled ) return;
+
             var p = e.GetCurrentPoint( _TopVisual );
             switch ( p.Properties.PointerUpdateKind )
             {
@@ -131,19 +140,46 @@ namespace m3u8.download.manager.ui
 
         private void DGV_PointerMoved( object sender, PointerEventArgs e )
         {
-            if ( _IsPointerPressed )
+            const double MOVE_THRSHOLD = 3;
+            if ( _IsPre_Begin_SelectRect )
+            {
+                var pt = e.GetPosition( _TopVisual );
+                if ( MOVE_THRSHOLD < Math.Abs( pt.X - _Pre_Begin_SelectRect_Point.X ) || 
+                     MOVE_THRSHOLD < Math.Abs( pt.Y - _Pre_Begin_SelectRect_Point.Y ) 
+                   )
+                {
+                    _IsPre_Begin_SelectRect = false;
+                    Begin_SelectRect( pt );
+                }
+            }
+            else if ( _IsPointerPressed )
             {
                 Move_SelectRect( e.GetPosition( _TopVisual ) );
             }
         }
         private void DGV_PointerReleased( object sender, PointerReleasedEventArgs e )
         {
-            if ( _IsPointerPressed )
+            if ( _IsPre_Begin_SelectRect )
+            {
+                _IsPre_Begin_SelectRect = false;
+            }
+            /*else*/ if ( _IsPointerPressed )
             {
                 End_SelectRect( e );
             }
         }
 
+        private void Pre_Begin_SelectRect( PointerPressedEventArgs e, in Point pt )
+        {
+            DGV.PointerMoved    -= DGV_PointerMoved;
+            DGV.PointerReleased -= DGV_PointerReleased;
+
+            DGV.PointerMoved    += DGV_PointerMoved;
+            DGV.PointerReleased += DGV_PointerReleased;
+            //---e.Handled = true;
+
+            _Pre_Begin_SelectRect_Point = pt;
+        }
         private void Begin_SelectRect( PointerPressedEventArgs e, in Point pt )
         {
             DGV.PointerMoved    -= DGV_PointerMoved;
@@ -177,7 +213,7 @@ namespace m3u8.download.manager.ui
             _ScrollIfNeedTimer.Interval = ScrollDelayInMilliseconds;
             _ScrollIfNeedTimer.Enabled  = true;
         }
-        private void End_SelectRect( PointerReleasedEventArgs e )
+        private void End_SelectRect( /*PointerReleasedEventArgs*/RoutedEventArgs e )
         {
             _ScrollIfNeedTimer.Enabled = false;
 

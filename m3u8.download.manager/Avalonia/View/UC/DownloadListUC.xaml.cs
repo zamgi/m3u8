@@ -75,11 +75,11 @@ namespace m3u8.download.manager.ui
                   this
                 , DGV
                 , this.FindControl< Rectangle >( "selectRect" )
-                , e => e.Column.DisplayIndex == 0/*#_Column_DisplayIndex*/ );
+                , e => /*(e.Column.DisplayIndex == 0) &&*/ !e.PointerPressedEventArgs.KeyModifiers.HasFlag( KeyModifiers.Control ) /*#_Column_DisplayIndex*/ );
 
             _DragDropExtension = DataGrid_DragDrop_Extension.Create< DownloadRow >( 
                   DGV
-                , e => e.Column.DisplayIndex != 0/*#_Column_DisplayIndex*/
+                , e => /*(e.Column.DisplayIndex == 0) &&*/ e.PointerPressedEventArgs.KeyModifiers.HasFlag( KeyModifiers.Control ) /*e.Column.DisplayIndex != 0*/ /*#_Column_DisplayIndex*/
                 , r => r.GetOutputFullFileNames()
                 , r => _Model.GetVisibleIndex( r )
                 , (oldIndex, newIndex, r) => _Model.ChangeRowPosition( r, newIndex ) );

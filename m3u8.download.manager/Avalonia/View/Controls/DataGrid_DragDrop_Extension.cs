@@ -124,13 +124,16 @@ namespace m3u8.download.manager.ui
         private Point _LastMove_Pos;
         private void DGV_CellPointerPressed( object sender, DataGridCellPointerPressedEventArgs e )
         {
-            var p = e.PointerPressedEventArgs.GetCurrentPoint( _TopVisual );
-            if ( (p.Properties.PointerUpdateKind == PointerUpdateKind.LeftButtonPressed) &&
-                 _Allow_Begin_DragDrop( e ) &&
-                 !e.PointerPressedEventArgs.Handled
-               )
+            var pargs = e.PointerPressedEventArgs;
+            if ( !pargs.Handled )
             {
-                Prepare_DoDragDrop( e.PointerPressedEventArgs, p.Position );
+                var p = e.PointerPressedEventArgs.GetCurrentPoint( _TopVisual );
+                if ( (p.Properties.PointerUpdateKind == PointerUpdateKind.LeftButtonPressed) &&
+                     _Allow_Begin_DragDrop( e )
+                    )
+                {
+                    Prepare_DoDragDrop( e.PointerPressedEventArgs, p.Position );
+                }
             }
         }
         private void DGV_PointerMoved( object sender, PointerEventArgs e ) => TryBegin_DoDragDrop( e );

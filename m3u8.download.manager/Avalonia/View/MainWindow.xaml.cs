@@ -78,6 +78,12 @@ namespace m3u8.download.manager.ui
         private WindowNotificationManager _NotificationManager;
         #endregion
 
+#if DEBUG
+        private static string GET_APP_TITLE() => _Resources_.APP_TITLE + " / (DEBUG)"; 
+#else
+        private static string GET_APP_TITLE() => _Resources_.APP_TITLE; 
+#endif
+
         #region [.ctor().]
         public MainWindow()
         {
@@ -137,7 +143,7 @@ namespace m3u8.download.manager.ui
             //----------------------------------------//
 
             #region [.-1-.]
-            this.Title = _Resources_.APP_TITLE;
+            this.Title = GET_APP_TITLE();
             this.DataContext = _VM = new MainVM( this );
 
             _VM.DownloadListModel.RowPropertiesChanged     += DownloadListModel_RowPropertiesChanged;
@@ -267,7 +273,7 @@ namespace m3u8.download.manager.ui
 
                 e.Cancel = true;
 
-                var result = await this.MessageBox_ShowQuestion( "Dou you want to [CANCEL] all downloading and exit ?", _Resources_.APP_TITLE );
+                var result = await this.MessageBox_ShowQuestion( "Dou you want to [CANCEL] all downloading and exit ?", GET_APP_TITLE() );
                 if ( result == ButtonResult.Yes )
                 {
                     const int WAIT_Milliseconds = 10_000;
@@ -586,7 +592,7 @@ namespace m3u8.download.manager.ui
                 _HostWindow_4_Notification.Show( /*this*/ );
                 this.Activate();
 
-                var notification = new Notification( _Resources_.APP_TITLE, _Resources_.ALL_DOWNLOADS_COMPLETED_NOTIFICATION, NotificationType.Information, TimeSpan.FromSeconds( 2_500 ),
+                var notification = new Notification( GET_APP_TITLE(), _Resources_.ALL_DOWNLOADS_COMPLETED_NOTIFICATION, NotificationType.Information, TimeSpan.FromSeconds( 2_500 ),
                     onClose: () => { _HostWindow_4_Notification.Close(); _HostWindow_4_Notification = null; } );
                 _NotificationManager.Show( notification );
             }   
@@ -605,7 +611,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _ShowDownloadStatistics )
             {
-                this.Title = $"{DownloadListUC.GetDownloadInfoText( row )},  [{_Resources_.APP_TITLE}]";
+                this.Title = $"{DownloadListUC.GetDownloadInfoText( row )},  [{GET_APP_TITLE()}]";
             }
         }
         #endregion
