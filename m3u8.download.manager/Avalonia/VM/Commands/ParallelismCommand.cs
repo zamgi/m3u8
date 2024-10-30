@@ -17,30 +17,6 @@ namespace m3u8.download.manager
         public event EventHandler CanExecuteChanged;
 #pragma warning restore
         public bool CanExecute( object parameter ) => true;
-
-        public async void Execute( object parameter )
-        {
-            var f = new ParallelismForm( _VM.DownloadController );
-            {
-                var st = _VM.SettingsController.Settings;
-
-                f.UseCrossDownloadInstanceParallelism = st.UseCrossDownloadInstanceParallelism;
-                f.MaxDegreeOfParallelism              = st.MaxDegreeOfParallelism;
-                f.SetMaxCrossDownloadInstance( st.MaxCrossDownloadInstance, st.MaxCrossDownloadInstanceSaved );
-                f.SetMaxSpeedThresholdInMbps ( st.MaxSpeedThresholdInMbps , st.MaxSpeedThresholdInMbpsSaved  );
-
-                await f.ShowDialogEx();
-                if ( f.Success )
-                {
-                    st.UseCrossDownloadInstanceParallelism = f.UseCrossDownloadInstanceParallelism;
-                    st.MaxDegreeOfParallelism              = f.MaxDegreeOfParallelism;
-                    st.MaxCrossDownloadInstance            = f.MaxCrossDownloadInstance;
-                    st.MaxCrossDownloadInstanceSaved       = f.MaxCrossDownloadInstanceSaved;
-                    st.MaxSpeedThresholdInMbps             = f.MaxSpeedThresholdInMbps;
-                    st.MaxSpeedThresholdInMbpsSaved        = f.MaxSpeedThresholdInMbpsSaved;
-                    _VM.SettingsController.SaveNoThrow_IfAnyChanged();
-                }
-            }            
-        }
+        public async void Execute( object parameter ) => await SettingsCommand.Show( _VM, SettingsForm.SettingsTabEnum.Parallelism );
     }
 }
