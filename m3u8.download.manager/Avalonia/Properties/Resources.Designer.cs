@@ -88,7 +88,7 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (NET 8.0).
+        ///   Looks up a localized string similar to (NET 9.0).
         /// </summary>
         internal static string NET_CORE {
             get {

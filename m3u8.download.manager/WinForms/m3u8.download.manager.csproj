@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <TargetFrameworks>net9.0-windows</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOsPlatform('Windows'))">$(TargetFrameworks);net481</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
@@ -35,16 +35,20 @@
     <OutputPath>..\..\m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\bin\</OutputPath>
   </PropertyGroup>
   
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net8.0-windows' ">
-    <ProjectConfigFileName>App.net8.0-windows.config</ProjectConfigFileName>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net9.0-windows' ">
+    <ProjectConfigFileName>App.net9.0-windows.config</ProjectConfigFileName>
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
- 
+  
+  <PropertyGroup>
+    <NoWarn>1701;1702;WFO1000</NoWarn>
+  </PropertyGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Condition=" '$(TargetFramework)' == 'net481' " Command="copy /Y &quot;App.net481.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />
     
-    <Exec Condition=" '$(TargetFramework)' == 'net8.0-windows' " Command="copy /Y &quot;App.net8.0-windows.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />
+    <Exec Condition=" '$(TargetFramework)' == 'net9.0-windows' " Command="copy /Y &quot;App.net9.0-windows.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />
   </Target>
 
   <ItemGroup>

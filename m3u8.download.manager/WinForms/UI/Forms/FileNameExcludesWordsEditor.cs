@@ -123,6 +123,29 @@ namespace m3u8.download.manager.ui
                         DialogResult = DialogResult.OK;
                         this.Close();
                         return (true);
+
+                    case Keys.V | Keys.Control:
+                        if ( DGV.Focused )
+                        {
+                            var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
+                            if ( text.IsNullOrEmpty() ) text = Clipboard.GetText( TextDataFormat.UnicodeText )?.Trim();
+
+                            if ( !text.IsNullOrEmpty() )
+                            {
+                                var rows = text.Split( ['\r', '\n'], StringSplitOptions.RemoveEmptyEntries );
+                                foreach ( var row in rows )
+                                {
+                                    var line = row.Trim();
+                                    if ( !line.IsNullOrEmpty() )
+                                    {
+                                        var n = DGV.Rows.Add( line );
+                                        DGV.FirstDisplayedScrollingRowIndex = n;
+                                    }
+                                }
+                                return (true);
+                            }                            
+                        }
+                        break;
                 }
             }
             return (base.ProcessCmdKey( ref msg, keyData ));

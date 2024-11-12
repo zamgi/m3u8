@@ -70,7 +70,7 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .m3u8 file download manager (NET 8.0).
+        ///   Looks up a localized string similar to .m3u8 file download manager (NET 9.0).
         /// </summary>
         internal static string APP_TITLE__NET_CORE {
             get {
@@ -445,7 +445,7 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (NET 8.0).
+        ///   Looks up a localized string similar to (NET 9.0).
         /// </summary>
         internal static string NET_CORE {
             get {
