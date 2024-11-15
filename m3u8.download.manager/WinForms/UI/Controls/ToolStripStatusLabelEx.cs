@@ -8,6 +8,8 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed class ToolStripStatusLabelEx : ToolStripStatusLabel
     {
+        public ToolStripStatusLabelEx() { }
+
         protected override void OnPaint( PaintEventArgs e )
         {
             //---base.OnPaint( e );

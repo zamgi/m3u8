@@ -26,7 +26,8 @@
             // statusBar
             // 
             this.statusBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] 
+            {
                 this.leftSideTextLabel,
                 this.leftSideTextLabel_2,
                 this.exceptionWordsLabel,
