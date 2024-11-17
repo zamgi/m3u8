@@ -249,7 +249,11 @@ namespace m3u8.download.manager.ui
         {
             if ( GetSettings().UseCrossDownloadInstanceParallelism )
             {
-                parallelismLabel.BackColor = (parallelismLabel.Enabled ? _parallelismLabel_BackColor : Color.FromKnownColor( KnownColor.Control ));
+#if NETCOREAPP
+                parallelismLabel.BackColor = (parallelismLabel.Enabled ? Color.FromKnownColor( KnownColor.Control ) : Color.FromKnownColor( KnownColor.Control ));
+#else
+                parallelismLabel.BackColor = (parallelismLabel.Enabled ? Color.DimGray                              : Color.FromKnownColor( KnownColor.Control ));
+#endif
             }
         }
         private void exceptionWordsLabel_Click( object sender, EventArgs e ) => ShowDialog_FileNameExcludesWordsEditor();
@@ -261,9 +265,13 @@ namespace m3u8.download.manager.ui
             parallelismLabel.Text        = $"degree of parallelism:  {st.MaxDegreeOfParallelism} " +
                                            (st.MaxCrossDownloadInstance.HasValue ? $"\r\ndownload-instances:  {st.MaxCrossDownloadInstance.Value} " : null);
             parallelismLabel.ToolTipText = $"use cross download-instance parallelism:  {st.UseCrossDownloadInstanceParallelism.ToString().ToLower()}";
-
-            parallelismLabel.ForeColor   = (st.UseCrossDownloadInstanceParallelism ? _parallelismLabel_ForeColor : Color.FromKnownColor( KnownColor.ControlText ));
-            parallelismLabel.BackColor   = (st.UseCrossDownloadInstanceParallelism ? _parallelismLabel_BackColor : Color.FromKnownColor( KnownColor.Control     ));
+#if NETCOREAPP
+            parallelismLabel.ForeColor = (st.UseCrossDownloadInstanceParallelism ? Color.FromKnownColor( KnownColor.ControlText ) : Color.DimGray);
+            parallelismLabel.BackColor = (st.UseCrossDownloadInstanceParallelism ? Color.FromKnownColor( KnownColor.Control     ) : Color.FromKnownColor( KnownColor.Control ));
+#else
+            parallelismLabel.ForeColor = (st.UseCrossDownloadInstanceParallelism ? Color.White   : Color.FromKnownColor( KnownColor.ControlText ));
+            parallelismLabel.BackColor = (st.UseCrossDownloadInstanceParallelism ? Color.DimGray : Color.FromKnownColor( KnownColor.Control ));
+#endif
             //--------------------------------------------//
 
             exceptionWordsLabel.Text = (st.MaxCrossDownloadInstance.HasValue ? "file name exception\r\nword editor" : "file name exceptions");
@@ -274,13 +282,6 @@ namespace m3u8.download.manager.ui
             settingsLabel.ToolTipText = $"other settings =>\r\n attempt request count by part:  {st.AttemptRequestCountByPart}" +
                                         $"\r\n request timeout by part:  {st.RequestTimeoutByPart}";
         }
-#if NETCOREAPP
-        private static Color _parallelismLabel_ForeColor => Color.DimGray;
-        private static Color _parallelismLabel_BackColor => Color.FromKnownColor( KnownColor.Control );
-#else
-        private static Color _parallelismLabel_ForeColor => Color.White;
-        private static Color _parallelismLabel_BackColor => Color.DimGray;        
-#endif
         #endregion
     }
 }
