@@ -133,23 +133,6 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        /*public static bool ShowModalDialog( IWin32Window owner, _DC_ dc, _SC_ sc
-            , string m3u8FileUrl
-            , IDictionary< string, string > requestHeaders
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , in (int n, int total)? seriesInfo
-            , Func< AddNewDownloadForm, Task > okAction )
-        {
-            using ( var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, seriesInfo ) )
-            {
-                if ( f.ShowDialog( owner ) == DialogResult.OK )
-                {
-                    okAction?.Invoke( f );
-                    return (true);
-                }
-            }
-            return (false);
-        }//*/
         public static void Show( IWin32Window owner, _DC_ dc, _SC_ sc
             , string m3u8FileUrl
             , IDictionary< string, string > requestHeaders
@@ -509,20 +492,19 @@ namespace m3u8.download.manager.ui
             isLiveStreamCheckBox.ForeColor = isLiveStream ? Color.FromArgb(70, 70, 70) : Color.Silver;
             liveStreamMaxSizeInMbNumUpDn.Visible = liveStreamMaxSizeInMbLabel.Visible = isLiveStream;
 
-            Set_mainLayoutPanel_Height();
+            set_mainLayoutPanel_Height();
         }
-        private void Set_mainLayoutPanel_Height( bool? IsLiveStream_or_patternOutputFileName_visible = null )
+        private void set_mainLayoutPanel_Height( bool? isLiveStream_or_patternOutputFileName_visible = null )
         {
-            const int DEFAULT_HEIGHT_isLiveStream_1  = 90;
-            const int DEFAULT_HEIGHT_isLiveStream_2  = 30;
-            const int DEFAULT_HEIGHT_mainLayoutPanel = 60;
-            const int DEFAULT_HEIGHT_this            = 255;
+            const int DEFAULT_HEIGHT_isLiveStream    = 30;
+            const int DEFAULT_HEIGHT_mainLayoutPanel = 70;
+            const int DEFAULT_HEIGHT_this            = 315;
 
-            var is_vis                      = IsLiveStream_or_patternOutputFileName_visible.GetValueOrDefault( this.IsLiveStream || patternOutputFileNameLabel.Visible );
-            var DEFAULT_HEIGHT_isLiveStream = is_vis ? (logPanel.Visible ? DEFAULT_HEIGHT_isLiveStream_2 : DEFAULT_HEIGHT_isLiveStream_1) : 0;
+            var is_extra_visible = isLiveStream_or_patternOutputFileName_visible.GetValueOrDefault( this.IsLiveStream || patternOutputFileNameLabel.Visible );
+            var extra_height = is_extra_visible ? DEFAULT_HEIGHT_isLiveStream : 0;
 
-            mainLayoutPanel.Height = DEFAULT_HEIGHT_mainLayoutPanel + DEFAULT_HEIGHT_isLiveStream;
-            if ( is_vis ) this.Height = Math.Max( DEFAULT_HEIGHT_this + DEFAULT_HEIGHT_isLiveStream, this.Height );
+            mainLayoutPanel.Height = DEFAULT_HEIGHT_mainLayoutPanel + extra_height;
+            if ( is_extra_visible && (this.Height <= DEFAULT_HEIGHT_this) ) this.Height += extra_height;
         }
 
         private void Process_use_OutputFileNamePatternProcessor_on_Init()
@@ -534,7 +516,7 @@ namespace m3u8.download.manager.ui
                 Set_patternOutputFileNameLabel( t.Last_OutputFileName_As_Pattern );
                 patternOutputFileNameNumUpDn.ValueAsInt32 = t.Last_OutputFileName_Num;
                 patternOutputFileNameLabelCaption.Visible = patternOutputFileNameLabel.Visible = patternOutputFileNameNumUpDn.Visible = true;
-                Set_mainLayoutPanel_Height( true );
+                set_mainLayoutPanel_Height( isLiveStream_or_patternOutputFileName_visible: true );
 
                 if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
                 {
@@ -585,7 +567,7 @@ namespace m3u8.download.manager.ui
                 //---patternOutputFileNameNumUpDn_ValueChanged( null, null );
             }
             patternOutputFileNameLabelCaption.Visible = patternOutputFileNameLabel.Visible = patternOutputFileNameNumUpDn.Visible = has;
-            Set_mainLayoutPanel_Height();
+            set_mainLayoutPanel_Height();
         }
         private void patternOutputFileNameNumUpDn_ValueChanged( object sender, EventArgs e )
         {
