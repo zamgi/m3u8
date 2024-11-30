@@ -139,5 +139,38 @@ namespace m3u8.download.manager.ui
 
         public static FormWindowState ToFormWindowState( this WINDOWPLACEMENT? wp ) => ((!wp.HasValue || !wp.Value.IsRestoredWindowWillBeMaximized) ? FormWindowState.Normal : FormWindowState.Maximized);
         #endregion
+
+        #region [.ShellExploreAndSelectFile.]
+        private const int    S_OK        = 0;
+        private const string SHELL32_DLL = "shell32.dll";
+        [DllImport(SHELL32_DLL)] private static extern int SHParseDisplayName( [MarshalAs(UnmanagedType.LPWStr)] string pszName, IntPtr pbc, out IntPtr ppidl, /*SFGAO*/uint sfgaoIn, /*out SFGAO*/IntPtr psfgaoOut );
+        [DllImport(SHELL32_DLL)] private static extern int SHOpenFolderAndSelectItems( IntPtr pidlFolder, uint cidl, IntPtr apidl, uint dwFlags );
+        private static int SHParseDisplayName_( string pszName, out IntPtr pidl ) => SHParseDisplayName( pszName, IntPtr.Zero, out pidl, 0, IntPtr.Zero );
+        private static int SHOpenFolderAndSelectItems_( IntPtr pidlFolder ) => SHOpenFolderAndSelectItems( pidlFolder, 0, IntPtr.Zero, 0 ); 
+
+        private const string OLE32_DLL = "ole32.dll";
+        [DllImport(OLE32_DLL)] private static extern void CoTaskMemFree( IntPtr pv );
+
+        public static bool ShellExploreAndSelectFile( string filePath )
+        {
+            // Parse the full filename into a pidl
+            var hr = SHParseDisplayName_( filePath, out var pidl );
+            if ( hr == S_OK )
+            {
+                try
+                {
+                    // Open Explorer and select the thing
+                    hr = SHOpenFolderAndSelectItems_( pidl );
+                    return (hr == S_OK);
+                }
+                finally
+                {
+                    // Use the task allocator to free to returned pidl
+                    CoTaskMemFree( pidl );
+                }
+            }
+            return (false);
+        }
+        #endregion
     }
 }

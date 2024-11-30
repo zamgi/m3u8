@@ -79,21 +79,56 @@ namespace m3u8.download.manager
             }
         }
 
+        public static bool Try_ShellExploreAndSelectFile( string filePath ) => IsWinNT() && WinNT.ShellExploreAndSelectFile( filePath );
 
         /// <summary>
         /// 
         /// </summary>
         private static class WinNT
         {
+            #region [.MessageBox.]
             [DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]
             private static extern int MessageBox( IntPtr hWnd, string text, string caption, uint type );
-
             public static void MessageBox_ShowError( string text, string caption )
             {
                 const int MB_ICONEXCLAMATION = 0x00000030;
 
                 MessageBox( IntPtr.Zero, text, caption, MB_ICONEXCLAMATION );
             }
+            #endregion
+
+            #region [.ShellExploreAndSelectFile.]
+            private const int    S_OK        = 0;
+            private const string SHELL32_DLL = "shell32.dll";
+            [DllImport(SHELL32_DLL)] private static extern int SHParseDisplayName( [MarshalAs(UnmanagedType.LPWStr)] string pszName, IntPtr pbc, out IntPtr ppidl, /*SFGAO*/uint sfgaoIn, /*out SFGAO*/IntPtr psfgaoOut );
+            [DllImport(SHELL32_DLL)] private static extern int SHOpenFolderAndSelectItems( IntPtr pidlFolder, uint cidl, IntPtr apidl, uint dwFlags );
+            private static int SHParseDisplayName_( string pszName, out IntPtr pidl ) => SHParseDisplayName( pszName, IntPtr.Zero, out pidl, 0, IntPtr.Zero );
+            private static int SHOpenFolderAndSelectItems_( IntPtr pidlFolder ) => SHOpenFolderAndSelectItems( pidlFolder, 0, IntPtr.Zero, 0 ); 
+
+            private const string OLE32_DLL = "ole32.dll";
+            [DllImport(OLE32_DLL)] private static extern void CoTaskMemFree( IntPtr pv );
+
+            public static bool ShellExploreAndSelectFile( string filePath )
+            {
+                // Parse the full filename into a pidl
+                var hr = SHParseDisplayName_( filePath, out var pidl );
+                if ( hr == S_OK )
+                {
+                    try
+                    {
+                        // Open Explorer and select the thing
+                        hr = SHOpenFolderAndSelectItems_( pidl );
+                        return (hr == S_OK);
+                    }
+                    finally
+                    {
+                        // Use the task allocator to free to returned pidl
+                        CoTaskMemFree( pidl );
+                    }
+                }
+                return (false);
+            }
+            #endregion
         }
     }
 }
