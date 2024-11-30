@@ -151,7 +151,7 @@ namespace m3u8.download.manager.ui
         private const string OLE32_DLL = "ole32.dll";
         [DllImport(OLE32_DLL)] private static extern void CoTaskMemFree( IntPtr pv );
 
-        public static bool ShellExploreAndSelectFile( string filePath )
+        public static bool ShellExploreAndSelectFile( string filePath, out Exception error )
         {
             // Parse the full filename into a pidl
             var hr = SHParseDisplayName_( filePath, out var pidl );
@@ -161,6 +161,7 @@ namespace m3u8.download.manager.ui
                 {
                     // Open Explorer and select the thing
                     hr = SHOpenFolderAndSelectItems_( pidl );
+                    error = Marshal.GetExceptionForHR( hr );
                     return (hr == S_OK);
                 }
                 finally
@@ -169,6 +170,7 @@ namespace m3u8.download.manager.ui
                     CoTaskMemFree( pidl );
                 }
             }
+            error = Marshal.GetExceptionForHR( hr );
             return (false);
         }
         #endregion

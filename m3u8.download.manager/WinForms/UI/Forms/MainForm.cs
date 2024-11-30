@@ -1297,7 +1297,7 @@ namespace m3u8.download.manager.ui
             var row = downloadListUC.GetSelectedDownloadRow();
             if ( FileHelper.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
             {                
-                WinApi.ShellExploreAndSelectFile( outputFileName );
+                var suc = WinApi.ShellExploreAndSelectFile( outputFileName, out var error );
                 //using ( Process.Start( "explorer", $"/e,/select,\"{outputFileName}\"" ) ) {; }
             }
         }
