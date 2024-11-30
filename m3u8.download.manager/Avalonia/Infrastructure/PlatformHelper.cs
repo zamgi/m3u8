@@ -79,7 +79,13 @@ namespace m3u8.download.manager
             }
         }
 
-        public static bool Try_ShellExploreAndSelectFile( string filePath ) => IsWinNT() && WinNT.ShellExploreAndSelectFile( filePath );
+        public static bool Try_ShellExploreAndSelectFile( string filePath, out Exception error )
+        {
+            if ( IsWinNT() )
+                return (WinNT.ShellExploreAndSelectFile( filePath, out error ));
+            error = new NotSupportedException();
+            return (false);
+        }
 
         /// <summary>
         /// 
@@ -108,7 +114,7 @@ namespace m3u8.download.manager
             private const string OLE32_DLL = "ole32.dll";
             [DllImport(OLE32_DLL)] private static extern void CoTaskMemFree( IntPtr pv );
 
-            public static bool ShellExploreAndSelectFile( string filePath )
+            public static bool ShellExploreAndSelectFile( string filePath, out Exception error )
             {
                 // Parse the full filename into a pidl
                 var hr = SHParseDisplayName_( filePath, out var pidl );
@@ -118,6 +124,7 @@ namespace m3u8.download.manager
                     {
                         // Open Explorer and select the thing
                         hr = SHOpenFolderAndSelectItems_( pidl );
+                        error = Marshal.GetExceptionForHR( hr );
                         return (hr == S_OK);
                     }
                     finally
@@ -126,6 +133,7 @@ namespace m3u8.download.manager
                         CoTaskMemFree( pidl );
                     }
                 }
+                error = Marshal.GetExceptionForHR( hr );
                 return (false);
             }
             #endregion

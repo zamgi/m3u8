@@ -1121,10 +1121,11 @@ namespace m3u8.download.manager.ui
                 {
                     try
                     {
-                        var suc = PlatformHelper.Try_ShellExploreAndSelectFile( outputFileName );
+                        var suc = PlatformHelper.Try_ShellExploreAndSelectFile( outputFileName, out var error );
                         if ( !suc )
                         {
-                            using ( Process.Start( "explorer", $"/e,/select,\"{outputFileName}\"" ) ) {; }
+                            throw error;
+                            //using ( Process.Start( "explorer", $"/e,/select,\"{outputFileName}\"" ) ) {; }
                         }
                     }
                     catch ( Exception ex )
