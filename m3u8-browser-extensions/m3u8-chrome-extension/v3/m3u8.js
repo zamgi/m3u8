@@ -78,7 +78,7 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
                         '<table class="content">' + trs.join('') + '</table>';
 
     let aa = content.querySelectorAll('a.download');
-    for (i = 0; i < aa.length; i++) {
+    for (let i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (event) {
             send2host_single(this.href, this.getAttribute('requestHeaders') || '');
             event.preventDefault();
@@ -87,7 +87,7 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
     }
 
     aa = content.querySelectorAll('a.auto_start_download');
-    for (i = 0; i < aa.length; i++) {
+    for (let i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (event) {
             send2host_single(this.href, this.getAttribute('requestHeaders') || '', true);
             event.preventDefault();

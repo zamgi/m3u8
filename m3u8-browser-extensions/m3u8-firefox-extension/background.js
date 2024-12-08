@@ -1,123 +1,142 @@
 window.onload = function () {
     // work object
-    window.bg = new bgObj();
+    window.workInfo = new workInfoType();
 
-    chrome.webRequest.onCompleted.addListener(function (details) {
-        var extension = details.url.split('?')[ 0 ].split('.').pop();
-        if ((extension || '').toLowerCase() === 'm3u8') {
-            window.bg.save_m3u8_url( details.tabId, details.url );
+    let requestHeaders_by_url = {};
+    chrome.webRequest.onCompleted.addListener(function (d/*details*/) {
+        let ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
+        if (ext === 'm3u8') {
+            var requestHeaders = requestHeaders_by_url[d.url];
+            if (requestHeaders) delete requestHeaders_by_url[d.url];
+            window.workInfo.addM3u8Urls( d.tabId, d.url, requestHeaders );
             try {
-                var t = window.bg.tabs[ details.tabId ];
-                t.port_info.postMessage({ method: 'set_m3u8_urls', data: t.m3u8_urls });
+                let t = window.workInfo.tabs[ d.tabId ];
+                t.connectPort.postMessage({ method: 'setM3u8Urls', data: t.m3u8_urls });
             } catch (ex) {
                 console.log(ex);
             }
-            window.bg.m3u8_urls_count( { tab_id: details.tabId } );
+            window.workInfo.setUrlsCountText({ tabId: d.tabId });
         }
     }, {
         urls: ["<all_urls>"]
     });
 
-    // set handler to tabs
-    chrome.tabs.onActivated.addListener(function (info) { window.bg.onActivated(info.tabId); });
+    chrome.webRequest.onBeforeSendHeaders.addListener(async function (d/*details*/) {
+        let ext = (d.url.split('?')[0].split('.').pop() || '').toLowerCase();
+        if (ext === 'm3u8') {
+            //console.log('onBeforeSendHeaders() => tabId: ' + d.tabId + ', url: ' + d.url );
 
-    // set handler to tabs:  need for seng objects
+            requestHeaders_by_url[d.url] = JSON.stringify(d.requestHeaders);
+        }
+        //else console.log('discarded => tabId: ' + d.tabId + ', url: ' + d.url );
+    }, {
+        urls: ['<all_urls>']
+    }, ['requestHeaders'/*, 'extraHeaders'*/]);
+
+    // set handler to tabs
+    chrome.tabs.onActivated.addListener(function (info) { window.workInfo.onActivated(info.tabId); });
+
+    // set handler to tabs:  need for send objects
     if (chrome.extension.onConnect) {
-        chrome.extension.onConnect.addListener(function (port) { port.onMessage.addListener(methodCaller); });
+        chrome.extension.onConnect.addListener(function (port) { port.onMessage.addListener(workInfo_methodCaller); });
     }
 
     // set handler to tabs
     chrome.tabs.onUpdated.addListener(function (tabId, info, tab) {
-        // if tab load
-        if (info && info.status && (info.status.toLowerCase() === 'complete')) {
-            // if user open empty tab or ftp protocol and etc.
-            if (!tabId || !tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
-                if (tabId) {
-                    chrome.browserAction.disable(tabId);
-                }
-                return (0);
-            }
+        if (!info || !info.status || (info.status.toLowerCase() !== 'complete')) return;
 
-            window.bg.onActivated(tabId);
-
-            chrome.browserAction.enable(tabId);
-
-            // save tab info if need
-            window.bg.addTab(tab);
-
-            // connect with new tab, and save object
-            var port = chrome.tabs.connect(tabId);
-            var t    = window.bg.tabs[tabId];
-            t.port_info = port;
-
-            // run function in script_in_content.js
-            chrome.tabs.executeScript(tabId, { code: "initialization()" });
-
-            // send tabId, hosts and others information into script_in_content.js
-            port.postMessage({ method: 'setTabId', data: tabId });
-            port.postMessage({ method: 'set_m3u8_urls', data: t.m3u8_urls });
-            port.postMessage({ method: 'run' });
+        // if user open empty tab or ftp protocol and etc.
+        if ((tabId === undefined) || !tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
+            if (tabId !== undefined) chrome.browserAction.disable(tabId);
+            return (0);
         }
+
+        window.workInfo.onActivated(tabId);
+        chrome.browserAction.enable(tabId);
+
+        // save tab info if need
+        window.workInfo.addTab(tab);
+
+        // connect with new tab, and save object
+        let port = chrome.tabs.connect(tabId);
+        let t    = window.workInfo.tabs[tabId];
+        t.connectPort = port;
+
+        // run function in script_in_content.js
+        chrome.tabs.executeScript(tabId, { code: "popupInfo_init()" });
+
+        // send tabId, hosts and others information into script_in_content.js
+        port.postMessage({ method: 'setTabId', data: tabId });
+        port.postMessage({ method: 'setM3u8Urls', data: t.m3u8_urls });
+        port.postMessage({ method: 'connect2Extension' });
     });
 
-    chrome.tabs.onRemoved.addListener(function (tabId) { window.bg.removeTab(tabId); });
+    chrome.tabs.onRemoved.addListener(function (tabId) { window.workInfo.deleteTab(tabId); });
 };
 
-function methodCaller(obj) {
+function workInfo_methodCaller(obj) {
     if (obj && obj.method) {
         if (obj.data)
-            window.bg[obj.method](obj.data);
+            window.workInfo[obj.method](obj.data);
         else
-            window.bg[obj.method]();
+            window.workInfo[obj.method]();
     }
 }
 
 /* work object */
-window.bgObj = function () { };
+window.workInfoType = function () { };
 
 /* Public methods */
-window.bgObj.prototype = {
+window.workInfoType.prototype = {
     /* internal params */
     tabs: {},
-    active_tabId: {},
+    active_tabId: null,
 
     /* Function add tab into $tabs object, if need */
     addTab: function (tab) {
-        if (tab.id) {
-            var o = this.tabs[tab.id];
+        if (tab && (tab.id !== undefined)) {
+            let o = this.tabs[tab.id];
             if (!o) {
                 this.tabs[tab.id] = { tab_obj: tab };
             } else {
                 o.m3u8_urls = [];
             }
 
-            this.m3u8_urls_count({ tab_id: tab.id });
+            this.setUrlsCountText({ tabId: tab.id });
         }
     },
-    removeTab: function (tabId) {
-        if (tabId) {
-            delete this.tabs[tabId];
-        }
+    deleteTab: function (tabId) {
+        let has = !!this.tabs[tabId];
+        if (has) delete this.tabs[tabId];
     },
-    save_m3u8_url: function (tabId, m3u8_url) {
-        if (tabId && m3u8_url) {
-            var o = this.tabs[tabId];
+    deleteTabUrls: async function (tabId) {
+        let has = !!this.tabs[tabId];
+        if (has) delete this.tabs[tabId];
+
+        await this.setUrlsCountText({ tabId: tabId });
+        //if (has) await this.save2Storage();
+    },
+    addM3u8Urls: function (tabId, m3u8_url, requestHeaders) {
+        if ((tabId !== undefined) && m3u8_url) {
+            let o = this.tabs[tabId];
             if (!o) {
-                o = { m3u8_urls: [] };
-                this.tabs[tabId] = o;
+                o = this.tabs[tabId] = { m3u8_urls: [m3u8_url], requestHeaders: { m3u8_url: requestHeaders } };
             }
             else if (!o.m3u8_urls) {
-                o.m3u8_urls = [];
+                o.m3u8_urls = [m3u8_url];
+                if (!o.requestHeaders) o.requestHeaders = {};
+                o.requestHeaders[m3u8_url] = requestHeaders;
             }
-
-            if (o.m3u8_urls.indexOf(m3u8_url) === -1) {
+            else if (o.m3u8_urls.indexOf(m3u8_url) === -1) {
                 o.m3u8_urls.push(m3u8_url);
+                if (!o.requestHeaders) o.requestHeaders = {};
+                o.requestHeaders[m3u8_url] = requestHeaders;
             }
         }
     },
     /* Function will be called from script_in_content.js */
-    m3u8_urls_count: function (d) {
-        var o = this.tabs[d.tab_id];
+    setUrlsCountText: function (d) {
+        let o = d ? this.tabs[d.tabId] : null;
         if (o && o.m3u8_urls && o.m3u8_urls.length) {
             chrome.browserAction.setBadgeText({ text: o.m3u8_urls.length + '' });
             return (0);
@@ -131,14 +150,12 @@ window.bgObj.prototype = {
         // set active tab
         this.active_tabId = tabId;
 
-        var d = { m3u8_urls: [] };
+        let d = { m3u8_urls: [] };
 
-        if (tabId) {
-            d.tab_id = tabId;
-            var o = this.tabs[d.tab_id];
+        if (tabId !== undefined) {
+            let o = this.tabs[tabId];
             if (!o) {
-                o = { m3u8_urls: [] };
-                this.tabs[d.tab_id] = o;
+                o = this.tabs[tabId] = { m3u8_urls: [] };
             }
             else if (!o.m3u8_urls) {
                 o.m3u8_urls = [];
@@ -147,20 +164,12 @@ window.bgObj.prototype = {
         }
 
         // set actual count of m3u8_urls for current tab
-        this.m3u8_urls_count(d);
+        this.setUrlsCountText({ tabId: tabId });
     },
 
     /* Function will be called from find.js and others places */
-    get_m3u8_urls: function () {
-        // init if need
-        var o = this.tabs[this.active_tabId];
-        if (!o) {
-            o = { m3u8_urls: [] };
-            this.tabs[this.active_tabId] = o;
-        }
-        else if (!o.m3u8_urls) {
-            o.m3u8_urls = [];
-        }
-        return (o.m3u8_urls);
+    getM3u8Urls: function () {
+        let o = (this.active_tabId !== undefined) ? this.tabs[this.active_tabId] : null;
+        return ((o && o.m3u8_urls) ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
     }
 };

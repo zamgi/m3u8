@@ -1,6 +1,6 @@
 html { overflow: hidden; max-width: 800px; }
 .body { font-family: verdana; overflow: hidden; margin: 3px 3px 0 3px; }
-.body_2 { margin-bottom: 10px }
+.body_2 { margin-bottom: 15px }
 .right { text-align: right; }
 
 div.content {
@@ -37,5 +37,6 @@ div.options_2 { background-color: whitesmoke; margin-right: 15px; }
     div.options_2:nth-child(1) {padding-top: 5px;}
     div.options_2:nth-last-child(1) {padding-bottom: 5px;}
 span.sign { padding: 0 0 15px 15px }
+span.sign_2 { padding: 0 0 15px 5px }
 
 input[type="checkbox"], label[for] { cursor: pointer; }

@@ -2,12 +2,20 @@
 <html>
 <head>
     <title>m3u8 file downloader</title>
-    <link href="m3u8.png" type="image/png" rel="shortcut icon" />
-    <link href="m3u8.css" type="text/css" rel="stylesheet" />
-    <script src="m3u8.js" type="text/javascript"></script>
+    <link type="image/png" rel="shortcut icon" href="m3u8.png"  />
+    <link type="text/css"  rel="stylesheet"    href="m3u8.css" />
+    <script type="text/javascript" src="m3u8.js"></script>
 </head>
-<body class="bodydef">
-    <div id="content" class="content">
+<body class="body">
+    <div class="options_1">
+        <input id="directionRtl" type="checkbox" checked="checked" />
+        <label for="directionRtl">direction: rtl</label>
+        <!--
+        <input id="saveUrlListBetweenTabReload" type="checkbox" />
+        <label for="saveUrlListBetweenTabReload">save url-list between tab reload</label>
+        -->
+        <button id="clearUrlList" title="clear url-list" style="display: none">clear</button>
     </div>
+    <div id="content" class="content" style="direction: rtl;"></div>
 </body>
 </html>

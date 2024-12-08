@@ -4,20 +4,20 @@
 
   "manifest_version": 2,
 
-  "name": "m3u8 file downloader",
-  "description": "m3u8 file downloader chrome extension.",
-  "version": "1.5",
+  "name"       : "m3u8 file downloader (manifest.v2)",
+  "description": "m3u8 file downloader chrome extension (manifest.v2).",
+  "version"    : "1.5",
   "offline_enabled": true,
   "icons": {
-    "32": "m3u8.png",
+    "32" : "m3u8.png",
     "128": "m3u8_148.png"
   },
   "options_ui": {
     "chrome_style": true,
-    "page": "m3u8_options.html"
+    "page"        : "m3u8_options.html"
   },
   "browser_action": {
-    "default_icon": "m3u8.png",
+    "default_icon" : "m3u8.png",
     "default_popup": "m3u8.html"
   },
 
@@ -37,7 +37,7 @@
 
   "content_scripts": [{
     "matches": [ "http://*/*", "https://*/*" ],
-    "js": [ "script_in_content.js" ],
-    "run_at": "document_end"
+    "js"     : [ "script_in_content.js" ],
+    "run_at" : "document_end"
   }]
 }

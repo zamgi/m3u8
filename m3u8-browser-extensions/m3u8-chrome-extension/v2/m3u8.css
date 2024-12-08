@@ -1,9 +1,9 @@
+.body { font-family: verdana; }
+.body_2 { margin-bottom: 15px }
+div.content_2 { padding: 0 15px 15px 15px; }
+
 .right {
     text-align: right;
-}
-
-.bodydef {
-    font-family: verdana;
 }
 
 div.content {
