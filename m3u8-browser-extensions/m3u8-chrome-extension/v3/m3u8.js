@@ -1,4 +1,4 @@
-window.addEventListener('load', async function (/*event*/) {
+window.addEventListener('load', async function (/*e*/) {
 
     let tabs  = await chrome.tabs.query({ active: true, currentWindow: true });
     let tabId = ((tabs && tabs.length) ? tabs[ 0 ].id : -1);
@@ -14,7 +14,7 @@ window.addEventListener('load', async function (/*event*/) {
 
     let ch = document.getElementById('saveUrlListBetweenTabReload');
     ch.checked = !!res.saveUrlListBetweenTabReload;    
-    ch.addEventListener('click', async function (/*event*/) {
+    ch.addEventListener('click', async function (/*e*/) {
         await chrome.storage.local.set({ saveUrlListBetweenTabReload: this.checked });
     });
 
@@ -22,7 +22,7 @@ window.addEventListener('load', async function (/*event*/) {
     ch = document.getElementById('directionRtl');
     ch.checked = (res.directionRtl !== undefined) ? !!res.directionRtl : (content.style.direction === 'rtl');
     content.style.direction = ch.checked ? 'rtl' : '';
-    ch.addEventListener('click', async function (/*event*/) {
+    ch.addEventListener('click', async function (/*e*/) {
         content.style.direction = this.checked ? 'rtl' : '';
         await chrome.storage.local.set({ directionRtl: this.checked });
     });
@@ -30,7 +30,7 @@ window.addEventListener('load', async function (/*event*/) {
     if (m3u8_urls && m3u8_urls.length) {
         let bt = document.getElementById('clearUrlList');
         bt.style.display = '';
-        bt.addEventListener('click', async function (/*event*/) {
+        bt.addEventListener('click', async function (/*e*/) {
             await workInfo.deleteTabUrls(tabId);
 
             render_m3u8_urls();
@@ -79,44 +79,44 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
 
     let aa = content.querySelectorAll('a.download');
     for (let i = 0; i < aa.length; i++) {
-        aa[i].addEventListener('click', function (event) {
+        aa[i].addEventListener('click', function (e) {
             send2host_single(this.href, this.getAttribute('requestHeaders') || '');
-            event.preventDefault();
+            e.preventDefault();
             return (false);
         });
     }
 
     aa = content.querySelectorAll('a.auto_start_download');
     for (let i = 0; i < aa.length; i++) {
-        aa[i].addEventListener('click', function (event) {
+        aa[i].addEventListener('click', function (e) {
             send2host_single(this.href, this.getAttribute('requestHeaders') || '', true);
-            event.preventDefault();
+            e.preventDefault();
             return (false);
         });
     }
 
     aa = content.querySelectorAll('a.download_all');
     if (0 < aa.length) {
-        aa[0].addEventListener('click', function (event) {
+        aa[0].addEventListener('click', function (e) {
             let messageObject = [], bb = content.querySelectorAll('a.download');
             for (let j = 0; j < bb.length; j++) {
                 messageObject.push( create_messageObject(bb[j].href, bb[j].getAttribute('requestHeaders') || '') );
             }
             send2host_multi(messageObject);
-            event.preventDefault();
+            e.preventDefault();
             return (false);
         });
     }
 
     aa = content.querySelectorAll('a.auto_start_download_all');
     if (0 < aa.length) {
-        aa[0].addEventListener('click', function (event) {
+        aa[0].addEventListener('click', function (e) {
             let messageObject = [], bb = content.querySelectorAll('a.auto_start_download');
             for (let j = 0; j < bb.length; j++) {
                 messageObject.push( create_messageObject(bb[j].href, bb[j].getAttribute('requestHeaders') || '', true) );
             }
             send2host_multi(messageObject);
-            event.preventDefault();
+            e.preventDefault();
             return (false);
         });
     }

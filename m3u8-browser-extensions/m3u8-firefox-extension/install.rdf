@@ -9,15 +9,15 @@
 
     <em:targetApplication>
       <Description>
-        <!-- <em:id>toolkit@mozilla.org</em:id> -->
-        <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>57.*</em:minVersion>
+        <!--<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>-->
+        <em:id>{64807ac5-de2d-4f7f-8bac-da6e1e935a1a}</em:id>
+        <em:minVersion>58.*</em:minVersion>
         <em:maxVersion>*</em:maxVersion>
       </Description>
     </em:targetApplication>
 
-    <em:name>m3u8 file downloader</em:name>
-    <em:description>m3u8 file downloader firefox extension</em:description>
+    <em:name>m3u8 file downloader (manifest.v2)</em:name>
+    <em:description>m3u8 file downloader firefox extension (manifest.v2)</em:description>
     <em:creator>zamgi</em:creator>
     <em:homepageURL>https://github.com/zamgi/m3u8</em:homepageURL>
   </Description>

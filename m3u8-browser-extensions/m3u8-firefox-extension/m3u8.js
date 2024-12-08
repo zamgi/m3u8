@@ -80,44 +80,44 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
 
     let aa = content.querySelectorAll('a.download');
     for (let i = 0; i < aa.length; i++) {
-        aa[i].addEventListener('click', function (event) {                     
+        aa[i].addEventListener('click', function (e) {                     
             send2host_single(this.href, this.getAttribute('requestHeaders') || '');
-            event.preventDefault();
+            e.preventDefault();
             return (false);
         });
     }
 
     aa = content.querySelectorAll('a.auto_start_download');
     for (let i = 0; i < aa.length; i++) {
-        aa[i].addEventListener('click', function (event) {            
+        aa[i].addEventListener('click', function (e) {            
             send2host_single(this.href, this.getAttribute('requestHeaders') || '', true);
-            event.preventDefault();
+            e.preventDefault();
             return (false);
         });
     }
 
     aa = content.querySelectorAll('a.download_all');
     if (0 < aa.length) {
-        aa[0].addEventListener('click', function (event) {
+        aa[0].addEventListener('click', function (e) {
             let messageObject = [], bb = content.querySelectorAll('a.download');
             for (let j = 0; j < bb.length; j++) {
                 messageObject.push( create_messageObject(bb[j].href, bb[j].getAttribute('requestHeaders') || '') );
             }
             send2host_multi(messageObject);
-            event.preventDefault();
+            e.preventDefault();
             return (false);
         });
     }
 
     aa = content.querySelectorAll('a.auto_start_download_all');
     if (0 < aa.length) {
-        aa[0].addEventListener('click', function (event) {
+        aa[0].addEventListener('click', function (e) {
             let messageObject = [], bb = content.querySelectorAll('a.auto_start_download');
             for (let j = 0; j < bb.length; j++) {
                 messageObject.push( create_messageObject(bb[j].href, bb[j].getAttribute('requestHeaders') || '', true) );
             }
             send2host_multi(messageObject);
-            event.preventDefault();
+            e.preventDefault();
             return (false);
         });
     }

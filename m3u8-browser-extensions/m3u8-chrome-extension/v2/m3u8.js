@@ -3,8 +3,6 @@ window.onload = function () {
         // get m3u8 urls for current active tab
         var backgroundPage = chrome.extension.getBackgroundPage();
         var m3u8_urls = backgroundPage.bg.get_m3u8_urls();
-        //window.bg_wnd = chrome.extension.getBackgroundPage();
-        //var m3u8_urls = window.bg_wnd.bg.get_m3u8_urls();
 
         // function render m3u8 urls list
         render_m3u8_urls(m3u8_urls);
