@@ -14,12 +14,8 @@ function methodCaller(obj) {
     }
 }
 
-/* Popup object */
 window.popupObj = function () { };
-
-/* Public methods */
 window.popupObj.prototype = {
-    /* internal params */
     tab_id: null,
     port: null,
     m3u8_urls: [],

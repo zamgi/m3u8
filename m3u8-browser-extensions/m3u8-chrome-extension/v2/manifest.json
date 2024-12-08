@@ -9,15 +9,15 @@
   "version"    : "1.5",
   "offline_enabled": true,
   "icons": {
-    "32" : "m3u8.png",
-    "128": "m3u8_148.png"
+    "32" : "img/m3u8.png",
+    "128": "img/m3u8_148.png"
   },
   "options_ui": {
     "page"        : "m3u8_options.html",
     "chrome_style": true
   },
   "browser_action": {
-    "default_icon" : "m3u8.png",
+    "default_icon" : "img/m3u8.png",
     "default_popup": "m3u8.html"
   },
 
@@ -37,7 +37,7 @@
 
   "content_scripts": [{
     "matches": [ "http://*/*", "https://*/*" ],
-    "js"     : [ "script_in_content.js" ],
+    "js"     : [ "js/script_in_content.js" ],
     "run_at" : "document_end"
   }]
 }

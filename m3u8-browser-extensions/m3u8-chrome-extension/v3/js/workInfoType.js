@@ -84,7 +84,6 @@ workInfoType.prototype = {
 
     getM3u8Urls: function (tabId) {
         let o = this.tabs[tabId];
-        //return ((o && o.m3u8_urls) ? o.m3u8_urls : []);
         return ((o && o.m3u8_urls) ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
     }
 };

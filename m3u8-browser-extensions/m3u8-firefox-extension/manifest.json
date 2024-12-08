@@ -2,23 +2,22 @@
   "manifest_version": 2,
   "name"       : "m3u8 file downloader (manifest.v2)",
   "description": "m3u8 file downloader firefox extension (manifest.v2).",
-  "version"    : "1.6",
+  "version"    : "1.7",
   "icons": {
-    "32" : "m3u8.png",
-    "128": "m3u8_128.png"
+    "32" : "img/m3u8.png",
+    "128": "img/m3u8_128.png"
   },
 
   "applications": {
     "gecko": {
-      //"id": "denisov72@mail.ru",
-      "id": "{64807ac5-de2d-4f7f-8bac-da6e1e935a1a}",
+      "id": "{64807ac5-de2d-4f7f-8bac-da6e1e935a1b}",
       "strict_min_version": "58.0"
     }
   },
 
   "content_scripts": [{
     "matches": [ "*://*/*" ],
-    "js"     : [ "script_in_content.js" ],
+    "js"     : [ "js/script_in_content.js" ],
     "run_at" : "document_end"
   }],
 
@@ -34,12 +33,12 @@
   ],
 
   "browser_action": {
-    "default_icon" : "m3u8.png",
+    "default_icon" : "img/m3u8.png",
     "default_popup": "m3u8.html"
   },
 
   "background": {
-    "page": "background.html"
+    "page": "m3u8_background.html"
   },
 
   "options_ui": {    

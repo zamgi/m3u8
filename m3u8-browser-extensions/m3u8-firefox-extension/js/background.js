@@ -1,5 +1,4 @@
 window.onload = function () {
-    // work object
     window.workInfo = new workInfoType();
 
     let requestHeaders_by_url = {};
@@ -83,16 +82,11 @@ function workInfo_methodCaller(obj) {
     }
 }
 
-/* work object */
 window.workInfoType = function () { };
-
-/* Public methods */
 window.workInfoType.prototype = {
-    /* internal params */
     tabs: {},
     active_tabId: null,
 
-    /* Function add tab into $tabs object, if need */
     addTab: function (tab) {
         if (tab && (tab.id !== undefined)) {
             let o = this.tabs[tab.id];
@@ -134,18 +128,14 @@ window.workInfoType.prototype = {
             }
         }
     },
-    /* Function will be called from script_in_content.js */
     setUrlsCountText: function (d) {
         let o = d ? this.tabs[d.tabId] : null;
         if (o && o.m3u8_urls && o.m3u8_urls.length) {
             chrome.browserAction.setBadgeText({ text: o.m3u8_urls.length + '' });
             return (0);
         }
-
-        // show default text
         chrome.browserAction.setBadgeText({ text: '' });
     },
-    /* Function will be called when user change active tab */
     onActivated: function (tabId) {
         // set active tab
         this.active_tabId = tabId;
@@ -162,12 +152,8 @@ window.workInfoType.prototype = {
             }
             d.m3u8_urls = o.m3u8_urls;
         }
-
-        // set actual count of m3u8_urls for current tab
         this.setUrlsCountText({ tabId: tabId });
     },
-
-    /* Function will be called from find.js and others places */
     getM3u8Urls: function () {
         let o = (this.active_tabId !== undefined) ? this.tabs[this.active_tabId] : null;
         return ((o && o.m3u8_urls) ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });

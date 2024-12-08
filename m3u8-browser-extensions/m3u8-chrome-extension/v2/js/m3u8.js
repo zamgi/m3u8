@@ -23,11 +23,11 @@ function render_m3u8_urls(m3u8_urls) {
     var trs = [];
     for (var i = 0, cnt = m3u8_urls.length; i < cnt; i++) {
         var m3u8_url = m3u8_urls[i];
-        trs.push('<tr><td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="auto_start_download.png" style="height: 16px"/></a></td>' + 
+        trs.push('<tr><td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="img/auto_start_download.png" style="height: 16px"/></a></td>' + 
                  '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>');
     }
     var download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + m3u8_urls.length + '</a></h5>';
-    var auto_start_download_all = ((1 < m3u8_urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="auto_start_download.png" style="height: 16px"/></a>' : '');
+    var auto_start_download_all = ((1 < m3u8_urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="img/auto_start_download.png" style="height: 16px"/></a>' : '');
     content.innerHTML = '<table><tr><td>' + auto_start_download_all + '</td><td>' + download_all + '</td></tr></table>' +
                         '<table class="content">' + trs.join('') + '</table>';
 
@@ -108,7 +108,7 @@ function send2host_multi(messageObject) {
             type    : "basic",
             title   : "[" + HOST_NAME + "] => send-native-message ERROR:",
             message : message || "[NULL]",
-            iconUrl : "m3u8_148.png",
+            iconUrl : "img/m3u8_148.png",
             priority: 2
         };
         chrome.notifications.clear(HOST_NAME);

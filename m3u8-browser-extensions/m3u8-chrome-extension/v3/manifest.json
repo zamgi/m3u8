@@ -9,14 +9,14 @@
   "version"    : "2.0",
   "offline_enabled": true,
   "icons": {
-    "32" : "m3u8.png",
-    "128": "m3u8_148.png"
+    "32" : "img/m3u8.png",
+    "128": "img/m3u8_148.png"
   },
   "options_ui": {
     "page": "m3u8_options.html"
   },
   "action": {
-    "default_icon" : "m3u8.png",
+    "default_icon" : "img/m3u8.png",
     "default_popup": "m3u8.html"
   },
 
@@ -33,12 +33,12 @@
   "host_permissions": [ "http://*/*", "https://*/*" ],
 
   "background": {
-    "service_worker": "service-worker.js"
+    "service_worker": "js/service-worker.js"
   },
 
   "content_scripts": [{
     "matches": [ "http://*/*", "https://*/*" ],
-    "js"     : [ "workInfoType.js" ],
+    "js"     : [ "js/workInfoType.js" ],
     "run_at" : "document_end"
   }]
 }

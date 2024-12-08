@@ -1,1 +1,0 @@
-For using in FireFox ESR (including Top-Browser) need a remove [install.rdf]-file from this folder & remove [install.rdf]-file from .xpi-file (and possible turn-off some xpi-settings in about--config tab)

@@ -1,4 +1,3 @@
-/* work object */
 var workInfoType = function (bg) {
     if (bg) {
         this.tabs         = bg.tabs || {};
@@ -50,7 +49,6 @@ workInfoType.prototype = {
         }
         chrome.action.setBadgeText({ text: '' });
     },
-    /* Function will be called when user change active tab */
     onActivated: function (tabId) {
         // set active tab
         this.active_tabId = tabId;
@@ -69,12 +67,9 @@ workInfoType.prototype = {
             }
             d.m3u8_urls = o.m3u8_urls;
         }
-
-        // set actual count of m3u8_urls for current tab
         this.m3u8_urls_count(d);
     },
     get_m3u8_urls: function () {
-        // init if need
         var o = this.tabs[this.active_tabId];
         if (!o) {
             o = { m3u8_urls: [] };

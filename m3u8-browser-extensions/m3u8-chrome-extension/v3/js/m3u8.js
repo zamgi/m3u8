@@ -51,7 +51,7 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
         let m3u8_url = m3u8_urls[i], requestHeaders_4_url = requestHeaders[m3u8_url] || '';
         let a = document.createElement('a'); a.className = 'auto_start_download'; a.title = 'auto start download'; a.href = m3u8_url; a.setAttribute('requestHeaders', requestHeaders_4_url);
 
-        let img = document.createElement('img'); img.src = 'auto_start_download.png'; img.style.height = '16px';
+        let img = document.createElement('img'); img.src = 'img/auto_start_download.png'; img.style.height = '16px';
         a.appendChild(img);
 
         let td = document.createElement('td');
@@ -69,11 +69,11 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
         
         trs.push(tr.outerHTML);
 
-        //trs.push('<tr><td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="auto_start_download.png" style="height: 16px"/></a></td>' + 
+        //trs.push('<tr><td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="img/auto_start_download.png" style="height: 16px"/></a></td>' +
         //         '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>');
     }
     let download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + m3u8_urls.length + '</a></h5>',
-        auto_start_download_all = ((1 < m3u8_urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="auto_start_download.png" style="height: 16px"/></a>' : '');
+        auto_start_download_all = ((1 < m3u8_urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="img/auto_start_download.png" style="height: 16px"/></a>' : '');
     content.innerHTML = '<table><tr><td>' + auto_start_download_all + '</td><td>' + download_all + '</td></tr></table>' +
                         '<table class="content">' + trs.join('') + '</table>';
 
@@ -151,7 +151,7 @@ async function send2host_multi(messageObject) {
         type    : 'basic',
         title   : '[' + HOST_NAME + '] => send-native-message ERROR:',
         message : message || '[NULL]',
-        iconUrl : 'm3u8_148.png',
+        iconUrl : 'img/m3u8_148.png',
         priority: 2
     };
     await chrome.notifications.clear(HOST_NAME);

@@ -3,5 +3,5 @@
   "description": "m3u8 file download manager firefox extension host",
   "path"       : "/bin/m3u8.download.manager.exe",
   "type"       : "stdio",
-  "allowed_extensions": [ "{64807ac5-de2d-4f7f-8bac-da6e1e935a1a}" ]
+  "allowed_extensions": [ "{64807ac5-de2d-4f7f-8bac-da6e1e935a1b}" ]
 }

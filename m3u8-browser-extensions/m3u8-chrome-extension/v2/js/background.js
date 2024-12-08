@@ -70,16 +70,11 @@ function methodCaller(obj) {
     }
 }
 
-/* work object */
 window.bgObj = function () { };
-
-/* Public methods */
 window.bgObj.prototype = {
-    /* internal params */
     tabs: {},
     active_tabId: -1,
 
-    /* Function add tab into $tabs object, if need */
     addTab: function (tab) {
         if (tab.id) {
             var o = this.tabs[tab.id];
@@ -113,17 +108,14 @@ window.bgObj.prototype = {
             }
         }
     },
-    /* Function will be called from script_in_content.js */
     m3u8_urls_count: function (d) {
         var o = this.tabs[d.tab_id];
         if (o && o.m3u8_urls && o.m3u8_urls.length) {
             chrome.browserAction.setBadgeText({ text: o.m3u8_urls.length + '' });
             return (0);
-        }
-        // show default text
+        }        
         chrome.browserAction.setBadgeText({ text: '' });
     },    
-    /* Function will be called when user change active tab */
     onActivated: function (tabId) {
         // set active tab
         this.active_tabId = tabId;
@@ -146,8 +138,6 @@ window.bgObj.prototype = {
         // set actual count of m3u8_urls for current tab
         this.m3u8_urls_count(d);
     },
-
-    /* Function will be called from find.js and others places */
     get_m3u8_urls: function () {
         // init if need
         var o = this.tabs[this.active_tabId];

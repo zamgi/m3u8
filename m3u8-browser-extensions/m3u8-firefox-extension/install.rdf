@@ -4,13 +4,12 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>denisov72@mail.ru</em:id>
-    <em:version>1.6</em:version>
+    <em:version>1.7</em:version>
     <em:type>2</em:type>
 
     <em:targetApplication>
       <Description>
-        <!--<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>-->
-        <em:id>{64807ac5-de2d-4f7f-8bac-da6e1e935a1a}</em:id>
+        <em:id>{64807ac5-de2d-4f7f-8bac-da6e1e935a1b}</em:id>
         <em:minVersion>58.*</em:minVersion>
         <em:maxVersion>*</em:maxVersion>
       </Description>
