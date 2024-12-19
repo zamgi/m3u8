@@ -37,6 +37,10 @@
     <None Remove="App.net9.0-windows.config" />    
   </ItemGroup>
 
+  <PropertyGroup>
+    <NoWarn>1701;1702;WFO1000</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />    
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
