@@ -236,7 +236,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_LoadingRow( object sender, DataGridRowEventArgs e )
         {
-            var index = e.Row.GetIndex();
+            var index = e.Row.Index;
 
             var t = (WordItem) _DGVRows[ index ];
             t.ViewOrderNumber = index + 1;

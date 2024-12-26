@@ -59,8 +59,13 @@ namespace m3u8.download.manager.ui
         //*/
         #endregion
 
+        #region [..]
+        [DllImport(USER32_DLL)][return:MarshalAs(UnmanagedType.Bool)] private static extern bool ClipCursor( IntPtr lpRect );
+        public static bool RemoveClipCursor() => ClipCursor( IntPtr.Zero );
+        #endregion
+
         #region [.SetForceForegroundWindow.]
-        [DllImport(USER32_DLL)] public static extern IntPtr GetForegroundWindow(); 
+        [ DllImport(USER32_DLL)] public static extern IntPtr GetForegroundWindow(); 
         [DllImport(USER32_DLL)] private static extern uint GetWindowThreadProcessId( IntPtr hWnd, IntPtr processId );
         [DllImport(USER32_DLL)] private static extern bool AttachThreadInput( uint idAttach, uint idAttachTo, bool fAttach );
         [DllImport(USER32_DLL, SetLastError=true)] private static extern bool BringWindowToTop( IntPtr hWnd );

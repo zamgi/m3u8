@@ -329,7 +329,7 @@ namespace m3u8.download.manager.ui
                             if ( km.HasFlag( KeyModifiers.Control ) || km.HasFlag( KeyModifiers.Shift ) || km.HasFlag( KeyModifiers.Alt ) ) break;
                                 
                             var selectedDownloadRow = this.GetSelectedDownloadRow();
-                            var rowIndex            = e.Row.GetIndex();
+                            var rowIndex            = e.Row.Index;
                             if ( IsValidRowIndex( rowIndex, selectedDownloadRow ) )
                             {
                                 var evnt = default(DownloadRowEventHandler);
@@ -377,7 +377,7 @@ namespace m3u8.download.manager.ui
                                 var row = (pargs.Source as Control)?.GetSelfAndVisualAncestors().OfType< DataGridRow >().FirstOrDefault();
                                 if ( row != null )
                                 {
-                                    DGV.SelectedIndex = row.GetIndex();
+                                    DGV.SelectedIndex = row.Index;
                                 }
                             }
                             #region comm. other var.
@@ -513,7 +513,7 @@ namespace m3u8.download.manager.ui
                     #region [.save selected row.]
                     var selRow = this.GetSelectedDownloadRow();
                     var dgrow = DGV.GetVisualDescendants().OfType<DataGridRow>().First( r => r.DataContext == selRow );
-                    var selVisibleIndex = (dgrow?.GetIndex()).GetValueOrDefault( -1 );
+                    var selVisibleIndex = (dgrow?.Index).GetValueOrDefault( -1 );
                     #endregion
 
                     SetDataGridItems();

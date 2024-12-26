@@ -122,7 +122,7 @@ namespace m3u8.download.manager.ui
         private StringFormat      _SF_Right;
         private bool              _UserMade_DGV_SelectionChanged;
         private SortInfo          _LastSortInfo;
-        private Action            _RestoreSortIfNeedAction;
+        private Action            _RestoreSortIfNeed_Action;
         private Timer             _CommonUpdateTimer;
         private _SC_              _SC;
         private ContextMenuStrip  _ColumnsContextMenu;
@@ -137,7 +137,7 @@ namespace m3u8.download.manager.ui
 //_Settings = Settings.Default;
 //_LastSortInfo = SortInfo.FromJson( _Settings.LastSortInfoJson );
 
-            _RestoreSortIfNeedAction = new Action( RestoreSortIfNeed );
+            _RestoreSortIfNeed_Action = new Action( RestoreSortIfNeed );
             _CommonUpdateTimer = new Timer() { Interval = 1_000, Enabled = false };
             _CommonUpdateTimer.Tick += CommonUpdateTimer_Tick;
 
@@ -500,7 +500,7 @@ namespace m3u8.download.manager.ui
         }
 
         internal IEnumerable< DataGridViewColumn > GetDataGridColumns() => DGV.Columns.Cast< DataGridViewColumn >();
-        internal IEnumerable< DataGridViewColumn > GetAlwaysVisibleDataGridColumns() => new[] { DGV_outputFileNameColumn };
+        internal IEnumerable< DataGridViewColumn > GetAlwaysVisibleDataGridColumns() => [ DGV_outputFileNameColumn ];
         #endregion
 
         #region [.private methods.]
@@ -705,7 +705,7 @@ namespace m3u8.download.manager.ui
         {
             if ( this.InvokeRequired )
             {
-                this.BeginInvoke( _RestoreSortIfNeedAction );
+                this.BeginInvoke( _RestoreSortIfNeed_Action );
                 return;
             }
 
@@ -722,35 +722,35 @@ namespace m3u8.download.manager.ui
             {
                 case OUTPUTFILENAME_COLUMN_INDEX:
                     comparison = (x, y) => string.Compare( x.OutputFileName, y.OutputFileName, true );
-                break;
+                    break;
 
                 case OUTPUTDIRECTORY_COLUMN_INDEX:
                     comparison = (x, y) => string.Compare( x.OutputDirectory, y.OutputDirectory, true );
-                break;
+                    break;
 
                 case STATUS_COLUMN_INDEX:
                     comparison = (x, y) => SortHelper.ToInt32( x.Status ).CompareTo( SortHelper.ToInt32( y.Status ) );
-                break;
+                    break;
 
                 case DOWNLOAD_PROGRESS_COLUMN_INDEX:
                     comparison = (x, y) => x.SuccessDownloadParts.CompareTo( y.SuccessDownloadParts );
-                break;
+                    break;
 
                 case DOWNLOAD_BYTES_COLUMN_INDEX:
                     comparison = (x, y) => x.DownloadBytesLength.CompareTo( y.DownloadBytesLength );
-                break;
+                    break;
 
                 case APPROX_REMAINED_BYTES_COLUMN_INDEX:
                     comparison = (x, y) => x.GetApproxRemainedBytes().CompareTo( y.GetApproxRemainedBytes() );
-                break;
+                    break;
 
                 case APPROX_TOTAL_BYTES_COLUMN_INDEX:
                     comparison = (x, y) => x.GetApproxTotalBytes().CompareTo( y.GetApproxTotalBytes() );
-                break;
+                    break;
 
                 case URL_COLUMN_INDEX:
                     comparison = (x, y) => string.Compare( x.Url, y.Url, true );
-                break;
+                    break;
 
                 case REQUEST_HEADERS_COLUMN_INDEX:
                     comparison = (x, y) => string.Compare( x.RequestHeaders.ToText(), y.RequestHeaders.ToText(), true );
@@ -758,10 +758,10 @@ namespace m3u8.download.manager.ui
 
                 case IS_LIVE_STREAM_COLUMN_INDEX:
                     comparison = (x, y) => x.IsLiveStream.CompareTo( y.IsLiveStream );
-                break;
+                    break;
                 case LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX:
                     comparison = (x, y) => x.LiveStreamMaxFileSizeInBytes.CompareTo( y.LiveStreamMaxFileSizeInBytes );
-                break;
+                    break;
 
                 case DOWNLOAD_TIME_COLUMN_INDEX:
                 case APPROX_REMAINED_TIME_COLUMN_INDEX:
@@ -1149,27 +1149,34 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_ColumnHeaderMouseClick( object sender, DataGridViewCellMouseEventArgs e )
         {
-            if ( (e.Button == MouseButtons.Left) && DGV.IsColumnSortable( e.ColumnIndex ) )
+            switch ( e.Button )
             {
-                _LastSortInfo.SetSortOrderAndSaveCurrent( e.ColumnIndex );
-                if ( !_LastSortInfo.HasSorting )
-                {
-                    var row = GetSelectedDownloadRow();
-                    _Model.Sort( SortHelper.CreateDefaultComparison() );
-                    SelectDownloadRowInternal( row, true );
-                }
+                case MouseButtons.Left:
+                    if ( DGV.IsColumnSortable( e.ColumnIndex ) )
+                    {
+                        _LastSortInfo.SetSortOrderAndSaveCurrent( e.ColumnIndex );
+                        if ( !_LastSortInfo.HasSorting )
+                        {
+                            var row = GetSelectedDownloadRow();
+                            _Model.Sort( SortHelper.CreateDefaultComparison() );
+                            SelectDownloadRowInternal( row, true );
+                        }
 
-                RestoreSortIfNeed();
+                        RestoreSortIfNeed();
 
-                _SC.Settings.LastSortInfoJson = _LastSortInfo.ToJson();
-                _SC.SaveNoThrow_IfAnyChanged();
-            }
-            else if ( e.Button == MouseButtons.Right )
-            {
-                var displayIndex = DGV.Columns[ e.ColumnIndex ].DisplayIndex;
-                var widthBefore  = DGV.Columns.Cast< DataGridViewColumn >().Where( c => c.Visible && c.DisplayIndex < displayIndex ).Sum( c => c.Width );
-                var pt = new Point( widthBefore + e.X - DGV.HorizontalScrollingOffset, e.Y );
-                _ColumnsContextMenu.Show( DGV, pt );
+                        _SC.Settings.LastSortInfoJson = _LastSortInfo.ToJson();
+                        _SC.SaveNoThrow_IfAnyChanged();
+                    }
+                    break;
+
+                case MouseButtons.Right:
+                    {
+                        var displayIndex = DGV.Columns[ e.ColumnIndex ].DisplayIndex;
+                        var widthBefore  = DGV.Columns.Cast< DataGridViewColumn >().Where( c => c.Visible && c.DisplayIndex < displayIndex ).Sum( c => c.Width );
+                        var pt = new Point( widthBefore + e.X - DGV.HorizontalScrollingOffset, e.Y );
+                        _ColumnsContextMenu.Show( DGV, pt );
+                    }
+                    break;
             }
         }
 
@@ -1185,14 +1192,62 @@ namespace m3u8.download.manager.ui
             _DGV_MouseDown_HitTestInfo = DGV.HitTest( e.X, e.Y ); 
             if ( e.Button == MouseButtons.Left )
             {
-                _DGV_MouseDown_ButtonLeft_Location = e.Location;
+                if ( _DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.ColumnHeader )
+                {
+                    _DGV_MouseDown_ButtonLeft_Location = e.Location;
 
-                DGV.MouseUp   -= DGV_MouseUp;
-                DGV.MouseMove -= DGV_MouseMove;
+                    DGV.MouseUp    -= DGV_MouseUp_4_LastColumnResizeOutOfDGVBounds;
+                    DGV.MouseMove  -= DGV_MouseMove_4_LastColumnResizeOutOfDGVBounds;
 
-                DGV.MouseUp   += DGV_MouseUp;
-                DGV.MouseMove += DGV_MouseMove;
+                    DGV.MouseUp    += DGV_MouseUp_4_LastColumnResizeOutOfDGVBounds;
+                    DGV.MouseMove  += DGV_MouseMove_4_LastColumnResizeOutOfDGVBounds;
+                }
+                else if ( (_DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.Cell) ||
+                          (_DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.RowHeader)
+                        )
+                {
+                    _DGV_MouseDown_ButtonLeft_Location = e.Location;
+
+                    DGV.MouseUp   -= DGV_MouseUp;
+                    DGV.MouseMove -= DGV_MouseMove;
+
+                    DGV.MouseUp   += DGV_MouseUp;
+                    DGV.MouseMove += DGV_MouseMove;
+                }
             }
+        }
+        private void DGV_MouseUp_4_LastColumnResizeOutOfDGVBounds( object sender, MouseEventArgs e )
+        {
+            DGV.MouseUp   -= DGV_MouseUp_4_LastColumnResizeOutOfDGVBounds;
+            DGV.MouseMove -= DGV_MouseMove_4_LastColumnResizeOutOfDGVBounds;
+
+            var inRect = DGV.ClientRectangle.Contains( e.Location );
+            if ( !inRect )
+            {
+                var x = DGV.RowHeadersWidth - DGV.HorizontalScrollingOffset;
+                var col4Resize = default(DataGridViewColumn);
+                foreach ( var col in DGV.Columns.Cast< DataGridViewColumn >() )
+                {
+                    if ( !col.Visible ) continue;
+                    col4Resize = col;
+                    if ( (x <= e.X) && (e.X <= (x + col.Width)) )
+                    {
+                        break;
+                    }
+                    x += col.Width;
+                }
+
+                if ( col4Resize != null )
+                {
+                    var grow_by_x = e.X - _DGV_MouseDown_ButtonLeft_Location.X;
+                    col4Resize.Width += grow_by_x;
+                }
+            }
+        }
+        private void DGV_MouseMove_4_LastColumnResizeOutOfDGVBounds( object sender, MouseEventArgs e )
+        {
+            WinApi.RemoveClipCursor();
+            Debug.WriteLine( e.Location );
         }
         private void DGV_MouseUp( object sender, MouseEventArgs e )
         {
@@ -1260,7 +1315,7 @@ namespace m3u8.download.manager.ui
 
             var dataObj = new DataObject();
 
-            var hasExistsFiles = fileNames.Any( fn => File.Exists( fn ) );            
+            var hasExistsFiles = fileNames.Any( File.Exists );            
             if ( hasExistsFiles ) dataObj.SetData( DataFormats.FileDrop, fileNames );
             
             dataObj.SetDataEx( new DRAGDROP_ROWS_FORMAT_TYPE( rows, focusedRow ) );

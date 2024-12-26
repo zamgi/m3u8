@@ -236,7 +236,7 @@ namespace m3u8.download.manager.ui
 
                         if ( bounds.Contains( pt ) )
                         {
-                            var newIndex = dgrow.GetIndex();
+                            var newIndex = dgrow.Index;
                             if ( (newIndex != -1) && (oldIndex != newIndex) )
                             {
                                 return;
@@ -263,7 +263,7 @@ namespace m3u8.download.manager.ui
 
                         if ( bounds.Contains( pt ) )
                         {
-                            var newIndex = dgrow.GetIndex();
+                            var newIndex = dgrow.Index;
                             if ( (newIndex != -1) && (oldIndex != newIndex) )
                             {
                                 _ChangeRowPosition( oldIndex, newIndex, drft.FocusedRow );

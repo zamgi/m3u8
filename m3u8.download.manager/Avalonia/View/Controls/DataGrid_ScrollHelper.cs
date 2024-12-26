@@ -46,7 +46,7 @@ namespace m3u8.download.manager.ui
         
         [M(O.AggressiveInlining)] private static bool TryGetTopDataGridRowIndex( DataGrid dgv, out int rowIndex )
         {
-            var seq_1 = dgv.GetVisualDescendants().OfType< DataGridRow >().Where( r => r.IsVisible ).Select( r => (row: r, idx: r.GetIndex(), r.Bounds) )
+            var seq_1 = dgv.GetVisualDescendants().OfType< DataGridRow >().Where( r => r.IsVisible ).Select( r => (row: r, idx: r.Index, r.Bounds) )
                            .OrderBy( t => t.idx ).ThenBy( t => t.Bounds.Top )
                            .ToList() 
                            ;
@@ -80,7 +80,7 @@ namespace m3u8.download.manager.ui
         }
         [M(O.AggressiveInlining)] private static bool TryGetBottomDataGridRowIndex( DataGrid dgv, out int rowIndex )
         {
-            var seq_1 = dgv.GetVisualDescendants().OfType< DataGridRow >().Where( r => r.IsVisible ).Select( r => (row: r, idx: r.GetIndex(), r.Bounds) )
+            var seq_1 = dgv.GetVisualDescendants().OfType< DataGridRow >().Where( r => r.IsVisible ).Select( r => (row: r, idx: r.Index, r.Bounds) )
                            .OrderByDescending( t => t.idx ).ThenByDescending( t => t.Bounds.Top )
                            .ToList()
                            ;

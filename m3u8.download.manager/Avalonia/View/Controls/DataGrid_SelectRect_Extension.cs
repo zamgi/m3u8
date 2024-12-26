@@ -264,7 +264,7 @@ namespace m3u8.download.manager.ui
             {
                 var bounds = dgrow.GetBoundsByTopAncestor(); if ( (bounds.Height <= 0) || (bounds.Width <= 0) ) continue;
 
-                var rowIndex = dgrow.GetIndex(); if ( !IsValidRowIndex( rowIndex ) ) continue;
+                var rowIndex = dgrow.Index; if ( !IsValidRowIndex( rowIndex ) ) continue;
                 var row      = _Model[ rowIndex ];
 
                 if ( bounds.Intersects( selectRect_Bounds ) )
