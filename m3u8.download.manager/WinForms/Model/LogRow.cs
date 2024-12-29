@@ -25,9 +25,10 @@ namespace m3u8.download.manager.models
         internal LogRow( /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged, LogRow other ) : base( model )
         {
             _RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));
-            RequestRowType = other.RequestRowType;
-            RequestText    = other.RequestText;
-            ResponseText   = other.ResponseText;            
+            RequestRowType        = other.RequestRowType;
+            RequestText           = other.RequestText;
+            ResponseText          = other.ResponseText;
+            AttemptRequestNumber  = other.AttemptRequestNumber;
         }
 
         internal static LogRow CreateRequest( string requestText, /*LogListModel*/ListModel< LogRow > model, _RowPropertiesChanged_ rowPropertiesChanged )
@@ -46,14 +47,28 @@ namespace m3u8.download.manager.models
             => new LogRow( model, rowPropertiesChanged ) { RequestRowType = RequestRowTypeEnum.Error, RequestText  = requestText, ResponseText = responseErrorText };
 
 
-        public string RequestText  { [M(O.AggressiveInlining)] get; private set; }
-        public string ResponseText { [M(O.AggressiveInlining)] get; private set; }
+        public string RequestText          { [M(O.AggressiveInlining)] get; private set; }
+        public string ResponseText         { [M(O.AggressiveInlining)] get; private set; }
+        public int?   AttemptRequestNumber { [M(O.AggressiveInlining)] get; private set; }
 
-        [M(O.AggressiveInlining)] public void SetResponse( string responseText )
+        [M(O.AggressiveInlining)] public void SetAttemptRequestNumber( int attemptRequestNumber )
+        {
+            if ( AttemptRequestNumber != attemptRequestNumber )
+            {
+                AttemptRequestNumber = attemptRequestNumber;
+                _RowPropertiesChanged.Invoke( this, nameof(AttemptRequestNumber) );
+            }
+        }
+        [M(O.AggressiveInlining)] public void SetResponse( string responseText, int? attemptRequestNumber = null )
         {
             ResponseText = responseText;
-
             _RowPropertiesChanged.Invoke( this, nameof(ResponseText/*RequestRowType*/) );
+
+            if ( attemptRequestNumber.HasValue && (AttemptRequestNumber != attemptRequestNumber.Value) )
+            {
+                AttemptRequestNumber = attemptRequestNumber.Value;
+                _RowPropertiesChanged.Invoke( this, nameof(AttemptRequestNumber) );
+            }
         }
         [M(O.AggressiveInlining)] public void SetResponseSuccess( string responseText )
         {
@@ -62,12 +77,18 @@ namespace m3u8.download.manager.models
 
             _RowPropertiesChanged.Invoke( this, nameof(RequestRowType) );
         }
-        [M(O.AggressiveInlining)] public void SetResponseError( string responseErrorText )
+        [M(O.AggressiveInlining)] public void SetResponseError( string responseErrorText, int? attemptRequestNumber = null )
         {
             ResponseText   = responseErrorText;
             RequestRowType = RequestRowTypeEnum.Error;
 
             _RowPropertiesChanged.Invoke( this, nameof(RequestRowType) );
+
+            if ( attemptRequestNumber.HasValue && (AttemptRequestNumber != attemptRequestNumber.Value) )
+            {
+                AttemptRequestNumber = attemptRequestNumber.Value;
+                _RowPropertiesChanged.Invoke( this, nameof(AttemptRequestNumber) );
+            }
         }
         public void Append2RequestText( string append2RequestText )
         {

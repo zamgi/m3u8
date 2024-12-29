@@ -1,4 +1,7 @@
-﻿namespace m3u8.download.manager.ui
+﻿using _DC_ = m3u8.download.manager.controllers.DownloadController;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
+namespace m3u8.download.manager.ui
 {
     partial class MainForm
     {
@@ -12,7 +15,7 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
+        private void InitializeComponent( _DC_ dc, _SC_ sc )
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
@@ -51,7 +54,7 @@
             this.speedThresholdToolButton = new System.Windows.Forms.SpeedThresholdToolButton();
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.downloadListUC = new m3u8.download.manager.ui.DownloadListUC();
-            this.logUC = new m3u8.download.manager.ui.LogUC();
+            this.logUC = new m3u8.download.manager.ui.LogUC( sc );
             this.mainContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.startDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,7 +74,7 @@
             this.cancelAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllWithOutputFilesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC();
+            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC( dc, sc );
             this.mainToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();

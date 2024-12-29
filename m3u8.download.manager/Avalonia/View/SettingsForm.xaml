@@ -86,7 +86,7 @@
                   Margin="2">
               <Grid RowDefinitions="auto,auto,auto,auto,auto,auto,*" ColumnDefinitions="*" 
                     Margin="7,3">
-                <TextBlock Grid.Row="0" Foreground="DodgerBlue">Download params</TextBlock>
+                <TextBlock Grid.Row="0" Foreground="DodgerBlue">download params</TextBlock>
                 <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1" CornerRadius="4" Padding="10">
                   <Grid RowDefinitions="auto,auto,15,auto,auto,15,auto,15,auto"
                         ColumnDefinitions="*,auto,auto,*" 
@@ -164,7 +164,6 @@
               </Grid>              
             </Grid>
           </Grid>          
-
         </ScrollViewer>
       </TabItem>
     </TabControl>   

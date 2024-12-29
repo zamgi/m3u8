@@ -10,6 +10,8 @@ using Avalonia.Markup.Xaml;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -25,6 +27,7 @@ namespace m3u8.download.manager.ui
 
         #region [.fields.]
         private FileNameCleaner4UI.Processor _FNCP;
+        private _SC_ _SC;
         #endregion
 
         #region [.ctor().]
@@ -35,8 +38,9 @@ namespace m3u8.download.manager.ui
             this.AttachDevTools();
 #endif
         }
-        internal ChangeOutputFileForm( DownloadRow row ) : this()
+        internal ChangeOutputFileForm( _SC_ sc, DownloadRow row ) : this()
         {
+            _SC = sc;
             (Row, this.OutputFileName) = (row, row.OutputFileName);
 
             set_outputFileNameTextBox_Selection_Position( this.OutputFileName );
@@ -77,7 +81,7 @@ namespace m3u8.download.manager.ui
                 case Key.Escape:
                     e.Handled = true;
                     this.Close(); 
-                return;
+                    return;
 
                 case Key.Enter: //Ok
                     if ( OkButtonProcess() )
@@ -85,7 +89,7 @@ namespace m3u8.download.manager.ui
                         e.Handled = true;
                         return;
                     }
-                break;
+                    break;
             }
 
             base.OnKeyDown( e );
@@ -107,7 +111,7 @@ namespace m3u8.download.manager.ui
 
         private bool IsValid()
         {
-            var fn = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
+            var fn = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _SC.OutputFileExtension );
             if ( fn.IsNullOrWhiteSpace() || (Path.GetExtension( fn ) == fn) )
             {                
                 outputFileNameTextBox.FocusAndBlinkBackColor();

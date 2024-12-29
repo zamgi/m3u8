@@ -24,6 +24,10 @@
   <PropertyGroup>
     <OutputPath>bin\</OutputPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>    
+  </PropertyGroup>  
+  
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);AVALONIA</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>

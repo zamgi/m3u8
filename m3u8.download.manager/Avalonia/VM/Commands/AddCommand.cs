@@ -78,7 +78,7 @@ namespace m3u8.download.manager
             Debug.Assert( suc || p.requestHeaders.IsNullOrEmpty() );
 
             if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() &&
-                 FileNameCleaner4UI.TryGetOutputFileNameByUrl( p.m3u8FileUrl, out var outputFileName ) 
+                 FileNameCleaner4UI.TryGetOutputFileNameByUrl( p.m3u8FileUrl, _VM.SettingsController.OutputFileExtension, out var outputFileName ) 
                )
             {
                 if ( _VM.SettingsController.UniqueUrlsOnly && !_VM.DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )

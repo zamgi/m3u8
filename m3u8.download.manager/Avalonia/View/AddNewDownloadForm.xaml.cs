@@ -321,7 +321,7 @@ namespace m3u8.download.manager.ui
             {
                 SuggestedStartLocation = await StorageProviderExtensions.TryGetFolderFromPathAsync( this.StorageProvider, this.OutputDirectory ),
                 DefaultExtension       = _SC.Settings.OutputFileExtension?.TrimStart('.'),
-                SuggestedFileName      = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName ),
+                SuggestedFileName      = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _SC.OutputFileExtension ),
             });
             if ( sf != null )
             {
@@ -397,7 +397,8 @@ namespace m3u8.download.manager.ui
             }
             _Last_m3u8FileUrlText = m3u8FileUrlText;
 
-            await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
+            if ( m3u8FileUrlText != null )
+            await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, _SC.OutputFileExtension, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
 
             setFocus2outputFileNameTextBox();
         }
@@ -608,7 +609,7 @@ namespace m3u8.download.manager.ui
             set => this.LiveStreamMaxFileSizeInMb = (int) (value >> 20);
         }
 
-        private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _OutputFileNamePatternProcessor.PatternChar );
+        private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _SC.OutputFileExtension, _OutputFileNamePatternProcessor.PatternChar );
         private string OutputFileName
         {
             get => outputFileNameTextBox?.Text?.Trim();

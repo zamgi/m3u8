@@ -119,12 +119,21 @@ namespace m3u8.download.manager.ui
 
             EventHandler< RoutedEventArgs > menuItemClick = (s, _) =>
             {
-                var item = (MenuItem) s;
-                var col  = (DataGridColumn) item.Tag;
+                var item = (MenuItem) s;                
                 var ch   = (CheckBox) item.Icon;
-                
+                var col  = (DataGridColumn) item.Tag;
+
+                DGV.ScrollIntoView( null, DGV.Columns[ 0 ] );
+
                 ch.IsChecked = !ch.IsChecked.GetValueOrDefault();
-                col.IsVisible = ch.IsChecked.GetValueOrDefault();
+                try
+                {
+                    col.IsVisible = ch.IsChecked.GetValueOrDefault();
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
             };
             EventHandler< RoutedEventArgs > checkBoxClick = (s, _) =>
             {
@@ -132,7 +141,18 @@ namespace m3u8.download.manager.ui
                 var item = (MenuItem) ch.Parent;
                 var col  = (DataGridColumn) item.Tag;
 
-                col.IsVisible = ch.IsChecked.GetValueOrDefault();
+                DGV.ScrollIntoView( null, DGV.Columns[ 0 ] );
+
+                ch.IsChecked = !ch.IsChecked.GetValueOrDefault();
+                try
+                {
+                    col.IsVisible = ch.IsChecked.GetValueOrDefault();
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
+
                 _ColumnsContextMenu.Close();
             };
             foreach ( var col in DGV.Columns.Cast< DataGridColumn >() )

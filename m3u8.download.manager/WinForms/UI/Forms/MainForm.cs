@@ -64,19 +64,21 @@ namespace m3u8.download.manager.ui
         #region [.ctor().]
         private MainForm()
         {
-            InitializeComponent();
+            _SC = new _SC_( Settings.Default );
+
+            _DownloadListModel = new DownloadListModel();
+            _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
+            _DC = new _DC_( _DownloadListModel, _SC );
+            //----------------------------------------//
+
+            InitializeComponent( _DC, _SC );
             this.Text = _APP_TITLE_;
             mainSplitContainer.SetCursor( Cursors.SizeNS );
             //----------------------------------------//
 
             _DownloadListModel_RowPropertiesChangedAction = new Action< DownloadRow, string >( DownloadListModel_RowPropertiesChanged );
-
-            _SC = new _SC_();
+            
             _LogRowsHeightStorer = new LogRowsHeightStorer();
-
-            _DownloadListModel  = new DownloadListModel();
-            _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
-            _DC = new _DC_( _DownloadListModel, _SC );
 
             _SC.SettingsPropertyChanged += SettingsController_PropertyChanged;
             SettingsController_PropertyChanged( _SC.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle) );
@@ -92,8 +94,8 @@ namespace m3u8.download.manager.ui
             downloadListUC.UpdatedSingleRunningRow    += downloadListUC_UpdatedSingleRunningRow;
             downloadListUC.UpdatedSummaryDownloadInfo += downloadListUC_UpdatedSummaryDownloadInfo;
             downloadListUC.DoubleClickEx              += openOutputFileMenuItem_Click;
-            statusBarUC.SetDownloadController( _DC );
-            statusBarUC.SetSettingsController( _SC );
+            //statusBarUC.SetDownloadController( _DC );
+            //statusBarUC.SetSettingsController( _SC );
             statusBarUC.TrackItemsCount( downloadListUC );
             statusBarUC.SettingsChanged += statusBarUC_SettingsChanged;
 
@@ -145,7 +147,7 @@ namespace m3u8.download.manager.ui
 #if DEBUG
             if ( _DownloadListModel.RowsCount == 0 )
             {
-                var dir = Settings.Default.OutputFileDirectory;
+                var dir = _SC.Settings.OutputFileDirectory;
                 _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , null, "xz-1", dir) );
                 _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", null, "xz-2", dir) );
                 _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", null, "xz-3", dir) );
@@ -263,76 +265,76 @@ namespace m3u8.download.manager.ui
                                 this.MessageBox_ShowError( "Nothing for Copy to clipboard.", this.Text );
                             }
                         }
-                    break;
+                        break;
 
                     case Keys.S: //Start download
                         if ( downloadListUC.HasFocus )
                         {
                             ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Start );
                         }
-                    break;
+                        break;
 
                     case Keys.P: //Pause download
                         if ( downloadListUC.HasFocus )
                         {
                             ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Pause );
                         }
-                    break;
+                        break;
 
                     case Keys.Z: //Cancel download
                         if ( downloadListUC.HasFocus )
                         {
                             ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
                         }
-                    break;
+                        break;
 
                     case Keys.W: //Exit | Close
                         this.Close();
-                    break;
+                        break;
 
                     case Keys.D: //Minimized window
                         this.WindowState = FormWindowState.Minimized;
-                    break;
+                        break;
 
                     case Keys.B: //Browse output file
                         if ( downloadListUC.HasFocus )
                         {
                             browseOutputFileMenuItem_Click( this, EventArgs.Empty );
                         }
-                    break;
+                        break;
                     case Keys.O: //Open output file
                         if ( downloadListUC.HasFocus )
                         {
                             openOutputFileMenuItem_Click( this, EventArgs.Empty );
                         }
-                    break;
+                        break;
                     case Keys.T: //Open output file with External progs
                         if ( downloadListUC.HasFocus )
                         {
                             openOutputFilesWithExternalMenuItem_Click( this, EventArgs.Empty );
                         }
-                    break;
+                        break;
 
                     case Keys.G:
                         if ( e.Shift ) //Collect Garbage
                         {
                             Collect_Garbage();
                         }
-                    break;
+                        break;
 
                     case Keys.Delete: // [Ctrl + Shift + Del]
                         if ( e.Shift && downloadListUC.HasFocus )
                         {
                             OnlyDeleteOutputFiles( downloadListUC.GetSelectedDownloadRows().ToArrayEx() );
                         }
-                    break;
+                        break;
 
                     case Keys.E: // [Ctrl + E]
                         if ( downloadListUC.HasFocus )
                         {
                             EditDownload( downloadListUC.GetSelectedDownloadRow() );
                         }
-                    break;
+                        break;
                 }
             }
             else
@@ -359,11 +361,15 @@ namespace m3u8.download.manager.ui
                                 DeleteDownloads( rows.ToArrayEx(), deleteOutputFiles: e.Shift );
                             }
                         }
-                    break;
+                        break;
 
                     case Keys.F1: //about
                         aboutToolButton_Click( this, EventArgs.Empty );
-                    break;
+                        break;
+
+                    case Keys.F11:
+                        this.WindowState = (this.WindowState == FormWindowState.Normal) ? FormWindowState.Maximized : FormWindowState.Normal;
+                        break;
 
                     case Keys.Enter: //change output-file dialog || Open output file
                         if ( downloadListUC.HasFocus )
@@ -381,7 +387,7 @@ namespace m3u8.download.manager.ui
                                 }
                             }
                         }
-                    break;
+                        break;
                 }
             }
             
@@ -977,7 +983,7 @@ namespace m3u8.download.manager.ui
             var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( p.requestHeaders, out var requestHeaders );
             Debug.Assert( suc || p.requestHeaders.IsNullOrEmpty() );
 
-            if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() && FileNameCleaner4UI.TryGetOutputFileNameByUrl( p.m3u8FileUrl, out var outputFileName ) )
+            if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() && FileNameCleaner4UI.TryGetOutputFileNameByUrl( p.m3u8FileUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) )
             {
                 if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
                 {
@@ -1420,7 +1426,7 @@ namespace m3u8.download.manager.ui
         }
         private void downloadListUC_OutputDirectoryClick( DownloadRow row )
         {
-            if ( DirectorySelectDialog.Show( this, GetSelectedDirectory( row ), $"Select output directory for file: '{row.OutputFileName}'", out var outputDirectory ) )
+            if ( DirectorySelectDialog.Show( this, _SC.Settings.UseDirectorySelectDialogModern, GetSelectedDirectory( row ), $"Select output directory for file: '{row.OutputFileName}'", out var outputDirectory ) )
             {
                 _Last_ChangeOutputDirectory = outputDirectory;
                 ChangeOutputDirectory( row, outputDirectory );
@@ -1436,7 +1442,7 @@ namespace m3u8.download.manager.ui
             {
                 var first_row = rows.First();
                 var descr = (rows.Count == 1) ? $"Select output directory for file: '{first_row.OutputFileName}'" : $"Select output directory for {rows.Count} files";
-                if ( DirectorySelectDialog.Show( this, GetSelectedDirectory( first_row ), descr, out var outputDirectory ) )
+                if ( DirectorySelectDialog.Show( this, _SC.Settings.UseDirectorySelectDialogModern, GetSelectedDirectory( first_row ), descr, out var outputDirectory ) )
                 {
                     _Last_ChangeOutputDirectory = outputDirectory;
                     foreach ( var row in rows )

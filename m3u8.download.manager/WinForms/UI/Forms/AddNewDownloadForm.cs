@@ -38,9 +38,9 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
-        private AddNewDownloadForm()
+        private AddNewDownloadForm( _DC_ dc, _SC_ sc )
         {
-            InitializeComponent();
+            InitializeComponent( dc, sc );
             //----------------------------------------//            
 
             //---statusBarUC.IsVisibleParallelismLabel = false;
@@ -51,7 +51,7 @@ namespace m3u8.download.manager.ui
         }
         private AddNewDownloadForm( _DC_ dc, _SC_ sc
             , DownloadRow row
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor ) : this()
+            , OutputFileNamePatternProcessor outputFileNamePatternProcessor ) : this( dc, sc )
         {
             _IsInEditMode      = true;
             _SC                = sc;
@@ -79,14 +79,12 @@ namespace m3u8.download.manager.ui
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
-            statusBarUC.SetDownloadController( dc );
-            statusBarUC.SetSettingsController( sc );  
         }
         private AddNewDownloadForm( _DC_ dc, _SC_ sc
             , string m3u8FileUrl
             , IDictionary< string, string > requestHeaders
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , in (int n, int total)? seriesInfo = null ) : this()
+            , in (int n, int total)? seriesInfo = null ) : this( dc, sc )
         {
             _SC                = sc;
             _Settings          = sc.Settings;
@@ -107,8 +105,6 @@ namespace m3u8.download.manager.ui
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
-            statusBarUC.SetDownloadController( dc );
-            statusBarUC.SetSettingsController( sc );
 
             #region [.seriesInfo.]
             if ( seriesInfo.HasValue )
@@ -359,7 +355,7 @@ namespace m3u8.download.manager.ui
             var outputFileName_2 = _OutputFileNamePatternProcessor.Process( outputFileName_1 );
             return (outputFileName_2);
         }
-        private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _OutputFileNamePatternProcessor.PatternChar );
+        private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _Settings.OutputFileExtension, _OutputFileNamePatternProcessor.PatternChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();
         public  bool   IsLiveStream
@@ -444,7 +440,7 @@ namespace m3u8.download.manager.ui
             }
             _Last_m3u8FileUrlText = m3u8FileUrlText;
 
-            await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
+            await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, _Settings.OutputFileExtension, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
 
             setFocus2outputFileNameTextBox();
         }
@@ -468,7 +464,7 @@ namespace m3u8.download.manager.ui
                                                      DefaultExt       = _Settings.OutputFileExtension,
                                                      AddExtension     = true, } )
             {
-                sfd.FileName = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
+                sfd.FileName = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _Settings.OutputFileExtension );
                 if ( sfd.ShowDialog( this ) == DialogResult.OK )
                 {
                     var outputFullFileName = sfd.FileName;
@@ -479,7 +475,7 @@ namespace m3u8.download.manager.ui
         }
         private void outputDirectorySelectButton_Click( object sender, EventArgs e )
         {
-            if ( DirectorySelectDialog.Show( this, this.OutputDirectory, "Select output directory", out var selectedPath ) )
+            if ( DirectorySelectDialog.Show( this, _Settings.UseDirectorySelectDialogModern, this.OutputDirectory, "Select output directory", out var selectedPath ) )
             {
                 this.OutputDirectory = selectedPath;
             }

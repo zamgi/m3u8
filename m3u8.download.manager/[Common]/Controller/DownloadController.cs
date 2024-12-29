@@ -7,7 +7,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
@@ -542,21 +541,44 @@ namespace m3u8.download.manager.controllers
                             var raiseRowPropertiesChangedEvent = InterlockedExtension.ExchangeIfNewValueBigger( ref start_ts, ts, ts - (100 * InterlockedExtension.TicksPerMillisecond) );
                             row.SetDownloadPartStepParams( p, raiseRowPropertiesChangedEvent );
 
+                            if ( rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
+                            {
+                                if ( p.Part.Error != null )
+                                {
+                                    rows_Dict.Remove( p.Part.OrderNumber );
+                                    anyErrorHappend = true;
+                                    logRow.SetResponseError( p.Part.Error.ToString(), p.AttemptRequestNumber );
+                                }
+                                else if ( raiseRowPropertiesChangedEvent )
+                                {
+                                    var msg = p.TotalContentLength.HasValue ? $"{Extensions.GetSizeFormatted( p.TotalBytesReaded )} of {Extensions.GetSizeFormatted( p.TotalContentLength.Value )}"
+                                                                               : Extensions.GetSizeFormatted( p.TotalBytesReaded );
+                                    logRow.SetResponse( msg, p.AttemptRequestNumber );
+                                }
+                                else
+                                {
+                                    logRow.SetAttemptRequestNumber( p.AttemptRequestNumber );
+                                }
+                            }
+                            #region comm. prev.
+                            /*
                             if ( raiseRowPropertiesChangedEvent && rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
                             {
                                 if ( p.Part.Error != null )
                                 {
                                     rows_Dict.Remove( p.Part.OrderNumber );
                                     anyErrorHappend = true;
-                                    logRow.SetResponseError( p.Part.Error.ToString() );
+                                    logRow.SetResponseError( p.Part.Error.ToString(), p.AttemptRequestNumber );
                                 }
                                 else
                                 {
                                     var msg = p.TotalContentLength.HasValue ? $"{Extensions.GetSizeFormatted( p.TotalBytesReaded )} of {Extensions.GetSizeFormatted( p.TotalContentLength.Value )}" 
                                                                                : Extensions.GetSizeFormatted( p.TotalBytesReaded );
-                                    logRow.SetResponse( msg );
+                                    logRow.SetResponse( msg, p.AttemptRequestNumber );
                                 }
                             }
+                            //*/
+                            #endregion
                         });
                         var waitingIfPausedAction   = new Action( () => row.SetStatus( DownloadStatus.Paused ) );
                         var waitingIfPausedBefore_2 = new Action< m3u8_part_ts__v2 >( part =>

@@ -17,7 +17,7 @@ namespace m3u8.download.manager.controllers
     /// </summary>
     internal sealed class SettingsPropertyChangeController : IDisposable
     {
-        public const int MAX_DEGREE_OF_PARALLELISM = 1024;
+        public const int MAX_DEGREE_OF_PARALLELISM = 1_024;
 
         /// <summary>
         /// 
@@ -29,9 +29,9 @@ namespace m3u8.download.manager.controllers
         private Dictionary< string, object > _PD;
         private string _AllJson;
 
-        public SettingsPropertyChangeController()
+        public SettingsPropertyChangeController( _Settings_ settings )
         {
-            this.Settings = _Settings_.Default;
+            this.Settings = settings;
             _AllJson = ObjAsDict_JsonSerializer.ToJSON( Settings );
 
             var props = typeof(_Settings_).GetProperties();
@@ -47,8 +47,9 @@ namespace m3u8.download.manager.controllers
             this.Settings.PropertyChanged += Settings_PropertyChanged;
         }
         public void Dispose() => this.Settings.PropertyChanged -= Settings_PropertyChanged;
-
+#if AVALONIA
         public static _Settings_ SettingsDefault { [M(O.AggressiveInlining)] get => _Settings_.Default; }
+#endif
         public _Settings_ Settings { [M(O.AggressiveInlining)] get; }
 
         public (TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams() => (Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
@@ -56,6 +57,7 @@ namespace m3u8.download.manager.controllers
         public IEnumerable< string > NameCleanerExcludesWords { [M(O.AggressiveInlining)] get => Settings.GetNameCleanerExcludesWords(); }
         public bool     ShowOnlyRequestRowsWithErrors       { [M(O.AggressiveInlining)] get => Settings.ShowOnlyRequestRowsWithErrors; }
         public string   OutputFileDirectory                 { [M(O.AggressiveInlining)] get => Settings.OutputFileDirectory; }
+        public string   OutputFileExtension                 { [M(O.AggressiveInlining)] get => Settings.OutputFileExtension; }
         public bool     UniqueUrlsOnly                      { [M(O.AggressiveInlining)] get => Settings.UniqueUrlsOnly; }
         public string   MainFormPositionJson                { [M(O.AggressiveInlining)] get => Settings.MainFormPositionJson; [M(O.AggressiveInlining)] set => Settings.MainFormPositionJson = value; }
         public bool     UseCrossDownloadInstanceParallelism { [M(O.AggressiveInlining)] get => Settings.UseCrossDownloadInstanceParallelism; }

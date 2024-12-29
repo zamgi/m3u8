@@ -144,7 +144,7 @@ namespace m3u8.download.manager.ui
 
             #region [.-1-.]
             this.Title = GET_APP_TITLE();
-            this.DataContext = _VM = new MainVM( this );
+            this.DataContext = _VM = new MainVM( this, Settings.Default );
 
             _VM.DownloadListModel.RowPropertiesChanged     += DownloadListModel_RowPropertiesChanged;
             _VM.SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
@@ -427,6 +427,10 @@ namespace m3u8.download.manager.ui
 
                     case Key.F1: //about
                         _VM.AboutCommand.Execute( null );
+                        break;
+
+                    case Key.F11:
+                        this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
                         break;
 
                     case Key.Enter: //change output-file dialog || Open output file
@@ -1194,10 +1198,10 @@ namespace m3u8.download.manager.ui
         #region [.Change output file-name.]
         private async void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
-            using var f = new ChangeOutputFileForm( row );
+            using var f = new ChangeOutputFileForm( _VM.SettingsController, row );
             {
                 await f.ShowDialog( this );
-                if ( f.Success && FileNameCleaner4UI.TryGetOutputFileName( f.OutputFileName, out var outputFileName ) )
+                if ( f.Success && FileNameCleaner4UI.TryGetOutputFileName( f.OutputFileName, _VM.SettingsController.OutputFileExtension, out var outputFileName ) )
                 {
                     //row.SetOutputFileName( outputFileName );
                     await ChangeOutputFileName( row, outputFileName );

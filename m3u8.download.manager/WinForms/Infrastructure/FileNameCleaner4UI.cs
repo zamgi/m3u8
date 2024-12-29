@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.infrastructure;
-using m3u8.download.manager.Properties;
 
 namespace m3u8.download.manager.ui
 {
@@ -14,20 +13,17 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal static class FileNameCleaner4UI
     {
-        private static Settings _Settings;
-        static FileNameCleaner4UI() => _Settings = Settings.Default;
-
-        private static string AddOutputFileExtensionIfMissing( this string outputFileName )
+        private static string AddOutputFileExtensionIfMissing( this string outputFileName, string outputFileExtension )
         {
             if ( !outputFileName.IsNullOrEmpty() )
             {
-                if ( !outputFileName.EndsWith( _Settings.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
+                if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
                 {
-                    if ( _Settings.OutputFileExtension.HasFirstCharNotDot() )
+                    if ( outputFileExtension.HasFirstCharNotDot() )
                     {
                         outputFileName += '.';
                     }
-                    outputFileName += _Settings.OutputFileExtension;
+                    outputFileName += outputFileExtension;
                 }
             }
             return (outputFileName);
@@ -45,18 +41,18 @@ namespace m3u8.download.manager.ui
             return (null);
         }
 
-        public static bool TryGetOutputFileNameByUrl( string m3u8FileUrlText, out string outputFileName )
+        public static bool TryGetOutputFileNameByUrl( string m3u8FileUrlText, string outputFileExtension, out string outputFileName )
         {
             try
             {
-                var m3u8FileUrl = new Uri( m3u8FileUrlText );
+                var m3u8FileUrl         = new Uri( m3u8FileUrlText );
                 var inputOutputFileName = Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath );
 
                 var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
                 if ( !fn.IsNullOrWhiteSpace() )
                 {
                     outputFileName = NameCleaner.Clean( fn )
-                                                .AddOutputFileExtensionIfMissing();
+                                                .AddOutputFileExtensionIfMissing( outputFileExtension );
                     return (!outputFileName.IsNullOrWhiteSpace());
                 }
             }
@@ -68,7 +64,7 @@ namespace m3u8.download.manager.ui
             outputFileName = default;
             return (false);
         }
-        public static async Task< string > SetOutputFileNameByUrl_Async( string m3u8FileUrlText, Action< string > setOutputFileNameAction, int millisecondsDelay )
+        public static async Task< string > SetOutputFileNameByUrl_Async( string m3u8FileUrlText, string outputFileExtension, Action< string > setOutputFileNameAction, int millisecondsDelay )
         {
             setOutputFileNameAction( null );
             try
@@ -84,7 +80,7 @@ namespace m3u8.download.manager.ui
                     fn = NameCleaner.Clean( fn );
                     setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
 
-                    fn = AddOutputFileExtensionIfMissing( fn );
+                    fn = AddOutputFileExtensionIfMissing( fn, outputFileExtension );
                     setOutputFileNameAction( fn );
 
                     return (fn);
@@ -97,14 +93,14 @@ namespace m3u8.download.manager.ui
             return (null);
         }
 
-        public static string GetOutputFileName( string inputOutputFileName, char? skipChar = null ) => (TryGetOutputFileName( inputOutputFileName, out string outputFileName, skipChar ) ? outputFileName : null);
-        public static bool TryGetOutputFileName( string inputOutputFileName, out string outputFileName, char? skipChar = null )
+        public static string GetOutputFileName( string inputOutputFileName, string outputFileExtension, char? skipChar = null ) => (TryGetOutputFileName( inputOutputFileName, outputFileExtension, out string outputFileName, skipChar ) ? outputFileName : null);
+        public static bool TryGetOutputFileName( string inputOutputFileName, string outputFileExtension, out string outputFileName, char? skipChar = null )
         {
             var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName, skipChar: skipChar );
             if ( !fn.IsNullOrWhiteSpace() )
             {
                 outputFileName = fn.GetFileName_NoThrow()
-                                   .AddOutputFileExtensionIfMissing();
+                                   .AddOutputFileExtensionIfMissing( outputFileExtension );
                 return (!outputFileName.IsNullOrWhiteSpace());
             }
             outputFileName = default;

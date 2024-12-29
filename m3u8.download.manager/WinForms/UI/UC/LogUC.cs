@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.models;
+using m3u8.download.manager.Properties;
 
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
 using CellStyle                   = System.Windows.Forms.DataGridViewCellStyle;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -57,10 +61,12 @@ namespace m3u8.download.manager.ui
         private bool _WasAdjustColumnsWidthSprain; //_VScrollBarVisible;
 
         private LogRowsHeightStorer _LogRowsHeightStorer;
+        private Settings _Settings;
+        private int _AttemptRequestCount;
         #endregion
 
         #region [.ctor().]
-        public LogUC()
+        private LogUC()
         {
             InitializeComponent();
             //----------------------------------------------//
@@ -123,7 +129,12 @@ namespace m3u8.download.manager.ui
             _ContextMenu.Items.Add( _ShowOnlyRequestRowsWithErrorsMenuItem );
             _ContextMenu.Items.Add( _ScrollToLastRowMenuItem );
         }
-
+        public LogUC( _SC_ sc ) : this()
+        {
+            _Settings = sc.Settings; //Settings.Default;
+            _Settings.PropertyChanged += _Settings_PropertyChanged;
+            _AttemptRequestCount = _Settings.AttemptRequestCountByPart;
+        }
         protected override void Dispose( bool disposing )
         {
             if ( disposing )
@@ -133,8 +144,17 @@ namespace m3u8.download.manager.ui
                 _SF.Dispose();
                 DetachLogRowsHeightStorer();
                 DetachModel();
+                if ( _Settings != null ) _Settings.PropertyChanged -= _Settings_PropertyChanged;
             }
             base.Dispose( disposing );
+        }
+
+        private void _Settings_PropertyChanged( object sender, PropertyChangedEventArgs e )
+        {
+            if ( e.PropertyName == nameof(Settings.AttemptRequestCountByPart) )
+            {
+                _AttemptRequestCount = _Settings.AttemptRequestCountByPart;
+            }
         }
         #endregion
 
@@ -167,7 +187,7 @@ namespace m3u8.download.manager.ui
         public bool ShowResponseColumn
         {
             get => DGV_responseColumn.Visible;
-            set => DGV_responseColumn.Visible = value;
+            set => DGV_responseColumn.Visible = DGV_requestAttemptCountColumn.Visible = value;
         }
 
         public bool IsVerticalScrollBarVisible => (DGV.Controls.OfType< VScrollBar >().FirstOrDefault()?.Visible).GetValueOrDefault();
@@ -552,6 +572,32 @@ namespace m3u8.download.manager.ui
                 var w = (DGV.Width - GetColumnsResizeDiff());
                 if ( this.ShowResponseColumn )
                 {
+                    DataGridViewColumn col_1, col_2, col_3;
+                    if ( e.Column == DGV_responseColumn )
+                    {
+                        col_1 = DGV_responseColumn;
+                        col_2 = DGV_requestColumn;
+                        col_3 = DGV_requestAttemptCountColumn;
+                    }
+                    else if ( e.Column == DGV_requestAttemptCountColumn )
+                    {
+                        col_1 = DGV_requestAttemptCountColumn;
+                        col_2 = DGV_requestColumn;
+                        col_3 = DGV_responseColumn;                        
+                    }
+                    else //if ( e.Column == DGV_requestColumn )
+                    {
+                        col_1 = DGV_requestColumn;
+                        col_2 = DGV_responseColumn;
+                        col_3 = DGV_requestAttemptCountColumn;
+                    }
+
+                    var rw = w - col_1.Width;
+                    var cw = 1.0 * (col_2.Width + col_3.Width);
+                    col_2.Width = (int) (rw / (cw / Math.Max( 1, col_2.Width )));
+                    col_3.Width = (int) (rw / (cw / Math.Max( 1, col_3.Width )));
+
+                    /*
                     DataGridViewColumn col_1, col_2;
                     if ( e.Column == DGV_responseColumn )
                     {
@@ -574,6 +620,7 @@ namespace m3u8.download.manager.ui
                         col_2.Width = col_2.MinimumWidth;
                         col_1.Width = w - col_2.Width;
                     }
+                    //*/
                 }
                 else
                 {
@@ -597,22 +644,23 @@ namespace m3u8.download.manager.ui
             DGV.ColumnWidthChanged -= DGV_ColumnWidthChanged;
             //try
             //{
-                var w  = (DGV.Width - GetColumnsResizeDiff());
-                if ( this.ShowResponseColumn )
-                {
-                    var cw = 1.0 * (DGV_requestColumn.Width + DGV_responseColumn.Width);
-                    DGV_requestColumn .Width = (int) (w / (cw / Math.Max( 1, DGV_requestColumn .Width )));
-                    DGV_responseColumn.Width = (int) (w / (cw / Math.Max( 1, DGV_responseColumn.Width )));
-                }
-                else
-                {
-                    DGV_requestColumn.Width = w;
-                }
+            var w  = (DGV.Width - GetColumnsResizeDiff());
+            if ( this.ShowResponseColumn )
+            {
+                var cw = 1.0 * (DGV_requestColumn.Width + DGV_responseColumn.Width + DGV_requestAttemptCountColumn.Width);
+                DGV_requestColumn            .Width = (int) (w / (cw / Math.Max( 1, DGV_requestColumn .Width )));
+                DGV_responseColumn           .Width = (int) (w / (cw / Math.Max( 1, DGV_responseColumn.Width )));
+                DGV_requestAttemptCountColumn.Width = (int) (w / (cw / Math.Max( 1, DGV_requestAttemptCountColumn.Width )));
+            }
+            else
+            {
+                DGV_requestColumn.Width = w;
+            }
 
-                if ( sender != null )
-                {
-                    AdjustRowsHeight();
-                }
+            if ( sender != null )
+            {
+                AdjustRowsHeight();
+            }
             //}
             //finally
             //{ 
@@ -645,7 +693,7 @@ namespace m3u8.download.manager.ui
                         case RequestRowTypeEnum.Error        : e.Value = GetError_4_RequestColumn__text( row.RequestText ); break;
                         case RequestRowTypeEnum.RequestHeader: e.Value = Get_4_RequestHeaderColumn__text( row.RequestText ); break;
                     }
-                break;
+                    break;
 
                 case 1: //Response
                     switch ( row.RequestRowType )
@@ -655,7 +703,15 @@ namespace m3u8.download.manager.ui
                         case RequestRowTypeEnum.Error        : e.Value = GetError_4_ResponseColumn__text( row.ResponseText ); break;
                         case RequestRowTypeEnum.RequestHeader: e.Value = Get_4_RequestHeaderColumn__text( row.ResponseText ); break;
                     }
-                break;
+                    break;
+
+                case 2: //Request attempt count
+                    var arn = row.AttemptRequestNumber.GetValueOrDefault( 0 );
+                    if ( 0 < arn )
+                    {
+                        e.Value = ((1 < arn) && (0 < _AttemptRequestCount)) ? $"{arn} of {_AttemptRequestCount}" : arn.ToString();
+                    }
+                    break;
             }
         }
         private void DGV_CellFormatting( object sender, DataGridViewCellFormattingEventArgs e )
@@ -673,7 +729,7 @@ namespace m3u8.download.manager.ui
                         case RequestRowTypeEnum.RequestHeader: cs = Get_4_RequestHeaderColumn__cellStyle( row.RequestText ); break;
                         default: cs = null; break;
                     }
-                break;
+                    break;
 
                 case 1: //Response
                     switch ( row.RequestRowType )
@@ -684,7 +740,26 @@ namespace m3u8.download.manager.ui
                         case RequestRowTypeEnum.RequestHeader: cs = Get_4_RequestHeaderColumn__cellStyle( row.ResponseText ); break;
                         default: cs = null; break;
                     }
-                break;
+                    break;
+
+                case 2: //Request attempt count
+                    if ( row.AttemptRequestNumber.HasValue )
+                    {
+                        var arn = row.AttemptRequestNumber.ToString();
+                        switch ( row.RequestRowType )
+                        {
+                            case RequestRowTypeEnum.None         : cs = Get_4_RequestColumn__cellStyle( arn ); break;
+                            case RequestRowTypeEnum.Success      : cs = _Rsp_ReceivedCellStyle; break;
+                            case RequestRowTypeEnum.Error        : cs = GetError_4_ResponseColumn__cellStyle( arn ); break;
+                            case RequestRowTypeEnum.RequestHeader: cs = Get_4_RequestHeaderColumn__cellStyle( arn ); break;
+                            default: cs = null; break;
+                        }
+                    }
+                    else
+                    {
+                        cs = null;
+                    }
+                    break;
 
                 default: cs = null; break;
             }
@@ -729,9 +804,10 @@ namespace m3u8.download.manager.ui
 
                 if ( this.ShowResponseColumn )
                 {
-                    MeasureCellText( gr, row, 1, e.RowIndex, out var sz_1 );
+                    MeasureCellText( gr, row, columnIndex: 1, e.RowIndex, out var sz_1 );
+                    MeasureCellText( gr, row, columnIndex: 2, e.RowIndex, out var sz_2 );
 
-                    row.Height = (int) Math.Max( sz_0.Height, sz_1.Height );
+                    row.Height = (int) Math.Max( Math.Max( sz_0.Height, sz_1.Height ), sz_2.Height );
                 }
                 else
                 {
@@ -739,6 +815,8 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+
+        private void DGV_DataError( object sender, DataGridViewDataErrorEventArgs e ) => Debug.WriteLine( $"{nameof( DGV_DataError )}::'{e.Context}'; [row={e.RowIndex}:col={e.ColumnIndex}] => '{e.Exception}'" );
 
         [M(O.AggressiveInlining)] private void MeasureCellText( Graphics gr, DataGridViewRow row, int columnIndex, int rowIndex, out SizeF sz )
         {

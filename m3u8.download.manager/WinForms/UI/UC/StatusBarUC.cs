@@ -28,10 +28,14 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
-        public StatusBarUC()
+        public StatusBarUC( _DC_ dc, _SC_ sc )
         {
             InitializeComponent();
             //----------------------------------------//
+
+            _DC = dc ?? throw (new ArgumentNullException( nameof(dc) ));
+            _SC = sc ?? throw (new ArgumentNullException( nameof(sc) ));
+            _SC.SettingsPropertyChanged += SettingsController_PropertyChanged;
 
             //LeftSideTextLabelText = null;
             parallelismLabel_set();
@@ -44,36 +48,16 @@ namespace m3u8.download.manager.ui
             if ( disposing )
             {
                 components?.Dispose();
-                _DetachSettingsControllerAction?.Invoke();
                 _DetachTrackItemsCountAction?.Invoke();
                 _C2CTProcessor.Dispose();
+                _SC.SettingsPropertyChanged -= SettingsController_PropertyChanged;
             }
             base.Dispose( disposing );
         }
         #endregion
 
         #region [.public.]
-        private Settings GetSettings() => (_SC?.Settings ?? Settings.Default);
-
-        public void SetDownloadController( _DC_ dc ) => _DC = dc;
-        private Action _DetachSettingsControllerAction;
-        public void SetSettingsController( _SC_ sc )
-        {
-            _DetachSettingsControllerAction?.Invoke();
-
-            _SC = sc ?? throw (new ArgumentNullException( nameof(sc) ));
-            _SC.SettingsPropertyChanged -= SettingsController_PropertyChanged;
-            _SC.SettingsPropertyChanged += SettingsController_PropertyChanged;
-
-            _DetachSettingsControllerAction = () =>
-            {
-                if ( _SC != null )
-                {
-                    _SC.SettingsPropertyChanged -= SettingsController_PropertyChanged;
-                    _SC = null;
-                }
-            };
-        }
+        private Settings GetSettings() => _SC.Settings;
 
         #region [.TrackItemsCount.]
         private Action _DetachTrackItemsCountAction;
@@ -133,7 +117,7 @@ namespace m3u8.download.manager.ui
 
         public void ShowDialog_ColumnsVisibilityEditor( IEnumerable< DataGridViewColumn > dataGridColumns, IEnumerable< DataGridViewColumn > immutableDataGridColumns )
         {
-            using var f = new ColumnsVisibilityEditor( dataGridColumns, immutableDataGridColumns );
+            using ( var f = new ColumnsVisibilityEditor( dataGridColumns, immutableDataGridColumns ) )
             {
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
@@ -192,16 +176,8 @@ namespace m3u8.download.manager.ui
                     st.ExternalProgApplyByDefault             = f.Other.ExternalProgApplyByDefault;
                     st.UseDirectorySelectDialogModern         = f.Other.UseDirectorySelectDialogModern;
                     st.UniqueUrlsOnly                         = f.Other.UniqueUrlsOnly;
-                    
-                    if ( _SC == null )
-                    {
-                        parallelismLabel_set();
-                        settingsLabel_set();
-                    }
-                    else
-                    {
-                        _SC.SaveNoThrow_IfAnyChanged();
-                    }
+
+                    _SC.SaveNoThrow_IfAnyChanged();
 
                     SettingsChanged?.Invoke( this, EventArgs.Empty );
                 }

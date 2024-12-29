@@ -3,6 +3,7 @@ using System.ComponentModel;
 
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
+using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
 
 namespace m3u8.download.manager
@@ -12,9 +13,9 @@ namespace m3u8.download.manager
     /// </summary>
     internal sealed class MainVM : IDisposable, INotifyPropertyChanged
     {
-        public MainVM( MainWindow mainWindow )
+        public MainVM( MainWindow mainWindow, Settings settings )
         {
-            SettingsController = new SettingsPropertyChangeController();
+            SettingsController = new SettingsPropertyChangeController( settings );
 
             DownloadListModel  = new DownloadListModel();
             DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;

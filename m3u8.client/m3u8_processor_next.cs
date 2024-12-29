@@ -42,9 +42,9 @@ namespace m3u8
         public m3u8_client_next( HttpClient httpClient, in init_params ip )
         {
             _HttpClient = httpClient ?? throw (new ArgumentNullException( nameof( httpClient ) ));
-            InitParams = ip;
-            _ConnectionClose = ip.ConnectionClose;
-            _AttemptRequestCount = ip.AttemptRequestCount.GetValueOrDefault( 1 );
+            InitParams  = ip;
+            _ConnectionClose      = ip.ConnectionClose;
+            _AttemptRequestCount  = ip.AttemptRequestCount.GetValueOrDefault( 1 );
             _HttpCompletionOption = ip.HttpCompletionOption.GetValueOrDefault( HttpCompletionOption.ResponseHeadersRead );
 
         }
@@ -180,11 +180,12 @@ namespace m3u8
         public struct DownloadPartStepActionParams
         {
             public DownloadPartStepActionParams( in m3u8_part_ts__v2 part ) => Part = part;
-            public m3u8_part_ts__v2 Part      { get; init; }
-            public long?   TotalContentLength { get; internal set; }
-            public long    TotalBytesReaded   { get; internal set; }            
-            public int     BytesReaded        { get; internal set; }
-            public double? InstantSpeedInMbps { get; internal set; }
+            public m3u8_part_ts__v2 Part        { get; init; }
+            public long?   TotalContentLength   { get; internal set; }
+            public long    TotalBytesReaded     { get; internal set; }            
+            public int     BytesReaded          { get; internal set; }
+            public double? InstantSpeedInMbps   { get; internal set; }
+            public int     AttemptRequestNumber { get; internal set; }
         }
         /// <summary>
         /// 
@@ -268,15 +269,21 @@ namespace m3u8
                                 }
                                 if ( bytesReaded == 0 )
                                     break;
-
+/*
+if ( (new Random()).Next( 10 ) == 0 )
+{
+    throw new Exception( "(new Random()).Next( 10 ) == 0" );
+}
+*/
                                 await part.Stream.WriteAsync( buf, 0, bytesReaded, ct ).CAX();
                                 totalBytesReaded += bytesReaded;
 
                                 ip.ThrottlerBySpeed_User.TakeIntoAccountDownloadedBytes( bytesReaded );
 
-                                dpsa.InstantSpeedInMbps = instantSpeedInMbps;
-                                dpsa.TotalBytesReaded   = totalBytesReaded;
-                                dpsa.BytesReaded        = bytesReaded;
+                                dpsa.InstantSpeedInMbps   = instantSpeedInMbps;
+                                dpsa.TotalBytesReaded     = totalBytesReaded;
+                                dpsa.BytesReaded          = bytesReaded;
+                                dpsa.AttemptRequestNumber = _AttemptRequestCount - attemptRequestCount + 1;
                                 ip.DownloadPartStepAction?.Invoke( dpsa );
                             }
 

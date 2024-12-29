@@ -1,4 +1,7 @@
-﻿namespace m3u8.download.manager.ui
+﻿using _DC_ = m3u8.download.manager.controllers.DownloadController;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
+namespace m3u8.download.manager.ui
 {
     partial class AddNewDownloadForm
     {
@@ -12,7 +15,7 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
+        private void InitializeComponent( _DC_ dc, _SC_ sc )
         {
             this.components = new System.ComponentModel.Container();
             this.l1 = new System.Windows.Forms.Label();
@@ -29,7 +32,7 @@
             this.outputFileNameSelectButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.outputFileNameClearButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.logPanel = new System.Windows.Forms.Panel();
-            this.logUC = new m3u8.download.manager.ui.LogUC();
+            this.logUC = new m3u8.download.manager.ui.LogUC( sc );
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.outputDirectoryTextBox = new m3u8.download.manager.ui.TextBoxEx();
             this.isLiveStreamCheckBox = new System.Windows.Forms.CheckBox();
@@ -42,7 +45,7 @@
             this.buttomPanel = new System.Windows.Forms.Panel();
             this.downloadStartButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.downloadLaterButton = new System.Windows.Forms.ButtonWithFocusCues();
-            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC();
+            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC( dc, sc );
             this.topPanel.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.mainTabPage.SuspendLayout();

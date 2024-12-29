@@ -24,7 +24,7 @@ namespace m3u8.download.manager.ui
             using ( var f = new ChangeOutputFileForm( row, sc ) )
             {
                 if ( (f.ShowDialog( owner ) == DialogResult.OK) &&
-                     FileNameCleaner4UI.TryGetOutputFileName( f.OutputFileName, out outputFileName )
+                     FileNameCleaner4UI.TryGetOutputFileName( f.OutputFileName, sc.Settings.OutputFileExtension, out outputFileName )
                    )
                 {
                     return (true);
@@ -103,7 +103,7 @@ namespace m3u8.download.manager.ui
 
             if ( DialogResult == DialogResult.OK )
             {
-                var fn = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName );
+                var fn = FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _SC.Settings.OutputFileExtension );
                 if ( fn.IsNullOrWhiteSpace() || (Path.GetExtension( fn ) == fn) )
                 {
                     e.Cancel = true;
