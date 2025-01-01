@@ -55,7 +55,7 @@ workInfoType.prototype = {
     addM3u8Urls: async function (tabId, m3u8_url, requestHeaders) {
         let o = this.tabs[tabId], need_save = true;
         if (!o) {
-            o = this.tabs[tabId] = { m3u8_urls: [m3u8_url], requestHeaders: { m3u8_url: requestHeaders } };
+            o = this.tabs[tabId] = { m3u8_urls: [m3u8_url], requestHeaders: { [m3u8_url]: requestHeaders } };
         }
         else if (!o.m3u8_urls) {
             o.m3u8_urls = [m3u8_url];

@@ -114,7 +114,7 @@ window.workInfoType.prototype = {
         if ((tabId !== undefined) && m3u8_url) {
             let o = this.tabs[tabId];
             if (!o) {
-                o = this.tabs[tabId] = { m3u8_urls: [m3u8_url], requestHeaders: { m3u8_url: requestHeaders } };
+                o = this.tabs[tabId] = { m3u8_urls: [m3u8_url], requestHeaders: { [m3u8_url]: requestHeaders } };
             }
             else if (!o.m3u8_urls) {
                 o.m3u8_urls = [m3u8_url];
