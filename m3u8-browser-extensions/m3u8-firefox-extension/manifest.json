@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name"       : "m3u8 file downloader (manifest.v2)",
   "description": "m3u8 file downloader firefox extension (manifest.v2).",
-  "version"    : "1.7",
+  "version"    : "1.8",
   "icons": {
     "32" : "img/m3u8.png",
     "128": "img/m3u8_128.png"
