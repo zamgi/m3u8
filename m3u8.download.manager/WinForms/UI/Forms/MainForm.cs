@@ -1428,13 +1428,12 @@ namespace m3u8.download.manager.ui
         {
             if ( DirectorySelectDialog.Show( this, _SC.Settings.UseDirectorySelectDialogModern, GetSelectedDirectory( row ), $"Select output directory for file: '{row.OutputFileName}'", out var outputDirectory ) )
             {
-                _Last_ChangeOutputDirectory = outputDirectory;
+                _SC.Settings.LastChangeOutputDirectory = outputDirectory;
                 ChangeOutputDirectory( row, outputDirectory );
                 downloadListUC.Invalidate( true );
             }
         }
 
-        private string _Last_ChangeOutputDirectory;
         private void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
         {
             var rows = downloadListUC.GetSelectedDownloadRows();
@@ -1444,7 +1443,7 @@ namespace m3u8.download.manager.ui
                 var descr = (rows.Count == 1) ? $"Select output directory for file: '{first_row.OutputFileName}'" : $"Select output directory for {rows.Count} files";
                 if ( DirectorySelectDialog.Show( this, _SC.Settings.UseDirectorySelectDialogModern, GetSelectedDirectory( first_row ), descr, out var outputDirectory ) )
                 {
-                    _Last_ChangeOutputDirectory = outputDirectory;
+                    _SC.Settings.LastChangeOutputDirectory = outputDirectory;
                     foreach ( var row in rows )
                     {
                         ChangeOutputDirectory( row, outputDirectory );
@@ -1453,7 +1452,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _Last_ChangeOutputDirectory ) ?? row.OutputDirectory;
+        private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _SC.Settings.LastChangeOutputDirectory ) ?? row.OutputDirectory;
 
         private void ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
         private void ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );

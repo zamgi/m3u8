@@ -126,7 +126,9 @@
     <Setting Name="ShowAllDownloadsCompleted_Notification" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-
     <Setting Name="LogUC_RowDefinition_Height" Type="System.Nullable&lt;System.Double&gt;" Scope="User" />
+    <Setting Name="LastChangeOutputDirectory" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

@@ -1239,7 +1239,6 @@ namespace m3u8.download.manager.ui
             #endregion
         }
 
-        private string _Last_ChangeOutputDirectory;
         private async void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
         {
             var rows = downloadListUC.GetSelectedDownloadRows();
@@ -1258,7 +1257,7 @@ namespace m3u8.download.manager.ui
                     var outputDirectory = sf[ 0 ].Path.LocalPath.ToString();
                     if ( !outputDirectory.IsNullOrWhiteSpace() )
                     {
-                        _Last_ChangeOutputDirectory = outputDirectory;
+                        _VM.SettingsController.Settings.LastChangeOutputDirectory = outputDirectory;
                         foreach ( var row in rows )
                         {
                             await ChangeOutputDirectory( row, outputDirectory );
@@ -1282,7 +1281,7 @@ namespace m3u8.download.manager.ui
                 #endregion
             }
         }
-        private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _Last_ChangeOutputDirectory ) ?? row.OutputDirectory;
+        private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _VM.SettingsController.Settings.LastChangeOutputDirectory ) ?? row.OutputDirectory;
         private Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
         private Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
         private async Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
