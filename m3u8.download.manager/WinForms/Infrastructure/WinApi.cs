@@ -59,11 +59,6 @@ namespace m3u8.download.manager.ui
         //*/
         #endregion
 
-        #region [..]
-        [DllImport(USER32_DLL)][return:MarshalAs(UnmanagedType.Bool)] private static extern bool ClipCursor( IntPtr lpRect );
-        public static bool RemoveClipCursor() => ClipCursor( IntPtr.Zero );
-        #endregion
-
         #region [.SetForceForegroundWindow.]
         [ DllImport(USER32_DLL)] public static extern IntPtr GetForegroundWindow(); 
         [DllImport(USER32_DLL)] private static extern uint GetWindowThreadProcessId( IntPtr hWnd, IntPtr processId );
@@ -178,6 +173,11 @@ namespace m3u8.download.manager.ui
             error = Marshal.GetExceptionForHR( hr );
             return (false);
         }
+        #endregion
+
+        #region [.ClipCursor.]
+        [DllImport(USER32_DLL)][return:MarshalAs(UnmanagedType.Bool)] private static extern bool ClipCursor( IntPtr lpRect );
+        public static bool RemoveClipCursor() => ClipCursor( IntPtr.Zero );
         #endregion
     }
 }
