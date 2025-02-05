@@ -21,9 +21,9 @@
 
   <PropertyGroup>
     <ServerGarbageCollection>true</ServerGarbageCollection>
-    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
-    <!--<RetainVMGarbageCollection>true</RetainVMGarbageCollection>-->
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>    
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <!--<RetainVMGarbageCollection>true</RetainVMGarbageCollection>-->
   </PropertyGroup>
   
   <PropertyGroup>
@@ -58,6 +58,8 @@
     <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
     <Compile Include="..\[Common]\Controller\Sync_primitives.cs" Link="Controller\Sync_primitives.cs" />
     <Compile Include="..\[Common]\Extensions.cs" Link="Infrastructure\Extensions.cs" />
+    <Compile Include="..\[Common]\UndoModel.cs" Link="Model\UndoModel.cs" />
+    <Compile Include="..\[Common]\UrlHelper.cs" Link="Infrastructure\UrlHelper.cs" />
   </ItemGroup>
 
   <ItemGroup>

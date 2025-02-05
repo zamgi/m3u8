@@ -114,12 +114,12 @@ namespace System.Windows.Forms.Taskbar
 
                 if ( typeof(T) != ValueType )
                 {
-                    throw new NotSupportedException( $"LocalizedMessages.ShellPropertyWrongType: '{ValueType.Name}'." );
+                    throw (new NotSupportedException( $"LocalizedMessages.ShellPropertyWrongType: '{ValueType.Name}'." ));
                 }
 
-                if ( value is Nullable )
+                if ( typeof(T).IsGenericType && (typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>)) /*value is Nullable*/ )
                 {
-                    var t = typeof(T);
+                    var t  = typeof(T);
                     var pi = t.GetProperty( "HasValue" );
                     if ( pi != null )
                     {

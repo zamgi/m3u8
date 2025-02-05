@@ -342,12 +342,12 @@ namespace System.Windows.Forms.Taskbar
             return (false);
         }
 
-        private static bool DispatchLivePreviewBitmapMessage( ref System.Windows.Forms.Message m, TaskbarWindow taskbarWindow )
+        private static bool DispatchLivePreviewBitmapMessage( ref Message m, TaskbarWindow taskbarWindow )
         {
             if ( m.Msg == (int) TaskbarNativeMethods.WmDwmSendIconicLivePreviewBitmap )
             {
                 // Try to get the width/height
-                var width = (int) (((long) m.LParam) >> 16);
+                var width  = (int) (((long) m.LParam) >> 16);
                 var height = (int) (((long) m.LParam) & (0xFFFF));
 
                 // Default size for the thumbnail
@@ -381,14 +381,14 @@ namespace System.Windows.Forms.Taskbar
 
                 // capture the bitmap for the given control
                 // If the user has already specified us a bitmap to use, use that.
-                var hBitmap = taskbarWindow.TabbedThumbnail.CurrentHBitmap == IntPtr.Zero ? GrabBitmap( taskbarWindow, realWindowSize ) : taskbarWindow.TabbedThumbnail.CurrentHBitmap;
+                var hBitmap = (taskbarWindow.TabbedThumbnail.CurrentHBitmap == IntPtr.Zero) ? GrabBitmap( taskbarWindow, realWindowSize ) : taskbarWindow.TabbedThumbnail.CurrentHBitmap;
 
                 // If we have a valid parent window handle,
                 // calculate the offset so we can place the "peek" bitmap
                 // correctly on the app window
-                if ( taskbarWindow.TabbedThumbnail.ParentWindowHandle != IntPtr.Zero && taskbarWindow.TabbedThumbnail.WindowHandle != IntPtr.Zero )
+                if ( (taskbarWindow.TabbedThumbnail.ParentWindowHandle != IntPtr.Zero) && (taskbarWindow.TabbedThumbnail.WindowHandle != IntPtr.Zero) )
                 {
-                    var offset = new System.Drawing.Point();
+                    var offset = new Point();
 #if WPF
                     // if we don't have a offset specified already by the user...
                     if ( !taskbarWindow.TabbedThumbnail.PeekOffset.HasValue )
@@ -485,7 +485,7 @@ namespace System.Windows.Forms.Taskbar
                     // Only set the peek bitmap if it's not null. 
                     // If it's null (either we didn't get the bitmap or size was 0),
                     // let DWM handle it
-                    if ( hBitmap != null )
+                    if ( hBitmap != IntPtr.Zero/*!= null*/ )
                     {
                         TabbedThumbnailNativeMethods.SetPeekBitmap( taskbarWindow.WindowToTellTaskbarAbout, hBitmap, taskbarWindow.TabbedThumbnail.DisplayFrameAroundBitmap );
                     }

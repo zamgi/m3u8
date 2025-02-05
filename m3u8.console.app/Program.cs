@@ -586,14 +586,11 @@ namespace m3u8
 #if NETCOREAPP
                 Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
 #endif
+#if !(NETCOREAPP)
                 #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
-#if NETCOREAPP
-                ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13);
-#else
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13 | SecurityProtocolType.Ssl3);
-#endif
                 #endregion
-
+#endif
                 var M3U8_FILE_URL   = ConfigurationManager.AppSettings[ "M3U8_FILE_URL"   ]; if ( M3U8_FILE_URL  .IsNullOrWhiteSpace() ) throw (new ArgumentNullException( nameof(M3U8_FILE_URL) ));
                 var OUTPUT_FILE_DIR = ConfigurationManager.AppSettings[ "OUTPUT_FILE_DIR" ]; if ( OUTPUT_FILE_DIR.IsNullOrWhiteSpace() ) OUTPUT_FILE_DIR = @"E:\\";
                 var OUTPUT_FILE_EXT = ConfigurationManager.AppSettings[ "OUTPUT_FILE_EXT" ]; if ( OUTPUT_FILE_EXT.IsNullOrWhiteSpace() ) OUTPUT_FILE_EXT = ".avi";
@@ -762,9 +759,12 @@ namespace m3u8
     /// </summary>
     internal struct DefaultConnectionLimitSaver : IDisposable
     {
+#if !(NETCOREAPP)
         private readonly int _DefaultConnectionLimit;
+#endif        
         private DefaultConnectionLimitSaver( int connectionLimit )
         {
+#if !(NETCOREAPP)
             if ( ServicePointManager.DefaultConnectionLimit < connectionLimit )
             {
                 _DefaultConnectionLimit = ServicePointManager.DefaultConnectionLimit;
@@ -774,13 +774,16 @@ namespace m3u8
             {
                 _DefaultConnectionLimit = -1;
             }
+#endif
         }        
         public void Dispose()
         {
+#if !(NETCOREAPP)
             if ( 0 < _DefaultConnectionLimit )
             {
                 ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
             }
+#endif
         }
 
         public static DefaultConnectionLimitSaver Create( int connectionLimit ) => new DefaultConnectionLimitSaver( connectionLimit );

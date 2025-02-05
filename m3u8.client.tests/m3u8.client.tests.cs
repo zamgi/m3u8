@@ -2,15 +2,16 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Security;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.Configuration;
 using Xunit;
+
 using m3u8.infrastructure;
-using System.Net.Security;
-using System.Net;
-using System.Security.Authentication;
 
 namespace m3u8.client.tests
 {

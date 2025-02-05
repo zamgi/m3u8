@@ -1,6 +1,4 @@
-﻿using System.Drawing;
-using System.Runtime.InteropServices;
-#if WPF
+﻿#if WPF
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 #endif
@@ -16,15 +14,14 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Internal member to keep track of the current size</summary>
         private System.Windows.Size currentSize = new System.Windows.Size( 256, 256 );
 
-#endif
         private ShellThumbnailFormatOption formatOption = ShellThumbnailFormatOption.Default;
-
+#endif
         /// <summary>Internal constructor that takes in a parent ShellObject.</summary>
         internal ShellThumbnail( ShellObject shellObject )
         {
             if ( shellObject == null || shellObject.NativeShellItem == null )
             {
-                throw new ArgumentNullException( "shellObject" );
+                throw (new ArgumentNullException( "shellObject" ));
             }
 
             shellItemNative = shellObject.NativeShellItem;

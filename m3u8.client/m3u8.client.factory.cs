@@ -5,14 +5,10 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Runtime.InteropServices;
 using System.Security.Authentication;
-
-
 
 #if NETCOREAPP
 using System.Net.Security;
-using System.Security.Authentication;
 #endif
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;

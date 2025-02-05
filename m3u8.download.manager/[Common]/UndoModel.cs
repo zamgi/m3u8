@@ -25,10 +25,7 @@ namespace m3u8.download.manager.models
         }
 
         public event Action UndoChanged;
-        //private void Fire_UndoChanged( bool suc )
-        //{
-        //    if ( suc ) UndoChanged?.Invoke();
-        //}
+        [M(O.AggressiveInlining)] private void Fire_UndoChanged() => UndoChanged?.Invoke();
 
         public void Dispose()
         {
@@ -41,19 +38,19 @@ namespace m3u8.download.manager.models
             switch ( changedType )
             {
                 case _CollectionChangedTypeEnum_.Remove:
-                    if ( _UndoList.AddIf( row ) ) UndoChanged?.Invoke();
+                    if ( _UndoList.AddIf( row ) ) Fire_UndoChanged();
                     break;
 
                 //case _CollectionChangedTypeEnum_.BulkUpdate:
                 case _CollectionChangedTypeEnum_.Remove_Bulk:
                     var existsRows = _DownloadListModel.GetRows();
                     var undoRows   = _ShadowRowsModel.GetRows().Except( existsRows ).ToList();
-                    if ( _UndoList.Add( undoRows ) ) UndoChanged?.Invoke();
+                    if ( _UndoList.Add( undoRows ) ) Fire_UndoChanged();
                     _ShadowRowsModel.RemoveRows( undoRows );
                     break;
 
                 case _CollectionChangedTypeEnum_.Clear:
-                    if ( _UndoList.Replace( _ShadowRowsModel.GetRows() ) ) UndoChanged?.Invoke();
+                    if ( _UndoList.Replace( _ShadowRowsModel.GetRows() ) ) Fire_UndoChanged();
                     _ShadowRowsModel.Clear();
                     break;
 
@@ -73,7 +70,7 @@ namespace m3u8.download.manager.models
         {
             if ( _UndoList.TryDequeue( out row ) )
             {
-                UndoChanged?.Invoke();
+                Fire_UndoChanged();
                 return (true);
             }
             return (false);
@@ -83,7 +80,7 @@ namespace m3u8.download.manager.models
             if ( 0 < _UndoList.Count )
             {
                 row = _UndoList.Dequeue();
-                UndoChanged?.Invoke();
+                Fire_UndoChanged();
                 return (true);
             }
             row = null; 

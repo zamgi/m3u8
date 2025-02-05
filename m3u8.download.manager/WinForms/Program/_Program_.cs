@@ -105,10 +105,11 @@ namespace m3u8.download.manager
                     // Copy user settings from previous application version if necessary
                     Settings.Default.UpgradeIfNeed();
                     #endregion
-
+#if !(NETCOREAPP)
                     #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
                     Set_SecurityProtocols();
                     #endregion
+#endif
 #if NETCOREAPP
                     Application.SetHighDpiMode( HighDpiMode.SystemAware ); 
 #endif
@@ -136,15 +137,9 @@ namespace m3u8.download.manager
             }
         }
 
+#if !(NETCOREAPP)
         private static void Set_SecurityProtocols()
         {
-            #region comm. other vers.
-            //set_SecurityProtocol( SecurityProtocolType.Tls   );
-            //set_SecurityProtocol( SecurityProtocolType.Tls11 );
-            //set_SecurityProtocol( SecurityProtocolType.Tls12 );
-            //set_SecurityProtocol( SecurityProtocolType.Tls13 );
-            //set_SecurityProtocol( SecurityProtocolType.Ssl3  );                    
-            #endregion
             foreach ( var spt in Enum.GetValues( typeof(SecurityProtocolType) ).Cast< SecurityProtocolType >() )
             {
                 try
@@ -157,5 +152,6 @@ namespace m3u8.download.manager
                 }
             }
         }
+#endif
     }
 }

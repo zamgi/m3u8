@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Taskbar;
 
@@ -24,7 +25,6 @@ using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.Down
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
-using System.Threading.Tasks;
 
 namespace m3u8.download.manager.ui
 {

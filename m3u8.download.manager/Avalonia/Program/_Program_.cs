@@ -101,9 +101,6 @@ namespace m3u8.download.manager
                     Settings.Default.UpgradeIfNeed();
                     #endregion
 
-                    #region comm. [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Tls13 + Ssl3'.]
-                    /*Set_SecurityProtocols();*/
-                    #endregion
 
                     #region [.register encoding provider.]
                     AdvancedEncodingProvider.Init();
@@ -141,27 +138,5 @@ namespace m3u8.download.manager
                                                                   //.UseSkia()
                                                                   //.UseReactiveUI()
                                                                   ;
-
-        private static void Set_SecurityProtocols()
-        {
-            #region comm. other vers.
-            //set_SecurityProtocol( SecurityProtocolType.Tls   );
-            //set_SecurityProtocol( SecurityProtocolType.Tls11 );
-            //set_SecurityProtocol( SecurityProtocolType.Tls12 );
-            //set_SecurityProtocol( SecurityProtocolType.Tls13 );
-            //set_SecurityProtocol( SecurityProtocolType.Ssl3  );                    
-            #endregion
-            foreach ( var spt in Enum.GetValues( typeof(SecurityProtocolType) ).Cast< SecurityProtocolType >() )
-            {
-                try
-                {
-                    ServicePointManager.SecurityProtocol |= spt;
-                }
-                catch ( Exception ex )
-                {
-                    Debug.WriteLine( ex );
-                }
-            }
-        }
     }
 }

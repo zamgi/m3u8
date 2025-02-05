@@ -139,7 +139,8 @@ namespace m3u8.download.manager.ipc
                         var stdin = Console.OpenStandardInput();
 
                         var lengthBytes = new byte[ 4 ];
-                        stdin.Read( lengthBytes, 0, 4 );
+                        var lengthRead = stdin.Read( lengthBytes, 0, 4 );
+                        Debug.Assert( lengthRead == 4 );
                         var length = BitConverter.ToInt32( lengthBytes, 0 );
 
                         var buffer = new char[ length ];

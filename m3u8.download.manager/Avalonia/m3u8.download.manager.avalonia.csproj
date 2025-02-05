@@ -16,9 +16,9 @@
 
   <PropertyGroup>
     <ServerGarbageCollection>true</ServerGarbageCollection>
-    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
-    <!--<RetainVMGarbageCollection>true</RetainVMGarbageCollection>-->
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>    
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <!--<RetainVMGarbageCollection>true</RetainVMGarbageCollection>-->
   </PropertyGroup>  
   
   <PropertyGroup>

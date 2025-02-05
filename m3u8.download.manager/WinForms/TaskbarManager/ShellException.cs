@@ -1,10 +1,14 @@
 ﻿using System.Runtime.InteropServices;
+#if !(NETCOREAPP)
 using System.Runtime.Serialization;
+#endif
 
 namespace System.Windows.Forms.Taskbar
 {
     /// <summary>An exception thrown when an error occurs while dealing with ShellObjects.</summary>
+#if !(NETCOREAPP)
     [Serializable]
+#endif
     public class ShellException : ExternalException
     {
         /// <summary>Default constructor.</summary>
@@ -33,6 +37,8 @@ namespace System.Windows.Forms.Taskbar
         internal ShellException( HResult result ) : this( (int) result ) { }
 
         internal ShellException( string message, HResult errorCode ) : this( message, (int) errorCode ) { }
+#if !(NETCOREAPP)
         protected ShellException( SerializationInfo info, StreamingContext context ) : base( info, context ) { }
+#endif
     }
 }
