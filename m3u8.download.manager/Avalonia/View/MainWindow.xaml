@@ -50,7 +50,7 @@
             <Image Source="/Resources/menu/control_pause.png" />
           </MenuItem.Header>
         </MenuItem>
-        <MenuItem x:Name="cancelDownloadToolButton" ToolTip.Tip="Cancel download  (Ctrl + Z)" Padding="0" Margin="0,0,5,0">
+        <MenuItem x:Name="cancelDownloadToolButton" ToolTip.Tip="Cancel download  (Ctrl + X)" Padding="0" Margin="0,0,5,0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/control_cancel.png" />
           </MenuItem.Header>
@@ -72,7 +72,14 @@
           <MenuItem.Header>
             <Image Source="/Resources/menu/control_delete_all_finished.png" />
           </MenuItem.Header>
-        </MenuItem>        
+        </MenuItem>
+        <Separator/>
+        
+        <MenuItem x:Name="undoToolButton" IsEnabled="False" ToolTip.Tip="Undo last deleted download  (Ctrl + Z)" Padding="0" Margin="0,0,5,0">
+          <MenuItem.Header>
+            <Image Source="/Resources/menu/undo.png" />
+          </MenuItem.Header>
+        </MenuItem>
         <Separator/>
         
         <MenuItem x:Name="showLogToolButton" ToolTip.Tip="Show/Hide download log" Padding="0" Margin="0,0,5,0">
@@ -165,7 +172,7 @@
             <Image Source="/Resources/contextMenu/pause.png"/>
           </MenuItem.Icon>
         </MenuItem>
-        <MenuItem x:Name="cancelDownloadMenuItem" Header="Cancel      (Ctrl + Z)" HotKey="Ctrl + Z">
+        <MenuItem x:Name="cancelDownloadMenuItem" Header="Cancel      (Ctrl + X)" HotKey="Ctrl + Z">
           <MenuItem.Icon>
             <Image Source="/Resources/contextMenu/cancel.png"/>
           </MenuItem.Icon>

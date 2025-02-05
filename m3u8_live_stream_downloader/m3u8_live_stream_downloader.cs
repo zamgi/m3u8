@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Security;
 using System.Runtime.CompilerServices;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -70,7 +73,7 @@ namespace m3u8
 
             _IP = ip;
 
-            _HttpClient         = ip.HttpClient ?? new HttpClient();
+            _HttpClient         = ip.HttpClient ?? CreateHttpClient();
             _Dispose_HttpClient = (ip.HttpClient == null);
             _PartUrls           = new BlockingCollection< string >();
             _PartUrlsStatus     = new Dictionary< string, PartUrlStatusEnum >();
@@ -363,6 +366,88 @@ namespace m3u8
                 _ThrottlerBySpeed_User.Restart();
             }
             #endregion
+        }
+
+        private static HttpClient CreateHttpClient( in TimeSpan? timeout = null )
+        {
+#if NETCOREAPP
+            SocketsHttpHandler CreateSocketsHttpHandler( in TimeSpan? _timeout )
+            {
+                static void set_Protocol( SslClientAuthenticationOptions sslOptions, SslProtocols protocol )
+                {
+                    try
+                    {
+                        sslOptions.EnabledSslProtocols |= protocol;
+                    }
+                    catch ( Exception ex )
+                    {
+                        Debug.WriteLine( ex );
+                    }
+                };
+
+                var h = new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.All };
+                h.SslOptions.RemoteCertificateValidationCallback = ( sender, certificate, chain, sslPolicyErrors ) => true;
+                //set_Protocol( h.SslOptions, SslProtocols.Tls   );
+                //set_Protocol( h.SslOptions, SslProtocols.Tls11 );
+                set_Protocol( h.SslOptions, SslProtocols.Tls12 );
+                set_Protocol( h.SslOptions, SslProtocols.Tls13 );
+#pragma warning disable CS0618
+                set_Protocol( h.SslOptions, SslProtocols.Ssl2 );
+                set_Protocol( h.SslOptions, SslProtocols.Ssl3 );
+#pragma warning restore CS0618
+                if ( _timeout.HasValue )
+                {
+                    h.ConnectTimeout = _timeout.Value;
+                }
+                return (h);
+            };
+
+            var handler = CreateSocketsHttpHandler( timeout );
+            var httpClient = new HttpClient( handler, true );
+#else
+            HttpClientHandler CreateHttpClientHandler( /*in TimeSpan? _timeout*/ )
+            {
+                static void set_Protocol( HttpClientHandler h, SslProtocols protocol )
+                {
+                    try
+                    {
+                        h.SslProtocols |= protocol;
+                    }
+                    catch ( Exception ex )
+                    {
+                        Debug.WriteLine( ex );
+                    }
+                };
+
+                var h = new HttpClientHandler() 
+                { 
+                    ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true, 
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip 
+                };
+
+                //set_Protocol( h, SslProtocols.Tls   );
+                //set_Protocol( h, SslProtocols.Tls11 );
+                set_Protocol( h, SslProtocols.Tls12 );
+                set_Protocol( h, SslProtocols.Tls13 );
+#pragma warning disable CS0618
+                set_Protocol( h, SslProtocols.Ssl2 );
+                set_Protocol( h, SslProtocols.Ssl3 );
+#pragma warning restore CS0618
+                //if ( _timeout.HasValue )
+                //{
+                //    h.ConnectTimeout = _timeout.Value;
+                //}
+                return (h);
+            };
+
+            var handler    = CreateHttpClientHandler( /*timeout*/ );
+            var httpClient = new HttpClient( handler, true );
+#endif
+            if ( timeout.HasValue )
+            {
+                httpClient.Timeout = timeout.Value;
+            }
+            return (httpClient);
         }
     }
 

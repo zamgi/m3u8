@@ -27,6 +27,7 @@ namespace m3u8.download.manager.ui
             System.Windows.Forms.ToolStripSeparator s6 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s7 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s8 = new System.Windows.Forms.ToolStripSeparator();
+            System.Windows.Forms.ToolStripSeparator s9 = new System.Windows.Forms.ToolStripSeparator();
 
             System.Windows.Forms.ToolStripSeparator s20 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s21 = new System.Windows.Forms.ToolStripSeparator();
@@ -41,6 +42,7 @@ namespace m3u8.download.manager.ui
             this.cancelDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.deleteDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.deleteAllFinishedDownloadToolButton = new System.Windows.Forms.ToolStripButton();
+            this.undoToolButton = new System.Windows.Forms.ToolStripButton();
             this.showLogToolButton = new System.Windows.Forms.ToolStripButton();
             this.copyToolButton = new System.Windows.Forms.ToolStripButton();
             this.pasteToolButton = new System.Windows.Forms.ToolStripButton();
@@ -98,17 +100,19 @@ namespace m3u8.download.manager.ui
                 this.deleteDownloadToolButton,
                 this.deleteAllFinishedDownloadToolButton,
                 s3,
-                this.showLogToolButton,
+                this.undoToolButton,
                 s4,
+                this.showLogToolButton,
+                s5,
                 this.copyToolButton,
                 this.pasteToolButton,
-                s5,
-                this.degreeOfParallelismToolButton,
                 s6,
-                this.downloadInstanceToolButton,
+                this.degreeOfParallelismToolButton,
                 s7,
-                this.speedThresholdToolButton,
+                this.downloadInstanceToolButton,
                 s8,
+                this.speedThresholdToolButton,
+                s9,
                 this.aboutToolButton,
                 this.otherSettingsToolButton,                
                 this.parallelismSettingsToolButton,
@@ -149,7 +153,7 @@ namespace m3u8.download.manager.ui
             this.cancelDownloadToolButton.Enabled = false;
             this.cancelDownloadToolButton.Image = global::m3u8.download.manager.Properties.Resources.control_cancel;
             this.cancelDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cancelDownloadToolButton.ToolTipText = "Cancel download  (Ctrl + Z)";
+            this.cancelDownloadToolButton.ToolTipText = "Cancel download  (Ctrl + X)";
             this.cancelDownloadToolButton.Click += new System.EventHandler(this.cancelDownloadToolButton_Click);
             // 
             // deleteDownloadToolButton
@@ -169,6 +173,15 @@ namespace m3u8.download.manager.ui
             this.deleteAllFinishedDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteAllFinishedDownloadToolButton.ToolTipText = "Delete all finished downloads";
             this.deleteAllFinishedDownloadToolButton.Click += new System.EventHandler(this.deleteAllFinishedDownloadToolButton_Click);
+            // 
+            // undoToolButton
+            // 
+            this.undoToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.undoToolButton.Enabled = false;
+            this.undoToolButton.Image = global::m3u8.download.manager.Properties.Resources.undo;
+            this.undoToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.undoToolButton.ToolTipText = "Undo last deleted download  (Ctrl + Z)";
+            this.undoToolButton.Click += new System.EventHandler(this.undoToolButton_Click);
             // 
             // showLogToolButton
             // 
@@ -335,7 +348,7 @@ namespace m3u8.download.manager.ui
             // cancelDownloadMenuItem
             // 
             this.cancelDownloadMenuItem.Image = global::m3u8.download.manager.Properties.Resources.cancel;
-            this.cancelDownloadMenuItem.ShortcutKeyDisplayString = "(Ctrl + Z)";
+            this.cancelDownloadMenuItem.ShortcutKeyDisplayString = "(Ctrl + X)";
             this.cancelDownloadMenuItem.Text = "Cancel";
             this.cancelDownloadMenuItem.Click += new System.EventHandler(this.cancelDownloadMenuItem_Click);
             // 
@@ -464,6 +477,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ToolStripButton cancelDownloadToolButton;
         private System.Windows.Forms.ToolStripButton deleteDownloadToolButton;
         private System.Windows.Forms.ToolStripButton deleteAllFinishedDownloadToolButton;
+        private System.Windows.Forms.ToolStripButton undoToolButton;
         private System.Windows.Forms.ToolStripButton showLogToolButton;
         private System.Windows.Forms.ToolStripButton copyToolButton;
         private System.Windows.Forms.ToolStripButton pasteToolButton;

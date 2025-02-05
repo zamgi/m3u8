@@ -100,6 +100,13 @@ namespace m3u8.download.manager.models
             }
             return (row);
         }
+        [M(O.AggressiveInlining)] protected bool Contains( T row )
+        {
+#if DEBUG
+            Debug.Assert( row != null );
+#endif
+            return (_RowsVisibleIndexes.ContainsKey( row.Id ));
+        }
         [M(O.AggressiveInlining)] protected bool Remove( T row )
         {
 #if DEBUG

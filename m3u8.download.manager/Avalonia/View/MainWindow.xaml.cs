@@ -43,6 +43,7 @@ namespace m3u8.download.manager.ui
         private MenuItem cancelDownloadToolButton;
         private MenuItem deleteDownloadToolButton;
         private MenuItem deleteAllFinishedDownloadToolButton;
+        private MenuItem undoToolButton;
         private MenuItem showLogToolButton;
         private MenuItem copyToolButton;
         private MenuItem pasteToolButton;
@@ -111,6 +112,7 @@ namespace m3u8.download.manager.ui
             deleteDownloadToolButton = this.Find_Ex< MenuItem >( nameof(deleteDownloadToolButton) ); deleteDownloadToolButton.Click += deleteDownloadToolButton_Click;
             deleteAllFinishedDownloadToolButton = this.Find_Ex< MenuItem >( nameof(deleteAllFinishedDownloadToolButton) ); deleteAllFinishedDownloadToolButton.Click += deleteAllFinishedDownloadToolButton_Click;
 
+            undoToolButton    = this.Find_Ex< MenuItem >( nameof(undoToolButton)    ); undoToolButton.Click    += undoToolButton_Click;
             showLogToolButton = this.Find_Ex< MenuItem >( nameof(showLogToolButton) ); showLogToolButton.Click += showLogToolButton_Click;
             copyToolButton    = this.Find_Ex< MenuItem >( nameof(copyToolButton)    ); copyToolButton.Click    += copyToolButton_Click;
             pasteToolButton   = this.Find_Ex< MenuItem >( nameof(pasteToolButton)   ); pasteToolButton.Click   += pasteToolButton_Click;
@@ -148,8 +150,9 @@ namespace m3u8.download.manager.ui
 
             _VM.DownloadListModel.RowPropertiesChanged     += DownloadListModel_RowPropertiesChanged;
             _VM.SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
+            _VM.UndoModel.UndoChanged                      += () => { undoToolButton.IsEnabled = _VM.UndoModel.HasUndo; undoToolButton.SetValue( ToolTip.TipProperty, $"Undo step count: {_VM.UndoModel.UndoCount}  (Ctrl + Z)" ); };
 
-            SettingsController_PropertyChanged( _VM.SettingsController.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle) );
+            SettingsController_PropertyChanged( _VM.SettingsController.Settings, nameof(Settings.ShowDownloadStatisticsInMainFormTitle)  );
             SettingsController_PropertyChanged( _VM.SettingsController.Settings, nameof(Settings.ShowAllDownloadsCompleted_Notification) );
             #endregion
 
@@ -348,7 +351,7 @@ namespace m3u8.download.manager.ui
                         }
                         break;
 
-                    case Key.Z: //Cancel download
+                    case Key.X/*Z*/: //Cancel download
                         if ( downloadListUC.HasFocus )
                         {
                             ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
@@ -394,6 +397,13 @@ namespace m3u8.download.manager.ui
                         if ( e.KeyModifiers.HasFlag( KeyModifiers.Shift ) && downloadListUC.HasFocus )
                         {
                             OnlyDeleteOutputFiles( downloadListUC.GetSelectedDownloadRows() );
+                        }
+                        break;
+
+                    case Key.Z:
+                        if ( _VM.UndoModel.TryUndo( out var row ) )
+                        {
+                            _VM.DownloadListModel.AddRow( row );
                         }
                         break;
                 }
@@ -910,6 +920,13 @@ namespace m3u8.download.manager.ui
 
         #region [.menu.]
         private GridLength? _Last_logUC_row_Height;
+        private void undoToolButton_Click( object sender, EventArgs e )
+        {
+            if ( _VM.UndoModel.TryUndo( out var row ) )
+            {
+                _VM.DownloadListModel.AddRow( row );
+            }
+        }
         private void showLogToolButton_Click( object sender, EventArgs e )
         {
             #region comm.

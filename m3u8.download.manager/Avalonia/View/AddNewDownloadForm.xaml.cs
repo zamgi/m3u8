@@ -466,7 +466,7 @@ namespace m3u8.download.manager.ui
             _Model.Clear();
 
             #region [.url.]
-            if ( !Extensions.TryGetM3u8FileUrl( this.M3u8FileUrl, out var x ) )
+            if ( !UrlHelper.TryGetM3u8FileUrl( this.M3u8FileUrl, out var x ) )
             {
                 _Model.AddRequestErrorRow( x.error.ToString() );
                 logUC.ClearSelection();

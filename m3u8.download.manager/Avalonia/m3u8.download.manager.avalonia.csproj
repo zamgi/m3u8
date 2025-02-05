@@ -50,6 +50,7 @@
     <None Remove="Resources\m3u.jpg" />
     <None Remove="Resources\m3u8.png" />
     <None Remove="Resources\m3u8_148x166.ico" />
+    <None Remove="Resources\menu\undo.png" />
     <None Remove="View\SettingsForm.xaml" />
   </ItemGroup>
   
@@ -78,6 +79,8 @@
     <Compile Include="..\[Common]\Controller\DownloadController.cs" Link="Controller\DownloadController.cs" />
     <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
     <Compile Include="..\[Common]\Controller\Sync_primitives.cs" Link="Controller\Sync_primitives.cs" />
+    <Compile Include="..\[Common]\UndoModel.cs" Link="Model\UndoModel.cs" />
+    <Compile Include="..\[Common]\UrlHelper.cs" Link="Infrastructure\UrlHelper.cs" />
   </ItemGroup>
      
   <ItemGroup>

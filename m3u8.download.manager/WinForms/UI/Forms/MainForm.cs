@@ -24,6 +24,7 @@ using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.Down
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+using System.Threading.Tasks;
 
 namespace m3u8.download.manager.ui
 {
@@ -38,6 +39,7 @@ namespace m3u8.download.manager.ui
         private _ReceivedSend2FirstCopyEventHandler_   _ReceivedSend2FirstCopyEventHandler;        
 
         private DownloadListModel              _DownloadListModel;
+        private UndoModel                      _UndoModel;
         private _DC_                           _DC;
         private _SC_                           _SC;
         private LogRowsHeightStorer            _LogRowsHeightStorer;
@@ -69,6 +71,9 @@ namespace m3u8.download.manager.ui
             _DownloadListModel = new DownloadListModel();
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
             _DC = new _DC_( _DownloadListModel, _SC );
+
+            _UndoModel = new UndoModel( _DownloadListModel );
+            _UndoModel.UndoChanged += () => { undoToolButton.Enabled = _UndoModel.HasUndo; undoToolButton.ToolTipText = $"Undo step count: {_UndoModel.UndoCount}  (Ctrl + Z)"; };
             //----------------------------------------//
 
             InitializeComponent( _DC, _SC );
@@ -281,7 +286,7 @@ namespace m3u8.download.manager.ui
                         }
                         break;
 
-                    case Keys.Z: //Cancel download
+                    case Keys.X/*Z*/: //Cancel download
                         if ( downloadListUC.HasFocus )
                         {
                             ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
@@ -333,6 +338,13 @@ namespace m3u8.download.manager.ui
                         if ( downloadListUC.HasFocus )
                         {
                             EditDownload( downloadListUC.GetSelectedDownloadRow() );
+                        }
+                        break;
+
+                    case Keys.Z: // UNDO
+                        if ( _UndoModel.TryUndo( out var row ) )
+                        {
+                            _DownloadListModel.AddRow( row );
                         }
                         break;
                 }
@@ -446,7 +458,7 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case nameof(Settings.ShowAllDownloadsCompleted_Notification):
-                    /*
+                    //*
                     _DC.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
                     if ( settings.ShowAllDownloadsCompleted_Notification )
                     {
@@ -519,32 +531,42 @@ namespace m3u8.download.manager.ui
 
             ShowDownloadStatisticsInTitle();
 
+            var existsRows = default(IReadOnlyList< DownloadRow >);
             switch ( changedType )
-            {
-                //case _CollectionChangedTypeEnum_.BulkUpdate:
+            {                
                 case _CollectionChangedTypeEnum_.Remove:
-                case _CollectionChangedTypeEnum_.Remove_Bulk:
-                    _LogRowsHeightStorer.RemoveAllExcept( (from _row in _DownloadListModel.GetRows() select _row.Log) );
-                    if ( changedType == _CollectionChangedTypeEnum_.Remove )
+                    if ( row != null )
                     {
-                        _ExternalProgQueue.Remove( row?.GetOutputFullFileNames() );
+                        _LogRowsHeightStorer.Remove( row.Log );
+                        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                     }
-                break;
+                    break;
+
+                //case _CollectionChangedTypeEnum_.BulkUpdate:
+                case _CollectionChangedTypeEnum_.Remove_Bulk:
+                    existsRows = _DownloadListModel.GetRows();
+
+                    var existsLogs = existsRows.Select( r => r.Log );
+                    _LogRowsHeightStorer.RemoveAllExcept( existsLogs );
+
+                    var existsOutputFullFileNames = existsRows.SelectMany( r => r.GetOutputFullFileNames() );
+                    _ExternalProgQueue.RemoveAllExcept( existsOutputFullFileNames );
+                    break;
 
                 case _CollectionChangedTypeEnum_.Clear:
                     _LogRowsHeightStorer.Clear();
                     _ExternalProgQueue  .Clear();
-                break;
+                    break;
 
                 case _CollectionChangedTypeEnum_.Add:
                     if ( _SC.Settings.ExternalProgApplyByDefault )
                     {
                         _ExternalProgQueue.AddIf( row?.GetOutputFullFileName() /*(from _row in _DownloadListModel.GetRows() select _row.GetOutputFullFileName())*/ );
                     }
-                break;
+                    break;
             }
 
-            _SC.SetDownloadRows_WithSaveIfChanged( _DownloadListModel.GetRows() );
+            _SC.SetDownloadRows_WithSaveIfChanged( existsRows ?? _DownloadListModel.GetRows() );
         }
         private void DownloadListModel_RowPropertiesChanged( DownloadRow row, string propertyName )
         {
@@ -586,9 +608,11 @@ namespace m3u8.download.manager.ui
                     }
                     #endregion
 
-                    #region [.show/hide NotifyIcon.]
+                    #region comm. [.show/hide NotifyIcon.]
+                    /*
                     var any_running = _DownloadListModel.GetRows().Any( row => row.Status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Wait => true, _ => false } );
                     DownloadController_IsDownloadingChanged( isDownloading: any_running );
+                    //*/
                     #endregion
                 }
                 break;
@@ -597,7 +621,7 @@ namespace m3u8.download.manager.ui
 
         private void _NotifyIcon_BalloonTipClosed( object sender, EventArgs e ) => _NotifyIcon.Visible = false;
         private void DownloadController_IsDownloadingChanged( bool isDownloading )
-        {             
+        {
             if ( isDownloading ) 
             {
                 if ( _NotifyIcon != null ) _NotifyIcon.Visible = false;
@@ -995,23 +1019,7 @@ namespace m3u8.download.manager.ui
             }
 
             #region [.AddNewDownloadForm as top-always-owner-form.]
-            AddNewDownloadForm.Show( this, _DC, _SC, p.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo, async f =>
-            {
-                if ( f.DialogResult == DialogResult.OK )
-                {
-                    var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
-                    await downloadListUC.SelectDownloadRowDelay( row );
-                    if ( f.AutoStartDownload )
-                    {
-                        _DC.Start( row );
-                    }
-                }
-
-                if ( AddNewDownloadForm.TryGetOpenedForm( out var openedForm ) )
-                {
-                    openedForm.ActivateAfterCloseOther();
-                }
-            });
+            AddNewDownloadForm.Add( this, _DC, _SC, p.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
             #endregion
 
             #region comm. [.AddNewDownloadForm as modal-dialog.]
@@ -1057,13 +1065,32 @@ namespace m3u8.download.manager.ui
         {
             if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
 
-            AddNewDownloadForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor, null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/, f =>
+            AddNewDownloadForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor, null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/,
+                                     AddNewDownloadForm_when_Edit_formClosedAction, AddNewDownloadForm_when_Add_formClosedAction );
+        }
+        private async Task AddNewDownloadForm_when_Add_formClosedAction( AddNewDownloadForm f )
+        {
+            if ( f.DialogResult == DialogResult.OK )
             {
-                if ( (f.DialogResult == DialogResult.OK) && !row.Status.IsRunningOrPaused() )
+                var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
+                await downloadListUC.SelectDownloadRowDelay( row );
+                if ( f.AutoStartDownload )
                 {
-                    row.Update( f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes );                   
+                    _DC.Start( row );
                 }
-            });
+            }
+
+            if ( AddNewDownloadForm.TryGetOpenedForm( out var openedForm ) )
+            {
+                openedForm.ActivateAfterCloseOther();
+            }
+        }
+        private void AddNewDownloadForm_when_Edit_formClosedAction( AddNewDownloadForm f, DownloadRow row )
+        {
+            if ( (f.DialogResult == DialogResult.OK) && !row.Status.IsRunningOrPaused() )
+            {
+                row.Update( f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes );
+            }
         }
 
         private bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
@@ -1139,7 +1166,8 @@ namespace m3u8.download.manager.ui
                        "  Ctrl+S:\t Start selected download" + Environment.NewLine +
                        "  Ctrl+V:\t Paste download url from clipboard" + Environment.NewLine +
                        "  Ctrl+W:\t Exit application" + Environment.NewLine +
-                       "  Ctrl+Z:\t Cancel selected download" + Environment.NewLine +
+                       "  Ctrl+X:\t Cancel selected download" + Environment.NewLine +
+                       "  Ctrl+Z:\t Undo deleted download" + Environment.NewLine +
                        "  Insert:\t Open add new download dialog" + Environment.NewLine +
                        "  Delete:\t Delete download (with or without output file)" + Environment.NewLine +
                        "  Enter:\t Open rename output file dialog" + Environment.NewLine +
@@ -1153,6 +1181,13 @@ namespace m3u8.download.manager.ui
         private void cancelDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
         private void deleteDownloadToolButton_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRows().ToArrayEx(), deleteOutputFiles: false );
         private void deleteAllFinishedDownloadToolButton_Click( object sender, EventArgs e ) => ProcessDownloadCommand( DownloadCommandEnum.DeleteAllFinished );
+        private void undoToolButton_Click( object sender, EventArgs e )
+        {
+            if ( _UndoModel.TryUndo( out var row ) )
+            {
+                _DownloadListModel.AddRow( row );
+            }
+        }
 
         private void downloadInstanceToolButton_ValueChanged( int downloadInstanceValue )
         {

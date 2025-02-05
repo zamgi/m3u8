@@ -20,6 +20,7 @@ namespace m3u8.download.manager
             DownloadListModel  = new DownloadListModel();
             DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
             DownloadController = new DownloadController( DownloadListModel, SettingsController );
+            UndoModel          = new UndoModel( DownloadListModel );
 
             AddCommand                         = new AddCommand( this );
             EditCommand                        = new EditCommand( this );
@@ -44,6 +45,7 @@ namespace m3u8.download.manager
         public DownloadListModel                DownloadListModel  { get; }
         public DownloadController               DownloadController { get; }
         public SettingsPropertyChangeController SettingsController { get; }
+        public UndoModel                        UndoModel          { get; }
 
         public AddCommand                         AddCommand                         { get; }
         public EditCommand                        EditCommand                        { get; }

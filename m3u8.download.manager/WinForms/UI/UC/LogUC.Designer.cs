@@ -26,6 +26,7 @@
             this.DGV_requestColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_responseColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_requestAttemptCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.toolTip = new System.Windows.Forms.ToolTip();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -72,7 +73,7 @@
             this.DGV.TabIndex = 0;
             this.DGV.VirtualMode = true;
             this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
-            this.DGV.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseClick);
+            this.DGV.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseClick);            
             this.DGV.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DGV_CellValueNeeded);
             this.DGV.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DGV_CellFormatting);
             this.DGV.CellPainting += new System.Windows.Forms.DataGridViewCellPaintingEventHandler(this.DGV_CellPainting);
@@ -131,5 +132,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_requestColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_responseColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_requestAttemptCountColumn;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

@@ -147,7 +147,7 @@ namespace m3u8.download.manager.controllers
         public static Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( string m3u8FileUrlText, IDictionary< string, string > requestHeaders, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
         {
             #region [.url.]
-            if ( !Extensions.TryGetM3u8FileUrl( m3u8FileUrlText?.Trim(), out var t ) )
+            if ( !UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText?.Trim(), out var t ) )
             {
                 return Task.FromResult( (default(m3u8_file_t), t.error) );
             }
@@ -431,7 +431,7 @@ namespace m3u8.download.manager.controllers
             #endregion
 
             #region [.url.]
-            if ( !Extensions.TryGetM3u8FileUrl( row.Url, out var t ) )
+            if ( !UrlHelper.TryGetM3u8FileUrl( row.Url, out var t ) )
             {
                 row.StatusError( t.error );
                 return;

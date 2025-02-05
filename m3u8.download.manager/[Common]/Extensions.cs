@@ -47,6 +47,25 @@ namespace m3u8.download.manager
                 }
             }
         }
+        public static void RemoveAllExcept< T >( this HashSet< T > hs, IEnumerable< T > seq )
+        {
+            var seq_hs = seq?.ToHashSet();
+            if ( seq_hs.AnyEx() )
+            {
+                var exists = hs.ToArrayEx();
+                foreach ( var t in exists )
+                {
+                    if ( !seq_hs.Contains( t ) )
+                    {
+                        hs.Remove( t );
+                    }
+                }
+            }
+            else
+            {
+                hs.Clear();
+            }
+        }
         public static void Add< T >( this HashSet< T > hs, IEnumerable< T > seq )
         {
             if ( seq != null )
@@ -176,25 +195,6 @@ namespace m3u8.download.manager
             {
                 var t = (T) ser.ReadObject( ms );
                 return (t);
-            }
-        }
-
-        public static bool TryGetM3u8FileUrl( string m3u8FileUrlText, out (Uri m3u8FileUrl, Exception error) t )
-        {
-            try
-            {
-                var m3u8FileUrl = new Uri( m3u8FileUrlText );
-                if ( (m3u8FileUrl.Scheme != Uri.UriSchemeHttp) && (m3u8FileUrl.Scheme != Uri.UriSchemeHttps) )
-                {
-                    throw (new ArgumentException( $"Only '{Uri.UriSchemeHttp}' and '{Uri.UriSchemeHttps}' schemes are allowed.", nameof( m3u8FileUrl ) ));
-                }
-                t = (m3u8FileUrl, null);
-                return (true);
-            }
-            catch ( Exception ex )
-            {
-                t = (null, ex);
-                return (false);
             }
         }
 

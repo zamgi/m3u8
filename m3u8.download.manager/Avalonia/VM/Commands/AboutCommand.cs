@@ -39,7 +39,8 @@ namespace m3u8.download.manager
                        "  Ctrl+S: Start selected download" + Environment.NewLine +
                        "  Ctrl+V: Paste download url from clipboard" + Environment.NewLine +
                        "  Ctrl+W: Exit application" + Environment.NewLine +
-                       "  Ctrl+Z: Cancel selected download" + Environment.NewLine +
+                       "  Ctrl+X: Cancel selected download" + Environment.NewLine +
+                       "  Ctrl+Z: Undo deleted download" + Environment.NewLine +
                        "  Insert: Open add new download dialog" + Environment.NewLine +
                        "  Delete: Delete download (with or without output file)" + Environment.NewLine +
                        "  Enter:  Open rename output file dialog" + Environment.NewLine +

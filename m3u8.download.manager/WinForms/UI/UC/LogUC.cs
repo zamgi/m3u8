@@ -15,6 +15,7 @@ using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.Co
 using CellStyle                   = System.Windows.Forms.DataGridViewCellStyle;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+using static m3u8.download.manager.ui.DefaultColors;
 
 namespace m3u8.download.manager.ui
 {
@@ -62,7 +63,8 @@ namespace m3u8.download.manager.ui
 
         private LogRowsHeightStorer _LogRowsHeightStorer;
         private Settings _Settings;
-        private int _AttemptRequestCount;
+        private int  _AttemptRequestCount;
+        private bool _AllowDrawDownloadButtonForM3u8Urls;
         #endregion
 
         #region [.ctor().]
@@ -188,7 +190,21 @@ namespace m3u8.download.manager.ui
         {
             get => DGV_responseColumn.Visible;
             set => DGV_responseColumn.Visible = DGV_requestAttemptCountColumn.Visible = value;
+        }        
+        public bool AllowDrawDownloadButtonForM3u8Urls 
+        {
+            get => _AllowDrawDownloadButtonForM3u8Urls;
+            set
+            {
+                if ( _AllowDrawDownloadButtonForM3u8Urls != value )
+                {
+                    this.DGV.MouseMove -= DGV_MouseMove;                    
+                    if ( _AllowDrawDownloadButtonForM3u8Urls = value ) this.DGV.MouseMove += DGV_MouseMove;
+                }
+            }
         }
+        public Func< string, bool > AllowDownloadAdditionalM3u8Url { get; set; }
+        public event Action< Uri > DownloadAdditionalM3u8Url;
 
         public bool IsVerticalScrollBarVisible => (DGV.Controls.OfType< VScrollBar >().FirstOrDefault()?.Visible).GetValueOrDefault();
         public void AdjustColumnsWidthSprain() => DGV_Resize( null, null );
@@ -675,10 +691,61 @@ namespace m3u8.download.manager.ui
                 ClearSelection();
             }
 
-            if ( e.Button == MouseButtons.Right )
+            switch ( e.Button )
             {
-                _ContextMenu.Show( DGV, e.Location );
+                case MouseButtons.Left:
+                    if ( AllowDrawDownloadButtonForM3u8Urls )
+                    { 
+                        var row_rc              = DGV.GetRowDisplayRectangle( hti.RowIndex, cutOverflow: true );
+                        var m3u8_Url_ButtonRect = Get_M3u8_Url_ButtonRect( row_rc );
+                        if ( m3u8_Url_ButtonRect.Contains( e.Location ) )
+                        {
+                            var m3u8FileUrl = _Model[ hti.RowIndex ].RequestText;
+                            if ( !UrlHelper.TryGetM3u8FileUrl( m3u8FileUrl, out var x ) )
+                            {
+                                //---this.FindForm().MessageBox_ShowError( x.error.ToString(), "Download Additional '.m3u8' url" );
+                                return;
+                            }
+
+                            DownloadAdditionalM3u8Url?.Invoke( x.m3u8FileUrl );
+                        }
+                    }
+                    break;
+
+                case MouseButtons.Right:
+                    _ContextMenu.Show( DGV, e.Location );
+                    break;
             }
+        }
+        private void DGV_MouseMove( object sender, MouseEventArgs e )
+        {
+            var hti = DGV.HitTest( e.X, e.Y );
+            if ( (0 <= hti.RowIndex) || (0 <= hti.ColumnIndex) )
+            {
+                var row_rc              = DGV.GetRowDisplayRectangle( hti.RowIndex, cutOverflow: true );
+                var m3u8_Url_ButtonRect = Get_M3u8_Url_ButtonRect( row_rc );
+                if ( m3u8_Url_ButtonRect.Contains( e.Location ) )
+                {
+                    var m3u8FileUrl = _Model[ hti.RowIndex ].RequestText;
+                    if ( UrlHelper.TryGetM3u8FileUrl( m3u8FileUrl, out var x ) )
+                    {
+                        DGV.Cursor = Cursors.Hand;
+                        DGV.ShowCellErrors = DGV.ShowRowErrors = false;
+                        DGV.ShowCellToolTips = false;
+                        var f = this.FindForm();
+                        toolTip.Show( $"Download Additional '.m3u8' url: '{m3u8FileUrl}')", f, f.PointToClient( DGV.PointToScreen( e.Location ) ), duration: 1_500 );
+                        return;
+                    }
+                }
+            }
+
+            DGV.ShowCellErrors = DGV.ShowRowErrors = true;
+            DGV.ShowCellToolTips = true;
+            if ( DGV.Cursor != Cursors.Default )
+            {
+                DGV.Cursor = Cursors.Default;
+                toolTip.Hide( this.FindForm() );
+            }            
         }
         private void DGV_CellValueNeeded( object sender, DataGridViewCellValueEventArgs e )
         {
@@ -783,15 +850,48 @@ namespace m3u8.download.manager.ui
                 var text = e.Value?.ToString();
                 if ( !text.IsNullOrEmpty() )
                 {
+                    var rc                  = e.CellBounds;
+                    var is_M3u8_Url         = AllowDrawDownloadButtonForM3u8Urls && Is_M3u8_Url( text ) && (AllowDownloadAdditionalM3u8Url?.Invoke( text ) == true);
+                    var m3u8_Url_ButtonRect = (is_M3u8_Url) ? Get_M3u8_Url_ButtonRect( rc ) : Rectangle.Empty;
+
                     using ( var br = new SolidBrush( (isSelected ? cs.SelectionForeColor : cs.ForeColor) ) )
                     {
-                        var rc = e.CellBounds;
-                            rc.Inflate( -2, -2 );
+                        rc.Inflate( -2, -2 );
+                        rc.Width -= m3u8_Url_ButtonRect.Width;
                         e.Graphics.DrawString( text, cs.Font, br, rc, _SF );
+                    }
+
+                    if ( is_M3u8_Url )
+                    {
+                        var pt = this.DGV.PointToClient( Control.MousePosition );
+                        var buttonState = (/*ButtonState.Normal |*/ ButtonState.Flat);
+                        if ( m3u8_Url_ButtonRect.Contains( pt ) )
+                        {
+                            buttonState |= ButtonState.Normal;
+                            if ( Control.MouseButtons == MouseButtons.Left ) buttonState |= ButtonState.Pushed;
+                        }
+                        //else buttonState |= ButtonState.Inactive;
+
+                        ControlPaint.DrawCaptionButton( e.Graphics, m3u8_Url_ButtonRect, CaptionButton.Restore, buttonState );
+                        //ControlPaint.DrawButton( e.Graphics, m3u8_Url_ButtonRect, buttonState );
+                        //e.Graphics.DrawString( "+", cs.Font, Brushes.Black, m3u8_Url_ButtonRect, _SF );
                     }
                 }
             }
-        }        
+        }
+        private static Rectangle Get_M3u8_Url_ButtonRect( in Rectangle rc )
+        {
+            var h = rc.Height - 4;
+            return (new Rectangle( rc.Right - h - 2, rc.Y + 2, h, h ));
+        }
+        private static bool Is_M3u8_Url( string text )
+        {
+            Debug.Assert( text != null );
+            var suc = (text.StartsWith( "http://", StringComparison.OrdinalIgnoreCase ) ||
+                       text.StartsWith( "https://", StringComparison.OrdinalIgnoreCase )) &&
+                       text.Split( '?' ).First().Split( '.' ).LastOrDefault().EqualIgnoreCase( "m3u8" );
+            return (suc);
+        }
         private void DGV_RowDividerDoubleClick( object sender, DataGridViewRowDividerDoubleClickEventArgs e )
         {
             e.Handled = true;

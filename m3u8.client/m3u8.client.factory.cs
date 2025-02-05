@@ -3,7 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
+using System.Security.Authentication;
+
+
 
 #if NETCOREAPP
 using System.Net.Security;
@@ -272,15 +277,16 @@ namespace m3u8.infrastructure
                     }
                 };
 
-                var h = new SocketsHttpHandler();
+                var h = new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.All };
                     h.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
                     //set_Protocol( h.SslOptions, SslProtocols.Tls   );
                     //set_Protocol( h.SslOptions, SslProtocols.Tls11 );
                     set_Protocol( h.SslOptions, SslProtocols.Tls12 );
-                #pragma warning disable CS0618
+                    set_Protocol( h.SslOptions, SslProtocols.Tls13 );
+#pragma warning disable CS0618
                     set_Protocol( h.SslOptions, SslProtocols.Ssl2  );
                     set_Protocol( h.SslOptions, SslProtocols.Ssl3  );
-                #pragma warning restore CS0618
+#pragma warning restore CS0618
                 if ( _timeout.HasValue )
                 {
                     h.ConnectTimeout = _timeout.Value;
@@ -288,10 +294,46 @@ namespace m3u8.infrastructure
                 return (h);
             };
             
-            var handler    = CreateSocketsHttpHandler( in timeout );
+            var handler    = CreateSocketsHttpHandler( timeout );
             var httpClient = new HttpClient( handler, true );
 #else
-            var httpClient = new HttpClient();
+            HttpClientHandler CreateHttpClientHandler( /*in TimeSpan? _timeout*/ )
+            {
+                static void set_Protocol( HttpClientHandler h, SslProtocols protocol )
+                {
+                    try
+                    {
+                        h.SslProtocols |= protocol;
+                    }
+                    catch ( Exception ex )
+                    {
+                        Debug.WriteLine( ex );
+                    }
+                };
+
+                var h = new HttpClientHandler() 
+                { 
+                    ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true, 
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip 
+                };
+
+                //set_Protocol( h, SslProtocols.Tls   );
+                //set_Protocol( h, SslProtocols.Tls11 );
+                set_Protocol( h, SslProtocols.Tls12 );
+                set_Protocol( h, SslProtocols.Tls13 );
+#pragma warning disable CS0618
+                set_Protocol( h, SslProtocols.Ssl2 );
+                set_Protocol( h, SslProtocols.Ssl3 );
+#pragma warning restore CS0618
+                //if ( _timeout.HasValue )
+                //{
+                //    h.ConnectTimeout = _timeout.Value;
+                //}
+                return (h);
+            };
+
+            var handler    = CreateHttpClientHandler( /*timeout*/ );
+            var httpClient = new HttpClient( handler, true );
 #endif
             if ( timeout.HasValue )
             {

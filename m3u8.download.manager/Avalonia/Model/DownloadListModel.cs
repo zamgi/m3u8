@@ -40,6 +40,7 @@ namespace m3u8.download.manager.models
             row = base.Add( row );
             _Urls.Add( row.Url );
         }
+        public bool ContainsRow( DownloadRow row ) => base.Contains( row );
 
         public void RemoveRows( IReadOnlyList< DownloadRow > rows )
         {

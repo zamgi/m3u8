@@ -229,6 +229,9 @@ namespace m3u8.download.manager.ui
             this.logUC.ShowOnlyRequestRowsWithErrors = false;
             this.logUC.ScrollToLastRow = true;
             this.logUC.ShowResponseColumn = true;
+            this.logUC.AllowDrawDownloadButtonForM3u8Urls = true;
+            this.logUC.DownloadAdditionalM3u8Url += new System.Action<System.Uri>(this.logUC_DownloadAdditionalM3u8Url);
+            this.logUC.AllowDownloadAdditionalM3u8Url = new System.Func<string, bool>(this.logUC_AllowDownloadAdditionalM3u8Url);
             this.logUC.Size = new System.Drawing.Size(803, 0);
             this.logUC.TabIndex = 0;
             // 

@@ -26,6 +26,7 @@ namespace m3u8.download.manager.ui
         #region [.fields.]
         private LogListModel      _Model;
         private bool              _DownloadLater;
+        private _DC_              _DC;
         private _SC_              _SC;
         private Settings          _Settings;
         private DownloadListModel _DownloadListModel;
@@ -35,11 +36,16 @@ namespace m3u8.download.manager.ui
         private string             _Initial_M3u8FileUrl;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
         private bool _IsInEditMode;
+        private Func< AddNewDownloadForm, Task > _FormClosedAction;
         #endregion
 
         #region [.ctor().]
         private AddNewDownloadForm( _DC_ dc, _SC_ sc )
         {
+            _DC       = dc;
+            _SC       = sc;
+            _Settings = sc.Settings;
+
             InitializeComponent( dc, sc );
             //----------------------------------------//            
 
@@ -49,13 +55,15 @@ namespace m3u8.download.manager.ui
 
             _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
         }
+
+        /// <summary>
+        /// Edit
+        /// </summary>
         private AddNewDownloadForm( _DC_ dc, _SC_ sc
             , DownloadRow row
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor ) : this( dc, sc )
         {
             _IsInEditMode      = true;
-            _SC                = sc;
-            _Settings          = sc.Settings;
             _DownloadListModel = dc?.Model;
             requestHeadersEditor.SetRequestHeaders( row.RequestHeaders );
 
@@ -80,14 +88,16 @@ namespace m3u8.download.manager.ui
             _Model = new LogListModel();
             logUC.SetModel( _Model );
         }
+
+        /// <summary>
+        /// Add
+        /// </summary>
         private AddNewDownloadForm( _DC_ dc, _SC_ sc
             , string m3u8FileUrl
             , IDictionary< string, string > requestHeaders
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
             , in (int n, int total)? seriesInfo = null ) : this( dc, sc )
         {
-            _SC                = sc;
-            _Settings          = sc.Settings;
             _DownloadListModel = dc?.Model;
             requestHeadersEditor.SetRequestHeaders( requestHeaders );
 
@@ -129,14 +139,14 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        public static void Show( IWin32Window owner, _DC_ dc, _SC_ sc
+        public static void Add( IWin32Window owner, _DC_ dc, _SC_ sc
             , string m3u8FileUrl
             , IDictionary< string, string > requestHeaders
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
             , in (int n, int total)? seriesInfo
             , Func< AddNewDownloadForm, Task > formClosedAction )
         {
-            var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, seriesInfo );
+            var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, seriesInfo ) { _FormClosedAction = formClosedAction };
 
             f.FormClosed += (_, _) => formClosedAction?.Invoke( f );
             var close = new EventHandler( (_, _) => f.Close() );
@@ -149,16 +159,18 @@ namespace m3u8.download.manager.ui
             , DownloadRow row
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
             , Action< FormClosingEventArgs > formClosingAction
-            , Action< AddNewDownloadForm > formClosedAction )
+            , Action< AddNewDownloadForm, DownloadRow > formClosedAction
+            , Func< AddNewDownloadForm, Task > formClosedAction_4_DownloadAdditionalM3u8Url )
         {
             var f = new AddNewDownloadForm( dc, sc, row, outputFileNamePatternProcessor ) 
             { 
                 Icon = Icon.FromHandle( Resources.edit.GetHicon() ),
                 Text = $"Edit, / '{row.OutputFileName}' /",
+                _FormClosedAction = formClosedAction_4_DownloadAdditionalM3u8Url,
             };
 
             f.FormClosing += (_, e) => formClosingAction?.Invoke( e );
-            f.FormClosed  += (_, _) => formClosedAction?.Invoke( f );
+            f.FormClosed  += (_, _) => formClosedAction?.Invoke( f, row );
             var close = new EventHandler( (_, _) => f.Close() );
             f.downloadStartButton.Text = "Ok";
             f.downloadLaterButton.Text = "Cancel";
@@ -596,7 +608,7 @@ namespace m3u8.download.manager.ui
             _Model.Clear();
 
             #region [.url.]
-            if ( !Extensions.TryGetM3u8FileUrl( this.M3u8FileUrl, out var x ) )
+            if ( !UrlHelper.TryGetM3u8FileUrl( this.M3u8FileUrl, out var x ) )
             {
                 _Model.AddRequestErrorRow( x.error.ToString() );
                 logUC.ClearSelection();
@@ -658,5 +670,10 @@ namespace m3u8.download.manager.ui
         private void requestHeadersEditor_OnRequestHeadersCountChanged( int requestHeadersCount, int enabledCount ) 
             => requestHeadersTabPage.Text = (requestHeadersCount == enabledCount) ? $"request headers ({requestHeadersCount})" : $"request headers ({enabledCount} of {requestHeadersCount})";
         #endregion
+
+
+        private bool logUC_AllowDownloadAdditionalM3u8Url( string m3u8FileUrl ) => !this.M3u8FileUrl.Equals( m3u8FileUrl, StringComparison.InvariantCultureIgnoreCase );
+        private void logUC_DownloadAdditionalM3u8Url( Uri m3u8FileUrl )
+        => AddNewDownloadForm.Add( this, _DC, _SC, m3u8FileUrl.ToString(), this.requestHeadersEditor.GetRequestHeaders(), _OutputFileNamePatternProcessor, seriesInfo: null, _FormClosedAction );
     }
 }

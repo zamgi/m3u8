@@ -36,6 +36,13 @@ namespace m3u8.download.manager.ui
         }
         public bool ContainsModel( _LogRowsModel_ model ) => _Dict.ContainsKey( model );
 
+        public void Remove( _LogRowsModel_ m )
+        {
+            if ( m != null )
+            {
+                _Dict.Remove( m );
+            }
+        }
         public void RemoveAllExcept( IEnumerable< _LogRowsModel_ > models )
         {
             var hs = models?.ToHashSet();
