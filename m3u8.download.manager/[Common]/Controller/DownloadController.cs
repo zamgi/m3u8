@@ -714,9 +714,9 @@ namespace m3u8.download.manager.controllers
                         var rows_Dict = new Dictionary< string, LogRow >();
                         var localLock = new object();
 
-                        var st = (LastPartLogRows: new List< LogRow >(),
-                                  CreateDateTime: default(DateTime), 
-                                  RowSaveState: default(DownloadRow), 
+                        var st = (LastPartLogRows       : new List< LogRow >(),
+                                  CreateDateTime        : default(DateTime), 
+                                  RowSaveState          : default(DownloadRow), 
                                   CreatedOutpuFileLogRow: default(LogRow));
                         var queued_cnt      = 0;
                         var output_file_cnt = 0;

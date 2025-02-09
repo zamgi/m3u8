@@ -189,7 +189,7 @@ namespace m3u8.download.manager.ui
         {
             get => DGV_responseColumn.Visible;
             set => DGV_responseColumn.Visible = DGV_requestAttemptCountColumn.Visible = value;
-        }        
+        }
         public bool AllowDrawDownloadButtonForM3u8Urls 
         {
             get => _AllowDrawDownloadButtonForM3u8Urls;

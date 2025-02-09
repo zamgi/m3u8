@@ -114,7 +114,7 @@
             this.DGV_requestAttemptCountColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.DGV_requestAttemptCountColumn.MinimumWidth = 75;
             this.DGV_requestAttemptCountColumn.FillWeight = 150F;
-            this.DGV_requestAttemptCountColumn.Width = 150;            
+            this.DGV_requestAttemptCountColumn.Width = 150;
             // 
             // LogUC
             // 

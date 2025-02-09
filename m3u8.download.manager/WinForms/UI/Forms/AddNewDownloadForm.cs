@@ -47,7 +47,7 @@ namespace m3u8.download.manager.ui
             _Settings = sc.Settings;
 
             InitializeComponent( dc, sc );
-            //----------------------------------------//            
+            //----------------------------------------//
 
             //---statusBarUC.IsVisibleParallelismLabel = false;
             logPanel.Visible = false;
