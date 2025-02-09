@@ -565,7 +565,9 @@ namespace m3u8.download.manager.ui
         }
         private void DownloadController_IsDownloadingChanged( bool isDownloading )
         {
-            if ( !isDownloading )
+            bool any_running() => _VM.DownloadListModel.GetRows().Any( row => row.Status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Wait => true, _ => false } );
+
+            if ( !isDownloading && !any_running() )
             {
                 _HostWindow_4_Notification?.Close();
                 _HostWindow_4_Notification = new Window() 
