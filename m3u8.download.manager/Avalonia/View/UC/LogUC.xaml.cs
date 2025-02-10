@@ -61,10 +61,8 @@ namespace m3u8.download.manager.ui
             //this.Styles.Add( GlobalStyles.Dark );
 
             var st = _SC_.SettingsDefault;
-            _ShowOnlyRequestRowsWithErrors = st.ShowOnlyRequestRowsWithErrors;
-            _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox.IsChecked = _ShowOnlyRequestRowsWithErrors;
-            _ScrollToLastRow = st.ScrollToLastRow;
-            _ScrollToLastRowMenuItemCheckBox.IsChecked = _ScrollToLastRow;
+            _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox.IsChecked = _ShowOnlyRequestRowsWithErrors = st.ShowOnlyRequestRowsWithErrors;
+            _ScrollToLastRowMenuItemCheckBox              .IsChecked = _ScrollToLastRow               = st.ScrollToLastRow; 
         }
         #endregion
 

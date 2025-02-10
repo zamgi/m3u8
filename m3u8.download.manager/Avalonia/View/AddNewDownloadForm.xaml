@@ -16,7 +16,12 @@
       <Setter Property="FontSize" Value="12" />
       <Setter Property="Margin"   Value="5,0,-1,-5" />
       <Setter Property="Padding"  Value="5,3" />
-    </Style>    
+    </Style>
+    <!--
+    <Style Selector="Button, CheckBox, TextBox, NumericUpDown">
+      <Setter Property="CornerRadius" Value="1.5" />
+    </Style>
+    -->
   </Window.Styles>
   
   <Grid>
@@ -56,7 +61,7 @@
                                AllowSpin="True" ClipValueToMinMax="True" Foreground="DimGray"
                                HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0"
                                ToolTip.Tip="current pattern output file name count-number"
-                               IsVisible="False" />
+                               IsVisible="False"/>
                 <!--=== live-stream ===========================================-->
                 <CheckBox x:Name="isLiveStreamCheckBox" Grid.Row="0" Grid.Column="6" Foreground="Silver" Cursor="Hand" Margin="5,0,0,0">this is a live stream</CheckBox>
                 <TextBlock x:Name="liveStreamMaxSizeInMbTextBlock" Grid.Row="2" Grid.Column="3" Grid.ColumnSpan="3" 
@@ -69,13 +74,13 @@
                                Minimum="1" Maximum="10000000" Value="250" FormatString="0"
                                AllowSpin="True" ClipValueToMinMax="True"
                                HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0"
-                               IsVisible="False" />
+                               IsVisible="False"/>
                 <!--=== output-directory ===========================================-->
                 <TextBlock Grid.Row="4" Grid.Column="0" Foreground="SteelBlue" Margin="0,0,5,0" TextAlignment="Right"
                            TextWrapping="Wrap" TextTrimming="CharacterEllipsis">
                   output directory :
                 </TextBlock>
-                <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" IsReadOnly="True" Margin="0,0,3,0"></TextBox>    
+                <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" IsReadOnly="True" Margin="0,0,3,0"></TextBox>
                 <Button  x:Name="outputDirectorySelectButton" Grid.Row="4" Grid.Column="5" Width="25" Cursor="Hand" Margin="0,0,3,0">=</Button>
                 <Button  x:Name="loadM3u8FileContentButton"   Grid.Row="4" Grid.Column="6" Cursor="Hand" Margin="0">(load .m3u8 file-content)</Button>    
               </Grid>
@@ -92,8 +97,6 @@
             </Grid>
           </Grid>
         </Grid>
-        
-
       </TabItem>
       
       <TabItem x:Name="requestHeadersTabItem" Header="request header">

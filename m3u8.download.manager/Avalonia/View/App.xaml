@@ -8,5 +8,9 @@
       
         <!--<FluentTheme />-->
         <!--<StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>-->
+      
+      <Style Selector="Button, CheckBox, TextBox, NumericUpDown">
+        <Setter Property="CornerRadius" Value="1.5" />
+      </Style>
     </Application.Styles>
 </Application>

@@ -49,61 +49,56 @@
   </Window.Styles>
   
   <Grid>
-  <Rectangle x:Name="selectRect" Stretch="Fill" Grid.Row="0"
-             Stroke="DimGray" StrokeThickness="2" ZIndex="100" IsVisible="False" />  
+    <Rectangle x:Name="selectRect" Stretch="Fill" Grid.Row="0"
+               Stroke="DimGray" StrokeThickness="2" ZIndex="100" IsVisible="False" />  
     
-  <Grid RowDefinitions="auto,*,auto" ColumnDefinitions="auto,*,auto" Margin="15">
-    <TextBlock Grid.Row="0" Grid.Column="0" 
-               VerticalAlignment="Center">filter:</TextBlock>
-    <TextBox x:Name="filterTextBox" Grid.Row="0" Grid.Column="1"
-             Margin="10,0,3,0"
-             TextWrapping="NoWrap"
-             />
-    <Button x:Name="clearFilterButton" Grid.Row="0" Grid.Column="2"
-            Width="25" Cursor="Hand" IsVisible="False">&#x26CC;</Button>
+    <Grid RowDefinitions="auto,*,auto" ColumnDefinitions="auto,*,auto" Margin="15">
+      <TextBlock Grid.Row="0" Grid.Column="0" 
+                 VerticalAlignment="Center">filter:</TextBlock>
+      <TextBox x:Name="filterTextBox" Grid.Row="0" Grid.Column="1"
+               Margin="10,0,3,0" TextWrapping="NoWrap" />
+      <Button x:Name="clearFilterButton" Grid.Row="0" Grid.Column="2"
+              Width="22" Cursor="Hand" IsVisible="False">&#x26CC;</Button>
 
-    <DataGrid x:Name="DGV" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-              SelectionMode="Extended"
-              CanUserResizeColumns="False"
-              CanUserReorderColumns="False"
-              CanUserSortColumns="True"
-              IsReadOnly="False"
-              GridLinesVisibility="All" 
-              VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver"
-              BorderBrush="LightGray" BorderThickness="1"
-              ClipboardCopyMode="None"
-              Background="LightGray"
-              >
-      <DataGrid.Columns>
-        <DataGridTextColumn Header="#" Binding="{Binding ViewOrderNumber, Mode=OneWay}" 
-                            Width="auto" IsReadOnly="True" CanUserSort="False"
-                            CellStyleClasses="order_number" />
-        <!--
-        <DataGridTextColumn Header="Exclude word" Binding="{Binding Text, Mode=TwoWay}" 
-                            Width="*" CanUserSort="True" SortMemberPath="Text" />
-        -->
-        <DataGridTextColumn Binding="{Binding Text, Mode=TwoWay}"
-                            Width="*" CanUserSort="True" SortMemberPath="Text">
-          <DataGridTextColumn.Header>
-            <DockPanel>
-              <TextBlock Grid.Column="0" Text="Exclude word" VerticalAlignment="Center"
-                         Margin="0,0,10,0" />
-              <Button x:Name="addNewRowButton" Cursor="Hand" ToolTip.Tip="append new row"
-                      Background="Gray" Padding="5,2"
-                      >+</Button>
-            </DockPanel>
-          </DataGridTextColumn.Header>
-        </DataGridTextColumn>
-        
-      </DataGrid.Columns>
-    </DataGrid>
+      <DataGrid x:Name="DGV" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+                SelectionMode="Extended"
+                CanUserResizeColumns="False"
+                CanUserReorderColumns="False"
+                CanUserSortColumns="True"
+                IsReadOnly="False"
+                GridLinesVisibility="All" 
+                VerticalGridLinesBrush="Silver" HorizontalGridLinesBrush="Silver"
+                BorderBrush="LightGray" BorderThickness="1"
+                ClipboardCopyMode="None"
+                Background="LightGray"
+                >
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="#" Binding="{Binding ViewOrderNumber, Mode=OneWay}" 
+                              Width="auto" IsReadOnly="True" CanUserSort="False"
+                              CellStyleClasses="order_number" />
+          <!--
+          <DataGridTextColumn Header="Exclude word" Binding="{Binding Text, Mode=TwoWay}" 
+                              Width="*" CanUserSort="True" SortMemberPath="Text" />
+          -->
+          <DataGridTextColumn Binding="{Binding Text, Mode=TwoWay}"
+                              Width="*" CanUserSort="True" SortMemberPath="Text">
+            <DataGridTextColumn.Header>
+              <DockPanel Margin="0,-2,0,-1">
+                <TextBlock Grid.Column="0" Text="Exclude word" VerticalAlignment="Center"
+                           Margin="0,0,10,0" />
+                <Button x:Name="addNewRowButton" Cursor="Hand" ToolTip.Tip="append new row"
+                        Background="Gainsboro" Padding="1,1" Height="22" Width="20" Content="+" />
+              </DockPanel>
+            </DataGridTextColumn.Header>
+          </DataGridTextColumn>
+        </DataGrid.Columns>
+      </DataGrid>
     
-    <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" 
-               HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,0">
-      <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
-      <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
-    </DockPanel>
-  </Grid>
-
+      <DockPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" 
+                 HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,15,0,0">
+        <Button x:Name="okButton"     HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="0,0,5,0">Ok</Button>
+        <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="110" Height="30" Cursor="Hand" Margin="5,0,0,0">Cancel</Button>
+      </DockPanel>
+    </Grid>
   </Grid>    
 </Window>

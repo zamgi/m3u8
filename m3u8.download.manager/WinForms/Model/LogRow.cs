@@ -47,9 +47,10 @@ namespace m3u8.download.manager.models
             => new LogRow( model, rowPropertiesChanged ) { RequestRowType = RequestRowTypeEnum.Error, RequestText  = requestText, ResponseText = responseErrorText };
 
 
-        public string RequestText          { [M(O.AggressiveInlining)] get; private set; }
-        public string ResponseText         { [M(O.AggressiveInlining)] get; private set; }
-        public int?   AttemptRequestNumber { [M(O.AggressiveInlining)] get; private set; }
+        public RequestRowTypeEnum RequestRowType       { [M(O.AggressiveInlining)] get; private set; }
+        public string             RequestText          { [M(O.AggressiveInlining)] get; private set; }
+        public string             ResponseText         { [M(O.AggressiveInlining)] get; private set; }
+        public int?               AttemptRequestNumber { [M(O.AggressiveInlining)] get; private set; }
 
         [M(O.AggressiveInlining)] public void SetAttemptRequestNumber( int attemptRequestNumber )
         {
@@ -97,7 +98,5 @@ namespace m3u8.download.manager.models
 
             _RowPropertiesChanged.Invoke( this, nameof(RequestRowType) );
         }
-
-        public RequestRowTypeEnum RequestRowType { [M(O.AggressiveInlining)] get; private set; }
     }
 }
