@@ -136,7 +136,7 @@ namespace m3u8.download.manager.ui
                         e.Handled = true;
                         this.Close(); 
                     }
-                return;
+                    return;
 
                 case Key.Enter: //Ok
                     if ( OkButtonProcess() )
@@ -144,14 +144,14 @@ namespace m3u8.download.manager.ui
                         e.Handled = true;
                         return;
                     }
-                break;
+                    break;
 
                 case Key.Space:
                     if ( DGV.IsFocused_SelfOrDescendants() )
                     {
                         TryCheckByKey();
                     }
-                break;
+                    break;
             }
 
             base.OnKeyDown( e );

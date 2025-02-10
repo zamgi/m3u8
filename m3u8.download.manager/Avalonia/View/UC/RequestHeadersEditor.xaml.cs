@@ -157,21 +157,21 @@ namespace m3u8.download.manager.ui
                     {
                         TryCheckByKey();
                     }
-                break;
+                    break;
 
                 case Key.Insert:
                     if ( DGV.IsFocused_SelfOrDescendants() )
                     {
                         addRowMenuItem_Click( null, EventArgs.Empty );
                     }
-                break;
+                    break;
 
                 case Key.Delete:
                     if ( DGV.IsFocused_SelfOrDescendants() )
                     {
                         deleteRowMenuItem_Click( null, EventArgs.Empty );
                     }
-                break;
+                    break;
 
                 case Key.PageDown:
                 case Key.PageUp:

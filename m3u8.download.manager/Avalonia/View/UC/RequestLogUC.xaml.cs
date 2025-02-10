@@ -86,7 +86,7 @@ namespace m3u8.download.manager.ui
                 case _CollectionChangedTypeEnum_.Remove_Bulk:
                 case _CollectionChangedTypeEnum_.Clear:
                     SetDataGridItems();
-                break;
+                    break;
             }
         }
         #endregion

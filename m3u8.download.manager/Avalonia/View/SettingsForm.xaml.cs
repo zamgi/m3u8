@@ -329,7 +329,7 @@ namespace m3u8.download.manager.ui
                 case Key.Escape:
                     e.Handled = true;
                     this.Close(); 
-                return;
+                    return;
 
                 case Key.Enter: //Ok
                     if ( OkButtonProcess() )
@@ -337,7 +337,7 @@ namespace m3u8.download.manager.ui
                         e.Handled = true;
                         return;
                     }
-                break;
+                    break;
             }
 
             base.OnKeyDown( e );

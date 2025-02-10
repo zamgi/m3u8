@@ -10,9 +10,9 @@ using System.Windows.Forms;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
-using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using CellStyle = System.Windows.Forms.DataGridViewCellStyle;
+using _SC_      = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
-using CellStyle                   = System.Windows.Forms.DataGridViewCellStyle;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -49,6 +49,8 @@ namespace m3u8.download.manager.ui
         private bool              _ShowOnlyRequestRowsWithErrors;
         private ToolStripMenuItem _ScrollToLastRowMenuItem;
         private bool              _ScrollToLastRow;
+        private ToolStripMenuItem _AutoResizeRowsHeightMenuItem;
+        private bool              _AutoResizeRowsHeight;
 
         private LogListModel             _Model;
         private List_WithIndex< LogRow > _DGVRows;
@@ -126,9 +128,13 @@ namespace m3u8.download.manager.ui
             _ScrollToLastRow = true;
             _ScrollToLastRowMenuItem = new ToolStripMenuItem( "Scroll to last row", null, _ScrollToLastRow_Click ) { Checked = _ScrollToLastRow };
 
+            _AutoResizeRowsHeight = false;
+            _AutoResizeRowsHeightMenuItem = new ToolStripMenuItem( "Auto resize rows height", null, _AutoResizeRowsHeight_Click ) { Checked = _AutoResizeRowsHeight };
+
             _ContextMenu = new ContextMenuStrip();
             _ContextMenu.Items.Add( _ShowOnlyRequestRowsWithErrorsMenuItem );
             _ContextMenu.Items.Add( _ScrollToLastRowMenuItem );
+            _ContextMenu.Items.Add( _AutoResizeRowsHeightMenuItem );
         }
         public LogUC( _SC_ sc ) : this()
         {
@@ -185,6 +191,25 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        public bool AutoResizeRowsHeight
+        {
+            get => _AutoResizeRowsHeight;
+            set
+            {
+                if ( _AutoResizeRowsHeight/*_Settings.AutoResizeRowsHeight*/ != value )
+                {
+                    _AutoResizeRowsHeightMenuItem.Checked = _AutoResizeRowsHeight = /*_Settings.AutoResizeRowsHeight =*/ value;
+                    if ( value )
+                    {
+                        AdjustRowsHeight();
+                    }
+                    else
+                    {
+                        ResetRowsHeight();
+                    }
+                }
+            }
+        }
         public bool ShowResponseColumn
         {
             get => DGV_responseColumn.Visible;
@@ -225,6 +250,24 @@ namespace m3u8.download.manager.ui
                     DGV.ResumeLayout( true );
                     DGV.ResumeDrawing();
                 }
+            }
+        }
+        public void ResetRowsHeight()
+        {
+            var h = DGV.RowTemplate.Height;
+            DGV.SuspendDrawing();
+            DGV.SuspendLayout();
+            try
+            {
+                for ( var i = DGV.RowCount - 1; 0 <= i; i-- )
+                {
+                    DGV.Rows[ i ].Height = h;
+                }
+            }
+            finally
+            {
+                DGV.ResumeLayout( true );
+                DGV.ResumeDrawing();
             }
         }
         public void AdjustRowsHeightAndColumnsWidthSprain()
@@ -525,6 +568,7 @@ namespace m3u8.download.manager.ui
 
         private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;
         private void _ScrollToLastRow_Click( object sender, EventArgs e ) => this.ScrollToLastRow = !this.ScrollToLastRow;
+        private void _AutoResizeRowsHeight_Click( object sender, EventArgs e ) => this.AutoResizeRowsHeight = !this.AutoResizeRowsHeight;
         #endregion
 
         #region [.get cell-styles.]

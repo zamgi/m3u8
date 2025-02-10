@@ -205,7 +205,7 @@ namespace m3u8.download.manager.ui
                         case _CollectionChangedTypeEnum_.Add:
                             await Dispatcher.UIThread.InvokeAsync( () => AddRow_UI( row ) );
                             //ScrollToLastRow_Routine();
-                        break;
+                            break;
 
                         //case _CollectionChangedTypeEnum_.BulkUpdate:
                         case _CollectionChangedTypeEnum_.Add_Bulk:
@@ -213,7 +213,7 @@ namespace m3u8.download.manager.ui
                         case _CollectionChangedTypeEnum_.Remove:
                         case _CollectionChangedTypeEnum_.Clear:
                             SetDataGridItems();
-                        break;
+                            break;
                     }
                 }
             }
@@ -275,14 +275,6 @@ namespace m3u8.download.manager.ui
 
         private void SettingsController_PropertyChanged( Settings settings, string propertyName )
         {
-            if ( propertyName == nameof(Settings.ShowOnlyRequestRowsWithErrors) )
-            {
-                _ShowOnlyRequestRowsWithErrors = settings.ShowOnlyRequestRowsWithErrors;
-
-                _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox.IsChecked = _ShowOnlyRequestRowsWithErrors;
-                SetDataGridItems();
-            }
-
             switch ( propertyName )
             {
                 case nameof(Settings.ShowOnlyRequestRowsWithErrors):
@@ -290,14 +282,14 @@ namespace m3u8.download.manager.ui
 
                     _ShowOnlyRequestRowsWithErrorsMenuItemCheckBox.IsChecked = _ShowOnlyRequestRowsWithErrors;
                     SetDataGridItems();
-                break;
+                    break;
 
                 case nameof(Settings.ScrollToLastRow):
                     _ScrollToLastRow = settings.ScrollToLastRow;
 
                     _ScrollToLastRowMenuItemCheckBox.IsChecked = _ScrollToLastRow;
                     ScrollToLastRow_Routine();
-                break;
+                    break;
             }
         }
         private void _ShowOnlyRequestRowsWithErrorsMenuItem_Click( object sender, RoutedEventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;

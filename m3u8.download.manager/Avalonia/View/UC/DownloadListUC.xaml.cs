@@ -252,7 +252,7 @@ namespace m3u8.download.manager.ui
             //        case OUTPUTFILENAME_COLUMN_INDEX:
             //        case OUTPUTDIRECTORY_COLUMN_INDEX:
             //            DGV.SetHandCursorIfNonHand();
-            //        break;
+            //            break;
             //    }
             //} 
             #endregion
@@ -365,13 +365,13 @@ namespace m3u8.download.manager.ui
                                         {
                                             evnt = OutputFileNameClick;
                                         }
-                                    break;
+                                        break;
                                     case LiveStreamMaxFileSize_Column_DisplayIndex:
                                         if ( _Model[ rowIndex ].IsLiveStream )
                                         {
                                             evnt = LiveStreamMaxFileSizeClick;
                                         }
-                                    break;
+                                        break;
                                 }
                                 if ( evnt != null )
                                 {
@@ -385,7 +385,7 @@ namespace m3u8.download.manager.ui
                         }
                         break;
                     }
-                break;
+                    break;
 
                 case PointerUpdateKind.RightButtonPressed:
                     {
@@ -424,7 +424,7 @@ namespace m3u8.download.manager.ui
                             evnt( p.Position, this.GetSelectedDownloadRow() );
                         }
                     }
-                break;
+                    break;
             }
         }
         #endregion
@@ -515,18 +515,18 @@ namespace m3u8.download.manager.ui
             {
                 case _CollectionChangedTypeEnum_.Sort:
                     DGV.InvalidateVisual();
-                break;
+                    break;
 
                 case _CollectionChangedTypeEnum_.Add:
                     SetDataGridItems();
                     SelectDownloadRow( row );
-                break;
+                    break;
 
                 case _CollectionChangedTypeEnum_.Add_Bulk:
                 case _CollectionChangedTypeEnum_.Clear:
                     SetDataGridItems();
                     DGV.InvalidateVisual();
-                break;
+                    break;
 
                 case _CollectionChangedTypeEnum_.Remove:
                 case _CollectionChangedTypeEnum_.Remove_Bulk:

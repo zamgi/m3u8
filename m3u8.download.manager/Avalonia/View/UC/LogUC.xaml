@@ -60,7 +60,7 @@
             >
       <DataGrid.Columns>
         <DataGridTextColumn Header="Request"  Binding="{Binding RequestText}"  Width="8*" />
-        <DataGridTextColumn Header="Response" Binding="{Binding ResponseText}" Width="2.5*"    />
+        <DataGridTextColumn Header="Response" Binding="{Binding ResponseText}" Width="2.5*" />
         <DataGridTextColumn Binding="{Binding AttemptRequestNumber}" Width="*">
           <DataGridTextColumn.Header>
             <TextBlock TextTrimming="CharacterEllipsis" ToolTip.Tip="Request attempt count">Request attempt count</TextBlock>
