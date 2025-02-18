@@ -1,9 +1,10 @@
 ﻿using System.Drawing;
+using System.Globalization;
 using System.Linq;
 
 using _Resources_                    = m3u8.download.manager.Properties.Resources;
-using _ToolStripSpeedThreshold_      = m3u8.download.manager.ui.ToolStripSpeedThreshold;
 using _ToolStripDegreeOfParallelism_ = m3u8.download.manager.ui.ToolStripDegreeOfParallelism;
+using _ToolStripSpeedThreshold_      = m3u8.download.manager.ui.ToolStripSpeedThreshold;
 
 namespace System.Windows.Forms
 {
@@ -335,7 +336,12 @@ namespace System.Windows.Forms
         protected override Color  SelectedBackColor => Color.LightGreen;
 
         public bool TrimTrailingDecimalsZero { get; set; } = true;
-        private string get_formatted( decimal d ) => TrimTrailingDecimalsZero ? d.ToString().TrimEnd( '0' ).TrimEnd( '.' ) : d.ToString();
+#if NETCOREAPP
+        private bool IsInteger( in decimal d ) => decimal.IsInteger( d );
+#else
+        private bool IsInteger( in decimal d ) => (d == decimal.Truncate( d ));
+#endif
+        private string get_formatted( decimal d ) => TrimTrailingDecimalsZero && !IsInteger( d ) ? d.ToString( new NumberFormatInfo() { NumberDecimalSeparator = "." } ).TrimEnd( '0' ).TrimEnd( '.' ) : d.ToString();
         public override decimal? Value 
         { 
             get => _Value;

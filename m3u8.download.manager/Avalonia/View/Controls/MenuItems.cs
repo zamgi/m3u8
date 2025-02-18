@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 using Avalonia;
@@ -244,7 +245,7 @@ namespace m3u8.download.manager.ui
         protected override IBrush  SelectedBackground => Brushes.LightGreen;
 
         public bool TrimTrailingDecimalsZero { get; set; } = true;
-        private string get_formatted( decimal d ) => TrimTrailingDecimalsZero ? d.ToString().TrimEnd( '0' ).TrimEnd( '.' ) : d.ToString();
+        private string get_formatted( decimal d ) => TrimTrailingDecimalsZero && !decimal.IsInteger( d ) ? d.ToString( new NumberFormatInfo() { NumberDecimalSeparator = "." } ).TrimEnd( '0' ).TrimEnd( '.' ) : d.ToString();
         public override decimal? Value 
         { 
             get => _Value;
