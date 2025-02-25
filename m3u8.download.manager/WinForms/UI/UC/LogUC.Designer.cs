@@ -25,7 +25,7 @@
             this.DGV = new System.Windows.Forms.DataGridViewEx();
             this.DGV_requestColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DGV_responseColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DGV_requestAttemptCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DGV_attemptRequestCountColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.toolTip = new System.Windows.Forms.ToolTip();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
@@ -50,7 +50,7 @@
             {
                 this.DGV_requestColumn,
                 this.DGV_responseColumn,
-                this.DGV_requestAttemptCountColumn,
+                this.DGV_attemptRequestCountColumn,
             });
             cs3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
             cs3.BackColor = System.Drawing.SystemColors.Window;
@@ -103,18 +103,18 @@
             this.DGV_responseColumn.FillWeight = 250F;
             this.DGV_responseColumn.Width = 250;
             // 
-            // DGV_requestAttemptCountColumn
+            // DGV_attemptRequestCountColumn
             // 
             cs7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
             cs8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.DGV_requestAttemptCountColumn.HeaderCell.Style = cs8;
-            this.DGV_requestAttemptCountColumn.DefaultCellStyle = cs7;            
-            this.DGV_requestAttemptCountColumn.HeaderText = "Request attempt count";            
-            this.DGV_requestAttemptCountColumn.ReadOnly = true;
-            this.DGV_requestAttemptCountColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DGV_requestAttemptCountColumn.MinimumWidth = 75;
-            this.DGV_requestAttemptCountColumn.FillWeight = 150F;
-            this.DGV_requestAttemptCountColumn.Width = 150;
+            this.DGV_attemptRequestCountColumn.HeaderCell.Style = cs8;
+            this.DGV_attemptRequestCountColumn.DefaultCellStyle = cs7;            
+            this.DGV_attemptRequestCountColumn.HeaderText = "Attempt request count";            
+            this.DGV_attemptRequestCountColumn.ReadOnly = true;
+            this.DGV_attemptRequestCountColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DGV_attemptRequestCountColumn.MinimumWidth = 75;
+            this.DGV_attemptRequestCountColumn.FillWeight = 150F;
+            this.DGV_attemptRequestCountColumn.Width = 150;
             // 
             // LogUC
             // 
@@ -131,7 +131,7 @@
         private System.Windows.Forms.DataGridViewEx DGV;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_requestColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_responseColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_requestAttemptCountColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DGV_attemptRequestCountColumn;
         private System.Windows.Forms.ToolTip toolTip;
     }
 }

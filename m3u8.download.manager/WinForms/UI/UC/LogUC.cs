@@ -213,7 +213,7 @@ namespace m3u8.download.manager.ui
         public bool ShowResponseColumn
         {
             get => DGV_responseColumn.Visible;
-            set => DGV_responseColumn.Visible = DGV_requestAttemptCountColumn.Visible = value;
+            set => DGV_responseColumn.Visible = DGV_attemptRequestCountColumn.Visible = value;
         }
         public bool AllowDrawDownloadButtonForM3u8Urls 
         {
@@ -636,19 +636,19 @@ namespace m3u8.download.manager.ui
                     {
                         col_1 = DGV_responseColumn;
                         col_2 = DGV_requestColumn;
-                        col_3 = DGV_requestAttemptCountColumn;
+                        col_3 = DGV_attemptRequestCountColumn;
                     }
-                    else if ( e.Column == DGV_requestAttemptCountColumn )
+                    else if ( e.Column == DGV_attemptRequestCountColumn )
                     {
-                        col_1 = DGV_requestAttemptCountColumn;
-                        col_2 = DGV_requestColumn;
-                        col_3 = DGV_responseColumn;                        
+                        col_1 = DGV_attemptRequestCountColumn;
+                        col_2 = DGV_responseColumn;
+                        col_3 = DGV_requestColumn;
                     }
                     else //if ( e.Column == DGV_requestColumn )
                     {
                         col_1 = DGV_requestColumn;
-                        col_2 = DGV_responseColumn;
-                        col_3 = DGV_requestAttemptCountColumn;
+                        col_2 = DGV_attemptRequestCountColumn;
+                        col_3 = DGV_responseColumn;
                     }
 
                     var rw = w - col_1.Width;
@@ -706,10 +706,10 @@ namespace m3u8.download.manager.ui
             var w  = (DGV.Width - GetColumnsResizeDiff());
             if ( this.ShowResponseColumn )
             {
-                var cw = 1.0 * (DGV_requestColumn.Width + DGV_responseColumn.Width + DGV_requestAttemptCountColumn.Width);
+                var cw = 1.0 * (DGV_requestColumn.Width + DGV_responseColumn.Width + DGV_attemptRequestCountColumn.Width);
                 DGV_requestColumn            .Width = (int) (w / (cw / Math.Max( 1, DGV_requestColumn .Width )));
                 DGV_responseColumn           .Width = (int) (w / (cw / Math.Max( 1, DGV_responseColumn.Width )));
-                DGV_requestAttemptCountColumn.Width = (int) (w / (cw / Math.Max( 1, DGV_requestAttemptCountColumn.Width )));
+                DGV_attemptRequestCountColumn.Width = (int) (w / (cw / Math.Max( 1, DGV_attemptRequestCountColumn.Width )));
             }
             else
             {
