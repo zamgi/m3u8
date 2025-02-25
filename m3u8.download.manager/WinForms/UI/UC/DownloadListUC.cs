@@ -296,15 +296,15 @@ namespace m3u8.download.manager.ui
                         DGV.ClearSelection();
                         row.Selected = true;
                     }
-                break;
+                    break;
 
                 default:
                     DGV.ClearSelection();
                     DGV.Rows[ rowIndex ].Selected = true;
-                break;
+                    break;
             }
         }
-        [M(O.AggressiveInlining)] private void SelectLonelyRowIfCurrentSelectedOnlyOneOrZeroRow( int rowIndex )
+        [M(O.AggressiveInlining)] private void SelectLonelyRowIfCurrentlySelectedOnlyOneOrZeroRow( int rowIndex )
         {
             var srs = DGV.SelectedRows;
             switch ( srs.Count )
@@ -317,7 +317,7 @@ namespace m3u8.download.manager.ui
                         DGV.ClearSelection();
                         row.Selected = true;
                     }
-                break;
+                    break;
             }
         }
         private bool SelectDownloadRowInternal( DownloadRow row, bool callAfterSort = false )
@@ -412,7 +412,7 @@ namespace m3u8.download.manager.ui
             {
                 case _CollectionChangedTypeEnum_.Sort:
                     DGV.Refresh();
-                break;
+                    break;
 
                 case _CollectionChangedTypeEnum_.Add:
                 case _CollectionChangedTypeEnum_.Add_Bulk:
@@ -434,7 +434,9 @@ namespace m3u8.download.manager.ui
                 //case _CollectionChangedTypeEnum_.BulkUpdate:
                 {
                     #region [.save selected row.]
-                    var selectedVisibleIndex = (DGV.SelectedRows.Cast< DataGridViewRow >().FirstOrDefault()?.Index).GetValueOrDefault( -1 );
+                    var srs = DGV.SelectedRows;
+                    var selectedVisibleIndex = (0 < srs.Count) ? srs.Cast< DataGridViewRow >().Min( r => r.Index ) : -1;
+                    //var selectedVisibleIndex = (DGV.SelectedRows.Cast< DataGridViewRow >().FirstOrDefault()?.Index).GetValueOrDefault( -1 );
                     #endregion
 
                     #region [.set grid-row-count.]                    
@@ -1265,7 +1267,7 @@ namespace m3u8.download.manager.ui
                 if ( allowed && (e.Button == MouseButtons.Right) )
                 {
                     //select actual row if current selected only one-or-zero row
-                    SelectLonelyRowIfCurrentSelectedOnlyOneOrZeroRow( ht.RowIndex );                        
+                    SelectLonelyRowIfCurrentlySelectedOnlyOneOrZeroRow( ht.RowIndex );                        
 
                     MouseClickRightButton?.Invoke( e, GetSelectedDownloadRow(), outOfGridArea: false );
                 }

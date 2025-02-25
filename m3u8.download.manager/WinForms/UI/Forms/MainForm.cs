@@ -69,6 +69,7 @@ namespace m3u8.download.manager.ui
             _SC = new _SC_( Settings.Default );
 
             _DownloadListModel = new DownloadListModel();
+            _DownloadListModel.CollectionChanged    += DownloadListModel_CollectionChanged;
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
             _DC = new _DC_( _DownloadListModel, _SC );
 
@@ -344,7 +345,7 @@ namespace m3u8.download.manager.ui
                     case Keys.Z: // UNDO
                         if ( _UndoModel.TryUndo( out var row ) )
                         {
-                            _DownloadListModel.AddRow( row );
+                            _DownloadListModel.AddRowIf( row );
                         }
                         break;
                 }
@@ -429,12 +430,12 @@ namespace m3u8.download.manager.ui
             {
                 case nameof(Settings.ShowDownloadStatisticsInMainFormTitle):
                     _ShowDownloadStatistics = settings.ShowDownloadStatisticsInMainFormTitle;
-                
-                    _DownloadListModel.CollectionChanged -= DownloadListModel_CollectionChanged;
-                    if ( _ShowDownloadStatistics )
-                    {
-                        _DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
-                    }
+
+                    //_DownloadListModel.CollectionChanged -= DownloadListModel_CollectionChanged;
+                    //if ( _ShowDownloadStatistics )
+                    //{
+                    //    _DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
+                    //}
                     ShowDownloadStatisticsInTitle();
                     break;
 
@@ -606,13 +607,6 @@ namespace m3u8.download.manager.ui
                             ExternalProg_Run_IfExists( _SC.Settings.ExternalProgFilePath, $"\"{outputFileName}\"" );
                         }
                     }
-                    #endregion
-
-                    #region comm. [.show/hide NotifyIcon.]
-                    /*
-                    var any_running = _DownloadListModel.GetRows().Any( row => row.Status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Wait => true, _ => false } );
-                    DownloadController_IsDownloadingChanged( isDownloading: any_running );
-                    //*/
                     #endregion
                 }
                 break;
@@ -911,7 +905,7 @@ namespace m3u8.download.manager.ui
 
                 SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
                 #endregion
-            }            
+            }
         }
         private async void OnlyDeleteOutputFiles( DownloadRow[] rows, bool ask = true )
         {
@@ -1213,7 +1207,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _UndoModel.TryUndo( out var row ) )
             {
-                _DownloadListModel.AddRow( row );
+                _DownloadListModel.AddRowIf( row );
             }
         }
 

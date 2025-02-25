@@ -403,7 +403,7 @@ namespace m3u8.download.manager.ui
                     case Key.Z:
                         if ( _VM.UndoModel.TryUndo( out var row ) )
                         {
-                            _VM.DownloadListModel.AddRow( row );
+                            _VM.DownloadListModel.AddRowIf( row );
                         }
                         break;
                 }
@@ -926,7 +926,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _VM.UndoModel.TryUndo( out var row ) )
             {
-                _VM.DownloadListModel.AddRow( row );
+                _VM.DownloadListModel.AddRowIf( row );
             }
         }
         private void showLogToolButton_Click( object sender, EventArgs e )

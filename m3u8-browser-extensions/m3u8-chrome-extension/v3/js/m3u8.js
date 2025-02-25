@@ -133,8 +133,12 @@ async function send2host_single(m3u8_url, requestHeaders, auto_start_download) {
 async function send2host_multi(messageObject) {
     const HOST_NAME = 'm3u8.downloader.host';
 
-    let res = await chrome.runtime.sendNativeMessage(HOST_NAME, { array: messageObject });
-    let message;
+    let res, message;
+    try {
+        res = await chrome.runtime.sendNativeMessage(HOST_NAME, { array: messageObject });
+    } catch (ex) {
+        message = ex + '';
+    }
     if (res) {
         if (res.text === 'success') {
             console.log('[' + HOST_NAME + '] sent the response: "' + JSON.stringify(res) + '"');
@@ -144,7 +148,7 @@ async function send2host_multi(messageObject) {
         message = res.text || JSON.stringify(res);
     }
     else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
-        message = chrome.runtime.lastError.message;
+        message = ((message) ? (message + ', ') : '') + chrome.runtime.lastError.message;
     }
 
     let notificationOptions = {

@@ -76,42 +76,47 @@ function render_m3u8_urls(m3u8_urls) {
     }
 }
 
-function create_messageObject(m3u8_url, auto_start_download) {
-    return ({
-        m3u8_url: m3u8_url,
-        auto_start_download: !!auto_start_download
-    });
-}
+function create_messageObject(m3u8_url, auto_start_download) { return ({ m3u8_url: m3u8_url, auto_start_download: !!auto_start_download }); }
 function send2host_single(m3u8_url, auto_start_download) { send2host_multi( [ create_messageObject(m3u8_url, auto_start_download) ] ); }
 function send2host_multi(messageObject) {
     var HOST_NAME = "m3u8.downloader.host";
-    
-    chrome.runtime.sendNativeMessage(HOST_NAME, 
-    {
-        array: messageObject 
-    },
-    function (response) {
-        var message;
-        if (response) {
-            if (response.text === "success") {
-                console.log("[" + HOST_NAME + "] sent the response: '" + JSON.stringify(response) + "'");
-                return;
-            } 
 
-            message = response.text || JSON.stringify(response);
-        }
-        else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
-            message = chrome.runtime.lastError.message;
-        }
+    try {
+        chrome.runtime.sendNativeMessage(HOST_NAME, { array: messageObject },
+        function (response) {
+            var message;
+            if (response) {
+                if (response.text === "success") {
+                    console.log("[" + HOST_NAME + "] sent the response: '" + JSON.stringify(response) + "'");
+                    return;
+                } 
 
-        var notificationOptions = {
-            type    : "basic",
-            title   : "[" + HOST_NAME + "] => send-native-message ERROR:",
-            message : message || "[NULL]",
-            iconUrl : "img/m3u8_148.png",
-            priority: 2
-        };
-        chrome.notifications.clear(HOST_NAME);
-        chrome.notifications.create(HOST_NAME, notificationOptions);
-    });
+                message = response.text || JSON.stringify(response);
+            }
+            else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
+                message = chrome.runtime.lastError.message;
+            }
+
+            var notificationOptions = {
+                type    : "basic",
+                title   : "[" + HOST_NAME + "] => send-native-message ERROR:",
+                message : message || "[NULL]",
+                iconUrl : "img/m3u8_148.png",
+                priority: 2
+            };
+            chrome.notifications.clear(HOST_NAME);
+            chrome.notifications.create(HOST_NAME, notificationOptions);
+        });
+    } catch (ex) {
+        var message = ex + '';
+            var notificationOptions = {
+                type    : "basic",
+                title   : "[" + HOST_NAME + "] => send-native-message ERROR:",
+                message : message || "[NULL]",
+                iconUrl : "img/m3u8_148.png",
+                priority: 2
+            };
+            chrome.notifications.clear(HOST_NAME);
+            chrome.notifications.create(HOST_NAME, notificationOptions);
+    }
 }

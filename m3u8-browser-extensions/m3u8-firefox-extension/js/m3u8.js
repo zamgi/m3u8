@@ -133,8 +133,9 @@ function create_messageObject(m3u8_url, requestHeaders, auto_start_download) {
 function send2host_single(m3u8_url, requestHeaders, auto_start_download) { send2host_multi( [ create_messageObject(m3u8_url, requestHeaders, auto_start_download) ] ); }
 function send2host_multi(messageObject) {
     const HOST_NAME = "m3u8.downloader.host";
-    
-    chrome.runtime.sendNativeMessage(HOST_NAME, { array: messageObject },
+
+    try {
+        chrome.runtime.sendNativeMessage(HOST_NAME, { array: messageObject },
         function (response) {
             let message;
             if (response) {
@@ -158,5 +159,17 @@ function send2host_multi(messageObject) {
             };
             chrome.notifications.clear(HOST_NAME);
             chrome.notifications.create(HOST_NAME, notificationOptions);
-        });
+        });        
+    } catch (ex) {
+        let message = ex + '';
+        let notificationOptions = {
+            type    : "basic",
+            title   : "[" + HOST_NAME + "] => send-native-message ERROR:",
+            message : message || "[NULL]",
+            iconUrl : "img/m3u8_148.png",
+            priority: 2
+        };
+        chrome.notifications.clear(HOST_NAME);
+        chrome.notifications.create(HOST_NAME, notificationOptions);
+    }
 }
