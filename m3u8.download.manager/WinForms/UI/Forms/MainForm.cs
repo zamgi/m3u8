@@ -44,6 +44,7 @@ namespace m3u8.download.manager.ui
         private _SC_                           _SC;
         private LogRowsHeightStorer            _LogRowsHeightStorer;
         private Action< DownloadRow, string >  _DownloadListModel_RowPropertiesChangedAction;
+        private Action< _CollectionChangedTypeEnum_, DownloadRow > _DownloadListModel_CollectionChangedAction;
         private bool                           _ShowDownloadStatistics;
         private HashSet< string >              _ExternalProgQueue;
         private NotifyIcon                     _NotifyIcon;
@@ -83,6 +84,7 @@ namespace m3u8.download.manager.ui
             //----------------------------------------//
 
             _DownloadListModel_RowPropertiesChangedAction = new Action< DownloadRow, string >( DownloadListModel_RowPropertiesChanged );
+            _DownloadListModel_CollectionChangedAction    = new Action< _CollectionChangedTypeEnum_, DownloadRow >( DownloadListModel_CollectionChanged );
             
             _LogRowsHeightStorer = new LogRowsHeightStorer();
 
@@ -430,12 +432,6 @@ namespace m3u8.download.manager.ui
             {
                 case nameof(Settings.ShowDownloadStatisticsInMainFormTitle):
                     _ShowDownloadStatistics = settings.ShowDownloadStatisticsInMainFormTitle;
-
-                    //_DownloadListModel.CollectionChanged -= DownloadListModel_CollectionChanged;
-                    //if ( _ShowDownloadStatistics )
-                    //{
-                    //    _DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
-                    //}
                     ShowDownloadStatisticsInTitle();
                     break;
 
@@ -526,7 +522,7 @@ namespace m3u8.download.manager.ui
 
             if ( this.InvokeRequired )
             {
-                this.BeginInvoke( DownloadListModel_CollectionChanged, changedType, row );
+                this.BeginInvoke( _DownloadListModel_CollectionChangedAction, changedType, row );
                 return;
             }
 
