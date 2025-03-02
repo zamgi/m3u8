@@ -72,7 +72,7 @@
             this.DGV.Size = new System.Drawing.Size(746, 452);
             this.DGV.TabIndex = 0;
             this.DGV.VirtualMode = true;
-            this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
+            //---this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
             this.DGV.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseClick);            
             this.DGV.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DGV_CellValueNeeded);
             this.DGV.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DGV_CellFormatting);
@@ -112,9 +112,9 @@
             this.DGV_attemptRequestCountColumn.HeaderText = "Attempt request count";            
             this.DGV_attemptRequestCountColumn.ReadOnly = true;
             this.DGV_attemptRequestCountColumn.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DGV_attemptRequestCountColumn.MinimumWidth = 75;
-            this.DGV_attemptRequestCountColumn.FillWeight = 150F;
-            this.DGV_attemptRequestCountColumn.Width = 150;
+            this.DGV_attemptRequestCountColumn.MinimumWidth = 50;
+            this.DGV_attemptRequestCountColumn.FillWeight = 70F;
+            this.DGV_attemptRequestCountColumn.Width = 70;
             // 
             // LogUC
             // 

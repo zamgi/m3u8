@@ -615,6 +615,7 @@ namespace m3u8.download.manager.ui
         {
             base.OnLoad( e );
 
+            this.DGV.Resize += new EventHandler(this.DGV_Resize);
             DGV_Resize( null, null );
         }
 
