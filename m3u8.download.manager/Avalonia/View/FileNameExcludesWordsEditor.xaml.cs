@@ -16,8 +16,6 @@ using Avalonia.VisualTree;
 
 using ReactiveUI;
 
-using static System.Net.Mime.MediaTypeNames;
-
 namespace m3u8.download.manager.ui
 {
     /// <summary>
