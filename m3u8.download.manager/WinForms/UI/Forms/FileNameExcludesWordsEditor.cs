@@ -143,7 +143,7 @@ namespace m3u8.download.manager.ui
                                     }
                                 }
                                 return (true);
-                            }                            
+                            }
                         }
                         break;
                 }

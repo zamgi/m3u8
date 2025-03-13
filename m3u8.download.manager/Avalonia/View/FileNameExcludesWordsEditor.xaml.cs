@@ -16,6 +16,8 @@ using Avalonia.VisualTree;
 
 using ReactiveUI;
 
+using static System.Net.Mime.MediaTypeNames;
+
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -109,7 +111,7 @@ namespace m3u8.download.manager.ui
 
             filterTextBox_SubscribeDisposable.Dispose_NoThrow();
         }
-        protected override void OnKeyDown( KeyEventArgs e )
+        protected override async void OnKeyDown( KeyEventArgs e )
         {
             switch ( e.Key )
             {
@@ -131,6 +133,50 @@ namespace m3u8.download.manager.ui
 
                 case Key.Delete:
                     e.Handled = TryDeleteSelectedItemsFromDGV();
+                    break;
+
+                case Key.C:
+                    if ( e.KeyModifiers.HasFlag( KeyModifiers.Control ) )
+                    {                        
+                        var selItems = DGV.SelectedItems;
+                        if ( 0 < selItems.Count )
+                        {
+                            e.Handled = true;
+                            var txt = string.Join( "\r\n", selItems.Cast< WordItem >().Select( w => w.Text ) );
+                            await ClipboardHelper.CopyToClipboard( this, txt );
+                        }
+                    }
+                    break;
+
+                case Key.V:
+                    if ( e.KeyModifiers.HasFlag( KeyModifiers.Control ) && (!_DGVRows.IsAddingNew && !_DGVRows.IsEditingItem) )
+                    {
+                        var txt = await ClipboardHelper.GetFromClipboard( this );
+                        if ( !txt.IsNullOrEmpty() )
+                        {                            
+                            var rows = txt.Split( [ '\r', '\n' ], StringSplitOptions.RemoveEmptyEntries );
+                            foreach ( var row in rows )
+                            {
+                                var line = row.Trim();
+                                if ( !line.IsNullOrEmpty() )
+                                {
+                                    var t = (WordItem) _DGVRows.AddNew();
+                                    t.Text = line;
+                                    _DGVRows.CommitNew();
+                                    try
+                                    {
+                                        DGV.ScrollIntoView( t, DGV.Columns[ 1 ] );
+                                    }
+                                    catch ( Exception ex )
+                                    {
+                                        Debug.WriteLine( ex );
+                                    }
+
+                                    e.Handled = true;
+                                }
+                            }
+                        }
+                    }
                     break;
             }
 
@@ -178,7 +224,7 @@ namespace m3u8.download.manager.ui
                 return (false);
             }
 
-            object[] to_array( IList selectedItems )
+            static object[] to_array( IList selectedItems )
             {
                 var count = selectedItems.Count;
                 if ( 0 < count )

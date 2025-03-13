@@ -114,6 +114,8 @@ namespace m3u8.download.manager
             var txt = string.Join( "\r\n", rows.Select( r => r.RequestHeaders.AnyEx() ? $"{r.Url}{CLIP_BRD__URL_REQ_HEAD_SEP_CHAR}{BrowserIPC.ExtensionRequestHeader.ToJson( r.RequestHeaders )}" : r.Url ) );
             return (window.Clipboard.SetTextAsync( txt ));
         }
+        public static Task CopyToClipboard( this Window window, string txt ) => window.Clipboard.SetTextAsync( txt );
+        public static Task< string > GetFromClipboard( this Window window ) => window.Clipboard.GetTextAsync();
 
         public static async Task< (bool success, IDictionary< string, string > headers) > TryGetHeadersFromClipboard( this Window window )
         {
