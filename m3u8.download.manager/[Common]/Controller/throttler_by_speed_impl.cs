@@ -192,4 +192,199 @@ namespace m3u8.download.manager.controllers
         public override string ToString() => $"max_speed_threshold: {GetMaxSpeedThreshold()} Mbps";
 #endif
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal sealed class throttler_by_speed_impl__v2 : I_throttler_by_speed_t, IDisposable
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        private sealed class download_measure_t
+        {
+            private long _TotalDownloadBytes;
+            private long _StartMeasureDateTimeTicks;
+            public download_measure_t( long startMeasureDateTimeTicks ) => _StartMeasureDateTimeTicks = startMeasureDateTimeTicks;
+            public long StartMeasureDateTimeTicks => _StartMeasureDateTimeTicks;
+            public long GetTotalDownloadBytes() => _TotalDownloadBytes;
+            
+            /// <summary>
+            /// 
+            /// </summary>
+            private readonly struct last_measure_tuple_t
+            {
+                public long MeasureDateTimeTicks  { get; init; }
+                public long IntervalDateTimeTicks { get; init; }
+                public int  DownloadBytes         { get; init; }
+            }
+
+            private last_measure_tuple_t _LastMeasureTuple = new last_measure_tuple_t();
+            public void AddTotalDownloadBytes( long measureDateTimeTicks, int downloadBytes )
+            {
+                _TotalDownloadBytes += downloadBytes;
+
+                var prev_MeasureDateTimeTicks = _LastMeasureTuple.MeasureDateTimeTicks;
+                var lmt = new last_measure_tuple_t()
+                { 
+                    IntervalDateTimeTicks = measureDateTimeTicks - prev_MeasureDateTimeTicks, 
+                    MeasureDateTimeTicks  = measureDateTimeTicks, 
+                    DownloadBytes         = downloadBytes 
+                };
+                _LastMeasureTuple = lmt;
+            }
+            public (long intervalDateTimeTicks, int downloadBytes) GetLastDownloadBytes() => (_LastMeasureTuple.IntervalDateTimeTicks, _LastMeasureTuple.DownloadBytes);
+        }
+
+        private decimal _Max_speed_threshold_in_Mbps;
+        private SpinLock _SpinLock;
+        private object _Lock;
+        private CancellationTokenSource __Cts__;
+        private download_measure_t _DownloadMeasure;
+
+        public throttler_by_speed_impl__v2( decimal? max_speed_threshold_in_Mbps ) : this( max_speed_threshold_in_Mbps.GetValueOrDefault( decimal.MaxValue ) ) { }
+        public throttler_by_speed_impl__v2( decimal max_speed_threshold_in_Mbps )
+        {
+            _Max_speed_threshold_in_Mbps = max_speed_threshold_in_Mbps;
+            _DownloadMeasure = Create__download_measure_t();
+            __Cts__ = new CancellationTokenSource();
+            _SpinLock = new SpinLock();
+            _Lock = new object();
+        }
+        public void Dispose()
+        {
+            var cts = Get_Cts();
+            cts.Cancel_NoThrow();
+            cts.Dispose_NoThrow();
+        }
+
+        private CancellationTokenSource Get_Cts()
+        {
+            lock ( __Cts__ )
+            {
+                return (__Cts__);
+            }
+        }
+
+        private decimal GetMaxSpeedThreshold_Internal()
+        {
+            var lockTaken = false;
+            try
+            {
+                _SpinLock.Enter( ref lockTaken );
+                return (_Max_speed_threshold_in_Mbps);
+            }
+            finally
+            {
+                if ( lockTaken )
+                {
+                    _SpinLock.Exit( true );
+                }
+            }
+        }
+        public decimal? GetMaxSpeedThreshold() => GetMaxSpeedThreshold_Internal();
+        public void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps )
+        {
+            var lockTaken = false;
+            try
+            {
+                _SpinLock.Enter( ref lockTaken );
+                _Max_speed_threshold_in_Mbps = max_speed_threshold_in_Mbps.GetValueOrDefault( decimal.MaxValue );
+            }
+            finally
+            {
+                if ( lockTaken )
+                {
+                    _SpinLock.Exit( true );
+                }
+            }
+            //---Interlocked.Exchange( ref _Max_speed_threshold_in_Mbps, max_speed_threshold_in_Mbps.GetValueOrDefault( decimal.MaxValue ) );
+            //_DownloadMeasureDict.Clear();
+            Get_Cts().Cancel_NoThrow();
+        }
+
+        private static download_measure_t Create__download_measure_t() => new download_measure_t( Stopwatch.GetTimestamp() );
+        public void Start( Task task )
+        {
+            lock ( _Lock )
+            {
+                _DownloadMeasure = Create__download_measure_t();
+            }
+        }
+        public void Restart( Task task )
+        {
+            lock ( _Lock )
+            {
+                _DownloadMeasure = Create__download_measure_t();
+            }
+        }
+        public void End( Task task ) { }
+
+        private static void Delay_NoThrow( int millisecondsDelay, CancellationToken ct )
+        {
+            try
+            {
+                Task.Delay( millisecondsDelay, ct ).Wait( ct );
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+            }
+        }
+        private void Recreate_Cts_IfNeed()
+        {
+            lock ( __Cts__ )
+            {
+                if ( __Cts__.IsCancellationRequested )
+                {
+                    __Cts__.Dispose_NoThrow();
+                    __Cts__ = new CancellationTokenSource();
+                }
+            }
+        }
+        public double? Throttle( Task task, CancellationToken ct )
+        {
+            lock ( _Lock )
+            {
+                var totalDownloadBytes = _DownloadMeasure.GetTotalDownloadBytes();
+                if ( totalDownloadBytes == 0 ) return (null);
+
+                var nowTicks = Stopwatch.GetTimestamp();
+                var elapsedSeconds = new TimeSpan( nowTicks - _DownloadMeasure.StartMeasureDateTimeTicks ).TotalSeconds;
+                var secondsDelay   = (Extensions.GetMbps( totalDownloadBytes ) / (double) GetMaxSpeedThreshold_Internal()) - elapsedSeconds;
+
+                var last = _DownloadMeasure.GetLastDownloadBytes();
+                var last_elapsedSeconds = TimeSpan.FromTicks( last.intervalDateTimeTicks ).TotalSeconds;
+                var instantSpeedInMbps  = (0 < last_elapsedSeconds) ? Extensions.GetSpeedInMbps( last.downloadBytes, last_elapsedSeconds ) : (double?) null;
+
+                if ( 0 < secondsDelay )
+                {
+                    const double MAX_SECONDS_DELAY_BY_STEP = 1; //10;
+                    var secondsDelay_2 = Math.Min( MAX_SECONDS_DELAY_BY_STEP, secondsDelay );
+
+                    //---Debug.WriteLine( $"instant-speed: {instantSpeedInMbps:N2} Mbps, elapsedSeconds: {elapsedSeconds}, currentDownloadBytes: {totalDownloadBytes:#,#} => secondsDelay: {secondsDelay:N2}" );
+                    Debug.WriteLine( $"secondsDelay: {secondsDelay:N4}, secondsDelay_2: {secondsDelay_2:N4}" );
+
+                    using var join_ct = CancellationTokenSource.CreateLinkedTokenSource( ct, Get_Cts().Token );
+                    Delay_NoThrow( (int) (secondsDelay_2 * 1_000), join_ct.Token );
+                    Recreate_Cts_IfNeed();
+                }
+                //else
+                //{
+                //    Debug.WriteLine( $"instant-speed: {instantSpeedInMbps:N2} Mbps, elapsedSeconds: {elapsedSeconds}, currentDownloadBytes: {totalDownloadBytes:#,#}" );
+                //}
+                return (instantSpeedInMbps);
+            }
+        }
+        public void TakeIntoAccountDownloadedBytes( Task task, int downloadBytes )
+        {
+            lock ( _Lock )
+            {
+                _DownloadMeasure.AddTotalDownloadBytes( measureDateTimeTicks: Stopwatch.GetTimestamp(), downloadBytes );
+            }
+        }
+#if DEBUG
+        public override string ToString() => $"max_speed_threshold: {GetMaxSpeedThreshold()} Mbps";
+#endif
+    }
 }

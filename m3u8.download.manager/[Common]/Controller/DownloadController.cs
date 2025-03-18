@@ -112,7 +112,7 @@ namespace m3u8.download.manager.controllers
                                                                                          _SettingsController.MaxDegreeOfParallelism );
 
             _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( _SettingsController.MaxDegreeOfParallelism );
-            _ThrottlerBySpeed            = new throttler_by_speed_impl( _SettingsController.MaxSpeedThresholdInMbps );
+            _ThrottlerBySpeed            = new throttler_by_speed_impl__v2/*throttler_by_speed_impl*/( _SettingsController.MaxSpeedThresholdInMbps );
             _StreamPool                  = CreateStreamPool( _SettingsController.MaxDegreeOfParallelism );
             _RespBufPool                 = CreateRespBufPool( _SettingsController.MaxDegreeOfParallelism );
         }
