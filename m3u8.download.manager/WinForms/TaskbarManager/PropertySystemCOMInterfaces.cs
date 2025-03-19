@@ -7,9 +7,9 @@ namespace System.Windows.Forms.Taskbar
     // all inherited methods need to be declared again with the exception of those already declared in "IUnknown"
 #pragma warning disable 108
 
-    [ComImport,
-    Guid(ShellIIDGuid.IPropertyDescription),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IPropertyDescription)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyDescription
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -91,9 +91,9 @@ namespace System.Windows.Forms.Taskbar
         HResult IsValueCanonical( [In] PropVariant propvar );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IPropertyDescription2),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IPropertyDescription2)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyDescription2 : IPropertyDescription
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -163,9 +163,9 @@ namespace System.Windows.Forms.Taskbar
         void GetImageReferenceForValue( [In] PropVariant propvar, [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszImageRes );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IPropertyDescriptionList ),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IPropertyDescriptionList)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyDescriptionList
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -175,9 +175,9 @@ namespace System.Windows.Forms.Taskbar
         void GetAt( [In] uint iElem, [In] ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IPropertyDescription ppv );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IPropertyEnumType ),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IPropertyEnumType)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyEnumType
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -196,9 +196,9 @@ namespace System.Windows.Forms.Taskbar
         void GetDisplayText( [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszDisplay );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IPropertyEnumType2 ),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IPropertyEnumType2)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyEnumType2 : IPropertyEnumType
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -220,9 +220,9 @@ namespace System.Windows.Forms.Taskbar
         void GetImageReference( [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszImageRes );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IPropertyEnumTypeList ),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IPropertyEnumTypeList)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyEnumTypeList
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -243,7 +243,7 @@ namespace System.Windows.Forms.Taskbar
 
     /// <summary>A property store</summary>
     [ComImport]
-    [Guid(ShellIIDGuid.IPropertyStore )]
+    [Guid(ShellIIDGuid.IPropertyStore)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyStore
     {
@@ -271,7 +271,7 @@ namespace System.Windows.Forms.Taskbar
 
     /// <summary>An in-memory property store cache</summary>
     [ComImport]
-    [Guid(ShellIIDGuid.IPropertyStoreCache )]
+    [Guid(ShellIIDGuid.IPropertyStoreCache)]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IPropertyStoreCache
     {

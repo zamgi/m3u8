@@ -10,39 +10,35 @@ namespace System.Windows.Forms.Taskbar
     /// </summary>
     public abstract class ShellContainer : ShellObject, IEnumerable<ShellObject>, IDisposable
     {
-        private IShellFolder desktopFolderEnumeration;
-        private IShellFolder nativeShellFolder;
+        private IShellFolder _DesktopFolderEnumeration;
+        private IShellFolder _NativeShellFolder;
 
-        internal ShellContainer()
-        {
-        }
-        internal ShellContainer( IShellItem2 shellItem ) : base( shellItem )
-        {
-        }
+        internal ShellContainer() { }
+        internal ShellContainer( IShellItem2 shellItem ) : base( shellItem ) { }
 
         internal IShellFolder NativeShellFolder
         {
             get
             {
-                if ( nativeShellFolder == null )
+                if ( _NativeShellFolder == null )
                 {
                     var guid = new Guid(ShellIIDGuid.IShellFolder );
                     var handler = new Guid(ShellBHIDGuid.ShellFolderObject );
 
                     var hr = NativeShellItem.BindToHandler(
-                        IntPtr.Zero, ref handler, ref guid, out nativeShellFolder );
+                        IntPtr.Zero, ref handler, ref guid, out _NativeShellFolder );
 
                     if ( CoreErrorHelper.Failed( hr ) )
                     {
                         var str = ShellHelper.GetParsingName( NativeShellItem );
                         if ( str != null && str != Environment.GetFolderPath( Environment.SpecialFolder.Desktop ) )
                         {
-                            throw new ShellException( hr );
+                            throw (new ShellException( hr ));
                         }
                     }
                 }
 
-                return nativeShellFolder;
+                return (_NativeShellFolder);
             }
         }
 
@@ -52,15 +48,15 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( NativeShellFolder == null )
             {
-                if ( desktopFolderEnumeration == null )
+                if ( _DesktopFolderEnumeration == null )
                 {
-                    ShellNativeMethods.SHGetDesktopFolder( out desktopFolderEnumeration );
+                    ShellNativeMethods.SHGetDesktopFolder( out _DesktopFolderEnumeration );
                 }
 
-                nativeShellFolder = desktopFolderEnumeration;
+                _NativeShellFolder = _DesktopFolderEnumeration;
             }
 
-            return new ShellFolderItems( this );
+            return (new ShellFolderItems( this ));
         }
 
         IEnumerator IEnumerable.GetEnumerator() => new ShellFolderItems( this );
@@ -69,16 +65,16 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="disposing"><B>True</B> indicates that this is being called from Dispose(), rather than the finalizer.</param>
         protected override void Dispose( bool disposing )
         {
-            if ( nativeShellFolder != null )
+            if ( _NativeShellFolder != null )
             {
-                Marshal.ReleaseComObject( nativeShellFolder );
-                nativeShellFolder = null;
+                Marshal.ReleaseComObject( _NativeShellFolder );
+                _NativeShellFolder = null;
             }
 
-            if ( desktopFolderEnumeration != null )
+            if ( _DesktopFolderEnumeration != null )
             {
-                Marshal.ReleaseComObject( desktopFolderEnumeration );
-                desktopFolderEnumeration = null;
+                Marshal.ReleaseComObject( _DesktopFolderEnumeration );
+                _DesktopFolderEnumeration = null;
             }
 
             base.Dispose( disposing );

@@ -63,7 +63,7 @@ namespace System.Windows.Forms.Taskbar
             else
             {
                 // We already have buttons assigned
-                throw new InvalidOperationException( "LocalizedMessages.TaskbarWindowManagerButtonsAlreadyAdded" );
+                throw (new InvalidOperationException( "LocalizedMessages.TaskbarWindowManagerButtonsAlreadyAdded" ));
             }
         }
 
@@ -96,7 +96,7 @@ namespace System.Windows.Forms.Taskbar
             }
 
             // Listen for Title changes
-            preview.TitleChanged += new EventHandler( thumbnailPreview_TitleChanged );
+            preview.TitleChanged   += new EventHandler( thumbnailPreview_TitleChanged );
             preview.TooltipChanged += new EventHandler( thumbnailPreview_TooltipChanged );
 
             // Get/Set properties for proxy window
@@ -152,14 +152,14 @@ namespace System.Windows.Forms.Taskbar
                 }
             }
 
-            return toReturn;
+            return (toReturn);
         }
 #endif
         internal static TaskbarWindow GetTaskbarWindow( IntPtr userWindowHandle, TaskbarProxyWindowType taskbarProxyWindowType )
         {
             if ( userWindowHandle == IntPtr.Zero )
             {
-                throw new ArgumentException( "LocalizedMessages.CommonFileDialogInvalidHandle", "userWindowHandle" );
+                throw (new ArgumentException( "LocalizedMessages.CommonFileDialogInvalidHandle", "userWindowHandle" ));
             }
 
             var toReturn = _taskbarWindowList.FirstOrDefault( window => window.UserWindowHandle == userWindowHandle );
@@ -177,7 +177,7 @@ namespace System.Windows.Forms.Taskbar
                 }
             }
 
-            return toReturn;
+            return (toReturn);
         }
 
         #region Message dispatch methods
@@ -342,12 +342,12 @@ namespace System.Windows.Forms.Taskbar
             return (false);
         }
 
-        private static bool DispatchLivePreviewBitmapMessage( ref Message m, TaskbarWindow taskbarWindow )
+        private static bool DispatchLivePreviewBitmapMessage( ref System.Windows.Forms.Message m, TaskbarWindow taskbarWindow )
         {
             if ( m.Msg == (int) TaskbarNativeMethods.WmDwmSendIconicLivePreviewBitmap )
             {
                 // Try to get the width/height
-                var width  = (int) (((long) m.LParam) >> 16);
+                var width = (int) (((long) m.LParam) >> 16);
                 var height = (int) (((long) m.LParam) & (0xFFFF));
 
                 // Default size for the thumbnail
@@ -381,14 +381,14 @@ namespace System.Windows.Forms.Taskbar
 
                 // capture the bitmap for the given control
                 // If the user has already specified us a bitmap to use, use that.
-                var hBitmap = (taskbarWindow.TabbedThumbnail.CurrentHBitmap == IntPtr.Zero) ? GrabBitmap( taskbarWindow, realWindowSize ) : taskbarWindow.TabbedThumbnail.CurrentHBitmap;
+                var hBitmap = taskbarWindow.TabbedThumbnail.CurrentHBitmap == IntPtr.Zero ? GrabBitmap( taskbarWindow, realWindowSize ) : taskbarWindow.TabbedThumbnail.CurrentHBitmap;
 
                 // If we have a valid parent window handle,
                 // calculate the offset so we can place the "peek" bitmap
                 // correctly on the app window
-                if ( (taskbarWindow.TabbedThumbnail.ParentWindowHandle != IntPtr.Zero) && (taskbarWindow.TabbedThumbnail.WindowHandle != IntPtr.Zero) )
+                if ( taskbarWindow.TabbedThumbnail.ParentWindowHandle != IntPtr.Zero && taskbarWindow.TabbedThumbnail.WindowHandle != IntPtr.Zero )
                 {
-                    var offset = new Point();
+                    var offset = new System.Drawing.Point();
 #if WPF
                     // if we don't have a offset specified already by the user...
                     if ( !taskbarWindow.TabbedThumbnail.PeekOffset.HasValue )
@@ -646,10 +646,8 @@ namespace System.Windows.Forms.Taskbar
             { //TabbedThumbnail is linked to WinformsControl
                 if ( taskbarWindow.TabbedThumbnail.CurrentHBitmap == IntPtr.Zero )
                 {
-                    using ( var bmp = TabbedThumbnailScreenCapture.GrabWindowBitmap(
-                        taskbarWindow.TabbedThumbnail.WindowHandle, requestedSize ) )
+                    using ( var bmp = TabbedThumbnailScreenCapture.GrabWindowBitmap( taskbarWindow.TabbedThumbnail.WindowHandle, requestedSize ) )
                     {
-
                         hBitmap = bmp.GetHbitmap();
                     }
                 }
@@ -692,16 +690,14 @@ namespace System.Windows.Forms.Taskbar
                 }
             }
 #endif
-            return hBitmap;
+            return (hBitmap);
         }
 
         internal static void SetActiveTab( TaskbarWindow taskbarWindow )
         {
             if ( taskbarWindow != null )
             {
-                TaskbarList.Instance.SetTabActive(
-                    taskbarWindow.WindowToTellTaskbarAbout,
-                    taskbarWindow.TabbedThumbnail.ParentWindowHandle, 0 );
+                TaskbarList.Instance.SetTabActive( taskbarWindow.WindowToTellTaskbarAbout, taskbarWindow.TabbedThumbnail.ParentWindowHandle, 0 );
             }
         }
 
@@ -717,8 +713,7 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( taskbarWindow != null )
             {
-                TabbedThumbnailNativeMethods.DwmInvalidateIconicBitmaps(
-                    taskbarWindow.WindowToTellTaskbarAbout );
+                TabbedThumbnailNativeMethods.DwmInvalidateIconicBitmaps( taskbarWindow.WindowToTellTaskbarAbout );
             }
         }
 
@@ -734,7 +729,7 @@ namespace System.Windows.Forms.Taskbar
 
             if ( !CoreErrorHelper.Succeeded( hr ) )
             {
-                throw new ShellException( hr );
+                throw (new ShellException( hr ));
             }
 
             _buttonsAdded = true;

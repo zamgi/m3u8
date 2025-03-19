@@ -7,7 +7,7 @@ namespace System.Windows.Forms.Taskbar
 {
     /// <summary>An exception thrown when an error occurs while dealing with the Property System API.</summary>
 #if !(NETCOREAPP)
-    [Serializable]
+    [Serializable] 
 #endif
     public class PropertySystemException : ExternalException
     {
@@ -22,7 +22,6 @@ namespace System.Windows.Forms.Taskbar
 
         /// <summary>Initializes an exception with custom message and error code.</summary>
         public PropertySystemException( string message, int errorCode ) : base( message, errorCode ) { }
-
 #if !(NETCOREAPP)
         /// <summary>Initializes an exception from serialization info and a context.</summary>
         protected PropertySystemException( SerializationInfo info, StreamingContext context ) : base( info, context ) { }

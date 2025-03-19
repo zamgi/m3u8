@@ -117,7 +117,7 @@ namespace System.Windows.Forms.Taskbar
                     typeof(float),
                     (pv, array, i) => // float
                     {
-                        float[] val = new float[1];
+                        var val = new float[1];
                         Marshal.Copy(pv._blob.Pointer, val, (int)i, 1);
                         array.SetValue(val[0], (int)i);
                     }
@@ -127,7 +127,7 @@ namespace System.Windows.Forms.Taskbar
                     typeof(decimal),
                     (pv, array, i) =>
                     {
-                        int[] val = new int[4];
+                        var val = new int[4];
                         for (int a = 0; a < val.Length; a++)
                         {
                             val[a] = Marshal.ReadInt32(pv._blob.Pointer,
@@ -141,14 +141,14 @@ namespace System.Windows.Forms.Taskbar
                     typeof(string),
                     (pv, array, i) =>
                     {
-                        string val = string.Empty;
+                        var val = string.Empty;
                         PropVariantNativeMethods.PropVariantGetStringElem(pv, i, ref val);
                         array.SetValue(val, i);
                     }
                 }
             };
 
-            return cache;
+            return (cache);
         }
 
         /// <summary>Attempts to create a PropVariant by finding an appropriate constructor.</summary>
@@ -162,7 +162,7 @@ namespace System.Windows.Forms.Taskbar
             else
             {
                 Func<object, PropVariant> func = GetDynamicConstructor( value.GetType() );
-                return func( value );
+                return (func( value ));
             }
         }
 
@@ -186,12 +186,12 @@ namespace System.Windows.Forms.Taskbar
                     if ( constructor == null )
                     {
                         // if the method was not found, throw.
-                        throw new ArgumentException( "LocalizedMessages.PropVariantTypeNotSupported" );
+                        throw (new ArgumentException( "LocalizedMessages.PropVariantTypeNotSupported" ));
                     }
                     else // if the method was found, create an expression to call it.
                     {
                         // create parameters to action
-                        ParameterExpression arg = _Expression_.Parameter( typeof( object ), "arg" );
+                        ParameterExpression arg = _Expression_.Parameter( typeof(object), "arg" );
 
                         // create an expression to invoke the constructor with an argument cast to the correct type
                         NewExpression create = _Expression_.New( constructor, _Expression_.Convert( arg, type ) );
@@ -201,7 +201,7 @@ namespace System.Windows.Forms.Taskbar
                         _cache.Add( type, action );
                     }
                 }
-                return action;
+                return (action);
             }
         }
 
@@ -265,7 +265,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set a string value</summary>
         public PropVariant( string value )
         {
-            if ( value == null ) throw new ArgumentException( "LocalizedMessages.PropVariantNullString", "value" );
+            if ( value == null ) throw (new ArgumentException( "LocalizedMessages.PropVariantNullString", "value" ));
 
             _valueType = (ushort) VarEnum.VT_LPWSTR;
             _ptr = Marshal.StringToCoTaskMemUni( value );
@@ -274,7 +274,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set a string vector</summary>
         public PropVariant( string[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             PropVariantNativeMethods.InitPropVariantFromStringVector( value, (uint) value.Length, this );
         }
@@ -282,7 +282,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set a bool vector</summary>
         public PropVariant( bool[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             PropVariantNativeMethods.InitPropVariantFromBooleanVector( value, (uint) value.Length, this );
         }
@@ -290,7 +290,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set a short vector</summary>
         public PropVariant( short[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             PropVariantNativeMethods.InitPropVariantFromInt16Vector( value, (uint) value.Length, this );
         }
@@ -298,7 +298,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set a short vector</summary>
         public PropVariant( ushort[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             PropVariantNativeMethods.InitPropVariantFromUInt16Vector( value, (uint) value.Length, this );
         }
@@ -306,7 +306,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set an int vector</summary>
         public PropVariant( int[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             PropVariantNativeMethods.InitPropVariantFromInt32Vector( value, (uint) value.Length, this );
         }
@@ -314,7 +314,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set an uint vector</summary>
         public PropVariant( uint[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             PropVariantNativeMethods.InitPropVariantFromUInt32Vector( value, (uint) value.Length, this );
         }
@@ -322,7 +322,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set a long vector</summary>
         public PropVariant( long[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             PropVariantNativeMethods.InitPropVariantFromInt64Vector( value, (uint) value.Length, this );
         }
@@ -330,7 +330,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set a ulong vector</summary>
         public PropVariant( ulong[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             PropVariantNativeMethods.InitPropVariantFromUInt64Vector( value, (uint) value.Length, this );
         }
@@ -338,7 +338,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>&gt; Set a double vector</summary>
         public PropVariant( double[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             PropVariantNativeMethods.InitPropVariantFromDoubleVector( value, (uint) value.Length, this );
         }
@@ -346,7 +346,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Set a DateTime vector</summary>
         public PropVariant( DateTime[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
             
             var fileTimeArr = new _FILETIME_[ value.Length ];
             for ( int i = 0; i < value.Length; i++ )
@@ -429,7 +429,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="value">Decimal array to wrap.</param>
         public PropVariant( decimal[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             _valueType = (ushort) (VarEnum.VT_DECIMAL | VarEnum.VT_VECTOR);
             _int32 = value.Length;
@@ -438,7 +438,7 @@ namespace System.Windows.Forms.Taskbar
             _blob.Pointer = Marshal.AllocCoTaskMem( value.Length * sizeof( decimal ) );
             for ( int i = 0; i < value.Length; i++ )
             {
-                int[] bits = decimal.GetBits( value[ i ] );
+                var bits = decimal.GetBits( value[ i ] );
                 Marshal.Copy( bits, 0, _blob.Pointer, bits.Length );
             }
         }
@@ -447,14 +447,13 @@ namespace System.Windows.Forms.Taskbar
         public PropVariant( float value )
         {
             _valueType = (ushort) VarEnum.VT_R4;
-
             _float = value;
         }
 
         /// <summary>Creates a PropVariant containing a float[] array.</summary>
         public PropVariant( float[] value )
         {
-            if ( value == null ) throw new ArgumentNullException( "value" );
+            if ( value == null ) throw (new ArgumentNullException( "value" ));
 
             _valueType = (ushort) (VarEnum.VT_R4 | VarEnum.VT_VECTOR);
             _int32 = value.Length;
@@ -497,7 +496,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="array">The new value to set.</param>
         internal void SetSafeArray( Array array )
         {
-            if ( array == null ) { throw new ArgumentNullException( "array" ); }
+            if ( array == null ) throw (new ArgumentNullException( "array" ));
             const ushort vtUnknown = 13;
             IntPtr psa = PropVariantNativeMethods.SafeArrayCreateVector( vtUnknown, 0, (uint) array.Length );
 
@@ -662,7 +661,7 @@ namespace System.Windows.Forms.Taskbar
                 dwLowDateTime  = (int) (hFT & 0xFFFFFFFF),
                 dwHighDateTime = (int) (hFT >> 32)
             };
-            return ft;
+            return (ft);
         }
 
         private object GetBlobData()
@@ -690,7 +689,7 @@ namespace System.Windows.Forms.Taskbar
 
             if ( !_vectorActions.TryGetValue( typeof(T), out var action ) )
             {
-                throw new InvalidCastException( "LocalizedMessages.PropVariantUnsupportedType" );
+                throw (new InvalidCastException( "LocalizedMessages.PropVariantUnsupportedType" ));
             }
 
             var array = new T[ count ];
@@ -698,13 +697,13 @@ namespace System.Windows.Forms.Taskbar
             {
                 action( this, array, i );
             }
-            return array;
+            return (array);
         }
 
         private static Array CrackSingleDimSafeArray( IntPtr psa )
         {
             uint cDims = PropVariantNativeMethods.SafeArrayGetDim( psa );
-            if ( cDims != 1 ) throw new ArgumentException( "LocalizedMessages.PropVariantMultiDimArray", "psa" );
+            if ( cDims != 1 ) throw (new ArgumentException( "LocalizedMessages.PropVariantMultiDimArray", "psa" ));
 
             int lBound = PropVariantNativeMethods.SafeArrayGetLBound( psa, 1U );
             int uBound = PropVariantNativeMethods.SafeArrayGetUBound( psa, 1U );

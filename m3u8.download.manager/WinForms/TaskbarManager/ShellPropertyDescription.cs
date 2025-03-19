@@ -7,26 +7,26 @@ namespace System.Windows.Forms.Taskbar
     /// <summary>Defines the shell property description information for a property.</summary>
     public class ShellPropertyDescription : IDisposable
     {
-        private PropertyAggregationType? aggregationTypes;
-        private string canonicalName;
-        private PropertyColumnStateOptions? columnState;
-        private PropertyConditionOperation? conditionOperation;
-        private PropertyConditionType? conditionType;
-        private uint? defaultColumWidth;
-        private string displayName;
-        private PropertyDisplayType? displayType;
-        private string editInvitation;
-        private PropertyGroupingRange? groupingRange;
-        private IPropertyDescription nativePropertyDescription;
-        private ReadOnlyCollection<ShellPropertyEnumType> propertyEnumTypes;
-        private PropertyKey propertyKey;
-        private PropertyTypeOptions? propertyTypeFlags;
-        private PropertyViewOptions? propertyViewFlags;
-        private PropertySortDescription? sortDescription;
-        private Type valueType;
-        private VarEnum? varEnumType = null;
+        private PropertyAggregationType? _AggregationTypes;
+        private string _CanonicalName;
+        private PropertyColumnStateOptions? _ColumnState;
+        private PropertyConditionOperation? _ConditionOperation;
+        private PropertyConditionType? _ConditionType;
+        private uint? _DefaultColumWidth;
+        private string _DisplayName;
+        private PropertyDisplayType? _DisplayType;
+        private string _EditInvitation;
+        private PropertyGroupingRange? _GroupingRange;
+        private IPropertyDescription _NativePropertyDescription;
+        private ReadOnlyCollection<ShellPropertyEnumType> _PropertyEnumTypes;
+        private PropertyKey _PropertyKey;
+        private PropertyTypeOptions? _PropertyTypeFlags;
+        private PropertyViewOptions? _PropertyViewFlags;
+        private PropertySortDescription? _SortDescription;
+        private Type _ValueType;
+        private VarEnum? _VarEnumType;
 
-        internal ShellPropertyDescription( PropertyKey key ) => propertyKey = key;
+        internal ShellPropertyDescription( PropertyKey key ) => _PropertyKey = key;
         ~ShellPropertyDescription() => Dispose( false );
 
         /// <summary>
@@ -36,16 +36,16 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( NativePropertyDescription != null && aggregationTypes == null )
+                if ( NativePropertyDescription != null && _AggregationTypes == null )
                 {
                     var hr = NativePropertyDescription.GetAggregationType( out var tempAggregationTypes );
                     if ( CoreErrorHelper.Succeeded( hr ) )
                     {
-                        aggregationTypes = tempAggregationTypes;
+                        _AggregationTypes = tempAggregationTypes;
                     }
                 }
 
-                return aggregationTypes.HasValue ? aggregationTypes.Value : default( PropertyAggregationType );
+                return (_AggregationTypes.HasValue ? _AggregationTypes.Value : default);
             }
         }
 
@@ -54,11 +54,11 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( canonicalName == null )
+                if ( _CanonicalName == null )
                 {
-                    PropertySystemNativeMethods.PSGetNameFromPropertyKey( ref propertyKey, out canonicalName );
+                    PropertySystemNativeMethods.PSGetNameFromPropertyKey( ref _PropertyKey, out _CanonicalName );
                 }
-                return canonicalName;
+                return (_CanonicalName);
             }
         }
 
@@ -70,15 +70,15 @@ namespace System.Windows.Forms.Taskbar
             get
             {
                 // If default/first value, try to get it again, otherwise used the cached one.
-                if ( NativePropertyDescription != null && columnState == null )
+                if ( NativePropertyDescription != null && _ColumnState == null )
                 {
                     var hr = NativePropertyDescription.GetColumnState( out var state );
                     if ( CoreErrorHelper.Succeeded( hr ) )
                     {
-                        columnState = state;
+                        _ColumnState = state;
                     }
                 }
-                return columnState.HasValue ? columnState.Value : default;
+                return (_ColumnState.HasValue ? _ColumnState.Value : default);
             }
         }
 
@@ -94,16 +94,16 @@ namespace System.Windows.Forms.Taskbar
             get
             {
                 // If default/first value, try to get it again, otherwise used the cached one.
-                if ( NativePropertyDescription != null && conditionOperation == null )
+                if ( NativePropertyDescription != null && _ConditionOperation == null )
                 {
                     var hr = NativePropertyDescription.GetConditionType( out var tempConditionType, out var tempConditionOperation );
                     if ( CoreErrorHelper.Succeeded( hr ) )
                     {
-                        conditionOperation = tempConditionOperation;
-                        conditionType = tempConditionType;
+                        _ConditionOperation = tempConditionOperation;
+                        _ConditionType = tempConditionType;
                     }
                 }
-                return conditionOperation.HasValue ? conditionOperation.Value : default;
+                return (_ConditionOperation.HasValue ? _ConditionOperation.Value : default);
             }
         }
 
@@ -120,16 +120,16 @@ namespace System.Windows.Forms.Taskbar
             get
             {
                 // If default/first value, try to get it again, otherwise used the cached one.
-                if ( NativePropertyDescription != null && conditionType == null )
+                if ( NativePropertyDescription != null && _ConditionType == null )
                 {
                     var hr = NativePropertyDescription.GetConditionType( out var tempConditionType, out var tempConditionOperation );
                     if ( CoreErrorHelper.Succeeded( hr ) )
                     {
-                        conditionOperation = tempConditionOperation;
-                        conditionType = tempConditionType;
+                        _ConditionOperation = tempConditionOperation;
+                        _ConditionType = tempConditionType;
                     }
                 }
-                return conditionType.HasValue ? conditionType.Value : default;
+                return (_ConditionType.HasValue ? _ConditionType.Value : default);
             }
         }
 
@@ -138,15 +138,15 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( NativePropertyDescription != null && !defaultColumWidth.HasValue )
+                if ( NativePropertyDescription != null && !_DefaultColumWidth.HasValue )
                 {
                     var hr = NativePropertyDescription.GetDefaultColumnWidth( out var tempDefaultColumWidth );
                     if ( CoreErrorHelper.Succeeded( hr ) )
                     {
-                        defaultColumWidth = tempDefaultColumWidth;
+                        _DefaultColumWidth = tempDefaultColumWidth;
                     }
                 }
-                return defaultColumWidth.HasValue ? defaultColumWidth.Value : default;
+                return (_DefaultColumWidth.HasValue ? _DefaultColumWidth.Value : default);
             }
         }
 
@@ -155,18 +155,18 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( NativePropertyDescription != null && displayName == null )
+                if ( NativePropertyDescription != null && _DisplayName == null )
                 {
                     var hr = NativePropertyDescription.GetDisplayName( out var dispNameptr );
                     if ( CoreErrorHelper.Succeeded( hr ) && dispNameptr != IntPtr.Zero )
                     {
-                        displayName = Marshal.PtrToStringUni( dispNameptr );
+                        _DisplayName = Marshal.PtrToStringUni( dispNameptr );
 
                         // Free the string
                         Marshal.FreeCoTaskMem( dispNameptr );
                     }
                 }
-                return displayName;
+                return (_DisplayName);
             }
         }
 
@@ -175,15 +175,15 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( NativePropertyDescription != null && displayType == null )
+                if ( NativePropertyDescription != null && _DisplayType == null )
                 {
                     var hr = NativePropertyDescription.GetDisplayType( out var tempDisplayType );
                     if ( CoreErrorHelper.Succeeded( hr ) )
                     {
-                        displayType = tempDisplayType;
+                        _DisplayType = tempDisplayType;
                     }
                 }
-                return displayType.HasValue ? displayType.Value : default;
+                return (_DisplayType.HasValue ? _DisplayType.Value : default);
             }
         }
 
@@ -192,19 +192,19 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( NativePropertyDescription != null && editInvitation == null )
+                if ( NativePropertyDescription != null && _EditInvitation == null )
                 {
                     // EditInvitation can be empty, so ignore the HR value, but don't throw an exception
                     var hr = NativePropertyDescription.GetEditInvitation( out var ptr );
 
                     if ( CoreErrorHelper.Succeeded( hr ) && ptr != IntPtr.Zero )
                     {
-                        editInvitation = Marshal.PtrToStringUni( ptr );
+                        _EditInvitation = Marshal.PtrToStringUni( ptr );
                         // Free the string
                         Marshal.FreeCoTaskMem( ptr );
                     }
                 }
-                return editInvitation;
+                return (_EditInvitation);
             }
         }
 
@@ -218,15 +218,15 @@ namespace System.Windows.Forms.Taskbar
             get
             {
                 // If default/first value, try to get it again, otherwise used the cached one.
-                if ( NativePropertyDescription != null && groupingRange == null )
+                if ( NativePropertyDescription != null && _GroupingRange == null )
                 {
                     var hr = NativePropertyDescription.GetGroupingRange( out var tempGroupingRange );
                     if ( CoreErrorHelper.Succeeded( hr ) )
                     {
-                        groupingRange = tempGroupingRange;
+                        _GroupingRange = tempGroupingRange;
                     }
                 }
-                return groupingRange.HasValue ? groupingRange.Value : default;
+                return (_GroupingRange.HasValue ? _GroupingRange.Value : default);
             }
         }
 
@@ -238,7 +238,7 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( NativePropertyDescription != null && propertyEnumTypes == null )
+                if ( NativePropertyDescription != null && _PropertyEnumTypes == null )
                 {
                     var propEnumTypeList = new List<ShellPropertyEnumType>();
                     var guid             = new Guid(ShellIIDGuid.IPropertyEnumTypeList );
@@ -256,14 +256,14 @@ namespace System.Windows.Forms.Taskbar
                         }
                     }
 
-                    propertyEnumTypes = new ReadOnlyCollection<ShellPropertyEnumType>( propEnumTypeList );
+                    _PropertyEnumTypes = new ReadOnlyCollection<ShellPropertyEnumType>( propEnumTypeList );
                 }
-                return propertyEnumTypes;
+                return (_PropertyEnumTypes);
             }
         }
 
         /// <summary>Gets the property key identifying the underlying property.</summary>
-        public PropertyKey PropertyKey => propertyKey;
+        public PropertyKey PropertyKey => _PropertyKey;
 
         /// <summary>Gets the current sort description flags for the property, which indicate the particular wordings of sort offerings.</summary>
         /// <remarks>
@@ -275,15 +275,15 @@ namespace System.Windows.Forms.Taskbar
             get
             {
                 // If default/first value, try to get it again, otherwise used the cached one.
-                if ( NativePropertyDescription != null && sortDescription == null )
+                if ( NativePropertyDescription != null && _SortDescription == null )
                 {
                     var hr = NativePropertyDescription.GetSortDescription( out var tempSortDescription );
                     if ( CoreErrorHelper.Succeeded( hr ) )
                     {
-                        sortDescription = tempSortDescription;
+                        _SortDescription = tempSortDescription;
                     }
                 }
-                return sortDescription.HasValue ? sortDescription.Value : default;
+                return (_SortDescription.HasValue ? _SortDescription.Value : default);
             }
         }
 
@@ -292,13 +292,13 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( NativePropertyDescription != null && propertyTypeFlags == null )
+                if ( NativePropertyDescription != null && _PropertyTypeFlags == null )
                 {
                     var hr = NativePropertyDescription.GetTypeFlags( PropertyTypeOptions.MaskAll, out var tempFlags );
-                    propertyTypeFlags = CoreErrorHelper.Succeeded( hr ) ? tempFlags : default;
+                    _PropertyTypeFlags = CoreErrorHelper.Succeeded( hr ) ? tempFlags : default;
                 }
 
-                return propertyTypeFlags.HasValue ? propertyTypeFlags.Value : default;
+                return (_PropertyTypeFlags.HasValue ? _PropertyTypeFlags.Value : default);
             }
         }
 
@@ -307,11 +307,11 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( valueType == null )
+                if ( _ValueType == null )
                 {
-                    valueType = ShellPropertyFactory.VarEnumToSystemType( VarEnumType );
+                    _ValueType = ShellPropertyFactory.VarEnumToSystemType( VarEnumType );
                 }
-                return valueType;
+                return (_ValueType);
             }
         }
 
@@ -320,15 +320,15 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( NativePropertyDescription != null && varEnumType == null )
+                if ( NativePropertyDescription != null && _VarEnumType == null )
                 {
                     var hr = NativePropertyDescription.GetPropertyType( out var tempType );
                     if ( CoreErrorHelper.Succeeded( hr ) )
                     {
-                        varEnumType = tempType;
+                        _VarEnumType = tempType;
                     }
                 }
-                return varEnumType.HasValue ? varEnumType.Value : default;
+                return (_VarEnumType.HasValue ? _VarEnumType.Value : default);
             }
         }
 
@@ -337,12 +337,12 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( NativePropertyDescription != null && propertyViewFlags == null )
+                if ( NativePropertyDescription != null && _PropertyViewFlags == null )
                 {
                     var hr = NativePropertyDescription.GetViewFlags( out var tempFlags );
-                    propertyViewFlags = CoreErrorHelper.Succeeded( hr ) ? tempFlags : default;
+                    _PropertyViewFlags = CoreErrorHelper.Succeeded( hr ) ? tempFlags : default;
                 }
-                return propertyViewFlags.HasValue ? propertyViewFlags.Value : default;
+                return (_PropertyViewFlags.HasValue ? _PropertyViewFlags.Value : default);
             }
         }
 
@@ -351,12 +351,12 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( nativePropertyDescription == null )
+                if ( _NativePropertyDescription == null )
                 {
                     var guid = new Guid(ShellIIDGuid.IPropertyDescription );
-                    PropertySystemNativeMethods.PSGetPropertyDescription( ref propertyKey, ref guid, out nativePropertyDescription );
+                    PropertySystemNativeMethods.PSGetPropertyDescription( ref _PropertyKey, ref guid, out _NativePropertyDescription );
                 }
-                return nativePropertyDescription;
+                return (_NativePropertyDescription);
             }
         }
 
@@ -391,28 +391,28 @@ namespace System.Windows.Forms.Taskbar
                 }
             }
 
-            return label;
+            return (label);
         }
 
         /// <summary>Release the native objects</summary>
         /// <param name="disposing">Indicates that this is being called from Dispose(), rather than the finalizer.</param>
         protected virtual void Dispose( bool disposing )
         {
-            if ( nativePropertyDescription != null )
+            if ( _NativePropertyDescription != null )
             {
-                Marshal.ReleaseComObject( nativePropertyDescription );
-                nativePropertyDescription = null;
+                Marshal.ReleaseComObject( _NativePropertyDescription );
+                _NativePropertyDescription = null;
             }
 
             if ( disposing )
             {
                 // and the managed ones
-                canonicalName = null;
-                displayName = null;
-                editInvitation = null;
-                defaultColumWidth = null;
-                valueType = null;
-                propertyEnumTypes = null;
+                _CanonicalName     = null;
+                _DisplayName       = null;
+                _EditInvitation    = null;
+                _DefaultColumWidth = null;
+                _ValueType         = null;
+                _PropertyEnumTypes = null;
             }
         }
     }

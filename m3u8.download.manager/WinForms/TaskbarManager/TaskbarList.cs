@@ -6,25 +6,25 @@
     /// </summary>
     internal static class TaskbarList
     {
-        private static readonly object _syncLock = new object();
+        private static readonly object _SyncLock = new object();
 
-        private static ITaskbarList4 _taskbarList;
+        private static ITaskbarList4 _TaskbarList;
         internal static ITaskbarList4 Instance
         {
             get
             {
-                if ( _taskbarList == null )
+                if ( _TaskbarList == null )
                 {
-                    lock ( _syncLock )
+                    lock ( _SyncLock )
                     {
-                        if ( _taskbarList == null )
+                        if ( _TaskbarList == null )
                         {
-                            _taskbarList = (ITaskbarList4) new CTaskbarList();
-                            _taskbarList.HrInit();
+                            _TaskbarList = (ITaskbarList4) new CTaskbarList();
+                            _TaskbarList.HrInit();
                         }
                     }
                 }
-                return _taskbarList;
+                return (_TaskbarList);
             }
         }
     }

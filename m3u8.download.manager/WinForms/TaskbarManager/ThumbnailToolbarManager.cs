@@ -27,7 +27,7 @@
         {
             if ( windowHandle == IntPtr.Zero )
             {
-                throw new ArgumentException( "LocalizedMessages.ThumbnailManagerInvalidHandle", "windowHandle" );
+                throw (new ArgumentException( "LocalizedMessages.ThumbnailManagerInvalidHandle", "windowHandle" ));
             }
             VerifyButtons( buttons );
 
@@ -58,13 +58,13 @@
 #endif
         private static void VerifyButtons( params ThumbnailToolBarButton[] buttons )
         {
-            if ( buttons != null && buttons.Length == 0 )
+            if ( (buttons != null) && (buttons.Length == 0) )
             {
-                throw new ArgumentException( "LocalizedMessages.ThumbnailToolbarManagerNullEmptyArray", "buttons" );
+                throw (new ArgumentException( "LocalizedMessages.ThumbnailToolbarManagerNullEmptyArray", "buttons" ));
             }
             if ( buttons.Length > 7 )
             {
-                throw new ArgumentException( "LocalizedMessages.ThumbnailToolbarManagerMaxButtons", "buttons" );
+                throw (new ArgumentException( "LocalizedMessages.ThumbnailToolbarManagerMaxButtons", "buttons" ));
             }
         }
     }

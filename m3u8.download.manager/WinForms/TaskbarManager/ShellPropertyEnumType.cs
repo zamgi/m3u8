@@ -3,9 +3,9 @@ namespace System.Windows.Forms.Taskbar
     /// <summary>Defines the enumeration values for a property type.</summary>
     public class ShellPropertyEnumType
     {
-        private string displayText;
-        private PropEnumType? enumType;
-        private object minValue, setValue, enumerationValue;
+        private string _DisplayText;
+        private PropEnumType? _EnumType;
+        private object _MinValue, _SetValue, _EnumerationValue;
         internal ShellPropertyEnumType( IPropertyEnumType nativePropertyEnumType ) => NativePropertyEnumType = nativePropertyEnumType;
 
         /// <summary>Gets display text from an enumeration information structure.</summary>
@@ -13,11 +13,11 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( displayText == null )
+                if ( _DisplayText == null )
                 {
-                    NativePropertyEnumType.GetDisplayText( out displayText );
+                    NativePropertyEnumType.GetDisplayText( out _DisplayText );
                 }
-                return displayText;
+                return (_DisplayText);
             }
         }
 
@@ -26,12 +26,12 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( !enumType.HasValue )
+                if ( !_EnumType.HasValue )
                 {
                     NativePropertyEnumType.GetEnumType( out var tempEnumType );
-                    enumType = tempEnumType;
+                    _EnumType = tempEnumType;
                 }
-                return enumType.Value;
+                return (_EnumType.Value);
             }
         }
 
@@ -40,15 +40,15 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( minValue == null )
+                if ( _MinValue == null )
                 {
                     using ( var propVar = new PropVariant() )
                     {
                         NativePropertyEnumType.GetRangeMinValue( propVar );
-                        minValue = propVar.Value;
+                        _MinValue = propVar.Value;
                     }
                 }
-                return minValue;
+                return (_MinValue);
             }
         }
 
@@ -57,15 +57,15 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( setValue == null )
+                if ( _SetValue == null )
                 {
                     using ( var propVar = new PropVariant() )
                     {
                         NativePropertyEnumType.GetRangeSetValue( propVar );
-                        setValue = propVar.Value;
+                        _SetValue = propVar.Value;
                     }
                 }
-                return setValue;
+                return (_SetValue);
             }
         }
 
@@ -74,15 +74,15 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( enumerationValue == null )
+                if ( _EnumerationValue == null )
                 {
                     using ( var propVar = new PropVariant() )
                     {
                         NativePropertyEnumType.GetValue( propVar );
-                        enumerationValue = propVar.Value;
+                        _EnumerationValue = propVar.Value;
                     }
                 }
-                return enumerationValue;
+                return (_EnumerationValue);
             }
         }
 

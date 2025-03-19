@@ -123,11 +123,39 @@ namespace m3u8.download.manager.ui
         private bool              _UserMade_DGV_SelectionChanged;
         private SortInfo          _LastSortInfo;
         private Action            _RestoreSortIfNeed_Action;
+#if DEBUG
+        private TimerEx           _CommonUpdateTimer;
+#else
         private Timer             _CommonUpdateTimer;
+#endif
         private _SC_              _SC;
         private ContextMenuStrip  _ColumnsContextMenu;
         #endregion
-
+#if DEBUG
+        /// <summary>
+        /// 
+        /// </summary>
+        private sealed class TimerEx
+        {
+            private Timer _Timer;
+            public TimerEx() => _Timer = new Timer();
+            public event EventHandler Tick
+            {
+                add    => _Timer.Tick += value;
+                remove => _Timer.Tick -= value;
+            }
+            public bool Enabled 
+            {
+                get => _Timer.Enabled;
+                set => _Timer.Enabled = value;
+            }
+            public int Interval
+            {
+                get => _Timer.Interval;
+                set => _Timer.Interval = value;
+            }
+        }
+#endif
         #region [.ctor().]
         public DownloadListUC()
         {
@@ -138,7 +166,11 @@ namespace m3u8.download.manager.ui
 //_LastSortInfo = SortInfo.FromJson( _Settings.LastSortInfoJson );
 
             _RestoreSortIfNeed_Action = new Action( RestoreSortIfNeed );
+#if DEBUG
+            _CommonUpdateTimer = new TimerEx() { Interval = 1_000, Enabled = false };
+#else
             _CommonUpdateTimer = new Timer() { Interval = 1_000, Enabled = false };
+#endif
             _CommonUpdateTimer.Tick += CommonUpdateTimer_Tick;
 
             _ErrorCellStyle    = new CellStyle( DGV.DefaultCellStyle )
@@ -797,6 +829,9 @@ namespace m3u8.download.manager.ui
             }
 
             Fire_UpdatedSummaryDownloadInfo();
+#if DEBUG
+            Debug.WriteLine( $"CommonUpdateTimer_Tick: '{DateTime.Now}'" );
+#endif
         }
         private void Fire_UpdatedSummaryDownloadInfo()
         {

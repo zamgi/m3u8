@@ -3,7 +3,7 @@
 namespace System.Windows.Forms.Taskbar
 {
     [ComImport]
-    [Guid("6332DEBF-87B5-4670-90C0-5E57B408A49E" )]
+    [Guid("6332DEBF-87B5-4670-90C0-5E57B408A49E")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ICustomDestinationList
     {
@@ -40,9 +40,9 @@ namespace System.Windows.Forms.Taskbar
         void AbortList();
     }
 
-    [ComImport()]
-    [Guid("92CA9DCD-5622-4BBA-A805-5E9F541BD8C9" )]
-    [InterfaceTypeAttribute( ComInterfaceType.InterfaceIsIUnknown )]
+    [ComImport]
+    [Guid("92CA9DCD-5622-4BBA-A805-5E9F541BD8C9")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IObjectArray
     {
         void GetCount( out uint cObjects );
@@ -53,9 +53,9 @@ namespace System.Windows.Forms.Taskbar
             [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject );
     }
 
-    [ComImport()]
-    [Guid("5632B1A4-E38A-400A-928A-D4CD63230295" )]
-    [InterfaceTypeAttribute( ComInterfaceType.InterfaceIsIUnknown )]
+    [ComImport]
+    [Guid("5632B1A4-E38A-400A-928A-D4CD63230295")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IObjectCollection
     {
         // IObjectArray
@@ -80,9 +80,9 @@ namespace System.Windows.Forms.Taskbar
         void Clear();
     }
 
-    [ComImport()]
-    [Guid("c43dc798-95d1-4bea-9030-bb99e2983a1a" )]
-    [InterfaceTypeAttribute( ComInterfaceType.InterfaceIsIUnknown )]
+    [ComImport]
+    [Guid("c43dc798-95d1-4bea-9030-bb99e2983a1a")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ITaskbarList4
     {
         // ITaskbarList
@@ -161,18 +161,18 @@ namespace System.Windows.Forms.Taskbar
         void SetTabProperties( IntPtr hwndTab, SetTabPropertiesOption stpFlags );
     }
 
-    [Guid("77F10CF0-3DB5-4966-B520-B7C54FD35ED6" )]
+    [ComImport]
+    [Guid("77F10CF0-3DB5-4966-B520-B7C54FD35ED6")]
     [ClassInterface(ClassInterfaceType.None )]
-    [ComImport()]
     internal class CDestinationList { }
 
-    [Guid("2D3468C1-36A7-43B6-AC24-D3F02FD9607A" )]
-    [ClassInterface(ClassInterfaceType.None )]
-    [ComImport()]
+    [ComImport]
+    [Guid("2D3468C1-36A7-43B6-AC24-D3F02FD9607A")]
+    [ClassInterface(ClassInterfaceType.None)]
     internal class CEnumerableObjectCollection { }
 
-    [Guid("56FDF344-FD6D-11d0-958A-006097C9A090" )]
-    [ClassInterface(ClassInterfaceType.None )]
-    [ComImport()]
+    [ComImport]
+    [Guid("56FDF344-FD6D-11d0-958A-006097C9A090")]
+    [ClassInterface(ClassInterfaceType.None)]
     internal class CTaskbarList { }
 }

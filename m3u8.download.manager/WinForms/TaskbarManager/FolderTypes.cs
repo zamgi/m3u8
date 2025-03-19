@@ -122,10 +122,10 @@ namespace System.Windows.Forms.Taskbar
         internal static Guid Videos = new Guid(
             0x5fa96407, 0x7e77, 0x483c, 0xac, 0x93, 0x69, 0x1d, 0x05, 0x85, 0x0d, 0xe8 );
 
-        private static readonly Dictionary<Guid, string> types;
+        private static readonly Dictionary<Guid, string> _Types;
         static FolderTypes()
         {
-            types = new Dictionary<Guid, string>
+            _Types = new Dictionary<Guid, string>
             {
                 // Review: These Localized messages could probably be a reflected value of the field's name.
                 { NotSpecified, "LocalizedMessages.FolderTypeNotSpecified" },
@@ -158,6 +158,6 @@ namespace System.Windows.Forms.Taskbar
                 { Videos, "LocalizedMessages.FolderTypeVideos" }
             };
         }
-        internal static string GetFolderType( Guid typeId ) => types.TryGetValue( typeId, out var type ) ? type : string.Empty;
+        internal static string GetFolderType( Guid typeId ) => _Types.TryGetValue( typeId, out var type ) ? type : string.Empty;
     }
 }

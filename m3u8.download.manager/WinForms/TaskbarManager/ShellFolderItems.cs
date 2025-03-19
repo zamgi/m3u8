@@ -7,64 +7,64 @@ namespace System.Windows.Forms.Taskbar
 {
     internal class ShellFolderItems : IEnumerator< ShellObject >
     {
-        private readonly ShellContainer nativeShellFolder;
-        private ShellObject currentItem;
-        private IEnumIDList nativeEnumIdList;
+        private readonly ShellContainer _NativeShellFolder;
+        private ShellObject _CurrentItem;
+        private IEnumIDList _NativeEnumIdList;
 
         internal ShellFolderItems( ShellContainer nativeShellFolder )
         {
-            this.nativeShellFolder = nativeShellFolder;
+            _NativeShellFolder = nativeShellFolder;
 
             var hr = nativeShellFolder.NativeShellFolder.EnumObjects(
                 IntPtr.Zero,
                 ShellNativeMethods.ShellFolderEnumerationOptions.Folders | ShellNativeMethods.ShellFolderEnumerationOptions.NonFolders,
-                out nativeEnumIdList );
+                out _NativeEnumIdList );
 
             if ( !CoreErrorHelper.Succeeded( hr ) )
             {
                 if ( hr == HResult.Canceled )
                 {
-                    throw new FileNotFoundException();
+                    throw (new FileNotFoundException());
                 }
                 else
                 {
-                    throw new ShellException( hr );
+                    throw (new ShellException( hr ));
                 }
             }
         }
 
-        public ShellObject Current => currentItem;
+        public ShellObject Current => _CurrentItem;
 
-        object IEnumerator.Current => currentItem;
+        object IEnumerator.Current => _CurrentItem;
 
         public void Dispose()
         {
-            if ( nativeEnumIdList != null )
+            if ( _NativeEnumIdList != null )
             {
-                Marshal.ReleaseComObject( nativeEnumIdList );
-                nativeEnumIdList = null;
+                Marshal.ReleaseComObject( _NativeEnumIdList );
+                _NativeEnumIdList = null;
             }
         }
 
         public bool MoveNext()
         {
-            if ( nativeEnumIdList == null ) return (false);
+            if ( _NativeEnumIdList == null ) return (false);
 
             uint itemsRequested = 1;
-            var hr = nativeEnumIdList.Next( itemsRequested, out var item, out var numItemsReturned );
+            var hr = _NativeEnumIdList.Next( itemsRequested, out var item, out var numItemsReturned );
 
             if ( numItemsReturned < itemsRequested || hr != HResult.Ok ) return (false);
 
-            currentItem = ShellObjectFactory.Create( item, nativeShellFolder );
+            _CurrentItem = ShellObjectFactory.Create( item, _NativeShellFolder );
 
             return (true);
         }
 
         public void Reset()
         {
-            if ( nativeEnumIdList != null )
+            if ( _NativeEnumIdList != null )
             {
-                nativeEnumIdList.Reset();
+                _NativeEnumIdList.Reset();
             }
         }
     }

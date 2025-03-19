@@ -11,19 +11,13 @@
         /// Creates a Event Args for a TabbedThumbnailBitmapRequested event.
         /// </summary>
         /// <param name="windowHandle">Window handle for the control/window related to the event</param>
-        public TabbedThumbnailBitmapRequestedEventArgs( IntPtr windowHandle )
-            : base( windowHandle )
-        {
-        }
+        public TabbedThumbnailBitmapRequestedEventArgs( IntPtr windowHandle ) : base( windowHandle ) { }
 #if WPF
         /// <summary>
         /// Creates a Event Args for a TabbedThumbnailBitmapRequested event.
         /// </summary>
         /// <param name="windowsControl">WPF Control (UIElement) related to the event</param>
-        public TabbedThumbnailBitmapRequestedEventArgs( UIElement windowsControl )
-            : base( windowsControl )
-        {
-        }
+        public TabbedThumbnailBitmapRequestedEventArgs( UIElement windowsControl ) : base( windowsControl ) { }
 #endif
         /// <summary>
         /// Gets or sets a value indicating whether the TabbedThumbnailBitmapRequested event was handled.

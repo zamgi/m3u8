@@ -8,8 +8,8 @@ namespace System.Windows.Forms.Taskbar
     /// </summary>
     public partial class ShellProperties : IDisposable
     {
-        private ShellPropertyCollection defaultPropertyCollection;
-        private PropertySystem propertySystem;
+        private ShellPropertyCollection _DefaultPropertyCollection;
+        private PropertySystem _PropertySystem;
 
         internal ShellProperties( ShellObject parent ) => ParentShellObject = parent;
 
@@ -18,12 +18,11 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( defaultPropertyCollection == null )
+                if ( _DefaultPropertyCollection == null )
                 {
-                    defaultPropertyCollection = new ShellPropertyCollection( ParentShellObject );
+                    _DefaultPropertyCollection = new ShellPropertyCollection( ParentShellObject );
                 }
-
-                return defaultPropertyCollection;
+                return (_DefaultPropertyCollection);
             }
         }
 
@@ -32,12 +31,11 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( propertySystem == null )
+                if ( _PropertySystem == null )
                 {
-                    propertySystem = new PropertySystem( ParentShellObject );
+                    _PropertySystem = new PropertySystem( ParentShellObject );
                 }
-
-                return propertySystem;
+                return (_PropertySystem);
             }
         }
 
@@ -83,7 +81,7 @@ namespace System.Windows.Forms.Taskbar
         internal IShellProperty CreateTypedProperty<T>( PropertyKey propKey )
         {
             var desc = ShellPropertyDescriptionsCache.Cache.GetPropertyDescription( propKey );
-            return new ShellProperty<T>( propKey, desc, ParentShellObject );
+            return (new ShellProperty<T>( propKey, desc, ParentShellObject ));
         }
 
         internal IShellProperty CreateTypedProperty( PropertyKey propKey ) => ShellPropertyFactory.CreateShellProperty( propKey, ParentShellObject );
@@ -96,16 +94,16 @@ namespace System.Windows.Forms.Taskbar
 
             if ( !CoreErrorHelper.Succeeded( result ) )
             {
-                throw new ArgumentException( "LocalizedMessages.ShellInvalidCanonicalName", Marshal.GetExceptionForHR( result ) );
+                throw (new ArgumentException( "LocalizedMessages.ShellInvalidCanonicalName", Marshal.GetExceptionForHR( result ) ));
             }
-            return CreateTypedProperty( propKey );
+            return (CreateTypedProperty( propKey ));
         }
 
         protected virtual void Dispose( bool disposed )
         {
             if ( disposed )
             {
-                defaultPropertyCollection?.Dispose();
+                _DefaultPropertyCollection?.Dispose();
             }
         }
     }

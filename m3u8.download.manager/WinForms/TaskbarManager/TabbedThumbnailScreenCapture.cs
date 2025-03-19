@@ -162,7 +162,7 @@ namespace System.Windows.Forms.Taskbar
                 }
 
                 // Create the new image with the sizes we've calculated
-                return (Bitmap) originalBitmap.GetThumbnailImage( newWidth, newHeight, null, IntPtr.Zero );
+                return ((Bitmap) originalBitmap.GetThumbnailImage( newWidth, newHeight, null, IntPtr.Zero ));
             }
             finally
             {

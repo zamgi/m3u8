@@ -52,8 +52,7 @@ namespace System.Windows.Forms.Taskbar
             Refuse = 0x00000002
         }
 
-        [Flags]
-        internal enum FileOpenOptions
+        [Flags] internal enum FileOpenOptions
         {
             OverwritePrompt = 0x00000002,
             StrictFileTypes = 0x00000004,
@@ -86,8 +85,7 @@ namespace System.Windows.Forms.Taskbar
         /// Indicate flags that modify the property store object retrieved by methods that create a property store, such as
         /// IShellItem2::GetPropertyStore or IPropertyStoreFactory::GetPropertyStore.
         /// </summary>
-        [Flags]
-        internal enum GetPropertyStoreOptions
+        [Flags] internal enum GetPropertyStoreOptions
         {
             /// <summary>
             /// Meaning to a calling process: Return a read-only property store that contains all properties. Slow items (offline files) are
@@ -204,8 +202,7 @@ namespace System.Windows.Forms.Taskbar
             NonIndexableLocationWarning = 1
         };
 
-        [Flags]
-        internal enum LibraryOptions
+        [Flags] internal enum LibraryOptions
         {
             Default = 0,
             PinnedToNavigationPane = 0x1,
@@ -219,8 +216,7 @@ namespace System.Windows.Forms.Taskbar
             MakeUniqueName = 2
         };
 
-        [Flags]
-        internal enum ShellChangeNotifyEventSource
+        [Flags] internal enum ShellChangeNotifyEventSource
         {
             InterruptLevel = 0x0001,
             ShellLevel = 0x0002,
@@ -228,8 +224,7 @@ namespace System.Windows.Forms.Taskbar
             NewDelivery = 0x8000
         }
 
-        [Flags]
-        internal enum ShellFileGetAttributesOptions
+        [Flags] internal enum ShellFileGetAttributesOptions
         {
             /// <summary>The specified items can be copied.</summary>
             CanCopy = 0x00000001,
@@ -365,8 +360,7 @@ namespace System.Windows.Forms.Taskbar
             PkeyMask = unchecked((int) 0x81044000),
         }
 
-        [Flags]
-        internal enum ShellFolderEnumerationOptions : ushort
+        [Flags] internal enum ShellFolderEnumerationOptions : ushort
         {
             CheckingForChildren = 0x0010,
             Folders = 0x0020,
@@ -414,8 +408,7 @@ namespace System.Windows.Forms.Taskbar
             ParentRelative = unchecked((int) 0x80080001)           // SIGDN_INFOLDER
         }
 
-        [Flags]
-        internal enum SIIGBF
+        [Flags] internal enum SIIGBF
         {
             ResizeToFit = 0x00,
             BiggerSizeOk = 0x01,
@@ -425,16 +418,14 @@ namespace System.Windows.Forms.Taskbar
             InCacheOnly = 0x10,
         }
 
-        [Flags]
-        internal enum ThumbnailCacheOptions
+        [Flags] internal enum ThumbnailCacheOptions
         {
             Default = 0x00000000,
             LowQuality = 0x00000001,
             Cached = 0x00000002,
         }
 
-        [Flags]
-        internal enum ThumbnailOptions
+        [Flags] internal enum ThumbnailOptions
         {
             Extract = 0x00000000,
             InCacheOnly = 0x00000001,
@@ -447,16 +438,14 @@ namespace System.Windows.Forms.Taskbar
         [DllImport("shell32.dll")]
         public static extern void ILFree( IntPtr pidl );
 
-        [DllImport("gdi32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("gdi32.dll")][return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool DeleteObject( IntPtr hObject );
 
         [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
         internal static extern uint ILGetSize( IntPtr pidl );
 
         [DllImport("shlwapi.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int PathParseIconLocation(
-            [MarshalAs(UnmanagedType.LPWStr)] ref string pszIconFile );
+        internal static extern int PathParseIconLocation( [MarshalAs(UnmanagedType.LPWStr)] ref string pszIconFile );
 
         [DllImport("shell32.dll")]
         internal static extern IntPtr SHChangeNotification_Lock(
@@ -465,12 +454,10 @@ namespace System.Windows.Forms.Taskbar
             out IntPtr pidl,
             out uint lEvent );
 
-        [DllImport("shell32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("shell32.dll")][return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool SHChangeNotification_Unlock( IntPtr hLock );
 
-        [DllImport("shell32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("shell32.dll")][return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool SHChangeNotifyDeregister( uint hNotify );
 
         [DllImport("shell32.dll")]
@@ -563,7 +550,7 @@ namespace System.Windows.Forms.Taskbar
         {
             internal IntPtr pIdl;
 
-            [MarshalAs( UnmanagedType.Bool)]
+            [MarshalAs(UnmanagedType.Bool)]
             internal bool recursively;
         }
 
@@ -577,7 +564,7 @@ namespace System.Windows.Forms.Taskbar
         [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
         internal struct ThumbnailId
         {
-            [MarshalAs( UnmanagedType.LPArray, SizeParamIndex = 16)]
+            [MarshalAs(UnmanagedType.LPArray, SizeParamIndex=16)]
             private readonly byte rgbKey;
         }
     }

@@ -12,9 +12,9 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( Uri.IsWellFormedUriString( path, UriKind.Absolute ) )
             {
-                return path;
+                return (path);
             }
-            return Path.GetFullPath( (path) );
+            return (Path.GetFullPath( path ));
         }
 
         internal static string GetItemType( IShellItem2 shellItem )
@@ -22,7 +22,7 @@ namespace System.Windows.Forms.Taskbar
             if ( shellItem != null )
             {
                 var hr = shellItem.GetString( ref ItemTypePropertyKey, out var itemType );
-                if ( hr == HResult.Ok ) { return itemType; }
+                if ( hr == HResult.Ok ) return (itemType);
             }
 
             return (null);
@@ -36,9 +36,9 @@ namespace System.Windows.Forms.Taskbar
 
             var hr = shellItem.GetDisplayName( ShellNativeMethods.ShellItemDesignNameOptions.DesktopAbsoluteParsing, out var pszPath );
 
-            if ( hr != HResult.Ok && hr != HResult.InvalidArguments )
+            if ( (hr != HResult.Ok) && (hr != HResult.InvalidArguments) )
             {
-                throw new ShellException( "LocalizedMessages.ShellHelperGetParsingNameFailed", hr );
+                throw (new ShellException( "LocalizedMessages.ShellHelperGetParsingNameFailed", hr ));
             }
 
             if ( pszPath != IntPtr.Zero )
@@ -47,7 +47,7 @@ namespace System.Windows.Forms.Taskbar
                 Marshal.FreeCoTaskMem( pszPath );
             }
 
-            return path;
+            return (path);
         }
 
         internal static IntPtr PidlFromParsingName( string name )
@@ -62,7 +62,7 @@ namespace System.Windows.Forms.Taskbar
         internal static IntPtr PidlFromShellItem( IShellItem nativeShellItem )
         {
             var unknown = Marshal.GetIUnknownForObject( nativeShellItem );
-            return PidlFromUnknown( unknown );
+            return (PidlFromUnknown( unknown ));
         }
 
         internal static IntPtr PidlFromUnknown( IntPtr unknown )

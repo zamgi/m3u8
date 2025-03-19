@@ -1,5 +1,7 @@
 ﻿using System;
+#if THROTTLER__V1
 using System.Collections.Concurrent;
+#endif
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,10 +11,11 @@ using O = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.download.manager.controllers
 {
+#if THROTTLER__V1
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class throttler_by_speed_impl : I_throttler_by_speed_t, IDisposable
+    internal sealed class throttler_by_speed_impl__v1 : I_throttler_by_speed__v1_t, IDisposable
     {
         /// <summary>
         /// 
@@ -61,8 +64,8 @@ namespace m3u8.download.manager.controllers
         private CancellationTokenSource __Cts__;
         private ConcurrentDictionary< Task, download_measure_t > _DownloadMeasureDict;
 
-        public throttler_by_speed_impl( decimal? max_speed_threshold_in_Mbps ) : this( max_speed_threshold_in_Mbps.GetValueOrDefault( decimal.MaxValue ) ) { }
-        public throttler_by_speed_impl( decimal max_speed_threshold_in_Mbps )
+        public throttler_by_speed_impl__v1( decimal? max_speed_threshold_in_Mbps ) : this( max_speed_threshold_in_Mbps.GetValueOrDefault( decimal.MaxValue ) ) { }
+        public throttler_by_speed_impl__v1( decimal max_speed_threshold_in_Mbps )
         {
             _Max_speed_threshold_in_Mbps = max_speed_threshold_in_Mbps;
             _DownloadMeasureDict = new ConcurrentDictionary< Task, download_measure_t >();
@@ -192,11 +195,12 @@ namespace m3u8.download.manager.controllers
         public override string ToString() => $"max_speed_threshold: {GetMaxSpeedThreshold()} Mbps";
 #endif
     }
-
+#endif
+#if THROTTLER__V2
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class throttler_by_speed_impl__v2 : I_throttler_by_speed_t, IDisposable
+    internal sealed class throttler_by_speed_impl__v2 : I_throttler_by_speed__v2_t, IDisposable
     {
         /// <summary>
         /// 
@@ -247,9 +251,9 @@ namespace m3u8.download.manager.controllers
         {
             _Max_speed_threshold_in_Mbps = max_speed_threshold_in_Mbps;
             _DownloadMeasure = Create__download_measure_t();
-            __Cts__ = new CancellationTokenSource();
+            __Cts__   = new CancellationTokenSource();
             _SpinLock = new SpinLock();
-            _Lock = new object();
+            _Lock     = new object();
         }
         public void Dispose()
         {
@@ -298,27 +302,25 @@ namespace m3u8.download.manager.controllers
                     _SpinLock.Exit( true );
                 }
             }
-            //---Interlocked.Exchange( ref _Max_speed_threshold_in_Mbps, max_speed_threshold_in_Mbps.GetValueOrDefault( decimal.MaxValue ) );
-            //_DownloadMeasureDict.Clear();
             Get_Cts().Cancel_NoThrow();
         }
 
-        private static download_measure_t Create__download_measure_t() => new download_measure_t( Stopwatch.GetTimestamp() );
-        public void Start( Task task )
+        [M(O.AggressiveInlining)] private static download_measure_t Create__download_measure_t() => new download_measure_t( Stopwatch.GetTimestamp() );
+        public void Start()
         {
             lock ( _Lock )
             {
                 _DownloadMeasure = Create__download_measure_t();
             }
         }
-        public void Restart( Task task )
+        public void Restart()
         {
             lock ( _Lock )
             {
                 _DownloadMeasure = Create__download_measure_t();
             }
         }
-        public void End( Task task ) { }
+        public void End() { }
 
         private static void Delay_NoThrow( int millisecondsDelay, CancellationToken ct )
         {
@@ -342,7 +344,7 @@ namespace m3u8.download.manager.controllers
                 }
             }
         }
-        public double? Throttle( Task task, CancellationToken ct )
+        public double? Throttle( CancellationToken ct )
         {
             lock ( _Lock )
             {
@@ -376,7 +378,7 @@ namespace m3u8.download.manager.controllers
                 return (instantSpeedInMbps);
             }
         }
-        public void TakeIntoAccountDownloadedBytes( Task task, int downloadBytes )
+        public void TakeIntoAccountDownloadedBytes( int downloadBytes )
         {
             lock ( _Lock )
             {
@@ -387,4 +389,5 @@ namespace m3u8.download.manager.controllers
         public override string ToString() => $"max_speed_threshold: {GetMaxSpeedThreshold()} Mbps";
 #endif
     }
+#endif
 }

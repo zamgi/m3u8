@@ -12,6 +12,12 @@ using m3u8.infrastructure;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+#if THROTTLER__V1
+using ThrottlerBySpeed_InDownloadProcessUser = m3u8.ThrottlerBySpeed_InDownloadProcessUser__v1;
+#endif
+#if THROTTLER__V2
+using ThrottlerBySpeed_InDownloadProcessUser = m3u8.ThrottlerBySpeed_InDownloadProcessUser__v2;
+#endif
 
 namespace m3u8
 {
@@ -740,7 +746,7 @@ if ( (new Random()).Next( 10 ) == 0 )
             public Action                       WaitingIfPaused            { [M(O.AggressiveInlining)] get; set; }
             public Action< m3u8_part_ts__v2 >   WaitingIfPausedBefore_2    { [M(O.AggressiveInlining)] get; set; }
             public Action< m3u8_part_ts__v2 >   WaitingIfPausedAfter_2     { [M(O.AggressiveInlining)] get; set; }
-            public I_throttler_by_speed_t       ThrottlerBySpeed           { [M(O.AggressiveInlining)] get; set; }
+            public I_throttler_by_speed__v2_t   ThrottlerBySpeed           { [M(O.AggressiveInlining)] get; set; }
             public ObjectPool< Stream >         StreamPool                 { [M(O.AggressiveInlining)] get; set; }
             public ObjectPool< byte[] >         RespBufPool                { [M(O.AggressiveInlining)] get; set; }
             public m3u8_client_next.DownloadPartStepActionDelegate DownloadPartStepAction { [M(O.AggressiveInlining)] get; set; }

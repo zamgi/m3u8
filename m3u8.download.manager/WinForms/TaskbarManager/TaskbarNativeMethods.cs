@@ -66,55 +66,52 @@ namespace System.Windows.Forms.Taskbar
         THB_FLAGS = 0x8
     }
 
-    [Flags]
-    internal enum ThumbButtonOptions
+    [Flags] internal enum ThumbButtonOptions
     {
-        Enabled = 0x00000000,
-        Disabled = 0x00000001,
+        Enabled        = 0x00000000,
+        Disabled       = 0x00000001,
         DismissOnClick = 0x00000002,
-        NoBackground = 0x00000004,
-        Hidden = 0x00000008,
+        NoBackground   = 0x00000004,
+        Hidden         = 0x00000008,
         NonInteractive = 0x00000010
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto )]
+    [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
     internal struct ThumbButton
     {
         /// <summary>WPARAM value for a THUMBBUTTON being clicked.</summary>
         internal const int Clicked = 0x1800;
 
-        [MarshalAs( UnmanagedType.U4 )]
+        [MarshalAs(UnmanagedType.U4)]
         internal ThumbButtonMask Mask;
 
         internal uint Id;
         internal uint Bitmap;
         internal IntPtr Icon;
 
-        [MarshalAs( UnmanagedType.ByValTStr, SizeConst = 260 )]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst=260)]
         internal string Tip;
 
-        [MarshalAs( UnmanagedType.U4 )]
+        [MarshalAs(UnmanagedType.U4)]
         internal ThumbButtonOptions Flags;
     }
 
     internal static class TaskbarNativeMethods
     {
         internal const int WmCommand = 0x0111;
-
         internal const uint WmDwmSendIconicLivePreviewBitmap = 0x0326;
-
         internal const uint WmDwmSendIconThumbnail = 0x0323;
 
         // Register Window Message used by Shell to notify that the corresponding taskbar button has been added to the taskbar.
         internal static readonly uint WmTaskbarButtonCreated = RegisterWindowMessage( "TaskbarButtonCreated" );
 
-        [DllImport("shell32.dll" )]
+        [DllImport("shell32.dll")]
         public static extern int SHGetPropertyStoreForWindow(
             IntPtr hwnd,
             ref Guid iid /*IID_IPropertyStore*/,
             [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore );
 
-        [DllImport("shell32.dll" )]
+        [DllImport("shell32.dll")]
         internal static extern void GetCurrentProcessExplicitAppUserModelID(
             [Out(), MarshalAs(UnmanagedType.LPWStr)] out string AppID );
 
@@ -127,17 +124,16 @@ namespace System.Windows.Forms.Taskbar
                 out var propStore );
             if ( rc != 0 )
             {
-                throw Marshal.GetExceptionForHR( rc );
+                throw (Marshal.GetExceptionForHR( rc ));
             }
-            return propStore;
+            return (propStore);
         }
 
         [DllImport("user32.dll", EntryPoint="RegisterWindowMessage", SetLastError=true, CharSet=CharSet.Unicode)]
         internal static extern uint RegisterWindowMessage( [MarshalAs(UnmanagedType.LPWStr)] string lpString );
 
-        [DllImport("shell32.dll" )]
-        internal static extern void SetCurrentProcessExplicitAppUserModelID(
-            [MarshalAs(UnmanagedType.LPWStr)] string AppID );
+        [DllImport("shell32.dll")]
+        internal static extern void SetCurrentProcessExplicitAppUserModelID( [MarshalAs(UnmanagedType.LPWStr)] string AppID );
 
         /// <summary>Sets the window's application id by its window handle.</summary>
         /// <param name="hwnd">The window handle.</param>
@@ -163,7 +159,7 @@ namespace System.Windows.Forms.Taskbar
             Marshal.ReleaseComObject( propStore );
         }
 
-        [DllImport("shell32.dll" )]
+        [DllImport("shell32.dll")]
         internal static extern void SHAddToRecentDocs( ShellAddToRecentDocs flags, [MarshalAs(UnmanagedType.LPWStr)] string path );
 
         internal static void SHAddToRecentDocs( string path ) => SHAddToRecentDocs( ShellAddToRecentDocs.PathW, path );

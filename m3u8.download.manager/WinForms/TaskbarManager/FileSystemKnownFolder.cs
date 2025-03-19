@@ -6,20 +6,18 @@ namespace System.Windows.Forms.Taskbar
     /// <summary>Represents a registered file system Known Folder</summary>
     public class FileSystemKnownFolder : ShellFileSystemFolder, IKnownFolder, IDisposable
     {
-        private IKnownFolderNative  knownFolderNative;
-        private KnownFolderSettings knownFolderSettings;
+        private IKnownFolderNative  _KnownFolderNative;
+        private KnownFolderSettings _KnownFolderSettings;
 
-        internal FileSystemKnownFolder( IShellItem2 shellItem ) : base( shellItem )
-        {
-        }
+        internal FileSystemKnownFolder( IShellItem2 shellItem ) : base( shellItem ) { }
         internal FileSystemKnownFolder( IKnownFolderNative kf )
         {
             Debug.Assert( kf != null );
-            knownFolderNative = kf;
+            _KnownFolderNative = kf;
 
             // Set the native shell item and set it on the base class (ShellObject)
             var guid = new Guid(ShellIIDGuid.IShellItem2 );
-            knownFolderNative.GetShellItem( 0, ref guid, out nativeShellItem );
+            _KnownFolderNative.GetShellItem( 0, ref guid, out _NativeShellItem );
         }
 
         /// <summary>Gets this known folder's canonical name.</summary>
@@ -108,33 +106,33 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( knownFolderNative == null )
+                if ( _KnownFolderNative == null )
                 {
                     // We need to get the PIDL either from the NativeShellItem, or from base class's property (if someone already set it on
                     // us). Need to use the PIDL to get the native IKnownFolder interface.
 
                     // Get the PIDL for the ShellItem
-                    if ( nativeShellItem != null && base.PIDL == IntPtr.Zero )
+                    if ( _NativeShellItem != null && base.PIDL == IntPtr.Zero )
                     {
-                        base.PIDL = ShellHelper.PidlFromShellItem( nativeShellItem );
+                        base.PIDL = ShellHelper.PidlFromShellItem( _NativeShellItem );
                     }
 
                     // If we have a valid PIDL, get the native IKnownFolder
                     if ( base.PIDL != IntPtr.Zero )
                     {
-                        knownFolderNative = KnownFolderHelper.FromPIDL( base.PIDL );
+                        _KnownFolderNative = KnownFolderHelper.FromPIDL( base.PIDL );
                     }
 
-                    Debug.Assert( knownFolderNative != null );
+                    Debug.Assert( _KnownFolderNative != null );
                 }
 
                 // If this is the first time this property is being called, get the native Folder Defination (KnownFolder properties)
-                if ( knownFolderSettings == null )
+                if ( _KnownFolderSettings == null )
                 {
-                    knownFolderSettings = new KnownFolderSettings( knownFolderNative );
+                    _KnownFolderSettings = new KnownFolderSettings( _KnownFolderNative );
                 }
 
-                return knownFolderSettings;
+                return (_KnownFolderSettings);
             }
         }
 
@@ -144,13 +142,13 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( disposing )
             {
-                knownFolderSettings = null;
+                _KnownFolderSettings = null;
             }
 
-            if ( knownFolderNative != null )
+            if ( _KnownFolderNative != null )
             {
-                Marshal.ReleaseComObject( knownFolderNative );
-                knownFolderNative = null;
+                Marshal.ReleaseComObject( _KnownFolderNative );
+                _KnownFolderNative = null;
             }
 
             base.Dispose( disposing );

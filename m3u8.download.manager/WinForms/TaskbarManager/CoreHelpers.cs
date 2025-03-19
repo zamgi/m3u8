@@ -11,7 +11,7 @@ public static class CoreHelpers
     //
     // Summary:
     //     Determines if the application is running on Vista
-    public static bool RunningOnVista => Environment.OSVersion.Version.Major >= 6;
+    public static bool RunningOnVista => (Environment.OSVersion.Version.Major >= 6);
 
     //
     // Summary:
@@ -38,7 +38,7 @@ public static class CoreHelpers
     {
         if ( string.IsNullOrEmpty( resourceId ) )
         {
-            return string.Empty;
+            return (string.Empty);
         }
 
         resourceId = resourceId.Replace( "shell32,dll", "shell32.dll" );
@@ -54,39 +54,36 @@ public static class CoreHelpers
         return (buf.ToString());
     }
 
-    //
-    // Summary:
-    //     Throws PlatformNotSupportedException if the application is not running on Windows
-    //     Vista
+    /// <summary>
+    /// Summary: Throws PlatformNotSupportedException if the application is not running on Windows Vista
+    /// </summary>
     public static void ThrowIfNotVista()
     {
         if ( !RunningOnVista )
         {
-            throw new PlatformNotSupportedException( "LocalizedMessages.CoreHelpersRunningOnVista" );
+            throw (new PlatformNotSupportedException( "LocalizedMessages.CoreHelpersRunningOnVista" ));
         }
     }
 
-    //
-    // Summary:
-    //     Throws PlatformNotSupportedException if the application is not running on Windows
-    //     7
+    /// <summary>
+    /// Summary: Throws PlatformNotSupportedException if the application is not running on Windows 7
+    /// </summary>
     public static void ThrowIfNotWin7()
     {
         if ( !RunningOnWin7 )
         {
-            throw new PlatformNotSupportedException( "LocalizedMessages.CoreHelpersRunningOn7" );
+            throw (new PlatformNotSupportedException( "LocalizedMessages.CoreHelpersRunningOn7" ));
         }
     }
 
-    //
-    // Summary:
-    //     Throws PlatformNotSupportedException if the application is not running on Windows
-    //     XP
+    /// <summary>
+    /// Summary: Throws PlatformNotSupportedException if the application is not running on Windows XP
+    /// </summary>
     public static void ThrowIfNotXP()
     {
         if ( !RunningOnXP )
         {
-            throw new PlatformNotSupportedException( "LocalizedMessages.CoreHelpersRunningOnXp" );
+            throw (new PlatformNotSupportedException( "LocalizedMessages.CoreHelpersRunningOnXp" ));
         }
     }
 }

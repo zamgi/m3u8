@@ -8,8 +8,7 @@
     /// respectively, for all specified events. 
     /// This parameter can be one or more of the following values:
     /// </summary>
-    [Flags]
-    public enum ShellObjectChangeTypes
+    [Flags] public enum ShellObjectChangeTypes
     {
         /// <summary>
         /// None

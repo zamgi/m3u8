@@ -36,97 +36,97 @@ namespace System.Windows.Forms.Taskbar
             {
                 case (VarEnum.VT_EMPTY):
                 case (VarEnum.VT_NULL):
-                    return typeof(object );
+                    return typeof(object);
 
                 case (VarEnum.VT_UI1):
-                    return typeof(byte? );
+                    return typeof(byte?);
 
                 case (VarEnum.VT_I2):
-                    return typeof(short? );
+                    return typeof(short?);
 
                 case (VarEnum.VT_UI2):
-                    return typeof(ushort? );
+                    return typeof(ushort?);
 
                 case (VarEnum.VT_I4):
-                    return typeof(int? );
+                    return typeof(int?);
 
                 case (VarEnum.VT_UI4):
-                    return typeof(uint? );
+                    return typeof(uint?);
 
                 case (VarEnum.VT_I8):
-                    return typeof(long? );
+                    return typeof(long?);
 
                 case (VarEnum.VT_UI8):
-                    return typeof(ulong? );
+                    return typeof(ulong?);
 
                 case (VarEnum.VT_R8):
-                    return typeof(double? );
+                    return typeof(double?);
 
                 case (VarEnum.VT_BOOL):
-                    return typeof(bool? );
+                    return typeof(bool?);
 
                 case (VarEnum.VT_FILETIME):
-                    return typeof(DateTime? );
+                    return typeof(DateTime?);
 
                 case (VarEnum.VT_CLSID):
-                    return typeof(IntPtr? );
+                    return typeof(IntPtr?);
 
                 case (VarEnum.VT_CF):
-                    return typeof(IntPtr? );
+                    return typeof(IntPtr?);
 
                 case (VarEnum.VT_BLOB):
-                    return typeof(byte[] );
+                    return typeof(byte[]);
 
                 case (VarEnum.VT_LPWSTR):
-                    return typeof(string );
+                    return typeof(string);
 
                 case (VarEnum.VT_UNKNOWN):
-                    return typeof(IntPtr? );
+                    return typeof(IntPtr?);
 
                 case (VarEnum.VT_STREAM):
-                    return typeof(IStream );
+                    return typeof(IStream);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_UI1):
-                    return typeof(byte[] );
+                    return typeof(byte[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_I2):
-                    return typeof(short[] );
+                    return typeof(short[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_UI2):
-                    return typeof(ushort[] );
+                    return typeof(ushort[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_I4):
-                    return typeof(int[] );
+                    return typeof(int[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_UI4):
-                    return typeof(uint[] );
+                    return typeof(uint[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_I8):
-                    return typeof(long[] );
+                    return typeof(long[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_UI8):
-                    return typeof(ulong[] );
+                    return typeof(ulong[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_R8):
-                    return typeof(double[] );
+                    return typeof(double[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_BOOL):
-                    return typeof(bool[] );
+                    return typeof(bool[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_FILETIME):
-                    return typeof(DateTime[] );
+                    return typeof(DateTime[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_CLSID):
-                    return typeof(IntPtr[] );
+                    return typeof(IntPtr[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_CF):
-                    return typeof(IntPtr[] );
+                    return typeof(IntPtr[]);
 
                 case (VarEnum.VT_VECTOR | VarEnum.VT_LPWSTR):
-                    return typeof(string[] );
+                    return typeof(string[]);
 
                 default:
-                    return typeof(object );
+                    return typeof(object);
             }
         }
 
@@ -141,7 +141,7 @@ namespace System.Windows.Forms.Taskbar
 
             if ( ctorInfo == null )
             {
-                throw new ArgumentException( "LocalizedMessages.ShellPropertyFactoryConstructorNotFound", "type" );
+                throw (new ArgumentException( "LocalizedMessages.ShellPropertyFactoryConstructorNotFound", "type" ));
             }
 
             var key   = _Expression_.Parameter( argTypes[ 0 ], "propKey" );
@@ -150,7 +150,7 @@ namespace System.Windows.Forms.Taskbar
 
             var create = _Expression_.New( ctorInfo, key, desc, _Expression_.Convert( third, argTypes[ 2 ] ) );
 
-            return _Expression_.Lambda<Func<PropertyKey, ShellPropertyDescription, object, IShellProperty>>( create, key, desc, third ).Compile();
+            return (_Expression_.Lambda<Func<PropertyKey, ShellPropertyDescription, object, IShellProperty>>( create, key, desc, third ).Compile());
         }
 
         private static IShellProperty GenericCreateShellProperty<T>( PropertyKey propKey, T thirdArg )
@@ -172,7 +172,7 @@ namespace System.Windows.Forms.Taskbar
                 _storeCache.Add( hash, ctor );
             }
 
-            return ctor( propKey, propDesc, thirdArg );
+            return (ctor( propKey, propDesc, thirdArg ));
         }
 
         private static int GetTypeHash( params Type[] types ) => GetTypeHash( (IEnumerable<Type>) types );
@@ -185,7 +185,7 @@ namespace System.Windows.Forms.Taskbar
             {
                 hash = hash * 31 + type.GetHashCode();
             }
-            return hash;
+            return (hash);
         }
     }
 }

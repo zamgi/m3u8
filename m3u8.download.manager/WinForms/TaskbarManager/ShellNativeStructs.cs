@@ -6,8 +6,7 @@
     /// You can combine these flags, but you can only choose one flag from each group of related flags. Typically one flag from each of the
     /// access and sharing groups must be specified for all functions and methods which use these constants.
     /// </summary>
-    [Flags]
-    public enum AccessModes
+    [Flags] public enum AccessModes
     {
         /// <summary>Indicates that, in direct mode, each change to a storage or stream element is written as it occurs.</summary>
         Direct = 0x00000000,

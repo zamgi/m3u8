@@ -498,10 +498,11 @@ namespace m3u8
                 public void Wait( CancellationToken ct ) => _Semaphore.Wait( ct );
                 public Task WaitAsync( CancellationToken ct ) => _Semaphore.WaitAsync( ct );
             }
+#if THROTTLER__V1
             /// <summary>
             /// 
             /// </summary>
-            private sealed class throttler_by_speed_impl : I_throttler_by_speed_t
+            private sealed class throttler_by_speed_impl__v1 : I_throttler_by_speed__v1_t
             {
                 public void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps ) { }
                 public void Dispose() { }
@@ -512,7 +513,23 @@ namespace m3u8
                 public void TakeIntoAccountDownloadedBytes( Task task, int downloadedBytes ) { }
                 public double? Throttle( Task task, CancellationToken ct ) => null;
             }
-
+#endif
+#if THROTTLER__V2
+            /// <summary>
+            /// 
+            /// </summary>
+            private sealed class throttler_by_speed_impl__v2 : I_throttler_by_speed__v2_t
+            {
+                public void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps ) { }
+                public void Dispose() { }
+                public void End() { }
+                public decimal? GetMaxSpeedThreshold() => null;
+                public void Restart() { }
+                public void Start() { }
+                public void TakeIntoAccountDownloadedBytes( int downloadedBytes ) { }
+                public double? Throttle( CancellationToken ct ) => null;
+            }
+#endif
             public static async Task run( string m3u8FileUrl, string outputFileName, CancellationToken ct, IDictionary< string, string > requestHeaders = null )
             {
                 using var mc = m3u8_client_next_factory.Create( new m3u8_client_next.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead } );
@@ -525,7 +542,7 @@ namespace m3u8
                 using var waitIfPausedEvent  = new ManualResetEventSlim( true, 0 );
                 using var dts                = new download_threads_semaphore_impl( maxDegreeOfParallelism );
                 using var dts_2              = new download_threads_semaphore_impl( maxDegreeOfParallelism );
-                using var throttler_by_speed = new throttler_by_speed_impl();
+                using var throttler_by_speed = new throttler_by_speed_impl__v2();
                 using var streamPool         = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
                 using var respBufPool        = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
 
@@ -813,7 +830,7 @@ namespace m3u8
                         //case ConsoleKey.Enter:
                         case ConsoleKey.Escape:
                             cts.Cancel();
-                        break;
+                            break;
                     }
                 }
             }

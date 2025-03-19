@@ -18,7 +18,11 @@
   <PropertyGroup>
     <OutputPath>bin\</OutputPath>
   </PropertyGroup>
-
+  
+  <PropertyGroup>
+    <DefineConstants>THROTTLER__V2;</DefineConstants>
+  </PropertyGroup>
+  
   <ItemGroup>
     <None Remove=".gitignore" />
   </ItemGroup>

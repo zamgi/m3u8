@@ -21,18 +21,17 @@ namespace System.Windows.Forms.Taskbar
             new Guid(ShellKFIDGuid.VideosLibrary)
         };
 
-        private readonly IKnownFolder knownFolder;
-        private INativeShellLibrary nativeShellLibrary;
+        private readonly IKnownFolder _KnownFolder;
+        private INativeShellLibrary _NativeShellLibrary;
 
         /// <summary>Creates a shell library in the Libraries Known Folder, using the given shell library name.</summary>
         /// <param name="libraryName">The name of this library</param>
         /// <param name="overwrite">Allow overwriting an existing library; if one exists with the same name</param>
-        public ShellLibrary( string libraryName, bool overwrite )
-            : this()
+        public ShellLibrary( string libraryName, bool overwrite ) : this()
         {
             if ( string.IsNullOrEmpty( libraryName ) )
             {
-                throw new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" );
+                throw (new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" ));
             }
 
             Name = libraryName;
@@ -42,8 +41,8 @@ namespace System.Windows.Forms.Taskbar
                     ShellNativeMethods.LibrarySaveOptions.OverrideExisting :
                     ShellNativeMethods.LibrarySaveOptions.FailIfThere;
 
-            nativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
-            nativeShellLibrary.SaveInKnownFolder( ref guid, libraryName, flags, out nativeShellItem );
+            _NativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
+            _NativeShellLibrary.SaveInKnownFolder( ref guid, libraryName, flags, out _NativeShellItem );
         }
 
         /// <summary>Creates a shell library in a given Known Folder, using the given shell library name.</summary>
@@ -54,20 +53,20 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( string.IsNullOrEmpty( libraryName ) )
             {
-                throw new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" );
+                throw (new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" ));
             }
 
-            knownFolder = sourceKnownFolder;
+            _KnownFolder = sourceKnownFolder;
 
             Name = libraryName;
-            var guid = knownFolder.FolderId;
+            var guid = _KnownFolder.FolderId;
 
             var flags = overwrite ?
                     ShellNativeMethods.LibrarySaveOptions.OverrideExisting :
                     ShellNativeMethods.LibrarySaveOptions.FailIfThere;
 
-            nativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
-            nativeShellLibrary.SaveInKnownFolder( ref guid, libraryName, flags, out nativeShellItem );
+            _NativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
+            _NativeShellLibrary.SaveInKnownFolder( ref guid, libraryName, flags, out _NativeShellItem );
         }
 
         /// <summary>Creates a shell library in a given local folder, using the given shell library name.</summary>
@@ -78,12 +77,12 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( string.IsNullOrEmpty( libraryName ) )
             {
-                throw new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" );
+                throw (new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" ));
             }
 
             if ( !Directory.Exists( folderPath ) )
             {
-                throw new DirectoryNotFoundException( "LocalizedMessages.ShellLibraryFolderNotFound" );
+                throw (new DirectoryNotFoundException( "LocalizedMessages.ShellLibraryFolderNotFound" ));
             }
 
             Name = libraryName;
@@ -94,17 +93,16 @@ namespace System.Windows.Forms.Taskbar
 
             var guid = new Guid(ShellIIDGuid.IShellItem );
 
-            ShellNativeMethods.SHCreateItemFromParsingName( folderPath, IntPtr.Zero, ref guid, out
-            IShellItem shellItemIn );
+            ShellNativeMethods.SHCreateItemFromParsingName( folderPath, IntPtr.Zero, ref guid, out IShellItem shellItemIn );
 
-            nativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
-            nativeShellLibrary.Save( shellItemIn, libraryName, flags, out nativeShellItem );
+            _NativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
+            _NativeShellLibrary.Save( shellItemIn, libraryName, flags, out _NativeShellItem );
         }
 
         private ShellLibrary() => CoreHelpers.ThrowIfNotWin7();
 
         //Construct the ShellLibrary object from a native Shell Library
-        private ShellLibrary( INativeShellLibrary nativeShellLibrary ) : this() => this.nativeShellLibrary = nativeShellLibrary;
+        private ShellLibrary( INativeShellLibrary nativeShellLibrary ) : this() => _NativeShellLibrary = nativeShellLibrary;
 
         /// <summary>Creates a shell library in the Libraries Known Folder, using the given IKnownFolder</summary>
         /// <param name="sourceKnownFolder">KnownFolder from which to create the new Shell Library</param>
@@ -114,31 +112,29 @@ namespace System.Windows.Forms.Taskbar
             Debug.Assert( sourceKnownFolder != null );
 
             // Keep a reference locally
-            knownFolder = sourceKnownFolder;
+            _KnownFolder = sourceKnownFolder;
 
-            nativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
+            _NativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
 
-            var flags = isReadOnly ?
-                    AccessModes.Read :
-                    AccessModes.ReadWrite;
+            var flags = isReadOnly ? AccessModes.Read : AccessModes.ReadWrite;
 
             // Get the IShellItem2
-            base.nativeShellItem = ((ShellObject) sourceKnownFolder).NativeShellItem2;
+            _NativeShellItem = ((ShellObject) sourceKnownFolder).NativeShellItem2;
 
             var guid = sourceKnownFolder.FolderId;
 
             // Load the library from the IShellItem2
             try
             {
-                nativeShellLibrary.LoadLibraryFromKnownFolder( ref guid, flags );
+                _NativeShellLibrary.LoadLibraryFromKnownFolder( ref guid, flags );
             }
             catch ( InvalidCastException )
             {
-                throw new ArgumentException( "LocalizedMessages.ShellLibraryInvalidLibrary", "sourceKnownFolder" );
+                throw (new ArgumentException( "LocalizedMessages.ShellLibraryInvalidLibrary", "sourceKnownFolder" ));
             }
             catch ( NotImplementedException )
             {
-                throw new ArgumentException( "LocalizedMessages.ShellLibraryInvalidLibrary", "sourceKnownFolder" );
+                throw (new ArgumentException( "LocalizedMessages.ShellLibraryInvalidLibrary", "sourceKnownFolder" ));
             }
         }
 
@@ -155,7 +151,7 @@ namespace System.Windows.Forms.Taskbar
             get
             {
                 CoreHelpers.ThrowIfNotWin7();
-                return KnownFolderHelper.FromKnownFolderId( new Guid(ShellKFIDGuid.Libraries ) );
+                return (KnownFolderHelper.FromKnownFolderId( new Guid( ShellKFIDGuid.Libraries ) ));
             }
         }
 
@@ -169,23 +165,23 @@ namespace System.Windows.Forms.Taskbar
             {
                 var guid = new Guid( ShellIIDGuid.IShellItem );
 
-                nativeShellLibrary.GetDefaultSaveFolder(
+                _NativeShellLibrary.GetDefaultSaveFolder(
                     ShellNativeMethods.DefaultSaveFolderType.Detect,
                     ref guid,
                     out var saveFolderItem );
 
-                return ShellHelper.GetParsingName( saveFolderItem );
+                return (ShellHelper.GetParsingName( saveFolderItem ));
             }
             set
             {
                 if ( string.IsNullOrEmpty( value ) )
                 {
-                    throw new ArgumentNullException( "value" );
+                    throw (new ArgumentNullException( "value" ));
                 }
 
                 if ( !Directory.Exists( value ) )
                 {
-                    throw new DirectoryNotFoundException( "LocalizedMessages.ShellLibraryDefaultSaveFolderNotFound" );
+                    throw (new DirectoryNotFoundException( "LocalizedMessages.ShellLibraryDefaultSaveFolderNotFound" ));
                 }
 
                 var fullPath = new DirectoryInfo( value ).FullName;
@@ -194,9 +190,8 @@ namespace System.Windows.Forms.Taskbar
 
                 ShellNativeMethods.SHCreateItemFromParsingName( fullPath, IntPtr.Zero, ref guid, out IShellItem saveFolderItem );
 
-                nativeShellLibrary.SetDefaultSaveFolder( ShellNativeMethods.DefaultSaveFolderType.Detect, saveFolderItem );
-
-                nativeShellLibrary.Commit();
+                _NativeShellLibrary.SetDefaultSaveFolder( ShellNativeMethods.DefaultSaveFolderType.Detect, saveFolderItem );
+                _NativeShellLibrary.Commit();
             }
         }
 
@@ -205,14 +200,14 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                nativeShellLibrary.GetIcon( out var iconRef );
-                return new IconReference( iconRef );
+                _NativeShellLibrary.GetIcon( out var iconRef );
+                return (new IconReference( iconRef ));
             }
 
             set
             {
-                nativeShellLibrary.SetIcon( value.ReferencePath );
-                nativeShellLibrary.Commit();
+                _NativeShellLibrary.SetIcon( value.ReferencePath );
+                _NativeShellLibrary.Commit();
             }
         }
 
@@ -221,11 +216,9 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                nativeShellLibrary.GetOptions( out var flags );
+                _NativeShellLibrary.GetOptions( out var flags );
 
-                return (
-                    (flags & ShellNativeMethods.LibraryOptions.PinnedToNavigationPane) ==
-                    ShellNativeMethods.LibraryOptions.PinnedToNavigationPane);
+                return ( (flags & ShellNativeMethods.LibraryOptions.PinnedToNavigationPane) == ShellNativeMethods.LibraryOptions.PinnedToNavigationPane);
             }
             set
             {
@@ -240,8 +233,8 @@ namespace System.Windows.Forms.Taskbar
                     flags &= ~ShellNativeMethods.LibraryOptions.PinnedToNavigationPane;
                 }
 
-                nativeShellLibrary.SetOptions( ShellNativeMethods.LibraryOptions.PinnedToNavigationPane, flags );
-                nativeShellLibrary.Commit();
+                _NativeShellLibrary.SetOptions( ShellNativeMethods.LibraryOptions.PinnedToNavigationPane, flags );
+                _NativeShellLibrary.Commit();
             }
         }
 
@@ -254,16 +247,15 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                nativeShellLibrary.GetFolderType( out var folderTypeGuid );
-
-                return GetFolderTypefromGuid( folderTypeGuid );
+                _NativeShellLibrary.GetFolderType( out var folderTypeGuid );
+                return (GetFolderTypefromGuid( folderTypeGuid ));
             }
 
             set
             {
                 var guid = FolderTypesGuids[ (int) value ];
-                nativeShellLibrary.SetFolderType( ref guid );
-                nativeShellLibrary.Commit();
+                _NativeShellLibrary.SetFolderType( ref guid );
+                _NativeShellLibrary.Commit();
             }
         }
 
@@ -273,9 +265,8 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                nativeShellLibrary.GetFolderType( out var folderTypeGuid );
-
-                return folderTypeGuid;
+                _NativeShellLibrary.GetFolderType( out var folderTypeGuid );
+                return (folderTypeGuid);
             }
         }
 
@@ -289,8 +280,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     base.Name = Path.GetFileNameWithoutExtension( ShellHelper.GetParsingName( NativeShellItem ) );
                 }
-
-                return base.Name;
+                return (base.Name);
             }
         }
 
@@ -298,7 +288,7 @@ namespace System.Windows.Forms.Taskbar
         public int Count => ItemsList.Count;
 
         internal override IShellItem NativeShellItem => NativeShellItem2;
-        internal override IShellItem2 NativeShellItem2 => nativeShellItem;
+        internal override IShellItem2 NativeShellItem2 => _NativeShellItem;
 
         private List<ShellFileSystemFolder> ItemsList => GetFolders();
 
@@ -310,7 +300,7 @@ namespace System.Windows.Forms.Taskbar
             get => ItemsList[ index ];
             set =>
                 // Index related options are not supported by IShellLibrary doesn't support them.
-                throw new NotImplementedException();
+                throw (new NotImplementedException());
         }
 
         /// <summary>Load the library using a number of options</summary>
@@ -332,18 +322,16 @@ namespace System.Windows.Forms.Taskbar
                 throw new ShellException( hr );
 
             var nativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
-            var flags = isReadOnly ?
-                    AccessModes.Read :
-                    AccessModes.ReadWrite;
+            var flags = isReadOnly ? AccessModes.Read : AccessModes.ReadWrite;
             nativeShellLibrary.LoadLibraryFromItem( nativeShellItem, flags );
 
             var library = new ShellLibrary( nativeShellLibrary );
             try
             {
-                library.nativeShellItem = (IShellItem2) nativeShellItem;
+                library._NativeShellItem = (IShellItem2) nativeShellItem;
                 library.Name = libraryName;
 
-                return library;
+                return (library);
             }
             catch
             {
@@ -367,18 +355,16 @@ namespace System.Windows.Forms.Taskbar
 
             var nativeShellItem = item.NativeShellItem;
             var nativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
-            var flags = isReadOnly ?
-                    AccessModes.Read :
-                    AccessModes.ReadWrite;
+            var flags = isReadOnly ? AccessModes.Read : AccessModes.ReadWrite;
             nativeShellLibrary.LoadLibraryFromItem( nativeShellItem, flags );
 
             var library = new ShellLibrary( nativeShellLibrary );
             try
             {
-                library.nativeShellItem = (IShellItem2) nativeShellItem;
+                library._NativeShellItem = (IShellItem2) nativeShellItem;
                 library.Name = libraryName;
 
-                return library;
+                return (library);
             }
             catch
             {
@@ -394,7 +380,7 @@ namespace System.Windows.Forms.Taskbar
         public static ShellLibrary Load( IKnownFolder sourceKnownFolder, bool isReadOnly )
         {
             CoreHelpers.ThrowIfNotWin7();
-            return new ShellLibrary( sourceKnownFolder, isReadOnly );
+            return (new ShellLibrary( sourceKnownFolder, isReadOnly ));
         }
 
         /// <summary>Shows the library management dialog which enables users to mange the library folders and default save location.</summary>
@@ -453,10 +439,10 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="item">The folder to add to the library.</param>
         public void Add( ShellFileSystemFolder item )
         {
-            if ( item == null ) throw new ArgumentNullException( "item" );
+            if ( item == null ) throw (new ArgumentNullException( "item" ));
 
-            nativeShellLibrary.AddFolder( item.NativeShellItem );
-            nativeShellLibrary.Commit();
+            _NativeShellLibrary.AddFolder( item.NativeShellItem );
+            _NativeShellLibrary.Commit();
         }
 
         /// <summary>Add an existing folder to this library</summary>
@@ -465,7 +451,7 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( !Directory.Exists( folderPath ) )
             {
-                throw new DirectoryNotFoundException( "LocalizedMessages.ShellLibraryFolderNotFound" );
+                throw (new DirectoryNotFoundException( "LocalizedMessages.ShellLibraryFolderNotFound" ));
             }
 
             Add( ShellFileSystemFolder.FromFolderPath( folderPath ) );
@@ -477,10 +463,10 @@ namespace System.Windows.Forms.Taskbar
             var list = ItemsList;
             foreach ( var folder in list )
             {
-                nativeShellLibrary.RemoveFolder( folder.NativeShellItem );
+                _NativeShellLibrary.RemoveFolder( folder.NativeShellItem );
             }
 
-            nativeShellLibrary.Commit();
+            _NativeShellLibrary.Commit();
         }
 
         /// <summary>Close the library, and release its associated file system resources</summary>
@@ -493,7 +479,7 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( string.IsNullOrEmpty( fullPath ) )
             {
-                throw new ArgumentNullException( "fullPath" );
+                throw (new ArgumentNullException( "fullPath" ));
             }
 
             return ItemsList.Any( folder => string.Equals( fullPath, folder.Path, StringComparison.OrdinalIgnoreCase ) );
@@ -506,7 +492,7 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( item == null )
             {
-                throw new ArgumentNullException( "item" );
+                throw (new ArgumentNullException( "item" ));
             }
 
             return ItemsList.Any( folder => string.Equals( item.Path, folder.Path, StringComparison.OrdinalIgnoreCase ) );
@@ -528,12 +514,12 @@ namespace System.Windows.Forms.Taskbar
         /// <returns><B>true</B> if the item was removed.</returns>
         public bool Remove( ShellFileSystemFolder item )
         {
-            if ( item == null ) throw new ArgumentNullException( "item" );
+            if ( item == null ) throw (new ArgumentNullException( "item" ));
 
             try
             {
-                nativeShellLibrary.RemoveFolder( item.NativeShellItem );
-                nativeShellLibrary.Commit();
+                _NativeShellLibrary.RemoveFolder( item.NativeShellItem );
+                _NativeShellLibrary.Commit();
             }
             catch ( COMException )
             {
@@ -584,28 +570,25 @@ namespace System.Windows.Forms.Taskbar
 
             var nativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
 
-            var flags = isReadOnly ?
-                    AccessModes.Read :
-                    AccessModes.ReadWrite;
-
+            var flags = isReadOnly ? AccessModes.Read : AccessModes.ReadWrite;
             nativeShellLibrary.LoadLibraryFromItem( nativeShellItem, flags );
 
             var library = new ShellLibrary( nativeShellLibrary )
             {
-                nativeShellItem = (IShellItem2) nativeShellItem
+                _NativeShellItem = (IShellItem2) nativeShellItem
             };
 
-            return library;
+            return (library);
         }
 
         /// <summary>Release resources</summary>
         /// <param name="disposing">Indicates that this was called from Dispose(), rather than from the finalizer.</param>
         protected override void Dispose( bool disposing )
         {
-            if ( nativeShellLibrary != null )
+            if ( _NativeShellLibrary != null )
             {
-                Marshal.ReleaseComObject( nativeShellLibrary );
-                nativeShellLibrary = null;
+                Marshal.ReleaseComObject( _NativeShellLibrary );
+                _NativeShellLibrary = null;
             }
 
             base.Dispose( disposing );
@@ -617,10 +600,10 @@ namespace System.Windows.Forms.Taskbar
             {
                 if ( folderTypeGuid.Equals( FolderTypesGuids[ i ] ) )
                 {
-                    return (LibraryFolderType) i;
+                    return ((LibraryFolderType) i);
                 }
             }
-            throw new ArgumentOutOfRangeException( "folderTypeGuid", "LocalizedMessages.ShellLibraryInvalidFolderType" );
+            throw (new ArgumentOutOfRangeException( "folderTypeGuid", "LocalizedMessages.ShellLibraryInvalidFolderType" ));
         }
 
         private static void ShowManageLibraryUI( ShellLibrary shellLibrary, IntPtr windowHandle, string title, string instruction, bool allowAllLocations )
@@ -643,7 +626,7 @@ namespace System.Windows.Forms.Taskbar
             staWorker.Start();
             staWorker.Join();
 
-            if ( !CoreErrorHelper.Succeeded( hr ) ) throw new ShellException( hr );
+            if ( !CoreErrorHelper.Succeeded( hr ) ) throw (new ShellException( hr ));
         }
 
         private List<ShellFileSystemFolder> GetFolders()
@@ -652,9 +635,9 @@ namespace System.Windows.Forms.Taskbar
 
             var shellItemArrayGuid = new Guid(ShellIIDGuid.IShellItemArray );
 
-            var hr = nativeShellLibrary.GetFolders( ShellNativeMethods.LibraryFolderFilter.AllItems, ref shellItemArrayGuid, out var itemArray );
+            var hr = _NativeShellLibrary.GetFolders( ShellNativeMethods.LibraryFolderFilter.AllItems, ref shellItemArrayGuid, out var itemArray );
 
-            if ( !CoreErrorHelper.Succeeded( hr ) ) { return list; }
+            if ( !CoreErrorHelper.Succeeded( hr ) ) return (list);
 
             itemArray.GetCount( out var count );
 
@@ -669,7 +652,7 @@ namespace System.Windows.Forms.Taskbar
                 Marshal.ReleaseComObject( itemArray );
             }
 
-            return list;
+            return (list);
         }
     }
 }

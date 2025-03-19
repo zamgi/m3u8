@@ -25,7 +25,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="first">First NativePoint</param>
         /// <param name="second">Second NativePoint</param>
         /// <returns>True if first NativePoint is equal to the second; false otherwise.</returns>
-        public static bool operator ==( in NativePoint first, in NativePoint second ) => first.X == second.X && first.Y == second.Y;
+        public static bool operator ==( in NativePoint first, in NativePoint second ) => (first.X == second.X) && (first.Y == second.Y);
 
         /// <summary>Determines if two NativePoints are not equal.</summary>
         /// <param name="first">First NativePoint</param>
@@ -44,7 +44,7 @@ namespace System.Windows.Forms.Taskbar
         {
             var hash = X.GetHashCode();
             hash = hash * 31 + Y.GetHashCode();
-            return hash;
+            return (hash);
         }
     }
 }

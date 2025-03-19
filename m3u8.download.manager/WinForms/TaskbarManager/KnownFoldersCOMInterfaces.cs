@@ -7,9 +7,9 @@ namespace System.Windows.Forms.Taskbar
     // all inherited methods need to be declared again with the exception of those already declared in "IUnknown"
 #pragma warning disable 0108
 
-    [ComImport,
-    Guid(KnownFoldersIIDGuid.IKnownFolderManager),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(KnownFoldersIIDGuid.IKnownFolderManager)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IKnownFolderManager
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -48,8 +48,8 @@ namespace System.Windows.Forms.Taskbar
         void Redirect();
     }
 
-    [ComImport,Guid(KnownFoldersIIDGuid.IKnownFolder ),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport,Guid(KnownFoldersIIDGuid.IKnownFolder)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IKnownFolderNative
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]

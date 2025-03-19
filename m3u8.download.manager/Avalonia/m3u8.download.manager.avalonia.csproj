@@ -28,7 +28,7 @@
   </PropertyGroup>  
   
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);AVALONIA</DefineConstants>
+    <DefineConstants>$(DefineConstants);AVALONIA;THROTTLER__V2;</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>

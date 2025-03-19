@@ -8,26 +8,24 @@ namespace System.Windows.Forms.Taskbar
     public abstract class ShellObject : IDisposable, IEquatable<ShellObject>
     {
         /// <summary>Internal member to keep track of the native IShellItem2</summary>
-        internal IShellItem2 nativeShellItem;
+        internal IShellItem2 _NativeShellItem;
 
         /// <summary>A friendly name for this object that' suitable for display</summary>
-        private string _internalName;
+        private string _InternalName;
 
         /// <summary>Parsing name for this Object e.g. c:\Windows\file.txt, or ::{Some Guid}</summary>
-        private string _internalParsingName;
+        private string _InternalParsingName;
 
         /// <summary>PID List (PIDL) for this object</summary>
-        private IntPtr _internalPIDL;
-        private int? hashValue;
+        private IntPtr _InternalPIDL;
+        private int? _HashValue;
 
-        private ShellObject parentShellObject;
-        private ShellProperties properties;
-        private ShellThumbnail thumbnail;
+        private ShellObject _ParentShellObject;
+        private ShellProperties _Properties;
+        private ShellThumbnail _Thumbnail;
 
-        internal ShellObject()
-        {
-        }
-        internal ShellObject( IShellItem2 shellItem ) => nativeShellItem = shellItem;
+        internal ShellObject() { }
+        internal ShellObject( IShellItem2 shellItem ) => _NativeShellItem = shellItem;
 
         /// <summary>Implement the finalizer.</summary>
         ~ShellObject() => Dispose( false );
@@ -86,22 +84,22 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( _internalName == null && NativeShellItem != null )
+                if ( _InternalName == null && NativeShellItem != null )
                 {
                     var pszString = IntPtr.Zero;
                     var hr = NativeShellItem.GetDisplayName( ShellNativeMethods.ShellItemDesignNameOptions.Normal, out pszString );
                     if ( hr == HResult.Ok && pszString != IntPtr.Zero )
                     {
-                        _internalName = Marshal.PtrToStringAuto( pszString );
+                        _InternalName = Marshal.PtrToStringAuto( pszString );
 
                         // Free the string
                         Marshal.FreeCoTaskMem( pszString );
                     }
                 }
-                return _internalName;
+                return (_InternalName);
             }
 
-            protected set => _internalName = value;
+            protected set => _InternalName = value;
         }
 
         /// <summary>Gets the parent ShellObject. Returns null if the object has no parent, i.e. if this object is the Desktop folder.</summary>
@@ -109,13 +107,13 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( parentShellObject == null && NativeShellItem2 != null )
+                if ( _ParentShellObject == null && NativeShellItem2 != null )
                 {
                     var hr = NativeShellItem2.GetParent( out var parentShellItem );
 
                     if ( hr == HResult.Ok && parentShellItem != null )
                     {
-                        parentShellObject = ShellObjectFactory.Create( parentShellItem );
+                        _ParentShellObject = ShellObjectFactory.Create( parentShellItem );
                     }
                     else if ( hr == HResult.NoObject )
                     {
@@ -124,11 +122,11 @@ namespace System.Windows.Forms.Taskbar
                     }
                     else
                     {
-                        throw new ShellException( hr );
+                        throw (new ShellException( hr ));
                     }
                 }
 
-                return parentShellObject;
+                return (_ParentShellObject);
             }
         }
 
@@ -137,13 +135,13 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( _internalParsingName == null && nativeShellItem != null )
+                if ( _InternalParsingName == null && _NativeShellItem != null )
                 {
-                    _internalParsingName = ShellHelper.GetParsingName( nativeShellItem );
+                    _InternalParsingName = ShellHelper.GetParsingName( _NativeShellItem );
                 }
-                return _internalParsingName ?? string.Empty;
+                return _InternalParsingName ?? string.Empty;
             }
-            protected set => _internalParsingName = value;
+            protected set => _InternalParsingName = value;
         }
 
         /// <summary>Gets an object that allows the manipulation of ShellProperties for this shell item.</summary>
@@ -151,11 +149,11 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( properties == null )
+                if ( _Properties == null )
                 {
-                    properties = new ShellProperties( this );
+                    _Properties = new ShellProperties( this );
                 }
-                return properties;
+                return _Properties;
             }
         }
 
@@ -164,8 +162,8 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( thumbnail == null ) { thumbnail = new ShellThumbnail( this ); }
-                return thumbnail;
+                if ( _Thumbnail == null ) { _Thumbnail = new ShellThumbnail( this ); }
+                return _Thumbnail;
             }
         }
 
@@ -186,17 +184,17 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( nativeShellItem == null && ParsingName != null )
+                if ( _NativeShellItem == null && ParsingName != null )
                 {
                     var guid = new Guid(ShellIIDGuid.IShellItem2 );
-                    var retCode = ShellNativeMethods.SHCreateItemFromParsingName( ParsingName, IntPtr.Zero, ref guid, out nativeShellItem );
+                    var retCode = ShellNativeMethods.SHCreateItemFromParsingName( ParsingName, IntPtr.Zero, ref guid, out _NativeShellItem );
 
-                    if ( nativeShellItem == null || !CoreErrorHelper.Succeeded( retCode ) )
+                    if ( _NativeShellItem == null || !CoreErrorHelper.Succeeded( retCode ) )
                     {
                         throw new ShellException( "LocalizedMessages.ShellObjectCreationFailed", Marshal.GetExceptionForHR( retCode ) );
                     }
                 }
-                return nativeShellItem;
+                return _NativeShellItem;
             }
         }
 
@@ -206,14 +204,14 @@ namespace System.Windows.Forms.Taskbar
             get
             {
                 // Get teh PIDL for the ShellItem
-                if ( _internalPIDL == IntPtr.Zero && NativeShellItem != null )
+                if ( _InternalPIDL == IntPtr.Zero && NativeShellItem != null )
                 {
-                    _internalPIDL = ShellHelper.PidlFromShellItem( NativeShellItem );
+                    _InternalPIDL = ShellHelper.PidlFromShellItem( NativeShellItem );
                 }
 
-                return _internalPIDL;
+                return _InternalPIDL;
             }
-            set => _internalPIDL = value;
+            set => _InternalPIDL = value;
         }
 
         /// <summary>
@@ -291,7 +289,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Returns the hash code of the object.</summary>
         public override int GetHashCode()
         {
-            if ( !hashValue.HasValue )
+            if ( !_HashValue.HasValue )
             {
                 var size = ShellNativeMethods.ILGetSize( PIDL );
                 if ( size != 0 )
@@ -306,14 +304,14 @@ namespace System.Windows.Forms.Taskbar
                     for ( int i = 0; i < pidlData.Length; i++ )
                         hash = (hash ^ pidlData[ i ]) * p;
 
-                    hashValue = hash;
+                    _HashValue = hash;
                 }
                 else
                 {
-                    hashValue = 0;
+                    _HashValue = 0;
                 }
             }
-            return hashValue.Value;
+            return _HashValue.Value;
         }
 
         /// <summary>Overrides object.ToString()</summary>
@@ -346,28 +344,28 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( disposing )
             {
-                _internalName = null;
-                _internalParsingName = null;
-                properties = null;
-                thumbnail = null;
-                parentShellObject = null;
+                _InternalName = null;
+                _InternalParsingName = null;
+                _Properties = null;
+                _Thumbnail = null;
+                _ParentShellObject = null;
             }
 
-            if ( properties != null )
+            if ( _Properties != null )
             {
-                properties.Dispose();
+                _Properties.Dispose();
             }
 
-            if ( _internalPIDL != IntPtr.Zero )
+            if ( _InternalPIDL != IntPtr.Zero )
             {
-                ShellNativeMethods.ILFree( _internalPIDL );
-                _internalPIDL = IntPtr.Zero;
+                ShellNativeMethods.ILFree( _InternalPIDL );
+                _InternalPIDL = IntPtr.Zero;
             }
 
-            if ( nativeShellItem != null )
+            if ( _NativeShellItem != null )
             {
-                Marshal.ReleaseComObject( nativeShellItem );
-                nativeShellItem = null;
+                Marshal.ReleaseComObject( _NativeShellItem );
+                _NativeShellItem = null;
             }
 
             if ( NativePropertyStore != null )

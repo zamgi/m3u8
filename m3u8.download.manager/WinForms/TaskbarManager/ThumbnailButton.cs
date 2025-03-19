@@ -7,8 +7,8 @@ namespace System.Windows.Forms.Taskbar
     /// </summary>
     public sealed class ThumbnailToolBarButton : IDisposable
     {
-        private static uint nextId = 101;
-        private ThumbButton win32ThumbButton;
+        private static uint NEXT_ID = 101;
+        private ThumbButton _Win32ThumbButton;
 
         /// <summary>
         /// The event that occurs when the taskbar thumbnail button
@@ -33,13 +33,13 @@ namespace System.Windows.Forms.Taskbar
             internalUpdate = true;
 
             // Set our id
-            Id = nextId;
+            Id = NEXT_ID;
 
             // increment the ID
-            if ( nextId == int.MaxValue )
-                nextId = 101; // our starting point
+            if ( NEXT_ID == int.MaxValue )
+                NEXT_ID = 101; // our starting point
             else
-                nextId++;
+                NEXT_ID++;
 
             // Set user settings
             Icon = icon;
@@ -49,7 +49,7 @@ namespace System.Windows.Forms.Taskbar
             Enabled = true;
 
             // Create a native 
-            win32ThumbButton = new ThumbButton();
+            _Win32ThumbButton = new ThumbButton();
 
             // End our internal update
             internalUpdate = false;
@@ -228,22 +228,22 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                win32ThumbButton.Id = Id;
-                win32ThumbButton.Tip = Tooltip;
-                win32ThumbButton.Icon = Icon != null ? Icon.Handle : IntPtr.Zero;
-                win32ThumbButton.Flags = Flags;
+                _Win32ThumbButton.Id    = Id;
+                _Win32ThumbButton.Tip   = Tooltip;
+                _Win32ThumbButton.Icon  = Icon != null ? Icon.Handle : IntPtr.Zero;
+                _Win32ThumbButton.Flags = Flags;
 
-                win32ThumbButton.Mask = ThumbButtonMask.THB_FLAGS;
+                _Win32ThumbButton.Mask = ThumbButtonMask.THB_FLAGS;
                 if ( Tooltip != null )
                 {
-                    win32ThumbButton.Mask |= ThumbButtonMask.Tooltip;
+                    _Win32ThumbButton.Mask |= ThumbButtonMask.Tooltip;
                 }
                 if ( Icon != null )
                 {
-                    win32ThumbButton.Mask |= ThumbButtonMask.Icon;
+                    _Win32ThumbButton.Mask |= ThumbButtonMask.Icon;
                 }
 
-                return win32ThumbButton;
+                return (_Win32ThumbButton);
             }
         }
 
@@ -254,16 +254,17 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="taskbarWindow">Taskbar Window associated with this button</param>
         internal void FireClick( TaskbarWindow taskbarWindow )
         {
-            if ( Click != null && taskbarWindow != null )
+            var evnt = Click;
+            if ( (evnt != null) && (taskbarWindow != null) )
             {
                 if ( taskbarWindow.UserWindowHandle != IntPtr.Zero )
                 {
-                    Click( this, new ThumbnailButtonClickedEventArgs( taskbarWindow.UserWindowHandle, this ) );
+                    evnt( this, new ThumbnailButtonClickedEventArgs( taskbarWindow.UserWindowHandle, this ) );
                 }
 #if WPF
                 else if ( taskbarWindow.WindowsControl != null )
                 {
-                    Click( this, new ThumbnailButtonClickedEventArgs( taskbarWindow.WindowsControl, this ) );
+                    evnt( this, new ThumbnailButtonClickedEventArgs( taskbarWindow.WindowsControl, this ) );
                 }
 #endif
             }
@@ -272,21 +273,13 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>
         /// Handle to the window to which this button is for (on the taskbar).
         /// </summary>
-        internal IntPtr WindowHandle
-        {
-            get;
-            set;
-        }
+        internal IntPtr WindowHandle { get; set; }
 
         /// <summary>
         /// Indicates if this button was added to the taskbar. If it's not yet added,
         /// then we can't do any updates on it.
         /// </summary>
-        internal bool AddedToTaskbar
-        {
-            get;
-            set;
-        }
+        internal bool AddedToTaskbar { get; set; }
 
         internal void UpdateThumbnailButton()
         {
@@ -297,7 +290,7 @@ namespace System.Windows.Forms.Taskbar
 
             var hr = TaskbarList.Instance.ThumbBarUpdateButtons( WindowHandle, 1, nativeButtons );
 
-            if ( !CoreErrorHelper.Succeeded( hr ) ) throw new ShellException( hr );
+            if ( !CoreErrorHelper.Succeeded( hr ) ) throw (new ShellException( hr ));
         }
 
         #endregion

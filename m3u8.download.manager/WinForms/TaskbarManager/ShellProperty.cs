@@ -7,12 +7,12 @@ namespace System.Windows.Forms.Taskbar
     /// Defines a strongly-typed property object. All writable property objects must be of this type to be able to call the value setter.
     /// </summary>
     /// <typeparam name="T">The type of this property's value. Because a property value can be empty, only nullable types are allowed.</typeparam>
-    public class ShellProperty<T> : IShellProperty
+    public class ShellProperty< T > : IShellProperty
     {
-        private readonly ShellPropertyDescription description;
-        private int? imageReferenceIconIndex;
-        private string imageReferencePath = null;
-        private PropertyKey propertyKey;
+        private readonly ShellPropertyDescription _Description;
+        private int? _ImageReferenceIconIndex;
+        private string _ImageReferencePath;
+        private PropertyKey _PropertyKey;
 
         /// <summary>Constructs a new Property object</summary>
         internal ShellProperty(
@@ -20,8 +20,8 @@ namespace System.Windows.Forms.Taskbar
             ShellPropertyDescription description,
             ShellObject parent )
         {
-            this.propertyKey = propertyKey;
-            this.description = description;
+            _PropertyKey = propertyKey;
+            _Description = description;
             ParentShellObject = parent;
             AllowSetTruncatedValue = false;
         }
@@ -32,8 +32,8 @@ namespace System.Windows.Forms.Taskbar
             ShellPropertyDescription description,
             IPropertyStore propertyStore )
         {
-            this.propertyKey = propertyKey;
-            this.description = description;
+            _PropertyKey = propertyKey;
+            _Description = description;
             NativePropertyStore = propertyStore;
             AllowSetTruncatedValue = false;
         }
@@ -46,27 +46,24 @@ namespace System.Windows.Forms.Taskbar
         public bool AllowSetTruncatedValue { get; set; }
 
         /// <summary>Get the property description object.</summary>
-        public ShellPropertyDescription Description => description;
+        public ShellPropertyDescription Description => _Description;
 
         /// <summary>Gets the image reference path and icon index associated with a property value (Windows 7 only).</summary>
         public IconReference IconReference
         {
             get
             {
-                if ( !CoreHelpers.RunningOnWin7 )
-                {
-                    throw new PlatformNotSupportedException( "LocalizedMessages.ShellPropertyWindows7" );
-                }
+                if ( !CoreHelpers.RunningOnWin7 ) throw (new PlatformNotSupportedException( "LocalizedMessages.ShellPropertyWindows7" ));
 
                 GetImageReference();
-                var index = (imageReferenceIconIndex.HasValue ? imageReferenceIconIndex.Value : -1);
+                var index = (_ImageReferenceIconIndex.HasValue ? _ImageReferenceIconIndex.Value : -1);
 
-                return new IconReference( imageReferencePath, index );
+                return (new IconReference( _ImageReferencePath, index ));
             }
         }
 
         /// <summary>Gets the property key identifying this property.</summary>
-        public PropertyKey PropertyKey => propertyKey;
+        public PropertyKey PropertyKey => _PropertyKey;
 
         /// <summary>
         /// Gets or sets the strongly-typed value of this property. The value of the property is cleared if the value is set to null.
@@ -90,21 +87,21 @@ namespace System.Windows.Forms.Taskbar
                     if ( ParentShellObject.NativePropertyStore != null )
                     {
                         // If there is a valid property store for this shell object, then use it.
-                        ParentShellObject.NativePropertyStore.GetValue( ref propertyKey, propVar );
+                        ParentShellObject.NativePropertyStore.GetValue( ref _PropertyKey, propVar );
                     }
                     else if ( ParentShellObject != null )
                     {
                         // Use IShellItem2.GetProperty instead of creating a new property store The file might be locked. This is probably
                         // quicker, and sufficient for what we need
-                        ParentShellObject.NativeShellItem2.GetProperty( ref propertyKey, propVar );
+                        ParentShellObject.NativeShellItem2.GetProperty( ref _PropertyKey, propVar );
                     }
                     else if ( NativePropertyStore != null )
                     {
-                        NativePropertyStore.GetValue( ref propertyKey, propVar );
+                        NativePropertyStore.GetValue( ref _PropertyKey, propVar );
                     }
 
                     //Get the value
-                    return propVar.Value != null ? (T) propVar.Value : default;
+                    return ((propVar.Value != null) ? (T) propVar.Value : default);
                 }
             }
             set
@@ -112,10 +109,7 @@ namespace System.Windows.Forms.Taskbar
                 // Make sure we use the correct type
                 Debug.Assert( ValueType == ShellPropertyFactory.VarEnumToSystemType( Description.VarEnumType ) );
 
-                if ( typeof(T) != ValueType )
-                {
-                    throw (new NotSupportedException( $"LocalizedMessages.ShellPropertyWrongType: '{ValueType.Name}'." ));
-                }
+                if ( typeof(T) != ValueType ) throw (new NotSupportedException( $"LocalizedMessages.ShellPropertyWrongType: '{ValueType.Name}'." ));
 
                 if ( typeof(T).IsGenericType && (typeof(T).GetGenericTypeDefinition() == typeof(Nullable<>)) /*value is Nullable*/ )
                 {
@@ -146,7 +140,7 @@ namespace System.Windows.Forms.Taskbar
                 }
                 else if ( NativePropertyStore != null )
                 {
-                    throw new InvalidOperationException( "LocalizedMessages.ShellPropertyCannotSetProperty" );
+                    throw (new InvalidOperationException( "LocalizedMessages.ShellPropertyCannotSetProperty" ));
                 }
             }
         }
@@ -164,17 +158,15 @@ namespace System.Windows.Forms.Taskbar
                     if ( ParentShellObject != null )
                     {
                         var store = ShellPropertyCollection.CreateDefaultPropertyStore( ParentShellObject );
-
-                        store.GetValue( ref propertyKey, propVar );
-
+                        store.GetValue( ref _PropertyKey, propVar );
                         Marshal.ReleaseComObject( store );
                     }
                     else if ( NativePropertyStore != null )
                     {
-                        NativePropertyStore.GetValue( ref propertyKey, propVar );
+                        NativePropertyStore.GetValue( ref _PropertyKey, propVar );
                     }
 
-                    return propVar != null ? propVar.Value : null;
+                    return ((propVar != null) ? propVar.Value : null);
                 }
             }
         }
@@ -187,7 +179,7 @@ namespace System.Windows.Forms.Taskbar
                 // The type for this object need to match that of the description
                 Debug.Assert( Description.ValueType == typeof(T) );
 
-                return Description.ValueType;
+                return (Description.ValueType);
             }
         }
 
@@ -221,7 +213,7 @@ namespace System.Windows.Forms.Taskbar
 
             using ( var propVar = new PropVariant() )
             {
-                store.GetValue( ref propertyKey, propVar );
+                store.GetValue( ref _PropertyKey, propVar );
 
                 // Release the Propertystore
                 Marshal.ReleaseComObject( store );
@@ -230,9 +222,9 @@ namespace System.Windows.Forms.Taskbar
                 var hr = Description.NativePropertyDescription.FormatForDisplay( propVar, ref format, out var formattedString );
 
                 // Sometimes, the value cannot be displayed properly, such as for blobs or if we get argument exception
-                if ( !CoreErrorHelper.Succeeded( hr ) ) throw new ShellException( hr );
+                if ( !CoreErrorHelper.Succeeded( hr ) ) throw (new ShellException( hr ));
 
-                return formattedString;
+                return (formattedString);
             }
         }
 
@@ -253,7 +245,7 @@ namespace System.Windows.Forms.Taskbar
 
             using ( var propVar = new PropVariant() )
             {
-                store.GetValue( ref propertyKey, propVar );
+                store.GetValue( ref _PropertyKey, propVar );
 
                 // Release the Propertystore
                 Marshal.ReleaseComObject( store );
@@ -277,7 +269,7 @@ namespace System.Windows.Forms.Taskbar
 
             using ( var propVar = new PropVariant() )
             {
-                store.GetValue( ref propertyKey, propVar );
+                store.GetValue( ref _PropertyKey, propVar );
 
                 Marshal.ReleaseComObject( store );
                 store = null;
@@ -289,8 +281,8 @@ namespace System.Windows.Forms.Taskbar
                 var index = ShellNativeMethods.PathParseIconLocation( ref refPath );
                 if ( refPath != null )
                 {
-                    imageReferencePath = refPath;
-                    imageReferenceIconIndex = index;
+                    _ImageReferencePath = refPath;
+                    _ImageReferenceIconIndex = index;
                 }
             }
         }
@@ -304,29 +296,29 @@ namespace System.Windows.Forms.Taskbar
                 var hr = ParentShellObject.NativeShellItem2.GetPropertyStore( ShellNativeMethods.GetPropertyStoreOptions.ReadWrite, ref guid, out writablePropStore );
                 if ( !CoreErrorHelper.Succeeded( hr ) )
                 {
-                    throw new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty", Marshal.GetExceptionForHR( hr ) );
+                    throw (new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty", Marshal.GetExceptionForHR( hr ) ));
                 }
 
-                var result = writablePropStore.SetValue( ref propertyKey, propVar );
+                var result = writablePropStore.SetValue( ref _PropertyKey, propVar );
                 if ( !AllowSetTruncatedValue && (int) result == ShellNativeMethods.InPlaceStringTruncated )
                 {
-                    throw new ArgumentOutOfRangeException( "propVar", "LocalizedMessages.ShellPropertyValueTruncated" );
+                    throw (new ArgumentOutOfRangeException( "propVar", "LocalizedMessages.ShellPropertyValueTruncated" ));
                 }
 
                 if ( !CoreErrorHelper.Succeeded( result ) )
                 {
-                    throw new PropertySystemException( "LocalizedMessages.ShellPropertySetValue", Marshal.GetExceptionForHR( (int) result ) );
+                    throw (new PropertySystemException( "LocalizedMessages.ShellPropertySetValue", Marshal.GetExceptionForHR( (int) result ) ));
                 }
 
                 writablePropStore.Commit();
             }
-            catch ( InvalidComObjectException e )
+            catch ( InvalidComObjectException ex )
             {
-                throw new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty", e );
+                throw (new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty", ex ));
             }
             catch ( InvalidCastException )
             {
-                throw new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty" );
+                throw (new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty" ));
             }
             finally
             {

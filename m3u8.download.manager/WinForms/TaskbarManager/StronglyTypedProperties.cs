@@ -14,16 +14,15 @@ namespace System.Windows.Forms.Taskbar
     // TODO: FIX THIS!!!
     public partial class ShellProperties
     {
-
         /// <summary>
         /// .System Properties
         /// </summary>
         public class PropertySystem : PropertyStoreItems
         {
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-            internal PropertySystem( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystem( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.AcquisitionID -- PKEY_AcquisitionID</para>
@@ -38,12 +37,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.AcquisitionID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -60,12 +59,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ApplicationName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -82,12 +81,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Author;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -104,12 +103,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Capacity;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -126,12 +125,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Category;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -148,12 +147,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Comment;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -170,12 +169,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Company;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -192,12 +191,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ComputerName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -215,12 +214,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ContainedItems;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<IntPtr[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<IntPtr[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<IntPtr[]>;
+                    return (_Hashtable[ key ] as ShellProperty<IntPtr[]>);
                 }
             }
 
@@ -236,12 +235,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ContentStatus;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -257,12 +256,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ContentType;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -279,12 +278,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Copyright;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -301,12 +300,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DateAccessed;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -324,12 +323,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DateAcquired;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -345,12 +344,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DateArchived;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -366,12 +365,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DateCompleted;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -388,12 +387,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DateCreated;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -410,12 +409,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DateImported;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -432,12 +431,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DateModified;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -454,12 +453,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DescriptionID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte[]>;
+                    return (_Hashtable[ key ] as ShellProperty<byte[]>);
                 }
             }
 
@@ -475,12 +474,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DueDate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -496,12 +495,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.EndDate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -518,12 +517,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FileAllocationSize;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -540,12 +539,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FileAttributes;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -562,12 +561,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FileCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -584,12 +583,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FileDescription;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -623,12 +622,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FileExtension;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -646,12 +645,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FileFRN;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -688,12 +687,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FileName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -710,12 +709,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FileOwner;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -732,12 +731,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FileVersion;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -754,12 +753,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FindData;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte[]>;
+                    return (_Hashtable[ key ] as ShellProperty<byte[]>);
                 }
             }
 
@@ -776,12 +775,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FlagColor;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -799,12 +798,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FlagColorText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -821,12 +820,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FlagStatus;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -844,12 +843,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FlagStatusText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -866,12 +865,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FreeSpace;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -890,12 +889,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.FullText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -911,12 +910,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IdentityProperty;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -932,12 +931,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ImageParsingName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -953,12 +952,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Importance;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -976,12 +975,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ImportanceText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -998,12 +997,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.InfoTipText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1020,12 +1019,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.InternalName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1042,12 +1041,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsAttachment;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1064,12 +1063,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsDefaultNonOwnerSaveLocation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1086,12 +1085,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsDefaultSaveLocation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1107,12 +1106,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsDeleted;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1129,12 +1128,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsEncrypted;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1150,12 +1149,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsFlagged;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1171,12 +1170,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsFlaggedComplete;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1193,12 +1192,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsIncomplete;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1215,12 +1214,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsLocationSupported;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1237,12 +1236,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsPinnedToNamespaceTree;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1259,12 +1258,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsRead;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1281,12 +1280,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsSearchOnlyItem;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1303,12 +1302,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsSendToTarget;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1325,12 +1324,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IsShared;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -1349,12 +1348,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemAuthors;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -1370,12 +1369,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemClassType;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1394,12 +1393,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemDate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -1431,12 +1430,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemFolderNameDisplay;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1466,12 +1465,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemFolderPathDisplay;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1504,12 +1503,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemFolderPathDisplayNarrow;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1532,12 +1531,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1591,12 +1590,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemNameDisplay;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1628,12 +1627,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemNamePrefix;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1654,12 +1653,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemParticipants;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -1696,12 +1695,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemPathDisplay;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1734,12 +1733,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemPathDisplayNarrow;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1777,12 +1776,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemType;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1819,12 +1818,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemTypeText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1849,12 +1848,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ItemUrl;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1871,12 +1870,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Keywords;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -1895,12 +1894,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Kind;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -1918,12 +1917,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.KindText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1940,12 +1939,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Language;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1961,12 +1960,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.MileageInformation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -1983,12 +1982,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.MIMEType;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2005,12 +2004,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.NamespaceClsid;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<IntPtr?>;
+                    return (_Hashtable[ key ] as ShellProperty<IntPtr?>);
                 }
             }
 
@@ -2026,12 +2025,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Null;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -2047,12 +2046,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.OfflineAvailability;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -2068,12 +2067,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.OfflineStatus;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -2090,12 +2089,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.OriginalFileName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2112,12 +2111,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.OwnerSid;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2134,12 +2133,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ParentalRating;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2155,12 +2154,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ParentalRatingReason;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2176,12 +2175,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ParentalRatingsOrganization;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2198,12 +2197,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ParsingBindContext;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -2221,12 +2220,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ParsingName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2248,12 +2247,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ParsingPath;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2270,12 +2269,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PerceivedType;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -2292,12 +2291,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PercentFull;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -2314,12 +2313,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Priority;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -2337,12 +2336,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PriorityText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2358,12 +2357,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Project;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2380,12 +2379,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ProviderItemID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2403,12 +2402,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Rating;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -2426,12 +2425,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RatingText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2448,12 +2447,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sensitivity;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -2471,12 +2470,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.SensitivityText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2493,12 +2492,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.SFGAOFlags;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -2515,12 +2514,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.SharedWith;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -2537,12 +2536,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ShareUserRating;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -2559,12 +2558,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.SharingStatus;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -2582,12 +2581,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.SimpleRating;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -2604,12 +2603,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Size;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -2626,12 +2625,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.SoftwareUsed;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2647,12 +2646,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.SourceItem;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2668,12 +2667,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.StartDate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -2689,12 +2688,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Status;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2711,12 +2710,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Subject;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2733,12 +2732,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Thumbnail;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<IntPtr?>;
+                    return (_Hashtable[ key ] as ShellProperty<IntPtr?>);
                 }
             }
 
@@ -2756,12 +2755,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ThumbnailCacheId;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -2778,12 +2777,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.ThumbnailStream;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<IStream>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<IStream>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<IStream>;
+                    return (_Hashtable[ key ] as ShellProperty<IStream>);
                 }
             }
 
@@ -2800,12 +2799,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Title;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2822,12 +2821,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.TotalFileSize;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -2844,12 +2843,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Trademarks;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -2863,7 +2862,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemAppUserModel == null )
                     {
-                        internalPropertySystemAppUserModel = new PropertySystemAppUserModel( shellObjectParent );
+                        internalPropertySystemAppUserModel = new PropertySystemAppUserModel( _ShellObjectParent );
                     }
 
                     return internalPropertySystemAppUserModel;
@@ -2879,7 +2878,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemAudio == null )
                     {
-                        internalPropertySystemAudio = new PropertySystemAudio( shellObjectParent );
+                        internalPropertySystemAudio = new PropertySystemAudio( _ShellObjectParent );
                     }
 
                     return internalPropertySystemAudio;
@@ -2895,7 +2894,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemCalendar == null )
                     {
-                        internalPropertySystemCalendar = new PropertySystemCalendar( shellObjectParent );
+                        internalPropertySystemCalendar = new PropertySystemCalendar( _ShellObjectParent );
                     }
 
                     return internalPropertySystemCalendar;
@@ -2911,7 +2910,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemCommunication == null )
                     {
-                        internalPropertySystemCommunication = new PropertySystemCommunication( shellObjectParent );
+                        internalPropertySystemCommunication = new PropertySystemCommunication( _ShellObjectParent );
                     }
 
                     return internalPropertySystemCommunication;
@@ -2927,7 +2926,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemComputer == null )
                     {
-                        internalPropertySystemComputer = new PropertySystemComputer( shellObjectParent );
+                        internalPropertySystemComputer = new PropertySystemComputer( _ShellObjectParent );
                     }
 
                     return internalPropertySystemComputer;
@@ -2943,7 +2942,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemContact == null )
                     {
-                        internalPropertySystemContact = new PropertySystemContact( shellObjectParent );
+                        internalPropertySystemContact = new PropertySystemContact( _ShellObjectParent );
                     }
 
                     return internalPropertySystemContact;
@@ -2959,7 +2958,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemDevice == null )
                     {
-                        internalPropertySystemDevice = new PropertySystemDevice( shellObjectParent );
+                        internalPropertySystemDevice = new PropertySystemDevice( _ShellObjectParent );
                     }
 
                     return internalPropertySystemDevice;
@@ -2975,7 +2974,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemDeviceInterface == null )
                     {
-                        internalPropertySystemDeviceInterface = new PropertySystemDeviceInterface( shellObjectParent );
+                        internalPropertySystemDeviceInterface = new PropertySystemDeviceInterface( _ShellObjectParent );
                     }
 
                     return internalPropertySystemDeviceInterface;
@@ -2991,7 +2990,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemDevices == null )
                     {
-                        internalPropertySystemDevices = new PropertySystemDevices( shellObjectParent );
+                        internalPropertySystemDevices = new PropertySystemDevices( _ShellObjectParent );
                     }
 
                     return internalPropertySystemDevices;
@@ -3007,7 +3006,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemDocument == null )
                     {
-                        internalPropertySystemDocument = new PropertySystemDocument( shellObjectParent );
+                        internalPropertySystemDocument = new PropertySystemDocument( _ShellObjectParent );
                     }
 
                     return internalPropertySystemDocument;
@@ -3023,7 +3022,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemDRM == null )
                     {
-                        internalPropertySystemDRM = new PropertySystemDRM( shellObjectParent );
+                        internalPropertySystemDRM = new PropertySystemDRM( _ShellObjectParent );
                     }
 
                     return internalPropertySystemDRM;
@@ -3039,7 +3038,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemGPS == null )
                     {
-                        internalPropertySystemGPS = new PropertySystemGPS( shellObjectParent );
+                        internalPropertySystemGPS = new PropertySystemGPS( _ShellObjectParent );
                     }
 
                     return internalPropertySystemGPS;
@@ -3055,7 +3054,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemIdentity == null )
                     {
-                        internalPropertySystemIdentity = new PropertySystemIdentity( shellObjectParent );
+                        internalPropertySystemIdentity = new PropertySystemIdentity( _ShellObjectParent );
                     }
 
                     return internalPropertySystemIdentity;
@@ -3071,7 +3070,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemIdentityProvider == null )
                     {
-                        internalPropertySystemIdentityProvider = new PropertySystemIdentityProvider( shellObjectParent );
+                        internalPropertySystemIdentityProvider = new PropertySystemIdentityProvider( _ShellObjectParent );
                     }
 
                     return internalPropertySystemIdentityProvider;
@@ -3087,7 +3086,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemImage == null )
                     {
-                        internalPropertySystemImage = new PropertySystemImage( shellObjectParent );
+                        internalPropertySystemImage = new PropertySystemImage( _ShellObjectParent );
                     }
 
                     return internalPropertySystemImage;
@@ -3103,7 +3102,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemJournal == null )
                     {
-                        internalPropertySystemJournal = new PropertySystemJournal( shellObjectParent );
+                        internalPropertySystemJournal = new PropertySystemJournal( _ShellObjectParent );
                     }
 
                     return internalPropertySystemJournal;
@@ -3119,7 +3118,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemLayoutPattern == null )
                     {
-                        internalPropertySystemLayoutPattern = new PropertySystemLayoutPattern( shellObjectParent );
+                        internalPropertySystemLayoutPattern = new PropertySystemLayoutPattern( _ShellObjectParent );
                     }
 
                     return internalPropertySystemLayoutPattern;
@@ -3135,7 +3134,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemLink == null )
                     {
-                        internalPropertySystemLink = new PropertySystemLink( shellObjectParent );
+                        internalPropertySystemLink = new PropertySystemLink( _ShellObjectParent );
                     }
 
                     return internalPropertySystemLink;
@@ -3151,7 +3150,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemMedia == null )
                     {
-                        internalPropertySystemMedia = new PropertySystemMedia( shellObjectParent );
+                        internalPropertySystemMedia = new PropertySystemMedia( _ShellObjectParent );
                     }
 
                     return internalPropertySystemMedia;
@@ -3167,7 +3166,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemMessage == null )
                     {
-                        internalPropertySystemMessage = new PropertySystemMessage( shellObjectParent );
+                        internalPropertySystemMessage = new PropertySystemMessage( _ShellObjectParent );
                     }
 
                     return internalPropertySystemMessage;
@@ -3183,7 +3182,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemMusic == null )
                     {
-                        internalPropertySystemMusic = new PropertySystemMusic( shellObjectParent );
+                        internalPropertySystemMusic = new PropertySystemMusic( _ShellObjectParent );
                     }
 
                     return internalPropertySystemMusic;
@@ -3199,7 +3198,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemNote == null )
                     {
-                        internalPropertySystemNote = new PropertySystemNote( shellObjectParent );
+                        internalPropertySystemNote = new PropertySystemNote( _ShellObjectParent );
                     }
 
                     return internalPropertySystemNote;
@@ -3215,7 +3214,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemPhoto == null )
                     {
-                        internalPropertySystemPhoto = new PropertySystemPhoto( shellObjectParent );
+                        internalPropertySystemPhoto = new PropertySystemPhoto( _ShellObjectParent );
                     }
 
                     return internalPropertySystemPhoto;
@@ -3231,7 +3230,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemPropGroup == null )
                     {
-                        internalPropertySystemPropGroup = new PropertySystemPropGroup( shellObjectParent );
+                        internalPropertySystemPropGroup = new PropertySystemPropGroup( _ShellObjectParent );
                     }
 
                     return internalPropertySystemPropGroup;
@@ -3247,7 +3246,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemPropList == null )
                     {
-                        internalPropertySystemPropList = new PropertySystemPropList( shellObjectParent );
+                        internalPropertySystemPropList = new PropertySystemPropList( _ShellObjectParent );
                     }
 
                     return internalPropertySystemPropList;
@@ -3263,7 +3262,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemRecordedTV == null )
                     {
-                        internalPropertySystemRecordedTV = new PropertySystemRecordedTV( shellObjectParent );
+                        internalPropertySystemRecordedTV = new PropertySystemRecordedTV( _ShellObjectParent );
                     }
 
                     return internalPropertySystemRecordedTV;
@@ -3279,7 +3278,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemSearch == null )
                     {
-                        internalPropertySystemSearch = new PropertySystemSearch( shellObjectParent );
+                        internalPropertySystemSearch = new PropertySystemSearch( _ShellObjectParent );
                     }
 
                     return internalPropertySystemSearch;
@@ -3295,7 +3294,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemShell == null )
                     {
-                        internalPropertySystemShell = new PropertySystemShell( shellObjectParent );
+                        internalPropertySystemShell = new PropertySystemShell( _ShellObjectParent );
                     }
 
                     return internalPropertySystemShell;
@@ -3311,7 +3310,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemSoftware == null )
                     {
-                        internalPropertySystemSoftware = new PropertySystemSoftware( shellObjectParent );
+                        internalPropertySystemSoftware = new PropertySystemSoftware( _ShellObjectParent );
                     }
 
                     return internalPropertySystemSoftware;
@@ -3327,7 +3326,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemSync == null )
                     {
-                        internalPropertySystemSync = new PropertySystemSync( shellObjectParent );
+                        internalPropertySystemSync = new PropertySystemSync( _ShellObjectParent );
                     }
 
                     return internalPropertySystemSync;
@@ -3343,7 +3342,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemTask == null )
                     {
-                        internalPropertySystemTask = new PropertySystemTask( shellObjectParent );
+                        internalPropertySystemTask = new PropertySystemTask( _ShellObjectParent );
                     }
 
                     return internalPropertySystemTask;
@@ -3359,7 +3358,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemVideo == null )
                     {
-                        internalPropertySystemVideo = new PropertySystemVideo( shellObjectParent );
+                        internalPropertySystemVideo = new PropertySystemVideo( _ShellObjectParent );
                     }
 
                     return internalPropertySystemVideo;
@@ -3375,7 +3374,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertySystemVolume == null )
                     {
-                        internalPropertySystemVolume = new PropertySystemVolume( shellObjectParent );
+                        internalPropertySystemVolume = new PropertySystemVolume( _ShellObjectParent );
                     }
 
                     return internalPropertySystemVolume;
@@ -3389,12 +3388,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemAppUserModel : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemAppUserModel( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemAppUserModel( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.AppUserModel.ExcludeFromShowInNewInstall -- PKEY_AppUserModel_ExcludeFromShowInNewInstall</para>
@@ -3408,12 +3405,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.AppUserModel.ExcludeFromShowInNewInstall;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -3429,12 +3426,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.AppUserModel.ID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3450,12 +3447,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.AppUserModel.IsDestinationListSeparator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -3471,12 +3468,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.AppUserModel.PreventPinning;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -3492,12 +3489,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.AppUserModel.RelaunchCommand;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3513,12 +3510,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.AppUserModel.RelaunchDisplayNameResource;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3534,15 +3531,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.AppUserModel.RelaunchIconResource;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -3550,12 +3546,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemAudio : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemAudio( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemAudio( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Audio.ChannelCount -- PKEY_Audio_ChannelCount</para>
@@ -3570,12 +3564,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.ChannelCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -3592,12 +3586,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.Compression;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3614,12 +3608,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.EncodingBitrate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -3636,12 +3630,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.Format;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3657,12 +3651,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.IsVariableBitrate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -3678,12 +3672,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.PeakValue;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -3700,12 +3694,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.SampleRate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -3722,12 +3716,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.SampleSize;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -3744,12 +3738,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.StreamName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3766,15 +3760,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Audio.StreamNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
-
         }
 
         /// <summary>
@@ -3782,12 +3775,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemCalendar : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemCalendar( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemCalendar( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Calendar.Duration -- PKEY_Calendar_Duration</para>
@@ -3802,12 +3793,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.Duration;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3824,12 +3815,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.IsOnline;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -3845,12 +3836,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.IsRecurring;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -3866,12 +3857,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.Location;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3887,12 +3878,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.OptionalAttendeeAddresses;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -3908,12 +3899,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.OptionalAttendeeNames;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -3930,12 +3921,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.OrganizerAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3952,12 +3943,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.OrganizerName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -3973,12 +3964,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.ReminderTime;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -3994,12 +3985,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.RequiredAttendeeAddresses;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -4015,12 +4006,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.RequiredAttendeeNames;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -4036,12 +4027,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.Resources;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -4058,12 +4049,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.ResponseStatus;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -4080,12 +4071,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.ShowTimeAs;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -4103,15 +4094,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Calendar.ShowTimeAsText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -4119,12 +4109,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemCommunication : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemCommunication( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemCommunication( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Communication.AccountName -- PKEY_Communication_AccountName</para>
@@ -4139,12 +4127,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Communication.AccountName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4161,12 +4149,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Communication.DateItemExpires;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -4183,12 +4171,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Communication.FollowUpIconIndex;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -4205,12 +4193,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Communication.HeaderItem;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -4227,12 +4215,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Communication.PolicyTag;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4249,12 +4237,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Communication.SecurityFlags;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -4270,12 +4258,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Communication.Suffix;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4291,12 +4279,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Communication.TaskStatus;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -4314,15 +4302,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Communication.TaskStatusText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -4330,12 +4317,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemComputer : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemComputer( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemComputer( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Computer.DecoratedFreeSpace -- PKEY_Computer_DecoratedFreeSpace</para>
@@ -4350,15 +4335,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Computer.DecoratedFreeSpace;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong[]>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong[]>);
                 }
             }
-
         }
 
         /// <summary>
@@ -4366,12 +4350,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemContact : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemContact( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemContact( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Contact.Anniversary -- PKEY_Contact_Anniversary</para>
@@ -4385,12 +4367,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Anniversary;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -4406,12 +4388,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.AssistantName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4427,12 +4409,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.AssistantTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4448,12 +4430,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Birthday;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -4469,12 +4451,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4490,12 +4472,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessAddressCity;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4511,12 +4493,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessAddressCountry;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4532,12 +4514,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessAddressPostalCode;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4553,12 +4535,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessAddressPostOfficeBox;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4574,12 +4556,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessAddressState;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4595,12 +4577,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessAddressStreet;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4617,12 +4599,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessFaxNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4638,12 +4620,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessHomepage;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4659,12 +4641,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.BusinessTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4680,12 +4662,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.CallbackTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4701,12 +4683,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.CarTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4722,12 +4704,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Children;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -4743,12 +4725,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.CompanyMainTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4764,12 +4746,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Department;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4785,12 +4767,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.EmailAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4806,12 +4788,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.EmailAddress2;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4827,12 +4809,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.EmailAddress3;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4848,12 +4830,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.EmailAddresses;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -4869,12 +4851,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.EmailName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4890,12 +4872,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.FileAsName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4911,12 +4893,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.FirstName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4932,12 +4914,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.FullName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4953,12 +4935,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Gender;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -4974,12 +4956,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.GenderValue;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -4995,12 +4977,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Hobbies;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -5016,12 +4998,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.HomeAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5037,12 +5019,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.HomeAddressCity;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5058,12 +5040,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.HomeAddressCountry;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5079,12 +5061,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.HomeAddressPostalCode;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5100,12 +5082,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.HomeAddressPostOfficeBox;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5121,12 +5103,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.HomeAddressState;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5142,12 +5124,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.HomeAddressStreet;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5163,12 +5145,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.HomeFaxNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5184,12 +5166,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.HomeTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5205,12 +5187,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.IMAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -5226,12 +5208,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Initials;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5247,12 +5229,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.JobTitle;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5268,12 +5250,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Label;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5289,12 +5271,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.LastName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5310,12 +5292,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.MailingAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5331,12 +5313,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.MiddleName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5352,12 +5334,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.MobileTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5373,12 +5355,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Nickname;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5394,12 +5376,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.OfficeLocation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5415,12 +5397,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.OtherAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5436,12 +5418,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.OtherAddressCity;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5457,12 +5439,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.OtherAddressCountry;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5478,12 +5460,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.OtherAddressPostalCode;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5499,12 +5481,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.OtherAddressPostOfficeBox;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5520,12 +5502,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.OtherAddressState;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5541,12 +5523,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.OtherAddressStreet;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5562,12 +5544,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PagerTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5583,12 +5565,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PersonalTitle;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5604,12 +5586,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PrimaryAddressCity;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5625,12 +5607,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PrimaryAddressCountry;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5646,12 +5628,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PrimaryAddressPostalCode;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5667,12 +5649,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PrimaryAddressPostOfficeBox;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5688,12 +5670,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PrimaryAddressState;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5709,12 +5691,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PrimaryAddressStreet;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5730,12 +5712,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PrimaryEmailAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5751,12 +5733,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.PrimaryTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5772,12 +5754,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Profession;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5793,12 +5775,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.SpouseName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5814,12 +5796,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Suffix;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5835,12 +5817,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.TelexNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5856,12 +5838,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.TTYTDDTelephone;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5877,12 +5859,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.Webpage;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5896,13 +5878,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertyContactJA == null )
                     {
-                        internalPropertyContactJA = new PropertyContactJA( shellObjectParent );
+                        internalPropertyContactJA = new PropertyContactJA( _ShellObjectParent );
                     }
 
                     return internalPropertyContactJA;
                 }
             }
-
         }
 
         /// <summary>
@@ -5910,12 +5891,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertyContactJA : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertyContactJA( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertyContactJA( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Contact.JA.CompanyNamePhonetic -- PKEY_Contact_JA_CompanyNamePhonetic</para>
@@ -5930,12 +5909,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.JA.CompanyNamePhonetic;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5952,12 +5931,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.JA.FirstNamePhonetic;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -5974,15 +5953,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Contact.JA.LastNamePhonetic;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -5990,12 +5968,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemDevice : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemDevice( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemDevice( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Device.PrinterURL -- PKEY_Device_PrinterURL</para>
@@ -6010,15 +5985,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Device.PrinterUrl;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -6026,12 +6000,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemDeviceInterface : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemDeviceInterface( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemDeviceInterface( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.DeviceInterface.PrinterDriverDirectory -- PKEY_DeviceInterface_PrinterDriverDirectory</para>
@@ -6046,12 +6018,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DeviceInterface.PrinterDriverDirectory;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6068,12 +6040,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DeviceInterface.PrinterDriverName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6090,12 +6062,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DeviceInterface.PrinterName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6112,15 +6084,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DeviceInterface.PrinterPortName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -6128,12 +6099,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemDevices : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemDevices( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemDevices( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Devices.BatteryLife -- PKEY_Devices_BatteryLife</para>
@@ -6148,12 +6117,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.BatteryLife;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -6170,12 +6139,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.BatteryPlusCharging;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -6192,12 +6161,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.BatteryPlusChargingText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6214,12 +6183,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Category;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -6236,12 +6205,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.CategoryGroup;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -6258,12 +6227,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.CategoryPlural;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -6280,12 +6249,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.ChargingState;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -6302,12 +6271,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Connected;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6324,12 +6293,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.ContainerId;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<IntPtr?>;
+                    return (_Hashtable[ key ] as ShellProperty<IntPtr?>);
                 }
             }
 
@@ -6346,12 +6315,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.DefaultTooltip;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6368,12 +6337,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.DeviceDescription1;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6390,12 +6359,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.DeviceDescription2;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6412,12 +6381,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.DiscoveryMethod;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -6434,12 +6403,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.FriendlyName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6456,12 +6425,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.FunctionPaths;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -6478,12 +6447,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.InterfacePaths;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -6500,12 +6469,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.IsDefault;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6522,12 +6491,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.IsNetworkConnected;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6544,12 +6513,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.IsShared;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6566,12 +6535,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.IsSoftwareInstalling;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6588,12 +6557,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.LaunchDeviceStageFromExplorer;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6610,12 +6579,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.LocalMachine;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6632,12 +6601,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Manufacturer;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6654,12 +6623,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.MissedCalls;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -6676,12 +6645,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.ModelName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6698,12 +6667,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.ModelNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6720,12 +6689,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.NetworkedTooltip;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6742,12 +6711,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.NetworkName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6764,12 +6733,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.NetworkType;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6786,12 +6755,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.NewPictures;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -6808,12 +6777,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Notification;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6830,12 +6799,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.NotificationStore;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<IntPtr?>;
+                    return (_Hashtable[ key ] as ShellProperty<IntPtr?>);
                 }
             }
 
@@ -6852,12 +6821,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.NotWorkingProperly;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6874,12 +6843,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Paired;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6896,12 +6865,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.PrimaryCategory;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6918,12 +6887,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Roaming;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -6940,12 +6909,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.SafeRemovalRequired;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -6962,12 +6931,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.SharedTooltip;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -6984,12 +6953,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.SignalStrength;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -7006,12 +6975,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Status1;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7028,12 +6997,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Status2;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7050,12 +7019,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.StorageCapacity;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -7072,12 +7041,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.StorageFreeSpace;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -7094,12 +7063,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.StorageFreeSpacePercent;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -7116,12 +7085,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.TextMessages;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -7138,12 +7107,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Voicemail;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -7157,13 +7126,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     if ( internalPropertyDevicesNotifications == null )
                     {
-                        internalPropertyDevicesNotifications = new PropertyDevicesNotifications( shellObjectParent );
+                        internalPropertyDevicesNotifications = new PropertyDevicesNotifications( _ShellObjectParent );
                     }
 
                     return internalPropertyDevicesNotifications;
                 }
             }
-
         }
 
         /// <summary>
@@ -7171,12 +7139,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertyDevicesNotifications : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertyDevicesNotifications( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertyDevicesNotifications( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Devices.Notifications.LowBattery -- PKEY_Devices_Notification_LowBattery</para>
@@ -7191,12 +7157,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Notifications.LowBattery;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -7213,12 +7179,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Notifications.MissedCall;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -7235,12 +7201,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Notifications.NewMessage;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -7257,12 +7223,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Notifications.NewVoicemail;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -7279,12 +7245,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Notifications.StorageFull;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -7301,15 +7267,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Devices.Notifications.StorageFullLinkText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
-
         }
 
         /// <summary>
@@ -7317,12 +7282,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemDocument : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemDocument( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemDocument( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Document.ByteCount -- PKEY_Document_ByteCount</para>
@@ -7337,12 +7300,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.ByteCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7359,12 +7322,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.CharacterCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7380,12 +7343,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.ClientID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7401,12 +7364,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.Contributor;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -7423,12 +7386,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.DateCreated;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -7445,12 +7408,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.DatePrinted;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -7467,12 +7430,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.DateSaved;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -7488,12 +7451,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.Division;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7509,12 +7472,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.DocumentID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7531,12 +7494,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.HiddenSlideCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7553,12 +7516,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.LastAuthor;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7575,12 +7538,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.LineCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7597,12 +7560,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.Manager;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7619,12 +7582,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.MultimediaClipCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7641,12 +7604,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.NoteCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7663,12 +7626,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.PageCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7685,12 +7648,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.ParagraphCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7707,12 +7670,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.PresentationFormat;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7729,12 +7692,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.RevisionNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7751,12 +7714,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.Security;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7773,12 +7736,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.SlideCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -7795,12 +7758,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.Template;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7817,12 +7780,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.TotalEditingTime;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -7838,12 +7801,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.Version;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7860,15 +7823,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Document.WordCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
-
         }
 
         /// <summary>
@@ -7876,12 +7838,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemDRM : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemDRM( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemDRM( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.DRM.DatePlayExpires -- PKEY_DRM_DatePlayExpires</para>
@@ -7896,12 +7856,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DRM.DatePlayExpires;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -7918,12 +7878,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DRM.DatePlayStarts;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -7940,12 +7900,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DRM.Description;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -7962,12 +7922,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DRM.IsProtected;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -7984,15 +7944,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.DRM.PlayCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
-
         }
 
         /// <summary>
@@ -8000,12 +7959,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemGPS : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemGPS( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemGPS( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.GPS.Altitude -- PKEY_GPS_Altitude</para>
@@ -8021,12 +7977,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.Altitude;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -8043,12 +7999,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.AltitudeDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8065,12 +8021,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.AltitudeNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8087,12 +8043,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.AltitudeRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -8109,12 +8065,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.AreaInformation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8131,12 +8087,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.Date;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -8154,12 +8110,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationBearing;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -8176,12 +8132,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationBearingDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8198,12 +8154,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationBearingNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8220,12 +8176,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationBearingRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8243,12 +8199,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationDistance;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -8265,12 +8221,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationDistanceDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8287,12 +8243,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationDistanceNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8309,12 +8265,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationDistanceRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8333,12 +8289,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationLatitude;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double[]>;
+                    return (_Hashtable[ key ] as ShellProperty<double[]>);
                 }
             }
 
@@ -8355,12 +8311,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationLatitudeDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint[]>;
+                    return (_Hashtable[ key ] as ShellProperty<uint[]>);
                 }
             }
 
@@ -8377,12 +8333,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationLatitudeNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint[]>;
+                    return (_Hashtable[ key ] as ShellProperty<uint[]>);
                 }
             }
 
@@ -8399,12 +8355,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationLatitudeRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8423,12 +8379,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationLongitude;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double[]>;
+                    return (_Hashtable[ key ] as ShellProperty<double[]>);
                 }
             }
 
@@ -8445,12 +8401,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationLongitudeDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint[]>;
+                    return (_Hashtable[ key ] as ShellProperty<uint[]>);
                 }
             }
 
@@ -8467,12 +8423,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationLongitudeNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint[]>;
+                    return (_Hashtable[ key ] as ShellProperty<uint[]>);
                 }
             }
 
@@ -8489,12 +8445,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DestinationLongitudeRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8511,12 +8467,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.Differential;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -8533,12 +8489,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DOP;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -8555,12 +8511,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DOPDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8577,12 +8533,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.DOPNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8600,12 +8556,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.ImageDirection;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -8622,12 +8578,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.ImageDirectionDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8644,12 +8600,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.ImageDirectionNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8666,12 +8622,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.ImageDirectionRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8689,12 +8645,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.Latitude;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double[]>;
+                    return (_Hashtable[ key ] as ShellProperty<double[]>);
                 }
             }
 
@@ -8711,12 +8667,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.LatitudeDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint[]>;
+                    return (_Hashtable[ key ] as ShellProperty<uint[]>);
                 }
             }
 
@@ -8733,12 +8689,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.LatitudeNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint[]>;
+                    return (_Hashtable[ key ] as ShellProperty<uint[]>);
                 }
             }
 
@@ -8755,12 +8711,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.LatitudeRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8778,12 +8734,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.Longitude;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double[]>;
+                    return (_Hashtable[ key ] as ShellProperty<double[]>);
                 }
             }
 
@@ -8800,12 +8756,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.LongitudeDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint[]>;
+                    return (_Hashtable[ key ] as ShellProperty<uint[]>);
                 }
             }
 
@@ -8822,12 +8778,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.LongitudeNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint[]>;
+                    return (_Hashtable[ key ] as ShellProperty<uint[]>);
                 }
             }
 
@@ -8844,12 +8800,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.LongitudeRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8866,12 +8822,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.MapDatum;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8888,12 +8844,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.MeasureMode;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8910,12 +8866,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.ProcessingMethod;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8932,12 +8888,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.Satellites;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -8955,12 +8911,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.Speed;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -8977,12 +8933,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.SpeedDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -8999,12 +8955,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.SpeedNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -9022,12 +8978,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.SpeedRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9045,12 +9001,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.Status;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9068,12 +9024,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.Track;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -9090,12 +9046,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.TrackDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -9112,12 +9068,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.TrackNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -9134,12 +9090,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.TrackRef;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9156,15 +9112,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.GPS.VersionID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte[]>;
+                    return (_Hashtable[ key ] as ShellProperty<byte[]>);
                 }
             }
-
         }
 
         /// <summary>
@@ -9172,12 +9127,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemIdentity : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemIdentity( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemIdentity( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Identity.Blob -- PKEY_Identity_Blob</para>
@@ -9192,12 +9145,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Identity.Blob;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte[]>;
+                    return (_Hashtable[ key ] as ShellProperty<byte[]>);
                 }
             }
 
@@ -9214,12 +9167,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Identity.DisplayName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9236,12 +9189,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Identity.IsMeIdentity;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -9258,12 +9211,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Identity.PrimaryEmailAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9280,12 +9233,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Identity.ProviderID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<IntPtr?>;
+                    return (_Hashtable[ key ] as ShellProperty<IntPtr?>);
                 }
             }
 
@@ -9302,12 +9255,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Identity.UniqueID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9324,15 +9277,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Identity.UserName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -9340,12 +9292,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemIdentityProvider : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemIdentityProvider( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemIdentityProvider( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.IdentityProvider.Name -- PKEY_IdentityProvider_Name</para>
@@ -9360,12 +9310,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IdentityProvider.Name;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9382,15 +9332,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.IdentityProvider.Picture;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -9398,12 +9347,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemImage : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemImage( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemImage( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Image.BitDepth -- PKEY_Image_BitDepth</para>
@@ -9418,12 +9365,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.BitDepth;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -9440,12 +9387,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.ColorSpace;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -9462,12 +9409,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.CompressedBitsPerPixel;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -9484,12 +9431,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.CompressedBitsPerPixelDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -9506,12 +9453,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.CompressedBitsPerPixelNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -9528,12 +9475,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.Compression;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -9551,12 +9498,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.CompressionText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9573,12 +9520,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.Dimensions;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9595,12 +9542,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.HorizontalResolution;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -9617,12 +9564,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.HorizontalSize;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -9638,12 +9585,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.ImageID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9659,12 +9606,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.ResolutionUnit;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<short?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<short?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<short?>;
+                    return (_Hashtable[ key ] as ShellProperty<short?>);
                 }
             }
 
@@ -9681,12 +9628,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.VerticalResolution;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -9703,15 +9650,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Image.VerticalSize;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
-
         }
 
         /// <summary>
@@ -9719,12 +9665,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemJournal : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemJournal( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemJournal( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Journal.Contacts -- PKEY_Journal_Contacts</para>
@@ -9738,12 +9682,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Journal.Contacts;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -9759,15 +9703,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Journal.EntryType;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -9775,12 +9718,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemLayoutPattern : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemLayoutPattern( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemLayoutPattern( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.LayoutPattern.ContentViewModeForBrowse -- PKEY_LayoutPattern_ContentViewModeForBrowse</para>
@@ -9796,12 +9737,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.LayoutPattern.ContentViewModeForBrowse;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9819,15 +9760,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.LayoutPattern.ContentViewModeForSearch;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -9835,12 +9775,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemLink : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemLink( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemLink( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Link.Arguments -- PKEY_Link_Arguments</para>
@@ -9854,12 +9792,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.Arguments;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9875,12 +9813,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.Comment;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9896,12 +9834,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.DateVisited;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -9917,12 +9855,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.Description;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -9939,12 +9877,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.Status;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -9961,12 +9899,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.TargetExtension;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -9988,12 +9926,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.TargetParsingPath;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10011,12 +9949,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.TargetSFGAOFlags;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -10034,12 +9972,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.TargetSFGAOFlagsStrings;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -10055,15 +9993,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Link.TargetUrl;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -10071,12 +10008,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemMedia : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemMedia( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemMedia( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Media.AuthorUrl -- PKEY_Media_AuthorUrl</para>
@@ -10091,12 +10025,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.AuthorUrl;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10112,12 +10046,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.AverageLevel;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -10134,12 +10068,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.ClassPrimaryID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10156,12 +10090,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.ClassSecondaryID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10178,12 +10112,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.CollectionGroupID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10200,12 +10134,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.CollectionID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10222,12 +10156,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.ContentDistributor;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10244,12 +10178,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.ContentID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10266,12 +10200,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.CreatorApplication;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10288,12 +10222,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.CreatorApplicationVersion;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10310,12 +10244,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.DateEncoded;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -10331,12 +10265,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.DateReleased;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10353,12 +10287,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.Duration;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -10375,12 +10309,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.DVDID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10397,12 +10331,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.EncodedBy;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10419,12 +10353,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.EncodingSettings;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10441,12 +10375,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.FrameCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -10463,12 +10397,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.MCDI;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10485,12 +10419,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.MetadataContentProvider;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10507,12 +10441,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.Producer;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -10529,12 +10463,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.PromotionUrl;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10551,12 +10485,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.ProtectionType;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10573,12 +10507,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.ProviderRating;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10595,12 +10529,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.ProviderStyle;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10617,12 +10551,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.Publisher;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10638,12 +10572,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.SubscriptionContentId;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10660,12 +10594,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.Subtitle;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10682,12 +10616,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.UniqueFileIdentifier;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10704,12 +10638,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.UserNoAutoInfo;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10726,12 +10660,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.UserWebUrl;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10748,12 +10682,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.Writer;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -10770,15 +10704,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Media.Year;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
-
         }
 
         /// <summary>
@@ -10786,12 +10719,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemMessage : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemMessage( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemMessage( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Message.AttachmentContents -- PKEY_Message_AttachmentContents</para>
@@ -10805,12 +10735,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.AttachmentContents;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10827,12 +10757,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.AttachmentNames;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -10849,12 +10779,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.BccAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -10871,12 +10801,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.BccName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -10893,12 +10823,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.CcAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -10915,12 +10845,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.CcName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -10936,12 +10866,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.ConversationID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -10958,12 +10888,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.ConversationIndex;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte[]>;
+                    return (_Hashtable[ key ] as ShellProperty<byte[]>);
                 }
             }
 
@@ -10980,12 +10910,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.DateReceived;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -11002,12 +10932,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.DateSent;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -11025,12 +10955,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.Flags;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -11046,12 +10976,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.FromAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -11068,12 +10998,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.FromName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -11090,12 +11020,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.HasAttachments;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -11111,12 +11041,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.IsFwdOrReply;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -11133,12 +11063,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.MessageClass;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11155,12 +11085,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.ProofInProgress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -11176,12 +11106,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.SenderAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11197,12 +11127,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.SenderName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11219,12 +11149,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.Store;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11241,12 +11171,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.ToAddress;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -11263,12 +11193,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.ToDoFlags;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -11284,12 +11214,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.ToDoTitle;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11306,15 +11236,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Message.ToName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
-
         }
 
         /// <summary>
@@ -11322,12 +11251,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemMusic : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemMusic( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemMusic( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Music.AlbumArtist -- PKEY_Music_AlbumArtist</para>
@@ -11342,12 +11269,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.AlbumArtist;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11365,12 +11292,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.AlbumID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11387,12 +11314,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.AlbumTitle;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11409,12 +11336,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.Artist;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -11431,12 +11358,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.BeatsPerMinute;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11453,12 +11380,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.Composer;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -11475,12 +11402,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.Conductor;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -11497,12 +11424,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.ContentGroupDescription;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11520,12 +11447,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.DisplayArtist;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11542,12 +11469,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.Genre;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -11564,12 +11491,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.InitialKey;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11586,12 +11513,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.IsCompilation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -11608,12 +11535,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.Lyrics;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11630,12 +11557,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.Mood;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11652,12 +11579,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.PartOfSet;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11674,12 +11601,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.Period;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11695,12 +11622,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.SynchronizedLyrics;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte[]>;
+                    return (_Hashtable[ key ] as ShellProperty<byte[]>);
                 }
             }
 
@@ -11717,15 +11644,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Music.TrackNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
-
         }
 
         /// <summary>
@@ -11733,12 +11659,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemNote : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemNote( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemNote( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Note.Color -- PKEY_Note_Color</para>
@@ -11752,12 +11676,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Note.Color;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -11775,15 +11699,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Note.ColorText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -11791,12 +11714,10 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemPhoto : PropertyStoreItems
         {
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
 
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemPhoto( ShellObject parent ) => shellObjectParent = parent;
+            internal PropertySystemPhoto( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Photo.Aperture -- PKEY_Photo_Aperture</para>
@@ -11811,12 +11732,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.Aperture;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -11833,12 +11754,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ApertureDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -11855,12 +11776,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ApertureNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -11882,12 +11803,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.Brightness;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -11904,12 +11825,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.BrightnessDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -11926,12 +11847,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.BrightnessNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -11948,12 +11869,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.CameraManufacturer;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11970,12 +11891,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.CameraModel;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -11992,12 +11913,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.CameraSerialNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -12015,12 +11936,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.Contrast;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12038,12 +11959,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ContrastText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -12060,12 +11981,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.DateTaken;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -12082,12 +12003,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.DigitalZoom;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12104,12 +12025,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.DigitalZoomDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12126,12 +12047,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.DigitalZoomNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12148,12 +12069,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.Event;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -12170,12 +12091,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.EXIFVersion;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -12192,12 +12113,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureBias;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12214,12 +12135,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureBiasDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -12236,12 +12157,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureBiasNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -12258,12 +12179,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureIndex;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12280,12 +12201,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureIndexDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12302,12 +12223,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureIndexNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12324,12 +12245,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureProgram;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12347,12 +12268,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureProgramText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -12369,12 +12290,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureTime;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12391,12 +12312,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureTimeDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12413,12 +12334,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ExposureTimeNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12435,12 +12356,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.Flash;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte?>;
+                    return (_Hashtable[ key ] as ShellProperty<byte?>);
                 }
             }
 
@@ -12457,12 +12378,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FlashEnergy;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12479,12 +12400,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FlashEnergyDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12501,12 +12422,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FlashEnergyNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12522,12 +12443,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FlashManufacturer;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -12543,12 +12464,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FlashModel;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -12566,12 +12487,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FlashText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -12588,12 +12509,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12610,12 +12531,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FNumberDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12632,12 +12553,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FNumberNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12654,12 +12575,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalLength;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12676,12 +12597,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalLengthDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12697,12 +12618,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalLengthInFilm;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -12719,12 +12640,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalLengthNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12742,12 +12663,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalPlaneXResolution;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12764,12 +12685,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalPlaneXResolutionDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12786,12 +12707,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalPlaneXResolutionNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12809,12 +12730,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalPlaneYResolution;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12831,12 +12752,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalPlaneYResolutionDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12853,12 +12774,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.FocalPlaneYResolutionNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12877,12 +12798,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.GainControl;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -12899,12 +12820,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.GainControlDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12921,12 +12842,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.GainControlNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -12944,12 +12865,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.GainControlText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -12966,12 +12887,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ISOSpeed;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -12987,12 +12908,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.LensManufacturer;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -13008,12 +12929,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.LensModel;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -13030,12 +12951,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.LightSource;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -13051,12 +12972,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.MakerNote;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte[]>;
+                    return (_Hashtable[ key ] as ShellProperty<byte[]>);
                 }
             }
 
@@ -13072,12 +12993,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.MakerNoteOffset;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ulong?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ulong?>;
+                    return (_Hashtable[ key ] as ShellProperty<ulong?>);
                 }
             }
 
@@ -13094,12 +13015,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.MaxAperture;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -13116,12 +13037,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.MaxApertureDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -13138,12 +13059,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.MaxApertureNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -13160,12 +13081,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.MeteringMode;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -13183,12 +13104,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.MeteringModeText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -13205,12 +13126,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.Orientation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -13228,12 +13149,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.OrientationText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -13250,12 +13171,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.PeopleNames;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -13273,12 +13194,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.PhotometricInterpretation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -13296,12 +13217,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.PhotometricInterpretationText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -13319,12 +13240,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ProgramMode;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -13342,12 +13263,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ProgramModeText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -13363,12 +13284,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.RelatedSoundFile;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -13386,12 +13307,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.Saturation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -13409,12 +13330,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.SaturationText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -13432,12 +13353,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.Sharpness;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -13455,12 +13376,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.SharpnessText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -13477,12 +13398,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ShutterSpeed;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -13499,12 +13420,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ShutterSpeedDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -13521,12 +13442,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.ShutterSpeedNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -13543,12 +13464,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.SubjectDistance;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<double?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<double?>;
+                    return (_Hashtable[ key ] as ShellProperty<double?>);
                 }
             }
 
@@ -13565,12 +13486,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.SubjectDistanceDenominator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -13587,12 +13508,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.SubjectDistanceNumerator;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -13609,12 +13530,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.TagViewAggregate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -13630,12 +13551,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.TranscodedForSync;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -13652,12 +13573,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.WhiteBalance;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -13675,15 +13596,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Photo.WhiteBalanceText;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -13691,12 +13611,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemPropGroup : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemPropGroup( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemPropGroup( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.PropGroup.Advanced -- PKEY_PropGroup_Advanced</para>
@@ -13710,12 +13627,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Advanced;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13731,12 +13648,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Audio;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13752,12 +13669,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Calendar;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13773,12 +13690,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Camera;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13794,12 +13711,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Contact;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13815,12 +13732,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Content;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13836,12 +13753,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Description;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13857,12 +13774,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.FileSystem;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13878,12 +13795,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.General;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13899,12 +13816,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.GPS;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13920,12 +13837,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Image;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13941,12 +13858,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Media;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13962,12 +13879,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.MediaAdvanced;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -13983,12 +13900,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Message;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -14004,12 +13921,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Music;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -14025,12 +13942,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Origin;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -14046,12 +13963,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.PhotoAdvanced;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -14067,12 +13984,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.RecordedTV;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
 
@@ -14088,15 +14005,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropGroup.Video;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
-
         }
 
         /// <summary>
@@ -14104,12 +14020,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemPropList : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemPropList( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemPropList( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.PropList.ConflictPrompt -- PKEY_PropList_ConflictPrompt</para>
@@ -14125,12 +14038,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.ConflictPrompt;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14148,12 +14061,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.ContentViewModeForBrowse;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14171,12 +14084,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.ContentViewModeForSearch;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14194,12 +14107,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.ExtendedTileInfo;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14218,12 +14131,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.FileOperationPrompt;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14241,12 +14154,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.FullDetails;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14264,12 +14177,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.InfoTip;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14288,12 +14201,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.NonPersonal;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14310,12 +14223,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.PreviewDetails;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14333,12 +14246,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.PreviewTitle;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14356,12 +14269,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.QuickTip;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14378,12 +14291,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.TileInfo;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14400,15 +14313,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.PropList.XPDetailsPanel;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -14416,12 +14328,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemRecordedTV : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemRecordedTV( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemRecordedTV( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.RecordedTV.ChannelNumber -- PKEY_RecordedTV_ChannelNumber</para>
@@ -14436,12 +14345,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.ChannelNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -14458,12 +14367,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.Credits;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14479,12 +14388,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.DateContentExpires;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -14501,12 +14410,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.EpisodeName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14522,12 +14431,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.IsATSCContent;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -14543,12 +14452,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.IsClosedCaptioningAvailable;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -14564,12 +14473,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.IsDTVContent;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -14585,12 +14494,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.IsHDContent;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -14606,12 +14515,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.IsRepeatBroadcast;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -14627,12 +14536,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.IsSAP;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -14648,12 +14557,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.NetworkAffiliation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14669,12 +14578,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.OriginalBroadcastDate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -14690,12 +14599,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.ProgramDescription;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14711,12 +14620,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.RecordingTime;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -14733,12 +14642,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.StationCallSign;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14754,15 +14663,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.RecordedTV.StationName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -14770,12 +14678,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemSearch : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemSearch( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemSearch( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Search.AutoSummary -- PKEY_Search_AutoSummary</para>
@@ -14790,12 +14695,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.AutoSummary;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14812,12 +14717,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.ContainerHash;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14835,12 +14740,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.Contents;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -14858,12 +14763,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.EntryID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -14879,12 +14784,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.ExtendedProperties;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<byte[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<byte[]>;
+                    return (_Hashtable[ key ] as ShellProperty<byte[]>);
                 }
             }
 
@@ -14901,12 +14806,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.GatherTime;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -14924,12 +14829,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.HitCount;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -14946,12 +14851,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.IsClosedDirectory;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -14968,12 +14873,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.IsFullyContained;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -14990,12 +14895,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.QueryFocusedSummary;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15012,12 +14917,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.QueryFocusedSummaryWithFallback;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15034,12 +14939,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.Rank;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<int?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<int?>;
+                    return (_Hashtable[ key ] as ShellProperty<int?>);
                 }
             }
 
@@ -15056,12 +14961,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.Store;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15078,12 +14983,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.UrlToIndex;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15100,15 +15005,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Search.UrlToIndexWithModificationTime;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<object>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<object>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<object>;
+                    return (_Hashtable[ key ] as ShellProperty<object>);
                 }
             }
-
         }
 
         /// <summary>
@@ -15116,12 +15020,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemShell : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemShell( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemShell( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Shell.OmitFromView -- PKEY_Shell_OmitFromView</para>
@@ -15136,12 +15037,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Shell.OmitFromView;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15158,15 +15059,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Shell.SFGAOFlagsStrings;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
-
         }
 
         /// <summary>
@@ -15174,12 +15074,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemSoftware : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemSoftware( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemSoftware( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Software.DateLastUsed -- PKEY_Software_DateLastUsed</para>
@@ -15194,12 +15091,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Software.DateLastUsed;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<DateTime?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<DateTime?>;
+                    return (_Hashtable[ key ] as ShellProperty<DateTime?>);
                 }
             }
 
@@ -15216,15 +15113,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Software.ProductName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -15232,12 +15128,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemSync : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemSync( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemSync( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Sync.Comments -- PKEY_Sync_Comments</para>
@@ -15251,12 +15144,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.Comments;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15272,12 +15165,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.ConflictDescription;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15293,12 +15186,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.ConflictFirstLocation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15314,12 +15207,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.ConflictSecondLocation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15335,12 +15228,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.HandlerCollectionID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<IntPtr?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<IntPtr?>;
+                    return (_Hashtable[ key ] as ShellProperty<IntPtr?>);
                 }
             }
 
@@ -15356,12 +15249,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.HandlerID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15377,12 +15270,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.HandlerName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15399,12 +15292,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.HandlerType;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15421,12 +15314,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.HandlerTypeLabel;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15442,12 +15335,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.ItemID;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15463,12 +15356,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.ItemName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15485,12 +15378,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.ProgressPercentage;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15507,12 +15400,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.State;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15528,15 +15421,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Sync.Status;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -15544,12 +15436,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemTask : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemTask( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemTask( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Task.BillingInformation -- PKEY_Task_BillingInformation</para>
@@ -15563,12 +15452,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Task.BillingInformation;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15584,12 +15473,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Task.CompletionStatus;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15605,15 +15494,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Task.Owner;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
-
         }
 
         /// <summary>
@@ -15621,12 +15509,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemVideo : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemVideo( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemVideo( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Video.Compression -- PKEY_Video_Compression</para>
@@ -15641,12 +15526,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.Compression;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15663,12 +15548,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.Director;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string[]>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string[]>;
+                    return (_Hashtable[ key ] as ShellProperty<string[]>);
                 }
             }
 
@@ -15685,12 +15570,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.EncodingBitrate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15707,12 +15592,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.FourCC;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15729,12 +15614,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.FrameHeight;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15751,12 +15636,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.FrameRate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15773,12 +15658,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.FrameWidth;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15796,12 +15681,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.HorizontalAspectRatio;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15818,12 +15703,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.SampleSize;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15840,12 +15725,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.StreamName;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15862,12 +15747,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.StreamNumber;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<ushort?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<ushort?>;
+                    return (_Hashtable[ key ] as ShellProperty<ushort?>);
                 }
             }
 
@@ -15884,12 +15769,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.TotalBitrate;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
 
@@ -15905,12 +15790,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.TranscodedForSync;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -15928,15 +15813,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Video.VerticalAspectRatio;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<uint?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<uint?>;
+                    return (_Hashtable[ key ] as ShellProperty<uint?>);
                 }
             }
-
         }
 
         /// <summary>
@@ -15944,12 +15828,9 @@ namespace System.Windows.Forms.Taskbar
         /// </summary>
         public class PropertySystemVolume : PropertyStoreItems
         {
-
-
-            private readonly ShellObject shellObjectParent;
-            private readonly Hashtable hashtable = new Hashtable();
-
-            internal PropertySystemVolume( ShellObject parent ) => shellObjectParent = parent;
+            private readonly ShellObject _ShellObjectParent;
+            private readonly Hashtable _Hashtable = new Hashtable();
+            internal PropertySystemVolume( ShellObject parent ) => _ShellObjectParent = parent;
 
             /// <summary>
             /// <para>Name:     System.Volume.FileSystem -- PKEY_Volume_FileSystem</para>
@@ -15964,12 +15845,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Volume.FileSystem;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<string>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<string>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<string>;
+                    return (_Hashtable[ key ] as ShellProperty<string>);
                 }
             }
 
@@ -15985,12 +15866,12 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Volume.IsMappedDrive;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
 
@@ -16007,15 +15888,14 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var key = SystemProperties.System.Volume.IsRoot;
 
-                    if ( !hashtable.ContainsKey( key ) )
+                    if ( !_Hashtable.ContainsKey( key ) )
                     {
-                        hashtable.Add( key, shellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
+                        _Hashtable.Add( key, _ShellObjectParent.Properties.CreateTypedProperty<bool?>( key ) );
                     }
 
-                    return hashtable[ key ] as ShellProperty<bool?>;
+                    return (_Hashtable[ key ] as ShellProperty<bool?>);
                 }
             }
-
         }
     }
 }

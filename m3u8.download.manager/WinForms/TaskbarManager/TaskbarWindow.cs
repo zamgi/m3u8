@@ -21,7 +21,7 @@
             {
                 if ( _tabbedThumbnailPreview != null )
                 {
-                    throw new InvalidOperationException( "LocalizedMessages.TaskbarWindowValueSet" );
+                    throw (new InvalidOperationException( "LocalizedMessages.TaskbarWindowValueSet" ));
                 }
 
                 TabbedThumbnailProxyWindow = new TabbedThumbnailProxyWindow( value );
@@ -71,7 +71,7 @@
                     return TabbedThumbnailProxyWindow.WindowToTellTaskbarAbout;
                 }
 
-                throw new InvalidOperationException();
+                throw (new InvalidOperationException());
             }
         }
 
@@ -88,12 +88,12 @@
         {
             if ( userWindowHandle == IntPtr.Zero )
             {
-                throw new ArgumentException( "LocalizedMessages.CommonFileDialogInvalidHandle", "userWindowHandle" );
+                throw (new ArgumentException( "LocalizedMessages.CommonFileDialogInvalidHandle", "userWindowHandle" ));
             }
 
             if ( buttons == null || buttons.Length == 0 )
             {
-                throw new ArgumentException( "LocalizedMessages.TaskbarWindowEmptyButtonArray", "buttons" );
+                throw (new ArgumentException( "LocalizedMessages.TaskbarWindowEmptyButtonArray", "buttons" ));
             }
 
             // Create our proxy window
@@ -143,7 +143,7 @@
 #endif
         internal TaskbarWindow( TabbedThumbnail preview )
         {
-            if ( preview == null ) throw new ArgumentNullException( "preview" );
+            if ( preview == null ) throw (new ArgumentNullException( "preview" ));
 
             // Create our proxy window
             // Bug: This is only called in this constructor.  Which will cause the property 

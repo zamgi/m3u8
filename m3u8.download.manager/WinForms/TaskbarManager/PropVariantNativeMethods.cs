@@ -42,7 +42,7 @@ namespace System.Windows.Forms.Taskbar
         [DllImport("propsys.dll", CharSet=CharSet.Unicode, SetLastError=true, PreserveSig=false)]
         internal static extern void InitPropVariantFromUInt64Vector( [In, Out] ulong[] prgn, uint cElems, [Out] PropVariant ppropvar );
 
-        [DllImport("Ole32.dll", PreserveSig=false)] // returns hresult
+        [DllImport("ole32.dll", PreserveSig=false)] // returns hresult
         internal static extern void PropVariantClear( [In, Out] PropVariant pvar );
 
         [DllImport("propsys.dll", CharSet=CharSet.Unicode, SetLastError=true, PreserveSig=false)]

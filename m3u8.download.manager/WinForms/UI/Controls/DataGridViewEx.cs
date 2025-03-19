@@ -82,7 +82,7 @@ namespace System.Windows.Forms
                 _SelectLocation = e.Location;
                 _SelectRect = Rectangle.Empty;
                 _SelectedRows?.Clear();
-                StartDrawSelectRect?.Invoke( this, EventArgs.Empty );
+                if ( _DrawSelectRect ) StartDrawSelectRect?.Invoke( this, EventArgs.Empty );
 
                 _ScrollIfNeedTimer.Interval = ScrollDelayInMilliseconds;
                 _ScrollIfNeedTimer.Enabled  = true;

@@ -315,10 +315,10 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Windows</summary>
         internal static Guid Windows = new Guid(0xF38BF404, 0x1D43, 0x42F2, 0x93, 0x05, 0x67, 0xDE, 0x0B, 0x28, 0xFC, 0x23 );
 
-        private static readonly Dictionary<Guid, string> folders;
+        private static readonly Dictionary<Guid, string> _Folders;
         static FolderIdentifiers()
         {
-            folders = new Dictionary< Guid, string >();
+            _Folders = new Dictionary< Guid, string >();
             var folderIDs = typeof(FolderIdentifiers);
 
             var fields = folderIDs.GetFields( BindingFlags.NonPublic | BindingFlags.Static );
@@ -329,7 +329,7 @@ namespace System.Windows.Forms.Taskbar
                 {
                     var id = (Guid) f.GetValue( null );
                     var name = f.Name;
-                    folders.Add( id, name );
+                    _Folders.Add( id, name );
                 }
             }
         }
@@ -338,15 +338,15 @@ namespace System.Windows.Forms.Taskbar
         internal static SortedList<string, Guid> GetAllFolders()
         {
             // Make a copy of the dictionary because the Keys and Values collections are mutable.
-            ICollection<Guid> keys = folders.Keys;
+            ICollection<Guid> keys = _Folders.Keys;
 
             var slist = new SortedList< string, Guid >();
             foreach ( var g in keys )
             {
-                slist.Add( folders[ g ], g );
+                slist.Add( _Folders[ g ], g );
             }
 
-            return slist;
+            return (slist);
         }
 
         /// <summary>Returns the friendly name for a specified folder.</summary>
@@ -354,7 +354,7 @@ namespace System.Windows.Forms.Taskbar
         /// <returns>A <see cref="T:System.String"/> value.</returns>
         internal static string NameForGuid( Guid folderId )
         {
-            if ( !folders.TryGetValue( folderId, out var folder ) )
+            if ( !_Folders.TryGetValue( folderId, out var folder ) )
             {
                 throw (new ArgumentException( "LocalizedMessages.FolderIdsUnknownGuid", "folderId" ));
             }

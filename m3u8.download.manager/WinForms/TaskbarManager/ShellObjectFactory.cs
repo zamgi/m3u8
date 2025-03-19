@@ -17,7 +17,7 @@ namespace System.Windows.Forms.Taskbar
             // Need to make sure we're running on Vista or higher
             if ( !CoreHelpers.RunningOnVista )
             {
-                throw new PlatformNotSupportedException( "LocalizedMessages.ShellObjectFactoryPlatformNotSupported" );
+                throw (new PlatformNotSupportedException( "LocalizedMessages.ShellObjectFactoryPlatformNotSupported" ));
             }
 
             // A lot of APIs need IShellItem2, so just keep a copy of it here
@@ -45,7 +45,7 @@ namespace System.Windows.Forms.Taskbar
             // 1. First check if this is a Shell Link
             if ( StringComparer.OrdinalIgnoreCase.Equals( itemType, ".lnk" ) )
             {
-                return new ShellLink( nativeShellItem2 );
+                return (new ShellLink( nativeShellItem2 ));
             }
             // 2. Check if this is a container or a single item (entity)
             else if ( isFolder )
@@ -53,15 +53,15 @@ namespace System.Windows.Forms.Taskbar
                 // 3. If this is a folder, check for types: Shell Library, Shell Folder or Search Container
                 if ( itemType == ".library-ms" && (shellLibrary = ShellLibrary.FromShellItem( nativeShellItem2, true )) != null )
                 {
-                    return shellLibrary; // we already created this above while checking for Library
+                    return (shellLibrary); // we already created this above while checking for Library
                 }
                 else if ( itemType == ".searchconnector-ms" )
                 {
-                    return new ShellSearchConnector( nativeShellItem2 );
+                    return (new ShellSearchConnector( nativeShellItem2 ));
                 }
                 else if ( itemType == ".search-ms" )
                 {
-                    return new ShellSavedSearchCollection( nativeShellItem2 );
+                    return (new ShellSavedSearchCollection( nativeShellItem2 ));
                 }
 
                 // 4. It's a ShellFolder
@@ -71,26 +71,26 @@ namespace System.Windows.Forms.Taskbar
                     if ( !IsVirtualKnownFolder( nativeShellItem2 ) )
                     { //needs to check if it is a known folder and not virtual
                         var kf = new FileSystemKnownFolder( nativeShellItem2 );
-                        return kf;
+                        return (kf);
                     }
 
-                    return new ShellFileSystemFolder( nativeShellItem2 );
+                    return (new ShellFileSystemFolder( nativeShellItem2 ));
                 }
 
                 // 5. Is it a (Non File-System / Virtual) Known Folder
                 if ( IsVirtualKnownFolder( nativeShellItem2 ) )
                 { //needs to check if known folder is virtual
                     var kf = new NonFileSystemKnownFolder( nativeShellItem2 );
-                    return kf;
+                    return (kf);
                 }
 
-                return new ShellNonFileSystemFolder( nativeShellItem2 );
+                return (new ShellNonFileSystemFolder( nativeShellItem2 ));
             }
 
             // 6. If this is an entity (single item), check if its filesystem or not
-            if ( isFileSystem ) { return new ShellFile( nativeShellItem2 ); }
+            if ( isFileSystem ) return (new ShellFile( nativeShellItem2 ));
 
-            return new ShellNonFileSystemItem( nativeShellItem2 );
+            return (new ShellNonFileSystemItem( nativeShellItem2 ));
         }
 
         /// <summary>Creates a ShellObject given a parsing name</summary>
@@ -100,7 +100,7 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( string.IsNullOrEmpty( parsingName ) )
             {
-                throw new ArgumentNullException( "parsingName" );
+                throw (new ArgumentNullException( "parsingName" ));
             }
 
             // Create a native shellitem from our path
@@ -111,9 +111,9 @@ namespace System.Windows.Forms.Taskbar
 
             if ( !CoreErrorHelper.Succeeded( retCode ) )
             {
-                throw new ShellException( "LocalizedMessages.ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR( retCode ) );
+                throw (new ShellException( "LocalizedMessages.ShellObjectFactoryUnableToCreateItem", Marshal.GetExceptionForHR( retCode ) ));
             }
-            return ShellObjectFactory.Create( nativeShellItem );
+            return (ShellObjectFactory.Create( nativeShellItem ));
         }
 
         /// <summary>Constructs a new Shell object from IDList pointer</summary>
@@ -129,7 +129,7 @@ namespace System.Windows.Forms.Taskbar
             var retCode = ShellNativeMethods.SHCreateItemFromIDList( idListPtr, ref guid, out var nativeShellItem );
 
             if ( !CoreErrorHelper.Succeeded( retCode ) ) return (null);
-            return ShellObjectFactory.Create( nativeShellItem );
+            return (ShellObjectFactory.Create( nativeShellItem ));
         }
 
         /// <summary>Constructs a new Shell object from IDList pointer</summary>
@@ -145,7 +145,7 @@ namespace System.Windows.Forms.Taskbar
 
             if ( !CoreErrorHelper.Succeeded( retCode ) ) return (null);
 
-            return ShellObjectFactory.Create( nativeShellItem );
+            return (ShellObjectFactory.Create( nativeShellItem ));
         }
 
         // This is a work around for the STA thread bug. This will execute the call on a non-sta thread, then return the result

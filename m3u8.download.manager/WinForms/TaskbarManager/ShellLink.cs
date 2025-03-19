@@ -4,23 +4,23 @@
     public class ShellLink : ShellObject
     {
         /// <summary>Path for this file e.g. c:\Windows\file.txt,</summary>
-        private string _internalPath;
-        private string internalArguments;
-        private string internalComments;
-        private string internalTargetLocation;
+        private string _InternalPath;
+        private string _InternalArguments;
+        private string _InternalComments;
+        private string _InternalTargetLocation;
 
-        internal ShellLink( IShellItem2 shellItem ) => nativeShellItem = shellItem;
+        internal ShellLink( IShellItem2 shellItem ) => _NativeShellItem = shellItem;
 
         /// <summary>Gets the arguments associated with this link.</summary>
         public string Arguments
         {
             get
             {
-                if ( string.IsNullOrEmpty( internalArguments ) && NativeShellItem2 != null )
+                if ( string.IsNullOrEmpty( _InternalArguments ) && NativeShellItem2 != null )
                 {
-                    internalArguments = Properties.System.Link.Arguments.Value;
+                    _InternalArguments = Properties.System.Link.Arguments.Value;
                 }
-                return internalArguments;
+                return (_InternalArguments);
             }
         }
 
@@ -29,11 +29,11 @@
         {
             get
             {
-                if ( string.IsNullOrEmpty( internalComments ) && NativeShellItem2 != null )
+                if ( string.IsNullOrEmpty( _InternalComments ) && NativeShellItem2 != null )
                 {
-                    internalComments = Properties.System.Comment.Value;
+                    _InternalComments = Properties.System.Comment.Value;
                 }
-                return internalComments;
+                return (_InternalComments);
             }
         }
 
@@ -42,13 +42,13 @@
         {
             get
             {
-                if ( _internalPath == null && NativeShellItem != null )
+                if ( _InternalPath == null && NativeShellItem != null )
                 {
-                    _internalPath = base.ParsingName;
+                    _InternalPath = base.ParsingName;
                 }
-                return _internalPath;
+                return (_InternalPath);
             }
-            protected set => _internalPath = value;
+            protected set => _InternalPath = value;
         }
 
         /// <summary>Gets the location to which this link points to.</summary>
@@ -56,21 +56,21 @@
         {
             get
             {
-                if ( string.IsNullOrEmpty( internalTargetLocation ) && NativeShellItem2 != null )
+                if ( string.IsNullOrEmpty( _InternalTargetLocation ) && NativeShellItem2 != null )
                 {
-                    internalTargetLocation = Properties.System.Link.TargetParsingPath.Value;
+                    _InternalTargetLocation = Properties.System.Link.TargetParsingPath.Value;
                 }
-                return internalTargetLocation;
+                return (_InternalTargetLocation);
             }
             set
             {
                 if ( value == null ) return;
 
-                internalTargetLocation = value;
+                _InternalTargetLocation = value;
 
                 if ( NativeShellItem2 != null )
                 {
-                    Properties.System.Link.TargetParsingPath.Value = internalTargetLocation;
+                    Properties.System.Link.TargetParsingPath.Value = _InternalTargetLocation;
                 }
             }
         }
@@ -90,7 +90,7 @@
             {
                 if ( value == null )
                 {
-                    throw new ArgumentNullException( "value" );
+                    throw (new ArgumentNullException( "value" ));
                 }
 
                 if ( NativeShellItem2 != null )

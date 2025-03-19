@@ -23,6 +23,10 @@
   <ItemGroup>
     <None Remove=".gitignore" />
   </ItemGroup>
+  
+  <PropertyGroup>
+    <DefineConstants>THROTTLER__V2;</DefineConstants>
+  </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net481' ">
     <PackageReference Include="System.Net.Http" Version="4.3.4" />

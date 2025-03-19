@@ -7,19 +7,19 @@ namespace System.Windows.Forms.Taskbar
 {
     internal enum SICHINTF
     {
-        SICHINT_DISPLAY = 0x00000000,
-        SICHINT_CANONICAL = 0x10000000,
+        SICHINT_DISPLAY                       = 0x00000000,
+        SICHINT_CANONICAL                     = 0x10000000,
         SICHINT_TEST_FILESYSPATH_IF_NOT_EQUAL = 0x20000000,
-        SICHINT_ALLFIELDS = unchecked((int) 0x80000000)
+        SICHINT_ALLFIELDS                     = unchecked((int) 0x80000000)
     }
 
     // Disable warning if a method declaration hides another inherited from a parent COM interface To successfully import a COM interface,
     // all inherited methods need to be declared again with the exception of those already declared in "IUnknown"
 #pragma warning disable 108
 
-    [ComImport(),
-    Guid(ShellIIDGuid.ICondition),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.ICondition)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ICondition : IPersistStream
     {
         // Summary: Retrieves the class identifier (CLSID) of an object.
@@ -82,9 +82,9 @@ namespace System.Windows.Forms.Taskbar
         HResult Clone( [Out()] out ICondition ppc );
     };
 
-    [ComImport,
-    Guid(ShellIIDGuid.IConditionFactory),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IConditionFactory)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IConditionFactory
     {
         [PreserveSig]
@@ -109,17 +109,17 @@ namespace System.Windows.Forms.Taskbar
         HResult Resolve(/*[In] ICondition pc, [In] STRUCTURED_QUERY_RESOLVE_OPTION sqro, [In] ref SYSTEMTIME pstReferenceTime, [Out] out ICondition ppcResolved*/);
     };
 
-    [ComImport,
-    Guid("24264891-E80B-4fd3-B7CE-4FF2FAE8931F"),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid("24264891-E80B-4fd3-B7CE-4FF2FAE8931F")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IEntity
     {
         // TODO
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IEnumIDList),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IEnumIDList)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IEnumIDList
     {
         [PreserveSig]
@@ -157,9 +157,9 @@ namespace System.Windows.Forms.Taskbar
         HResult Clone( out IEnumUnknown result );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IModalWindow),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IModalWindow)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IModalWindow
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime),
@@ -167,23 +167,23 @@ namespace System.Windows.Forms.Taskbar
         int Show( [In] IntPtr parent );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IConditionFactory),
-    CoClass( typeof( ConditionFactoryCoClass ) )]
+    [ComImport]
+    [Guid(ShellIIDGuid.IConditionFactory)]
+    [CoClass( typeof(ConditionFactoryCoClass) )]
     internal interface INativeConditionFactory : IConditionFactory
     {
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IQueryParserManager),
-    CoClass( typeof(QueryParserManagerCoClass) )]
+    [ComImport]
+    [Guid(ShellIIDGuid.IQueryParserManager)]
+    [CoClass( typeof(QueryParserManagerCoClass) )]
     internal interface INativeQueryParserManager : IQueryParserManager
     {
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.ISearchFolderItemFactory),
-    CoClass( typeof(SearchFolderItemFactoryCoClass) )]
+    [ComImport]
+    [Guid(ShellIIDGuid.ISearchFolderItemFactory)]
+    [CoClass( typeof(SearchFolderItemFactoryCoClass) )]
     internal interface INativeSearchFolderItemFactory : ISearchFolderItemFactory
     {
     }
@@ -216,9 +216,9 @@ namespace System.Windows.Forms.Taskbar
         HResult GetSizeMax( out ulong cbSize );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IQueryParser),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IQueryParser)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IQueryParser
     {
         // Parse parses an input string, producing a query solution. pCustomProperties should be an enumeration of IRichChunk objects, one
@@ -258,9 +258,9 @@ namespace System.Windows.Forms.Taskbar
         HResult RestatePropertyValueToString( [In] ICondition pCondition, [In] bool fUseEnglish, [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszPropertyName, [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszQueryString );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IQueryParserManager),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IQueryParserManager)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IQueryParserManager
     {
         // Create a query parser loaded with the schema for a certain catalog localize to a certain language, and initialized with standard
@@ -279,9 +279,9 @@ namespace System.Windows.Forms.Taskbar
         HResult SetOption( [In] QueryParserManagerOption option, [In] PropVariant pOptionValue );
     };
 
-    [ComImport,
-    Guid(ShellIIDGuid.IQuerySolution),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IQuerySolution)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IQuerySolution : IConditionFactory
     {
         [PreserveSig]
@@ -321,9 +321,9 @@ namespace System.Windows.Forms.Taskbar
         HResult GetLexicalData( [MarshalAs(UnmanagedType.LPWStr)] out string ppszInputString, [Out] /* ITokenCollection** */ out IntPtr ppTokens, [Out] out uint plcid, [Out] /* IUnknown** */ out IntPtr ppWordBreaker );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IRichChunk),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IRichChunk)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IRichChunk
     {
         // The position *pFirstPos is zero-based. Any one of pFirstPos, pLength, ppsz and pValue may be NULL.
@@ -331,9 +331,9 @@ namespace System.Windows.Forms.Taskbar
         HResult GetData(/*[out, annotation("__out_opt")] ULONG* pFirstPos, [out, annotation("__out_opt")] ULONG* pLength, [out, annotation("__deref_opt_out_opt")] LPWSTR* ppsz, [out, annotation("__out_opt")] PROPVARIANT* pValue*/);
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.ISearchFolderItemFactory),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.ISearchFolderItemFactory)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ISearchFolderItemFactory
     {
         [PreserveSig]
@@ -373,9 +373,9 @@ namespace System.Windows.Forms.Taskbar
         HResult GetIDList( [Out] IntPtr ppidl );
     };
 
-    [ComImport,
-    Guid(ShellIIDGuid.ISharedBitmap),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.ISharedBitmap)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ISharedBitmap
     {
         void GetSharedBitmap( [Out] out IntPtr phbm );
@@ -389,10 +389,10 @@ namespace System.Windows.Forms.Taskbar
         void Detach( [Out] out IntPtr phbm );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IShellFolder),
-    InterfaceType( ComInterfaceType.InterfaceIsIUnknown),
-    ComConversionLoss]
+    [ComImport]
+    [Guid(ShellIIDGuid.IShellFolder)]
+    [InterfaceType( ComInterfaceType.InterfaceIsIUnknown)]
+    [ComConversionLoss]
     internal interface IShellFolder
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -428,10 +428,10 @@ namespace System.Windows.Forms.Taskbar
         void SetNameOf( [In] IntPtr hwnd, [In] ref IntPtr pidl, [In, MarshalAs(UnmanagedType.LPWStr)] string pszName, [In] uint uFlags, [Out] IntPtr ppidlOut );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IShellFolder2),
-    InterfaceType( ComInterfaceType.InterfaceIsIUnknown),
-    ComConversionLoss]
+    [ComImport]
+    [Guid(ShellIIDGuid.IShellFolder2)]
+    [InterfaceType( ComInterfaceType.InterfaceIsIUnknown)]
+    [ComConversionLoss]
     internal interface IShellFolder2 : IShellFolder
     {
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -486,9 +486,9 @@ namespace System.Windows.Forms.Taskbar
         void MapColumnToSCID( [In] uint iColumn, out PropertyKey pscid );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IShellItem),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IShellItem)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellItem
     {
         // Not supported: IBindCtx.
@@ -520,9 +520,9 @@ namespace System.Windows.Forms.Taskbar
             out int piOrder );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IShellItem2),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IShellItem2)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellItem2 : IShellItem
     {
         // Not supported: IBindCtx.
@@ -597,9 +597,9 @@ namespace System.Windows.Forms.Taskbar
         void GetBool( [In] ref PropertyKey key, out int pf );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IShellItemArray),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IShellItemArray)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellItemArray
     {
         // Not supported: IBindCtx.
@@ -648,9 +648,9 @@ namespace System.Windows.Forms.Taskbar
         HResult EnumItems( [MarshalAs(UnmanagedType.Interface)] out IntPtr ppenumShellItems );
     }
 
-    [ComImport()]
-    [Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b" )]
-    [InterfaceTypeAttribute( ComInterfaceType.InterfaceIsIUnknown )]
+    [ComImport]
+    [Guid("bcc18b79-ba16-442f-80c4-8a59c30c463b")]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellItemImageFactory
     {
         [PreserveSig]
@@ -660,9 +660,9 @@ namespace System.Windows.Forms.Taskbar
         [Out] out IntPtr phbm );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IShellLibrary),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IShellLibrary)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellLibrary
     {
         [PreserveSig]
@@ -746,9 +746,9 @@ namespace System.Windows.Forms.Taskbar
             [MarshalAs(UnmanagedType.Interface)] out IShellItem2 savedTo );
     };
 
-    [ComImport,
-    Guid(ShellIIDGuid.IShellLinkW),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IShellLinkW)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IShellLinkW
     {
         void GetPath(
@@ -808,9 +808,9 @@ namespace System.Windows.Forms.Taskbar
             [MarshalAs(UnmanagedType.LPWStr)] string pszFile );
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.IThumbnailCache),
-    InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [ComImport]
+    [Guid(ShellIIDGuid.IThumbnailCache)]
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IThumbnailCache
     {
         void GetThumbnail( [In] IShellItem pShellItem,
@@ -826,31 +826,31 @@ namespace System.Windows.Forms.Taskbar
         [Out] out ShellNativeMethods.ThumbnailCacheOptions pOutFlags );
     }
 
-    [ComImport,
-    ClassInterface(ClassInterfaceType.None),
-    TypeLibType( TypeLibTypeFlags.FCanCreate),
-    Guid(ShellCLSIDGuid.ConditionFactory )]
+    [ComImport]
+    [ClassInterface(ClassInterfaceType.None)]
+    [TypeLibType( TypeLibTypeFlags.FCanCreate)]
+    [Guid(ShellCLSIDGuid.ConditionFactory)]
     internal class ConditionFactoryCoClass
     {
     }
 
-    [ComImport,
-    Guid(ShellIIDGuid.CShellLink),
-    ClassInterface(ClassInterfaceType.None )]
+    [ComImport]
+    [Guid(ShellIIDGuid.CShellLink)]
+    [ClassInterface(ClassInterfaceType.None)]
     internal class CShellLink { }
 
-    [ComImport,
-    ClassInterface(ClassInterfaceType.None),
-    TypeLibType( TypeLibTypeFlags.FCanCreate),
-    Guid(ShellCLSIDGuid.QueryParserManager )]
+    [ComImport]
+    [ClassInterface(ClassInterfaceType.None)]
+    [TypeLibType( TypeLibTypeFlags.FCanCreate)]
+    [Guid(ShellCLSIDGuid.QueryParserManager)]
     internal class QueryParserManagerCoClass
     {
     }
 
-    [ComImport,
-    ClassInterface(ClassInterfaceType.None),
-    TypeLibType( TypeLibTypeFlags.FCanCreate),
-    Guid(ShellCLSIDGuid.SearchFolderItemFactory )]
+    [ComImport]
+    [ClassInterface(ClassInterfaceType.None)]
+    [TypeLibType( TypeLibTypeFlags.FCanCreate)]
+    [Guid(ShellCLSIDGuid.SearchFolderItemFactory)]
     internal class SearchFolderItemFactoryCoClass
     {
     }

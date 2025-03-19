@@ -48,6 +48,10 @@
   <PropertyGroup>
     <NoWarn>1701;1702;WFO1000</NoWarn>
   </PropertyGroup>
+  
+  <PropertyGroup>
+    <DefineConstants>THROTTLER__V2;</DefineConstants>
+  </PropertyGroup>  
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Condition=" '$(TargetFramework)' == 'net481' " Command="copy /Y &quot;App.net481.config&quot; &quot;$(OutputPath)m3u8.download.manager.exe.config&quot;" />

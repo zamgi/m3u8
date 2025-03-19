@@ -5,12 +5,8 @@ namespace System.Windows.Forms.Taskbar
     /// <summary>A folder in the Shell Namespace</summary>
     public class ShellFileSystemFolder : ShellFolder
     {
-        internal ShellFileSystemFolder()
-        {
-            // Empty
-        }
-
-        internal ShellFileSystemFolder( IShellItem2 shellItem ) => nativeShellItem = shellItem;
+        internal ShellFileSystemFolder() { }
+        internal ShellFileSystemFolder( IShellItem2 shellItem ) => _NativeShellItem = shellItem;
 
         /// <summary>The path for this Folder</summary>
         public virtual string Path => ParsingName;
@@ -26,14 +22,14 @@ namespace System.Windows.Forms.Taskbar
             // Make sure this is valid
             if ( !Directory.Exists( absPath ) )
             {
-                throw new DirectoryNotFoundException( $"LocalizedMessages.FilePathNotExist: '{path}'." );
+                throw (new DirectoryNotFoundException( $"LocalizedMessages.FilePathNotExist: '{path}'." ));
             }
 
             var folder = new ShellFileSystemFolder();
             try
             {
                 folder.ParsingName = absPath;
-                return folder;
+                return (folder);
             }
             catch
             {

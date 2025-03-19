@@ -14,9 +14,9 @@ namespace System.Windows.Forms.Taskbar
         private TaskbarManager() => CoreHelpers.ThrowIfNotWin7();
 
         // Best practice recommends defining a private object to lock on
-        private static readonly object _syncLock = new object();
+        private static readonly object _SyncLock = new object();
 
-        private static TaskbarManager _instance;
+        private static TaskbarManager _Instance;
         /// <summary>
         /// Represents an instance of the Windows Taskbar
         /// </summary>
@@ -24,18 +24,18 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( _instance == null )
+                if ( _Instance == null )
                 {
-                    lock ( _syncLock )
+                    lock ( _SyncLock )
                     {
-                        if ( _instance == null )
+                        if ( _Instance == null )
                         {
-                            _instance = new TaskbarManager();
+                            _Instance = new TaskbarManager();
                         }
                     }
                 }
 
-                return _instance;
+                return (_Instance);
             }
         }
 
@@ -134,7 +134,7 @@ namespace System.Windows.Forms.Taskbar
                 (new WindowInteropHelper( window )).Handle,
                 (TaskbarProgressBarStatus) state );
 #endif
-        private TabbedThumbnailManager _tabbedThumbnail;
+        private TabbedThumbnailManager _TabbedThumbnail;
         /// <summary>
         /// Gets the Tabbed Thumbnail manager class for adding/updating
         /// tabbed thumbnail previews.
@@ -143,15 +143,15 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( _tabbedThumbnail == null )
+                if ( _TabbedThumbnail == null )
                 {
-                    _tabbedThumbnail = new TabbedThumbnailManager();
+                    _TabbedThumbnail = new TabbedThumbnailManager();
                 }
-                return _tabbedThumbnail;
+                return (_TabbedThumbnail);
             }
         }
 
-        private ThumbnailToolBarManager _thumbnailToolBarManager;
+        private ThumbnailToolBarManager _ThumbnailToolBarManager;
         /// <summary>
         /// Gets the Thumbnail toolbar manager class for adding/updating
         /// toolbar buttons.
@@ -160,12 +160,11 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( _thumbnailToolBarManager == null )
+                if ( _ThumbnailToolBarManager == null )
                 {
-                    _thumbnailToolBarManager = new ThumbnailToolBarManager();
+                    _ThumbnailToolBarManager = new ThumbnailToolBarManager();
                 }
-
-                return _thumbnailToolBarManager;
+                return (_ThumbnailToolBarManager);
             }
         }
 
@@ -180,7 +179,7 @@ namespace System.Windows.Forms.Taskbar
             {
                 if ( string.IsNullOrEmpty( value ) )
                 {
-                    throw new ArgumentNullException( "value" );
+                    throw (new ArgumentNullException( "value" ));
                 }
 
                 SetCurrentProcessAppId( value );
@@ -188,7 +187,7 @@ namespace System.Windows.Forms.Taskbar
             }
         }
 
-        private IntPtr _ownerHandle;
+        private IntPtr _OwnerHandle;
         /// <summary>
         /// Sets the handle of the window whose taskbar button will be used
         /// to display progress.
@@ -197,19 +196,19 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( _ownerHandle == IntPtr.Zero )
+                if ( _OwnerHandle == IntPtr.Zero )
                 {
                     var currentProcess = Process.GetCurrentProcess();
 
                     if ( currentProcess == null || currentProcess.MainWindowHandle == IntPtr.Zero )
                     {
-                        throw new InvalidOperationException( "LocalizedMessages.TaskbarManagerValidWindowRequired" );
+                        throw (new InvalidOperationException( "LocalizedMessages.TaskbarManagerValidWindowRequired" ));
                     }
 
-                    _ownerHandle = currentProcess.MainWindowHandle;
+                    _OwnerHandle = currentProcess.MainWindowHandle;
                 }
 
-                return _ownerHandle;
+                return (_OwnerHandle);
             }
         }
 
@@ -249,9 +248,8 @@ namespace System.Windows.Forms.Taskbar
         /// <returns>The app id or null if no app id has been defined.</returns>
         private string GetCurrentProcessAppId()
         {
-            var appId = string.Empty;
-            TaskbarNativeMethods.GetCurrentProcessExplicitAppUserModelID( out appId );
-            return appId;
+            TaskbarNativeMethods.GetCurrentProcessExplicitAppUserModelID( out var appId );
+            return (appId);
         }
 
         /// <summary>

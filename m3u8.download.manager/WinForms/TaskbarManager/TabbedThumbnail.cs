@@ -153,7 +153,7 @@ namespace System.Windows.Forms.Taskbar
                 if ( _title != value )
                 {
                     _title = value;
-                    if ( TitleChanged != null ) { TitleChanged( this, EventArgs.Empty ); }
+                    if ( TitleChanged != null ) TitleChanged( this, EventArgs.Empty );
                 }
             }
         }
@@ -171,7 +171,7 @@ namespace System.Windows.Forms.Taskbar
                 if ( _tooltip != value )
                 {
                     _tooltip = value;
-                    if ( TooltipChanged != null ) { TooltipChanged( this, EventArgs.Empty ); }
+                    if ( TooltipChanged != null ) TooltipChanged( this, EventArgs.Empty );
                 }
             }
         }
@@ -502,7 +502,7 @@ namespace System.Windows.Forms.Taskbar
                 eventArgs = new TabbedThumbnailEventArgs( WindowsControl );
             }
 #endif
-            return eventArgs;
+            return (eventArgs);
         }
 
         #endregion

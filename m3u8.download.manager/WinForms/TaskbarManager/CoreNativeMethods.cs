@@ -152,8 +152,7 @@ namespace System.Windows.Forms.Taskbar
         [DllImport("user32.dll", CharSet=CharSet.Auto, SetLastError=true)]
         public static extern IntPtr SendMessage( IntPtr windowHandle, uint message, ref int wparam, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lparam );
 
-        [DllImport("gdi32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("gdi32.dll")][return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool DeleteObject( IntPtr graphicsObjectHandle );
 
         /// <summary>Destroys an icon and frees any memory the icon occupied.</summary>
@@ -162,8 +161,7 @@ namespace System.Windows.Forms.Taskbar
         /// If the function succeeds, the return value is nonzero. If the function fails, the return value is zero. To get extended error
         /// information, call GetLastError.
         /// </returns>
-        [DllImport("user32.dll", SetLastError=true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport("user32.dll", SetLastError=true)][return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool DestroyIcon( IntPtr hIcon );
 
         [DllImport("user32.dll", SetLastError=true, EntryPoint="DestroyWindow", CallingConvention=CallingConvention.StdCall)]
@@ -187,6 +185,6 @@ namespace System.Windows.Forms.Taskbar
             private int height;
             public int Width  { get => width; set => width = value; }
             public int Height { get => height; set => height = value; }
-        };
+        }
     }
 }

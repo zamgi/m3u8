@@ -1,4 +1,6 @@
-﻿#if WPF
+﻿using System.Drawing;
+using System.Runtime.InteropServices;
+#if WPF
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 #endif
@@ -9,11 +11,10 @@ namespace System.Windows.Forms.Taskbar
     public class ShellThumbnail
     {
         /// <summary>Native shellItem</summary>
-        private readonly IShellItem shellItemNative;
+        private readonly IShellItem _ShellItemNative;
 #if WPF
         /// <summary>Internal member to keep track of the current size</summary>
         private System.Windows.Size currentSize = new System.Windows.Size( 256, 256 );
-
         private ShellThumbnailFormatOption formatOption = ShellThumbnailFormatOption.Default;
 #endif
         /// <summary>Internal constructor that takes in a parent ShellObject.</summary>
@@ -24,7 +25,7 @@ namespace System.Windows.Forms.Taskbar
                 throw (new ArgumentNullException( "shellObject" ));
             }
 
-            shellItemNative = shellObject.NativeShellItem;
+            _ShellItemNative = shellObject.NativeShellItem;
         }
 
         /// <summary>Gets or sets a value that determines if the user can manually stretch the returned image. The default value is false.</summary>
@@ -175,7 +176,7 @@ namespace System.Windows.Forms.Taskbar
                 flags |= ShellNativeMethods.SIIGBF.ThumbnailOnly;
             }
 
-            return flags;
+            return (flags);
         }
 
         private Bitmap GetBitmap( System.Windows.Size iconOnlySize, System.Windows.Size thumbnailSize ) => GetBitmap( FormatOption == ShellThumbnailFormatOption.IconOnly ? iconOnlySize : thumbnailSize );
@@ -189,7 +190,7 @@ namespace System.Windows.Forms.Taskbar
             // delete HBitmap to avoid memory leaks
             ShellNativeMethods.DeleteObject( hBitmap );
 
-            return returnValue;
+            return (returnValue);
         }
 
         private BitmapSource GetBitmapSource( System.Windows.Size iconOnlySize, System.Windows.Size thumbnailSize ) => GetBitmapSource( FormatOption == ShellThumbnailFormatOption.IconOnly ? iconOnlySize : thumbnailSize );
@@ -208,7 +209,7 @@ namespace System.Windows.Forms.Taskbar
             // delete HBitmap to avoid memory leaks
             ShellNativeMethods.DeleteObject( hBitmap );
 
-            return returnValue;
+            return (returnValue);
         }
 
         private IntPtr GetHBitmap( System.Windows.Size size )
@@ -223,22 +224,21 @@ namespace System.Windows.Forms.Taskbar
             };
 
             // Use IShellItemImageFactory to get an icon Options passed in: Resize to fit
-            var hr = ((IShellItemImageFactory) shellItemNative).GetImage( nativeSIZE, CalculateFlags(), out hbitmap );
+            var hr = ((IShellItemImageFactory) _ShellItemNative).GetImage( nativeSIZE, CalculateFlags(), out hbitmap );
 
             if ( hr == HResult.Ok ) { return hbitmap; }
             else if ( (uint) hr == 0x8004B200 && FormatOption == ShellThumbnailFormatOption.ThumbnailOnly )
             {
                 // Thumbnail was requested, but this ShellItem doesn't have a thumbnail.
-                throw new InvalidOperationException( "LocalizedMessages.ShellThumbnailDoesNotHaveThumbnail", Marshal.GetExceptionForHR( (int) hr ) );
+                throw (new InvalidOperationException( "LocalizedMessages.ShellThumbnailDoesNotHaveThumbnail", Marshal.GetExceptionForHR( (int) hr ) ));
             }
             else if ( (uint) hr == 0x80040154 ) // REGDB_E_CLASSNOTREG
             {
-                throw new NotSupportedException( "LocalizedMessages.ShellThumbnailNoHandler", Marshal.GetExceptionForHR( (int) hr ) );
+                throw (new NotSupportedException( "LocalizedMessages.ShellThumbnailNoHandler", Marshal.GetExceptionForHR( (int) hr ) ));
             }
 
-            throw new ShellException( hr );
+            throw (new ShellException( hr ));
         }
 #endif
-
     }
 }

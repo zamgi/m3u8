@@ -20,9 +20,9 @@ namespace System.Windows.Forms.Taskbar
 
             if ( kf == null )
             {
-                throw new ArgumentException( "LocalizedMessages.ShellInvalidCanonicalName", "canonicalName" );
+                throw (new ArgumentException( "LocalizedMessages.ShellInvalidCanonicalName", "canonicalName" ));
             }
-            return kf;
+            return (kf);
         }
 
         /// <summary>Returns a known folder given a globally unique identifier.</summary>
@@ -39,9 +39,9 @@ namespace System.Windows.Forms.Taskbar
             var kf = GetKnownFolder( knownFolderNative );
             if ( kf == null )
             {
-                throw new ArgumentException( "LocalizedMessages.KnownFolderInvalidGuid", "knownFolderId" );
+                throw (new ArgumentException( "LocalizedMessages.KnownFolderInvalidGuid", "knownFolderId" ));
             }
-            return kf;
+            return (kf);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace System.Windows.Forms.Taskbar
 
                 if ( pidl == IntPtr.Zero )
                 {
-                    throw new ArgumentException( "LocalizedMessages.KnownFolderParsingName", "parsingName" );
+                    throw (new ArgumentException( "LocalizedMessages.KnownFolderParsingName", "parsingName" ));
                 }
 
                 // It's probably a special folder, try to get it
@@ -74,9 +74,9 @@ namespace System.Windows.Forms.Taskbar
                     var kf = KnownFolderHelper.GetKnownFolder( knownFolderNative );
                     if ( kf == null )
                     {
-                        throw new ArgumentException( "LocalizedMessages.KnownFolderParsingName", "parsingName" );
+                        throw (new ArgumentException( "LocalizedMessages.KnownFolderParsingName", "parsingName" ));
                     }
-                    return kf;
+                    return (kf);
                 }
 
                 // No physical storage was found for this known folder We'll try again with a different name
@@ -86,16 +86,16 @@ namespace System.Windows.Forms.Taskbar
 
                 if ( pidl2 == IntPtr.Zero )
                 {
-                    throw new ArgumentException( "LocalizedMessages.KnownFolderParsingName", "parsingName" );
+                    throw (new ArgumentException( "LocalizedMessages.KnownFolderParsingName", "parsingName" ));
                 }
 
                 var kf2 = KnownFolderHelper.GetKnownFolder( KnownFolderHelper.FromPIDL( pidl ) );
                 if ( kf2 == null )
                 {
-                    throw new ArgumentException( "LocalizedMessages.KnownFolderParsingName", "parsingName" );
+                    throw (new ArgumentException( "LocalizedMessages.KnownFolderParsingName", "parsingName" ));
                 }
 
-                return kf2;
+                return (kf2);
             }
             finally
             {
@@ -121,19 +121,17 @@ namespace System.Windows.Forms.Taskbar
 
             var hr = knownFolderManager.GetFolder( knownFolderId, out var knownFolderNative );
 
-            return (hr == HResult.Ok) ? GetKnownFolder( knownFolderNative ) : null;
+            return ((hr == HResult.Ok) ? GetKnownFolder( knownFolderNative ) : null);
         }
 
         /// <summary>Returns the native known folder (IKnownFolderNative) given a PID list</summary>
-        /// <param name="pidl"></param>
-        
         internal static IKnownFolderNative FromPIDL( IntPtr pidl )
         {
             var knownFolderManager = new KnownFolderManagerClass();
 
             var hr = knownFolderManager.FindFolderFromIDList( pidl, out var knownFolder );
 
-            return (hr == HResult.Ok) ? knownFolder : null;
+            return ((hr == HResult.Ok) ? knownFolder : null);
         }
 
         /// <summary>
@@ -166,11 +164,11 @@ namespace System.Windows.Forms.Taskbar
             if ( isFileSystem )
             {
                 var kf = new FileSystemKnownFolder( knownFolderNative );
-                return kf;
+                return (kf);
             }
 
             var knownFsFolder = new NonFileSystemKnownFolder( knownFolderNative );
-            return knownFsFolder;
+            return (knownFsFolder);
         }
     }
 }

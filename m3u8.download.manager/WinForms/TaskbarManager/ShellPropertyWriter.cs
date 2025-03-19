@@ -6,9 +6,9 @@ namespace System.Windows.Forms.Taskbar
     public class ShellPropertyWriter : IDisposable
     {
         // Reference to our writable PropertyStore
-        internal IPropertyStore writablePropStore;
+        internal IPropertyStore _WritablePropStore;
 
-        private ShellObject parentShellObject;
+        private ShellObject _ParentShellObject;
 
         internal ShellPropertyWriter( ShellObject parent )
         {
@@ -22,12 +22,11 @@ namespace System.Windows.Forms.Taskbar
                 var hr = ParentShellObject.NativeShellItem2.GetPropertyStore(
                         ShellNativeMethods.GetPropertyStoreOptions.ReadWrite,
                         ref guid,
-                        out writablePropStore );
+                        out _WritablePropStore );
 
                 if ( !CoreErrorHelper.Succeeded( hr ) )
                 {
-                    throw new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty",
-                        Marshal.GetExceptionForHR( hr ) );
+                    throw (new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty", Marshal.GetExceptionForHR( hr ) ));
                 }
                 else
                 {
@@ -35,43 +34,39 @@ namespace System.Windows.Forms.Taskbar
                     // others to use. Once this writer is closed/commited, we will set the
                     if ( ParentShellObject.NativePropertyStore == null )
                     {
-                        ParentShellObject.NativePropertyStore = writablePropStore;
+                        ParentShellObject.NativePropertyStore = _WritablePropStore;
                     }
                 }
             }
-            catch ( InvalidComObjectException e )
+            catch ( InvalidComObjectException ex )
             {
-                throw new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty", e );
+                throw (new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty", ex ));
             }
             catch ( InvalidCastException )
             {
-                throw new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty" );
+                throw (new PropertySystemException( "LocalizedMessages.ShellPropertyUnableToGetWritableProperty" ));
             }
         }
 
-        /// <summary></summary>
-        ~ShellPropertyWriter()
-        {
-            Dispose( false );
-        }
+        ~ShellPropertyWriter() => Dispose( false );
 
         /// <summary>Reference to parent ShellObject (associated with this writer)</summary>
         protected ShellObject ParentShellObject
         {
-            get => parentShellObject;
-            private set => parentShellObject = value;
+            get => _ParentShellObject;
+            private set => _ParentShellObject = value;
         }
 
         /// <summary>Call this method to commit the writes (calls to WriteProperty method) and dispose off the writer.</summary>
         public void Close()
         {
             // Close the property writer (commit, etc)
-            if ( writablePropStore != null )
+            if ( _WritablePropStore != null )
             {
-                writablePropStore.Commit();
+                _WritablePropStore.Commit();
 
-                Marshal.ReleaseComObject( writablePropStore );
-                writablePropStore = null;
+                Marshal.ReleaseComObject( _WritablePropStore );
+                _WritablePropStore = null;
             }
 
             ParentShellObject.NativePropertyStore = null;
@@ -100,26 +95,25 @@ namespace System.Windows.Forms.Taskbar
         /// </exception>
         public void WriteProperty( PropertyKey key, object value, bool allowTruncatedValue )
         {
-            if ( writablePropStore == null )
-                throw new InvalidOperationException( "Writeable store has been closed." );
+            if ( _WritablePropStore == null ) throw (new InvalidOperationException( "Writeable store has been closed." ));
 
             using ( var propVar = PropVariant.FromObject( value ) )
             {
-                var result = writablePropStore.SetValue( ref key, propVar );
+                var result = _WritablePropStore.SetValue( ref key, propVar );
 
                 if ( !allowTruncatedValue && ((int) result == ShellNativeMethods.InPlaceStringTruncated) )
                 {
                     // At this point we can't revert back the commit so don't commit, close the property store and throw an exception to let
                     // the user know.
-                    Marshal.ReleaseComObject( writablePropStore );
-                    writablePropStore = null;
+                    Marshal.ReleaseComObject( _WritablePropStore );
+                    _WritablePropStore = null;
 
-                    throw new ArgumentOutOfRangeException( "value", "LocalizedMessages.ShellPropertyValueTruncated" );
+                    throw (new ArgumentOutOfRangeException( "value", "LocalizedMessages.ShellPropertyValueTruncated" ));
                 }
 
                 if ( !CoreErrorHelper.Succeeded( result ) )
                 {
-                    throw new PropertySystemException( "LocalizedMessages.ShellPropertySetValue", Marshal.GetExceptionForHR( (int) result ) );
+                    throw (new PropertySystemException( "LocalizedMessages.ShellPropertySetValue", Marshal.GetExceptionForHR( (int) result ) ));
                 }
             }
         }
@@ -145,9 +139,7 @@ namespace System.Windows.Forms.Taskbar
 
             if ( !CoreErrorHelper.Succeeded( result ) )
             {
-                throw new ArgumentException(
-                    "LocalizedMessages.ShellInvalidCanonicalName",
-                    Marshal.GetExceptionForHR( result ) );
+                throw (new ArgumentException( "LocalizedMessages.ShellInvalidCanonicalName", Marshal.GetExceptionForHR( result ) ));
             }
 
             WriteProperty( propKey, value, allowTruncatedValue );
@@ -167,7 +159,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="allowTruncatedValue">True to allow truncation (default); otherwise False.</param>
         public void WriteProperty( IShellProperty shellProperty, object value, bool allowTruncatedValue )
         {
-            if ( shellProperty == null ) { throw new ArgumentNullException( "shellProperty" ); }
+            if ( shellProperty == null ) throw (new ArgumentNullException( "shellProperty" ));
             WriteProperty( shellProperty.PropertyKey, value, allowTruncatedValue );
         }
 
@@ -187,7 +179,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="allowTruncatedValue">True to allow truncation (default); otherwise False.</param>
         public void WriteProperty<T>( ShellProperty<T> shellProperty, T value, bool allowTruncatedValue )
         {
-            if ( shellProperty == null ) { throw new ArgumentNullException( "shellProperty" ); }
+            if ( shellProperty == null ) throw (new ArgumentNullException( "shellProperty" ));
             WriteProperty( shellProperty.PropertyKey, value, allowTruncatedValue );
         }
 

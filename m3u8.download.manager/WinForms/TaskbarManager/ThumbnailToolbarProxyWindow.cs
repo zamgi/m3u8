@@ -5,30 +5,30 @@
     /// </summary>
     internal class ThumbnailToolbarProxyWindow : NativeWindow, IDisposable
     {
-        private ThumbnailToolBarButton[] _thumbnailButtons;
-        private readonly IntPtr _internalWindowHandle;
+        private ThumbnailToolBarButton[] _ThumbnailButtons;
+        private readonly IntPtr _InternalWindowHandle;
 #if WPF
         internal System.Windows.UIElement WindowsControl { get; set; }
 #endif
-        internal IntPtr WindowToTellTaskbarAbout => _internalWindowHandle != IntPtr.Zero ? _internalWindowHandle : Handle;
+        internal IntPtr WindowToTellTaskbarAbout => (_InternalWindowHandle != IntPtr.Zero) ? _InternalWindowHandle : Handle;
         internal TaskbarWindow TaskbarWindow { get; set; }
 
         internal ThumbnailToolbarProxyWindow( IntPtr windowHandle, ThumbnailToolBarButton[] buttons )
         {
             if ( windowHandle == IntPtr.Zero )
             {
-                throw new ArgumentException( "LocalizedMessages.CommonFileDialogInvalidHandle", "windowHandle" );
+                throw (new ArgumentException( "LocalizedMessages.CommonFileDialogInvalidHandle", "windowHandle" ));
             }
-            if ( buttons != null && buttons.Length == 0 )
+            if ( (buttons != null) && (buttons.Length == 0) )
             {
-                throw new ArgumentException( "LocalizedMessages.ThumbnailToolbarManagerNullEmptyArray", "buttons" );
+                throw (new ArgumentException( "LocalizedMessages.ThumbnailToolbarManagerNullEmptyArray", "buttons" ));
             }
 
-            _internalWindowHandle = windowHandle;
-            _thumbnailButtons = buttons;
+            _InternalWindowHandle = windowHandle;
+            _ThumbnailButtons     = buttons;
 
             // Set the window handle on the buttons (for future updates)
-            Array.ForEach( _thumbnailButtons, new Action<ThumbnailToolBarButton>( UpdateHandle ) );
+            Array.ForEach( _ThumbnailButtons, new Action<ThumbnailToolBarButton>( UpdateHandle ) );
 
             // Assign the window handle (coming from the user) to this native window
             // so we can intercept the window messages sent from the taskbar to this window.
@@ -53,20 +53,18 @@
 #endif
         private void UpdateHandle( ThumbnailToolBarButton button )
         {
-            button.WindowHandle = _internalWindowHandle;
+            button.WindowHandle   = _InternalWindowHandle;
             button.AddedToTaskbar = false;
         }
 
         protected override void WndProc( ref Message m )
         {
-            var handled = false;
-
-            handled = TaskbarWindowManager.DispatchMessage( ref m, TaskbarWindow );
+            var handled = TaskbarWindowManager.DispatchMessage( ref m, TaskbarWindow );
 
             // If it's a WM_Destroy message, then also forward it to the base class (our native window)
             if ( (m.Msg == (int) WindowMessage.Destroy) ||
-               (m.Msg == (int) WindowMessage.NCDestroy) ||
-               ((m.Msg == (int) WindowMessage.SystemCommand) && (((int) m.WParam) == TabbedThumbnailNativeMethods.ScClose)) )
+                 (m.Msg == (int) WindowMessage.NCDestroy) ||
+                 ((m.Msg == (int) WindowMessage.SystemCommand) && (((int) m.WParam) == TabbedThumbnailNativeMethods.ScClose)) )
             {
                 base.WndProc( ref m );
             }
@@ -77,14 +75,10 @@
         }
 
         #region IDisposable Members
-
         /// <summary>
         /// 
         /// </summary>
-        ~ThumbnailToolbarProxyWindow()
-        {
-            Dispose( false );
-        }
+        ~ThumbnailToolbarProxyWindow() => Dispose( false );
 
         /// <summary>
         /// Release the native objects.
@@ -104,11 +98,9 @@
                 // Don't dispose the thumbnail buttons
                 // as they might be used in another window.
                 // Setting them to null will indicate we don't need use anymore.
-                _thumbnailButtons = null;
+                _ThumbnailButtons = null;
             }
         }
-
         #endregion
-
     }
 }

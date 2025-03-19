@@ -7,7 +7,7 @@ namespace System.Windows.Forms.Taskbar
     /// <summary>Provides means by which to intiailze with a file.</summary>
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid("b7d14566-0509-4cce-a71f-0a554233bd9b" )]
+    [Guid("b7d14566-0509-4cce-a71f-0a554233bd9b")]
     public interface IInitializeWithFile
     {
         /// <summary>Initializes with a file.</summary>
@@ -17,7 +17,7 @@ namespace System.Windows.Forms.Taskbar
     /// <summary>Provides means by which to initialize with a ShellObject</summary>
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid("7f73be3f-fb79-493c-a6c7-7ee14e245841" )]
+    [Guid("7f73be3f-fb79-493c-a6c7-7ee14e245841")]
     public interface IInitializeWithItem
     {
         /// <summary>Initializes with ShellItem</summary>
@@ -26,7 +26,7 @@ namespace System.Windows.Forms.Taskbar
 
     /// <summary>Provides means by which to initialize with a stream.</summary>
     [ComVisible( true )]
-    [Guid("b824b49d-22ac-4161-ac8a-9916e8fa3f7f" )]
+    [Guid("b824b49d-22ac-4161-ac8a-9916e8fa3f7f")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IInitializeWithStream
     {
@@ -36,7 +36,7 @@ namespace System.Windows.Forms.Taskbar
 
     /// <summary>ComVisible interface for native IThumbnailProvider</summary>
     [ComVisible( true )]
-    [Guid("e357fccd-a995-4576-b01f-234630154e96" )]
+    [Guid("e357fccd-a995-4576-b01f-234630154e96")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     public interface IThumbnailProvider
     {
@@ -46,7 +46,7 @@ namespace System.Windows.Forms.Taskbar
 
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid("fc4801a3-2ba9-11cf-a229-00aa003d7352" )]
+    [Guid("fc4801a3-2ba9-11cf-a229-00aa003d7352")]
     internal interface IObjectWithSite
     {
         void SetSite( [In, MarshalAs( UnmanagedType.IUnknown )] object pUnkSite );
@@ -54,7 +54,7 @@ namespace System.Windows.Forms.Taskbar
     }
 
     [ComImport]
-    [Guid("00000114-0000-0000-C000-000000000046" )]
+    [Guid("00000114-0000-0000-C000-000000000046")]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IOleWindow
     {
@@ -64,7 +64,7 @@ namespace System.Windows.Forms.Taskbar
 
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid("8895b1c6-b41f-4c1c-a562-0d564250836f" )]
+    [Guid("8895b1c6-b41f-4c1c-a562-0d564250836f")]
     internal interface IPreviewHandler
     {
         void SetWindow( IntPtr hwnd, ref RECT rect );
@@ -80,7 +80,7 @@ namespace System.Windows.Forms.Taskbar
 
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid("fec87aaf-35f9-447a-adb7-20234491401a" )]
+    [Guid("fec87aaf-35f9-447a-adb7-20234491401a")]
     internal interface IPreviewHandlerFrame
     {
         void GetWindowContext( IntPtr pinfo );
@@ -91,7 +91,7 @@ namespace System.Windows.Forms.Taskbar
 
     [ComImport]
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid("8327b13c-b63f-4b24-9b8a-d010dcc3f599" )]
+    [Guid("8327b13c-b63f-4b24-9b8a-d010dcc3f599")]
     internal interface IPreviewHandlerVisuals
     {
         void SetBackgroundColor( COLORREF color );
@@ -139,10 +139,10 @@ namespace System.Windows.Forms.Taskbar
 
         internal static readonly Guid ThumbnailProviderGuid = new Guid("{e357fccd-a995-4576-b01f-234630154e96}" );
 
-        [DllImport("user32.dll", CharSet=CharSet.Auto )]
+        [DllImport("user32.dll", CharSet=CharSet.Auto)]
         internal static extern IntPtr GetFocus();
 
-        [DllImport("user32.dll" )]
+        [DllImport("user32.dll")]
         internal static extern IntPtr SetParent( IntPtr hWndChild, IntPtr hWndNewParent );
     }
 
@@ -163,7 +163,7 @@ namespace System.Windows.Forms.Taskbar
         internal byte quality;
         internal byte pitchAndFamily;
 
-        [MarshalAs( UnmanagedType.ByValTStr, SizeConst = 32 )]
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst=32)]
         internal string lfFaceName = string.Empty;
     }
 }

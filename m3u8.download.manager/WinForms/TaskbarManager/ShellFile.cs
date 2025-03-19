@@ -13,13 +13,13 @@ namespace System.Windows.Forms.Taskbar
             // Make sure this is valid
             if ( !File.Exists( absPath ) )
             {
-                throw new FileNotFoundException( $"LocalizedMessages.FilePathNotExist: '{path}'." );
+                throw (new FileNotFoundException( $"LocalizedMessages.FilePathNotExist: '{path}'." ));
             }
 
             ParsingName = absPath;
         }
 
-        internal ShellFile( IShellItem2 shellItem ) => nativeShellItem = shellItem;
+        internal ShellFile( IShellItem2 shellItem ) => _NativeShellItem = shellItem;
 
         /// <summary>The path for this file</summary>
         public virtual string Path => ParsingName;

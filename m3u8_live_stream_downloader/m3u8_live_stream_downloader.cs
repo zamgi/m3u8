@@ -6,7 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+#if NETCOREAPP
 using System.Net.Security;
+#endif
 using System.Runtime.CompilerServices;
 using System.Security.Authentication;
 using System.Threading;
@@ -14,6 +16,12 @@ using System.Threading.Tasks;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+#if THROTTLER__V1
+using ThrottlerBySpeed_InDownloadProcessUser = m3u8.ThrottlerBySpeed_InDownloadProcessUser__v1;
+#endif
+#if THROTTLER__V2
+using ThrottlerBySpeed_InDownloadProcessUser = m3u8.ThrottlerBySpeed_InDownloadProcessUser__v2;
+#endif
 
 namespace m3u8
 {
@@ -40,7 +48,7 @@ namespace m3u8
 
             public ManualResetEventSlim   WaitIfPausedEvent { [M(O.AggressiveInlining)] get; set; }
             public Action                 WaitingIfPaused   { [M(O.AggressiveInlining)] get; set; }
-            public I_throttler_by_speed_t ThrottlerBySpeed  { [M(O.AggressiveInlining)] get; set; }
+            public I_throttler_by_speed__v2_t ThrottlerBySpeed  { [M(O.AggressiveInlining)] get; set; }
 
             public DownloadContentDelegate          DownloadContent          { get; set; }
             public DownloadContentErrorDelegate     DownloadContentError     { get; set; }

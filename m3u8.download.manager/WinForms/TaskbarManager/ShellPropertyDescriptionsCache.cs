@@ -4,29 +4,30 @@ namespace System.Windows.Forms.Taskbar
 {
     internal class ShellPropertyDescriptionsCache
     {
-        private static ShellPropertyDescriptionsCache cacheInstance;
-        private readonly IDictionary<PropertyKey, ShellPropertyDescription> propsDictionary;
-        private ShellPropertyDescriptionsCache() => propsDictionary = new Dictionary<PropertyKey, ShellPropertyDescription>();
+        private static ShellPropertyDescriptionsCache _CacheInstance;
+        private readonly IDictionary<PropertyKey, ShellPropertyDescription> _PropsDictionary;
+        private ShellPropertyDescriptionsCache() => _PropsDictionary = new Dictionary<PropertyKey, ShellPropertyDescription>();
 
         public static ShellPropertyDescriptionsCache Cache
         {
             get
             {
-                if ( cacheInstance == null )
+                if ( _CacheInstance == null )
                 {
-                    cacheInstance = new ShellPropertyDescriptionsCache();
+                    _CacheInstance = new ShellPropertyDescriptionsCache();
                 }
-                return cacheInstance;
+                return (_CacheInstance);
             }
         }
 
         public ShellPropertyDescription GetPropertyDescription( PropertyKey key )
         {
-            if ( !propsDictionary.ContainsKey( key ) )
+            if ( !_PropsDictionary.TryGetValue( key, out var val ) )
             {
-                propsDictionary.Add( key, new ShellPropertyDescription( key ) );
+                val = new ShellPropertyDescription( key );
+                _PropsDictionary.Add( key, val );
             }
-            return propsDictionary[ key ];
+            return (val);
         }
     }
 }

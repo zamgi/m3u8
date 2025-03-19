@@ -7,6 +7,6 @@ namespace System.Windows.Forms.Taskbar
         {
             // Empty
         }
-        internal ShellNonFileSystemFolder( IShellItem2 shellItem ) => nativeShellItem = shellItem;
+        internal ShellNonFileSystemFolder( IShellItem2 shellItem ) => _NativeShellItem = shellItem;
     }
 }

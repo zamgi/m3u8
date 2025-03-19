@@ -63,15 +63,15 @@ namespace System.Windows.Forms.Taskbar
             {
                 if ( string.IsNullOrEmpty( canonicalName ) )
                 {
-                    throw new ArgumentException( "LocalizedMessages.PropertyCollectionNullCanonicalName", "canonicalName" );
+                    throw (new ArgumentException( "LocalizedMessages.PropertyCollectionNullCanonicalName", "canonicalName" ));
                 }
 
                 var prop = Items.FirstOrDefault( p => p.CanonicalName == canonicalName );
                 if ( prop == null )
                 {
-                    throw new IndexOutOfRangeException( "LocalizedMessages.PropertyCollectionCanonicalInvalidIndex" );
+                    throw (new IndexOutOfRangeException( "LocalizedMessages.PropertyCollectionCanonicalInvalidIndex" ));
                 }
-                return prop;
+                return (prop);
             }
         }
 
@@ -84,9 +84,9 @@ namespace System.Windows.Forms.Taskbar
             get
             {
                 var prop = Items.FirstOrDefault( p => p.PropertyKey == key );
-                if ( prop != null ) return prop;
+                if ( prop != null ) return (prop);
 
-                throw new IndexOutOfRangeException( "LocalizedMessages.PropertyCollectionInvalidIndex" );
+                throw (new IndexOutOfRangeException( "LocalizedMessages.PropertyCollectionInvalidIndex" ));
             }
         }
 
@@ -97,10 +97,10 @@ namespace System.Windows.Forms.Taskbar
         {
             if ( string.IsNullOrEmpty( canonicalName ) )
             {
-                throw new ArgumentException( "LocalizedMessages.PropertyCollectionNullCanonicalName", "canonicalName" );
+                throw (new ArgumentException( "LocalizedMessages.PropertyCollectionNullCanonicalName", "canonicalName" ));
             }
 
-            return Items.Any( p => p.CanonicalName == canonicalName );
+            return (Items.Any( p => p.CanonicalName == canonicalName ));
         }
 
         public bool Contains( PropertyKey key ) => Items.Any( p => p.PropertyKey == key );
@@ -120,10 +120,10 @@ namespace System.Windows.Forms.Taskbar
             // throw on failure
             if ( nativePropertyStore == null || !CoreErrorHelper.Succeeded( hr ) )
             {
-                throw new ShellException( hr );
+                throw (new ShellException( hr ));
             }
 
-            return nativePropertyStore;
+            return (nativePropertyStore);
         }
 
         // TODO - ShellProperties.cs also has a similar class that is used for creating a ShellObject specific IShellProperty. These 2

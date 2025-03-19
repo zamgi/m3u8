@@ -85,7 +85,7 @@ namespace m3u8.download.manager.controllers
         private download_threads_semaphore_factory         _DownloadThreadsSemaphoreFactory;
         private download_threads_semaphore_factory         _DownloadThreadsSemaphoreFactory_2;
         private DefaultConnectionLimitSaver                _DefaultConnectionLimitSaver;
-        private I_throttler_by_speed_t                     _ThrottlerBySpeed;
+        private I_throttler_by_speed__v2_t                 _ThrottlerBySpeed;
         private ObjectPoolDisposable< Stream >             _StreamPool;
         private ObjectPool< byte[] >                       _RespBufPool;
         #endregion
@@ -112,9 +112,14 @@ namespace m3u8.download.manager.controllers
                                                                                          _SettingsController.MaxDegreeOfParallelism );
 
             _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( _SettingsController.MaxDegreeOfParallelism );
-            _ThrottlerBySpeed            = new throttler_by_speed_impl__v2/*throttler_by_speed_impl*/( _SettingsController.MaxSpeedThresholdInMbps );
-            _StreamPool                  = CreateStreamPool( _SettingsController.MaxDegreeOfParallelism );
-            _RespBufPool                 = CreateRespBufPool( _SettingsController.MaxDegreeOfParallelism );
+#if THROTTLER__V1
+            _ThrottlerBySpeed = new throttler_by_speed_impl__v1( _SettingsController.MaxSpeedThresholdInMbps );
+#endif
+#if THROTTLER__V2
+            _ThrottlerBySpeed = new throttler_by_speed_impl__v2( _SettingsController.MaxSpeedThresholdInMbps );
+#endif
+            _StreamPool  = CreateStreamPool ( _SettingsController.MaxDegreeOfParallelism );
+            _RespBufPool = CreateRespBufPool( _SettingsController.MaxDegreeOfParallelism );
         }
 
         public void Dispose()

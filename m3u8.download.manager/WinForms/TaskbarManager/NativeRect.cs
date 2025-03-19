@@ -36,9 +36,9 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="second">Second NativeRect</param>
         /// <returns>True if first NativeRect is equal to second; false otherwise.</returns>
         public static bool operator ==( in NativeRect first, in NativeRect second ) => first.Left == second.Left
-                && first.Top == second.Top
-                && first.Right == second.Right
-                && first.Bottom == second.Bottom;
+                                                                                    && first.Top == second.Top
+                                                                                    && first.Right == second.Right
+                                                                                    && first.Bottom == second.Bottom;
 
         /// <summary>Determines if two NativeRects are not equal</summary>
         /// <param name="first">First NativeRect</param>
@@ -59,7 +59,7 @@ namespace System.Windows.Forms.Taskbar
             hash = hash * 31 + Top.GetHashCode();
             hash = hash * 31 + Right.GetHashCode();
             hash = hash * 31 + Bottom.GetHashCode();
-            return hash;
+            return (hash);
         }
 
         /// <summary>Performs a conversion from <see cref="RECT"/> to <see cref="NativeRect"/>.</summary>

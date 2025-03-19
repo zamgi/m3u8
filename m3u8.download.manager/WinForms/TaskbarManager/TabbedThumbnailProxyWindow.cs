@@ -1,11 +1,13 @@
-﻿namespace System.Windows.Forms.Taskbar
+﻿using System.Drawing;
+
+namespace System.Windows.Forms.Taskbar
 {
     internal sealed class TabbedThumbnailProxyWindow : Form, IDisposable
     {
         internal TabbedThumbnailProxyWindow( TabbedThumbnail preview )
         {
             TabbedThumbnail = preview;
-            Size = new System.Drawing.Size( 1, 1 );
+            Size = new Size( 1, 1 );
 
             if ( !string.IsNullOrEmpty( preview.Title ) )
             {

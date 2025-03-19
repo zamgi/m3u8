@@ -1,7 +1,6 @@
 ﻿namespace System.Windows.Forms.Taskbar
 {
-    [Flags]
-    internal enum WindowStyles
+    [Flags] internal enum WindowStyles
     {
         /// <summary>The window has a thin-line border.</summary>
         Border = 0x00800000,
@@ -139,7 +138,7 @@
 
             TabbedThumbnailNativeMethods.GetWindowRect( hwnd, ref r );
 
-            return new System.Drawing.Size( c.X - r.Left, c.Y - r.Top );
+            return (new System.Drawing.Size( c.X - r.Left, c.Y - r.Top ));
         }
 
         internal static System.Drawing.Point GetParentOffsetOfChild( IntPtr hwnd, IntPtr hwndParent )
@@ -152,11 +151,9 @@
 
             TabbedThumbnailNativeMethods.ClientToScreen( hwndParent, ref parentScreenCoord );
 
-            var offset = new System.Drawing.Point(
-                childScreenCoord.X - parentScreenCoord.X,
-                childScreenCoord.Y - parentScreenCoord.Y );
-
-            return offset;
+            var offset = new System.Drawing.Point( childScreenCoord.X - parentScreenCoord.X,
+                                                   childScreenCoord.Y - parentScreenCoord.Y );
+            return (offset);
         }
     }
 }

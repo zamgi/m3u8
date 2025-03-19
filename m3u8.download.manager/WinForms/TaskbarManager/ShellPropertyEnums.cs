@@ -54,8 +54,7 @@
     }
 
     /// <summary>Describes how a property should be treated for display purposes.</summary>
-    [Flags]
-    public enum PropertyColumnStateOptions
+    [Flags] public enum PropertyColumnStateOptions
     {
         /// <summary>Default value</summary>
         None = 0x00000000,
@@ -197,8 +196,7 @@
     /// Typically use one, or a bitwise combination of these flags, to specify the format. Some flags are mutually exclusive, so combinations
     /// like <c>ShortTime | LongTime | HideTime</c> are not allowed.
     /// </remarks>
-    [Flags]
-    public enum PropertyDescriptionFormatOptions
+    [Flags] public enum PropertyDescriptionFormatOptions
     {
         /// <summary>The format settings specified in the property's .propdesc file.</summary>
         None = 0,
@@ -342,8 +340,7 @@
     }
 
     /// <summary>Describes the attributes of the <c>typeInfo</c> element in the property's <c>.propdesc</c> file.</summary>
-    [Flags]
-    public enum PropertyTypeOptions
+    [Flags] public enum PropertyTypeOptions
     {
         /// <summary>The property uses the default values for all attributes.</summary>
         None = 0x00000000,
@@ -411,8 +408,7 @@
     }
 
     /// <summary>Associates property names with property description list strings.</summary>
-    [Flags]
-    public enum PropertyViewOptions
+    [Flags] public enum PropertyViewOptions
     {
         /// <summary>The property is shown by default.</summary>
         None = 0x00000000,

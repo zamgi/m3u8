@@ -73,7 +73,7 @@
             {
                 win32ErrorCode = (int) (((uint) win32ErrorCode & 0x0000FFFF) | (FacilityWin32 << 16) | 0x80000000);
             }
-            return win32ErrorCode;
+            return (win32ErrorCode);
         }
 
         /// <summary>This is intended for Library Internal use only.</summary>

@@ -13,7 +13,7 @@
         public ThumbnailButtonClickedEventArgs( IntPtr windowHandle, ThumbnailToolBarButton button )
         {
             ThumbnailButton = button;
-            WindowHandle = windowHandle;
+            WindowHandle    = windowHandle;
 #if WPF
             WindowsControl = null;
 #endif
