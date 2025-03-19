@@ -7,7 +7,7 @@
 
   <PropertyGroup>
     <OutputPath>bin\</OutputPath>
-    <DefineConstants>TRACE;M3U8_CLIENT_TESTS;GITHUB_SPECIAL;</DefineConstants>
+    <DefineConstants>TRACE;M3U8_CLIENT_TESTS;GITHUB_SPECIAL;THROTTLER__V2;</DefineConstants>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
   </PropertyGroup>
