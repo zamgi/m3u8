@@ -29,17 +29,12 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="overwrite">Allow overwriting an existing library; if one exists with the same name</param>
         public ShellLibrary( string libraryName, bool overwrite ) : this()
         {
-            if ( string.IsNullOrEmpty( libraryName ) )
-            {
-                throw (new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" ));
-            }
+            if ( string.IsNullOrEmpty( libraryName ) ) throw (new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" ));
 
             Name = libraryName;
             var guid = new Guid( ShellKFIDGuid.Libraries );
 
-            var flags = overwrite ?
-                    ShellNativeMethods.LibrarySaveOptions.OverrideExisting :
-                    ShellNativeMethods.LibrarySaveOptions.FailIfThere;
+            var flags = overwrite ? ShellNativeMethods.LibrarySaveOptions.OverrideExisting : ShellNativeMethods.LibrarySaveOptions.FailIfThere;
 
             _NativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
             _NativeShellLibrary.SaveInKnownFolder( ref guid, libraryName, flags, out _NativeShellItem );
@@ -51,19 +46,14 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="overwrite">Override an existing library with the same name</param>
         public ShellLibrary( string libraryName, IKnownFolder sourceKnownFolder, bool overwrite ) : this()
         {
-            if ( string.IsNullOrEmpty( libraryName ) )
-            {
-                throw (new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" ));
-            }
+            if ( string.IsNullOrEmpty( libraryName ) ) throw (new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" ));
 
             _KnownFolder = sourceKnownFolder;
 
             Name = libraryName;
             var guid = _KnownFolder.FolderId;
 
-            var flags = overwrite ?
-                    ShellNativeMethods.LibrarySaveOptions.OverrideExisting :
-                    ShellNativeMethods.LibrarySaveOptions.FailIfThere;
+            var flags = overwrite ? ShellNativeMethods.LibrarySaveOptions.OverrideExisting : ShellNativeMethods.LibrarySaveOptions.FailIfThere;
 
             _NativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
             _NativeShellLibrary.SaveInKnownFolder( ref guid, libraryName, flags, out _NativeShellItem );
@@ -75,11 +65,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="overwrite">Override an existing library with the same name</param>
         public ShellLibrary( string libraryName, string folderPath, bool overwrite ) : this()
         {
-            if ( string.IsNullOrEmpty( libraryName ) )
-            {
-                throw (new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" ));
-            }
-
+            if ( string.IsNullOrEmpty( libraryName ) ) throw (new ArgumentException( "LocalizedMessages.ShellLibraryEmptyName", "libraryName" ));
             if ( !Directory.Exists( folderPath ) )
             {
                 throw (new DirectoryNotFoundException( "LocalizedMessages.ShellLibraryFolderNotFound" ));
@@ -87,9 +73,7 @@ namespace System.Windows.Forms.Taskbar
 
             Name = libraryName;
 
-            var flags = overwrite ?
-                    ShellNativeMethods.LibrarySaveOptions.OverrideExisting :
-                    ShellNativeMethods.LibrarySaveOptions.FailIfThere;
+            var flags = overwrite ? ShellNativeMethods.LibrarySaveOptions.OverrideExisting : ShellNativeMethods.LibrarySaveOptions.FailIfThere;
 
             var guid = new Guid(ShellIIDGuid.IShellItem );
 
@@ -165,20 +149,13 @@ namespace System.Windows.Forms.Taskbar
             {
                 var guid = new Guid( ShellIIDGuid.IShellItem );
 
-                _NativeShellLibrary.GetDefaultSaveFolder(
-                    ShellNativeMethods.DefaultSaveFolderType.Detect,
-                    ref guid,
-                    out var saveFolderItem );
+                _NativeShellLibrary.GetDefaultSaveFolder( ShellNativeMethods.DefaultSaveFolderType.Detect, ref guid, out var saveFolderItem );
 
                 return (ShellHelper.GetParsingName( saveFolderItem ));
             }
             set
             {
-                if ( string.IsNullOrEmpty( value ) )
-                {
-                    throw (new ArgumentNullException( "value" ));
-                }
-
+                if ( string.IsNullOrEmpty( value ) ) throw (new ArgumentNullException( "value" ));
                 if ( !Directory.Exists( value ) )
                 {
                     throw (new DirectoryNotFoundException( "LocalizedMessages.ShellLibraryDefaultSaveFolderNotFound" ));
@@ -217,13 +194,11 @@ namespace System.Windows.Forms.Taskbar
             get
             {
                 _NativeShellLibrary.GetOptions( out var flags );
-
                 return ( (flags & ShellNativeMethods.LibraryOptions.PinnedToNavigationPane) == ShellNativeMethods.LibraryOptions.PinnedToNavigationPane);
             }
             set
             {
                 var flags = ShellNativeMethods.LibraryOptions.Default;
-
                 if ( value )
                 {
                     flags |= ShellNativeMethods.LibraryOptions.PinnedToNavigationPane;
@@ -276,7 +251,7 @@ namespace System.Windows.Forms.Taskbar
         {
             get
             {
-                if ( base.Name == null && NativeShellItem != null )
+                if ( (base.Name == null) && (NativeShellItem != null) )
                 {
                     base.Name = Path.GetFileNameWithoutExtension( ShellHelper.GetParsingName( NativeShellItem ) );
                 }
@@ -318,8 +293,7 @@ namespace System.Windows.Forms.Taskbar
             var shellItemPath = Path.Combine( librariesFolderPath, libraryName + FileExtension );
             var hr = ShellNativeMethods.SHCreateItemFromParsingName( shellItemPath, IntPtr.Zero, ref guid, out IShellItem nativeShellItem );
 
-            if ( !CoreErrorHelper.Succeeded( hr ) )
-                throw new ShellException( hr );
+            if ( !CoreErrorHelper.Succeeded( hr ) ) throw (new ShellException( hr ));
 
             var nativeShellLibrary = (INativeShellLibrary) new ShellLibraryCoClass();
             var flags = isReadOnly ? AccessModes.Read : AccessModes.ReadWrite;
@@ -460,8 +434,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Clear all items of this Library</summary>
         public void Clear()
         {
-            var list = ItemsList;
-            foreach ( var folder in list )
+            foreach ( var folder in ItemsList )
             {
                 _NativeShellLibrary.RemoveFolder( folder.NativeShellItem );
             }
@@ -477,11 +450,8 @@ namespace System.Windows.Forms.Taskbar
         /// <returns><B>true</B> if the item exists in the collection.</returns>
         public bool Contains( string fullPath )
         {
-            if ( string.IsNullOrEmpty( fullPath ) )
-            {
-                throw (new ArgumentNullException( "fullPath" ));
-            }
-
+            if ( string.IsNullOrEmpty( fullPath ) ) throw (new ArgumentNullException( "fullPath" ));
+            
             return ItemsList.Any( folder => string.Equals( fullPath, folder.Path, StringComparison.OrdinalIgnoreCase ) );
         }
 
@@ -490,10 +460,7 @@ namespace System.Windows.Forms.Taskbar
         /// <returns><B>true</B>, if the folder exists in the collection.</returns>
         public bool Contains( ShellFileSystemFolder item )
         {
-            if ( item == null )
-            {
-                throw (new ArgumentNullException( "item" ));
-            }
+            if ( item == null ) throw (new ArgumentNullException( "item" ));
 
             return ItemsList.Any( folder => string.Equals( item.Path, folder.Path, StringComparison.OrdinalIgnoreCase ) );
         }
@@ -535,13 +502,13 @@ namespace System.Windows.Forms.Taskbar
         public bool Remove( string folderPath )
         {
             var item = ShellFileSystemFolder.FromFolderPath( folderPath );
-            return Remove( item );
+            return (Remove( item ));
         }
 
         /// <summary>Copies the collection to an array.</summary>
         /// <param name="array">The array to copy to.</param>
         /// <param name="arrayIndex">The index in the array at which to start the copy.</param>
-        void ICollection<ShellFileSystemFolder>.CopyTo( ShellFileSystemFolder[] array, int arrayIndex ) => throw new NotImplementedException();
+        void ICollection<ShellFileSystemFolder>.CopyTo( ShellFileSystemFolder[] array, int arrayIndex ) => throw (new NotImplementedException());
 
         /// <summary>Retrieves the collection enumerator.</summary>
         /// <returns>The enumerator.</returns>
@@ -552,13 +519,13 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="item">The FileSystemFolder to insert.</param>
         void IList<ShellFileSystemFolder>.Insert( int index, ShellFileSystemFolder item ) =>
             // Index related options are not supported by IShellLibrary doesn't support them.
-            throw new NotImplementedException();
+            throw (new NotImplementedException());
 
         /// <summary>Removes an item at the specified index.</summary>
         /// <param name="index">The index to remove.</param>
         void IList<ShellFileSystemFolder>.RemoveAt( int index ) =>
             // Index related options are not supported by IShellLibrary doesn't support them.
-            throw new NotImplementedException();
+            throw (new NotImplementedException());
 
         /// <summary>Load the library using a number of options</summary>
         /// <param name="nativeShellItem">IShellItem</param>
@@ -603,6 +570,7 @@ namespace System.Windows.Forms.Taskbar
                     return ((LibraryFolderType) i);
                 }
             }
+
             throw (new ArgumentOutOfRangeException( "folderTypeGuid", "LocalizedMessages.ShellLibraryInvalidFolderType" ));
         }
 

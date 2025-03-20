@@ -11,8 +11,8 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="direction">The direction in which the items are sorted.</param>
         public SortColumn( PropertyKey propertyKey, SortDirection direction ) : this()
         {
-            this._PropertyKey = propertyKey;
-            this._Direction = direction;
+            _PropertyKey = propertyKey;
+            _Direction   = direction;
         }
 
         /// <summary>

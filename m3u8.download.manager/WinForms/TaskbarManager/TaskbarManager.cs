@@ -199,7 +199,6 @@ namespace System.Windows.Forms.Taskbar
                 if ( _OwnerHandle == IntPtr.Zero )
                 {
                     var currentProcess = Process.GetCurrentProcess();
-
                     if ( currentProcess == null || currentProcess.MainWindowHandle == IntPtr.Zero )
                     {
                         throw (new InvalidOperationException( "LocalizedMessages.TaskbarManagerValidWindowRequired" ));
@@ -207,7 +206,6 @@ namespace System.Windows.Forms.Taskbar
 
                     _OwnerHandle = currentProcess.MainWindowHandle;
                 }
-
                 return (_OwnerHandle);
             }
         }

@@ -7,36 +7,18 @@ namespace System.Windows.Forms.Taskbar
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ICustomDestinationList
     {
-        void SetAppID(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszAppID );
+        void SetAppID( [MarshalAs(UnmanagedType.LPWStr)] string pszAppID );
 
-        [PreserveSig]
-        HResult BeginList(
-            out uint cMaxSlots,
-            ref Guid riid,
-            [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject );
+        [PreserveSig] HResult BeginList( out uint cMaxSlots, ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppvObject );
+        [PreserveSig] HResult AppendCategory( [MarshalAs(UnmanagedType.LPWStr)] string pszCategory, [MarshalAs(UnmanagedType.Interface)] IObjectArray poa );
 
-        [PreserveSig]
-        HResult AppendCategory(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszCategory,
-            [MarshalAs(UnmanagedType.Interface)] IObjectArray poa );
+        void AppendKnownCategory( [MarshalAs(UnmanagedType.I4)] KnownDestinationCategory category );
 
-        void AppendKnownCategory(
-            [MarshalAs( UnmanagedType.I4 )] KnownDestinationCategory category );
-
-        [PreserveSig]
-        HResult AddUserTasks(
-            [MarshalAs(UnmanagedType.Interface)] IObjectArray poa );
+        [PreserveSig] HResult AddUserTasks( [MarshalAs(UnmanagedType.Interface)] IObjectArray poa );
 
         void CommitList();
-
-        void GetRemovedDestinations(
-            ref Guid riid,
-            [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject );
-
-        void DeleteList(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszAppID );
-
+        void GetRemovedDestinations( ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppvObject );
+        void DeleteList( [MarshalAs(UnmanagedType.LPWStr)] string pszAppID );
         void AbortList();
     }
 
@@ -46,11 +28,7 @@ namespace System.Windows.Forms.Taskbar
     internal interface IObjectArray
     {
         void GetCount( out uint cObjects );
-
-        void GetAt(
-            uint iIndex,
-            ref Guid riid,
-            [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject );
+        void GetAt( uint iIndex, ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppvObject );
     }
 
     [ComImport]
@@ -59,24 +37,13 @@ namespace System.Windows.Forms.Taskbar
     internal interface IObjectCollection
     {
         // IObjectArray
-        [PreserveSig]
-        void GetCount( out uint cObjects );
-
-        [PreserveSig]
-        void GetAt(
-            uint iIndex,
-            ref Guid riid,
-            [Out(), MarshalAs(UnmanagedType.Interface)] out object ppvObject );
+        [PreserveSig] void GetCount( out uint cObjects );
+        [PreserveSig] void GetAt( uint iIndex, ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppvObject );
 
         // IObjectCollection
-        void AddObject(
-            [MarshalAs(UnmanagedType.Interface)] object pvObject );
-
-        void AddFromArray(
-            [MarshalAs(UnmanagedType.Interface)] IObjectArray poaSource );
-
+        void AddObject( [MarshalAs(UnmanagedType.Interface)] object pvObject );
+        void AddFromArray( [MarshalAs(UnmanagedType.Interface)] IObjectArray poaSource );
         void RemoveObject( uint uiIndex );
-
         void Clear();
     }
 
@@ -86,76 +53,28 @@ namespace System.Windows.Forms.Taskbar
     internal interface ITaskbarList4
     {
         // ITaskbarList
-        [PreserveSig]
-        void HrInit();
-
-        [PreserveSig]
-        void AddTab( IntPtr hwnd );
-
-        [PreserveSig]
-        void DeleteTab( IntPtr hwnd );
-
-        [PreserveSig]
-        void ActivateTab( IntPtr hwnd );
-
-        [PreserveSig]
-        void SetActiveAlt( IntPtr hwnd );
+        [PreserveSig] void HrInit();
+        [PreserveSig] void AddTab( IntPtr hwnd );
+        [PreserveSig] void DeleteTab( IntPtr hwnd );
+        [PreserveSig] void ActivateTab( IntPtr hwnd );
+        [PreserveSig] void SetActiveAlt( IntPtr hwnd );
 
         // ITaskbarList2
-        [PreserveSig]
-        void MarkFullscreenWindow(
-            IntPtr hwnd,
-            [MarshalAs( UnmanagedType.Bool )] bool fFullscreen );
+        [PreserveSig] void MarkFullscreenWindow( IntPtr hwnd, [MarshalAs(UnmanagedType.Bool)] bool fFullscreen );
 
         // ITaskbarList3
-        [PreserveSig]
-        void SetProgressValue( IntPtr hwnd, ulong ullCompleted, ulong ullTotal );
-
-        [PreserveSig]
-        void SetProgressState( IntPtr hwnd, TaskbarProgressBarStatus tbpFlags );
-
-        [PreserveSig]
-        void RegisterTab( IntPtr hwndTab, IntPtr hwndMDI );
-
-        [PreserveSig]
-        void UnregisterTab( IntPtr hwndTab );
-
-        [PreserveSig]
-        void SetTabOrder( IntPtr hwndTab, IntPtr hwndInsertBefore );
-
-        [PreserveSig]
-        void SetTabActive( IntPtr hwndTab, IntPtr hwndInsertBefore, uint dwReserved );
-
-        [PreserveSig]
-        HResult ThumbBarAddButtons(
-            IntPtr hwnd,
-            uint cButtons,
-            [MarshalAs(UnmanagedType.LPArray)] ThumbButton[] pButtons );
-
-        [PreserveSig]
-        HResult ThumbBarUpdateButtons(
-            IntPtr hwnd,
-            uint cButtons,
-            [MarshalAs(UnmanagedType.LPArray)] ThumbButton[] pButtons );
-
-        [PreserveSig]
-        void ThumbBarSetImageList( IntPtr hwnd, IntPtr himl );
-
-        [PreserveSig]
-        void SetOverlayIcon(
-          IntPtr hwnd,
-          IntPtr hIcon,
-          [MarshalAs(UnmanagedType.LPWStr)] string pszDescription );
-
-        [PreserveSig]
-        void SetThumbnailTooltip(
-            IntPtr hwnd,
-            [MarshalAs(UnmanagedType.LPWStr)] string pszTip );
-
-        [PreserveSig]
-        void SetThumbnailClip(
-            IntPtr hwnd,
-            IntPtr prcClip );
+        [PreserveSig] void SetProgressValue( IntPtr hwnd, ulong ullCompleted, ulong ullTotal );
+        [PreserveSig] void SetProgressState( IntPtr hwnd, TaskbarProgressBarStatus tbpFlags );
+        [PreserveSig] void RegisterTab( IntPtr hwndTab, IntPtr hwndMDI );
+        [PreserveSig] void UnregisterTab( IntPtr hwndTab );
+        [PreserveSig] void SetTabOrder( IntPtr hwndTab, IntPtr hwndInsertBefore );
+        [PreserveSig] void SetTabActive( IntPtr hwndTab, IntPtr hwndInsertBefore, uint dwReserved );
+        [PreserveSig] HResult ThumbBarAddButtons( IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] ThumbButton[] pButtons );
+        [PreserveSig] HResult ThumbBarUpdateButtons( IntPtr hwnd, uint cButtons, [MarshalAs(UnmanagedType.LPArray)] ThumbButton[] pButtons );
+        [PreserveSig] void ThumbBarSetImageList( IntPtr hwnd, IntPtr himl );
+        [PreserveSig] void SetOverlayIcon( IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string pszDescription );
+        [PreserveSig] void SetThumbnailTooltip( IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip );
+        [PreserveSig] void SetThumbnailClip( IntPtr hwnd, IntPtr prcClip );
 
         // ITaskbarList4
         void SetTabProperties( IntPtr hwndTab, SetTabPropertiesOption stpFlags );

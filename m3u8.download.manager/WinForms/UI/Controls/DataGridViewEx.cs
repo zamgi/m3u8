@@ -425,6 +425,12 @@ namespace System.Windows.Forms
             }
             //return (first.SequenceEqual( second ));
             //return (!first.Except( second ).Any() /*&& !second.Except( first ).Any()*/);
+            if ( second.Count < first.Count )
+            {
+                var t = first;
+                first = second;
+                second = t;
+            }
             foreach ( var t in first )
             {
                 if ( !second.Contains( t ) )

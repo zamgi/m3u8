@@ -90,6 +90,8 @@ namespace System.Windows.Forms
             }
 
             private const string SHELL32_DLL = "shell32.dll";
+            private const string SHLWAPI_DLL = "shlwapi.dll";
+
             [DllImport(SHELL32_DLL, CharSet=CharSet.Auto)] public static extern IntPtr SHBrowseForFolder( [In] BROWSEINFO lpbi );
             [DllImport(SHELL32_DLL, CharSet=CharSet.Auto)] private static extern bool SHGetPathFromIDList( IntPtr pidl, IntPtr pszPath );
             public static bool SHGetPathFromIDList( IntPtr pidl, out string path )
@@ -122,7 +124,7 @@ namespace System.Windows.Forms
 
             [DllImport(SHELL32_DLL)] public static extern int SHGetSpecialFolderLocation( IntPtr hwnd, int csidl, ref IntPtr ppidl );
             [DllImport(SHELL32_DLL)] public static extern int SHParseDisplayName( [MarshalAs(UnmanagedType.LPWStr)] string pszName, IntPtr pbc, ref IntPtr ppidl, SFGAO sfgaoIn, out SFGAO psfgaoOut );
-            [DllImport("shlwapi.dll", CharSet=CharSet.Unicode, EntryPoint="PathMatchSpecW")][return:MarshalAs(UnmanagedType.Bool)] public static extern bool IsPathMatch( string pszFile, string pszSpec );
+            [DllImport(SHLWAPI_DLL, CharSet=CharSet.Unicode, EntryPoint="PathMatchSpecW")][return:MarshalAs(UnmanagedType.Bool)] public static extern bool IsPathMatch( string pszFile, string pszSpec );
 
             internal const int MAX_PATH = 260;
             private  const int WM_USER  = 0x0400;

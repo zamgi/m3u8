@@ -79,24 +79,24 @@ namespace System.Windows.Forms.Taskbar
             }
         }
 
-        private string tooltip;
+        private string _Tooltip;
         /// <summary>
         /// Gets or sets the thumbnail button's tooltip.
         /// </summary>
         public string Tooltip
         {
-            get => tooltip;
+            get => _Tooltip;
             set
             {
-                if ( tooltip != value )
+                if ( _Tooltip != value )
                 {
-                    tooltip = value;
+                    _Tooltip = value;
                     UpdateThumbnailButton();
                 }
             }
         }
 
-        private bool visible = true;
+        private bool _Visible = true;
         /// <summary>
         /// Gets or sets the thumbnail button's visibility. Default is true.
         /// </summary>
@@ -105,9 +105,9 @@ namespace System.Windows.Forms.Taskbar
             get => (Flags & ThumbButtonOptions.Hidden) == 0;
             set
             {
-                if ( visible != value )
+                if ( _Visible != value )
                 {
-                    visible = value;
+                    _Visible = value;
 
                     if ( value )
                     {
@@ -124,7 +124,7 @@ namespace System.Windows.Forms.Taskbar
             }
         }
 
-        private bool enabled = true;
+        private bool _Enabled = true;
         /// <summary>
         /// Gets or sets the thumbnail button's enabled state. If the button is disabled, it is present, 
         /// but has a visual state that indicates that it will not respond to user action. Default is true.
@@ -134,9 +134,9 @@ namespace System.Windows.Forms.Taskbar
             get => (Flags & ThumbButtonOptions.Disabled) == 0;
             set
             {
-                if ( value != enabled )
+                if ( value != _Enabled )
                 {
-                    enabled = value;
+                    _Enabled = value;
 
                     if ( value )
                     {
@@ -152,7 +152,7 @@ namespace System.Windows.Forms.Taskbar
             }
         }
 
-        private bool dismissOnClick;
+        private bool _DismissOnClick;
         /// <summary>
         /// Gets or sets the property that describes the behavior when the button is clicked. 
         /// If set to true, the taskbar button's flyout will close immediately. Default is false.
@@ -162,9 +162,9 @@ namespace System.Windows.Forms.Taskbar
             get => (Flags & ThumbButtonOptions.DismissOnClick) == 0;
             set
             {
-                if ( value != dismissOnClick )
+                if ( value != _DismissOnClick )
                 {
-                    dismissOnClick = value;
+                    _DismissOnClick = value;
 
                     if ( value )
                     {
@@ -180,7 +180,7 @@ namespace System.Windows.Forms.Taskbar
             }
         }
 
-        private bool isInteractive = true;
+        private bool _IsInteractive = true;
         /// <summary>
         /// Gets or sets the property that describes whether the button is interactive with the user. Default is true.
         /// </summary>
@@ -194,9 +194,9 @@ namespace System.Windows.Forms.Taskbar
             get => (Flags & ThumbButtonOptions.NonInteractive) == 0;
             set
             {
-                if ( value != isInteractive )
+                if ( value != _IsInteractive )
                 {
-                    isInteractive = value;
+                    _IsInteractive = value;
 
                     if ( value )
                     {
@@ -308,7 +308,7 @@ namespace System.Windows.Forms.Taskbar
             {
                 // Dispose managed resources
                 Icon.Dispose();
-                tooltip = null;
+                _Tooltip = null;
             }
         }
         #endregion

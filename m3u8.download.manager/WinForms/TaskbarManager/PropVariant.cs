@@ -257,11 +257,7 @@ namespace System.Windows.Forms.Taskbar
         private readonly float _float;
 
         /// <summary>Default constrcutor</summary>
-        public PropVariant()
-        {
-            // left empty
-        }
-
+        public PropVariant() { }
         /// <summary>Set a string value</summary>
         public PropVariant( string value )
         {

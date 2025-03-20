@@ -22,8 +22,8 @@ namespace System.Windows.Forms.Taskbar
             {
                 if ( _NativeShellFolder == null )
                 {
-                    var guid = new Guid(ShellIIDGuid.IShellFolder );
-                    var handler = new Guid(ShellBHIDGuid.ShellFolderObject );
+                    var guid    = new Guid( ShellIIDGuid.IShellFolder );
+                    var handler = new Guid( ShellBHIDGuid.ShellFolderObject );
 
                     var hr = NativeShellItem.BindToHandler(
                         IntPtr.Zero, ref handler, ref guid, out _NativeShellFolder );

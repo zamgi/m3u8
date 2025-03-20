@@ -20,7 +20,7 @@ namespace System.Windows.Forms.Taskbar
         /// <summary>Internal constructor that takes in a parent ShellObject.</summary>
         internal ShellThumbnail( ShellObject shellObject )
         {
-            if ( shellObject == null || shellObject.NativeShellItem == null )
+            if ( (shellObject == null) || (shellObject.NativeShellItem == null) )
             {
                 throw (new ArgumentNullException( "shellObject" ));
             }
@@ -57,17 +57,14 @@ namespace System.Windows.Forms.Taskbar
                 // Check for 0; negative number check not required as System.Windows.Size only allows positive numbers.
                 if ( value.Height == 0 || value.Width == 0 )
                 {
-                    throw new System.ArgumentOutOfRangeException( "value", "LocalizedMessages.ShellThumbnailSizeCannotBe0" );
+                    throw (new System.ArgumentOutOfRangeException( "value", "LocalizedMessages.ShellThumbnailSizeCannotBe0" ));
                 }
 
-                var size = (FormatOption == ShellThumbnailFormatOption.IconOnly) ?
-                    DefaultIconSize.Maximum : DefaultThumbnailSize.Maximum;
+                var size = (FormatOption == ShellThumbnailFormatOption.IconOnly) ? DefaultIconSize.Maximum : DefaultThumbnailSize.Maximum;
 
                 if ( value.Height > size.Height || value.Width > size.Width )
                 {
-                    throw new System.ArgumentOutOfRangeException( "value",
-                        string.Format( System.Globalization.CultureInfo.InvariantCulture,
-                        "LocalizedMessages.ShellThumbnailCurrentSizeRange", size.ToString() ) );
+                    throw (new System.ArgumentOutOfRangeException( "value", string.Format( System.Globalization.CultureInfo.InvariantCulture, "LocalizedMessages.ShellThumbnailCurrentSizeRange", size.ToString() ) ));
                 }
 
                 currentSize = value;

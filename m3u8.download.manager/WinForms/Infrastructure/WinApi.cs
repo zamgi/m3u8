@@ -13,7 +13,8 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal static class WinApi
     {
-        private const string USER32_DLL = "user32.dll";
+        private const string USER32_DLL   = "user32.dll";
+        private const string KERNEL32_DLL = "kernel32.dll";
 
         #region [.SetForegroundWindow.]
         [DllImport(USER32_DLL)] public static extern bool SetForegroundWindow( IntPtr hWnd );
@@ -65,7 +66,7 @@ namespace m3u8.download.manager.ui
         [DllImport(USER32_DLL)] private static extern bool AttachThreadInput( uint idAttach, uint idAttachTo, bool fAttach );
         [DllImport(USER32_DLL, SetLastError=true)] private static extern bool BringWindowToTop( IntPtr hWnd );
         [DllImport(USER32_DLL)] private static extern bool ShowWindow( IntPtr hWnd, uint nCmdShow );
-        [DllImport("kernel32.dll")] private static extern uint GetCurrentThreadId();
+        [DllImport(KERNEL32_DLL)] private static extern uint GetCurrentThreadId();
 
         private const uint SW_SHOW = 5;
 

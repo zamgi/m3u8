@@ -16,7 +16,7 @@
         {
             get
             {
-                if ( string.IsNullOrEmpty( _InternalArguments ) && NativeShellItem2 != null )
+                if ( string.IsNullOrEmpty( _InternalArguments ) && (NativeShellItem2 != null) )
                 {
                     _InternalArguments = Properties.System.Link.Arguments.Value;
                 }
@@ -29,7 +29,7 @@
         {
             get
             {
-                if ( string.IsNullOrEmpty( _InternalComments ) && NativeShellItem2 != null )
+                if ( string.IsNullOrEmpty( _InternalComments ) && (NativeShellItem2 != null) )
                 {
                     _InternalComments = Properties.System.Comment.Value;
                 }
@@ -42,7 +42,7 @@
         {
             get
             {
-                if ( _InternalPath == null && NativeShellItem != null )
+                if ( (_InternalPath == null) && (NativeShellItem != null) )
                 {
                     _InternalPath = base.ParsingName;
                 }
@@ -56,7 +56,7 @@
         {
             get
             {
-                if ( string.IsNullOrEmpty( _InternalTargetLocation ) && NativeShellItem2 != null )
+                if ( string.IsNullOrEmpty( _InternalTargetLocation ) && (NativeShellItem2 != null) )
                 {
                     _InternalTargetLocation = Properties.System.Link.TargetParsingPath.Value;
                 }

@@ -21,7 +21,7 @@ namespace System.Windows.Forms.Taskbar
     public interface IInitializeWithItem
     {
         /// <summary>Initializes with ShellItem</summary>
-        void Initialize( [In, MarshalAs( UnmanagedType.IUnknown )] object shellItem, AccessModes accessMode );
+        void Initialize( [In, MarshalAs(UnmanagedType.IUnknown)] object shellItem, AccessModes accessMode );
     }
 
     /// <summary>Provides means by which to initialize with a stream.</summary>
@@ -49,7 +49,7 @@ namespace System.Windows.Forms.Taskbar
     [Guid("fc4801a3-2ba9-11cf-a229-00aa003d7352")]
     internal interface IObjectWithSite
     {
-        void SetSite( [In, MarshalAs( UnmanagedType.IUnknown )] object pUnkSite );
+        void SetSite( [In, MarshalAs(UnmanagedType.IUnknown)] object pUnkSite );
         void GetSite( ref Guid riid, [MarshalAs( UnmanagedType.IUnknown )] out object ppvSite );
     }
 
@@ -59,7 +59,7 @@ namespace System.Windows.Forms.Taskbar
     internal interface IOleWindow
     {
         void GetWindow( out IntPtr phwnd );
-        void ContextSensitiveHelp( [MarshalAs( UnmanagedType.Bool )] bool fEnterMode );
+        void ContextSensitiveHelp( [MarshalAs(UnmanagedType.Bool)] bool fEnterMode );
     }
 
     [ComImport]
@@ -135,15 +135,12 @@ namespace System.Windows.Forms.Taskbar
 
     internal static class HandlerNativeMethods
     {
-        internal static readonly Guid PreviewHandlerGuid = new Guid("{8895b1c6-b41f-4c1c-a562-0d564250836f}" );
-
+        private const string USER32_DLL = "user32.dll";
+        internal static readonly Guid PreviewHandlerGuid    = new Guid("{8895b1c6-b41f-4c1c-a562-0d564250836f}" );
         internal static readonly Guid ThumbnailProviderGuid = new Guid("{e357fccd-a995-4576-b01f-234630154e96}" );
 
-        [DllImport("user32.dll", CharSet=CharSet.Auto)]
-        internal static extern IntPtr GetFocus();
-
-        [DllImport("user32.dll")]
-        internal static extern IntPtr SetParent( IntPtr hWndChild, IntPtr hWndNewParent );
+        [DllImport(USER32_DLL, CharSet=CharSet.Auto)] internal static extern IntPtr GetFocus();
+        [DllImport(USER32_DLL)] internal static extern IntPtr SetParent( IntPtr hWndChild, IntPtr hWndNewParent );
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]

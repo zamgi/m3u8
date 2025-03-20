@@ -56,6 +56,10 @@ namespace System.Windows.Forms.Taskbar
         /// <returns>The lower half of the dword.</returns>
         public static int GetLoWord( long value ) => (short) (value & 0xFFFF);
 
+        private const string USER32_DLL   = "user32.dll";
+        private const string KERNEL32_DLL = "kernel32.dll";
+        private const string GDI32_DLL    = "gdi32.dll";
+
         /// <summary>
         /// Places (posts) a message in the message queue associated with the thread that created the specified window and returns without
         /// waiting for the thread to process the message.
@@ -69,7 +73,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="wparam">Specifies additional message-specific information.</param>
         /// <param name="lparam">Specifies additional message-specific information.</param>
         /// <returns>A return code specific to the message being sent.</returns>
-        [DllImport("user32.dll", CharSet=CharSet.Auto, PreserveSig=false, SetLastError=true)]
+        [DllImport(USER32_DLL, CharSet=CharSet.Auto, PreserveSig=false, SetLastError=true)]
         public static extern void PostMessage( IntPtr windowHandle, WindowMessage message, IntPtr wparam, IntPtr lparam );
 
         /// <summary>
@@ -85,7 +89,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="wparam">Specifies additional message-specific information.</param>
         /// <param name="lparam">Specifies additional message-specific information.</param>
         /// <returns>A return code specific to the message being sent.</returns>
-        [DllImport("user32.dll", CharSet=CharSet.Auto, SetLastError=true)]
+        [DllImport(USER32_DLL, CharSet=CharSet.Auto, SetLastError=true)]
         public static extern IntPtr SendMessage( IntPtr windowHandle, WindowMessage message, IntPtr wparam, IntPtr lparam );
 
         /// <summary>
@@ -101,7 +105,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="wparam">Specifies additional message-specific information.</param>
         /// <param name="lparam">Specifies additional message-specific information.</param>
         /// <returns>A return code specific to the message being sent.</returns>
-        [DllImport("user32.dll", CharSet=CharSet.Auto, SetLastError=true)]
+        [DllImport(USER32_DLL, CharSet=CharSet.Auto, SetLastError=true)]
         public static extern IntPtr SendMessage( IntPtr windowHandle, uint message, IntPtr wparam, IntPtr lparam );
 
         /// <summary>
@@ -117,7 +121,7 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="wparam">Specifies additional message-specific information.</param>
         /// <param name="lparam">Specifies additional message-specific information.</param>
         /// <returns>A return code specific to the message being sent.</returns>
-        [DllImport("user32.dll", CharSet=CharSet.Auto, SetLastError=true)]
+        [DllImport(USER32_DLL, CharSet=CharSet.Auto, SetLastError=true)]
         public static extern IntPtr SendMessage( IntPtr windowHandle, uint message, IntPtr wparam, [MarshalAs(UnmanagedType.LPWStr)] string lparam );
 
         /// <summary>
@@ -149,10 +153,10 @@ namespace System.Windows.Forms.Taskbar
         /// <param name="lparam">Specifies additional message-specific information.</param>
         /// <returns>A return code specific to the message being sent.</returns>
 
-        [DllImport("user32.dll", CharSet=CharSet.Auto, SetLastError=true)]
+        [DllImport(USER32_DLL, CharSet=CharSet.Auto, SetLastError=true)]
         public static extern IntPtr SendMessage( IntPtr windowHandle, uint message, ref int wparam, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder lparam );
 
-        [DllImport("gdi32.dll")][return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport(GDI32_DLL)][return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool DeleteObject( IntPtr graphicsObjectHandle );
 
         /// <summary>Destroys an icon and frees any memory the icon occupied.</summary>
@@ -161,20 +165,20 @@ namespace System.Windows.Forms.Taskbar
         /// If the function succeeds, the return value is nonzero. If the function fails, the return value is zero. To get extended error
         /// information, call GetLastError.
         /// </returns>
-        [DllImport("user32.dll", SetLastError=true)][return: MarshalAs(UnmanagedType.Bool)]
+        [DllImport(USER32_DLL, SetLastError=true)][return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool DestroyIcon( IntPtr hIcon );
 
-        [DllImport("user32.dll", SetLastError=true, EntryPoint="DestroyWindow", CallingConvention=CallingConvention.StdCall)]
+        [DllImport(USER32_DLL, SetLastError=true, EntryPoint="DestroyWindow", CallingConvention=CallingConvention.StdCall)]
         internal static extern int DestroyWindow( IntPtr handle );
 
         // Various helpers for forcing binding to proper version of Comctl32 (v6).
-        [DllImport("kernel32.dll", SetLastError=true, ThrowOnUnmappableChar=true, BestFitMapping=false)]
+        [DllImport(KERNEL32_DLL, SetLastError=true, ThrowOnUnmappableChar=true, BestFitMapping=false)]
         internal static extern IntPtr LoadLibrary( [MarshalAs(UnmanagedType.LPStr)] string fileName );
 
-        [DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Unicode)]
+        [DllImport(USER32_DLL, SetLastError=true, CharSet=CharSet.Unicode)]
         internal static extern int LoadString( IntPtr instanceHandle, int id, StringBuilder buffer, int bufferSize );
 
-        [DllImport("kernel32.dll", EntryPoint="LocalFree")]
+        [DllImport(KERNEL32_DLL, EntryPoint="LocalFree")]
         internal static extern IntPtr LocalFree( ref Guid guid );
 
         /// <summary>A Wrapper for a SIZE struct</summary>

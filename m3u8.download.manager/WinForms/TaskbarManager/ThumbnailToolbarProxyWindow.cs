@@ -37,10 +37,10 @@
 #if WPF
         internal ThumbnailToolbarProxyWindow( System.Windows.UIElement windowsControl, ThumbnailToolBarButton[] buttons )
         {
-            if ( windowsControl == null ) { throw new ArgumentNullException( "windowsControl" ); }
-            if ( buttons != null && buttons.Length == 0 )
+            if ( windowsControl == null ) throw (new ArgumentNullException( "windowsControl" ));
+            if ( (buttons != null) && (buttons.Length == 0) )
             {
-                throw new ArgumentException( "LocalizedMessages.ThumbnailToolbarManagerNullEmptyArray", "buttons" );
+                throw (new ArgumentException( "LocalizedMessages.ThumbnailToolbarManagerNullEmptyArray", "buttons" ));
             }
 
             _internalWindowHandle = IntPtr.Zero;

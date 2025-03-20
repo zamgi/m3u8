@@ -29,7 +29,7 @@ namespace System.Windows.Forms.Taskbar
 
             if ( !CoreErrorHelper.Succeeded( result ) )
             {
-                throw new ArgumentException( "LocalizedMessages.ShellInvalidCanonicalName", Marshal.GetExceptionForHR( result ) );
+                throw (new ArgumentException( "LocalizedMessages.ShellInvalidCanonicalName", Marshal.GetExceptionForHR( result ) ));
             }
             return ShellPropertyDescriptionsCache.Cache.GetPropertyDescription( propKey );
         }
@@ -48,14 +48,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     Int32 -- VT_I4</para>
             /// <para>FormatID: {65A98875-3C80-40AB-ABBC-EFDAF77DBEE2}, 100</para>
             /// </summary>
-            public static PropertyKey AcquisitionID
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{65A98875-3C80-40AB-ABBC-EFDAF77DBEE2}" ), 100 );
-                    return key;
-                }
-            }
+            public static PropertyKey AcquisitionID => new PropertyKey( new Guid("{65A98875-3C80-40AB-ABBC-EFDAF77DBEE2}" ), 100 );
 
             /// <summary>
             /// <para>Name:     System.ApplicationName -- PKEY_ApplicationName</para>
@@ -64,15 +57,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     String -- VT_LPWSTR  (For variants: VT_BSTR)  Legacy code may treat this as VT_LPSTR.</para>
             /// <para>FormatID: (FMTID_SummaryInformation) {F29F85E0-4FF9-1068-AB91-08002B27B3D9}, 18 (PIDSI_APPNAME)</para>
             /// </summary>
-            public static PropertyKey ApplicationName
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 18 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey ApplicationName => new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 18 );
 
             /// <summary>
             /// <para>Name:     System.Author -- PKEY_Author</para>
@@ -81,15 +66,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     Multivalue String -- VT_VECTOR | VT_LPWSTR  (For variants: VT_ARRAY | VT_BSTR)  Legacy code may treat this as VT_LPSTR.</para>
             /// <para>FormatID: (FMTID_SummaryInformation) {F29F85E0-4FF9-1068-AB91-08002B27B3D9}, 4 (PIDSI_AUTHOR)</para>
             /// </summary>
-            public static PropertyKey Author
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 4 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey Author => new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 4 );
 
             /// <summary>
             /// <para>Name:     System.Capacity -- PKEY_Capacity</para>
@@ -98,15 +75,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     UInt64 -- VT_UI8</para>
             /// <para>FormatID: (FMTID_Volume) {9B174B35-40FF-11D2-A27E-00C04FC30871}, 3 (PID_VOLUME_CAPACITY)  (Filesystem Volume Properties)</para>
             /// </summary>
-            public static PropertyKey Capacity
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{9B174B35-40FF-11D2-A27E-00C04FC30871}" ), 3 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey Capacity => new PropertyKey( new Guid("{9B174B35-40FF-11D2-A27E-00C04FC30871}" ), 3 );
 
             /// <summary>
             /// <para>Name:     System.Category -- PKEY_Category</para>
@@ -115,15 +84,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     Multivalue String -- VT_VECTOR | VT_LPWSTR  (For variants: VT_ARRAY | VT_BSTR)</para>
             /// <para>FormatID: (FMTID_DocumentSummaryInformation) {D5CDD502-2E9C-101B-9397-08002B2CF9AE}, 2 (PIDDSI_CATEGORY)</para>
             /// </summary>
-            public static PropertyKey Category
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ), 2 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey Category => new PropertyKey( new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ), 2 );
 
             /// <summary>
             /// <para>Name:     System.Comment -- PKEY_Comment</para>
@@ -132,15 +93,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     String -- VT_LPWSTR  (For variants: VT_BSTR)  Legacy code may treat this as VT_LPSTR.</para>
             /// <para>FormatID: (FMTID_SummaryInformation) {F29F85E0-4FF9-1068-AB91-08002B27B3D9}, 6 (PIDSI_COMMENTS)</para>
             /// </summary>
-            public static PropertyKey Comment
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 6 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey Comment => new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 6 );
 
             /// <summary>
             /// <para>Name:     System.Company -- PKEY_Company</para>
@@ -149,15 +102,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     String -- VT_LPWSTR  (For variants: VT_BSTR)</para>
             /// <para>FormatID: (FMTID_DocumentSummaryInformation) {D5CDD502-2E9C-101B-9397-08002B2CF9AE}, 15 (PIDDSI_COMPANY)</para>
             /// </summary>
-            public static PropertyKey Company
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ), 15 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey Company => new PropertyKey( new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ), 15 );
 
             /// <summary>
             /// <para>Name:     System.ComputerName -- PKEY_ComputerName</para>
@@ -166,15 +111,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     String -- VT_LPWSTR  (For variants: VT_BSTR)</para>
             /// <para>FormatID: (FMTID_ShellDetails) {28636AA6-953D-11D2-B5D6-00C04FD918D0}, 5 (PID_COMPUTERNAME)</para>
             /// </summary>
-            public static PropertyKey ComputerName
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 5 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey ComputerName => new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 5 );
 
             /// <summary>
             /// <para>Name:     System.ContainedItems -- PKEY_ContainedItems</para>
@@ -184,15 +121,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     Multivalue Guid -- VT_VECTOR | VT_CLSID  (For variants: VT_ARRAY | VT_CLSID)</para>
             /// <para>FormatID: (FMTID_ShellDetails) {28636AA6-953D-11D2-B5D6-00C04FD918D0}, 29</para>
             /// </summary>
-            public static PropertyKey ContainedItems
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 29 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey ContainedItems => new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 29 );
 
             /// <summary>
             /// <para>Name:     System.ContentStatus -- PKEY_ContentStatus</para>
@@ -200,15 +129,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     String -- VT_LPWSTR  (For variants: VT_BSTR)</para>
             /// <para>FormatID: (FMTID_DocumentSummaryInformation) {D5CDD502-2E9C-101B-9397-08002B2CF9AE}, 27</para>
             /// </summary>
-            public static PropertyKey ContentStatus
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ), 27 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey ContentStatus => new PropertyKey( new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ), 27 );
 
             /// <summary>
             /// <para>Name:     System.ContentType -- PKEY_ContentType</para>
@@ -216,15 +137,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     String -- VT_LPWSTR  (For variants: VT_BSTR)</para>
             /// <para>FormatID: (FMTID_DocumentSummaryInformation) {D5CDD502-2E9C-101B-9397-08002B2CF9AE}, 26</para>
             /// </summary>
-            public static PropertyKey ContentType
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ), 26 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey ContentType => new PropertyKey( new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ), 26 );
 
             /// <summary>
             /// <para>Name:     System.Copyright -- PKEY_Copyright</para>
@@ -233,15 +146,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     String -- VT_LPWSTR  (For variants: VT_BSTR)</para>
             /// <para>FormatID: (PSGUID_MEDIAFILESUMMARYINFORMATION) {64440492-4C8B-11D1-8B70-080036B11A03}, 11 (PIDMSI_COPYRIGHT)</para>
             /// </summary>
-            public static PropertyKey Copyright
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{64440492-4C8B-11D1-8B70-080036B11A03}" ), 11 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey Copyright => new PropertyKey( new Guid("{64440492-4C8B-11D1-8B70-080036B11A03}" ), 11 );
 
             /// <summary>
             /// <para>Name:     System.DateAccessed -- PKEY_DateAccessed</para>
@@ -250,15 +155,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     DateTime -- VT_FILETIME  (For variants: VT_DATE)</para>
             /// <para>FormatID: (FMTID_Storage) {B725F130-47EF-101A-A5F1-02608C9EEBAC}, 16 (PID_STG_ACCESSTIME)</para>
             /// </summary>
-            public static PropertyKey DateAccessed
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 16 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey DateAccessed => new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 16 );
 
             /// <summary>
             /// <para>Name:     System.DateAcquired -- PKEY_DateAcquired</para>
@@ -268,15 +165,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     DateTime -- VT_FILETIME  (For variants: VT_DATE)</para>
             /// <para>FormatID: {2CBAA8F5-D81F-47CA-B17A-F8D822300131}, 100</para>
             /// </summary>
-            public static PropertyKey DateAcquired
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{2CBAA8F5-D81F-47CA-B17A-F8D822300131}" ), 100 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey DateAcquired => new PropertyKey( new Guid("{2CBAA8F5-D81F-47CA-B17A-F8D822300131}" ), 100 );
 
             /// <summary>
             /// <para>Name:     System.DateArchived -- PKEY_DateArchived</para>
@@ -284,15 +173,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     DateTime -- VT_FILETIME  (For variants: VT_DATE)</para>
             /// <para>FormatID: {43F8D7B7-A444-4F87-9383-52271C9B915C}, 100</para>
             /// </summary>
-            public static PropertyKey DateArchived
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{43F8D7B7-A444-4F87-9383-52271C9B915C}" ), 100 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey DateArchived => new PropertyKey( new Guid("{43F8D7B7-A444-4F87-9383-52271C9B915C}" ), 100 );
 
             /// <summary>
             /// <para>Name:     System.DateCompleted -- PKEY_DateCompleted</para>
@@ -300,15 +181,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     DateTime -- VT_FILETIME  (For variants: VT_DATE)</para>
             /// <para>FormatID: {72FAB781-ACDA-43E5-B155-B2434F85E678}, 100</para>
             /// </summary>
-            public static PropertyKey DateCompleted
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{72FAB781-ACDA-43E5-B155-B2434F85E678}" ), 100 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey DateCompleted => new PropertyKey( new Guid("{72FAB781-ACDA-43E5-B155-B2434F85E678}" ), 100 );
 
             /// <summary>
             /// <para>Name:     System.DateCreated -- PKEY_DateCreated</para>
@@ -317,15 +190,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     DateTime -- VT_FILETIME  (For variants: VT_DATE)</para>
             /// <para>FormatID: (FMTID_Storage) {B725F130-47EF-101A-A5F1-02608C9EEBAC}, 15 (PID_STG_CREATETIME)</para>
             /// </summary>
-            public static PropertyKey DateCreated
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 15 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey DateCreated => new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 15 );
 
             /// <summary>
             /// <para>Name:     System.DateImported -- PKEY_DateImported</para>
@@ -334,15 +199,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     DateTime -- VT_FILETIME  (For variants: VT_DATE)</para>
             /// <para>FormatID: (FMTID_ImageProperties) {14B81DA1-0135-4D31-96D9-6CBFC9671A99}, 18258</para>
             /// </summary>
-            public static PropertyKey DateImported
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{14B81DA1-0135-4D31-96D9-6CBFC9671A99}" ), 18258 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey DateImported => new PropertyKey( new Guid("{14B81DA1-0135-4D31-96D9-6CBFC9671A99}" ), 18258 );
 
             /// <summary>
             /// <para>Name:     System.DateModified -- PKEY_DateModified</para>
@@ -351,15 +208,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     DateTime -- VT_FILETIME  (For variants: VT_DATE)</para>
             /// <para>FormatID: (FMTID_Storage) {B725F130-47EF-101A-A5F1-02608C9EEBAC}, 14 (PID_STG_WRITETIME)</para>
             /// </summary>
-            public static PropertyKey DateModified
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 14 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey DateModified => new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 14 );
 
             /// <summary>
             /// <para>Name:     System.DescriptionID -- PKEY_DescriptionID</para>
@@ -368,15 +217,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     Buffer -- VT_VECTOR | VT_UI1  (For variants: VT_ARRAY | VT_UI1)</para>
             /// <para>FormatID: (FMTID_ShellDetails) {28636AA6-953D-11D2-B5D6-00C04FD918D0}, 2 (PID_DESCRIPTIONID)</para>
             /// </summary>
-            public static PropertyKey DescriptionID
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 2 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey DescriptionID => new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 2 );
 
             /// <summary>
             /// <para>Name:     System.DueDate -- PKEY_DueDate</para>
@@ -384,15 +225,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     DateTime -- VT_FILETIME  (For variants: VT_DATE)</para>
             /// <para>FormatID: {3F8472B5-E0AF-4DB2-8071-C53FE76AE7CE}, 100</para>
             /// </summary>
-            public static PropertyKey DueDate
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{3F8472B5-E0AF-4DB2-8071-C53FE76AE7CE}" ), 100 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey DueDate => new PropertyKey( new Guid("{3F8472B5-E0AF-4DB2-8071-C53FE76AE7CE}" ), 100 );
 
             /// <summary>
             /// <para>Name:     System.EndDate -- PKEY_EndDate</para>
@@ -400,15 +233,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     DateTime -- VT_FILETIME  (For variants: VT_DATE)</para>
             /// <para>FormatID: {C75FAA05-96FD-49E7-9CB4-9F601082D553}, 100</para>
             /// </summary>
-            public static PropertyKey EndDate
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{C75FAA05-96FD-49E7-9CB4-9F601082D553}" ), 100 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey EndDate => new PropertyKey( new Guid("{C75FAA05-96FD-49E7-9CB4-9F601082D553}" ), 100 );
 
             /// <summary>
             /// <para>Name:     System.FileAllocationSize -- PKEY_FileAllocationSize</para>
@@ -417,15 +242,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     UInt64 -- VT_UI8</para>
             /// <para>FormatID: (FMTID_Storage) {B725F130-47EF-101A-A5F1-02608C9EEBAC}, 18 (PID_STG_ALLOCSIZE)</para>
             /// </summary>
-            public static PropertyKey FileAllocationSize
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 18 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey FileAllocationSize => new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 18 );
 
             /// <summary>
             /// <para>Name:     System.FileAttributes -- PKEY_FileAttributes</para>
@@ -434,15 +251,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     UInt32 -- VT_UI4</para>
             /// <para>FormatID: (FMTID_Storage) {B725F130-47EF-101A-A5F1-02608C9EEBAC}, 13 (PID_STG_ATTRIBUTES)</para>
             /// </summary>
-            public static PropertyKey FileAttributes
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 13 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey FileAttributes => new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 13 );
 
             /// <summary>
             /// <para>Name:     System.FileCount -- PKEY_FileCount</para>
@@ -451,15 +260,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     UInt64 -- VT_UI8</para>
             /// <para>FormatID: (FMTID_ShellDetails) {28636AA6-953D-11D2-B5D6-00C04FD918D0}, 12</para>
             /// </summary>
-            public static PropertyKey FileCount
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 12 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey FileCount => new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 12 );
 
             /// <summary>
             /// <para>Name:     System.FileDescription -- PKEY_FileDescription</para>
@@ -468,15 +269,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     String -- VT_LPWSTR  (For variants: VT_BSTR)</para>
             /// <para>FormatID: (PSFMTID_VERSION) {0CEF7D53-FA64-11D1-A203-0000F81FEDEE}, 3 (PIDVSI_FileDescription)</para>
             /// </summary>
-            public static PropertyKey FileDescription
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{0CEF7D53-FA64-11D1-A203-0000F81FEDEE}" ), 3 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey FileDescription => new PropertyKey( new Guid("{0CEF7D53-FA64-11D1-A203-0000F81FEDEE}" ), 3 );
 
             /// <summary>
             /// <para>Name:     System.FileExtension -- PKEY_FileExtension</para>
@@ -502,15 +295,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     String -- VT_LPWSTR  (For variants: VT_BSTR)</para>
             /// <para>FormatID: {E4F10A3C-49E6-405D-8288-A23BD4EEAA6C}, 100</para>
             /// </summary>
-            public static PropertyKey FileExtension
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{E4F10A3C-49E6-405D-8288-A23BD4EEAA6C}" ), 100 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey FileExtension => new PropertyKey( new Guid("{E4F10A3C-49E6-405D-8288-A23BD4EEAA6C}" ), 100 );
 
             /// <summary>
             /// <para>Name:     System.FileFRN -- PKEY_FileFRN</para>
@@ -520,15 +305,7 @@ namespace System.Windows.Forms.Taskbar
             /// <para>Type:     UInt64 -- VT_UI8</para>
             /// <para>FormatID: (FMTID_Storage) {B725F130-47EF-101A-A5F1-02608C9EEBAC}, 21 (PID_STG_FRN)</para>
             /// </summary>
-            public static PropertyKey FileFRN
-            {
-                get
-                {
-                    var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 21 );
-
-                    return key;
-                }
-            }
+            public static PropertyKey FileFRN => new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 21 );
 
             /// <summary>
             /// <para>Name:     System.FileName -- PKEY_FileName</para>
@@ -562,7 +339,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{41CF5AE0-F75A-4806-BD87-59C7D9248EB9}" ), 100 );
-
                     return key;
                 }
             }
@@ -579,7 +355,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{9B174B34-40FF-11D2-A27E-00C04FC30871}" ), 4 );
-
                     return key;
                 }
             }
@@ -596,7 +371,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{0CEF7D53-FA64-11D1-A203-0000F81FEDEE}" ), 4 );
-
                     return key;
                 }
             }
@@ -613,7 +387,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 0 );
-
                     return key;
                 }
             }
@@ -630,7 +403,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{67DF94DE-0CA7-4D6F-B792-053A3E4F03CF}" ), 100 );
-
                     return key;
                 }
             }
@@ -648,7 +420,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{45EAE747-8E2A-40AE-8CBF-CA52ABA6152A}" ), 100 );
-
                     return key;
                 }
             }
@@ -665,7 +436,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{E3E0584C-B788-4A5A-BB20-7F5A44C9ACDD}" ), 12 );
-
                     return key;
                 }
             }
@@ -683,7 +453,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{DC54FD2E-189D-4871-AA01-08C2F57A4ABC}" ), 100 );
-
                     return key;
                 }
             }
@@ -700,7 +469,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{9B174B35-40FF-11D2-A27E-00C04FC30871}" ), 2 );
-
                     return key;
                 }
             }
@@ -719,7 +487,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{1E3EE840-BC2B-476C-8237-2ACD1A839B22}" ), 6 );
-
                     return key;
                 }
             }
@@ -735,7 +502,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{A26F4AFC-7346-4299-BE47-EB1AE613139F}" ), 100 );
-
                     return key;
                 }
             }
@@ -751,7 +517,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{D7750EE0-C6A4-48EC-B53E-B87B52E6D073}" ), 100 );
-
                     return key;
                 }
             }
@@ -767,7 +532,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{E3E0584C-B788-4A5A-BB20-7F5A44C9ACDD}" ), 11 );
-
                     return key;
                 }
             }
@@ -785,7 +549,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{A3B29791-7713-4E1D-BB40-17DB85F01831}" ), 100 );
-
                     return key;
                 }
             }
@@ -802,7 +565,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{C9944A21-A406-48FE-8225-AEC7E24C211B}" ), 17 );
-
                     return key;
                 }
             }
@@ -819,7 +581,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{0CEF7D53-FA64-11D1-A203-0000F81FEDEE}" ), 5 );
-
                     return key;
                 }
             }
@@ -836,7 +597,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F23F425C-71A1-4FA8-922F-678EA4A60408}" ), 100 );
-
                     return key;
                 }
             }
@@ -853,7 +613,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{5D76B67F-9B3D-44BB-B6AE-25DA4F638A67}" ), 5 );
-
                     return key;
                 }
             }
@@ -870,7 +629,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{5D76B67F-9B3D-44BB-B6AE-25DA4F638A67}" ), 3 );
-
                     return key;
                 }
             }
@@ -886,7 +644,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{5CDA5FC8-33EE-4FF3-9094-AE7BD8868C4D}" ), 100 );
-
                     return key;
                 }
             }
@@ -903,7 +660,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{90E5E14E-648B-4826-B2AA-ACAF790E3513}" ), 10 );
-
                     return key;
                 }
             }
@@ -919,7 +675,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{5DA84765-E3FF-4278-86B0-A27967FBDD03}" ), 100 );
-
                     return key;
                 }
             }
@@ -935,7 +690,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{A6F360D2-55F9-48DE-B909-620E090A647C}" ), 100 );
-
                     return key;
                 }
             }
@@ -952,7 +706,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{346C8BD1-2E6A-4C45-89A4-61B78E8E700F}" ), 100 );
-
                     return key;
                 }
             }
@@ -969,7 +722,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{5D76B67F-9B3D-44BB-B6AE-25DA4F638A67}" ), 8 );
-
                     return key;
                 }
             }
@@ -986,7 +738,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{5D76B67F-9B3D-44BB-B6AE-25DA4F638A67}" ), 2 );
-
                     return key;
                 }
             }
@@ -1003,7 +754,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{E3E0584C-B788-4A5A-BB20-7F5A44C9ACDD}" ), 10 );
-
                     return key;
                 }
             }
@@ -1020,7 +770,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{5D76B67F-9B3D-44BB-B6AE-25DA4F638A67}" ), 4 );
-
                     return key;
                 }
             }
@@ -1037,7 +786,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 33 );
-
                     return key;
                 }
             }
@@ -1054,7 +802,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{EF884C5B-2BFE-41BB-AAE5-76EEDF4F9902}" ), 100 );
-
                     return key;
                 }
             }
@@ -1073,7 +820,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{D0A04F0A-462A-48A4-BB2F-3706E88DBD7D}" ), 100 );
-
                     return key;
                 }
             }
@@ -1089,7 +835,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{048658AD-2DB8-41A4-BBB6-AC1EF1207EB1}" ), 100 );
-
                     return key;
                 }
             }
@@ -1108,7 +853,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F7DB74B4-4287-4103-AFBA-F1B13DCD75CF}" ), 100 );
-
                     return key;
                 }
             }
@@ -1140,7 +884,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 2 );
-
                     return key;
                 }
             }
@@ -1170,7 +913,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{E3E0584C-B788-4A5A-BB20-7F5A44C9ACDD}" ), 6 );
-
                     return key;
                 }
             }
@@ -1203,7 +945,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{DABD30ED-0043-4789-A7F8-D013A4736622}" ), 100 );
-
                     return key;
                 }
             }
@@ -1226,7 +967,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{6B8DA074-3B5C-43BC-886F-0A2CDCE00B6F}" ), 100 );
-
                     return key;
                 }
             }
@@ -1280,7 +1020,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 10 );
-
                     return key;
                 }
             }
@@ -1312,7 +1051,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{D7313FF1-A77A-401C-8C99-3DBDD68ADD36}" ), 100 );
-
                     return key;
                 }
             }
@@ -1333,7 +1071,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{D4D0AA16-9948-41A4-AA85-D97FF9646993}" ), 100 );
-
                     return key;
                 }
             }
@@ -1370,7 +1107,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{E3E0584C-B788-4A5A-BB20-7F5A44C9ACDD}" ), 7 );
-
                     return key;
                 }
             }
@@ -1403,7 +1139,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 8 );
-
                     return key;
                 }
             }
@@ -1441,7 +1176,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 11 );
-
                     return key;
                 }
             }
@@ -1478,7 +1212,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 4 );
-
                     return key;
                 }
             }
@@ -1503,7 +1236,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{49691C90-7E17-101A-A91C-08002B2ECDA9}" ), 9 );
-
                     return key;
                 }
             }
@@ -1520,7 +1252,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 5 );
-
                     return key;
                 }
             }
@@ -1539,7 +1270,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{1E3EE840-BC2B-476C-8237-2ACD1A839B22}" ), 3 );
-
                     return key;
                 }
             }
@@ -1557,7 +1287,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F04BEF95-C585-4197-A2B7-DF46FDC9EE6D}" ), 100 );
-
                     return key;
                 }
             }
@@ -1574,7 +1303,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}" ), 28 );
-
                     return key;
                 }
             }
@@ -1590,7 +1318,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{FDF84370-031A-4ADD-9E91-0D775F1C6605}" ), 100 );
-
                     return key;
                 }
             }
@@ -1607,7 +1334,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{0B63E350-9CCC-11D0-BCDB-00805FCCCE04}" ), 5 );
-
                     return key;
                 }
             }
@@ -1624,7 +1350,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 6 );
-
                     return key;
                 }
             }
@@ -1640,7 +1365,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{00000000-0000-0000-0000-000000000000}" ), 0 );
-
                     return key;
                 }
             }
@@ -1656,7 +1380,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{A94688B6-7D9F-4570-A648-E3DFC0AB2B3F}" ), 100 );
-
                     return key;
                 }
             }
@@ -1672,7 +1395,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{6D24888F-4718-4BDA-AFED-EA0FB4386CD8}" ), 100 );
-
                     return key;
                 }
             }
@@ -1689,7 +1411,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{0CEF7D53-FA64-11D1-A203-0000F81FEDEE}" ), 6 );
-
                     return key;
                 }
             }
@@ -1706,7 +1427,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{5D76B67F-9B3D-44BB-B6AE-25DA4F638A67}" ), 6 );
-
                     return key;
                 }
             }
@@ -1723,7 +1443,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{64440492-4C8B-11D1-8B70-080036B11A03}" ), 21 );
-
                     return key;
                 }
             }
@@ -1739,7 +1458,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{10984E0A-F9F2-4321-B7EF-BAF195AF4319}" ), 100 );
-
                     return key;
                 }
             }
@@ -1755,7 +1473,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{A7FE0840-1344-46F0-8D37-52ED712A4BF9}" ), 100 );
-
                     return key;
                 }
             }
@@ -1772,7 +1489,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{DFB9A04D-362F-4CA3-B30B-0254B17B5B84}" ), 100 );
-
                     return key;
                 }
             }
@@ -1790,7 +1506,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 24 );
-
                     return key;
                 }
             }
@@ -1812,7 +1527,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 30 );
-
                     return key;
                 }
             }
@@ -1829,7 +1543,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 9 );
-
                     return key;
                 }
             }
@@ -1846,7 +1559,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{9B174B35-40FF-11D2-A27E-00C04FC30871}" ), 5 );
-
                     return key;
                 }
             }
@@ -1863,7 +1575,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{9C1FCF74-2D97-41BA-B4AE-CB2E3661A6E4}" ), 5 );
-
                     return key;
                 }
             }
@@ -1881,7 +1592,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{D98BE98B-B86B-4095-BF52-9D23B2E0A752}" ), 100 );
-
                     return key;
                 }
             }
@@ -1897,7 +1607,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{39A7F922-477C-48DE-8BC8-B28441E342E3}" ), 100 );
-
                     return key;
                 }
             }
@@ -1914,7 +1623,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F21D9941-81F0-471A-ADEE-4E74B49217ED}" ), 100 );
-
                     return key;
                 }
             }
@@ -1932,7 +1640,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{64440492-4C8B-11D1-8B70-080036B11A03}" ), 9 );
-
                     return key;
                 }
             }
@@ -1950,7 +1657,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{90197CA7-FD8F-4E8C-9DA3-B57E1E609295}" ), 100 );
-
                     return key;
                 }
             }
@@ -1967,7 +1673,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F8D3F6AC-4874-42CB-BE59-AB454B30716A}" ), 100 );
-
                     return key;
                 }
             }
@@ -1985,7 +1690,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{D0C7F054-3F72-4725-8527-129A577CB269}" ), 100 );
-
                     return key;
                 }
             }
@@ -2003,7 +1707,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 25 );
-
                     return key;
                 }
             }
@@ -2020,7 +1723,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{EF884C5B-2BFE-41BB-AAE5-76EEDF4F9902}" ), 200 );
-
                     return key;
                 }
             }
@@ -2037,7 +1739,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{64440492-4C8B-11D1-8B70-080036B11A03}" ), 12 );
-
                     return key;
                 }
             }
@@ -2054,7 +1755,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{EF884C5B-2BFE-41BB-AAE5-76EEDF4F9902}" ), 300 );
-
                     return key;
                 }
             }
@@ -2072,7 +1772,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{A09F084E-AD41-489F-8076-AA5BE3082BCA}" ), 100 );
-
                     return key;
                 }
             }
@@ -2089,7 +1788,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 12 );
-
                     return key;
                 }
             }
@@ -2106,7 +1804,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{14B81DA1-0135-4D31-96D9-6CBFC9671A99}" ), 305 );
-
                     return key;
                 }
             }
@@ -2122,7 +1819,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{668CDFA5-7A1B-4323-AE4B-E527393A1D81}" ), 100 );
-
                     return key;
                 }
             }
@@ -2138,7 +1834,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{48FD6EC8-8A12-4CDF-A03E-4EC5A511EDDE}" ), 100 );
-
                     return key;
                 }
             }
@@ -2154,7 +1849,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{000214A1-0000-0000-C000-000000000046}" ), 9 );
-
                     return key;
                 }
             }
@@ -2171,7 +1865,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 3 );
-
                     return key;
                 }
             }
@@ -2188,7 +1881,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 17 );
-
                     return key;
                 }
             }
@@ -2206,7 +1898,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{446D16B1-8DAD-4870-A748-402EA43D788C}" ), 100 );
-
                     return key;
                 }
             }
@@ -2223,7 +1914,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 27 );
-
                     return key;
                 }
             }
@@ -2240,7 +1930,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}" ), 2 );
-
                     return key;
                 }
             }
@@ -2257,7 +1946,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{28636AA6-953D-11D2-B5D6-00C04FD918D0}" ), 14 );
-
                     return key;
                 }
             }
@@ -2274,7 +1962,6 @@ namespace System.Windows.Forms.Taskbar
                 get
                 {
                     var key = new PropertyKey( new Guid("{0CEF7D53-FA64-11D1-A203-0000F81FEDEE}" ), 9 );
-
                     return key;
                 }
             }
@@ -2287,8 +1974,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class AppUserModel
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -2302,7 +1987,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}" ), 8 );
-
                         return key;
                     }
                 }
@@ -2318,7 +2002,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}" ), 5 );
-
                         return key;
                     }
                 }
@@ -2334,7 +2017,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}" ), 6 );
-
                         return key;
                     }
                 }
@@ -2350,7 +2032,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}" ), 9 );
-
                         return key;
                     }
                 }
@@ -2366,7 +2047,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}" ), 2 );
-
                         return key;
                     }
                 }
@@ -2382,7 +2062,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}" ), 4 );
-
                         return key;
                     }
                 }
@@ -2398,12 +2077,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}" ), 3 );
-
                         return key;
                     }
                 }
                 #endregion
-
             }
 
             /// <summary>
@@ -2411,8 +2088,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Audio
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -2427,7 +2102,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440490-4C8B-11D1-8B70-080036B11A03}" ), 7 );
-
                         return key;
                     }
                 }
@@ -2444,7 +2118,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440490-4C8B-11D1-8B70-080036B11A03}" ), 10 );
-
                         return key;
                     }
                 }
@@ -2461,7 +2134,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440490-4C8B-11D1-8B70-080036B11A03}" ), 4 );
-
                         return key;
                     }
                 }
@@ -2478,7 +2150,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440490-4C8B-11D1-8B70-080036B11A03}" ), 2 );
-
                         return key;
                     }
                 }
@@ -2494,7 +2165,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{E6822FEE-8C17-4D62-823C-8E9CFCBD1D5C}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2510,7 +2180,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{2579E5D0-1116-4084-BD9A-9B4F7CB4DF5E}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2527,7 +2196,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440490-4C8B-11D1-8B70-080036B11A03}" ), 5 );
-
                         return key;
                     }
                 }
@@ -2544,7 +2212,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440490-4C8B-11D1-8B70-080036B11A03}" ), 6 );
-
                         return key;
                     }
                 }
@@ -2561,7 +2228,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440490-4C8B-11D1-8B70-080036B11A03}" ), 9 );
-
                         return key;
                     }
                 }
@@ -2578,14 +2244,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440490-4C8B-11D1-8B70-080036B11A03}" ), 8 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -2593,8 +2255,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Calendar
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -2609,7 +2269,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{293CA35A-09AA-4DD2-B180-1FE245728A52}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2626,7 +2285,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{BFEE9149-E3E2-49A7-A862-C05988145CEC}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2642,7 +2300,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{315B9C8D-80A9-4EF9-AE16-8E746DA51D70}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2658,7 +2315,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{F6272D18-CECC-40B1-B26A-3911717AA7BD}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2674,7 +2330,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{D55BAE5A-3892-417A-A649-C6AC5AAAEAB3}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2690,7 +2345,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{09429607-582D-437F-84C3-DE93A2B24C3C}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2707,7 +2361,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{744C8242-4DF5-456C-AB9E-014EFB9021E3}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2724,7 +2377,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{AAA660F9-9865-458E-B484-01BC7FE3973E}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2740,7 +2392,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{72FC5BA4-24F9-4011-9F3F-ADD27AFAD818}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2756,7 +2407,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{0BA7D6C3-568D-4159-AB91-781A91FB71E5}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2772,7 +2422,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{B33AF30B-F552-4584-936C-CB93E5CDA29F}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2788,7 +2437,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{00F58A38-C54B-4C40-8696-97235980EAE1}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2805,7 +2453,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{188C1F91-3C40-4132-9EC5-D8B03B72A8A2}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2822,7 +2469,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{5BF396D4-5EB2-466F-BDE9-2FB3F2361D6E}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2840,14 +2486,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{53DA57CF-62C0-45C4-81DE-7610BCEFD7F5}" ), 100 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -2855,8 +2497,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Communication
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -2871,7 +2511,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{E3E0584C-B788-4A5A-BB20-7F5A44C9ACDD}" ), 9 );
-
                         return key;
                     }
                 }
@@ -2888,7 +2527,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{428040AC-A177-4C8A-9760-F6F761227F9A}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2905,7 +2543,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{83A6347E-6FE4-4F40-BA9C-C4865240D1F4}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2922,7 +2559,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{C9C34F84-2241-4401-B607-BD20ED75AE7F}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2939,7 +2575,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{EC0B4191-AB0B-4C66-90B6-C6637CDEBBAB}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2956,7 +2591,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{8619A4B6-9F4D-4429-8C0F-B996CA59E335}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2972,7 +2606,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{807B653A-9E91-43EF-8F97-11CE04EE20C5}" ), 100 );
-
                         return key;
                     }
                 }
@@ -2988,7 +2621,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{BE1A72C6-9A1D-46B7-AFE7-AFAF8CEF4999}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3006,14 +2638,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{A6744477-C237-475B-A075-54F34498292A}" ), 100 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -3021,8 +2649,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Computer
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -3037,14 +2663,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9B174B35-40FF-11D2-A27E-00C04FC30871}" ), 7 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -3052,8 +2674,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Contact
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -3067,7 +2687,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9AD5BADB-CEA7-4470-A03D-B84E51B9949E}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3083,7 +2702,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{CD102C9C-5540-4A88-A6F6-64E4981C8CD1}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3099,7 +2717,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9A93244D-A7AD-4FF8-9B99-45EE4CC09AF6}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3115,7 +2732,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 47 );
-
                         return key;
                     }
                 }
@@ -3131,7 +2747,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{730FB6DD-CF7C-426B-A03F-BD166CC9EE24}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3147,7 +2762,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{402B5934-EC5A-48C3-93E6-85E86A2D934E}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3163,7 +2777,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{B0B87314-FCF6-4FEB-8DFF-A50DA6AF561C}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3179,7 +2792,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{E1D4A09E-D758-4CD1-B6EC-34A8B5A73F80}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3195,7 +2807,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{BC4E71CE-17F9-48D5-BEE9-021DF0EA5409}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3211,7 +2822,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{446F787F-10C4-41CB-A6C4-4D0343551597}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3227,7 +2837,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{DDD1460F-C0BF-4553-8CE4-10433C908FB0}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3244,7 +2853,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{91EFF6F3-2E27-42CA-933E-7C999FBE310B}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3260,7 +2868,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{56310920-2491-4919-99CE-EADB06FAFDB2}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3276,7 +2883,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6A15E5A0-0A1E-4CD7-BB8C-D2F1B0C929BC}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3292,7 +2898,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{BF53D1C3-49E0-4F7F-8567-5A821D8AC542}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3308,7 +2913,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{8FDC6DEA-B929-412B-BA90-397A257465FE}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3340,7 +2944,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{8589E481-6040-473D-B171-7FA89C2708ED}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3356,7 +2959,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{FC9F7306-FF8F-4D49-9FB6-3FFE5C0951EC}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3372,7 +2974,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{F8FA7FA3-D12B-4785-8A4E-691A94F7A3E7}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3388,7 +2989,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{38965063-EDC8-4268-8491-B7723172CF29}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3404,7 +3004,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{644D37B4-E1B3-4BAD-B099-7E7C04966ACA}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3420,7 +3019,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{84D8F337-981D-44B3-9615-C7596DBA17E3}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3436,7 +3034,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{CC6F4F24-6083-4BD4-8754-674D0DE87AB8}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3452,7 +3049,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{F1A24AA7-9CA7-40F6-89EC-97DEF9FFE8DB}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3468,7 +3064,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{14977844-6B49-4AAD-A714-A4513BF60460}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3484,7 +3079,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{635E9051-50A5-4BA2-B9DB-4ED056C77296}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3500,7 +3094,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{3C8CEE58-D4F0-4CF9-B756-4E5D24447BCD}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3516,7 +3109,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{3C8CEE58-D4F0-4CF9-B756-4E5D24447BCD}" ), 101 );
-
                         return key;
                     }
                 }
@@ -3532,7 +3124,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{5DC2253F-5E11-4ADF-9CFE-910DD01E3E70}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3548,7 +3139,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{98F98354-617A-46B8-8560-5B1B64BF1F89}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3564,7 +3154,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 65 );
-
                         return key;
                     }
                 }
@@ -3580,7 +3169,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{08A65AA1-F4C9-43DD-9DDF-A33D8E7EAD85}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3596,7 +3184,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{8AFCC170-8A46-4B53-9EEE-90BAE7151E62}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3612,7 +3199,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7B9F6399-0A3F-4B12-89BD-4ADC51C918AF}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3628,7 +3214,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{C89A23D0-7D6D-4EB8-87D4-776A82D493E5}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3644,7 +3229,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{0ADEF160-DB3F-4308-9A21-06237B16FA2A}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3660,7 +3244,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{660E04D6-81AB-4977-A09F-82313113AB26}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3676,7 +3259,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 20 );
-
                         return key;
                     }
                 }
@@ -3692,7 +3274,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{D68DBD8A-3374-4B81-9972-3EC30682DB3D}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3708,7 +3289,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{F3D8F40D-50CB-44A2-9718-40CB9119495D}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3724,7 +3304,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 6 );
-
                         return key;
                     }
                 }
@@ -3740,7 +3319,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{97B0AD89-DF49-49CC-834E-660974FD755B}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3756,7 +3334,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{8F367200-C270-457C-B1D4-E07C5BCD90C7}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3772,7 +3349,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{C0AC206A-827E-4650-95AE-77E2BB74FCC9}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3788,7 +3364,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 71 );
-
                         return key;
                     }
                 }
@@ -3804,7 +3379,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 35 );
-
                         return key;
                     }
                 }
@@ -3820,7 +3394,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 74 );
-
                         return key;
                     }
                 }
@@ -3836,7 +3409,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 7 );
-
                         return key;
                     }
                 }
@@ -3852,7 +3424,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{508161FA-313B-43D5-83A1-C1ACCF68622C}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3868,7 +3439,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6E682923-7F7B-4F0C-A337-CFCA296687BF}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3884,7 +3454,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{8F167568-0AAE-4322-8ED9-6055B7B0E398}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3900,7 +3469,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{95C656C1-2ABF-4148-9ED3-9EC602E3B7CD}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3916,7 +3484,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{8B26EA41-058F-43F6-AECC-4035681CE977}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3932,7 +3499,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{71B377D6-E570-425F-A170-809FAE73E54E}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3948,7 +3514,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{FF962609-B7D6-4999-862D-95180D529AEA}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3964,7 +3529,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{D6304E01-F8F5-4F45-8B15-D024A6296789}" ), 100 );
-
                         return key;
                     }
                 }
@@ -3980,7 +3544,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 69 );
-
                         return key;
                     }
                 }
@@ -3996,7 +3559,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{C8EA94F0-A9E3-4969-A94B-9C62A95324E0}" ), 100 );
-
                         return key;
                     }
                 }
@@ -4012,7 +3574,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{E53D799D-0F3F-466E-B2FF-74634A3CB7A4}" ), 100 );
-
                         return key;
                     }
                 }
@@ -4028,7 +3589,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{18BBD425-ECFD-46EF-B612-7B4A6034EDA0}" ), 100 );
-
                         return key;
                     }
                 }
@@ -4044,7 +3604,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{DE5EF3C7-46E1-484E-9999-62C5308394C1}" ), 100 );
-
                         return key;
                     }
                 }
@@ -4060,7 +3619,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{F1176DFE-7138-4640-8B4C-AE375DC70A6D}" ), 100 );
-
                         return key;
                     }
                 }
@@ -4076,7 +3634,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{63C25B20-96BE-488F-8788-C09C407AD812}" ), 100 );
-
                         return key;
                     }
                 }
@@ -4092,7 +3649,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 48 );
-
                         return key;
                     }
                 }
@@ -4108,7 +3664,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 25 );
-
                         return key;
                     }
                 }
@@ -4124,7 +3679,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7268AF55-1CE4-4F6E-A41F-B6E4EF10E4A9}" ), 100 );
-
                         return key;
                     }
                 }
@@ -4140,7 +3694,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9D2408B6-3167-422B-82B0-F583B7A7CFE3}" ), 100 );
-
                         return key;
                     }
                 }
@@ -4156,7 +3709,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{176DC63C-2688-4E89-8143-A347800F25E9}" ), 73 );
-
                         return key;
                     }
                 }
@@ -4172,7 +3724,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{C554493C-C1F7-40C1-A76C-EF8C0614003E}" ), 100 );
-
                         return key;
                     }
                 }
@@ -4209,7 +3760,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
 
                 #region sub-classes
 
@@ -4283,8 +3833,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class JA
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -4338,9 +3886,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -4348,8 +3893,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Device
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -4369,9 +3912,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -4379,8 +3919,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class DeviceInterface
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -4451,9 +3989,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -4461,8 +3996,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Devices
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -5248,7 +4781,6 @@ namespace System.Windows.Forms.Taskbar
                 }
                 #endregion
 
-
                 #region sub-classes
 
                 /// <summary>
@@ -5374,8 +4906,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Notifications
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -5480,9 +5010,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -5490,8 +5017,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Document
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -5914,9 +5439,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -5924,8 +5446,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class DRM
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -6013,9 +5533,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -6023,8 +5540,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class GPS
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -6925,9 +6440,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -6935,8 +6447,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Identity
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -7058,9 +6568,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -7068,8 +6575,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class IdentityProvider
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -7106,9 +6611,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -7116,8 +6618,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Image
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -7357,9 +6857,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -7367,8 +6864,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Journal
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -7403,9 +6898,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -7413,8 +6905,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class LayoutPattern
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -7453,9 +6943,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -7463,8 +6950,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Link
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -7639,9 +7124,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -7649,8 +7131,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Media
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -8194,9 +7674,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -8204,8 +7681,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Message
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -8610,9 +8085,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -8620,8 +8092,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Music
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -8931,9 +8401,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -8941,8 +8408,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Note
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -8979,9 +8444,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -8989,8 +8451,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Photo
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -10454,9 +9914,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -10464,8 +9921,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class PropGroup
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -10772,9 +10227,6 @@ namespace System.Windows.Forms.Taskbar
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -10782,8 +10234,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class PropList
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -10962,7 +10412,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{C9944A21-A406-48FE-8225-AEC7E24C211B}" ), 6 );
-
                         return key;
                     }
                 }
@@ -10980,7 +10429,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{C9944A21-A406-48FE-8225-AEC7E24C211B}" ), 5 );
-
                         return key;
                     }
                 }
@@ -10997,7 +10445,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{C9944A21-A406-48FE-8225-AEC7E24C211B}" ), 3 );
-
                         return key;
                     }
                 }
@@ -11014,14 +10461,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{F2275480-F782-4291-BD94-F13693513AEC}" ), 0 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -11029,8 +10472,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class RecordedTV
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -11045,7 +10486,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 7 );
-
                         return key;
                     }
                 }
@@ -11062,7 +10502,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 4 );
-
                         return key;
                     }
                 }
@@ -11078,7 +10517,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 15 );
-
                         return key;
                     }
                 }
@@ -11095,7 +10533,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 2 );
-
                         return key;
                     }
                 }
@@ -11111,7 +10548,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 16 );
-
                         return key;
                     }
                 }
@@ -11127,7 +10563,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 12 );
-
                         return key;
                     }
                 }
@@ -11143,7 +10578,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 17 );
-
                         return key;
                     }
                 }
@@ -11159,7 +10593,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 18 );
-
                         return key;
                     }
                 }
@@ -11175,7 +10608,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 13 );
-
                         return key;
                     }
                 }
@@ -11191,7 +10623,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 14 );
-
                         return key;
                     }
                 }
@@ -11207,7 +10638,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{2C53C813-FB63-4E22-A1AB-0B331CA1E273}" ), 100 );
-
                         return key;
                     }
                 }
@@ -11223,7 +10653,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{4684FE97-8765-4842-9C13-F006447B178C}" ), 100 );
-
                         return key;
                     }
                 }
@@ -11239,7 +10668,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 3 );
-
                         return key;
                     }
                 }
@@ -11255,7 +10683,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{A5477F61-7A82-4ECA-9DDE-98B69B2479B3}" ), 100 );
-
                         return key;
                     }
                 }
@@ -11272,7 +10699,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{6D748DE2-8D38-4CC3-AC60-F009B057C557}" ), 5 );
-
                         return key;
                     }
                 }
@@ -11288,14 +10714,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{1B5439E7-EBA1-4AF8-BDD7-7AF1D4549493}" ), 100 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -11303,8 +10725,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Search
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -11319,7 +10739,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{560C36C0-503A-11CF-BAA1-00004C752A9A}" ), 2 );
-
                         return key;
                     }
                 }
@@ -11336,7 +10755,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{BCEEE283-35DF-4D53-826A-F36A3EEFC6BE}" ), 100 );
-
                         return key;
                     }
                 }
@@ -11354,7 +10772,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{B725F130-47EF-101A-A5F1-02608C9EEBAC}" ), 19 );
-
                         return key;
                     }
                 }
@@ -11372,7 +10789,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{49691C90-7E17-101A-A91C-08002B2ECDA9}" ), 5 );
-
                         return key;
                     }
                 }
@@ -11388,7 +10804,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7B03B546-FA4F-4A52-A2FE-03D5311E5865}" ), 100 );
-
                         return key;
                     }
                 }
@@ -11405,7 +10820,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{0B63E350-9CCC-11D0-BCDB-00805FCCCE04}" ), 8 );
-
                         return key;
                     }
                 }
@@ -11423,7 +10837,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{49691C90-7E17-101A-A91C-08002B2ECDA9}" ), 4 );
-
                         return key;
                     }
                 }
@@ -11440,7 +10853,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{0B63E343-9CCC-11D0-BCDB-00805FCCCE04}" ), 23 );
-
                         return key;
                     }
                 }
@@ -11457,7 +10869,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{0B63E343-9CCC-11D0-BCDB-00805FCCCE04}" ), 24 );
-
                         return key;
                     }
                 }
@@ -11474,7 +10885,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{560C36C0-503A-11CF-BAA1-00004C752A9A}" ), 3 );
-
                         return key;
                     }
                 }
@@ -11491,7 +10901,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{560C36C0-503A-11CF-BAA1-00004C752A9A}" ), 4 );
-
                         return key;
                     }
                 }
@@ -11508,7 +10917,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{49691C90-7E17-101A-A91C-08002B2ECDA9}" ), 3 );
-
                         return key;
                     }
                 }
@@ -11525,7 +10933,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{A06992B3-8CAF-4ED7-A547-B259E32AC9FC}" ), 100 );
-
                         return key;
                     }
                 }
@@ -11542,7 +10949,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{0B63E343-9CCC-11D0-BCDB-00805FCCCE04}" ), 2 );
-
                         return key;
                     }
                 }
@@ -11559,14 +10965,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{0B63E343-9CCC-11D0-BCDB-00805FCCCE04}" ), 12 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -11574,8 +10976,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Shell
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -11590,7 +10990,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{DE35258C-C695-4CBC-B982-38B0AD24CED0}" ), 2 );
-
                         return key;
                     }
                 }
@@ -11608,14 +11007,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{D6942081-D53B-443D-AD47-5E059D9CD27A}" ), 2 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -11623,8 +11018,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Software
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -11639,7 +11032,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{841E4F90-FF59-4D16-8947-E81BBFFAB36D}" ), 16 );
-
                         return key;
                     }
                 }
@@ -11656,14 +11048,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{0CEF7D53-FA64-11D1-A203-0000F81FEDEE}" ), 7 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -11671,8 +11059,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Sync
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -11686,7 +11072,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7BD5533E-AF15-44DB-B8C8-BD6624E1D032}" ), 13 );
-
                         return key;
                     }
                 }
@@ -11702,7 +11087,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{CE50C159-2FB8-41FD-BE68-D3E042E274BC}" ), 4 );
-
                         return key;
                     }
                 }
@@ -11718,7 +11102,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{CE50C159-2FB8-41FD-BE68-D3E042E274BC}" ), 6 );
-
                         return key;
                     }
                 }
@@ -11734,7 +11117,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{CE50C159-2FB8-41FD-BE68-D3E042E274BC}" ), 7 );
-
                         return key;
                     }
                 }
@@ -11750,7 +11132,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7BD5533E-AF15-44DB-B8C8-BD6624E1D032}" ), 2 );
-
                         return key;
                     }
                 }
@@ -11766,7 +11147,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7BD5533E-AF15-44DB-B8C8-BD6624E1D032}" ), 3 );
-
                         return key;
                     }
                 }
@@ -11782,7 +11162,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{CE50C159-2FB8-41FD-BE68-D3E042E274BC}" ), 2 );
-
                         return key;
                     }
                 }
@@ -11799,7 +11178,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7BD5533E-AF15-44DB-B8C8-BD6624E1D032}" ), 8 );
-
                         return key;
                     }
                 }
@@ -11816,7 +11194,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7BD5533E-AF15-44DB-B8C8-BD6624E1D032}" ), 9 );
-
                         return key;
                     }
                 }
@@ -11832,7 +11209,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7BD5533E-AF15-44DB-B8C8-BD6624E1D032}" ), 6 );
-
                         return key;
                     }
                 }
@@ -11848,7 +11224,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{CE50C159-2FB8-41FD-BE68-D3E042E274BC}" ), 3 );
-
                         return key;
                     }
                 }
@@ -11865,7 +11240,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7BD5533E-AF15-44DB-B8C8-BD6624E1D032}" ), 23 );
-
                         return key;
                     }
                 }
@@ -11882,7 +11256,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7BD5533E-AF15-44DB-B8C8-BD6624E1D032}" ), 24 );
-
                         return key;
                     }
                 }
@@ -11898,14 +11271,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{7BD5533E-AF15-44DB-B8C8-BD6624E1D032}" ), 10 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -11913,8 +11282,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Task
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -11928,7 +11295,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{D37D52C6-261C-4303-82B3-08B926AC6F12}" ), 100 );
-
                         return key;
                     }
                 }
@@ -11944,7 +11310,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{084D8A0A-E6D5-40DE-BF1F-C8820E7C877C}" ), 100 );
-
                         return key;
                     }
                 }
@@ -11960,14 +11325,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{08C7CC5F-60F2-4494-AD75-55E3E0B5ADD0}" ), 100 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -11975,8 +11336,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Video
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -11991,7 +11350,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 10 );
-
                         return key;
                     }
                 }
@@ -12008,7 +11366,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440492-4C8B-11D1-8B70-080036B11A03}" ), 20 );
-
                         return key;
                     }
                 }
@@ -12025,7 +11382,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 8 );
-
                         return key;
                     }
                 }
@@ -12042,7 +11398,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 44 );
-
                         return key;
                     }
                 }
@@ -12059,7 +11414,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 4 );
-
                         return key;
                     }
                 }
@@ -12076,7 +11430,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 6 );
-
                         return key;
                     }
                 }
@@ -12093,7 +11446,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 3 );
-
                         return key;
                     }
                 }
@@ -12111,7 +11463,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 42 );
-
                         return key;
                     }
                 }
@@ -12128,7 +11479,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 9 );
-
                         return key;
                     }
                 }
@@ -12145,7 +11495,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 2 );
-
                         return key;
                     }
                 }
@@ -12162,7 +11511,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 11 );
-
                         return key;
                     }
                 }
@@ -12179,7 +11527,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 43 );
-
                         return key;
                     }
                 }
@@ -12195,7 +11542,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 46 );
-
                         return key;
                     }
                 }
@@ -12213,14 +11559,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{64440491-4C8B-11D1-8B70-080036B11A03}" ), 45 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
 
             /// <summary>
@@ -12228,8 +11570,6 @@ namespace System.Windows.Forms.Taskbar
             /// </summary>
             public static class Volume
             {
-
-
                 #region Properties
 
                 /// <summary>
@@ -12244,7 +11584,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9B174B35-40FF-11D2-A27E-00C04FC30871}" ), 4 );
-
                         return key;
                     }
                 }
@@ -12260,7 +11599,6 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{149C0B69-2C2D-48FC-808F-D318D78C4636}" ), 2 );
-
                         return key;
                     }
                 }
@@ -12277,14 +11615,10 @@ namespace System.Windows.Forms.Taskbar
                     get
                     {
                         var key = new PropertyKey( new Guid("{9B174B35-40FF-11D2-A27E-00C04FC30871}" ), 10 );
-
                         return key;
                     }
                 }
                 #endregion
-
-
-
             }
             #endregion
         }

@@ -24,7 +24,6 @@ namespace System.Windows.Forms.Taskbar
                 var hr = shellItem.GetString( ref ItemTypePropertyKey, out var itemType );
                 if ( hr == HResult.Ok ) return (itemType);
             }
-
             return (null);
         }
 
@@ -52,10 +51,7 @@ namespace System.Windows.Forms.Taskbar
 
         internal static IntPtr PidlFromParsingName( string name )
         {
-            var retCode = ShellNativeMethods.SHParseDisplayName(
-                name, IntPtr.Zero, out var pidl, 0,
-                out var sfgao );
-
+            var retCode = ShellNativeMethods.SHParseDisplayName( name, IntPtr.Zero, out var pidl, 0, out var sfgao );
             return (CoreErrorHelper.Succeeded( retCode ) ? pidl : IntPtr.Zero);
         }
 

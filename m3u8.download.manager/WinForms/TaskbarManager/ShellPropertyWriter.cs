@@ -15,7 +15,7 @@ namespace System.Windows.Forms.Taskbar
             ParentShellObject = parent;
 
             // Open the property store for this shell object...
-            var guid = new Guid(ShellIIDGuid.IPropertyStore );
+            var guid = new Guid( ShellIIDGuid.IPropertyStore );
 
             try
             {

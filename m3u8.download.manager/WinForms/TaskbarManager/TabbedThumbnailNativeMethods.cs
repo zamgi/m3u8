@@ -7,52 +7,31 @@ namespace System.Windows.Forms.Taskbar
         internal const int DisplayFrame = 0x00000001;
 
         internal const int ForceIconicRepresentation = 7;
-        internal const int HasIconicBitmap = 10;
+        internal const int HasIconicBitmap           = 10;
 
-        internal const uint MsgfltAdd = 1;
-        internal const uint MsgfltRemove = 2;
-        internal const int ScClose = 0xF060;
-        internal const int ScMaximize = 0xF030;
-        internal const int ScMinimize = 0xF020;
-        internal const uint WaActive = 1;
+        internal const uint MsgfltAdd     = 1;
+        internal const uint MsgfltRemove  = 2;
+        internal const int  ScClose       = 0xF060;
+        internal const int  ScMaximize    = 0xF030;
+        internal const int  ScMinimize    = 0xF020;
+        internal const uint WaActive      = 1;
         internal const uint WaClickActive = 2;
         internal const uint WmDwmSendIconicLivePreviewBitmap = 0x0326;
-        internal const uint WmDwmSendIconicThumbnail = 0x0323;
+        internal const uint WmDwmSendIconicThumbnail         = 0x0323;
 
-        [DllImport("user32.dll", SetLastError=true)]
+        private const string USER32_DLL = "user32.dll";
+        private const string DWMAPI_DLL = "dwmapi.dll";
+        private const string GDI32_DLL  = "gdi32.dll";
+
+        [DllImport(USER32_DLL, SetLastError=true)]
         internal static extern IntPtr ChangeWindowMessageFilter( uint message, uint dwFlag );
 
-        [DllImport("user32.dll" )]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool ClientToScreen(
-            IntPtr hwnd,
-            ref NativePoint point );
-
-        [DllImport("dwmapi.dll" )]
-        internal static extern int DwmInvalidateIconicBitmaps( IntPtr hwnd );
-
-        [DllImport("dwmapi.dll" )]
-        internal static extern int DwmSetIconicLivePreviewBitmap(
-            IntPtr hwnd,
-            IntPtr hbitmap,
-            ref NativePoint ptClient,
-            uint flags );
-
-        [DllImport("dwmapi.dll" )]
-        internal static extern int DwmSetIconicLivePreviewBitmap(
-            IntPtr hwnd, IntPtr hbitmap, IntPtr ptClient, uint flags );
-
-        [DllImport("dwmapi.dll" )]
-        internal static extern int DwmSetIconicThumbnail(
-            IntPtr hwnd, IntPtr hbitmap, uint flags );
-
-        [DllImport("dwmapi.dll", PreserveSig = true )]
-        internal static extern int DwmSetWindowAttribute(
-            IntPtr hwnd,
-            //DWMWA_* values.
-            uint dwAttributeToSet,
-            IntPtr pvAttributeValue,
-            uint cbAttribute );
+        [DllImport(USER32_DLL)][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool ClientToScreen( IntPtr hwnd, ref NativePoint point );
+        [DllImport(DWMAPI_DLL)] internal static extern int DwmInvalidateIconicBitmaps( IntPtr hwnd );
+        [DllImport(DWMAPI_DLL)] internal static extern int DwmSetIconicLivePreviewBitmap( IntPtr hwnd, IntPtr hbitmap, ref NativePoint ptClient, uint flags );
+        [DllImport(DWMAPI_DLL)] internal static extern int DwmSetIconicLivePreviewBitmap( IntPtr hwnd, IntPtr hbitmap, IntPtr ptClient, uint flags );
+        [DllImport(DWMAPI_DLL)] internal static extern int DwmSetIconicThumbnail( IntPtr hwnd, IntPtr hbitmap, uint flags );
+        [DllImport(DWMAPI_DLL, PreserveSig=true)] internal static extern int DwmSetWindowAttribute( IntPtr hwnd, uint dwAttributeToSet, IntPtr pvAttributeValue, uint cbAttribute );
 
         /// <summary>
         /// Call this method to either enable custom previews on the taskbar (second argument as true) or to disable (second argument as
@@ -84,9 +63,7 @@ namespace System.Windows.Forms.Taskbar
             }
         }
 
-        [DllImport("user32.dll" )]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool GetClientRect( IntPtr hwnd, ref NativeRect rect );
+        [DllImport(USER32_DLL)][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool GetClientRect( IntPtr hwnd, ref NativeRect rect );
 
         internal static bool GetClientSize( IntPtr hwnd, out System.Drawing.Size size )
         {
@@ -100,15 +77,9 @@ namespace System.Windows.Forms.Taskbar
             return (true);
         }
 
-        [DllImport("user32.dll" )]
-        internal static extern IntPtr GetWindowDC( IntPtr hwnd );
-
-        [DllImport("user32.dll" )]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool GetWindowRect( IntPtr hwnd, ref NativeRect rect );
-
-        [DllImport("user32.dll" )]
-        internal static extern int ReleaseDC( IntPtr hwnd, IntPtr hdc );
+        [DllImport(USER32_DLL)] internal static extern IntPtr GetWindowDC( IntPtr hwnd );
+        [DllImport(USER32_DLL)][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool GetWindowRect( IntPtr hwnd, ref NativeRect rect );
+        [DllImport(USER32_DLL)] internal static extern int ReleaseDC( IntPtr hwnd, IntPtr hdc );
 
         /// <summary>Sets the specified iconic thumbnail for the specified window. This is typically done in response to a DWM message.</summary>
         /// <param name="hwnd">The window handle.</param>
@@ -137,7 +108,7 @@ namespace System.Windows.Forms.Taskbar
                 displayFrame ? DisplayFrame : (uint) 0 );
             if ( rc != 0 )
             {
-                throw Marshal.GetExceptionForHR( rc );
+                throw (Marshal.GetExceptionForHR( rc ));
             }
         }
 
@@ -162,25 +133,20 @@ namespace System.Windows.Forms.Taskbar
 
             if ( rc != 0 )
             {
-                var e = Marshal.GetExceptionForHR( rc );
-
-                if ( e is ArgumentException )
+                var ex = Marshal.GetExceptionForHR( rc );
+                if ( ex is ArgumentException )
                 {
                     // Ignore argument exception as it's not really recommended to be throwing exception when rendering the peek bitmap. If
                     // it's some other kind of exception, then throw it.
                 }
                 else
                 {
-                    throw e;
+                    throw ex;
                 }
             }
         }
 
-        [DllImport("gdi32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool StretchBlt(
-            IntPtr hDestDC, int destX, int destY, int destWidth, int destHeight,
-            IntPtr hSrcDC, int srcX, int srcY, int srcWidth, int srcHeight,
-            uint operation );
+        [DllImport(GDI32_DLL)] [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool StretchBlt( IntPtr hDestDC, int destX, int destY, int destWidth, int destHeight, IntPtr hSrcDC, int srcX, int srcY, int srcWidth, int srcHeight, uint operation );
     }
 }

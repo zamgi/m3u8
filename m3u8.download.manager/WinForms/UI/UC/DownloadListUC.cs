@@ -1240,8 +1240,7 @@ namespace m3u8.download.manager.ui
                     DGV.MouseMove  += DGV_MouseMove_4_LastColumnResizeOutOfDGVBounds;
                 }
                 else if ( (_DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.Cell) ||
-                          (_DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.RowHeader)
-                        )
+                          (_DGV_MouseDown_HitTestInfo.Type == DataGridViewHitTestType.RowHeader) )
                 {
                     _DGV_MouseDown_ButtonLeft_Location = e.Location;
 

@@ -44,8 +44,6 @@ namespace System.Windows.Forms.Taskbar
                 Bitmap targetBitmap = null;
                 try
                 {
-
-
                     targetBitmap = new Bitmap( size.Width, size.Height );
 
                     using ( var targetGr = Graphics.FromImage( targetBitmap ) )

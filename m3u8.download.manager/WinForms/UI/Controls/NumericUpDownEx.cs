@@ -289,8 +289,10 @@ namespace System.Windows.Forms
         }
 
         private delegate bool EnumWindowsProc( IntPtr hWnd, IntPtr lParam );
-        [DllImport("user32.dll")][return: MarshalAs(UnmanagedType.Bool)] private static extern bool EnumChildWindows( IntPtr hwndParent, EnumWindowsProc lpEnumFunc, IntPtr lParam );
-        [DllImport("user32.dll")] private static extern int GetClassName( IntPtr hWnd, StringBuilder lpClassName, int nMaxCount );
+
+        private const string USER32_DLL = "user32.dll";
+        [DllImport(USER32_DLL)][return: MarshalAs(UnmanagedType.Bool)] private static extern bool EnumChildWindows( IntPtr hwndParent, EnumWindowsProc lpEnumFunc, IntPtr lParam );
+        [DllImport(USER32_DLL)] private static extern int GetClassName( IntPtr hWnd, StringBuilder lpClassName, int nMaxCount );
         #region comm.
         /*
         private const int GWL_STYLE = -16;

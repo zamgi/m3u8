@@ -72,7 +72,9 @@ namespace m3u8.download.manager.ipc
             public static STARTUPINFO Create() => new STARTUPINFO() { cb = SizeOf };
         }
 
-        [DllImport("kernel32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+        private const string KERNEL32_DLL = "kernel32.dll";
+
+        [DllImport(KERNEL32_DLL, SetLastError=true, CharSet=CharSet.Auto)]
         private static extern bool CreateProcess( string lpApplicationName,
                                                   string lpCommandLine,
                                                   IntPtr lpProcessAttributes, //ref SECURITY_ATTRIBUTES lpProcessAttributes,

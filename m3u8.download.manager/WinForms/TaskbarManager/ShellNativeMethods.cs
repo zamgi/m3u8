@@ -10,54 +10,54 @@ namespace System.Windows.Forms.Taskbar
     /// </summary>
     internal static class ShellNativeMethods
     {
-        internal const int CommandLink = 0x0000000E;
-        internal const uint GetNote = 0x0000160A;
-        internal const uint GetNoteLength = 0x0000160B;
-        internal const int InPlaceStringTruncated = 0x00401A0;
-        internal const int MaxPath = 260;
-        internal const uint SetNote = 0x00001609;
-        internal const uint SetShield = 0x0000160C;
+        internal const int  CommandLink            = 0x0000000E;
+        internal const uint GetNote                = 0x0000160A;
+        internal const uint GetNoteLength          = 0x0000160B;
+        internal const int  InPlaceStringTruncated = 0x00401A0;
+        internal const int  MaxPath                = 260;
+        internal const uint SetNote                = 0x00001609;
+        internal const uint SetShield              = 0x0000160C;
 
         internal enum ControlState
         {
             Inactive = 0x00000000,
-            Enable = 0x00000001,
-            Visible = 0x00000002
+            Enable   = 0x00000001,
+            Visible  = 0x00000002
         }
 
         internal enum DefaultSaveFolderType
         {
-            Detect = 1,
+            Detect  = 1,
             Private = 2,
-            Public = 3
+            Public  = 3
         };
 
         internal enum FileDialogAddPlacement
         {
             Bottom = 0x00000000,
-            Top = 0x00000001,
+            Top    = 0x00000001,
         }
 
         internal enum FileDialogEventOverwriteResponse
         {
             Default = 0x00000000,
-            Accept = 0x00000001,
-            Refuse = 0x00000002
+            Accept  = 0x00000001,
+            Refuse  = 0x00000002
         }
 
         internal enum FileDialogEventShareViolationResponse
         {
             Default = 0x00000000,
-            Accept = 0x00000001,
-            Refuse = 0x00000002
+            Accept  = 0x00000001,
+            Refuse  = 0x00000002
         }
 
         [Flags] internal enum FileOpenOptions
         {
-            OverwritePrompt = 0x00000002,
-            StrictFileTypes = 0x00000004,
+            OverwritePrompt   = 0x00000002,
+            StrictFileTypes   = 0x00000004,
             NoChangeDirectory = 0x00000008,
-            PickFolders = 0x00000020,
+            PickFolders       = 0x00000020,
 
             // Ensure that items returned are filesystem items.
             ForceFilesystem = 0x00000040,
@@ -65,20 +65,20 @@ namespace System.Windows.Forms.Taskbar
             // Allow choosing items that have no storage.
             AllNonStorageItems = 0x00000080,
 
-            NoValidate = 0x00000100,
-            AllowMultiSelect = 0x00000200,
-            PathMustExist = 0x00000800,
-            FileMustExist = 0x00001000,
-            CreatePrompt = 0x00002000,
-            ShareAware = 0x00004000,
-            NoReadOnlyReturn = 0x00008000,
-            NoTestFileCreate = 0x00010000,
-            HideMruPlaces = 0x00020000,
-            HidePinnedPlaces = 0x00040000,
+            NoValidate         = 0x00000100,
+            AllowMultiSelect   = 0x00000200,
+            PathMustExist      = 0x00000800,
+            FileMustExist      = 0x00001000,
+            CreatePrompt       = 0x00002000,
+            ShareAware         = 0x00004000,
+            NoReadOnlyReturn   = 0x00008000,
+            NoTestFileCreate   = 0x00010000,
+            HideMruPlaces      = 0x00020000,
+            HidePinnedPlaces   = 0x00040000,
             NoDereferenceLinks = 0x00100000,
-            DontAddToRecent = 0x02000000,
-            ForceShowHidden = 0x10000000,
-            DefaultNoMiniMode = 0x20000000
+            DontAddToRecent    = 0x02000000,
+            ForceShowHidden    = 0x10000000,
+            DefaultNoMiniMode  = 0x20000000
         }
 
         /// <summary>
@@ -192,36 +192,36 @@ namespace System.Windows.Forms.Taskbar
         internal enum LibraryFolderFilter
         {
             ForceFileSystem = 1,
-            StorageItems = 2,
-            AllItems = 3
+            StorageItems    = 2,
+            AllItems        = 3
         };
 
         internal enum LibraryManageDialogOptions
         {
-            Default = 0,
+            Default                     = 0,
             NonIndexableLocationWarning = 1
         };
 
         [Flags] internal enum LibraryOptions
         {
-            Default = 0,
+            Default                = 0,
             PinnedToNavigationPane = 0x1,
-            MaskAll = 0x1
+            MaskAll                = 0x1
         };
 
         internal enum LibrarySaveOptions
         {
-            FailIfThere = 0,
+            FailIfThere      = 0,
             OverrideExisting = 1,
-            MakeUniqueName = 2
+            MakeUniqueName   = 2
         };
 
         [Flags] internal enum ShellChangeNotifyEventSource
         {
-            InterruptLevel = 0x0001,
-            ShellLevel = 0x0002,
+            InterruptLevel     = 0x0001,
+            ShellLevel         = 0x0002,
             RecursiveInterrupt = 0x1000,
-            NewDelivery = 0x8000
+            NewDelivery        = 0x8000
         }
 
         [Flags] internal enum ShellFileGetAttributesOptions
@@ -362,18 +362,18 @@ namespace System.Windows.Forms.Taskbar
 
         [Flags] internal enum ShellFolderEnumerationOptions : ushort
         {
-            CheckingForChildren = 0x0010,
-            Folders = 0x0020,
-            NonFolders = 0x0040,
-            IncludeHidden = 0x0080,
+            CheckingForChildren   = 0x0010,
+            Folders               = 0x0020,
+            NonFolders            = 0x0040,
+            IncludeHidden         = 0x0080,
             InitializeOnFirstNext = 0x0100,
-            NetPrinterSearch = 0x0200,
-            Shareable = 0x0400,
-            Storage = 0x0800,
-            NavigationEnum = 0x1000,
-            FastItems = 0x2000,
-            FlatList = 0x4000,
-            EnableAsync = 0x8000
+            NetPrinterSearch      = 0x0200,
+            Shareable             = 0x0400,
+            Storage               = 0x0800,
+            NavigationEnum        = 0x1000,
+            FastItems             = 0x2000,
+            FlatList              = 0x4000,
+            EnableAsync           = 0x8000
         }
 
         internal enum ShellItemAttributeOptions
@@ -397,137 +397,77 @@ namespace System.Windows.Forms.Taskbar
 
         internal enum ShellItemDesignNameOptions
         {
-            Normal = 0x00000000,           // SIGDN_NORMAL
-            ParentRelativeParsing = unchecked((int) 0x80018001),   // SIGDN_INFOLDER | SIGDN_FORPARSING
-            DesktopAbsoluteParsing = unchecked((int) 0x80028000),  // SIGDN_FORPARSING
-            ParentRelativeEditing = unchecked((int) 0x80031001),   // SIGDN_INFOLDER | SIGDN_FOREDITING
-            DesktopAbsoluteEditing = unchecked((int) 0x8004c000),  // SIGDN_FORPARSING | SIGDN_FORADDRESSBAR
-            FileSystemPath = unchecked((int) 0x80058000),             // SIGDN_FORPARSING
-            Url = unchecked((int) 0x80068000),                     // SIGDN_FORPARSING
+            Normal                      = 0x00000000,           // SIGDN_NORMAL
+            ParentRelativeParsing       = unchecked((int) 0x80018001),   // SIGDN_INFOLDER | SIGDN_FORPARSING
+            DesktopAbsoluteParsing      = unchecked((int) 0x80028000),  // SIGDN_FORPARSING
+            ParentRelativeEditing       = unchecked((int) 0x80031001),   // SIGDN_INFOLDER | SIGDN_FOREDITING
+            DesktopAbsoluteEditing      = unchecked((int) 0x8004c000),  // SIGDN_FORPARSING | SIGDN_FORADDRESSBAR
+            FileSystemPath              = unchecked((int) 0x80058000),             // SIGDN_FORPARSING
+            Url                         = unchecked((int) 0x80068000),                     // SIGDN_FORPARSING
             ParentRelativeForAddressBar = unchecked((int) 0x8007c001),     // SIGDN_INFOLDER | SIGDN_FORPARSING | SIGDN_FORADDRESSBAR
-            ParentRelative = unchecked((int) 0x80080001)           // SIGDN_INFOLDER
+            ParentRelative              = unchecked((int) 0x80080001)           // SIGDN_INFOLDER
         }
 
         [Flags] internal enum SIIGBF
         {
-            ResizeToFit = 0x00,
-            BiggerSizeOk = 0x01,
-            MemoryOnly = 0x02,
-            IconOnly = 0x04,
+            ResizeToFit   = 0x00,
+            BiggerSizeOk  = 0x01,
+            MemoryOnly    = 0x02,
+            IconOnly      = 0x04,
             ThumbnailOnly = 0x08,
-            InCacheOnly = 0x10,
+            InCacheOnly   = 0x10,
         }
 
         [Flags] internal enum ThumbnailCacheOptions
         {
-            Default = 0x00000000,
+            Default    = 0x00000000,
             LowQuality = 0x00000001,
-            Cached = 0x00000002,
+            Cached     = 0x00000002,
         }
 
         [Flags] internal enum ThumbnailOptions
         {
-            Extract = 0x00000000,
-            InCacheOnly = 0x00000001,
-            FastExtract = 0x00000002,
-            ForceExtraction = 0x00000004,
-            SlowReclaim = 0x00000008,
+            Extract           = 0x00000000,
+            InCacheOnly       = 0x00000001,
+            FastExtract       = 0x00000002,
+            ForceExtraction   = 0x00000004,
+            SlowReclaim       = 0x00000008,
             ExtractDoNotCache = 0x00000020
         }
 
-        [DllImport("shell32.dll")]
-        public static extern void ILFree( IntPtr pidl );
+        private const string SHELL32_DLL = "shell32.dll";
+        private const string SHLWAPI_DLL = "shlwapi.dll";
+        private const string GDI32_DLL   = "gdi32.dll";
 
-        [DllImport("gdi32.dll")][return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool DeleteObject( IntPtr hObject );
+        [DllImport(SHELL32_DLL)] public static extern void ILFree( IntPtr pidl );
+        [DllImport(GDI32_DLL)][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool DeleteObject( IntPtr hObject );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, SetLastError=true)] internal static extern uint ILGetSize( IntPtr pidl );
+        [DllImport(SHLWAPI_DLL, CharSet=CharSet.Unicode, SetLastError=true)] internal static extern int PathParseIconLocation( [MarshalAs(UnmanagedType.LPWStr)] ref string pszIconFile );
 
-        [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern uint ILGetSize( IntPtr pidl );
+        [DllImport(SHELL32_DLL)] internal static extern IntPtr SHChangeNotification_Lock( IntPtr windowHandle, int processId, out IntPtr pidl, out uint lEvent );
+        [DllImport(SHELL32_DLL)][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool SHChangeNotification_Unlock( IntPtr hLock );
+        [DllImport(SHELL32_DLL)][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool SHChangeNotifyDeregister( uint hNotify );
+        [DllImport(SHELL32_DLL)] internal static extern uint SHChangeNotifyRegister( IntPtr windowHandle, ShellChangeNotifyEventSource sources, ShellObjectChangeTypes events, uint message, int entries, ref SHChangeNotifyEntry changeNotifyEntry );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, SetLastError=true)] internal static extern int SHCreateItemFromIDList( /*PCIDLIST_ABSOLUTE*/ IntPtr pidl, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem2 ppv );
 
-        [DllImport("shlwapi.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int PathParseIconLocation( [MarshalAs(UnmanagedType.LPWStr)] ref string pszIconFile );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, SetLastError=true)]
+        internal static extern int SHCreateItemFromParsingName( [MarshalAs(UnmanagedType.LPWStr)] string path, /*The following parameter is not used - binding context.*/ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem2 shellItem );
 
-        [DllImport("shell32.dll")]
-        internal static extern IntPtr SHChangeNotification_Lock(
-            IntPtr windowHandle,
-            int processId,
-            out IntPtr pidl,
-            out uint lEvent );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, SetLastError=true)]
+        internal static extern int SHCreateItemFromParsingName( [MarshalAs(UnmanagedType.LPWStr)] string path, /*The following parameter is not used - binding context.*/ IntPtr pbc, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem );
 
-        [DllImport("shell32.dll")][return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SHChangeNotification_Unlock( IntPtr hLock );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, SetLastError=true)]
+        internal static extern int SHCreateShellItem( IntPtr pidlParent, [In, MarshalAs(UnmanagedType.Interface)] IShellFolder psfParent, IntPtr pidl, [MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, SetLastError=true)] internal static extern int SHCreateShellItemArrayFromDataObject( _IDataObject_ pdo, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItemArray iShellItemArray );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, SetLastError=true)] internal static extern int SHGetDesktopFolder( [MarshalAs(UnmanagedType.Interface)] out IShellFolder ppshf );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, SetLastError=true)] internal static extern int SHGetIDListFromObject( IntPtr iUnknown, out IntPtr ppidl );
+        [DllImport(SHELL32_DLL)][return: MarshalAs(UnmanagedType.Bool)] internal static extern bool SHGetPathFromIDListW( IntPtr pidl, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszPath );
 
-        [DllImport("shell32.dll")][return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SHChangeNotifyDeregister( uint hNotify );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, SetLastError=true)]
+        internal static extern int SHParseDisplayName( [MarshalAs(UnmanagedType.LPWStr)] string pszName, IntPtr pbc, out IntPtr ppidl, ShellFileGetAttributesOptions sfgaoIn, out ShellFileGetAttributesOptions psfgaoOut );
 
-        [DllImport("shell32.dll")]
-        internal static extern uint SHChangeNotifyRegister(
-            IntPtr windowHandle,
-            ShellChangeNotifyEventSource sources,
-            ShellObjectChangeTypes events,
-            uint message,
-            int entries,
-            ref SHChangeNotifyEntry changeNotifyEntry );
-
-        [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int SHCreateItemFromIDList(
-            /*PCIDLIST_ABSOLUTE*/ IntPtr pidl,
-            ref Guid riid,
-            [MarshalAs(UnmanagedType.Interface)] out IShellItem2 ppv );
-
-        [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int SHCreateItemFromParsingName(
-            [MarshalAs(UnmanagedType.LPWStr)] string path,
-            // The following parameter is not used - binding context.
-            IntPtr pbc,
-            ref Guid riid,
-            [MarshalAs(UnmanagedType.Interface)] out IShellItem2 shellItem );
-
-        [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int SHCreateItemFromParsingName(
-            [MarshalAs(UnmanagedType.LPWStr)] string path,
-            // The following parameter is not used - binding context.
-            IntPtr pbc,
-            ref Guid riid,
-            [MarshalAs(UnmanagedType.Interface)] out IShellItem shellItem );
-
-        [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int SHCreateShellItem(
-            IntPtr pidlParent,
-            [In, MarshalAs(UnmanagedType.Interface)] IShellFolder psfParent,
-            IntPtr pidl,
-            [MarshalAs(UnmanagedType.Interface)] out IShellItem ppsi
-        );
-
-        [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int SHCreateShellItemArrayFromDataObject( _IDataObject_ pdo, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IShellItemArray iShellItemArray );
-
-        [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int SHGetDesktopFolder( [MarshalAs(UnmanagedType.Interface)] out IShellFolder ppshf );
-
-        [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int SHGetIDListFromObject( IntPtr iUnknown, out IntPtr ppidl );
-
-        [DllImport("shell32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SHGetPathFromIDListW( IntPtr pidl, [MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszPath );
-
-        [DllImport("shell32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
-        internal static extern int SHParseDisplayName(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszName,
-            IntPtr pbc,
-            out IntPtr ppidl,
-            ShellFileGetAttributesOptions sfgaoIn,
-            out ShellFileGetAttributesOptions psfgaoOut
-        );
-
-        [DllImport("Shell32", CharSet=CharSet.Unicode, CallingConvention=CallingConvention.Winapi, SetLastError=true)]
-        internal static extern int SHShowManageLibraryUI(
-            [In, MarshalAs(UnmanagedType.Interface)] IShellItem library,
-            [In] IntPtr hwndOwner,
-            [In] string title,
-            [In] string instruction,
-            [In] LibraryManageDialogOptions lmdOptions );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, CallingConvention=CallingConvention.Winapi, SetLastError=true)]
+        internal static extern int SHShowManageLibraryUI( [In, MarshalAs(UnmanagedType.Interface)] IShellItem library, [In] IntPtr hwndOwner, [In] string title, [In] string instruction, [In] LibraryManageDialogOptions lmdOptions );
 
         [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto)]
         internal struct FilterSpec

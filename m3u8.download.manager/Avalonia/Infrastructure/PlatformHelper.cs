@@ -93,7 +93,9 @@ namespace m3u8.download.manager
         private static class WinNT
         {
             #region [.MessageBox.]
-            [DllImport("user32.dll", SetLastError=true, CharSet=CharSet.Auto)]
+            private const string USER32_DLL = "user32.dll";
+
+            [DllImport(USER32_DLL, SetLastError=true, CharSet=CharSet.Auto)]
             private static extern int MessageBox( IntPtr hWnd, string text, string caption, uint type );
             public static void MessageBox_ShowError( string text, string caption )
             {

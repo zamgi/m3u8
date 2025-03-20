@@ -25,61 +25,46 @@ namespace System.Windows.Forms.Taskbar
         // Summary: Retrieves the class identifier (CLSID) of an object.
         //
         // Parameters: pClassID: When this method returns, contains a reference to the CLSID. This parameter is passed uninitialized.
-        [PreserveSig]
-        void GetClassID( out Guid pClassID );
+        [PreserveSig] void GetClassID( out Guid pClassID );
 
         // Summary: Checks an object for changes since it was last saved to its current file.
         //
         // Returns: S_OK if the file has changed since it was last saved; S_FALSE if the file has not changed since it was last saved.
-        [PreserveSig]
-        HResult IsDirty();
-
-        [PreserveSig]
-        HResult Load( [In, MarshalAs(UnmanagedType.Interface)] IStream stm );
-
-        [PreserveSig]
-        HResult Save( [In, MarshalAs(UnmanagedType.Interface)] IStream stm, bool fRemember );
-
-        [PreserveSig]
-        HResult GetSizeMax( out ulong cbSize );
+        [PreserveSig] HResult IsDirty();
+        [PreserveSig] HResult Load( [In, MarshalAs(UnmanagedType.Interface)] IStream stm );
+        [PreserveSig] HResult Save( [In, MarshalAs(UnmanagedType.Interface)] IStream stm, bool fRemember );
+        [PreserveSig] HResult GetSizeMax( out ulong cbSize );
 
         // For any node, return what kind of node it is.
-        [PreserveSig]
-        HResult GetConditionType( [Out()] out SearchConditionType pNodeType );
+        [PreserveSig] HResult GetConditionType( [Out] out SearchConditionType pNodeType );
 
         // riid must be IID_IEnumUnknown, IID_IEnumVARIANT or IID_IObjectArray, or in the case of a negation node IID_ICondition. If this is
         // a leaf node, E_FAIL will be returned. If this is a negation node, then if riid is IID_ICondition, *ppv will be set to a single
         // ICondition, otherwise an enumeration of one. If this is a conjunction or a disjunction, *ppv will be set to an enumeration of the subconditions.
-        [PreserveSig]
-        HResult GetSubConditions( [In] ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppv );
+        [PreserveSig] HResult GetSubConditions( [In] ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out object ppv );
 
         // If this is not a leaf node, E_FAIL will be returned. Retrieve the property name, operation and value from the leaf node. Any one
         // of ppszPropertyName, pcop and ppropvar may be NULL.
-        [PreserveSig]
-        HResult GetComparisonInfo( [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszPropertyName, [Out] out SearchConditionOperation pcop, [Out] PropVariant ppropvar );
+        [PreserveSig] HResult GetComparisonInfo( [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszPropertyName, [Out] out SearchConditionOperation pcop, [Out] PropVariant ppropvar );
 
         // If this is not a leaf node, E_FAIL will be returned.
         // *ppszValueTypeName will be set to the semantic type of the value, or to NULL if this is not meaningful.
-        [PreserveSig]
-        HResult GetValueType( [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszValueTypeName );
+        [PreserveSig] HResult GetValueType( [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszValueTypeName );
 
         // If this is not a leaf node, E_FAIL will be returned. If the value of the leaf node is VT_EMPTY, *ppszNormalization will be set to
         // an empty string. If the value is a string (VT_LPWSTR, VT_BSTR or VT_LPSTR), then *ppszNormalization will be set to a
         // character-normalized form of the value. Otherwise, *ppszNormalization will be set to some (character-normalized) string
         // representation of the value.
-        [PreserveSig]
-        HResult GetValueNormalization( [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszNormalization );
+        [PreserveSig] HResult GetValueNormalization( [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszNormalization );
 
         // Return information about what parts of the input produced the property, the operation and the value. Any one of ppPropertyTerm,
         // ppOperationTerm and ppValueTerm may be NULL. For a leaf node returned by the parser, the position information of each IRichChunk
         // identifies the tokens that contributed the property/operation/value, the string value is the corresponding part of the input
         // string, and the PROPVARIANT is VT_EMPTY.
-        [PreserveSig]
-        HResult GetInputTerms( [Out] out IRichChunk ppPropertyTerm, [Out] out IRichChunk ppOperationTerm, [Out] out IRichChunk ppValueTerm );
+        [PreserveSig] HResult GetInputTerms( [Out] out IRichChunk ppPropertyTerm, [Out] out IRichChunk ppOperationTerm, [Out] out IRichChunk ppValueTerm );
 
         // Make a deep copy of this ICondition.
-        [PreserveSig]
-        HResult Clone( [Out()] out ICondition ppc );
+        [PreserveSig] HResult Clone( [Out] out ICondition ppc );
     };
 
     [ComImport]
@@ -87,26 +72,18 @@ namespace System.Windows.Forms.Taskbar
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IConditionFactory
     {
-        [PreserveSig]
-        HResult MakeNot( [In] ICondition pcSub, [In] bool fSimplify, [Out] out ICondition ppcResult );
-
-        [PreserveSig]
-        HResult MakeAndOr( [In] SearchConditionType ct, [In] IEnumUnknown peuSubs, [In] bool fSimplify, [Out] out ICondition ppcResult );
-
-        [PreserveSig]
-        HResult MakeLeaf(
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pszPropertyName,
-            [In] SearchConditionOperation cop,
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pszValueType,
-            [In] PropVariant ppropvar,
-            IRichChunk richChunk1,
-            IRichChunk richChunk2,
-            IRichChunk richChunk3,
-            [In] bool fExpand,
-            [Out] out ICondition ppcResult );
-
-        [PreserveSig]
-        HResult Resolve(/*[In] ICondition pc, [In] STRUCTURED_QUERY_RESOLVE_OPTION sqro, [In] ref SYSTEMTIME pstReferenceTime, [Out] out ICondition ppcResolved*/);
+        [PreserveSig] HResult MakeNot( [In] ICondition pcSub, [In] bool fSimplify, [Out] out ICondition ppcResult );
+        [PreserveSig] HResult MakeAndOr( [In] SearchConditionType ct, [In] IEnumUnknown peuSubs, [In] bool fSimplify, [Out] out ICondition ppcResult );
+        [PreserveSig] HResult MakeLeaf( [In, MarshalAs(UnmanagedType.LPWStr)] string pszPropertyName,
+                                        [In] SearchConditionOperation cop,
+                                        [In, MarshalAs(UnmanagedType.LPWStr)] string pszValueType,
+                                        [In] PropVariant ppropvar,
+                                        IRichChunk richChunk1,
+                                        IRichChunk richChunk2,
+                                        IRichChunk richChunk3,
+                                        [In] bool fExpand,
+                                        [Out] out ICondition ppcResult );
+        [PreserveSig] HResult Resolve(/*[In] ICondition pc, [In] STRUCTURED_QUERY_RESOLVE_OPTION sqro, [In] ref SYSTEMTIME pstReferenceTime, [Out] out ICondition ppcResolved*/);
     };
 
     [ComImport]
@@ -144,17 +121,10 @@ namespace System.Windows.Forms.Taskbar
     [Guid(ShellIIDGuid.IEnumUnknown )]
     internal interface IEnumUnknown
     {
-        [PreserveSig]
-        HResult Next( uint requestedNumber, ref IntPtr buffer, ref uint fetchedNumber );
-
-        [PreserveSig]
-        HResult Skip( uint number );
-
-        [PreserveSig]
-        HResult Reset();
-
-        [PreserveSig]
-        HResult Clone( out IEnumUnknown result );
+        [PreserveSig] HResult Next( uint requestedNumber, ref IntPtr buffer, ref uint fetchedNumber );
+        [PreserveSig] HResult Skip( uint number );
+        [PreserveSig] HResult Reset();
+        [PreserveSig] HResult Clone( out IEnumUnknown result );
     }
 
     [ComImport]
@@ -162,8 +132,8 @@ namespace System.Windows.Forms.Taskbar
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IModalWindow
     {
-        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime),
-        PreserveSig]
+        [PreserveSig]
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         int Show( [In] IntPtr parent );
     }
 
@@ -197,23 +167,15 @@ namespace System.Windows.Forms.Taskbar
         // Summary: Retrieves the class identifier (CLSID) of an object.
         //
         // Parameters: pClassID: When this method returns, contains a reference to the CLSID. This parameter is passed uninitialized.
-        [PreserveSig]
-        void GetClassID( out Guid pClassID );
+        [PreserveSig] void GetClassID( out Guid pClassID );
 
         // Summary: Checks an object for changes since it was last saved to its current file.
         //
         // Returns: S_OK if the file has changed since it was last saved; S_FALSE if the file has not changed since it was last saved.
-        [PreserveSig]
-        HResult IsDirty();
-
-        [PreserveSig]
-        HResult Load( [In, MarshalAs(UnmanagedType.Interface)] IStream stm );
-
-        [PreserveSig]
-        HResult Save( [In, MarshalAs(UnmanagedType.Interface)] IStream stm, bool fRemember );
-
-        [PreserveSig]
-        HResult GetSizeMax( out ulong cbSize );
+        [PreserveSig] HResult IsDirty();
+        [PreserveSig] HResult Load( [In, MarshalAs(UnmanagedType.Interface)] IStream stm );
+        [PreserveSig] HResult Save( [In, MarshalAs(UnmanagedType.Interface)] IStream stm, bool fRemember );
+        [PreserveSig] HResult GetSizeMax( out ulong cbSize );
     }
 
     [ComImport]
@@ -225,37 +187,28 @@ namespace System.Windows.Forms.Taskbar
         // for each custom property the application has recognized. pCustomProperties may be NULL, equivalent to an empty enumeration. For
         // each IRichChunk, the position information identifies the character span of the custom property, the string value should be the
         // name of an actual property, and the PROPVARIANT is completely ignored.
-        [PreserveSig]
-        HResult Parse( [In, MarshalAs(UnmanagedType.LPWStr)] string pszInputString, [In] IEnumUnknown pCustomProperties, [Out] out IQuerySolution ppSolution );
+        [PreserveSig] HResult Parse( [In, MarshalAs(UnmanagedType.LPWStr)] string pszInputString, [In] IEnumUnknown pCustomProperties, [Out] out IQuerySolution ppSolution );
 
         // Set a single option. See STRUCTURED_QUERY_SINGLE_OPTION above.
-        [PreserveSig]
-        HResult SetOption( [In] StructuredQuerySingleOption option, [In] PropVariant pOptionValue );
-
-        [PreserveSig]
-        HResult GetOption( [In] StructuredQuerySingleOption option, [Out] PropVariant pOptionValue );
+        [PreserveSig] HResult SetOption( [In] StructuredQuerySingleOption option, [In] PropVariant pOptionValue );
+        [PreserveSig] HResult GetOption( [In] StructuredQuerySingleOption option, [Out] PropVariant pOptionValue );
 
         // Set a multi option. See STRUCTURED_QUERY_MULTIOPTION above.
-        [PreserveSig]
-        HResult SetMultiOption( [In] StructuredQueryMultipleOption option, [In, MarshalAs(UnmanagedType.LPWStr)] string pszOptionKey, [In] PropVariant pOptionValue );
+        [PreserveSig] HResult SetMultiOption( [In] StructuredQueryMultipleOption option, [In, MarshalAs(UnmanagedType.LPWStr)] string pszOptionKey, [In] PropVariant pOptionValue );
 
         // Get a schema provider for browsing the currently loaded schema.
-        [PreserveSig]
-        HResult GetSchemaProvider( [Out] out /*ISchemaProvider*/ IntPtr ppSchemaProvider );
+        [PreserveSig] HResult GetSchemaProvider( [Out] out /*ISchemaProvider*/ IntPtr ppSchemaProvider );
 
         // Restate a condition as a query string according to the currently selected syntax. The parameter fUseEnglish is reserved for future
         // use; must be FALSE.
-        [PreserveSig]
-        HResult RestateToString( [In] ICondition pCondition, [In] bool fUseEnglish, [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszQueryString );
+        [PreserveSig] HResult RestateToString( [In] ICondition pCondition, [In] bool fUseEnglish, [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszQueryString );
 
         // Parse a condition for a given property. It can be anything that would go after 'PROPERTY:' in an AQS expession.
-        [PreserveSig]
-        HResult ParsePropertyValue( [In, MarshalAs(UnmanagedType.LPWStr)] string pszPropertyName, [In, MarshalAs(UnmanagedType.LPWStr)] string pszInputString, [Out] out IQuerySolution ppSolution );
+        [PreserveSig] HResult ParsePropertyValue( [In, MarshalAs(UnmanagedType.LPWStr)] string pszPropertyName, [In, MarshalAs(UnmanagedType.LPWStr)] string pszInputString, [Out] out IQuerySolution ppSolution );
 
         // Restate a condition for a given property. If the condition contains a leaf with any other property name, or no property name at
         // all, E_INVALIDARG will be returned.
-        [PreserveSig]
-        HResult RestatePropertyValueToString( [In] ICondition pCondition, [In] bool fUseEnglish, [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszPropertyName, [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszQueryString );
+        [PreserveSig] HResult RestatePropertyValueToString( [In] ICondition pCondition, [In] bool fUseEnglish, [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszPropertyName, [Out, MarshalAs(UnmanagedType.LPWStr)] out string ppszQueryString );
     }
 
     [ComImport]
@@ -265,18 +218,15 @@ namespace System.Windows.Forms.Taskbar
     {
         // Create a query parser loaded with the schema for a certain catalog localize to a certain language, and initialized with standard
         // defaults. One valid value for riid is IID_IQueryParser.
-        [PreserveSig]
-        HResult CreateLoadedParser( [In, MarshalAs(UnmanagedType.LPWStr)] string pszCatalog, [In] ushort langidForKeywords, [In] ref Guid riid, [Out] out IQueryParser ppQueryParser );
+        [PreserveSig] HResult CreateLoadedParser( [In, MarshalAs(UnmanagedType.LPWStr)] string pszCatalog, [In] ushort langidForKeywords, [In] ref Guid riid, [Out] out IQueryParser ppQueryParser );
 
         // In addition to setting AQS/NQS and automatic wildcard for the given query parser, this sets up standard named entity handlers and
         // sets the keyboard locale as locale for word breaking.
-        [PreserveSig]
-        HResult InitializeOptions( [In] bool fUnderstandNQS, [In] bool fAutoWildCard, [In] IQueryParser pQueryParser );
+        [PreserveSig] HResult InitializeOptions( [In] bool fUnderstandNQS, [In] bool fAutoWildCard, [In] IQueryParser pQueryParser );
 
         // Change one of the settings for the query parser manager, such as the name of the schema binary, or the location of the localized
         // and unlocalized schema binaries. By default, the settings point to the schema binaries used by Windows Shell.
-        [PreserveSig]
-        HResult SetOption( [In] QueryParserManagerOption option, [In] PropVariant pOptionValue );
+        [PreserveSig] HResult SetOption( [In] QueryParserManagerOption option, [In] PropVariant pOptionValue );
     };
 
     [ComImport]
@@ -284,41 +234,31 @@ namespace System.Windows.Forms.Taskbar
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface IQuerySolution : IConditionFactory
     {
-        [PreserveSig]
-        HResult MakeNot( [In] ICondition pcSub, [In] bool fSimplify, [Out] out ICondition ppcResult );
+        [PreserveSig] HResult MakeNot( [In] ICondition pcSub, [In] bool fSimplify, [Out] out ICondition ppcResult );
+        [PreserveSig] HResult MakeAndOr( [In] SearchConditionType ct, [In] IEnumUnknown peuSubs, [In] bool fSimplify, [Out] out ICondition ppcResult );
+        [PreserveSig] HResult MakeLeaf( [In, MarshalAs(UnmanagedType.LPWStr)] string pszPropertyName,
+                                        [In] SearchConditionOperation cop,
+                                        [In, MarshalAs(UnmanagedType.LPWStr)] string pszValueType,
+                                        [In] PropVariant ppropvar,
+                                        IRichChunk richChunk1,
+                                        IRichChunk richChunk2,
+                                        IRichChunk richChunk3,
+                                        [In] bool fExpand,
+                                        [Out] out ICondition ppcResult );
 
-        [PreserveSig]
-        HResult MakeAndOr( [In] SearchConditionType ct, [In] IEnumUnknown peuSubs, [In] bool fSimplify, [Out] out ICondition ppcResult );
-
-        [PreserveSig]
-        HResult MakeLeaf(
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pszPropertyName,
-            [In] SearchConditionOperation cop,
-            [In, MarshalAs(UnmanagedType.LPWStr)] string pszValueType,
-            [In] PropVariant ppropvar,
-            IRichChunk richChunk1,
-            IRichChunk richChunk2,
-            IRichChunk richChunk3,
-            [In] bool fExpand,
-            [Out] out ICondition ppcResult );
-
-        [PreserveSig]
-        HResult Resolve(/*[In] ICondition pc, [In] int sqro, [In] ref SYSTEMTIME pstReferenceTime, [Out] out ICondition ppcResolved*/);
+        [PreserveSig] HResult Resolve(/*[In] ICondition pc, [In] int sqro, [In] ref SYSTEMTIME pstReferenceTime, [Out] out ICondition ppcResolved*/);
 
         // Retrieve the condition tree and the "main type" of the solution. ppQueryNode and ppMainType may be NULL.
-        [PreserveSig]
-        HResult GetQuery( [Out, MarshalAs(UnmanagedType.Interface)] out ICondition ppQueryNode, [Out, MarshalAs(UnmanagedType.Interface)] out IEntity ppMainType );
+        [PreserveSig] HResult GetQuery( [Out, MarshalAs(UnmanagedType.Interface)] out ICondition ppQueryNode, [Out, MarshalAs(UnmanagedType.Interface)] out IEntity ppMainType );
 
         // Identify parts of the input string not accounted for. Each parse error is represented by an IRichChunk where the position
         // information reflect token counts, the string is NULL and the value is a VT_I4 where lVal is from the ParseErrorType enumeration.
         // The valid values for riid are IID_IEnumUnknown and IID_IEnumVARIANT.
-        [PreserveSig]
-        HResult GetErrors( [In] ref Guid riid, [Out] out /* void** */ IntPtr ppParseErrors );
+        [PreserveSig] HResult GetErrors( [In] ref Guid riid, [Out] out /* void** */ IntPtr ppParseErrors );
 
         // Report the query string, how it was tokenized and what LCID and word breaker were used (for recognizing keywords).
         // ppszInputString, ppTokens, pLocale and ppWordBreaker may be NULL.
-        [PreserveSig]
-        HResult GetLexicalData( [MarshalAs(UnmanagedType.LPWStr)] out string ppszInputString, [Out] /* ITokenCollection** */ out IntPtr ppTokens, [Out] out uint plcid, [Out] /* IUnknown** */ out IntPtr ppWordBreaker );
+        [PreserveSig] HResult GetLexicalData( [MarshalAs(UnmanagedType.LPWStr)] out string ppszInputString, [Out] /* ITokenCollection** */ out IntPtr ppTokens, [Out] out uint plcid, [Out] /* IUnknown** */ out IntPtr ppWordBreaker );
     }
 
     [ComImport]
@@ -327,8 +267,7 @@ namespace System.Windows.Forms.Taskbar
     internal interface IRichChunk
     {
         // The position *pFirstPos is zero-based. Any one of pFirstPos, pLength, ppsz and pValue may be NULL.
-        [PreserveSig]
-        HResult GetData(/*[out, annotation("__out_opt")] ULONG* pFirstPos, [out, annotation("__out_opt")] ULONG* pLength, [out, annotation("__deref_opt_out_opt")] LPWSTR* ppsz, [out, annotation("__out_opt")] PROPVARIANT* pValue*/);
+        [PreserveSig] HResult GetData(/*[out, annotation("__out_opt")] ULONG* pFirstPos, [out, annotation("__out_opt")] ULONG* pLength, [out, annotation("__deref_opt_out_opt")] LPWSTR* ppsz, [out, annotation("__out_opt")] PROPVARIANT* pValue*/);
     }
 
     [ComImport]
@@ -336,41 +275,18 @@ namespace System.Windows.Forms.Taskbar
     [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
     internal interface ISearchFolderItemFactory
     {
-        [PreserveSig]
-        HResult SetDisplayName( [In, MarshalAs(UnmanagedType.LPWStr)] string pszDisplayName );
-
-        [PreserveSig]
-        HResult SetFolderTypeID( [In] Guid ftid );
-
-        [PreserveSig]
-        HResult SetFolderLogicalViewMode( [In] FolderLogicalViewMode flvm );
-
-        [PreserveSig]
-        HResult SetIconSize( [In] int iIconSize );
-
-        [PreserveSig]
-        HResult SetVisibleColumns( [In] uint cVisibleColumns, [In, MarshalAs(UnmanagedType.LPArray)] PropertyKey[] rgKey );
-
-        [PreserveSig]
-        HResult SetSortColumns( [In] uint cSortColumns, [In, MarshalAs(UnmanagedType.LPArray)] SortColumn[] rgSortColumns );
-
-        [PreserveSig]
-        HResult SetGroupColumn( [In] ref PropertyKey keyGroup );
-
-        [PreserveSig]
-        HResult SetStacks( [In] uint cStackKeys, [In, MarshalAs(UnmanagedType.LPArray)] PropertyKey[] rgStackKeys );
-
-        [PreserveSig]
-        HResult SetScope( [In, MarshalAs(UnmanagedType.Interface)] IShellItemArray ppv );
-
-        [PreserveSig]
-        HResult SetCondition( [In] ICondition pCondition );
-
-        [PreserveSig]
-        int GetShellItem( ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out IShellItem ppv );
-
-        [PreserveSig]
-        HResult GetIDList( [Out] IntPtr ppidl );
+        [PreserveSig] HResult SetDisplayName( [In, MarshalAs(UnmanagedType.LPWStr)] string pszDisplayName );
+        [PreserveSig] HResult SetFolderTypeID( [In] Guid ftid );
+        [PreserveSig] HResult SetFolderLogicalViewMode( [In] FolderLogicalViewMode flvm );
+        [PreserveSig] HResult SetIconSize( [In] int iIconSize );
+        [PreserveSig] HResult SetVisibleColumns( [In] uint cVisibleColumns, [In, MarshalAs(UnmanagedType.LPArray)] PropertyKey[] rgKey );
+        [PreserveSig] HResult SetSortColumns( [In] uint cSortColumns, [In, MarshalAs(UnmanagedType.LPArray)] SortColumn[] rgSortColumns );
+        [PreserveSig] HResult SetGroupColumn( [In] ref PropertyKey keyGroup );
+        [PreserveSig] HResult SetStacks( [In] uint cStackKeys, [In, MarshalAs(UnmanagedType.LPArray)] PropertyKey[] rgStackKeys );
+        [PreserveSig] HResult SetScope( [In, MarshalAs(UnmanagedType.Interface)] IShellItemArray ppv );
+        [PreserveSig] HResult SetCondition( [In] ICondition pCondition );
+        [PreserveSig] int GetShellItem( ref Guid riid, [Out, MarshalAs(UnmanagedType.Interface)] out IShellItem ppv );
+        [PreserveSig] HResult GetIDList( [Out] IntPtr ppidl );
     };
 
     [ComImport]
@@ -379,13 +295,9 @@ namespace System.Windows.Forms.Taskbar
     internal interface ISharedBitmap
     {
         void GetSharedBitmap( [Out] out IntPtr phbm );
-
         void GetSize( [Out] out CoreNativeMethods.Size pSize );
-
         void GetFormat( [Out] out ThumbnailAlphaType pat );
-
         void InitializeBitmap( [In] IntPtr hbm, [In] ThumbnailAlphaType wtsAT );
-
         void Detach( [Out] out IntPtr phbm );
     }
 
@@ -752,60 +664,30 @@ namespace System.Windows.Forms.Taskbar
     internal interface IShellLinkW
     {
         void GetPath(
-            [Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile,
+            [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile,
             int cchMaxPath,
             //ref _WIN32_FIND_DATAW pfd,
             IntPtr pfd,
             uint fFlags );
-
         void GetIDList( out IntPtr ppidl );
-
         void SetIDList( IntPtr pidl );
-
-        void GetDescription(
-            [Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile,
-            int cchMaxName );
-
-        void SetDescription(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszName );
-
-        void GetWorkingDirectory(
-            [Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszDir,
-            int cchMaxPath
-            );
-
-        void SetWorkingDirectory(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszDir );
-
-        void GetArguments(
-            [Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszArgs,
-            int cchMaxPath );
-
-        void SetArguments(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszArgs );
+        void GetDescription( [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxName );
+        void SetDescription( [MarshalAs(UnmanagedType.LPWStr)] string pszName );
+        void GetWorkingDirectory( [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszDir, int cchMaxPath );
+        void SetWorkingDirectory( [MarshalAs(UnmanagedType.LPWStr)] string pszDir );
+        void GetArguments( [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszArgs, int cchMaxPath );
+        void SetArguments( [MarshalAs(UnmanagedType.LPWStr)] string pszArgs );
 
         void GetHotKey( out short wHotKey );
         void SetHotKey( short wHotKey );
         void GetShowCmd( out uint iShowCmd );
         void SetShowCmd( uint iShowCmd );
 
-        void GetIconLocation(
-            [Out(), MarshalAs(UnmanagedType.LPWStr)] out StringBuilder pszIconPath,
-            int cchIconPath,
-            out int iIcon );
-
-        void SetIconLocation(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszIconPath,
-            int iIcon );
-
-        void SetRelativePath(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszPathRel,
-            uint dwReserved );
-
+        void GetIconLocation( [Out, MarshalAs(UnmanagedType.LPWStr)] out StringBuilder pszIconPath, int cchIconPath, out int iIcon );
+        void SetIconLocation( [MarshalAs(UnmanagedType.LPWStr)] string pszIconPath, int iIcon );
+        void SetRelativePath( [MarshalAs(UnmanagedType.LPWStr)] string pszPathRel, uint dwReserved );
         void Resolve( IntPtr hwnd, uint fFlags );
-
-        void SetPath(
-            [MarshalAs(UnmanagedType.LPWStr)] string pszFile );
+        void SetPath( [MarshalAs(UnmanagedType.LPWStr)] string pszFile );
     }
 
     [ComImport]

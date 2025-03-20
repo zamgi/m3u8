@@ -12,7 +12,7 @@ namespace System.Windows.Forms.Taskbar
     internal static class ShellPropertyFactory
     {
         // Constructor cache. It takes object as the third param so a single function will suffice for both constructors.
-        private static readonly Dictionary<int, Func<PropertyKey, ShellPropertyDescription, object, IShellProperty>> _storeCache
+        private static readonly Dictionary<int, Func<PropertyKey, ShellPropertyDescription, object, IShellProperty>> _StoreCache
             = new Dictionary<int, Func<PropertyKey, ShellPropertyDescription, object, IShellProperty>>();
 
         /// <summary>Creates a generic ShellProperty.</summary>
@@ -165,11 +165,11 @@ namespace System.Windows.Forms.Taskbar
             // The hash for the function is based off the generic type and which type (constructor) we're using.
             var hash = GetTypeHash( type, thirdType );
 
-            if ( !_storeCache.TryGetValue( hash, out var ctor ) )
+            if ( !_StoreCache.TryGetValue( hash, out var ctor ) )
             {
                 Type[] argTypes = { typeof(PropertyKey), typeof(ShellPropertyDescription ), thirdType };
                 ctor = ExpressConstructor( type, argTypes );
-                _storeCache.Add( hash, ctor );
+                _StoreCache.Add( hash, ctor );
             }
 
             return (ctor( propKey, propDesc, thirdArg ));

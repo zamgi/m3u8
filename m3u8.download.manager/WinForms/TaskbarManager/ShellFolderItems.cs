@@ -34,7 +34,6 @@ namespace System.Windows.Forms.Taskbar
         }
 
         public ShellObject Current => _CurrentItem;
-
         object IEnumerator.Current => _CurrentItem;
 
         public void Dispose()

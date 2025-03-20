@@ -25,44 +25,44 @@ namespace System.Windows.Forms.Taskbar
 
     internal enum SetTabPropertiesOption
     {
-        None = 0x0,
-        UseAppThumbnailAlways = 0x1,
+        None                      = 0x0, 
+        UseAppThumbnailAlways     = 0x1,
         UseAppThumbnailWhenActive = 0x2,
-        UseAppPeekAlways = 0x4,
-        UseAppPeekWhenActive = 0x8
+        UseAppPeekAlways          = 0x4,
+        UseAppPeekWhenActive      = 0x8
     }
 
     internal enum ShellAddToRecentDocs
     {
-        Pidl = 0x1,
-        PathA = 0x2,
-        PathW = 0x3,
-        AppIdInfo = 0x4,       // indicates the data type is a pointer to a SHARDAPPIDINFO structure
+        Pidl            = 0x1,
+        PathA           = 0x2,
+        PathW           = 0x3,
+        AppIdInfo       = 0x4, // indicates the data type is a pointer to a SHARDAPPIDINFO structure
         AppIdInfoIdList = 0x5, // indicates the data type is a pointer to a SHARDAPPIDINFOIDLIST structure
-        Link = 0x6,            // indicates the data type is a pointer to an IShellLink instance
-        AppIdInfoLink = 0x7,   // indicates the data type is a pointer to a SHARDAPPIDINFOLINK structure
+        Link            = 0x6, // indicates the data type is a pointer to an IShellLink instance
+        AppIdInfoLink   = 0x7, // indicates the data type is a pointer to a SHARDAPPIDINFOLINK structure
     }
 
     internal enum TaskbarActiveTabSetting
     {
-        UseMdiThumbnail = 0x1,
+        UseMdiThumbnail   = 0x1,
         UseMdiLivePreview = 0x2
     }
 
     internal enum TaskbarProgressBarStatus
     {
-        NoProgress = 0,
+        NoProgress    = 0,
         Indeterminate = 0x1,
-        Normal = 0x2,
-        Error = 0x4,
-        Paused = 0x8
+        Normal        = 0x2,
+        Error         = 0x4,
+        Paused        = 0x8
     }
 
     internal enum ThumbButtonMask
     {
-        Bitmap = 0x1,
-        Icon = 0x2,
-        Tooltip = 0x4,
+        Bitmap    = 0x1,
+        Icon      = 0x2,
+        Tooltip   = 0x4,
         THB_FLAGS = 0x8
     }
 
@@ -98,30 +98,23 @@ namespace System.Windows.Forms.Taskbar
 
     internal static class TaskbarNativeMethods
     {
-        internal const int WmCommand = 0x0111;
+        internal const int  WmCommand                        = 0x0111;
         internal const uint WmDwmSendIconicLivePreviewBitmap = 0x0326;
-        internal const uint WmDwmSendIconThumbnail = 0x0323;
+        internal const uint WmDwmSendIconThumbnail           = 0x0323;
+
+        private const string USER32_DLL  = "user32.dll";
+        private const string SHELL32_DLL = "shell32.dll";
 
         // Register Window Message used by Shell to notify that the corresponding taskbar button has been added to the taskbar.
         internal static readonly uint WmTaskbarButtonCreated = RegisterWindowMessage( "TaskbarButtonCreated" );
 
-        [DllImport("shell32.dll")]
-        public static extern int SHGetPropertyStoreForWindow(
-            IntPtr hwnd,
-            ref Guid iid /*IID_IPropertyStore*/,
-            [Out(), MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore );
-
-        [DllImport("shell32.dll")]
-        internal static extern void GetCurrentProcessExplicitAppUserModelID(
-            [Out(), MarshalAs(UnmanagedType.LPWStr)] out string AppID );
+        [DllImport(SHELL32_DLL)] public static extern int SHGetPropertyStoreForWindow( IntPtr hwnd, ref Guid iid /*IID_IPropertyStore*/, [Out, MarshalAs(UnmanagedType.Interface)] out IPropertyStore propertyStore );
+        [DllImport(SHELL32_DLL)] internal static extern void GetCurrentProcessExplicitAppUserModelID( [Out, MarshalAs(UnmanagedType.LPWStr)] out string AppID );
 
         internal static IPropertyStore GetWindowPropertyStore( IntPtr hwnd )
         {
             var guid = new Guid(ShellIIDGuid.IPropertyStore );
-            var rc = SHGetPropertyStoreForWindow(
-                hwnd,
-                ref guid,
-                out var propStore );
+            var rc = SHGetPropertyStoreForWindow( hwnd, ref guid, out var propStore );
             if ( rc != 0 )
             {
                 throw (Marshal.GetExceptionForHR( rc ));
@@ -129,11 +122,10 @@ namespace System.Windows.Forms.Taskbar
             return (propStore);
         }
 
-        [DllImport("user32.dll", EntryPoint="RegisterWindowMessage", SetLastError=true, CharSet=CharSet.Unicode)]
+        [DllImport(USER32_DLL, EntryPoint="RegisterWindowMessage", SetLastError=true, CharSet=CharSet.Unicode)]
         internal static extern uint RegisterWindowMessage( [MarshalAs(UnmanagedType.LPWStr)] string lpString );
 
-        [DllImport("shell32.dll")]
-        internal static extern void SetCurrentProcessExplicitAppUserModelID( [MarshalAs(UnmanagedType.LPWStr)] string AppID );
+        [DllImport(SHELL32_DLL)] internal static extern void SetCurrentProcessExplicitAppUserModelID( [MarshalAs(UnmanagedType.LPWStr)] string AppID );
 
         /// <summary>Sets the window's application id by its window handle.</summary>
         /// <param name="hwnd">The window handle.</param>
@@ -151,7 +143,7 @@ namespace System.Windows.Forms.Taskbar
                 var result = propStore.SetValue( ref propkey, pv );
                 if ( !CoreErrorHelper.Succeeded( result ) )
                 {
-                    throw new ShellException( result );
+                    throw (new ShellException( result ));
                 }
             }
 
@@ -159,8 +151,7 @@ namespace System.Windows.Forms.Taskbar
             Marshal.ReleaseComObject( propStore );
         }
 
-        [DllImport("shell32.dll")]
-        internal static extern void SHAddToRecentDocs( ShellAddToRecentDocs flags, [MarshalAs(UnmanagedType.LPWStr)] string path );
+        [DllImport(SHELL32_DLL)] internal static extern void SHAddToRecentDocs( ShellAddToRecentDocs flags, [MarshalAs(UnmanagedType.LPWStr)] string path );
 
         internal static void SHAddToRecentDocs( string path ) => SHAddToRecentDocs( ShellAddToRecentDocs.PathW, path );
 

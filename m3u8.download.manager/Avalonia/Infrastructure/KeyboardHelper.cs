@@ -26,7 +26,9 @@ namespace m3u8.download.manager
         /// </summary>
         unsafe private static class WinNT
         {
-            [DllImport("user32.dll")] private static extern bool GetKeyboardState( /*byte[]*/byte* lpKeyState );
+            private const string USER32_DLL = "user32.dll";
+
+            [DllImport(USER32_DLL)] private static extern bool GetKeyboardState( /*byte[]*/byte* lpKeyState );
             public static bool IsShiftButtonPushed()
             {
                 const int VK_SHIFT  = 0x10;

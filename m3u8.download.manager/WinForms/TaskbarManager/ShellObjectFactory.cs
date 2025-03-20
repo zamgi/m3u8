@@ -51,7 +51,7 @@ namespace System.Windows.Forms.Taskbar
             else if ( isFolder )
             {
                 // 3. If this is a folder, check for types: Shell Library, Shell Folder or Search Container
-                if ( itemType == ".library-ms" && (shellLibrary = ShellLibrary.FromShellItem( nativeShellItem2, true )) != null )
+                if ( (itemType == ".library-ms") && (shellLibrary = ShellLibrary.FromShellItem( nativeShellItem2, true )) != null )
                 {
                     return (shellLibrary); // we already created this above while checking for Library
                 }
@@ -98,10 +98,7 @@ namespace System.Windows.Forms.Taskbar
         /// <returns>A newly constructed ShellObject object</returns>
         internal static ShellObject Create( string parsingName )
         {
-            if ( string.IsNullOrEmpty( parsingName ) )
-            {
-                throw (new ArgumentNullException( "parsingName" ));
-            }
+            if ( string.IsNullOrEmpty( parsingName ) ) throw (new ArgumentNullException( "parsingName" ));
 
             // Create a native shellitem from our path
             var guid = new Guid(ShellIIDGuid.IShellItem2 );
@@ -138,10 +135,7 @@ namespace System.Windows.Forms.Taskbar
         
         internal static ShellObject Create( IntPtr idListPtr, ShellContainer parent )
         {
-            var retCode = ShellNativeMethods.SHCreateShellItem(
-                IntPtr.Zero,
-                parent.NativeShellFolder,
-                idListPtr, out var nativeShellItem );
+            var retCode = ShellNativeMethods.SHCreateShellItem( IntPtr.Zero, parent.NativeShellFolder, idListPtr, out var nativeShellItem );
 
             if ( !CoreErrorHelper.Succeeded( retCode ) ) return (null);
 
