@@ -250,7 +250,7 @@ namespace m3u8.download.manager.controllers
         public throttler_by_speed_impl__v2( decimal max_speed_threshold_in_Mbps )
         {
             _Max_speed_threshold_in_Mbps = max_speed_threshold_in_Mbps;
-            _DownloadMeasure = Create__download_measure_t();
+            _DownloadMeasure = Create__download_measure();
             __Cts__   = new CancellationTokenSource();
             _SpinLock = new SpinLock();
             _Lock     = new object();
@@ -305,22 +305,17 @@ namespace m3u8.download.manager.controllers
             Get_Cts().Cancel_NoThrow();
         }
 
-        [M(O.AggressiveInlining)] private static download_measure_t Create__download_measure_t() => new download_measure_t( Stopwatch.GetTimestamp() );
-        public void Start()
+        [M(O.AggressiveInlining)] private static download_measure_t Create__download_measure() => new download_measure_t( Stopwatch.GetTimestamp() );
+        [M(O.AggressiveInlining)] private void Recreate__download_measure_with_lock()
         {
             lock ( _Lock )
             {
-                _DownloadMeasure = Create__download_measure_t();
+                _DownloadMeasure = Create__download_measure();
             }
         }
-        public void Restart()
-        {
-            lock ( _Lock )
-            {
-                _DownloadMeasure = Create__download_measure_t();
-            }
-        }
-        public void End() { }
+        public void Start() => Recreate__download_measure_with_lock();
+        public void Restart() => Recreate__download_measure_with_lock();
+        public void End() => Recreate__download_measure_with_lock(); //{ }
 
         private static void Delay_NoThrow( int millisecondsDelay, CancellationToken ct )
         {
