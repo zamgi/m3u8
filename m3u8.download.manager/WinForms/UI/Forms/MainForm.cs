@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,15 +17,15 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 
-using X    = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
+using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _DC_ = m3u8.download.manager.controllers.DownloadController;
-using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
 using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
-using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+using X    = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
 
 namespace m3u8.download.manager.ui
 {
@@ -34,6 +35,7 @@ namespace m3u8.download.manager.ui
     internal sealed partial class MainForm : Form, IDisposable
     {
         #region [.fields.]
+        private const int MAX_PASTE_URLS = 75; //100;
         private X[] _InputParamsArray;
         private _ReceivedInputParamsArrayEventHandler_ _ReceivedInputParamsArrayEventHandler;
         private _ReceivedSend2FirstCopyEventHandler_   _ReceivedSend2FirstCopyEventHandler;        
@@ -185,10 +187,14 @@ namespace m3u8.download.manager.ui
                 _InputParamsArray = null;
             }
             else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() &&
-                       ClipboardHelper.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) )
+                       ClipboardHelper.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) 
+                    )
             {
-                var frt = m3u8FileUrls.FirstOrDefault();
-                AddNewDownload( (frt.url, frt.requestHeaders, false) );
+                //var frt = m3u8FileUrls.FirstOrDefault();
+                //AddNewDownload( (frt.url, frt.requestHeaders, false) );
+
+                m3u8FileUrls = m3u8FileUrls.Take( MAX_PASTE_URLS ).ToArray();
+                AddNewDownloads( (m3u8FileUrls, false) );
             }
         }
         protected override void OnClosing( CancelEventArgs e )
@@ -248,7 +254,7 @@ namespace m3u8.download.manager.ui
                             e.SuppressKeyPress = true;
 
                             var autoStartDownload = e.Shift;
-                            if ( !autoStartDownload ) urls = urls.Take( 50 ).ToList( 50 );
+                            if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
                             AddNewDownloads( (urls, autoStartDownload) );
                             return;
                         }
@@ -1150,7 +1156,7 @@ namespace m3u8.download.manager.ui
             if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls ) )
             {
                 var autoStartDownload = ((Control.ModifierKeys & Keys.Shift) == Keys.Shift);
-                if ( !autoStartDownload ) urls = urls.Take( 50/*100*/ ).ToList( 50 );
+                if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
                 AddNewDownloads( (urls, autoStartDownload) );
             }
             else

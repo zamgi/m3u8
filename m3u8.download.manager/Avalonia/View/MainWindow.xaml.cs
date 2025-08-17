@@ -72,6 +72,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.field's.]
+        private const int MAX_PASTE_URLS = 75; //100;
         private MainVM _VM;
         private X[] _InputParamsArray;
         private bool _ShowDownloadStatistics;
@@ -222,8 +223,8 @@ namespace m3u8.download.manager.ui
                 var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard();
                 if ( success )
                 {
-                    var frt = m3u8FileUrls.FirstOrDefault();
-                    _VM.AddCommand.AddNewDownload( (frt.url, frt.requestHeaders, false) );
+                    m3u8FileUrls = m3u8FileUrls.Take( MAX_PASTE_URLS ).ToArray();
+                    _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
                 }
             }
             _VM.DownloadListModel.AddRows( _VM.SettingsController.GetDownloadRows() /*DownloadRowsSerializer.FromJSON( _VM.SettingsController.DownloadRowsJson )*/ );
@@ -310,7 +311,7 @@ namespace m3u8.download.manager.ui
                             e.Handled = true;
 
                             var autoStartDownload = e.KeyModifiers.HasFlag( KeyModifiers.Shift );
-                            if ( !autoStartDownload ) urls = urls.Take( 50 ).ToList( 50 );
+                            if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
                             _VM.AddCommand.AddNewDownloads( (urls, autoStartDownload) );
                             return;
                         }
@@ -982,7 +983,7 @@ namespace m3u8.download.manager.ui
             if ( success )
             {
                 var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
-                if ( !autoStartDownload ) urls = urls.Take( 50 ).ToList( 50 );
+                if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
                 _VM.AddCommand.AddNewDownloads( (urls, autoStartDownload) );
             }
             else
