@@ -94,7 +94,7 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0-windows' ">
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.8" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.9" />
   </ItemGroup>
   
   <ItemGroup>
