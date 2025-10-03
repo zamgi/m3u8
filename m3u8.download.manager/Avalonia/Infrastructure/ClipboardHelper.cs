@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Avalonia.Controls;
+using Avalonia.Input.Platform;
 
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
@@ -28,10 +29,10 @@ namespace m3u8.download.manager
             var M3U8_EXTENSION_Q = Resources.M3U8_EXTENSION + '?';
             try
             {
-                var text = (await window.Clipboard.GetTextAsync())?.Trim();
+                var text = (await window.Clipboard.TryGetTextAsync())?.Trim();
                 if ( !text.IsNullOrEmpty() )
                 {
-                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var array = text.Split( ['\r', '\n'], StringSplitOptions.RemoveEmptyEntries );
                     var hs    = new HashSet< string >( array.Length, StringComparer.InvariantCultureIgnoreCase );
                     var lst   = new List< (string url, string requestHeaders) >( array.Length );
                     foreach ( var a in array )
@@ -74,7 +75,7 @@ namespace m3u8.download.manager
             const string HTTPS = "https://";
             try
             {
-                var text = (await window.Clipboard.GetTextAsync())?.Trim();
+                var text = (await window.Clipboard.TryGetTextAsync())?.Trim();
                 if ( !text.IsNullOrEmpty() )
                 {
                     var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
@@ -115,14 +116,14 @@ namespace m3u8.download.manager
             return (window.Clipboard.SetTextAsync( txt ));
         }
         public static Task CopyToClipboard( this Window window, string txt ) => window.Clipboard.SetTextAsync( txt );
-        public static Task< string > GetFromClipboard( this Window window ) => window.Clipboard.GetTextAsync();
+        public static Task< string > GetFromClipboard( this Window window ) => window.Clipboard.TryGetTextAsync();
 
         public static async Task< (bool success, IDictionary< string, string > headers) > TryGetHeadersFromClipboard( this Window window )
         {
             const char COLON = ':';
             try
             {
-                var text = (await window.Clipboard.GetTextAsync())?.Trim();
+                var text = (await window.Clipboard.TryGetTextAsync())?.Trim();
                 if ( !text.IsNullOrEmpty() )
                 {
                     var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
