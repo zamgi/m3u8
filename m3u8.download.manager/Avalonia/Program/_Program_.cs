@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Avalonia;
@@ -20,7 +21,8 @@ namespace m3u8.download.manager
     /// </summary>
     internal static class Program
     {
-        //The main thread must be STA, and [STAThread] is ignored on async Main.//
+        //The main thread must be STA, and [STAThread] is ignored on async Task Main and prevent set this to MTA.//
+        //disallowed async/await => don't work Clipboard-Copy & Drag-N-Drop//
         [STAThread] private static /*async Task*/void Main( string[] args )
         {
             AppDomain.CurrentDomain.UnhandledException += async (_, e) => await Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(),"AppDomain.CurrentDomain.UnhandledException" );
@@ -121,13 +123,15 @@ namespace m3u8.download.manager
                 }
                 else if ( success )
                 {
-                    PipeIPC.NamedPipeClient__Output.Send_Async( sca.MutexName, inputParamsArray ).CAX().GetAwaiter();
-                    //await PipeIPC.NamedPipeClient__Output.Send_Async( sca.MutexName, inputParamsArray ).CAX();
+                    //disallowed async/await => don't work Clipboard-Copy & Drag-N-Drop
+                    //---await PipeIPC.NamedPipeClient__Output.Send_Async( sca.MutexName, inputParamsArray ).CAX();
+                    PipeIPC.NamedPipeClient__Output.Send_Async( sca.MutexName, inputParamsArray ).Wait();
                 }
                 else
                 {
-                    PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).CAX().GetAwaiter();
-                    //await PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).CAX();
+                    //disallowed async/await => don't work Clipboard-Copy & Drag-N-Drop
+                    //---await PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).CAX();
+                    PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).Wait();                    
                 }
                 #endregion
             }

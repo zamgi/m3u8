@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-
-using DynamicData;
 
 using _Timer_ = System.Timers.Timer;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -110,35 +111,40 @@ namespace m3u8.download.manager.ui
         }
 
         #region [.DGV events.]
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //private sealed class DRAGDROP_ROWS_FORMAT_TYPE__PREV
+        //{
+        //    public DRAGDROP_ROWS_FORMAT_TYPE__PREV( IReadOnlyList< T > selectedRows, T focusedRow, int focusedRowIndex ) 
+        //        => (Rows, FocusedRow, FocusedRowIndex) = (selectedRows, focusedRow, focusedRowIndex);
+        //    public IReadOnlyList< T > Rows { get; }
+        //    public T   FocusedRow      { get; }
+        //    public int FocusedRowIndex { get; }
+        //}
         /// <summary>
         /// 
         /// </summary>
         private sealed class DRAGDROP_ROWS_FORMAT_TYPE
         {
-            public DRAGDROP_ROWS_FORMAT_TYPE( IReadOnlyList< T > selectedRows, T focusedRow, int focusedRowIndex ) 
-                => (Rows, FocusedRow, FocusedRowIndex) = (selectedRows, focusedRow, focusedRowIndex);
-            public IReadOnlyList< T > Rows { get; }
-            public T   FocusedRow      { get; }
-            public int FocusedRowIndex { get; }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        private sealed class DRAGDROP_ROWS_FORMAT_TYPE__NEXT
-        {
-            private DRAGDROP_ROWS_FORMAT_TYPE__NEXT() { }
-            public DRAGDROP_ROWS_FORMAT_TYPE__NEXT( int focusedRowIndex ) => FocusedRowIndex = focusedRowIndex;
+            private DRAGDROP_ROWS_FORMAT_TYPE() { }
+            public DRAGDROP_ROWS_FORMAT_TYPE( int focusedRowIndex ) => FocusedRowIndex = focusedRowIndex;
             public int FocusedRowIndex { get; private set; }
+            public T Get_Last_DragDrop_FocusedRow() => _Last_DragDrop_FocusedRow;
 
 
             public const string DataFormatIdentifier = "DRAGDROP-ROWS-FORMAT-TYPE";
-            public string ToJSON() => System.Text.Json.JsonSerializer.Serialize( this );
-            public static string ToJSON( int focusedRowIndex ) => new DRAGDROP_ROWS_FORMAT_TYPE__NEXT( focusedRowIndex ).ToJSON();
-            public static bool TryFromJSON( string json, out DRAGDROP_ROWS_FORMAT_TYPE__NEXT drft )
+            private static T _Last_DragDrop_FocusedRow;
+            public static string ToJSON( T focusedRow, int focusedRowIndex )
+            {
+                _Last_DragDrop_FocusedRow = focusedRow;
+                return (JsonSerializer.Serialize( new DRAGDROP_ROWS_FORMAT_TYPE( focusedRowIndex ) ));
+            }
+            public static bool TryFromJSON( string json, out DRAGDROP_ROWS_FORMAT_TYPE drft )
             {
                 try
                 {
-                    drft = System.Text.Json.JsonSerializer.Deserialize< DRAGDROP_ROWS_FORMAT_TYPE__NEXT >( json );
+                    drft = JsonSerializer.Deserialize< DRAGDROP_ROWS_FORMAT_TYPE >( json );
                     return (true);
                 }
                 catch ( Exception ex )
@@ -236,8 +242,7 @@ namespace m3u8.download.manager.ui
         //    }
         //    _ScrollIfNeedTimer.Enabled = false;
         //    End_DoDragDrop( e );
-        //}
-        private T _Last_DragDrop_FocusedRow;
+        //}        
         private async void TryBegin_DoDragDrop( PointerEventArgs e )
         {
             var pt = e.GetCurrentPoint( _TopVisual ).Position;
@@ -276,10 +281,8 @@ namespace m3u8.download.manager.ui
                 }                                
             }
 
-            //NOT FUSKING WORK!!!
-            _Last_DragDrop_FocusedRow = focusedRow;
-            dataTrans.Add( DataTransferItem.Create( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.DataFormatIdentifier ),
-                                                    DRAGDROP_ROWS_FORMAT_TYPE__NEXT.ToJSON( /*rows, focusedRow,*/ _GetIndexOf( focusedRow ) ) ) );
+            dataTrans.Add( DataTransferItem.Create( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE.DataFormatIdentifier ),
+                                                    DRAGDROP_ROWS_FORMAT_TYPE.ToJSON( /*rows, */ focusedRow, _GetIndexOf( focusedRow ) ) ) );
             #endregion
 
             DGV.PointerReleased -= DGV_PointerReleased;
@@ -355,11 +358,14 @@ namespace m3u8.download.manager.ui
 
         //    e.DragEffects = DragDropEffects.None;
         //}
+        //private Rectangle _Last_DragOver_Rectangle;
         private void DGV_DragOver( object sender, DragEventArgs e )
         {
-            var json = e.DataTransfer.TryGetValue( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.DataFormatIdentifier ) );
-            if ( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.TryFromJSON( json, out var drft ) )
+            var json = e.DataTransfer.TryGetValue( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE.DataFormatIdentifier ) );
+            if ( DRAGDROP_ROWS_FORMAT_TYPE.TryFromJSON( json, out var drft ) )
             {
+                //if ( _Last_DragOver_Rectangle != null ) _Last_DragOver_Rectangle.Fill = Brushes.CadetBlue;
+
                 var pt = e.GetPosition( _TopVisual );
 
                 var pt_4_scroll = _LastMove_Pos = e.GetPosition( DGV );
@@ -378,6 +384,12 @@ namespace m3u8.download.manager.ui
                             var newIndex = dgrow.Index;
                             if ( (newIndex != -1) && (oldIndex != newIndex) )
                             {
+                                //var rect = dgrow.FindDescendantOfType< Rectangle >();
+                                //if ( rect?.Name == "BackgroundRectangle" )
+                                //{
+                                //    _Last_DragOver_Rectangle = rect;
+                                //    rect.Fill = Brushes.Red;
+                                //}
                                 return;
                             }
                         }
@@ -419,8 +431,8 @@ namespace m3u8.download.manager.ui
         //}        
         private void DGV_DragDrop( object sender, DragEventArgs e )
         {
-            var json = e.DataTransfer.TryGetValue( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.DataFormatIdentifier ) );
-            if ( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.TryFromJSON( json, out var drft ) )
+            var json = e.DataTransfer.TryGetValue( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE.DataFormatIdentifier ) );
+            if ( DRAGDROP_ROWS_FORMAT_TYPE.TryFromJSON( json, out var drft ) )
             {
                 var pt       = e.GetPosition( _TopVisual );
                 var oldIndex = drft.FocusedRowIndex;
@@ -436,7 +448,7 @@ namespace m3u8.download.manager.ui
                             var newIndex = dgrow.Index;
                             if ( (newIndex != -1) && (oldIndex != newIndex) )
                             {
-                                _ChangeRowPosition( _Last_DragDrop_FocusedRow/*drft.FocusedRow*/, oldIndex, newIndex );
+                                _ChangeRowPosition( drft.Get_Last_DragDrop_FocusedRow(), oldIndex, newIndex );
 
                                 Debug.WriteLine( $"DGV_DragDrop: {drft}" );
                                 return;
