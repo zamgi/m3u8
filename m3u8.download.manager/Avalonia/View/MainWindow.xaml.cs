@@ -304,6 +304,7 @@ namespace m3u8.download.manager.ui
             {
                 switch ( e.Key )
                 {
+                    //case Key.M: throw new Exception( "TEST-Exception" );
                     case Key.V: //Paste
                         var (success, urls) = await this.TryGetHttpUrlsFromClipboard();
                         if ( success )

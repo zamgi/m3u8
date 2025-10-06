@@ -187,17 +187,17 @@ namespace m3u8.download.manager
             return (new Rect( pt, sz ));
         }
 
-        [M(O.AggressiveInlining)] public static bool TryGet< T >( this IDataObject data, out T t )
-        {
-            if ( data.Get( nameof(T) ) is T _t )
-            {
-                t = _t;
-                return (true);
-            }
-            t = default;
-            return (false);
-        }
-        [M(O.AggressiveInlining)] public static void Set< T >( this DataObject data, T t ) => data.Set( nameof(T), t );
+        //[M(O.AggressiveInlining)] public static bool TryGet< T >( this IDataObject data, out T t )
+        //{
+        //    if ( data.Get( nameof(T) ) is T _t )
+        //    {
+        //        t = _t;
+        //        return (true);
+        //    }
+        //    t = default;
+        //    return (false);
+        //}
+        //[M(O.AggressiveInlining)] public static void Set< T >( this DataObject data, T t ) => data.Set( nameof(T), t );
 
 
         [M(O.AggressiveInlining)] public static T GetSelectedDownloadRow< T >( this DataGrid dgv ) where T : class => (dgv.SelectedItem as T);

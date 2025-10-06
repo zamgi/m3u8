@@ -3,6 +3,7 @@ using System.Threading;
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using _AvaDispatcher_ = Avalonia.Threading.Dispatcher;
 
@@ -40,6 +41,19 @@ namespace m3u8.download.manager.ui
             base.OnClosed( e );
 
             _Cts.Cancel();
+        }
+        protected override async void OnKeyDown( KeyEventArgs e )
+        {
+            if ( e.KeyModifiers.HasFlag( KeyModifiers.Control ) && e.Key.HasFlag( Key.C ) )
+            {                
+                var txt = this.FindControl< TextBlock >( "exceptionTextBlock" )?.Text;
+                if ( !txt.IsNullOrWhiteSpace() )
+                {
+                    e.Handled = true;
+                    await this.CopyToClipboard( txt );
+                }
+            }
+            base.OnKeyDown( e );
         }
     }
 }

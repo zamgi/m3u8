@@ -87,6 +87,17 @@ namespace m3u8.download.manager
             return (false);
         }
 
+        //public static bool Try_CoInitialize( out Exception error )
+        //{
+        //    if ( IsWinNT() )
+        //    {
+        //        error = default;
+        //        return (WinNT.CoInitialize());
+        //    }
+        //    error = new NotSupportedException();
+        //    return (false);
+        //}
+
         /// <summary>
         /// 
         /// </summary>
@@ -105,8 +116,17 @@ namespace m3u8.download.manager
             }
             #endregion
 
+            //#region [.CoInitialize.]
+            //[DllImport(OLE32_DLL, SetLastError=true)] private static extern int CoInitialize( IntPtr pvReserved );
+            //[DllImport(OLE32_DLL, SetLastError=true)] public static extern void CoUninitialize();
+
+            //public static bool CoInitialize() => (CoInitialize( IntPtr.Zero ) == S_OK);
+            //#endregion
+
             #region [.ShellExploreAndSelectFile.]
-            private const int    S_OK        = 0;
+            private const int    S_OK        = 0x0;
+            //private const int    S_FALSE     = 0x1;
+            //private const int    RPC_E_CHANGED_MODE = -2147417850; //0x80010106;
             private const string SHELL32_DLL = "shell32.dll";
             [DllImport(SHELL32_DLL)] private static extern int SHParseDisplayName( [MarshalAs(UnmanagedType.LPWStr)] string pszName, IntPtr pbc, out IntPtr ppidl, /*SFGAO*/uint sfgaoIn, /*out SFGAO*/IntPtr psfgaoOut );
             [DllImport(SHELL32_DLL)] private static extern int SHOpenFolderAndSelectItems( IntPtr pidlFolder, uint cidl, IntPtr apidl, uint dwFlags );

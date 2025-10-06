@@ -52,7 +52,7 @@ namespace m3u8.download.manager.ui
         public delegate bool                  Allow_Begin_DragDrop_Delegate( DataGridCellPointerPressedEventArgs e );
         public delegate IEnumerable< string > GetFileNames_4_DragDropFilesFormat_Delegate( T t );
         public delegate int                   GetIndexOf_Delegate( T t );
-        public delegate void                  ChangeRowPosition_Delegate( int oldIndex, int newIndex, T t );
+        public delegate void                  ChangeRowPosition_Delegate( T t, int oldIndex, int newIndex );
         
         /// <summary>
         /// 
@@ -115,21 +115,30 @@ namespace m3u8.download.manager.ui
         /// </summary>
         private sealed class DRAGDROP_ROWS_FORMAT_TYPE
         {
-            private DRAGDROP_ROWS_FORMAT_TYPE() { }
             public DRAGDROP_ROWS_FORMAT_TYPE( IReadOnlyList< T > selectedRows, T focusedRow, int focusedRowIndex ) 
                 => (Rows, FocusedRow, FocusedRowIndex) = (selectedRows, focusedRow, focusedRowIndex);
-            public IReadOnlyList< T > Rows { get; private set; }
-            public T   FocusedRow      { get; private set; }
+            public IReadOnlyList< T > Rows { get; }
+            public T   FocusedRow      { get; }
+            public int FocusedRowIndex { get; }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        private sealed class DRAGDROP_ROWS_FORMAT_TYPE__NEXT
+        {
+            private DRAGDROP_ROWS_FORMAT_TYPE__NEXT() { }
+            public DRAGDROP_ROWS_FORMAT_TYPE__NEXT( int focusedRowIndex ) => FocusedRowIndex = focusedRowIndex;
             public int FocusedRowIndex { get; private set; }
 
 
             public const string DataFormatIdentifier = "DRAGDROP-ROWS-FORMAT-TYPE";
-            public string ToJSON() => System.Text.Json.JsonSerializer.Serialize( this );            
-            public static bool TryFromJSON( string json, out DRAGDROP_ROWS_FORMAT_TYPE drft )
+            public string ToJSON() => System.Text.Json.JsonSerializer.Serialize( this );
+            public static string ToJSON( int focusedRowIndex ) => new DRAGDROP_ROWS_FORMAT_TYPE__NEXT( focusedRowIndex ).ToJSON();
+            public static bool TryFromJSON( string json, out DRAGDROP_ROWS_FORMAT_TYPE__NEXT drft )
             {
                 try
                 {
-                    drft = System.Text.Json.JsonSerializer.Deserialize< DRAGDROP_ROWS_FORMAT_TYPE >( json );
+                    drft = System.Text.Json.JsonSerializer.Deserialize< DRAGDROP_ROWS_FORMAT_TYPE__NEXT >( json );
                     return (true);
                 }
                 catch ( Exception ex )
@@ -172,6 +181,63 @@ namespace m3u8.download.manager.ui
             DGV.PointerReleased += DGV_PointerReleased;
             e.Handled = true;
         }
+        //private async void TryBegin_DoDragDrop__PREV( PointerEventArgs e )
+        //{
+        //    var pt = e.GetCurrentPoint( _TopVisual ).Position;
+
+        //    const int MOVE_DELTA = 5;
+        //    if ( Math.Abs( _Press_Pos.X - pt.X ) < MOVE_DELTA &&
+        //         Math.Abs( _Press_Pos.Y - pt.Y ) < MOVE_DELTA ) return; 
+        //    //-----------------------------------------------------//
+
+        //    var rows = DGV.GetSelectedDownloadRows< T >();
+        //    if ( !rows.Any() ) return;
+
+        //    var focusedRow = DGV.GetSelectedDownloadRow< T >();
+        //    if ( focusedRow == null ) return;
+
+        //    #region [.create DragDrop DataObject.]
+        //    var dataObj = new DataObject();
+
+        //    var fileNames = rows.Select( r => _GetFileNames_4_DragDropFilesFormat( r ) ).SelectMany( _ => _ ).Where( fn => fn != null ).ToList( rows.Count ).ToArray();
+        //    var hasExistsFiles = fileNames.Any( File.Exists );
+        //    if ( hasExistsFiles ) dataObj.Set( DataFormats.Files, fileNames );            
+
+        //    dataObj.Set( new DRAGDROP_ROWS_FORMAT_TYPE( rows, focusedRow, _GetIndexOf( focusedRow ) ) );
+        //    #endregion
+
+        //    DGV.PointerReleased -= DGV_PointerReleased;
+        //    DGV.PointerMoved    -= DGV_PointerMoved;
+        //    e.Handled = true;
+
+        //    _ScrollIfNeedTimer.Interval = ScrollDelayInMilliseconds;
+        //    _ScrollIfNeedTimer.Enabled  = true;
+
+        //    DGV.SetValue( DragDrop.AllowDropProperty, true );
+        //    DGV.AddHandler( DragDrop.DragOverEvent, DGV_DragOver );
+        //    DGV.AddHandler( DragDrop.DropEvent    , DGV_DragDrop );
+        //    try
+        //    {
+        //        _IsInDragDrop = true;
+        //        var res = await DragDrop.DoDragDrop( e, dataObj, DragDropEffects.Move | DragDropEffects.Copy );
+        //        if ( res != DragDropEffects.None )
+        //        {
+        //            ((DataGridCollectionView) DGV.ItemsSource).Refresh();
+        //            //DGV.InvalidateVisual();
+        //        }
+        //        Debug.WriteLine( res.ToString() );
+        //    }
+        //    finally
+        //    {
+        //        _IsInDragDrop = false;
+        //        DGV.SetValue( DragDrop.AllowDropProperty, false );
+        //        DGV.RemoveHandler( DragDrop.DragOverEvent, DGV_DragOver );
+        //        DGV.RemoveHandler( DragDrop.DropEvent    , DGV_DragDrop );
+        //    }
+        //    _ScrollIfNeedTimer.Enabled = false;
+        //    End_DoDragDrop( e );
+        //}
+        private T _Last_DragDrop_FocusedRow;
         private async void TryBegin_DoDragDrop( PointerEventArgs e )
         {
             var pt = e.GetCurrentPoint( _TopVisual ).Position;
@@ -187,73 +253,17 @@ namespace m3u8.download.manager.ui
             var focusedRow = DGV.GetSelectedDownloadRow< T >();
             if ( focusedRow == null ) return;
 
-            #region [.create DragDrop DataObject.]
-            var dataObj = new DataObject();
-
-            var fileNames = rows.Select( r => _GetFileNames_4_DragDropFilesFormat( r ) ).SelectMany( _ => _ ).Where( fn => fn != null ).ToList( rows.Count ).ToArray();
-            var hasExistsFiles = fileNames.Any( File.Exists );
-            if ( hasExistsFiles ) dataObj.Set( DataFormats.Files, fileNames );            
-
-            dataObj.Set( new DRAGDROP_ROWS_FORMAT_TYPE( rows, focusedRow, _GetIndexOf( focusedRow ) ) );
-            #endregion
-
-            DGV.PointerReleased -= DGV_PointerReleased;
-            DGV.PointerMoved    -= DGV_PointerMoved;
-            e.Handled = true;
-
-            _ScrollIfNeedTimer.Interval = ScrollDelayInMilliseconds;
-            _ScrollIfNeedTimer.Enabled  = true;
-
-            DGV.SetValue( DragDrop.AllowDropProperty, true );
-            DGV.AddHandler( DragDrop.DragOverEvent, DGV_DragOver );
-            DGV.AddHandler( DragDrop.DropEvent    , DGV_DragDrop );
-            try
-            {
-                _IsInDragDrop = true;
-                var res = await DragDrop.DoDragDrop( e, dataObj, DragDropEffects.Move | DragDropEffects.Copy );
-                if ( res != DragDropEffects.None )
-                {
-                    ((DataGridCollectionView) DGV.ItemsSource).Refresh();
-                    //DGV.InvalidateVisual();
-                }
-                Debug.WriteLine( res.ToString() );
-            }
-            finally
-            {
-                _IsInDragDrop = false;
-                DGV.SetValue( DragDrop.AllowDropProperty, false );
-                DGV.RemoveHandler( DragDrop.DragOverEvent, DGV_DragOver );
-                DGV.RemoveHandler( DragDrop.DropEvent    , DGV_DragDrop );
-            }
-            _ScrollIfNeedTimer.Enabled = false;
-            End_DoDragDrop( e );
-        }
-        private async void TryBegin_DoDragDrop__NEW( PointerEventArgs e )
-        {
-            var pt = e.GetCurrentPoint( _TopVisual ).Position;
-
-            const int MOVE_DELTA = 5;
-            if ( Math.Abs( _Press_Pos.X - pt.X ) < MOVE_DELTA &&
-                 Math.Abs( _Press_Pos.Y - pt.Y ) < MOVE_DELTA ) return; 
-            //-----------------------------------------------------//
-
-            var rows = DGV.GetSelectedDownloadRows< T >();
-            if ( !rows.Any() ) return;
-
-            var focusedRow = DGV.GetSelectedDownloadRow< T >();
-            if ( focusedRow == null ) return;
-
-            #region [.create DragDrop DataObject.]
+            #region [.create DragDrop DataTransfer.]
             var dataTrans = new DataTransfer();
 
-            var fileNames = rows.Select( r => _GetFileNames_4_DragDropFilesFormat( r ) ).SelectMany( _ => _ ).Where( fn => fn != null ).ToList( rows.Count ).ToArray();
+            var fileNames = rows.Select( r => _GetFileNames_4_DragDropFilesFormat( r ) ).SelectMany( _ => _ ).Where( fn => fn != null ).ToList( rows.Count );
             var hasExistsFiles = fileNames.Any( File.Exists );
             if ( hasExistsFiles ) 
             {
                 var storageProvider = TopLevel.GetTopLevel( _TopVisual )?.StorageProvider;
                 if ( storageProvider != null ) 
                 {
-                    var storageFiles = new List< IStorageFile >( fileNames.Length );
+                    var storageFiles = new List< IStorageFile >( fileNames.Count );
                     foreach ( var fn in fileNames )
                     {
                         var storageFile = await storageProvider.TryGetFileFromPathAsync( fn );
@@ -267,8 +277,9 @@ namespace m3u8.download.manager.ui
             }
 
             //NOT FUSKING WORK!!!
-            dataTrans.Add( DataTransferItem.Create( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE.DataFormatIdentifier ),
-                                                    new DRAGDROP_ROWS_FORMAT_TYPE( rows, focusedRow, _GetIndexOf( focusedRow ) ).ToJSON() ) );
+            _Last_DragDrop_FocusedRow = focusedRow;
+            dataTrans.Add( DataTransferItem.Create( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.DataFormatIdentifier ),
+                                                    DRAGDROP_ROWS_FORMAT_TYPE__NEXT.ToJSON( /*rows, focusedRow,*/ _GetIndexOf( focusedRow ) ) ) );
             #endregion
 
             DGV.PointerReleased -= DGV_PointerReleased;
@@ -313,9 +324,41 @@ namespace m3u8.download.manager.ui
             e.Handled = true;
         }
 
+        //private void DGV_DragOver__PREV( object sender, DragEventArgs e )
+        //{
+        //    if ( e.Data.TryGet< DRAGDROP_ROWS_FORMAT_TYPE >( out var drft ) )
+        //    {
+        //        var pt = e.GetPosition( _TopVisual );
+
+        //        var pt_4_scroll = _LastMove_Pos = e.GetPosition( DGV );
+        //        _ScrollHelper.Scroll2ViewIfNeed_Now( pt_4_scroll );
+
+        //        var oldIndex = drft.FocusedRowIndex;
+        //        if ( oldIndex != -1 )
+        //        {
+        //            foreach ( var dgrow in DGV.GetVisualDescendants().OfType< DataGridRow >() )
+        //            {
+        //                if ( !dgrow.IsVisible ) continue;
+        //                var bounds = dgrow.GetBoundsByTopAncestor(); if ( (bounds.Height <= 0) || (bounds.Width <= 0) ) continue;
+
+        //                if ( bounds.Contains( pt ) )
+        //                {
+        //                    var newIndex = dgrow.Index;
+        //                    if ( (newIndex != -1) && (oldIndex != newIndex) )
+        //                    {
+        //                        return;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    e.DragEffects = DragDropEffects.None;
+        //}
         private void DGV_DragOver( object sender, DragEventArgs e )
         {
-            if ( e.Data.TryGet< DRAGDROP_ROWS_FORMAT_TYPE >( out var drft ) )
+            var json = e.DataTransfer.TryGetValue( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.DataFormatIdentifier ) );
+            if ( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.TryFromJSON( json, out var drft ) )
             {
                 var pt = e.GetPosition( _TopVisual );
 
@@ -344,41 +387,40 @@ namespace m3u8.download.manager.ui
 
             e.DragEffects = DragDropEffects.None;
         }
-        private void DGV_DragOver__NEW( object sender, DragEventArgs e )
-        {
-            var json = e.DataTransfer.TryGetValue( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE.DataFormatIdentifier ) );
-            if ( DRAGDROP_ROWS_FORMAT_TYPE.TryFromJSON( json, out var drft ) )
-            {
-                var pt = e.GetPosition( _TopVisual );
+        //private void DGV_DragDrop__PREV( object sender, DragEventArgs e )
+        //{
+        //    if ( e.Data.TryGet< DRAGDROP_ROWS_FORMAT_TYPE >( out var drft ) )
+        //    {
+        //        var pt       = e.GetPosition( _TopVisual );
+        //        var oldIndex = drft.FocusedRowIndex;
+        //        if ( oldIndex != -1 )
+        //        {
+        //            foreach ( var dgrow in DGV.GetVisualDescendants().OfType< DataGridRow >() )
+        //            {
+        //                if ( !dgrow.IsVisible ) continue;
+        //                var bounds = dgrow.GetBoundsByTopAncestor(); if ( (bounds.Height <= 0) || (bounds.Width <= 0) ) continue;
 
-                var pt_4_scroll = _LastMove_Pos = e.GetPosition( DGV );
-                _ScrollHelper.Scroll2ViewIfNeed_Now( pt_4_scroll );
+        //                if ( bounds.Contains( pt ) )
+        //                {
+        //                    var newIndex = dgrow.Index;
+        //                    if ( (newIndex != -1) && (oldIndex != newIndex) )
+        //                    {
+        //                        _ChangeRowPosition( oldIndex, newIndex, drft.FocusedRow );
 
-                var oldIndex = drft.FocusedRowIndex;
-                if ( oldIndex != -1 )
-                {
-                    foreach ( var dgrow in DGV.GetVisualDescendants().OfType< DataGridRow >() )
-                    {
-                        if ( !dgrow.IsVisible ) continue;
-                        var bounds = dgrow.GetBoundsByTopAncestor(); if ( (bounds.Height <= 0) || (bounds.Width <= 0) ) continue;
+        //                        Debug.WriteLine( $"DGV_DragDrop: {drft}" );
+        //                        return;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
 
-                        if ( bounds.Contains( pt ) )
-                        {
-                            var newIndex = dgrow.Index;
-                            if ( (newIndex != -1) && (oldIndex != newIndex) )
-                            {
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-
-            e.DragEffects = DragDropEffects.None;
-        }
+        //    e.DragEffects = DragDropEffects.None;
+        //}        
         private void DGV_DragDrop( object sender, DragEventArgs e )
         {
-            if ( e.Data.TryGet< DRAGDROP_ROWS_FORMAT_TYPE >( out var drft ) )
+            var json = e.DataTransfer.TryGetValue( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.DataFormatIdentifier ) );
+            if ( DRAGDROP_ROWS_FORMAT_TYPE__NEXT.TryFromJSON( json, out var drft ) )
             {
                 var pt       = e.GetPosition( _TopVisual );
                 var oldIndex = drft.FocusedRowIndex;
@@ -394,38 +436,7 @@ namespace m3u8.download.manager.ui
                             var newIndex = dgrow.Index;
                             if ( (newIndex != -1) && (oldIndex != newIndex) )
                             {
-                                _ChangeRowPosition( oldIndex, newIndex, drft.FocusedRow );
-
-                                Debug.WriteLine( $"DGV_DragDrop: {drft}" );
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-
-            e.DragEffects = DragDropEffects.None;
-        }
-        private void DGV_DragDrop__NEW( object sender, DragEventArgs e )
-        {
-            var json = e.DataTransfer.TryGetValue( DataFormat.CreateStringApplicationFormat( DRAGDROP_ROWS_FORMAT_TYPE.DataFormatIdentifier ) );
-            if ( DRAGDROP_ROWS_FORMAT_TYPE.TryFromJSON( json, out var drft ) )
-            {
-                var pt       = e.GetPosition( _TopVisual );
-                var oldIndex = drft.FocusedRowIndex;
-                if ( oldIndex != -1 )
-                {
-                    foreach ( var dgrow in DGV.GetVisualDescendants().OfType< DataGridRow >() )
-                    {
-                        if ( !dgrow.IsVisible ) continue;
-                        var bounds = dgrow.GetBoundsByTopAncestor(); if ( (bounds.Height <= 0) || (bounds.Width <= 0) ) continue;
-
-                        if ( bounds.Contains( pt ) )
-                        {
-                            var newIndex = dgrow.Index;
-                            if ( (newIndex != -1) && (oldIndex != newIndex) )
-                            {
-                                _ChangeRowPosition( oldIndex, newIndex, drft.FocusedRow );
+                                _ChangeRowPosition( _Last_DragDrop_FocusedRow/*drft.FocusedRow*/, oldIndex, newIndex );
 
                                 Debug.WriteLine( $"DGV_DragDrop: {drft}" );
                                 return;

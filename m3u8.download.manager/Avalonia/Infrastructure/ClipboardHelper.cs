@@ -126,7 +126,7 @@ namespace m3u8.download.manager
                 var text = (await window.Clipboard.TryGetTextAsync())?.Trim();
                 if ( !text.IsNullOrEmpty() )
                 {
-                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var array = text.Split( [ '\r', '\n' ], StringSplitOptions.RemoveEmptyEntries );
                     var dict  = new Dictionary< string, string >( array.Length, StringComparer.InvariantCultureIgnoreCase );
 
                     foreach ( var a in array )

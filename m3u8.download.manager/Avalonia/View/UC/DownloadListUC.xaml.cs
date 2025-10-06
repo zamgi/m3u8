@@ -82,7 +82,7 @@ namespace m3u8.download.manager.ui
                 , e => /*(e.Column.DisplayIndex == 0) &&*/ e.PointerPressedEventArgs.KeyModifiers.HasFlag( KeyModifiers.Control ) /*e.Column.DisplayIndex != 0*/ /*#_Column_DisplayIndex*/
                 , r => r.GetOutputFullFileNames()
                 , r => _Model.GetVisibleIndex( r )
-                , (oldIndex, newIndex, r) => _Model.ChangeRowPosition( r, newIndex ) );
+                , (r, oldIndex, newIndex) => _Model.ChangeRowPosition( r, newIndex ) );
             //------------------------------------------------------------------//
 
             CreateColumnsContextMenu();

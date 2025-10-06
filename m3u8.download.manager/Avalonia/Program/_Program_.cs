@@ -20,10 +20,11 @@ namespace m3u8.download.manager
     /// </summary>
     internal static class Program
     {
-        private static async Task Main( string[] args )
+        //The main thread must be STA, and [STAThread] is ignored on async Main.//
+        [STAThread] private static /*async Task*/void Main( string[] args )
         {
-            AppDomain.CurrentDomain.UnhandledException += async (_, e) => await Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(),"AppDomain.CurrentDomain.UnhandledException"  );
-
+            AppDomain.CurrentDomain.UnhandledException += async (_, e) => await Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(),"AppDomain.CurrentDomain.UnhandledException" );
+            
             using ( var sca = SingleCopyApplication.Current )
             {
                 #region [.parse if opened from 'chrome-extension' || 'firefox-extension'.]
@@ -64,8 +65,7 @@ namespace m3u8.download.manager
 
                                     sca.Release(); //!!!
 
-                                    string errorMsg;
-                                    (success, errorMsg) = ProcessCreator.CreateAsBreakawayFromJob( executeFileName, cmdLine );
+                                    (success, var errorMsg) = ProcessCreator.CreateAsBreakawayFromJob( executeFileName, cmdLine );
                                     if ( !success )
                                     {
                                         PlatformHelper.TryMessageBox_ShowError( $"Error while trying run additional native application's process{(errorMsg.IsNullOrEmpty() ? null : $": '{errorMsg}'")}.", executeFileName );
@@ -89,7 +89,7 @@ namespace m3u8.download.manager
                 #region [.set/correct inputParams.]
                 if ( success && (inputParamsArray == null) )
                 {
-                    inputParamsArray = new[] { inputParams };
+                    inputParamsArray = [ inputParams ];
                 }
                 #endregion
 
@@ -121,11 +121,13 @@ namespace m3u8.download.manager
                 }
                 else if ( success )
                 {
-                    await PipeIPC.NamedPipeClient__Output.Send_Async( sca.MutexName, inputParamsArray ).CAX();
+                    PipeIPC.NamedPipeClient__Output.Send_Async( sca.MutexName, inputParamsArray ).CAX().GetAwaiter();
+                    //await PipeIPC.NamedPipeClient__Output.Send_Async( sca.MutexName, inputParamsArray ).CAX();
                 }
                 else
                 {
-                    await PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).CAX();
+                    PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).CAX().GetAwaiter();
+                    //await PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).CAX();
                 }
                 #endregion
             }

@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 using Avalonia.Controls;
 
-using m3u8.download.manager.Properties;
-
 namespace m3u8.download.manager.infrastructure
 {
     /// <summary>
@@ -21,7 +19,9 @@ namespace m3u8.download.manager.infrastructure
         {
             if ( !outputFileName.IsNullOrEmpty() )
             {
-                if ( !outputFileName.EndsWith( outputFileExtension/*_Settings.OutputFileExtension*/, StringComparison.InvariantCultureIgnoreCase ) )
+                if ( !outputFileName.EndsWith( outputFileExtension/*_Settings.OutputFileExtension*/, StringComparison.InvariantCultureIgnoreCase ) &&
+                     Path.GetExtension( outputFileName ).IsNullOrWhiteSpace()
+                   )
                 {
                     if ( /*_Settings.OutputFileExtension*/outputFileExtension.HasFirstCharNotDot() )
                     {
