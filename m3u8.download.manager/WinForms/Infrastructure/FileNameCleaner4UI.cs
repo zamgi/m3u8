@@ -17,7 +17,9 @@ namespace m3u8.download.manager.ui
         {
             if ( !outputFileName.IsNullOrEmpty() )
             {
-                if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
+                if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) &&
+                     Path.GetExtension( outputFileName ).IsNullOrWhiteSpace() 
+                   )
                 {
                     if ( outputFileExtension.HasFirstCharNotDot() )
                     {

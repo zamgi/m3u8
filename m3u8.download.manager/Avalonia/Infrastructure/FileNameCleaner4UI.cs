@@ -12,22 +12,19 @@ namespace m3u8.download.manager.infrastructure
     /// </summary>
     internal static class FileNameCleaner4UI
     {
-        //private static Settings _Settings;
-        //static FileNameCleaner4UI() => _Settings = Settings.Default;
-
         private static string AddOutputFileExtensionIfMissing( this string outputFileName, string outputFileExtension )
         {
             if ( !outputFileName.IsNullOrEmpty() )
             {
-                if ( !outputFileName.EndsWith( outputFileExtension/*_Settings.OutputFileExtension*/, StringComparison.InvariantCultureIgnoreCase ) &&
+                if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) &&
                      Path.GetExtension( outputFileName ).IsNullOrWhiteSpace()
                    )
                 {
-                    if ( /*_Settings.OutputFileExtension*/outputFileExtension.HasFirstCharNotDot() )
+                    if ( outputFileExtension.HasFirstCharNotDot() )
                     {
                         outputFileName += '.';
                     }
-                    outputFileName += outputFileExtension; //_Settings.OutputFileExtension;
+                    outputFileName += outputFileExtension;
                 }
             }
             return (outputFileName);
