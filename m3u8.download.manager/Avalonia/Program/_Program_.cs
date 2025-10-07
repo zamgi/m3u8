@@ -131,7 +131,7 @@ namespace m3u8.download.manager
                 {
                     //disallowed async/await => don't work Clipboard-Copy & Drag-N-Drop
                     //---await PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).CAX();
-                    PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).Wait();                    
+                    PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).Wait();
                 }
                 #endregion
             }

@@ -15,9 +15,8 @@ namespace m3u8.download.manager
     /// </summary>
     internal static class Program
     {
-        /// <summary>
-        ///
-        /// </summary>
+        //The main thread must be STA, and [STAThread] is ignored on async Task Main and prevent set this to MTA.//
+        //disallowed async/await => don't work Drag-N-Drop//
         [STAThread] private static void/*async Task*/ Main( string[] args )
         {
             //Application.EnableVisualStyles();
@@ -130,6 +129,7 @@ namespace m3u8.download.manager
                 }
                 else
                 {
+                    //disallowed async/await => don't work Drag-N-Drop
                     //await PipeIPC.NamedPipeClient__out.Send2FirstCopy_Async( sca.MutexName ).CAX();
                     PipeIPC.NamedPipeClient__Output.Send2FirstCopy_Async( sca.MutexName ).Wait();
                 }
