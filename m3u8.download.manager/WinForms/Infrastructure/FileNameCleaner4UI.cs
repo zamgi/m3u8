@@ -15,10 +15,12 @@ namespace m3u8.download.manager.ui
     {
         private static string AddOutputFileExtensionIfMissing( this string outputFileName, string outputFileExtension )
         {
+            const int DEFAULT_EXTENSION_LEN = 3;
+
             if ( !outputFileName.IsNullOrEmpty() )
             {
-                if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) &&
-                     Path.GetExtension( outputFileName ).IsNullOrWhiteSpace() 
+                if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) 
+                     && (Path.GetExtension( outputFileName )?.Length != DEFAULT_EXTENSION_LEN)
                    )
                 {
                     if ( outputFileExtension.HasFirstCharNotDot() )
