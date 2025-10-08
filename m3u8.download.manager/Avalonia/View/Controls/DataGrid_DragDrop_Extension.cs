@@ -99,12 +99,6 @@ namespace m3u8.download.manager.ui
             _ScrollIfNeedTimer.Elapsed += async (_, _) => await Dispatcher.UIThread.InvokeAsync( scrollIfNeedTimer_Elapsed_Action );
 
             DGV.AttachedToVisualTree += (_, e) => _TopVisual = (Visual) e.Root;
-
-
-            
-            //_SelectRect.Margin = new Thickness( 1, 98, 2, 551 - 100 );
-            //_SelectRect.IsVisible = true;
-            //_SelectRect.Fill = Brushes.Red;
         }
         #endregion
 
