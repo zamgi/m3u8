@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+#if !(NETCOREAPP)
+using System.Linq;
+#endif
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,14 +16,32 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal static class FileNameCleaner4UI
     {
+        private static bool HasLen3OnlyLetterExtension( string outputFileName )
+        {
+            const int DEFAULT_EXTENSION_LEN = 4;
+
+            var ext = Path.GetExtension( outputFileName );
+            if ( (ext != null) && (ext.Length == DEFAULT_EXTENSION_LEN) )
+            {
+#if NETCOREAPP
+                var sp = ext.AsSpan( 0 );
+                for ( var i = 0; i < sp.Length; i++ )
+                {
+                    if ( !char.IsLetter( sp[ i ] ) ) return (false);
+                }
+                return (true);
+#else
+                return (ext.Skip( 1 ).All( c => char.IsLetter( c ) ));
+#endif
+            }
+            return (false);
+        }
         private static string AddOutputFileExtensionIfMissing( this string outputFileName, string outputFileExtension )
         {
-            const int DEFAULT_EXTENSION_LEN = 3;
-
             if ( !outputFileName.IsNullOrEmpty() )
             {
                 if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) 
-                     && (Path.GetExtension( outputFileName )?.Length != DEFAULT_EXTENSION_LEN)
+                     && !HasLen3OnlyLetterExtension( outputFileName )
                    )
                 {
                     if ( outputFileExtension.HasFirstCharNotDot() )

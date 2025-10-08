@@ -12,14 +12,28 @@ namespace m3u8.download.manager.infrastructure
     /// </summary>
     internal static class FileNameCleaner4UI
     {
+        private static bool HasLen3OnlyLetterExtension( string outputFileName )
+        {
+            const int DEFAULT_EXTENSION_LEN = 4;
+
+            var ext = Path.GetExtension( outputFileName );
+            if ( (ext != null) && (ext.Length == DEFAULT_EXTENSION_LEN) )
+            {
+                var sp = ext.AsSpan( 0 );
+                for ( var i = 0; i < sp.Length; i++ )
+                {
+                    if ( !char.IsLetter( sp[ i ] ) ) return (false);
+                }
+                return (true);
+            }
+            return (false);
+        }
         private static string AddOutputFileExtensionIfMissing( this string outputFileName, string outputFileExtension )
         {
-            const int DEFAULT_EXTENSION_LEN = 3;
-
             if ( !outputFileName.IsNullOrEmpty() )
             {
                 if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase )
-                     && (Path.GetExtension( outputFileName )?.Length != DEFAULT_EXTENSION_LEN)
+                     && !HasLen3OnlyLetterExtension( outputFileName )
                    )
                 {
                     if ( outputFileExtension.HasFirstCharNotDot() )
