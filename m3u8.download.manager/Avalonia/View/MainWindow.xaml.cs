@@ -1059,15 +1059,15 @@ namespace m3u8.download.manager.ui
                         editDownloadMenuItem_Separator.IsVisible = false;
                 }
 
-                #region comm.
-                //pt = downloadListUC.TranslatePoint( pt, this ).GetValueOrDefault( pt );
+                #region [.calc menu-pos.] //comm.
+                var pt2 = downloadListUC.TranslatePoint( pt, this ).GetValueOrDefault( pt );
 
                 //var b1 = downloadListUC.Bounds;
                 //var b2 = mainContextMenu.Bounds;
 
-                //mainContextMenu.HorizontalOffset = pt.X + (- b1.Width / 2) + b2.Width / 2;
-                //mainContextMenu.VerticalOffset   = pt.Y + (- b1.Height); 
-                //mainContextMenu.Placement        = PlacementMode.Pointer; 
+                mainContextMenu.HorizontalOffset = pt2.X; // + (-b1.Width / 2) + b2.Width / 2;
+                mainContextMenu.VerticalOffset   = pt2.Y; // + (-b1.Height);
+                mainContextMenu.Placement        = PlacementMode.Pointer;
                 #endregion
 
                 mainContextMenu.Open( downloadListUC );
