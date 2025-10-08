@@ -64,22 +64,22 @@
   <Grid>    
   <Rectangle x:Name="selectRect" Stretch="Fill" 
              Stroke="DimGray" StrokeThickness="2" ZIndex="100" IsVisible="False" />
-    <Rectangle x:Name="dndRect" Stretch="Fill" IsHitTestVisible="False" Opacity="0.3" Fill="LightBlue"
-               Stroke="Blue" StrokeThickness="2" ZIndex="100" IsVisible="False" />
-    <DataGrid x:Name="DGV"
-            SelectionMode="Extended"
-            CanUserResizeColumns="True"
-            CanUserReorderColumns="False"
-            CanUserSortColumns="False"
-            IsReadOnly="True"
-            GridLinesVisibility="All"
-            VerticalGridLinesBrush="LightGray" HorizontalGridLinesBrush="LightGray"
-            RowBackground="White"
-            Background="LightGray"
-            ClipboardCopyMode="None"
-            VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Auto"            
-            >
+  <Rectangle x:Name="dndRect" Stretch="Fill" IsHitTestVisible="False" Opacity="0.3" Fill="LightBlue"
+             Stroke="Blue" StrokeThickness="2" ZIndex="100" IsVisible="False" />
+  <DataGrid x:Name="DGV"
+          SelectionMode="Extended"
+          CanUserResizeColumns="True"
+          CanUserReorderColumns="False"
+          CanUserSortColumns="False"
+          IsReadOnly="True"
+          GridLinesVisibility="All"
+          VerticalGridLinesBrush="LightGray" HorizontalGridLinesBrush="LightGray"
+          RowBackground="White"
+          Background="LightGray"
+          ClipboardCopyMode="None"
+          VerticalScrollBarVisibility="Auto"
+          HorizontalScrollBarVisibility="Auto"            
+          >
     <DataGrid.Columns>
       <DataGridTemplateColumn Width="30" CellStyleClasses="visible_always_sign w=30">
         <DataGridTemplateColumn.Header>
