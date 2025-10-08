@@ -79,6 +79,7 @@ namespace m3u8.download.manager.ui
 
             _DragDropExtension = DataGrid_DragDrop_Extension.Create< DownloadRow >( 
                   DGV
+                , this.FindControl< Rectangle >( "dndRect" )
                 , e => /*(e.Column.DisplayIndex == 0) &&*/ e.PointerPressedEventArgs.KeyModifiers.HasFlag( KeyModifiers.Control ) /*e.Column.DisplayIndex != 0*/ /*#_Column_DisplayIndex*/
                 , r => r.GetOutputFullFileNames()
                 , r => _Model.GetVisibleIndex( r )

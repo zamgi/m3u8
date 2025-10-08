@@ -199,7 +199,7 @@ namespace m3u8.download.manager.ui
             _Grid_Bounds = vp.GetTransformedBounds().Value.Bounds;
             if ( vp is Layoutable parentLayout )
             {
-                _ParentLayoutMargin = parentLayout.Margin;                
+                _ParentLayoutMargin = parentLayout.Margin;
                 pt = new Point( pt.X - _ParentLayoutMargin.Left, pt.Y - _ParentLayoutMargin.Top );
             }
             _Press_Pos         = pt;

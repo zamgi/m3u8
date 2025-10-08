@@ -27,7 +27,8 @@ namespace m3u8.download.manager.ui
     internal static class DataGrid_DragDrop_Extension
     {
         public static DataGrid_DragDrop_Extension< T > Create< T >( 
-              DataGrid dgv
+              DataGrid  dgv
+            , Rectangle selectRect
             , DataGrid_DragDrop_Extension< T >.Allow_Begin_DragDrop_Delegate               allow_Begin_DragDrop
             , DataGrid_DragDrop_Extension< T >.GetFileNames_4_DragDropFilesFormat_Delegate getFileNames_4_DragDropFilesFormat
             , DataGrid_DragDrop_Extension< T >.GetIndexOf_Delegate                         getIndexOf
@@ -36,6 +37,7 @@ namespace m3u8.download.manager.ui
             => new DataGrid_DragDrop_Extension< T >( new DataGrid_DragDrop_Extension< T >.InitParams()
             {
                 dgv                                = dgv,
+                selectRect                         = selectRect,
                 model                              = model,
                 allow_Begin_DragDrop               = allow_Begin_DragDrop,
                 getFileNames_4_DragDropFilesFormat = getFileNames_4_DragDropFilesFormat,
@@ -61,29 +63,32 @@ namespace m3u8.download.manager.ui
         public struct InitParams
         {
             public DataGrid                                    dgv                                { get; set; }
+            public Rectangle                                   selectRect                         { get; set; }
             public IReadOnlyList< T >                          model                              { get; set; }
             public Allow_Begin_DragDrop_Delegate               allow_Begin_DragDrop               { get; set; }
             public GetFileNames_4_DragDropFilesFormat_Delegate getFileNames_4_DragDropFilesFormat { get; set; }
             public GetIndexOf_Delegate                         getIndexOf                         { get; set; }
-            public ChangeRowPosition_Delegate                  changeRowPosition                  { get; set; }
+            public ChangeRowPosition_Delegate                  changeRowPosition                  { get; set; }            
         }
 
         #region [.field's.]
         private DataGrid  DGV;
         private Visual    _TopVisual;
+        private Rectangle _SelectRect;
         private IReadOnlyList< T > _Model;
         private Allow_Begin_DragDrop_Delegate               _Allow_Begin_DragDrop;
         private GetFileNames_4_DragDropFilesFormat_Delegate _GetFileNames_4_DragDropFilesFormat;
         private GetIndexOf_Delegate                         _GetIndexOf;
         private ChangeRowPosition_Delegate                  _ChangeRowPosition;
         private _Timer_                                     _ScrollIfNeedTimer;
-        private DataGrid_ScrollHelper< T >                  _ScrollHelper;
+        private DataGrid_ScrollHelper< T >                  _ScrollHelper;        
 
         public DataGrid_DragDrop_Extension( in InitParams ip )
         {
-            DGV                = ip.dgv               ?? throw (new ArgumentNullException( nameof(ip.dgv) ));
-            _GetIndexOf        = ip.getIndexOf        ?? throw (new ArgumentNullException( nameof(ip.getIndexOf) ));
-            _ChangeRowPosition = ip.changeRowPosition ?? throw (new ArgumentNullException( nameof(ip.changeRowPosition) ));
+            DGV                                 = ip.dgv               ?? throw (new ArgumentNullException( nameof(ip.dgv) ));
+            _SelectRect                         = ip.selectRect        ?? throw (new ArgumentNullException( nameof(ip.selectRect) ));
+            _GetIndexOf                         = ip.getIndexOf        ?? throw (new ArgumentNullException( nameof(ip.getIndexOf) ));
+            _ChangeRowPosition                  = ip.changeRowPosition ?? throw (new ArgumentNullException( nameof(ip.changeRowPosition) ));
             _Allow_Begin_DragDrop               = ip.allow_Begin_DragDrop               ?? new Allow_Begin_DragDrop_Delegate( e => e.Column.DisplayIndex != 0 );
             _GetFileNames_4_DragDropFilesFormat = ip.getFileNames_4_DragDropFilesFormat ?? new GetFileNames_4_DragDropFilesFormat_Delegate( _ => null );
             _ScrollHelper = DataGrid_ScrollHelper.Create( DGV, ip.model );
@@ -94,6 +99,12 @@ namespace m3u8.download.manager.ui
             _ScrollIfNeedTimer.Elapsed += async (_, _) => await Dispatcher.UIThread.InvokeAsync( scrollIfNeedTimer_Elapsed_Action );
 
             DGV.AttachedToVisualTree += (_, e) => _TopVisual = (Visual) e.Root;
+
+
+            
+            //_SelectRect.Margin = new Thickness( 1, 98, 2, 551 - 100 );
+            //_SelectRect.IsVisible = true;
+            //_SelectRect.Fill = Brushes.Red;
         }
         #endregion
 
@@ -243,6 +254,8 @@ namespace m3u8.download.manager.ui
         //    _ScrollIfNeedTimer.Enabled = false;
         //    End_DoDragDrop( e );
         //}        
+        private Rect _Grid_Bounds;
+        private int  _Last_Selected_RowIndex = -1;
         private async void TryBegin_DoDragDrop( PointerEventArgs e )
         {
             var pt = e.GetCurrentPoint( _TopVisual ).Position;
@@ -295,6 +308,10 @@ namespace m3u8.download.manager.ui
             DGV.SetValue( DragDrop.AllowDropProperty, true );
             DGV.AddHandler( DragDrop.DragOverEvent, DGV_DragOver );
             DGV.AddHandler( DragDrop.DropEvent    , DGV_DragDrop );
+
+            var vp = _SelectRect.GetVisualParent();
+            _Grid_Bounds = vp.GetTransformedBounds().Value.Bounds;
+
             try
             {
                 _IsInDragDrop = true;
@@ -325,6 +342,8 @@ namespace m3u8.download.manager.ui
             _LastMove_Pos = default;
 
             e.Handled = true;
+            _SelectRect.IsVisible   = false;
+            _Last_Selected_RowIndex = -1;
         }
 
         //private void DGV_DragOver__PREV( object sender, DragEventArgs e )
@@ -384,6 +403,22 @@ namespace m3u8.download.manager.ui
                             var newIndex = dgrow.Index;
                             if ( (newIndex != -1) && (oldIndex != newIndex) )
                             {
+                                if ( _Last_Selected_RowIndex != newIndex )
+                                {
+                                    _Last_Selected_RowIndex = newIndex;
+
+                                    //bounds = dgrow.Bounds;
+                                    //var b = dgrow.Bounds, y_offset = b.Height;
+                                    const int Y_OFFSET = 42; //?
+                                    _SelectRect.Margin = new Thickness( bounds.Left,
+                                                                        bounds.Top - Y_OFFSET,
+                                                                        _Grid_Bounds.Width  - bounds.Right,
+                                                                        _Grid_Bounds.Height - bounds.Bottom + Y_OFFSET );
+                                    //_SelectRect.Fill      = Brushes.Red;
+                                    _SelectRect.IsVisible = true;
+                                    Debug.WriteLine( _SelectRect.Margin );
+                                }
+
                                 //var rect = dgrow.FindDescendantOfType< Rectangle >();
                                 //if ( rect?.Name == "BackgroundRectangle" )
                                 //{
@@ -398,6 +433,8 @@ namespace m3u8.download.manager.ui
             }
 
             e.DragEffects = DragDropEffects.None;
+            _SelectRect.IsVisible   = false;
+            _Last_Selected_RowIndex = -1;
         }
         //private void DGV_DragDrop__PREV( object sender, DragEventArgs e )
         //{
@@ -458,7 +495,7 @@ namespace m3u8.download.manager.ui
                 }
             }
 
-            e.DragEffects = DragDropEffects.None;
+            e.DragEffects = DragDropEffects.None;            
         }
         #endregion
 
