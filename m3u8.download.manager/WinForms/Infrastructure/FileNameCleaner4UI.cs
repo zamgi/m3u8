@@ -5,7 +5,11 @@ using System.IO;
 using System.Linq;
 #endif
 using System.Threading.Tasks;
+#if AVALONIA
+using Avalonia.Controls;
+#else
 using System.Windows.Forms;
+#endif
 
 using m3u8.download.manager.infrastructure;
 
@@ -16,21 +20,36 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal static class FileNameCleaner4UI
     {
-        private static bool HasLen3OnlyLetterExtension( string outputFileName )
+        private static bool HasValidExtension( string outputFileName )
         {
-            const int DEFAULT_EXTENSION_LEN = 4;
+            const int DEFAULT_EXTENSION_LEN = 4;            
 
             var ext = Path.GetExtension( outputFileName );
             if ( (ext != null) && (ext.Length == DEFAULT_EXTENSION_LEN) )
             {
 #if NETCOREAPP
-                var sp = ext.AsSpan( 0 );
+                const string MP3_EXTENSION = "mp3";
+
+                static bool is_match( ReadOnlySpan< char > ext, ReadOnlySpan< char > pattern ) => char.ToLower( ext[ 0 ] ) == char.ToLower( pattern[ 0 ] ) &&
+                                                                                                  char.ToLower( ext[ 1 ] ) == char.ToLower( pattern[ 1 ] ) &&
+                                                                                                  char.ToLower( ext[ 2 ] ) == char.ToLower( pattern[ 2 ] );
+                var sp = ext.AsSpan( 1 );
+                if ( is_match( sp, MP3_EXTENSION ) ) return (true);
+                
                 for ( var i = 0; i < sp.Length; i++ )
                 {
                     if ( !char.IsLetter( sp[ i ] ) ) return (false);
                 }
                 return (true);
 #else
+                const string MP3_EXTENSION = ".mp3";
+
+                static bool is_match( string ext, string pattern ) => char.ToLower( ext[ 0 ] ) == char.ToLower( pattern[ 0 ] ) &&
+                                                                      char.ToLower( ext[ 1 ] ) == char.ToLower( pattern[ 1 ] ) &&
+                                                                      char.ToLower( ext[ 2 ] ) == char.ToLower( pattern[ 2 ] ) &&
+                                                                      char.ToLower( ext[ 3 ] ) == char.ToLower( pattern[ 3 ] );
+                if ( is_match( ext, MP3_EXTENSION ) ) return (true);
+
                 return (ext.Skip( 1 ).All( c => char.IsLetter( c ) ));
 #endif
             }
@@ -41,13 +60,10 @@ namespace m3u8.download.manager.ui
             if ( !outputFileName.IsNullOrEmpty() )
             {
                 if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) 
-                     && !HasLen3OnlyLetterExtension( outputFileName )
+                     && !HasValidExtension( outputFileName )
                    )
                 {
-                    if ( outputFileExtension.HasFirstCharNotDot() )
-                    {
-                        outputFileName += '.';
-                    }
+                    if ( outputFileExtension.HasFirstCharNotDot() ) outputFileName += '.';
                     outputFileName += outputFileExtension;
                 }
             }

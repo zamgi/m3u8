@@ -66,6 +66,7 @@
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
 
     <Compile Include="..\WinForms\Infrastructure\FileHelper.cs" Link="Infrastructure\FileHelper.cs" />
+    <Compile Include="..\WinForms\Infrastructure\FileNameCleaner4UI.cs" Link="Infrastructure\FileNameCleaner4UI.cs" />
     <Compile Include="..\WinForms\Infrastructure\ObjAsDict_JsonSerializer.cs" Link="Infrastructure\ObjAsDict_JsonSerializer.cs" />
     <Compile Include="..\WinForms\Infrastructure\AssemblyInfoHelper.cs" Link="Infrastructure\AssemblyInfoHelper.cs" />
     <Compile Include="..\WinForms\Infrastructure\DownloadRowsSerializer.cs" Link="Infrastructure\DownloadRowsSerializer.cs" />
