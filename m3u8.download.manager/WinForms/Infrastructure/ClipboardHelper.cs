@@ -120,6 +120,7 @@ namespace m3u8.download.manager
         public static bool TryGetHeadersFromClipboard( out IDictionary< string, string > headers )
         {
             const char COLON = ':';
+            const char TAB   = '\t';
             try
             {
                 var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
@@ -127,13 +128,14 @@ namespace m3u8.download.manager
 
                 if ( !text.IsNullOrEmpty() )
                 {
-                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var array = text.Split( [ '\r', '\n' ], StringSplitOptions.RemoveEmptyEntries );
                     var dict  = new Dictionary< string, string >( array.Length, StringComparer.InvariantCultureIgnoreCase );
+                    var anyOf = new[] { COLON, TAB };
 
                     foreach ( var a in array )
                     {
                         var s_row = a.Trim();
-                        var i     = s_row.IndexOf( COLON ); if ( i == -1 ) break;
+                        var i     = s_row.IndexOfAny( anyOf ); if ( i == -1 ) break;
                         var name  = s_row.Substring( 0,  i ).Trim(); if ( name.IsNullOrEmpty() ) break;
                         var value = s_row.Substring( i + 1 ).Trim();
 
