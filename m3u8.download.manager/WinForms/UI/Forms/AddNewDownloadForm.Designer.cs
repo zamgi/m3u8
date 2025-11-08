@@ -276,8 +276,8 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize, 30F));
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.mainLayoutPanel.Size = new System.Drawing.Size(803, 60 + 30);
+            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.mainLayoutPanel.Size = new System.Drawing.Size(803, 60 + 20);
             this.mainLayoutPanel.TabIndex = 1;
             // 
             // liveStreamMaxSizeInMbLabel
@@ -386,7 +386,7 @@ namespace m3u8.download.manager.ui
             this.loadM3u8FileContentButton.AutoSize = true;
             this.loadM3u8FileContentButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.loadM3u8FileContentButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.loadM3u8FileContentButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.loadM3u8FileContentButton.ForeColor = System.Drawing.Color.FromArgb(70, 70, 70);
             this.loadM3u8FileContentButton.Location = new System.Drawing.Point(670, 63);
             this.loadM3u8FileContentButton.Size = new System.Drawing.Size(130, 23);
             this.loadM3u8FileContentButton.TabIndex = 7;
@@ -414,7 +414,7 @@ namespace m3u8.download.manager.ui
             this.downloadStartButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.downloadStartButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.downloadStartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
-            this.downloadStartButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.downloadStartButton.ForeColor = System.Drawing.Color.FromArgb(70, 70, 70);
             this.downloadStartButton.Location = new System.Drawing.Point(233, 5);
             this.downloadStartButton.Size = new System.Drawing.Size(159, 23);
             this.downloadStartButton.TabIndex = 0;
@@ -429,7 +429,7 @@ namespace m3u8.download.manager.ui
             this.downloadLaterButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.downloadLaterButton.DialogResult = System.Windows.Forms.DialogResult.Yes;
             this.downloadLaterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.downloadLaterButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(70)))), ((int)(((byte)(70)))), ((int)(((byte)(70)))));
+            this.downloadLaterButton.ForeColor = System.Drawing.Color.FromArgb(70, 70, 70);
             this.downloadLaterButton.Location = new System.Drawing.Point(413, 5);
             this.downloadLaterButton.Size = new System.Drawing.Size(159, 23);
             this.downloadLaterButton.TabIndex = 1;
@@ -445,9 +445,10 @@ namespace m3u8.download.manager.ui
             this.externalProgApplyByDefaultCheckBox.ForeColor = System.Drawing.Color.Silver; //System.Drawing.Color.FromArgb(70, 70, 70); // 
             //this.externalProgApplyByDefaultCheckBox.Location = new System.Drawing.Point(670, 6);
             //this.externalProgApplyByDefaultCheckBox.Size = new System.Drawing.Size(112, 17);
-            this.externalProgApplyByDefaultCheckBox.TabIndex = 7;
+            this.externalProgApplyByDefaultCheckBox.TabIndex = 20;
             this.externalProgApplyByDefaultCheckBox.Text = "External program - Apply to all new downloads by default";
             this.externalProgApplyByDefaultCheckBox.UseVisualStyleBackColor = true;
+            this.externalProgApplyByDefaultCheckBox.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.externalProgApplyByDefaultCheckBox.Click += new System.EventHandler(this.externalProgApplyByDefaultCheckBox_Click);
             // 
             // statusBarUC
