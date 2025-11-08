@@ -42,6 +42,7 @@ namespace m3u8.download.manager.ui
             this.patternOutputFileNameLabel = new System.Windows.Forms.Label();
             this.patternOutputFileNameNumUpDn = new System.Windows.Forms.NumericUpDownEx();
             this.loadM3u8FileContentButton = new System.Windows.Forms.ButtonWithFocusCues();
+            this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox();
             this.buttomPanel = new System.Windows.Forms.Panel();
             this.downloadStartButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.downloadLaterButton = new System.Windows.Forms.ButtonWithFocusCues();
@@ -245,14 +246,16 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.mainLayoutPanel.Controls.Add(this.l2, 0, 2);
             this.mainLayoutPanel.Controls.Add(this.outputDirectoryTextBox, 1, 2);
             this.mainLayoutPanel.SetColumnSpan(this.outputDirectoryTextBox, 3);
             this.mainLayoutPanel.Controls.Add(this.outputDirectorySelectButton, 5, 2);
-            this.mainLayoutPanel.Controls.Add(this.l2, 0, 2);
+            this.mainLayoutPanel.Controls.Add(this.externalProgApplyByDefaultCheckBox, 1, 3);
+            this.mainLayoutPanel.SetColumnSpan(this.externalProgApplyByDefaultCheckBox, 3);
+            this.mainLayoutPanel.Controls.Add(this.l1, 0, 0);
             this.mainLayoutPanel.Controls.Add(this.outputFileNameSelectButton, 5, 0);
             this.mainLayoutPanel.Controls.Add(this.outputFileNameTextBox, 1, 0);
-            this.mainLayoutPanel.SetColumnSpan(this.outputFileNameTextBox, 3);
-            this.mainLayoutPanel.Controls.Add(this.l1, 0, 0);
+            this.mainLayoutPanel.SetColumnSpan(this.outputFileNameTextBox, 3);            
             this.mainLayoutPanel.Controls.Add(this.outputFileNameClearButton, 4, 0);
 
             this.mainLayoutPanel.Controls.Add(this.patternOutputFileNameLabelCaption, 0, 1);
@@ -269,11 +272,12 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.mainLayoutPanel.Location = new System.Drawing.Point(0, 81);
             this.mainLayoutPanel.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.mainLayoutPanel.RowCount = 3;
+            this.mainLayoutPanel.RowCount = 4;
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize, 30F));
-            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));            
-            this.mainLayoutPanel.Size = new System.Drawing.Size(803, 60);
+            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayoutPanel.Size = new System.Drawing.Size(803, 60 + 30);
             this.mainLayoutPanel.TabIndex = 1;
             // 
             // liveStreamMaxSizeInMbLabel
@@ -432,6 +436,20 @@ namespace m3u8.download.manager.ui
             this.downloadLaterButton.Text = "Download later";
             this.downloadLaterButton.UseVisualStyleBackColor = false;
             // 
+            // externalProgApplyByDefaultCheckBox
+            // 
+            this.externalProgApplyByDefaultCheckBox.AutoSize = true;
+            this.externalProgApplyByDefaultCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;            
+            this.externalProgApplyByDefaultCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.externalProgApplyByDefaultCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.externalProgApplyByDefaultCheckBox.ForeColor = System.Drawing.Color.Silver; //System.Drawing.Color.FromArgb(70, 70, 70); // 
+            //this.externalProgApplyByDefaultCheckBox.Location = new System.Drawing.Point(670, 6);
+            //this.externalProgApplyByDefaultCheckBox.Size = new System.Drawing.Size(112, 17);
+            this.externalProgApplyByDefaultCheckBox.TabIndex = 7;
+            this.externalProgApplyByDefaultCheckBox.Text = "External program - Apply to all new downloads by default";
+            this.externalProgApplyByDefaultCheckBox.UseVisualStyleBackColor = true;
+            this.externalProgApplyByDefaultCheckBox.Click += new System.EventHandler(this.externalProgApplyByDefaultCheckBox_Click);
+            // 
             // statusBarUC
             // 
             this.statusBarUC.AutoSize = true;
@@ -495,6 +513,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ButtonWithFocusCues downloadLaterButton;
         private System.Windows.Forms.ButtonWithFocusCues outputDirectorySelectButton;
         private m3u8.download.manager.ui.TextBoxEx outputDirectoryTextBox;
+        private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;
         private LogUC logUC;
         private StatusBarUC statusBarUC;
         private System.Windows.Forms.Label l1;

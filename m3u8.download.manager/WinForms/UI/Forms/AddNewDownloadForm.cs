@@ -232,6 +232,7 @@ namespace m3u8.download.manager.ui
         protected override void OnClosed( EventArgs e )
         {
             base.OnClosed( e );
+            _Settings.PropertyChanged -= _Settings_PropertyChanged;
 
             if ( !base.DesignMode )
             {
@@ -259,12 +260,24 @@ namespace m3u8.download.manager.ui
         {
             base.OnShown( e );
 
+            this.ExternalProgApplyByDefault = _Settings.ExternalProgApplyByDefault;
+            _Settings.PropertyChanged += _Settings_PropertyChanged;
+
             _LastForegroundWnd = WinApi.GetForegroundWindow(); //WinApi.GetTopForegroundWindow();
 
             this.Activate();
             WinApi.SetForegroundWindow( this.Handle );
             WinApi.SetForceForegroundWindow( this.Handle, _LastForegroundWnd );
         }
+
+        private void _Settings_PropertyChanged( object sender, PropertyChangedEventArgs e )
+        {
+            if ( e.PropertyName == nameof(Settings.ExternalProgApplyByDefault) )
+            {
+                this.ExternalProgApplyByDefault = _Settings.ExternalProgApplyByDefault;
+            }
+        }
+
         protected override void OnClosing( CancelEventArgs e )
         {
             base.OnClosing( e );
@@ -413,6 +426,16 @@ namespace m3u8.download.manager.ui
             }
         }
 
+        public bool ExternalProgApplyByDefault
+        {
+            get => externalProgApplyByDefaultCheckBox.Checked;
+            set
+            {
+                externalProgApplyByDefaultCheckBox.Checked = value;
+                set_externalProgApplyByDefaultCheckBox_Color( value );
+            }
+        }
+
         public bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
         #endregion
 
@@ -502,11 +525,19 @@ namespace m3u8.download.manager.ui
 
             set_mainLayoutPanel_Height();
         }
+        private void externalProgApplyByDefaultCheckBox_Click( object sender, EventArgs e )
+        {
+            var externalProgApplyByDefault = this.ExternalProgApplyByDefault;
+
+            set_externalProgApplyByDefaultCheckBox_Color( externalProgApplyByDefault );
+            _Settings.ExternalProgApplyByDefault = externalProgApplyByDefault;
+        }
+        private void set_externalProgApplyByDefaultCheckBox_Color( bool externalProgApplyByDefault ) => externalProgApplyByDefaultCheckBox.ForeColor = externalProgApplyByDefault ? Color.FromArgb( 70, 70, 70 ) : Color.Silver;
         private void set_mainLayoutPanel_Height( bool? isLiveStream_or_patternOutputFileName_visible = null )
         {
             const int DEFAULT_HEIGHT_isLiveStream    = 30;
-            const int DEFAULT_HEIGHT_mainLayoutPanel = 70;
-            const int DEFAULT_HEIGHT_this            = 315;
+            const int DEFAULT_HEIGHT_mainLayoutPanel = 70 + 30;
+            const int DEFAULT_HEIGHT_this            = 315 + 30;
 
             var is_extra_visible = isLiveStream_or_patternOutputFileName_visible.GetValueOrDefault( this.IsLiveStream || patternOutputFileNameLabel.Visible );
             var extra_height = is_extra_visible ? DEFAULT_HEIGHT_isLiveStream : 0;
