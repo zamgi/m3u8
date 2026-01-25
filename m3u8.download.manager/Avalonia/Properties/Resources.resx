@@ -124,7 +124,7 @@
     <value>(NET 4.8.1)</value>
   </data>
   <data name="NET_CORE" xml:space="preserve">
-    <value>(NET 9.0)</value>
+    <value>(NET 10.0)</value>
   </data>
   <data name="M3U8_EXTENSION" xml:space="preserve">
     <value>.m3u8</value>

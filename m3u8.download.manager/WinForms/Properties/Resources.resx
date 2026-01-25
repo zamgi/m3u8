@@ -121,13 +121,13 @@
     <value>.m3u8 file download manager (NET 4.8.1)</value>
   </data>
   <data name="APP_TITLE__NET_CORE" xml:space="preserve">
-    <value>.m3u8 file download manager (NET 9.0)</value>
+    <value>.m3u8 file download manager (NET 10.0)</value>
   </data>
   <data name="NET_FW" xml:space="preserve">
     <value>(NET 4.8.1)</value>
   </data>
   <data name="NET_CORE" xml:space="preserve">
-    <value>(NET 9.0)</value>
+    <value>(NET 10.0)</value>
   </data>
   <data name="M3U8_EXTENSION" xml:space="preserve">
     <value>.m3u8</value>
