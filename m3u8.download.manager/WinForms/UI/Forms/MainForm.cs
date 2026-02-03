@@ -1214,10 +1214,10 @@ namespace m3u8.download.manager.ui
 
         private void downloadInstanceToolButton_ValueChanged( int downloadInstanceValue )
         {
-            if ( _SC.UseCrossDownloadInstanceParallelism )
-            {
+            //if ( _SC.UseCrossDownloadInstanceParallelism )
+            //{
                 _SC.MaxCrossDownloadInstance = downloadInstanceValue;
-            }
+            //}
         }
         private void degreeOfParallelismToolButton_ValueChanged( int value ) => (_SC.MaxDegreeOfParallelism, _SC.MaxDegreeOfParallelismSaved) = (value, degreeOfParallelismToolButton.ValueSaved);
         private void speedThresholdToolButton_ValueChanged( decimal? value ) => (_SC.MaxSpeedThresholdInMbps, _SC.MaxSpeedThresholdInMbpsSaved) = (value, speedThresholdToolButton.ValueSaved); 

@@ -1001,10 +1001,10 @@ namespace m3u8.download.manager.ui
 
         private void downloadInstanceToolButton_ValueChanged( int downloadInstanceValue )
         {
-            if ( _VM.SettingsController.UseCrossDownloadInstanceParallelism )
-            {
+            //if ( _VM.SettingsController.UseCrossDownloadInstanceParallelism )
+            //{
                 _VM.SettingsController.MaxCrossDownloadInstance = downloadInstanceValue;
-            }
+            //}
         }
         private void degreeOfParallelismToolButton_ValueChanged( int value ) => _VM.SettingsController.MaxDegreeOfParallelism = value;
         private void speedThresholdToolButton_ValueChanged( decimal? value ) => _VM.SettingsController.MaxSpeedThresholdInMbps = value; 
