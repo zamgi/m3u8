@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.DigitLetterSort;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -10,8 +11,9 @@ using System.Windows.Forms;
 
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
-using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using CellStyle   = System.Windows.Forms.DataGridViewCellStyle;
 using HitTestInfo = System.Windows.Forms.DataGridView.HitTestInfo;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -755,7 +757,10 @@ namespace m3u8.download.manager.ui
             switch ( columnIndex )
             {
                 case OUTPUTFILENAME_COLUMN_INDEX:
-                    comparison = (x, y) => string.Compare( x.OutputFileName, y.OutputFileName, true );
+                    //---comparison = (x, y) => string.Compare( x.OutputFileName, y.OutputFileName, true );
+
+                    var comparer = new PartOfString.Comparer();
+                    comparison = (x, y) => comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) );
                     break;
 
                 case OUTPUTDIRECTORY_COLUMN_INDEX:
