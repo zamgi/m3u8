@@ -65,6 +65,7 @@
     <Compile Include="..\[Common]\Extensions.cs" Link="Infrastructure\Extensions.cs" />
     <Compile Include="..\[Common]\UndoModel.cs" Link="Model\UndoModel.cs" />
     <Compile Include="..\[Common]\UrlHelper.cs" Link="Infrastructure\UrlHelper.cs" />
+    <Compile Include="..\[Common]\DigitLetterSort.cs" Link="Infrastructure\DigitLetterSort.cs" />    
   </ItemGroup>
 
   <ItemGroup>
