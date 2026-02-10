@@ -61,9 +61,9 @@ namespace m3u8.download.manager.ui
                 otherSettingsUC.StartShowTotalMemory();
             }
         }
-        protected override void OnClosing( CancelEventArgs e )
+        protected override void OnFormClosing( FormClosingEventArgs e )
         {
-            base.OnClosing( e );
+            base.OnFormClosing( e );
 
             otherSettingsUC.OnClosing( DialogResult, e );
         }

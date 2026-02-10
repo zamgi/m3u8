@@ -149,7 +149,8 @@ namespace m3u8.download.manager.ui
             // outputFileNameTextBox
             // 
             this.outputFileNameTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this.outputFileNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //---this.outputFileNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle/*None*/;
+            this.outputFileNameTextBox.BorderColor = System.Drawing.Color.Silver;
             this.outputFileNameTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.outputFileNameTextBox.Location = new System.Drawing.Point(67, 6);
             this.outputFileNameTextBox.Size = new System.Drawing.Size(539, 18);
@@ -161,7 +162,8 @@ namespace m3u8.download.manager.ui
             // 
             this.outputDirectoryTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.outputDirectoryTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
-            this.outputDirectoryTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //---this.outputDirectoryTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle/*None*/;
+            this.outputDirectoryTextBox.BorderColor = System.Drawing.Color.Silver;
             this.outputDirectoryTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.outputDirectoryTextBox.Location = new System.Drawing.Point(67, 66);
             this.outputDirectoryTextBox.Size = new System.Drawing.Size(539, 18);

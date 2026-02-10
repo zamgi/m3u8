@@ -93,9 +93,9 @@ namespace m3u8.download.manager.ui
                 FormPositionStorer.Load( this, _SC.Settings.FileNameExcludesWordsEditorPositionJson );
             }
         }
-        protected override void OnClosed( EventArgs e )
+        protected override void OnFormClosed( FormClosedEventArgs e )
         {
-            base.OnClosed( e );
+            base.OnFormClosed( e );
 
             if ( !base.DesignMode && (_SC != null) )
             {

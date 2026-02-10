@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+
+using static System.Net.Mime.MediaTypeNames;
 
 namespace m3u8.download.manager
 {
@@ -26,7 +29,7 @@ namespace m3u8.download.manager
                 
                 if ( !text.IsNullOrEmpty() )
                 {
-                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var array = text.Split( [ '\r', '\n' ], StringSplitOptions.RemoveEmptyEntries );
                     var hs  = new HashSet< string >( array.Length, StringComparer.InvariantCultureIgnoreCase );
                     var lst = new List< (string url, string requestHeaders) >( array.Length );
                     foreach ( var a in array )
@@ -152,6 +155,18 @@ namespace m3u8.download.manager
 
             headers = default;
             return (false);
+        }
+        public static void CopyHeadersToClipboard( IDictionary< string, string > headers )
+        {
+            const char COLON = ':';
+
+            var buf = new StringBuilder();
+            foreach ( var p in headers )
+            {
+                buf.Append( p.Key ).Append( COLON ).Append( p.Value ).AppendLine();
+            }
+            var txt = buf.ToString();
+            Clipboard.SetText( txt, TextDataFormat.UnicodeText );
         }
     }
 }

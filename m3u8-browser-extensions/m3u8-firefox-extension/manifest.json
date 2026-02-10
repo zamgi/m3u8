@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name"       : "m3u8 file downloader (manifest.v2)",
-  "description": "m3u8 file downloader firefox extension (manifest.v2).",
-  "version"    : "1.8",
+  "name"       : "m3u8 file downloader (manifest.v2) v.2.0",
+  "description": "m3u8 file downloader firefox extension (manifest.v2) v.2.0.",
+  "version"    : "2.0",
   "icons": {
     "32" : "img/m3u8.png",
     "128": "img/m3u8_128.png"
@@ -22,6 +22,7 @@
   }],
 
   "permissions": [
+    "storage",
     "webNavigation",
     "webRequest",
     "webRequestBlocking",

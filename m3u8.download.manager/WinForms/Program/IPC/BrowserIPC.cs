@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
-using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
+using C = System.Runtime.Serialization.DataContractAttribute;
+using M = System.Runtime.Serialization.DataMemberAttribute;
+//using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
 
 namespace m3u8.download.manager.ipc
 {
@@ -19,33 +20,74 @@ namespace m3u8.download.manager.ipc
         /// <summary>
         /// 
         /// </summary>
-        [DataContract] private struct ExtensionInputParamsArray
+        [C] private struct ExtensionInputParamsArray
         {
             /// <summary>
             /// 
             /// </summary>
-            [DataContract] public struct InputParams
+            [C] public struct InputParams
             {
-                [DataMember(Name="m3u8_url", IsRequired=true)]
+                #region comm. prev.
+                /*
+                [M(Name="m3u8_url", IsRequired=true)]
                 public string m3u8FileUrl { get; set; }
 
-                [DataMember(Name="requestHeaders", IsRequired=false)]
+                [M(Name="requestHeaders", IsRequired=false)]
                 public string requestHeaders { get; set; }
 
-                [DataMember(Name="auto_start_download", IsRequired=false)]
+                [M(Name="auto_start_download", IsRequired=false)]
                 public bool autoStartDownload { get; set; }
+                */
+                #endregion
+
+                [M(Name="is_group_by_audio_video", IsRequired=false)]
+                public bool isGroupByAudioVideo { get; set; }
+
+
+                [M(Name="video_url", IsRequired=false)]
+                public string videoUrl { get; set; }
+                [M(Name="video_requestHeaders", IsRequired=false)]
+                public string videoRequestHeaders { get; set; }
+                [M(Name="audio_url", IsRequired=false)]
+                public string audioUrl { get; set; }
+                [M(Name="audio_requestHeaders", IsRequired=false)]
+                public string audioRequestHeaders { get; set; }
+
+
+                [M(Name="m3u8_url", IsRequired=/*true*/false)]
+                public string m3u8FileUrl { get; set; }
+
+                [M(Name="requestHeaders", IsRequired=false)]
+                public string requestHeaders { get; set; }
+
+
+                [M(Name="auto_start_download", IsRequired=false)]
+                public bool autoStartDownload { get; set; }
+
+
+                public UrlInputParams ToUrlInputParams() => new UrlInputParams()
+                {
+                    audioRequestHeaders = audioRequestHeaders,
+                    audioUrl            = audioUrl,
+                    autoStartDownload   = autoStartDownload,
+                    videoRequestHeaders = videoRequestHeaders,
+                    videoUrl            = videoUrl,
+                    isGroupByAudioVideo = isGroupByAudioVideo,
+                    m3u8FileUrl         = m3u8FileUrl,
+                    requestHeaders      = requestHeaders,
+                };
             }
 
-            [DataMember(Name= "array", IsRequired=true)]
+            [M(Name="array", IsRequired=true)]
             public InputParams[] Array { get; set; }
         }
 
         /// <summary>
         /// 
         /// </summary>
-        [DataContract] private struct ExtensionOutputParams
+        [C] private struct ExtensionOutputParams
         {
-            [DataMember(Name="text", IsRequired=true)]
+            [M(Name="text", IsRequired=true)]
             public string Text { get; set; }
 
             private string ToJson() => this.ToJSON();
@@ -58,12 +100,12 @@ namespace m3u8.download.manager.ipc
         /// <summary>
         /// 
         /// </summary>
-        [DataContract] public struct ExtensionRequestHeader
+        [C] public struct ExtensionRequestHeader
         {
-            [DataMember(Name="name", IsRequired=true)]
+            [M(Name="name", IsRequired=true)]
             public string Name { get; set; }
 
-            [DataMember(Name="value", IsRequired=true)]
+            [M(Name="value", IsRequired=true)]
             public string Value { get; set; }
 
             public static string ToJson( IDictionary< string, string > dict )
@@ -125,7 +167,7 @@ namespace m3u8.download.manager.ipc
             }
         }
 
-        public static string ReadFromStandardInput( int millisecondsDelay  = 2_500 )
+        public static string ReadFromStandardInput( int millisecondsDelay = 2_500 )
         {
             using ( var cts = new CancellationTokenSource( millisecondsDelay ) )
             using ( var br  = new Barrier( 2 ) )
@@ -188,18 +230,18 @@ namespace m3u8.download.manager.ipc
             }
         }
 
-        public static bool TryParseAsExtensionInputParams( string json, out X[] p )
+        public static bool TryParseAsExtensionInputParams( string json, out UrlInputParams[] p )
         {
             try
             {
                 var array = Extensions.FromJSON< ExtensionInputParamsArray >( json ).Array;
                 if ( array.AnyEx() )
                 {
-                    p = new X[ array.Length ];
+                    p = new UrlInputParams[ array.Length ];
                     for ( var i = array.Length - 1; 0 <= i; i-- )
                     {
                         ref var a = ref array[ i ];
-                        p[ i ] = (a.m3u8FileUrl, a.requestHeaders, a.autoStartDownload);
+                        p[ i ] = a.ToUrlInputParams();
                     }
                     return (true);
                 }
@@ -256,16 +298,22 @@ namespace m3u8.download.manager.ipc
                 return (BrowserTypeEnum.NoBrowser);
             }
 
-            public static string Create4PipeIPC( X[] array ) => string.Join( LINES_SEPARATOR, from p in array select Create4PipeIPC( p ) );
-            private static string Create4PipeIPC( in X p ) => $"{p.m3u8FileUrl}{PARAMS_SEPARATOR}{p.requestHeaders.GetValueIfNotNullOrWhiteSpaceOrDefault( EMPTY_REQUEST_HEADERS )}{PARAMS_SEPARATOR}{p.autoStartDownload}";
-            public static bool TryParse4PipeIPC_Multi( string pipeIpcCommandLine, out X[] array )
+            public static string Create4PipeIPC( UrlInputParams[] array ) => string.Join( LINES_SEPARATOR, from p in array select Create4PipeIPC( p ) );
+            private static string Create4PipeIPC( in UrlInputParams p )
+                //=> $"{p.m3u8FileUrl}{PARAMS_SEPARATOR}{p.requestHeaders.GetValueIfNotNullOrWhiteSpaceOrDefault( EMPTY_REQUEST_HEADERS )}{PARAMS_SEPARATOR}{p.autoStartDownload}";
+                => p.isGroupByAudioVideo
+                   ? $"{p.videoUrl}{PARAMS_SEPARATOR}{p.videoRequestHeaders.GetValueIfNotNullOrWhiteSpaceOrDefault( EMPTY_REQUEST_HEADERS )}{PARAMS_SEPARATOR}" +
+                     $"{p.audioUrl}{PARAMS_SEPARATOR}{p.audioRequestHeaders.GetValueIfNotNullOrWhiteSpaceOrDefault( EMPTY_REQUEST_HEADERS )}{PARAMS_SEPARATOR}" +
+                     $"{p.autoStartDownload}"
+                   : $"{p.m3u8FileUrl}{PARAMS_SEPARATOR}{p.requestHeaders.GetValueIfNotNullOrWhiteSpaceOrDefault( EMPTY_REQUEST_HEADERS )}{PARAMS_SEPARATOR}{p.autoStartDownload}";
+            public static bool TryParse4PipeIPC_Multi( string pipeIpcCommandLine, out UrlInputParams[] array )
             {
                 if ( pipeIpcCommandLine != null )
                 {
-                    var args = pipeIpcCommandLine.Split( new[] { LINES_SEPARATOR }, StringSplitOptions.None );
+                    var args = pipeIpcCommandLine.Split( [LINES_SEPARATOR], StringSplitOptions.None );
                     if ( 0 < args.Length )
                     {
-                        array = new X[ args.Length ];
+                        array = new UrlInputParams[ args.Length ];
 
                         for ( var i = args.Length - 1; 0 <= i; i-- )
                         {
@@ -284,14 +332,34 @@ namespace m3u8.download.manager.ipc
                 array = default;
                 return (false);
             }
-            private static bool TryParse4PipeIPC_Single( string pipeIpcCommandLine, out X p )
+            private static bool TryParse4PipeIPC_Single( string pipeIpcCommandLine, out UrlInputParams p )
             {
                 var args = pipeIpcCommandLine.Split( PARAMS_SEPARATOR );
-                if ( args.Length == 3 )
+                if ( args.Length == 3 ) //single
                 {
                     var rh = args[ 1 ]; if ( rh == EMPTY_REQUEST_HEADERS ) rh = null;
-                    p = (args[ 0 ], rh, args[ 2 ].Try2Bool());
+                    p = new UrlInputParams()
+                    {
+                        m3u8FileUrl       = args[ 0 ], 
+                        requestHeaders    = rh,
+                        autoStartDownload = args[ 2 ].Try2Bool()
+                    };
                     return (!p.m3u8FileUrl.IsNullOrWhiteSpace());
+                }
+                else if ( args.Length == 5 ) //grouped
+                {
+                    var vrh = args[ 1 ]; if ( vrh == EMPTY_REQUEST_HEADERS ) vrh = null;
+                    var arh = args[ 3 ]; if ( arh == EMPTY_REQUEST_HEADERS ) arh = null;
+                    p = new UrlInputParams()
+                    {
+                        isGroupByAudioVideo = true,
+                        videoUrl            = args[ 0 ], 
+                        videoRequestHeaders = vrh,
+                        audioUrl            = args[ 2 ], 
+                        audioRequestHeaders = arh,
+                        autoStartDownload   = args[ 4 ].Try2Bool()
+                    };
+                    return (!p.videoUrl.IsNullOrWhiteSpace() && !p.audioUrl.IsNullOrWhiteSpace());
                 }
                 p = default;
                 return (false);
@@ -299,12 +367,14 @@ namespace m3u8.download.manager.ipc
       
             public static string Create_4_CreateAsBreakawayFromJob( string executeFileName ) => $"\"{executeFileName}\" {CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG}";
             public static bool Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() => (Environment.GetCommandLineArgs()?.Any( a => a == CREATE_AS_BREAKAWAY_FROM_JOB__CMD_ARG )).GetValueOrDefault();
-            public static bool TryParse( string[] args, out X p )
+            public static bool TryParse( string[] args, out UrlInputParams p )
             {
-                p.m3u8FileUrl       = args.TryGetCmdArg( M3U8_FILE_URL__PARAM );
-                p.requestHeaders    = args.TryGetCmdArg( REQUEST_HEADERS__PARAM );
-                p.autoStartDownload = args.TryGetCmdArg( AUTO_START_DOWNLOAD__PARAM ).Try2Bool();
-
+                p = new UrlInputParams()
+                {
+                    m3u8FileUrl       = args.TryGetCmdArg( M3U8_FILE_URL__PARAM ),
+                    requestHeaders    = args.TryGetCmdArg( REQUEST_HEADERS__PARAM ),
+                    autoStartDownload = args.TryGetCmdArg( AUTO_START_DOWNLOAD__PARAM ).Try2Bool()
+                };
                 return (p.m3u8FileUrl != null);
             }
         }

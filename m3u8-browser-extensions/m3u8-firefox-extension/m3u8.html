@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>m3u8 file downloader (manifest.v2)</title>
+    <title>m3u8 file downloader (manifest.v2) v.2.0</title>
     <link type="image/png" rel="shortcut icon" href="img/m3u8.png"  />
     <link type="text/css"  rel="stylesheet"    href="css/m3u8.css" />
     <script type="text/javascript" src="js/m3u8.js"></script>
 </head>
 <body class="body">
     <div class="options_1">
-        <input id="directionRtl" type="checkbox" checked="checked" />
-        <label for="directionRtl">direction: rtl</label>
+        <input id="directionRtl" type="checkbox" checked="checked" title="direction: right-to-left | left-to-right" />
+        <label for="directionRtl" title="direction: right-to-left | left-to-right">direction: rtl</label>
+
+        <input id="groupByAudioVideo" type="checkbox" checked="checked" title="trying to group urls by audio+video for sites like 'kinokong' & etc." />
+        <label for="groupByAudioVideo" title="trying to group urls by audio+video for sites like 'kinokong' & etc.">group by audio+video</label>
+
         <!--
         <input id="saveUrlListBetweenTabReload" type="checkbox" />
         <label for="saveUrlListBetweenTabReload">save url-list between tab reload</label>

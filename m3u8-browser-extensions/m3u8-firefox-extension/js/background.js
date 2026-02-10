@@ -1,11 +1,12 @@
+const root = browser; //chrome;
 window.onload = function () {
     window.workInfo = new workInfoType();
 
     let requestHeaders_by_url = {};
-    chrome.webRequest.onCompleted.addListener(function (d/*details*/) {
+    root.webRequest.onCompleted.addListener(function (d/*details*/) {
         let ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
         if (ext === 'm3u8') {
-            var requestHeaders = requestHeaders_by_url[d.url];
+            let requestHeaders = requestHeaders_by_url[d.url];
             if (requestHeaders) delete requestHeaders_by_url[d.url];
             window.workInfo.addM3u8Urls( d.tabId, d.url, requestHeaders );
             try {
@@ -16,69 +17,63 @@ window.onload = function () {
             }
             window.workInfo.setUrlsCountText({ tabId: d.tabId });
         }
-    }, {
-        urls: ["<all_urls>"]
-    });
+    }, 
+    {urls: ["<all_urls>"]});
 
-    chrome.webRequest.onBeforeSendHeaders.addListener(async function (d/*details*/) {
-        let ext = (d.url.split('?')[0].split('.').pop() || '').toLowerCase();
+    root.webRequest.onBeforeSendHeaders.addListener(async function (d/*details*/) {
+        let ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
         if (ext === 'm3u8') {
             //console.log('onBeforeSendHeaders() => tabId: ' + d.tabId + ', url: ' + d.url );
-
             requestHeaders_by_url[d.url] = JSON.stringify(d.requestHeaders);
         }
         //else console.log('discarded => tabId: ' + d.tabId + ', url: ' + d.url );
-    }, {
-        urls: ['<all_urls>']
-    }, ['requestHeaders'/*, 'extraHeaders'*/]);
+    },
+    {urls: ['<all_urls>']}, ['requestHeaders']);
 
     // set handler to tabs
-    chrome.tabs.onActivated.addListener(function (info) { window.workInfo.onActivated(info.tabId); });
+    root.tabs.onActivated.addListener(d => window.workInfo.onActivated(d.tabId));
 
     // set handler to tabs:  need for send objects
-    if (chrome.extension.onConnect) {
-        chrome.extension.onConnect.addListener(function (port) { port.onMessage.addListener(workInfo_methodCaller); });
+    if (root.extension.onConnect) {
+        root.extension.onConnect.addListener(port => port.onMessage.addListener(workInfo_methodCaller));
     }
 
     // set handler to tabs
-    chrome.tabs.onUpdated.addListener(function (tabId, info, tab) {
-        if (!info || !info.status || (info.status.toLowerCase() !== 'complete')) return;
+    root.tabs.onUpdated.addListener(function (tabId, info, tab) {
+        if (!info?.status || (info.status.toLowerCase() !== 'complete')) return;
 
         // if user open empty tab or ftp protocol and etc.
-        if ((tabId === undefined) || !tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
-            if (tabId !== undefined) chrome.browserAction.disable(tabId);
+        if ((tabId === undefined) || !tab?.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
+            if (tabId !== undefined) root.browserAction.disable(tabId);
             return (0);
         }
 
         window.workInfo.onActivated(tabId);
-        chrome.browserAction.enable(tabId);
+        root.browserAction.enable(tabId);
 
         // save tab info if need
         window.workInfo.addTab(tab);
 
         // connect with new tab, and save object
-        let port = chrome.tabs.connect(tabId);
+        let port = root.tabs.connect(tabId);
         let t    = window.workInfo.tabs[tabId];
         t.connectPort = port;
 
         // run function in script_in_content.js
-        chrome.tabs.executeScript(tabId, { code: "popupInfo_init()" });
+        root.tabs.executeScript(tabId, { code: "popupInfo_init()" });
 
         // send tabId, hosts and others information into script_in_content.js
-        port.postMessage({ method: 'setTabId', data: tabId });
+        port.postMessage({ method: 'setTabId'   , data: tabId });
         port.postMessage({ method: 'setM3u8Urls', data: t.m3u8_urls });
         port.postMessage({ method: 'connect2Extension' });
     });
 
-    chrome.tabs.onRemoved.addListener(function (tabId) { window.workInfo.deleteTab(tabId); });
+    root.tabs.onRemoved.addListener(tabId => window.workInfo.deleteTab(tabId));
 };
 
 function workInfo_methodCaller(obj) {
-    if (obj && obj.method) {
-        if (obj.data)
-            window.workInfo[obj.method](obj.data);
-        else
-            window.workInfo[obj.method]();
+    if (obj?.method) {
+        window.workInfo[obj.method](obj?.data);
     }
 }
 
@@ -129,12 +124,13 @@ window.workInfoType.prototype = {
         }
     },
     setUrlsCountText: function (d) {
-        let o = d ? this.tabs[d.tabId] : null;
-        if (o && o.m3u8_urls && o.m3u8_urls.length) {
-            chrome.browserAction.setBadgeText({ text: o.m3u8_urls.length + '' });
+        let o = d ? this.tabs[d.tabId] : null, cnt = o?.m3u8_urls?.length;
+        if (cnt) {
+            root.browserAction.setBadgeText({ text: cnt + '' });
             return (0);
+        } else {
+            root.browserAction.setBadgeText({ text: '' });
         }
-        chrome.browserAction.setBadgeText({ text: '' });
     },
     onActivated: function (tabId) {
         // set active tab
@@ -156,6 +152,6 @@ window.workInfoType.prototype = {
     },
     getM3u8Urls: function () {
         let o = (this.active_tabId !== undefined) ? this.tabs[this.active_tabId] : null;
-        return ((o && o.m3u8_urls) ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
+        return (o?.m3u8_urls ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
     }
 };

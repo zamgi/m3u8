@@ -147,12 +147,71 @@ namespace m3u8.download.manager.ui
             yield return ("Save-Data"                , "The Save-Data client hint request header available in Chrome, Opera, and Yandex browsers lets developers deliver lighter, faster applications to users who opt-in to data saving mode in their browser.");
             yield return ("Sec-GPC"                  , "The Sec-GPC (Global Privacy Control) request header indicates whether the user consents to a website or service selling or sharing their personal information with third parties.");
         }
-        public void SetRequestHeaders( IDictionary< string, string > requestHeaders )
+        //public void SetRequestHeaders( IDictionary< string, string > requestHeaders )
+        //{
+        //    var max_name_length = GetRegularRequestHeader().Max( t => t.name.Length );
+        //    if ( requestHeaders.AnyEx() )
+        //    {
+        //        max_name_length = Math.Max( max_name_length, requestHeaders.Keys.Max( k => k.Length ) );
+        //    }
+
+        //    _AllRequestHeaders4DropDown = new List< RequestHeader >( 100 );            
+        //    var hs_allRequestHeaders4DropDown = new HashSet< string >( 100 );
+        //    foreach ( var (name, descr)  in GetRegularRequestHeader() )
+        //    {
+        //        if ( hs_allRequestHeaders4DropDown.Add( name ) )
+        //        {
+        //            _AllRequestHeaders4DropDown.Add( new RequestHeader( name/*, descr, max_name_length*/ ) );
+        //        }
+        //    }
+        //    DGV_keyColumn.DropDownWidth = 250; // 750;
+
+        //    if ( requestHeaders.AnyEx() )
+        //    {
+        //        foreach ( var key in requestHeaders.Keys )
+        //        {
+        //            if ( hs_allRequestHeaders4DropDown.Add( key ) )
+        //            {
+        //                _AllRequestHeaders4DropDown.Add( new RequestHeader( key ) );
+        //            }
+        //        }
+        //    }
+        //    _AllRequestHeaders4DropDown.Sort( (x, y) => string.Compare( x.DisplayName, y.DisplayName, true ) );
+
+        //    keyBindingSource.DataSource = _AllRequestHeaders4DropDown;
+
+        //    //-------------------------------------------------//
+
+        //    if ( requestHeaders.AnyEx() )
+        //    {
+        //        //DGV.RowsAdded -= DGV_RowsAdded;
+        //        //try
+        //        //{
+        //        var rows = DGV.Rows;
+        //        rows.Clear();
+        //        foreach ( var p in requestHeaders )
+        //        {
+        //            rows.Add( true, p.Key, p.Value );
+        //        }
+        //        //}
+        //        //finally
+        //        //{
+        //        //    DGV.RowsAdded += DGV_RowsAdded;
+        //        //}
+        //    }
+        //    else
+        //    {
+        //        OnRequestHeadersCountChanged?.Invoke( DGV.RowCount - 1, 0 );
+        //    }
+
+        //    DGV_Resize( null, EventArgs.Empty );
+        //}
+        public void SetRequestHeaders( ICollection< KeyValuePair< string, string > > requestHeaders )
         {
             var max_name_length = GetRegularRequestHeader().Max( t => t.name.Length );
             if ( requestHeaders.AnyEx() )
             {
-                max_name_length = Math.Max( max_name_length, requestHeaders.Keys.Max( k => k.Length ) );
+                max_name_length = Math.Max( max_name_length, requestHeaders.Select( p => p.Key ).Max( k => k.Length ) );
             }
 
             _AllRequestHeaders4DropDown = new List< RequestHeader >( 100 );            
@@ -168,7 +227,7 @@ namespace m3u8.download.manager.ui
 
             if ( requestHeaders.AnyEx() )
             {
-                foreach ( var key in requestHeaders.Keys )
+                foreach ( var key in requestHeaders.Select( p => p.Key ) )
                 {
                     if ( hs_allRequestHeaders4DropDown.Add( key ) )
                     {
@@ -260,6 +319,11 @@ namespace m3u8.download.manager.ui
             return (dict);
         }
         public bool InEditMode => DGV.IsCurrentCellInEditMode;
+        public bool ReadOnly
+        {
+            get => DGV.ReadOnly;
+            set => DGV.ReadOnly = value;
+        }
 
         private int GetEnabledCount()
         {
@@ -345,7 +409,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_ColumnHeaderMouseClick( object sender, DataGridViewCellMouseEventArgs e )
         {
-            if ( (e.ColumnIndex == DGV_checkedColumn.DisplayIndex) && (0 < DGV.RowCount) )
+            if ( !this.ReadOnly && ( e.ColumnIndex == DGV_checkedColumn.DisplayIndex) && (0 < DGV.RowCount) )
             {
                 var row_0 = DGV.Rows[ 0 ]; if ( row_0.IsNewRow ) return;
                 var isChecked = !Convert.ToBoolean( row_0.Cells[ e.ColumnIndex ].Value );
@@ -405,9 +469,20 @@ namespace m3u8.download.manager.ui
             switch ( e.KeyCode )
             {
                 case Keys.Delete:
-                    foreach ( var cell in DGV.SelectedCells.Cast< DataGridViewCell >() )
+                    if ( !(e.Handled = this.ReadOnly) )
                     {
-                        if ( cell.ColumnIndex != CHECKED_CELL_IDX ) cell.Value = null;
+                        foreach ( var cell in DGV.SelectedCells.Cast< DataGridViewCell >() )
+                        {
+                            if ( cell.ColumnIndex != CHECKED_CELL_IDX ) cell.Value = null;
+                        }
+                    }
+                    break;
+
+                case Keys.C:
+                    if ( e.Control )
+                    {
+                        ClipboardHelper.CopyHeadersToClipboard( GetRequestHeaders() );
+                        e.Handled = true;
                     }
                     break;
 
@@ -415,7 +490,7 @@ namespace m3u8.download.manager.ui
                     if ( e.Control ) goto case Keys.Insert;
                     break;
                 case Keys.Insert:
-                    if ( ClipboardHelper.TryGetHeadersFromClipboard( out var headers ) )
+                    if ( !this.ReadOnly && ClipboardHelper.TryGetHeadersFromClipboard( out var headers ) )
                     {
                         AppendRequestHeaders( headers );
                     }

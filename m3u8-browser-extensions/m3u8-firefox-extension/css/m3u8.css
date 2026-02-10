@@ -1,5 +1,5 @@
 html { overflow: hidden; max-width: 800px; }
-.body { font-family: verdana; overflow: hidden; margin: 3px 3px 0 3px; }
+.body { /*font-family: verdana;*/font-family: monospace; overflow: hidden; margin: 3px 3px 0 3px; }
 .body_2 { margin-bottom: 10px }
 .right { text-align: right; }
 
@@ -10,7 +10,7 @@ div.content {
     /*max-width: 800px;*/
     /*direction: rtl;*/
 }
-table.content { font-size: 10px; }
+table.content { /*font-size: 10px;*/font-size: 0.85em; }
 
 h5.found { text-align: left; vertical-align: central; margin: 3px 0 3px 7px; color: forestgreen; }
     h5.found a.download_all { color: forestgreen; }
@@ -25,8 +25,10 @@ a { outline: none; text-decoration: none; color: dimgrey; }
     a.auto_start_download_all { margin-left: 5px; }
 
 div.options_1 { background-color: whitesmoke; text-align: right; white-space: nowrap; }
-div.options_1 #directionRtl, div.options_1 label[for="directionRtl"] { color: silver; }
-               div.options_1 label[for="directionRtl"] { margin-right: 20px }
+/*div.options_1 #directionRtl, div.options_1 label[for="directionRtl"]*/
+div.options_1 input, div.options_1 label { color: silver; font-size: small; }
+                     div.options_1 label[for="directionRtl"] { margin-right: 10px }
+
 #clearUrlList { padding: 0 2px; margin-left: 35px; border: 1px silver solid; border-radius: 2px; }
 #clearUrlList:hover { background-color: whitesmoke }
 #clearUrlList:active { background-color: lightgrey; }
@@ -40,3 +42,6 @@ span.sign { padding: 0 0 15px 15px }
 span.sign_2 { padding: 0 0 15px 5px }
 
 input[type="checkbox"], label[for] { cursor: pointer; }
+
+.is_group_by_audio_video { color: dodgerblue; }
+    .is_group_by_audio_video:hover { color: #0081ff; }

@@ -1,9 +1,23 @@
 ﻿namespace m3u8.download.manager.ui
 {
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    //internal interface IOutputFileNamePatternProcessor
+    //{
+    //    string Process( string outputFileName );
+    //    bool HasPatternChar( string outputFileName );
+    //    bool IsEqualPattern( string outputFileName );
+    //    bool HasLast_OutputFileName_As_Pattern { get; }
+    //    bool TryGet_Patterned_Last_OutputFileName( out (string Patterned_Last_OutputFileName, string Last_OutputFileName_As_Pattern, int Last_OutputFileName_Num) t );
+    //    string Get_Patterned_Last_OutputFileName();
+    //    void Set_Last_OutputFileName_Num( int num );
+    //}
+
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class OutputFileNamePatternProcessor
+    internal sealed class OutputFileNamePatternProcessor //: IOutputFileNamePatternProcessor
     {
         private char   _PatternChar;
         private string _Last_OutputFileName_As_Pattern;

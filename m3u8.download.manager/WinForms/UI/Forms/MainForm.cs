@@ -24,7 +24,8 @@ using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
-using X    = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
+//using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
+using X = m3u8.download.manager.ipc.UrlInputParams;
 
 namespace m3u8.download.manager.ui
 {
@@ -163,9 +164,9 @@ namespace m3u8.download.manager.ui
             }
 #endif
         }
-        protected override void OnClosed( EventArgs e )
+        protected override void OnFormClosed( FormClosedEventArgs e )
         {
-            base.OnClosed( e );
+            base.OnFormClosed( e );
 
             if ( !base.DesignMode )
             {
@@ -196,9 +197,9 @@ namespace m3u8.download.manager.ui
                 AddNewDownloads( (m3u8FileUrls, false) );
             }
         }
-        protected override void OnClosing( CancelEventArgs e )
+        protected override void OnFormClosing( FormClosingEventArgs e )
         {
-            base.OnClosing( e );
+            base.OnFormClosing( e );
 
             #region comm. cancel if WaitBanner shown.
             /*
@@ -994,9 +995,24 @@ namespace m3u8.download.manager.ui
 
         private void AddNewDownloads( X[] array )
         {
-            var p = (m3u8FileUrls     : (from t in array select (t.m3u8FileUrl, t.requestHeaders)).ToArray(), 
-                     autoStartDownload: array.FirstOrDefault().autoStartDownload);
-            AddNewDownloads( p );
+#pragma warning disable IDE0037 // Use inferred member name
+            var p = (m3u8FileUrls     : (from t in array where (!t.isGroupByAudioVideo) select (t.m3u8FileUrl, t.requestHeaders)).ToList( array.Length ), 
+                     autoStartDownload: array.Where( t => !t.isGroupByAudioVideo ).FirstOrDefault().autoStartDownload);
+#pragma warning restore IDE0037 // Use inferred member name
+            if ( p.m3u8FileUrls.Any() )
+            {
+                AddNewDownloads( p );
+            }
+
+            var isGroupByAudioVideoArray = array.Where( t => t.isGroupByAudioVideo ).ToList();
+            if ( isGroupByAudioVideoArray.Any() )
+            {
+                AddNewDownload_4_GroupedByAudioVideo( isGroupByAudioVideoArray );
+            } 
+            else if ( !p.m3u8FileUrls.Any() )
+            {
+                AddNewDownload( default );
+            }
         }
         private void AddNewDownloads( in (IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls, bool autoStartDownload) p ) //, bool forceShowEmptyDialog )
         {
@@ -1005,7 +1021,7 @@ namespace m3u8.download.manager.ui
                 if ( p.m3u8FileUrls.Count == 1 )
                 {
                     var frt = p.m3u8FileUrls.First();
-                    AddNewDownload( (frt.url, frt.requestHeaders, p.autoStartDownload) );
+                    AddNewDownload( X.Create( frt.url, frt.requestHeaders, p.autoStartDownload ) );
                 }
                 else
                 {
@@ -1016,13 +1032,13 @@ namespace m3u8.download.manager.ui
                     foreach ( var t in p.m3u8FileUrls.Reverse() )
                     {
                         var seriesInfo = (n--, count);
-                        this.BeginInvoke( action, (t.url, t.requestHeaders, p.autoStartDownload), seriesInfo );
+                        this.BeginInvoke( action, X.Create( t.url, t.requestHeaders, p.autoStartDownload ), seriesInfo );
                     }
                 }
             }
             else //if ( forceShowEmptyDialog )
             {
-                AddNewDownload( (null, null, false) );
+                AddNewDownload( default/*(null, null, false)*/ );
             }
         }
         private async void AddNewDownload( X p, (int n, int total)? seriesInfo = null )
@@ -1084,6 +1100,91 @@ namespace m3u8.download.manager.ui
             //*/
             #endregion
         }
+        
+        private void AddNewDownload_4_GroupedByAudioVideo( IReadOnlyList< X > xs )
+        {
+            if ( xs.AnyEx_() )
+            {
+                if ( xs.Count == 1 )
+                {
+                    var x = xs.First();
+                    AddNewDownload_4_GroupedByAudioVideo( x );
+                }
+                else
+                {
+                    var action = new Action< X, (int n, int total) >( (X x, (int n, int total) seriesInfo) => AddNewDownload_4_GroupedByAudioVideo( x, seriesInfo ) );
+
+                    var count = xs.Count;
+                    var n     = count;
+                    foreach ( var x in xs.Reverse() )
+                    {
+                        var seriesInfo = (n--, count);
+                        this.BeginInvoke( action, x, seriesInfo );
+                    }
+                }
+            }
+            else
+            {
+                AddNewDownload( default );
+            }
+        }
+
+        private const string AUDIO_OUTPUTFILE_SUFFIX = "-a";
+        private async void AddNewDownload_4_GroupedByAudioVideo( X x, (int n, int total)? seriesInfo = null, string audioOutputFileSuffix = AUDIO_OUTPUTFILE_SUFFIX )
+        {
+            var suc_1 = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.videoRequestHeaders, out var videoRequestHeaders );
+            Debug.Assert( suc_1 || x.videoRequestHeaders.IsNullOrEmpty() );
+
+            var suc_2 = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.audioRequestHeaders, out var audioRequestHeaders );
+            Debug.Assert( suc_2 || x.audioRequestHeaders.IsNullOrEmpty() );
+
+            string get_outputFileName_4_audio( string outputFileName ) => Path.GetFileNameWithoutExtension( outputFileName ) + audioOutputFileSuffix + Path.GetExtension( outputFileName );
+
+            if ( x.autoStartDownload && !x.videoUrl.IsNullOrWhiteSpace() && FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.videoUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) )
+            {
+                if ( !_SC.UniqueUrlsOnly || (!_DownloadListModel.ContainsUrl( x.videoUrl ) && !_DownloadListModel.ContainsUrl( x.audioUrl )) )
+                {
+                    var outputFileName_a = get_outputFileName_4_audio( outputFileName );
+                    var row_1 = _DownloadListModel.AddRow( (x.audioUrl, audioRequestHeaders, outputFileName_a, _SC.OutputFileDirectory) );
+                    await downloadListUC.SelectDownloadRowDelay( row_1 );
+                    _DC.Start( row_1 );
+
+                    var row_2 = _DownloadListModel.AddRow( (x.videoUrl, videoRequestHeaders, outputFileName, _SC.OutputFileDirectory) );
+                    await downloadListUC.SelectDownloadRowDelay( row_2 );
+                    _DC.Start( row_2 );
+                }
+                return;
+            }
+
+            #region [.AddNewDownloadForm as top-always-owner-form.]
+            var url_a = "[audio]: " + Ellipsis.Compact( x.audioUrl, 100, EllipsisFormat.Middle );
+            var url_v = "[vidio]: " + Ellipsis.Compact( x.videoUrl, 100, EllipsisFormat.Middle );
+            var url = url_a + Environment.NewLine + 
+                      new string('-', /*Math.Max( url_a.Length, url_v.Length )*/150 ) + Environment.NewLine +
+                      url_v;
+            var requestHeaders = videoRequestHeaders.Concat( [new KeyValuePair< string, string >("-----------", "-----------")] ).Concat( audioRequestHeaders ).ToList( videoRequestHeaders.Count + audioRequestHeaders.Count + 1 );
+            FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.videoUrl, _SC.Settings.OutputFileExtension, out outputFileName );
+            AddNewDownloadForm.AddGrouped( this, _DC, _SC, url, (x.audioUrl, x.videoUrl), outputFileName, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo, async f =>
+            {
+                if ( f.DialogResult == DialogResult.OK )
+                {
+                    var (outFn, outDir, isLiveStream, liveStreamMaxFileSize, autoStart) = (f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes, f.AutoStartDownload);
+                    var outFn_a = get_outputFileName_4_audio( outFn );
+
+                    var row_1 = _DownloadListModel.AddRow( (x.audioUrl, audioRequestHeaders, outFn_a, outDir, isLiveStream, liveStreamMaxFileSize) );
+                    await downloadListUC.SelectDownloadRowDelay( row_1 );
+                    if ( autoStart ) _DC.Start( row_1 );
+
+                    var row_2 = _DownloadListModel.AddRow( (x.videoUrl, videoRequestHeaders, outFn, outDir, isLiveStream, liveStreamMaxFileSize) );
+                    await downloadListUC.SelectDownloadRowDelay( row_2 );
+                    if ( autoStart ) _DC.Start( row_2 );
+                }
+
+                if ( AddNewDownloadForm.TryGetOpenedForm( out var openedForm ) ) openedForm.ActivateAfterCloseOther();
+            });
+            #endregion
+        }
+
         private void EditDownload( DownloadRow row )
         {
             if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
@@ -1130,7 +1231,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.menu.]
-        private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => AddNewDownload( (null, null, false) );
+        private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => AddNewDownload( default/*(null, null, false)*/ );
         private void showLogToolButton_Click( object sender, EventArgs e )
         {
             var showLog = showLogToolButton.Checked;

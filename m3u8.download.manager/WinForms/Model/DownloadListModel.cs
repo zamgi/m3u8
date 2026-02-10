@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -65,6 +66,7 @@ namespace m3u8.download.manager.models
         [M(O.AggressiveInlining)] public IEnumerable< DownloadRow > GetAllFinished() => (from row in GetRows() where (row.Status == DownloadStatus.Finished) select row);
 
         [M(O.AggressiveInlining)] public bool ContainsUrl( string url ) => (!url.IsNullOrEmpty() && _Urls.Contains( url ));
+        [M(O.AggressiveInlining)] public bool ContainsAnyUrls( string url_1, string url_2, string url_3 ) => ContainsUrl( url_1 ) || ContainsUrl( url_2 ) || ContainsUrl( url_3 );
 
         protected override void OnAfterClear() => _Urls.Clear();
 
