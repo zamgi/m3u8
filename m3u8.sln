@@ -157,7 +157,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{697F351B-35FC-
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-firefox-extension\js\background.js = m3u8-browser-extensions\m3u8-firefox-extension\js\background.js
 		m3u8-browser-extensions\m3u8-firefox-extension\js\m3u8.js = m3u8-browser-extensions\m3u8-firefox-extension\js\m3u8.js
-		m3u8-browser-extensions\m3u8-firefox-extension\js\script_in_content.js = m3u8-browser-extensions\m3u8-firefox-extension\js\script_in_content.js
+		m3u8-browser-extensions\m3u8-firefox-extension\js\options.js = m3u8-browser-extensions\m3u8-firefox-extension\js\options.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{0930BC31-1120-4B78-9823-7AF7A961C834}"

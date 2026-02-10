@@ -1,19 +1,29 @@
 const root = browser; //chrome;
+async function getActiveTabId() {
+    // Query for the active tab in the current window
+    const tabs = await root.tabs.query({ active: true, currentWindow: true });
+
+    if (tabs?.length) {
+        return (tabs[ 0 ].id);
+    }
+}
 window.addEventListener('load', async function () {
     try {
         // get m3u8 urls for current active tab
-        let backgroundPage = root.extension.getBackgroundPage();
-        let t = backgroundPage.workInfo.getM3u8Urls();
-        let m3u8_urls = t.m3u8_urls;
+        const backgroundPage = root.extension.getBackgroundPage();
+        const activeTabId = await getActiveTabId();
+        const tabInfo = backgroundPage.workInfo.getM3u8UrlsByActiveTabId(activeTabId);
 
-        let opt = await root.storage.local.get(); if (!opt) opt = {}; if (opt.groupByAudioVideo === undefined) opt.groupByAudioVideo = true;
-                                                                      if (opt.directionRtl      === undefined) opt.directionRtl      = true;
+        const set_def_val = (d, prop, defVal) => { if (d[prop] === undefined) d[prop] = defVal; };
+        let opt = await root.storage.local.get(); if (!opt) opt = {}; set_def_val(opt, 'groupByAudioVideo', true);
+                                                                      set_def_val(opt, 'directionRtl'     , true);
+                                                                      set_def_val(opt, 'saveUrlListBetweenTabReload', false);
         const renderFunc = async function (groupByAudioVideo) {
             if (groupByAudioVideo) {
-                let urls = group_by_audio_video(m3u8_urls, t.requestHeaders);
+                let urls = group_by_audio_video(tabInfo.m3u8_urls, tabInfo.requestHeaders);
                 render_grouped_m3u8_urls(urls);
             } else {
-                render_m3u8_urls(m3u8_urls, t.requestHeaders);
+                render_m3u8_urls(tabInfo.m3u8_urls, tabInfo.requestHeaders);
             }
         }
         let ch = document.getElementById('groupByAudioVideo');
@@ -27,7 +37,7 @@ window.addEventListener('load', async function () {
 
         let content = document.getElementById('content');
         ch = document.getElementById('directionRtl');
-        ch.checked = !!opt.directionRtl; //(content.style.direction === 'rtl');
+        ch.checked = !!opt.directionRtl;
         content.style.direction = ch.checked ? 'rtl' : '';
         ch.addEventListener('click', async function () {
             content.style.direction = this.checked ? 'rtl' : '';
@@ -35,18 +45,22 @@ window.addEventListener('load', async function () {
             await root.storage.local.set(opt);
         });
 
-        //ch = document.getElementById('saveUrlListBetweenTabReload');
-        //ch.checked = !!opt.saveUrlListBetweenTabReload;
-        //ch.addEventListener('click', async function () { await root.storage.local.set({ saveUrlListBetweenTabReload: this.checked }); });
+        ch = document.getElementById('saveUrlListBetweenTabReload');
+        ch.checked = !!opt.saveUrlListBetweenTabReload;
+        ch.addEventListener('click', async function () {
+            opt.saveUrlListBetweenTabReload = this.checked;
+            await root.storage.local.set(opt);
+        });
 
-        if (m3u8_urls?.length) {
+        if (tabInfo.m3u8_urls?.length) {
             let bt = document.getElementById('clearUrlList');
             bt.style.display = '';
-            bt.addEventListener('click', async function (/*e*/) {
+            bt.addEventListener('click', async function () {
                 render_m3u8_urls();
                 this.style.display = 'none';
+                tabInfo.m3u8_urls = tabInfo.requestHeaders = null;
 
-                await backgroundPage.workInfo.deleteTabUrls(backgroundPage.workInfo.active_tabId/*tabId*/);
+                await backgroundPage.workInfo.deleteUrlsFromActivateTab();
             });
         }
 
@@ -97,24 +111,6 @@ function group_by_audio_video(m3u8_urls, requestHeaders) {
                 continue;
             }
         }
-
-        //if (m3u8_url.endsWith(SUFFIX_v)) {
-        //    let grouped_url = m3u8_url.substring(0, m3u8_url.length - SUFFIX_v.length),
-        //        url_a = grouped_url + SUFFIX_a,
-        //        idx   = m3u8_urls.indexOf(url_a);
-        //    if (idx !== -1) {
-        //        skiped_urls[url_a] = 1;
-
-        //        let o = {
-        //            is_group_by_audio_video: true,
-        //            grouped_url_text: grouped_url + ' + (' + SUFFIX_a + ') + (' + SUFFIX_v + ')',
-        //            video: { url: m3u8_url, requestHeaders: requestHeaders_4_url },
-        //            audio: { url: url_a   , requestHeaders: requestHeaders[url_a] || ''}
-        //        };
-        //        res.push(o);
-        //        continue;
-        //    }
-        //}
 
         res.push({ url: m3u8_url, requestHeaders: requestHeaders_4_url });
     }
@@ -287,9 +283,9 @@ function create_grouped_msgObj(a, auto_start_download) {
         is_group_by_audio_video: true,
         auto_start_download    : !!auto_start_download,
         video_url              : a.getAttribute('video-url'),
-        video_requestHeaders   : a.getAttribute('video-requestHeaders'),
+        video_requestHeaders   : a.getAttribute('video-requestHeaders') || '',
         audio_url              : a.getAttribute('audio-url'),
-        audio_requestHeaders   : a.getAttribute('audio-requestHeaders')
+        audio_requestHeaders   : a.getAttribute('audio-requestHeaders') || ''
     };
 }
 function create_msgObj(a, auto_start_download) {

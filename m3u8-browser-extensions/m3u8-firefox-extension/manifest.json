@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name"       : "m3u8 file downloader 2.1",
-  "description": "m3u8 file downloader firefox extension 2.1",
-  "version"    : "2.1",
+  "name"       : "m3u8 file downloader 2.2",
+  "description": "m3u8 file downloader firefox extension 2.2",
+  "version"    : "2.2",
   "icons": {
     "32" : "img/m3u8.png",
     "128": "img/m3u8_128.png"
@@ -11,13 +11,12 @@
   "applications": {
     "gecko": {
       "id": "{64807ac5-de2d-4f7f-8bac-da6e1e935a1b}",
-      "strict_min_version": "58.0"
+      "strict_min_version": "79.0"
     }
   },
 
   "content_scripts": [{
     "matches": [ "*://*/*" ],
-    "js"     : [ "js/script_in_content.js" ],
     "run_at" : "document_end"
   }],
 
@@ -27,6 +26,7 @@
     "webRequest",
     "webRequestBlocking",
     "tabs",
+    "activeTab",
     "notifications",
     "nativeMessaging",
     "*://*/*",
