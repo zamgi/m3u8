@@ -194,14 +194,14 @@ namespace m3u8.download.manager.ui
             , Func< AddNewDownloadForm, Task > formClosedAction )
         {
             var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, groupedUrls, outputFileName, requestHeaders, outputFileNamePatternProcessor, seriesInfo )
-            { 
-                //Icon = Icon.FromHandle( Resources.edit.GetHicon() ),
+            {
+                Icon = Resources.group_by_audio_video.CreateSafeIcon(), 
                 Text = "add new download (grouped by audio-video urls)",
                 _FormClosedAction = formClosedAction,
             };
-            f.m3u8FileUrlTextBox  .ReadOnly = true;
-            f.requestHeadersEditor.ReadOnly = true;
-            f.loadM3u8FileContentButton.ReadOnly = false;
+            f.m3u8FileUrlTextBox       .ReadOnly = true;
+            f.requestHeadersEditor     .ReadOnly = true;
+            f.loadM3u8FileContentButton.ReadOnly = true;
             f.InitAndShowWhenAdd( owner, m3u8FileUrl, formClosedAction );
         }
         public static void Add( IWin32Window owner, _DC_ dc, _SC_ sc
@@ -212,14 +212,7 @@ namespace m3u8.download.manager.ui
             , Func< AddNewDownloadForm, Task > formClosedAction )
         {
             var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, seriesInfo ) { _FormClosedAction = formClosedAction };
-
             f.InitAndShowWhenAdd( owner, m3u8FileUrl, formClosedAction );
-            //f.FormClosed += (_, _) => formClosedAction?.Invoke( f );
-            //var close = new EventHandler( (_, _) => f.Close() );
-            //f.downloadStartButton.Click += close;
-            //f.downloadLaterButton.Click += close;
-            //if ( m3u8FileUrl.IsNullOrWhiteSpace() ) f.Shown += (_, _) => f.m3u8FileUrlTextBox.Focus();
-            //f.Show( owner );
         }
         private void InitAndShowWhenAdd( IWin32Window owner, string m3u8FileUrl, Func< AddNewDownloadForm, Task > formClosedAction )
         {
@@ -239,7 +232,7 @@ namespace m3u8.download.manager.ui
         {
             var f = new AddNewDownloadForm( dc, sc, row, outputFileNamePatternProcessor ) 
             { 
-                Icon = Icon.FromHandle( Resources.edit.GetHicon() ),
+                Icon = Resources.edit.CreateSafeIcon(),
                 Text = $"Edit, / '{row.OutputFileName}' /",
                 _FormClosedAction = formClosedAction_4_DownloadAdditionalM3u8Url,
             };

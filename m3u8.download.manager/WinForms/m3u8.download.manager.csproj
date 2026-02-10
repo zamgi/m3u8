@@ -112,6 +112,7 @@
     <Compile Update="UI\Controls\DataGridViewTextBoxColumnEx.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="UI\Controls\TextBoxWithCustomPathPaste.cs" />
     <Compile Update="UI\Controls\ToolStripItems\ToolStripNumericUpDownUC.cs">
       <SubType>Component</SubType>
     </Compile>

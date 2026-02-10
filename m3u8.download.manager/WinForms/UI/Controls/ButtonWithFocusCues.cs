@@ -10,13 +10,14 @@ namespace System.Windows.Forms
         protected override bool ShowFocusCues => base.Focused;
         public bool ReadOnly
         {
-            get => this.Enabled;
+            get => !this.Enabled;
             set
             {
-                if ( this.Enabled != value )
+                var enabled = !value;
+                if ( this.Enabled != enabled )
                 {
-                    this.Enabled = value;
-                    if ( value )
+                    this.Enabled = enabled;
+                    if ( enabled )
                     {
                         if ( _Cursor != null     ) this.Cursor    = _Cursor;
                         if ( _FlatStyle.HasValue ) this.FlatStyle = _FlatStyle.Value;

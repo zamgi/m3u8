@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
+using m3u8.download.manager.Properties;
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -179,6 +181,47 @@ namespace m3u8.download.manager.ui
         #region [.ClipCursor.]
         [DllImport(USER32_DLL)][return:MarshalAs(UnmanagedType.Bool)] private static extern bool ClipCursor( IntPtr lpRect );
         public static bool RemoveClipCursor() => ClipCursor( IntPtr.Zero );
+        #endregion
+
+        #region [.Icon.]
+        [DllImport(USER32_DLL, SetLastError=true)][return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool DestroyIcon( IntPtr hIcon );
+
+        public static Icon CreateSafeIcon( this Bitmap bitmap )
+        {
+            var hIcon = bitmap.GetHicon();
+            //var icon = Icon.FromHandle( hIcon );
+            //DestroyIcon( hIcon );
+            var icon = CreateSafeIconFromHandle( hIcon );
+            return (icon);
+        }
+        public static Icon CreateSafeIconFromHandle( IntPtr hIcon )
+        {
+            Icon newIcon    = null;
+            Icon clonedIcon = null;
+
+            try
+            {
+                // 1. Create a managed Icon object from the native handle
+                newIcon = Icon.FromHandle( hIcon );
+
+                // 2. Clone the icon to get a new managed instance that can be disposed normally by the GC
+                //    (or a using statement)
+                clonedIcon = (Icon) newIcon.Clone();
+            }
+            finally
+            {
+                // 3. Manually destroy the *original* native handle.
+                //    It is safe to do this now because the clonedIcon has its own copy.
+                if ( newIcon != null )
+                {
+                    DestroyIcon( newIcon.Handle );
+                    newIcon.Dispose(); // Optional, as DestroyIcon handled the native part, but good practice
+                }
+            }
+
+            return (clonedIcon);
+        }
         #endregion
     }
 }

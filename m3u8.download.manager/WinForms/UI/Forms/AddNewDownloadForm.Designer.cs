@@ -26,7 +26,7 @@ namespace m3u8.download.manager.ui
             this.requestHeadersTabPage = new System.Windows.Forms.TabPage();
             this.requestHeadersEditor = new RequestHeadersEditor();
             this.m3u8FileUrlTextBox = new System.Windows.Forms.TextBox();
-            this.outputFileNameTextBox = new m3u8.download.manager.ui.TextBoxEx();
+            this.outputFileNameTextBox = new TextBoxWithCustomPathPaste();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.outputDirectorySelectButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.outputFileNameSelectButton = new System.Windows.Forms.ButtonWithFocusCues();
@@ -34,7 +34,7 @@ namespace m3u8.download.manager.ui
             this.logPanel = new System.Windows.Forms.Panel();
             this.logUC = new m3u8.download.manager.ui.LogUC( sc );
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.outputDirectoryTextBox = new m3u8.download.manager.ui.TextBoxEx();
+            this.outputDirectoryTextBox = new TextBoxWithCustomPathPaste();
             this.isLiveStreamCheckBox = new System.Windows.Forms.CheckBox();
             this.liveStreamMaxSizeInMbLabel = new System.Windows.Forms.Label();
             this.liveStreamMaxSizeInMbNumUpDn = new System.Windows.Forms.NumericUpDownEx();
@@ -150,7 +150,7 @@ namespace m3u8.download.manager.ui
             // 
             this.outputFileNameTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             //---this.outputFileNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle/*None*/;
-            this.outputFileNameTextBox.BorderColor = System.Drawing.Color.Silver;
+            //this.outputFileNameTextBox.BorderColor = System.Drawing.Color.Silver;
             this.outputFileNameTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.outputFileNameTextBox.Location = new System.Drawing.Point(67, 6);
             this.outputFileNameTextBox.Size = new System.Drawing.Size(539, 18);
@@ -163,7 +163,7 @@ namespace m3u8.download.manager.ui
             this.outputDirectoryTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.outputDirectoryTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
             //---this.outputDirectoryTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle/*None*/;
-            this.outputDirectoryTextBox.BorderColor = System.Drawing.Color.Silver;
+            //this.outputDirectoryTextBox.BorderColor = System.Drawing.Color.Silver;
             this.outputDirectoryTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.outputDirectoryTextBox.Location = new System.Drawing.Point(67, 66);
             this.outputDirectoryTextBox.Size = new System.Drawing.Size(539, 18);
@@ -203,13 +203,13 @@ namespace m3u8.download.manager.ui
             // outputFileNameClearButton
             // 
             this.outputFileNameClearButton.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this.outputFileNameClearButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.outputFileNameClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.outputFileNameClearButton.Cursor = System.Windows.Forms.Cursors.Hand;            
             this.outputFileNameClearButton.Location = new System.Drawing.Point(612, 3);
             this.outputFileNameClearButton.Size = new System.Drawing.Size(23, 23);
             this.outputFileNameClearButton.TabIndex = 2;
             this.outputFileNameClearButton.Text = "X";
-            this.outputFileNameClearButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;            
+            this.outputFileNameClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.outputFileNameClearButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.outputFileNameClearButton.UseCompatibleTextRendering = true;
             this.outputFileNameClearButton.UseVisualStyleBackColor = true;
             this.outputFileNameClearButton.Click += new System.EventHandler(this.outputFileNameClearButton_Click);
@@ -498,7 +498,7 @@ namespace m3u8.download.manager.ui
         private m3u8.download.manager.ui.RequestHeadersEditor requestHeadersEditor;
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.TextBox m3u8FileUrlTextBox;
-        private m3u8.download.manager.ui.TextBoxEx outputFileNameTextBox;
+        private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputFileNameTextBox;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.ButtonWithFocusCues outputFileNameClearButton;
         private System.Windows.Forms.ButtonWithFocusCues loadM3u8FileContentButton;
@@ -515,7 +515,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ButtonWithFocusCues downloadStartButton;
         private System.Windows.Forms.ButtonWithFocusCues downloadLaterButton;
         private System.Windows.Forms.ButtonWithFocusCues outputDirectorySelectButton;
-        private m3u8.download.manager.ui.TextBoxEx outputDirectoryTextBox;
+        private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputDirectoryTextBox;
         private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;
         private LogUC logUC;
         private StatusBarUC statusBarUC;

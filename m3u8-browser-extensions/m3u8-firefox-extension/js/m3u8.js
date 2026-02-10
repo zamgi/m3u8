@@ -6,6 +6,8 @@ window.addEventListener('load', async function () {
         let t = backgroundPage.workInfo.getM3u8Urls();
         let m3u8_urls = t.m3u8_urls;
 
+        let opt = await root.storage.local.get(); if (!opt) opt = { groupByAudioVideo: true, directionRtl: true };
+
         const renderFunc = async function (groupByAudioVideo) {
             if (groupByAudioVideo) {
                 let urls = group_by_audio_video(m3u8_urls, t.requestHeaders);
@@ -13,28 +15,29 @@ window.addEventListener('load', async function () {
             } else {
                 render_m3u8_urls(m3u8_urls, t.requestHeaders);
             }
-            //await root.storage.local.set({ groupByAudioVideo: groupByAudioVideo });
         }
         let ch = document.getElementById('groupByAudioVideo');
         ch.addEventListener('click', async function () {
             renderFunc(this.checked);
-            await root.storage.local.set({ groupByAudioVideo: this.checked });
+            opt.groupByAudioVideo = this.checked;
+            await root.storage.local.set(opt);
         });
-        let o = await root.storage.local.get(); if (o?.groupByAudioVideo !== undefined) ch.checked = !!o.groupByAudioVideo;
+        ch.checked = !!opt.groupByAudioVideo;
         renderFunc(ch.checked);
-
-        //let ch = document.getElementById('saveUrlListBetweenTabReload');
-        //ch.checked = !!res.saveUrlListBetweenTabReload;
-        //ch.addEventListener('click', async function (/*e*/) { await root.storage.local.set({ saveUrlListBetweenTabReload: this.checked }); });
 
         let content = document.getElementById('content');
         ch = document.getElementById('directionRtl');
-        ch.checked  = (content.style.direction === 'rtl');
+        ch.checked = !!opt.directionRtl; //(content.style.direction === 'rtl');
         content.style.direction = ch.checked ? 'rtl' : '';
-        ch.addEventListener('click', async function (/*e*/) {
+        ch.addEventListener('click', async function () {
             content.style.direction = this.checked ? 'rtl' : '';
-            //await root.storage.local.set({ directionRtl: this.checked });
+            opt.directionRtl = this.checked;
+            await root.storage.local.set(opt);
         });
+
+        //ch = document.getElementById('saveUrlListBetweenTabReload');
+        //ch.checked = !!opt.saveUrlListBetweenTabReload;
+        //ch.addEventListener('click', async function () { await root.storage.local.set({ saveUrlListBetweenTabReload: this.checked }); });
 
         if (m3u8_urls?.length) {
             let bt = document.getElementById('clearUrlList');
@@ -165,23 +168,19 @@ function render_grouped_m3u8_urls(urls) {
             //         '<td class="content" title="' + x.url + '"><a class="download" href="' + x.url + '">' + x.url + '</a></td></tr>');
         }
     }
-    let group_by_av_txt = group_by_av_cnt ? ' (grouped: ' + group_by_av_cnt + ')' : '';
-    let download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + urls.length + group_by_av_txt + '</a></h5>';
-    let auto_start_download_all = ((1 < urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="img/auto_start_download.png" style="height: 16px"/></a>' : '');
-    content.innerHTML = '<table><tr><td>' + auto_start_download_all + '</td><td>' + download_all + '</td></tr></table>' +
-                        '<table class="content">' + trs.join('') + '</table>';
+    set_content(content, trs, urls.length, group_by_av_cnt);
+    append_common_EventListeners(content);
 
     if (group_by_av_cnt) {
         let aa = content.querySelectorAll('a.is_group_by_audio_video');
         for (let i = 0; i < aa.length; i++) {
             aa[i].addEventListener('click', function (e) {
-                send2host_msgObj( create_grouped_msgObj(this) );
+                send2host_msgObj(create_grouped_msgObj(this));
                 e.preventDefault();
                 return (false);
             });
         }
     }
-    append_common_EventListeners(content);
 }
 
 function render_m3u8_urls(m3u8_urls, requestHeaders) {
@@ -193,19 +192,21 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
 
     let trs = [];
     for (let i = 0, cnt = m3u8_urls.length; i < cnt; i++) {
-        let m3u8_url = m3u8_urls[i], requestHeaders_4_url = requestHeaders[m3u8_url] || ''; 
-
-        trs.push(create_single_m3u8_url__html({ url: m3u8_url, requestHeaders: requestHeaders_4_url }));
+        const m3u8_url = m3u8_urls[i];
+        trs.push(create_single_m3u8_url__html({ url: m3u8_url, requestHeaders: requestHeaders[m3u8_url] || '' }));
 
         //trs.push('<tr><td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="img/auto_start_download.png" style="height: 16px"/></a></td>' +
         //         '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>');
     }
-    let download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + m3u8_urls.length + '</a></h5>';
-    let auto_start_download_all = ((1 < m3u8_urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="img/auto_start_download.png" style="height: 16px"/></a>' : '');
+    set_content(content, trs, m3u8_urls.length);
+    append_common_EventListeners(content);
+}
+function set_content(content, trs, urls_count, group_by_av_count) {
+    let group_by_av_txt = group_by_av_count ? ' (grouped: ' + group_by_av_count + ')' : '';
+    let download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + urls_count + group_by_av_txt + '</a></h5>';
+    let auto_start_download_all = ((1 < urls_count) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="img/auto_start_download.png" style="height: 16px"/></a>' : '');
     content.innerHTML = '<table><tr><td>' + auto_start_download_all + '</td><td>' + download_all + '</td></tr></table>' +
                         '<table class="content">' + trs.join('') + '</table>';
-
-    append_common_EventListeners(content);
 }
 function create_single_m3u8_url__html(x /*x = { url: m3u8_url, requestHeaders: requestHeaders_4_url }*/) {
     let a = document.createElement('a');

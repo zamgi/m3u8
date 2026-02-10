@@ -1158,11 +1158,13 @@ namespace m3u8.download.manager.ui
 
             #region [.AddNewDownloadForm as top-always-owner-form.]
             var url_a = "[audio]: " + Ellipsis.Compact( x.audioUrl, 100, EllipsisFormat.Middle );
-            var url_v = "[vidio]: " + Ellipsis.Compact( x.videoUrl, 100, EllipsisFormat.Middle );
+            var url_v = "[video]: " + Ellipsis.Compact( x.videoUrl, 100, EllipsisFormat.Middle );
             var url = url_a + Environment.NewLine + 
                       new string('-', /*Math.Max( url_a.Length, url_v.Length )*/150 ) + Environment.NewLine +
                       url_v;
-            var requestHeaders = videoRequestHeaders.Concat( [new KeyValuePair< string, string >("-----------", "-----------")] ).Concat( audioRequestHeaders ).ToList( videoRequestHeaders.Count + audioRequestHeaders.Count + 1 );
+            var requestHeaders = new[] {  new KeyValuePair<string, string>("/-------[audio]-------/", new string('-', 120))  }.Concat( videoRequestHeaders )
+                                .Concat( [new KeyValuePair<string, string>("/-------[video]-------/", new string('-', 120))] ).Concat( audioRequestHeaders )
+                                .ToList( videoRequestHeaders.Count + audioRequestHeaders.Count + 2 );
             FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.videoUrl, _SC.Settings.OutputFileExtension, out outputFileName );
             AddNewDownloadForm.AddGrouped( this, _DC, _SC, url, (x.audioUrl, x.videoUrl), outputFileName, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo, async f =>
             {

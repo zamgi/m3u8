@@ -180,7 +180,7 @@ namespace System.Windows.Forms.Taskbar
         /// <remarks>This method will not release the icon handle. It is the caller's responsibility to release the icon handle.</remarks>
         public void SetWindowIcon( IntPtr iconHandle )
         {
-            Icon = (iconHandle != IntPtr.Zero) ? System.Drawing.Icon.FromHandle( iconHandle ) : null;
+            Icon = (iconHandle != IntPtr.Zero) ? Icon.FromHandle( iconHandle ) : null;
 
             if ( (TaskbarWindow != null) && (TaskbarWindow.TabbedThumbnailProxyWindow != null) )
             {

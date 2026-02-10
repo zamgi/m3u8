@@ -22,7 +22,7 @@
             this.DGV_keyColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.DGV_valueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.filterLabel = new System.Windows.Forms.Label();
-            this.filterTextBox = new System.Windows.Forms.TextBox();
+            this.filterTextBox = new System.Windows.Forms.TextBoxWithBorder();
             this.clearFilterButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.keyBindingSource)).BeginInit();
@@ -48,10 +48,10 @@
                 this.DGV_checkedColumn,
                 this.DGV_keyColumn,
                 this.DGV_valueColumn
-            });
-            this.DGV.Location = new System.Drawing.Point(3, 22);
+            });            
             this.DGV.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders;
             this.DGV.ScrollDelayInMilliseconds = 10;
+            this.DGV.Location = new System.Drawing.Point(3, 23);
             this.DGV.Size = new System.Drawing.Size(319, 389);
             this.DGV.TabIndex = 0;
             this.DGV.Resize += new System.EventHandler(this.DGV_Resize);
@@ -117,9 +117,9 @@
             // filterTextBox
             // 
             this.filterTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this.filterTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.filterTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
-            this.filterTextBox.Location = new System.Drawing.Point(45, 2);
+            //---this.filterTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.filterTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.5f/*11.5F*/);
+            this.filterTextBox.Location = new System.Drawing.Point(45, 1);
             this.filterTextBox.Size = new System.Drawing.Size(224, 18);
             this.filterTextBox.TabIndex = 2;
             this.filterTextBox.WordWrap = false;
@@ -129,12 +129,12 @@
             // 
             this.clearFilterButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.clearFilterButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.clearFilterButton.Location = new System.Drawing.Point(270, 2);
             this.clearFilterButton.Size = new System.Drawing.Size(16, 18);
             this.clearFilterButton.TabIndex = 3;
             this.clearFilterButton.Text = "x";
-            this.clearFilterButton.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.clearFilterButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.clearFilterButton.UseCompatibleTextRendering = true;
             this.clearFilterButton.UseVisualStyleBackColor = true;
             this.clearFilterButton.Visible = false;
@@ -162,7 +162,7 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn DGV_keyColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_valueColumn;
         private System.Windows.Forms.Label filterLabel;
-        private System.Windows.Forms.TextBox filterTextBox;
+        private System.Windows.Forms.TextBoxWithBorder filterTextBox;
         private System.Windows.Forms.Button clearFilterButton;
     }
 }
