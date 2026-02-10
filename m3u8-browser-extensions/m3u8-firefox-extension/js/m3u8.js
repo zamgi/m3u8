@@ -6,8 +6,8 @@ window.addEventListener('load', async function () {
         let t = backgroundPage.workInfo.getM3u8Urls();
         let m3u8_urls = t.m3u8_urls;
 
-        let opt = await root.storage.local.get(); if (!opt) opt = { groupByAudioVideo: true, directionRtl: true };
-
+        let opt = await root.storage.local.get(); if (!opt) opt = {}; if (opt.groupByAudioVideo === undefined) opt.groupByAudioVideo = true;
+                                                                      if (opt.directionRtl === undefined) opt.directionRtl = true;
         const renderFunc = async function (groupByAudioVideo) {
             if (groupByAudioVideo) {
                 let urls = group_by_audio_video(m3u8_urls, t.requestHeaders);
