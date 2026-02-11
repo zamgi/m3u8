@@ -188,19 +188,20 @@ function render_m3u8_urls(tabInfo, handlers) {
     append_common_EventListeners(content, handlers);
 }
 function set_content(content, trs, urls_count, group_by_av_count) {
-    let clearUrlList            = '<td> <a id="clearUrlListButton" class="delete_all" title="clear all urls" href="#"><img src="img/delete_all.png" /></a> </td>';    
-    let auto_start_download_all = '<td> <a class="auto_start_download_all" title="auto start download all" href="#"><img src="img/auto_start_download.png" /></a> </td>';
+    let clearUrlList            = '<td> <a id="clearUrlListButton" class="delete_all" title="clear all" href="#"><img src="img/delete_all.png" /></a> </td>';    
+    let auto_start_download_all = '<td> <a class="auto_start_download_all" title="auto start download all' + 
+                                                      (group_by_av_count ? ' single/non-grouped' : '') + '" href="#"><img src="img/auto_start_download.png" /></a> </td>';
     let caption_total_count     = '<td> <h5 class="found"><a class="download_all" title="download all" href="#">total: ' + urls_count + '</a></h5> </td>';
 
     let caption_grouped_count = '';
     if (group_by_av_count) {
         let non_grouped_count = (urls_count - 2 * group_by_av_count), non_grouped = '';
         if (non_grouped_count) {
-            non_grouped = '<td> <a id="clearSingleUrlsButton" class="delete_all" title="delete all single/non-grouped urls" href="#"><img src="img/delete_all.png" /></a> </td>' + 
-                          '<td> <h5 class="found"><a class="download_all" title="download all" href="#">singles: ' + non_grouped_count + '</a></h5> </td>';
+            non_grouped = '<td> <a id="clearSingleUrlsButton" class="delete_all" title="delete all single/non-grouped" href="#"><img src="img/delete_all.png" /></a> </td>' + 
+                          '<td> <h5 class="found"><a class="download_all_singles" title="download all single/non-grouped" href="#">singles: ' + non_grouped_count + '</a></h5> </td>';
         }
-        let grouped     = '<td> <a id="clearGroupedUrlsButton" class="delete_all" title="delete all grouped urls" href="#"><img src="img/delete_all.png" /></a> </td>' +
-                          '<td> <h5 class="found"><a class="download_all" title="download all" href="#">grouped: ' + group_by_av_count + '/(' + (2*group_by_av_count) + ')</a></h5> </td>';
+        let grouped     = '<td> <a id="clearGroupedUrlsButton" class="delete_all" title="delete all grouped" href="#"><img src="img/delete_all.png" /></a> </td>' +
+                          '<td> <h5 class="found"><a class="download_all_grouped" title="download all grouped" href="#">grouped: ' + group_by_av_count + '/(' + (2*group_by_av_count) + ')</a></h5> </td>';
         caption_grouped_count = grouped + non_grouped;
     }
 
@@ -337,6 +338,9 @@ function append_common_EventListeners(content, handlers) {
 
     set_click_handler__4_send2host_msgObjsArray('a.download_all', 'a.download, a.is_group_by_audio_video', a => a.getAttribute('is_group_by_audio_video') ? create_grouped_msgObj(a) : create_msgObj(a));
     set_click_handler__4_send2host_msgObjsArray('a.auto_start_download_all', 'a.auto_start_download', a => create_msgObj(a, true));
+
+    set_click_handler__4_send2host_msgObjsArray('a.download_all_singles', 'a.download', a => create_msgObj(a));
+    set_click_handler__4_send2host_msgObjsArray('a.download_all_grouped', 'a.is_group_by_audio_video', a => create_grouped_msgObj(a));
 
     document.getElementById('clearUrlListButton')?.addEventListener('click', handlers.clearUrlListFunc);
     document.getElementById('clearSingleUrlsButton')?.addEventListener('click', handlers.clearSingleUrlsFunc);
