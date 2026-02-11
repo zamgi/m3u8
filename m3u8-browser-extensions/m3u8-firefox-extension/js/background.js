@@ -79,7 +79,21 @@ window.workInfoType.prototype = {
             await this.setUrlsCountText(tabId);
         }
     },
-    deleteUrlsFromActivateTab: async function () { await this.deleteTab(this.activeTabId); },
+    deleteAllUrlsFromTab: async function (tabId) { await this.deleteTab(tabId); },
+    deleteUrlFromTab: async function (tabId, m3u8_url) {
+        if ((tabId !== undefined) && m3u8_url) {
+            let o = this.tabs[tabId];
+            if (o?.m3u8_urls) {
+                const i = o.m3u8_urls.indexOf(m3u8_url);
+                if (i !== -1) {
+                    o.m3u8_urls.splice(i, 1);
+                    delete o.requestHeaders[m3u8_url];
+
+                    await this.setUrlsCountText(tabId);
+                }
+            }
+        }
+    },
 
     setUrlsCountText: async function (tabId) {
         //if (tabId !== undefined) {

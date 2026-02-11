@@ -18,10 +18,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-firefox-extension", "m3u8-firefox-extension", "{5F7272EB-A4D3-4D05-80AF-67D4348E03E7}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-firefox-extension\install.rdf = m3u8-browser-extensions\m3u8-firefox-extension\install.rdf
-		m3u8-browser-extensions\m3u8-firefox-extension\m3u8.html = m3u8-browser-extensions\m3u8-firefox-extension\m3u8.html
-		m3u8-browser-extensions\m3u8-firefox-extension\m3u8_background.html = m3u8-browser-extensions\m3u8-firefox-extension\m3u8_background.html
-		m3u8-browser-extensions\m3u8-firefox-extension\m3u8_options.html = m3u8-browser-extensions\m3u8-firefox-extension\m3u8_options.html
 		m3u8-browser-extensions\m3u8-firefox-extension\manifest.json = m3u8-browser-extensions\m3u8-firefox-extension\manifest.json
+		m3u8-browser-extensions\m3u8-firefox-extension\background.html = m3u8-browser-extensions\m3u8-firefox-extension\background.html
+		m3u8-browser-extensions\m3u8-firefox-extension\options.html = m3u8-browser-extensions\m3u8-firefox-extension\options.html
+		m3u8-browser-extensions\m3u8-firefox-extension\popup.html = m3u8-browser-extensions\m3u8-firefox-extension\popup.html
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_xpi", "_xpi", "{3C43194B-AA3D-4916-A292-FB9E65955B11}"
@@ -111,7 +111,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{EFB0BA45-C192-4542-B402-ED35ADB12140}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\auto_start_download.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\auto_start_download.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\auto_start_download_512.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\auto_start_download_512.png
 		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8.png
 		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8_148.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8_148.png
 	EndProjectSection
@@ -120,14 +119,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{B2219F69-9981-
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\m3u8.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\m3u8.js
 		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\options.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\options.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\service-worker.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\service-worker.js
 		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\workInfoType.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\workInfoType.js
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\serviceWorker.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\serviceWorker.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{8EED9A63-0A36-4026-8757-BB877EC6685F}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-chrome-extension\v2\img\auto_start_download.png = m3u8-browser-extensions\m3u8-chrome-extension\v2\img\auto_start_download.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v2\img\auto_start_download_512.png = m3u8-browser-extensions\m3u8-chrome-extension\v2\img\auto_start_download_512.png
 		m3u8-browser-extensions\m3u8-chrome-extension\v2\img\m3u8.png = m3u8-browser-extensions\m3u8-chrome-extension\v2\img\m3u8.png
 		m3u8-browser-extensions\m3u8-chrome-extension\v2\img\m3u8_148.png = m3u8-browser-extensions\m3u8-chrome-extension\v2\img\m3u8_148.png
 	EndProjectSection
@@ -148,7 +146,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{51B282ED-408A-4969-9B05-D9806AA91A25}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-firefox-extension\img\auto_start_download.png = m3u8-browser-extensions\m3u8-firefox-extension\img\auto_start_download.png
-		m3u8-browser-extensions\m3u8-firefox-extension\img\auto_start_download_512.png = m3u8-browser-extensions\m3u8-firefox-extension\img\auto_start_download_512.png
+		m3u8-browser-extensions\m3u8-firefox-extension\img\delete.png = m3u8-browser-extensions\m3u8-firefox-extension\img\delete.png
+		m3u8-browser-extensions\m3u8-firefox-extension\img\delete_all.png = m3u8-browser-extensions\m3u8-firefox-extension\img\delete_all.png
+		m3u8-browser-extensions\m3u8-firefox-extension\img\group_by_audio_video_1.png = m3u8-browser-extensions\m3u8-firefox-extension\img\group_by_audio_video_1.png
+		m3u8-browser-extensions\m3u8-firefox-extension\img\group_by_audio_video_2.png = m3u8-browser-extensions\m3u8-firefox-extension\img\group_by_audio_video_2.png
 		m3u8-browser-extensions\m3u8-firefox-extension\img\m3u8.png = m3u8-browser-extensions\m3u8-firefox-extension\img\m3u8.png
 		m3u8-browser-extensions\m3u8-firefox-extension\img\m3u8_128.png = m3u8-browser-extensions\m3u8-firefox-extension\img\m3u8_128.png
 	EndProjectSection
@@ -156,13 +157,13 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{697F351B-35FC-4D20-9622-E19BAE086BA6}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-firefox-extension\js\background.js = m3u8-browser-extensions\m3u8-firefox-extension\js\background.js
-		m3u8-browser-extensions\m3u8-firefox-extension\js\m3u8.js = m3u8-browser-extensions\m3u8-firefox-extension\js\m3u8.js
 		m3u8-browser-extensions\m3u8-firefox-extension\js\options.js = m3u8-browser-extensions\m3u8-firefox-extension\js\options.js
+		m3u8-browser-extensions\m3u8-firefox-extension\js\popup.js = m3u8-browser-extensions\m3u8-firefox-extension\js\popup.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{0930BC31-1120-4B78-9823-7AF7A961C834}"
 	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-firefox-extension\css\m3u8.css = m3u8-browser-extensions\m3u8-firefox-extension\css\m3u8.css
+		m3u8-browser-extensions\m3u8-firefox-extension\css\main.css = m3u8-browser-extensions\m3u8-firefox-extension\css\main.css
 	EndProjectSection
 EndProject
 Global

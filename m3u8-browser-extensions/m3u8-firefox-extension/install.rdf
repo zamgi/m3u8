@@ -4,7 +4,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>denisov72@mail.ru</em:id>
-    <em:version>2.2</em:version>
+    <em:version>2.3</em:version>
     <em:type>2</em:type>
 
     <em:targetApplication>
@@ -15,8 +15,8 @@
       </Description>
     </em:targetApplication>
 
-    <em:name>m3u8 file downloader 2.2</em:name>
-    <em:description>m3u8 file downloader firefox extension 2.2</em:description>
+    <em:name>m3u8 file downloader 2.3</em:name>
+    <em:description>m3u8 file downloader firefox extension 2.3</em:description>
     <em:creator>zamgi</em:creator>
     <em:homepageURL>https://github.com/zamgi/m3u8</em:homepageURL>
   </Description>

@@ -1,10 +1,10 @@
-window.addEventListener('load', async function (/*e*/) {
+window.addEventListener('load', async function () {
 
     let tabs  = await chrome.tabs.query({ active: true, currentWindow: true });
-    let tabId = ((tabs && tabs.length) ? tabs[ 0 ].id : -1);
+    let tabId = (tabs?.length ? tabs[ 0 ].id : -1);
 
-    let res = await chrome.storage.local.get();
-    let workInfo = conv_2_workInfo(res.workInfo);
+    let opt = await chrome.storage.local.get();
+    let workInfo = conv_2_workInfo(opt.workInfo);
 
     let t = workInfo.getM3u8Urls(tabId);
     let m3u8_urls = t.m3u8_urls;
@@ -13,16 +13,16 @@ window.addEventListener('load', async function (/*e*/) {
     render_m3u8_urls(m3u8_urls, t.requestHeaders);
 
     let ch = document.getElementById('saveUrlListBetweenTabReload');
-    ch.checked = !!res.saveUrlListBetweenTabReload;    
-    ch.addEventListener('click', async function (/*e*/) {
+    ch.checked = !!opt.saveUrlListBetweenTabReload;    
+    ch.addEventListener('click', async function () {
         await chrome.storage.local.set({ saveUrlListBetweenTabReload: this.checked });
     });
 
     let content = document.getElementById('content');
     ch = document.getElementById('directionRtl');
-    ch.checked = (res.directionRtl !== undefined) ? !!res.directionRtl : (content.style.direction === 'rtl');
+    ch.checked = (opt.directionRtl !== undefined) ? !!opt.directionRtl : (content.style.direction === 'rtl');
     content.style.direction = ch.checked ? 'rtl' : '';
-    ch.addEventListener('click', async function (/*e*/) {
+    ch.addEventListener('click', async function () {
         content.style.direction = this.checked ? 'rtl' : '';
         await chrome.storage.local.set({ directionRtl: this.checked });
     });
@@ -30,11 +30,11 @@ window.addEventListener('load', async function (/*e*/) {
     if (m3u8_urls && m3u8_urls.length) {
         let bt = document.getElementById('clearUrlList');
         bt.style.display = '';
-        bt.addEventListener('click', async function (/*e*/) {
-            await workInfo.deleteTabUrls(tabId);
-
+        bt.addEventListener('click', async function () {
             render_m3u8_urls();
             this.style.display = 'none';
+
+            await workInfo.deleteTabUrls(tabId);
         });
     }
 });
@@ -98,11 +98,11 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
     aa = content.querySelectorAll('a.download_all');
     if (0 < aa.length) {
         aa[0].addEventListener('click', function (e) {
-            let messageObject = [], bb = content.querySelectorAll('a.download');
+            let msgObjsArray = [], bb = content.querySelectorAll('a.download');
             for (let j = 0; j < bb.length; j++) {
-                messageObject.push( create_messageObject(bb[j].href, bb[j].getAttribute('requestHeaders') || '') );
+                msgObjsArray.push( create_msgObj(bb[j].href, bb[j].getAttribute('requestHeaders') || '') );
             }
-            send2host_multi(messageObject);
+            send2host_multi(msgObjsArray);
             e.preventDefault();
             return (false);
         });
@@ -111,31 +111,31 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
     aa = content.querySelectorAll('a.auto_start_download_all');
     if (0 < aa.length) {
         aa[0].addEventListener('click', function (e) {
-            let messageObject = [], bb = content.querySelectorAll('a.auto_start_download');
+            let msgObjsArray = [], bb = content.querySelectorAll('a.auto_start_download');
             for (let j = 0; j < bb.length; j++) {
-                messageObject.push( create_messageObject(bb[j].href, bb[j].getAttribute('requestHeaders') || '', true) );
+                msgObjsArray.push( create_msgObj(bb[j].href, bb[j].getAttribute('requestHeaders') || '', true) );
             }
-            send2host_multi(messageObject);
+            send2host_multi(msgObjsArray);
             e.preventDefault();
             return (false);
         });
     }
 }
 
-function create_messageObject(m3u8_url, requestHeaders, auto_start_download) {
+function create_msgObj(m3u8_url, requestHeaders, auto_start_download) {
     return ({
         m3u8_url: m3u8_url,
         requestHeaders: requestHeaders,
         auto_start_download: !!auto_start_download
     });
 }
-async function send2host_single(m3u8_url, requestHeaders, auto_start_download) { await send2host_multi( [ create_messageObject(m3u8_url, requestHeaders, auto_start_download) ] ); }
-async function send2host_multi(messageObject) {
+async function send2host_single(m3u8_url, requestHeaders, auto_start_download) { await send2host_multi( [ create_msgObj(m3u8_url, requestHeaders, auto_start_download) ] ); }
+async function send2host_multi(msgObjsArray) {
     const HOST_NAME = 'm3u8.downloader.host';
 
     let res, message;
     try {
-        res = await chrome.runtime.sendNativeMessage(HOST_NAME, { array: messageObject });
+        res = await chrome.runtime.sendNativeMessage(HOST_NAME, { array: msgObjsArray });
     } catch (ex) {
         message = ex + '';
     }
@@ -144,11 +144,10 @@ async function send2host_multi(messageObject) {
             console.log('[' + HOST_NAME + '] sent the response: "' + JSON.stringify(res) + '"');
             return;
         }
-
         message = res.text || JSON.stringify(res);
     }
-    else if (chrome.runtime.lastError && chrome.runtime.lastError.message) {
-        message = ((message) ? (message + ', ') : '') + chrome.runtime.lastError.message;
+    else if (chrome.runtime.lastError?.message) {
+        message = (message ? (message + ', ') : '') + chrome.runtime.lastError.message;
     }
 
     let notificationOptions = {

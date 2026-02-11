@@ -1,7 +1,7 @@
 var conv_2_workInfo = function (saved_wi) { return (new workInfoType(saved_wi)); }
 var load_workInfo = async function () {
-    let res = await chrome.storage.local.get();
-    return (new workInfoType(res.workInfo));
+    let opt = await chrome.storage.local.get();
+    return (new workInfoType(opt.workInfo));
 }
 
 var workInfoType = function (saved_wi) {

@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name"       : "m3u8 file downloader 2.2",
-  "description": "m3u8 file downloader firefox extension 2.2",
-  "version"    : "2.2",
+  "name"       : "m3u8 file downloader 2.3",
+  "description": "m3u8 file downloader firefox extension 2.3",
+  "version"    : "2.3",
   "icons": {
     "32" : "img/m3u8.png",
     "128": "img/m3u8_128.png"
@@ -22,28 +22,26 @@
 
   "permissions": [
     "storage",
-    "webNavigation",
     "webRequest",
-    "webRequestBlocking",
+    "webNavigation",
     "tabs",
     "activeTab",
     "notifications",
     "nativeMessaging",
-    "*://*/*",
-    "ftp://*/*"
+    "*://*/*"
   ],
 
   "browser_action": {
     "default_icon" : "img/m3u8.png",
-    "default_popup": "m3u8.html"
+    "default_popup": "popup.html"
   },
 
   "background": {
-    "page": "m3u8_background.html"
+    "page": "background.html"
   },
 
   "options_ui": {    
-    "page"        : "m3u8_options.html",
+    "page"        : "options.html",
     "chrome_style": true
   }
 }

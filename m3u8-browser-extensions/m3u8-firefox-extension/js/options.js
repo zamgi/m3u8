@@ -2,11 +2,11 @@ const root = browser; //chrome;
 window.addEventListener('load', async function () {
     const set_def_val = (d, prop, defVal) => { if (d[prop] === undefined) d[prop] = defVal; };
     let opt = await root.storage.local.get(); if (!opt) opt = {}; set_def_val(opt, 'groupByAudioVideo', true);
-                                                                  set_def_val(opt, 'directionRtl'     , true);
+                                                                  //set_def_val(opt, 'directionRtl'     , true);
                                                                   set_def_val(opt, 'saveUrlListBetweenTabReload', false);
                                                                   set_def_val(opt, 'enableButtonEvenIfNoUrls'   , false);
 
-    const set_proc_func = (checkboxId, opt_prop) => {
+    const set_checkbox_click_handler = (checkboxId, opt_prop) => {
         if (!opt_prop) opt_prop = checkboxId;
 
         const ch = document.getElementById(checkboxId);
@@ -16,8 +16,8 @@ window.addEventListener('load', async function () {
             await root.storage.local.set(opt);
         });
     };
-    set_proc_func('groupByAudioVideo');
-    set_proc_func('directionRtl');
-    set_proc_func('saveUrlListBetweenTabReload');
-    set_proc_func('enableButtonEvenIfNoUrls');
+    set_checkbox_click_handler('groupByAudioVideo');
+    //set_checkbox_click_handler('directionRtl');
+    set_checkbox_click_handler('saveUrlListBetweenTabReload');
+    set_checkbox_click_handler('enableButtonEvenIfNoUrls');
 });

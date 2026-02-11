@@ -33,7 +33,7 @@
   "host_permissions": [ "http://*/*", "https://*/*" ],
 
   "background": {
-    "service_worker": "js/service-worker.js"
+    "service_worker": "js/serviceWorker.js"
   },
 
   "content_scripts": [{

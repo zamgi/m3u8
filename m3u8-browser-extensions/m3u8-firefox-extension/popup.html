@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>m3u8 file downloader 2.3</title>
+    <link type="image/png" rel="shortcut icon" href="img/m3u8.png"  />
+    <link type="text/css"  rel="stylesheet"    href="css/main.css" />
+    <script type="text/javascript" src="js/popup.js"></script>
+</head>
+<body class="body">
+    <div class="options_1">
+        <div>
+            <input id="saveUrlListBetweenTabReload" type="checkbox" title="keep urls between tab reload" />
+            <label for="saveUrlListBetweenTabReload" title="keep urls between tab reload">keep urls</label>
+        </div>
+        <!--
+        <div>
+            <input id="directionRtl" type="checkbox" checked="checked" title="direction: right-to-left | left-to-right" />
+            <label for="directionRtl" title="direction: right-to-left | left-to-right">direction: rtl</label>
+        </div>
+        -->
+        <div>
+            <input id="groupByAudioVideo" type="checkbox" checked="checked" title="trying to group urls by audio+video for sites like 'kinokong' & etc." />
+            <label for="groupByAudioVideo" title="trying to group urls by audio+video for sites like 'kinokong' & etc.">group by audio+video</label>
+        </div>
+    </div>
+    <div id="content" class="content" style="direction: rtl;"></div>
+</body>
+</html>

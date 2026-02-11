@@ -1,15 +1,22 @@
-window.addEventListener('load', async function (/*event*/) {
-    let res = await chrome.storage.local.get();
+window.addEventListener('load', async function () {
+    const set_def_val = (d, prop, defVal) => { if (d[prop] === undefined) d[prop] = defVal; };
+    let opt = await root.storage.local.get(); if (!opt) opt = {}; set_def_val(opt, 'groupByAudioVideo', true);
+                                                                  set_def_val(opt, 'directionRtl'     , true);
+                                                                  set_def_val(opt, 'saveUrlListBetweenTabReload', false);
+                                                                  set_def_val(opt, 'enableButtonEvenIfNoUrls'   , false);
 
-    let ch = document.getElementById('saveUrlListBetweenTabReload');
-    ch.checked = !!res.saveUrlListBetweenTabReload;
-    ch.addEventListener('click', async function (/*event*/) {
-        await chrome.storage.local.set({ saveUrlListBetweenTabReload: this.checked });
-    });
+    const set_proc_func = (checkboxId, opt_prop) => {
+        if (!opt_prop) opt_prop = checkboxId;
 
-    ch = document.getElementById('directionRtl');
-    ch.checked = (res.directionRtl !== undefined) ? !!res.directionRtl : ch.checked;
-    ch.addEventListener('click', async function (/*event*/) {
-        await chrome.storage.local.set({ directionRtl: this.checked });
-    });
+        const ch = document.getElementById(checkboxId);
+        ch.checked = !!opt[opt_prop];
+        ch.addEventListener('click', async function () {
+            opt[opt_prop] = this.checked;
+            await root.storage.local.set(opt);
+        });
+    };
+    set_proc_func('groupByAudioVideo');
+    set_proc_func('directionRtl');
+    set_proc_func('saveUrlListBetweenTabReload');
+    set_proc_func('enableButtonEvenIfNoUrls');
 });

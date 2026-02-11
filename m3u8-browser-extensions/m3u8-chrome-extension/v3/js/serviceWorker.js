@@ -45,11 +45,11 @@ async function KeepAliveRoutine() {
 
 //urls-list will be saved between reloads.
 (async () => {
-    let res = await chrome.storage.local.get();
-    if (!res.saveUrlListBetweenTabReload) {
+    let opt = await chrome.storage.local.get();
+    if (!opt.saveUrlListBetweenTabReload) {
         await conv_2_workInfo().clear();
     } else {
-        await conv_2_workInfo(res.workInfo).removeEmptyTabs();
+        await conv_2_workInfo(opt.workInfo).removeEmptyTabs();
     }
 })();
 
@@ -96,9 +96,9 @@ chrome.tabs.onUpdated.addListener(async function (tabId, info, tab) {
         await (await load_workInfo()).deleteTab(tabId);
     }
     else {
-        let res = await chrome.storage.local.get();
-        if (!res.saveUrlListBetweenTabReload) {
-            await conv_2_workInfo(res.workInfo).deleteTabUrls(tabId);
+        let opt = await chrome.storage.local.get();
+        if (!opt.saveUrlListBetweenTabReload) {
+            await conv_2_workInfo(opt.workInfo).deleteTabUrls(tabId);
         }
     }    
 });

@@ -39,6 +39,9 @@ namespace m3u8.download.manager.ui
         private Func< AddNewDownloadForm, Task > _FormClosedAction;
         #endregion
 
+        private static string GetCaptionBySeriesInfo( in (int n, int total) seriesInfo ) => $" ({seriesInfo.n} of {seriesInfo.total})";
+        private static string GetCaptionBySeriesInfo( in (int n, int total)? seriesInfo ) => seriesInfo.HasValue ? GetCaptionBySeriesInfo( seriesInfo.Value ) : null;
+
         #region [.ctor().]
         private AddNewDownloadForm( _DC_ dc, _SC_ sc )
         {
@@ -117,16 +120,13 @@ namespace m3u8.download.manager.ui
             logUC.SetModel( _Model );
 
             #region [.seriesInfo.]
-            if ( seriesInfo.HasValue )
-            {
-                var x = seriesInfo.Value;
-                this.Text += $" ({x.n} of {x.total})";
-            }
+            this.Text += GetCaptionBySeriesInfo( seriesInfo );
             _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
             #endregion
 
             this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;           
         }
+
         private (string audio, string video) _GroupedUrls;
         /// <summary>
         /// Add Grouped
@@ -163,11 +163,7 @@ namespace m3u8.download.manager.ui
             logUC.SetModel( _Model );
 
             #region [.seriesInfo.]
-            if ( seriesInfo.HasValue )
-            {
-                var x = seriesInfo.Value;
-                this.Text += $" ({x.n} of {x.total})";
-            }
+            this.Text += GetCaptionBySeriesInfo( seriesInfo );
             _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
             #endregion
 
@@ -196,7 +192,7 @@ namespace m3u8.download.manager.ui
             var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, groupedUrls, outputFileName, requestHeaders, outputFileNamePatternProcessor, seriesInfo )
             {
                 Icon = Resources.group_by_audio_video.CreateSafeIcon(), 
-                Text = "add new download (grouped by audio-video urls)",
+                Text = "add new download (grouped by audio-video urls)" + GetCaptionBySeriesInfo( seriesInfo ),
                 _FormClosedAction = formClosedAction,
             };
             f.m3u8FileUrlTextBox       .ReadOnly = true;
