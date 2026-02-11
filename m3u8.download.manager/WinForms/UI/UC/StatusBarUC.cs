@@ -240,7 +240,7 @@ namespace m3u8.download.manager.ui
             var st = GetSettings();
             parallelismLabel.Text        = $"degree of parallelism:  {st.MaxDegreeOfParallelism} " +
                                            (st.MaxCrossDownloadInstance.HasValue ? $"\r\ndownload-instances:  {st.MaxCrossDownloadInstance.Value} " : null);
-            parallelismLabel.ToolTipText = $"use cross download-instance parallelism:  {st.UseCrossDownloadInstanceParallelism.ToString().ToLower()}";
+            parallelismLabel.ToolTipText = $"share \"max download threads\"\r\nbetween all downloads-instance:  {st.UseCrossDownloadInstanceParallelism.ToString().ToLower()}";
 #if NETCOREAPP
             parallelismLabel.ForeColor = (st.UseCrossDownloadInstanceParallelism ? Color.FromKnownColor( KnownColor.ControlText ) : Color.DimGray);
             parallelismLabel.BackColor = (st.UseCrossDownloadInstanceParallelism ? Color.FromKnownColor( KnownColor.Control     ) : Color.FromKnownColor( KnownColor.Control ));

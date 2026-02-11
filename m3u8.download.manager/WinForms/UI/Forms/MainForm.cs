@@ -909,12 +909,44 @@ namespace m3u8.download.manager.ui
                 #endregion
             }
         }
-        private async void OnlyDeleteOutputFiles( DownloadRow[] rows, bool ask = true )
+        private async void OnlyDeleteOutputFiles( DownloadRow[] rows, bool ask = true, Action< DownloadRow > sucDelPostProcessingFunc = null )
         {
             if ( !rows.AnyEx() ) return;
 
-            var exists_fns = rows.SelectMany( r => r.GetOutputFullFileNames() ).Where( File.Exists ).ToList( rows.Length );
-            if ( exists_fns.Count == 0 ) return;
+            var dict = new Dictionary< string, DownloadRow >( rows.Length );
+
+            void call_sucDelPostProcessingFunc( IEnumerable< string > fns )
+            {
+                foreach ( var fn in fns )
+                {
+                    if ( dict.TryGetValue( fn, out var r ) ) sucDelPostProcessingFunc( r );
+                }
+            };
+
+            var fns  = rows.SelectMany( r => 
+                            {
+                                var fns = r.GetOutputFullFileNames();
+                                foreach ( var fn in fns )
+                                {
+                                    dict[ fn ] = r;
+                                }
+                                return (fns);
+                            })
+                            .ToList( rows.Length );
+            var exists_fns = fns.Where( File.Exists ).ToList( fns.Count );
+            if ( exists_fns.Count == 0 )
+            {
+                if ( sucDelPostProcessingFunc != null ) call_sucDelPostProcessingFunc( fns );
+                return;
+            }
+            else if ( sucDelPostProcessingFunc != null )
+            {
+                var non_exists_fns = fns.Except( exists_fns ).ToList( fns.Count );
+                if ( non_exists_fns.Count != 0 )
+                {
+                    call_sucDelPostProcessingFunc( non_exists_fns );
+                }
+            }
 
             if ( ask ) 
             {
@@ -933,7 +965,14 @@ namespace m3u8.download.manager.ui
                     await FileHelper.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
                     {
                         var suc = await FileHelper.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
-                        syncCtx.Invoke(() => wb.IncreaseSteps( null ));
+                        if ( suc && (sucDelPostProcessingFunc != null) )
+                        {
+                            syncCtx.Invoke(() => { wb.IncreaseSteps(); if ( dict.TryGetValue( fn, out var r ) ) sucDelPostProcessingFunc( r ); } );
+                        }
+                        else
+                        {
+                            syncCtx.Invoke(() => wb.IncreaseSteps());
+                        }                        
                         return (suc);
                     });
                 }
@@ -1336,6 +1375,7 @@ namespace m3u8.download.manager.ui
                 cancelDownloadMenuItem             .Enabled = cancelDownloadToolButton.Enabled;
                 pauseDownloadMenuItem              .Enabled = pauseDownloadToolButton .Enabled;
                 deleteDownloadMenuItem             .Enabled = deleteDownloadToolButton.Enabled;
+                moreOpMenuItem                     .Enabled = deleteDownloadToolButton.Enabled;
                 deleteWithOutputFileMenuItem       .Enabled = deleteDownloadToolButton.Enabled && (selectedRow_AnyFileExists = FileHelper.AnyFileExists( selectedRow?.GetOutputFullFileNames() ));
                 browseOutputFileMenuItem           .Visible = deleteWithOutputFileMenuItem.Enabled;
                 openOutputFileMenuItem             .Visible = deleteWithOutputFileMenuItem.Enabled;     
@@ -1574,6 +1614,26 @@ namespace m3u8.download.manager.ui
 
         private void deleteAllDownloadsMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _DownloadListModel.GetRows().ToArrayEx(), deleteOutputFiles: false );
         private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _DownloadListModel.GetRows().ToArrayEx(), deleteOutputFiles: true );
+
+
+        private void moreOp_delOutputFileAndChangeExt2Mp3_MenuItem_Click( object sender, EventArgs e ) => DelOutputFileAndChangeExt( ".mp3" );
+        private void moreOp_delOutputFileAndChangeExt2Mp4_MenuItem_Click( object sender, EventArgs e ) => DelOutputFileAndChangeExt( ".mp4" );
+        private void DelOutputFileAndChangeExt( /*DownloadRow[] rows,*/ string ext )
+        {
+            var rows = downloadListUC.GetSelectedDownloadRows().ToArrayEx();
+
+            OnlyDeleteOutputFiles( rows, ask: true, row =>
+            {
+                var fn     = row.OutputFileName;
+                var new_fn = Path.GetFileNameWithoutExtension( fn ) + ext;
+                if ( fn != new_fn )
+                {
+                    var suc = _ExternalProgQueue.Remove( row.GetOutputFullFileName() );
+                    row.SetOutputFileName( new_fn );
+                    if ( suc ) _ExternalProgQueue.Add( row.GetOutputFullFileName() );
+                }
+            });
+        }
         #endregion
 
         #region [.change OutputFileName & OutputDirectory.]

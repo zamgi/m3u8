@@ -81,7 +81,7 @@ namespace m3u8.download.manager.ui
 
         #region [.public.]
         public void SetTotalSteps( int totalSteps ) => _TotalSteps = totalSteps;
-        public void IncreaseSteps( string speedText )
+        public void IncreaseSteps( string speedText = null )
         {            
             _CurrentSteps++;
             _PercentSteps = Convert.ToByte( (100.0 * _CurrentSteps) / _TotalSteps );

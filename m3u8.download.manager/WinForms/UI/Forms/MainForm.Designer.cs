@@ -66,6 +66,9 @@ namespace m3u8.download.manager.ui
             this.deleteDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteWithOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.onlyDeleteOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+                this.moreOpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+                this.moreOp_delOutputFileAndChangeExt2Mp3_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+                this.moreOp_delOutputFileAndChangeExt2Mp4_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.browseOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputFilesWithExternalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -315,6 +318,7 @@ namespace m3u8.download.manager.ui
                 this.deleteDownloadMenuItem,
                 this.deleteWithOutputFileMenuItem,
                 this.onlyDeleteOutputFileMenuItem,
+                this.moreOpMenuItem,
                 s21,
                 this.browseOutputFileMenuItem,
                 this.openOutputFileMenuItem,
@@ -377,6 +381,26 @@ namespace m3u8.download.manager.ui
             this.onlyDeleteOutputFileMenuItem.ShortcutKeyDisplayString = "(Ctrl + Shift + Del)";
             this.onlyDeleteOutputFileMenuItem.Text = "Only Delete Output file";
             this.onlyDeleteOutputFileMenuItem.Click += new System.EventHandler(this.onlyDeleteOutputFileMenuItem_Click);
+                //
+                // moreOpMenuItem
+                // 
+                this.moreOpMenuItem.Text = "(more...)";
+                this.moreOpMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[]
+                {
+                    this.moreOp_delOutputFileAndChangeExt2Mp3_MenuItem,
+                    this.moreOp_delOutputFileAndChangeExt2Mp4_MenuItem,
+                } );
+                // 
+                // moreOp_delOutputFileAndChangeExt2Mp3_MenuItem
+                // 
+                this.moreOp_delOutputFileAndChangeExt2Mp3_MenuItem.Text = "Delete output-file and Change extension to (.mp3)";
+                this.moreOp_delOutputFileAndChangeExt2Mp3_MenuItem.Click += new System.EventHandler(this.moreOp_delOutputFileAndChangeExt2Mp3_MenuItem_Click);
+                // 
+                // moreOp_delOutputFileAndChangeExt2Mp4_MenuItem
+                // 
+                this.moreOp_delOutputFileAndChangeExt2Mp4_MenuItem.Text = "Delete output-file and Change extension to (.mp4)";
+                this.moreOp_delOutputFileAndChangeExt2Mp4_MenuItem.Click += new System.EventHandler(this.moreOp_delOutputFileAndChangeExt2Mp4_MenuItem_Click);
+
             // 
             // browseOutputFileMenuItem
             // 
@@ -503,6 +527,9 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ToolStripMenuItem deleteDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteWithOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem onlyDeleteOutputFileMenuItem;
+            private System.Windows.Forms.ToolStripMenuItem moreOpMenuItem;
+            private System.Windows.Forms.ToolStripMenuItem moreOp_delOutputFileAndChangeExt2Mp3_MenuItem;
+            private System.Windows.Forms.ToolStripMenuItem moreOp_delOutputFileAndChangeExt2Mp4_MenuItem;
         private System.Windows.Forms.ToolStripMenuItem browseOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFilesWithExternalMenuItem;

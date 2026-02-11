@@ -66,7 +66,7 @@
             this.useCrossDownloadInstanceParallelismCheckBox.Location = new System.Drawing.Point(44, 68);
             this.useCrossDownloadInstanceParallelismCheckBox.Size = new System.Drawing.Size(166, 30);
             this.useCrossDownloadInstanceParallelismCheckBox.TabIndex = 5;
-            this.useCrossDownloadInstanceParallelismCheckBox.Text = "share \"max download threads\"\r\n between all downloads-instance"; //---"use cross downloads-instance\r\ndegree of parallelism";            
+            this.useCrossDownloadInstanceParallelismCheckBox.Text = "share \"max download threads\"\r\nbetween all downloads-instance";          
             this.useCrossDownloadInstanceParallelismCheckBox.UseVisualStyleBackColor = true;
             toolTip.SetToolTip(this.useCrossDownloadInstanceParallelismCheckBox, "checked - share \"max download threads\" between all downloads-instance\r\n" +
                                                                                  "unchecked - use \"max download threads\" per each downloads-instance" );

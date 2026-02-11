@@ -178,7 +178,7 @@ namespace m3u8.download.manager.controllers
 
             if ( !prop.PropertyType.IsValueType )
             {
-                Debug.WriteLine( $"NOT struct: {prop}" );
+                Debug.WriteLine( $"NOT struct/(ValueType): {prop}" );
                 return;
             }
 
