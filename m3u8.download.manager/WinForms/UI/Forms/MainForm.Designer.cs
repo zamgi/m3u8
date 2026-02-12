@@ -535,7 +535,6 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ToolStripMenuItem openOutputFilesWithExternalMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeOutputDirectoryMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteAllFinishedDownloadMenuItem;       
-        //---private System.Windows.Forms.ToolStripMenuItem allDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem startAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cancelAllDownloadsMenuItem;

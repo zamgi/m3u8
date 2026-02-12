@@ -14,7 +14,6 @@ window.addEventListener('load', async function () {
 
         const set_def_val = (d, prop, defVal) => { if (d[prop] === undefined) d[prop] = defVal; };
         let opt = await root.storage.local.get(); if (!opt) opt = {}; set_def_val(opt, 'groupByAudioVideo', true);
-                                                                      //set_def_val(opt, 'directionRtl'     , true);
                                                                       set_def_val(opt, 'saveUrlListBetweenTabReload', false);
 
         const set_checkbox_click_handler = (checkboxId, onClickFunc, opt_prop) => {
@@ -56,7 +55,7 @@ window.addEventListener('load', async function () {
                 renderFunc(opt.groupByAudioVideo);
             }
         },
-        clearGroupedUrlsFunc= async () => {
+        clearGroupedUrlsFunc = async () => {
             const aa = content.querySelectorAll('a.is_group_by_audio_video');
             if (aa.length) {
                 for (let i = 0; i < aa.length; i++) {
@@ -66,21 +65,33 @@ window.addEventListener('load', async function () {
                 }
                 renderFunc(opt.groupByAudioVideo);
             }
+        },
+        showSingleUrlsClick = async function () {
+            opt.hideSingleUrls = !this.checked;
+            await root.storage.local.set(opt);
+
+            renderFunc(opt.groupByAudioVideo);
+        },
+        showGroupedUrlsClick = async function () {
+            opt.hideGroupedUrls = !this.checked;
+            await root.storage.local.set(opt);
+
+            renderFunc(opt.groupByAudioVideo);
         };
 
-        const handlers = { clearUrlListFunc, deleteUrlFromListFunc, clearSingleUrlsFunc, clearGroupedUrlsFunc };
+        const handlers = { clearUrlListFunc, deleteUrlFromListFunc, clearSingleUrlsFunc, clearGroupedUrlsFunc, showSingleUrlsClick, showGroupedUrlsClick };
         const renderFunc = groupByAudioVideo => {
             if (groupByAudioVideo) {
                 let urls = group_by_audio_video(tabInfo);
-                render_grouped_m3u8_urls(urls, handlers);
+                render_grouped_m3u8_urls(urls, handlers, opt);
             } else {
                 render_m3u8_urls(tabInfo, handlers);
             }
         }
 
-        set_checkbox_click_handler('groupByAudioVideo', renderFunc);
-        //set_checkbox_click_handler('directionRtl', rtl => document.getElementById('content').style.direction = rtl ? 'rtl' : '');
+        set_checkbox_click_handler('groupByAudioVideo', renderFunc);        
         set_checkbox_click_handler('saveUrlListBetweenTabReload');
+        //set_checkbox_click_handler('directionRtl', rtl => document.getElementById('content').style.direction = rtl ? 'rtl' : '');
 
     } catch (ex) {
         console.error('m3u8:popup => ' + ex);
@@ -89,7 +100,7 @@ window.addEventListener('load', async function () {
 });
 
 function get_trimmed_url(url, max_len) {
-    if (!max_len) max_len = 120;
+    if (!max_len) max_len = 110;
     if (max_len < url?.length) {
         url = url.substring(0, max_len / 2 - 2) + '...' + url.substring(url.length - max_len/2 - 2);
     }
@@ -135,30 +146,32 @@ function group_by_audio_video(tabInfo) {
     }
     return (res);
 }
-function render_grouped_m3u8_urls(urls, handlers) {
+function render_grouped_m3u8_urls(urls, handlers, opt) {
     const content = document.getElementById('content');
 
     if (!urls?.length) return set_no_requests(content);
 
-    let trs = [], group_by_av_cnt = 0;
+    let trs = [], group_by_av_cnt = 0, no_group_cnt = 0;
     for (let i = 0, cnt = urls.length; i < cnt; i++) {
         const x = urls[i];
         if (x.is_group_by_audio_video) {
             //x = {
             //    is_group_by_audio_video: true,
-            //    video: { url: m3u8_url, requestHeaders: requestHeaders_4_url },
-            //    audio: { url: url_a   , requestHeaders: requestHeaders[url_a] || ''}
+            //    video: { url: , requestHeaders: },
+            //    audio: { url: , requestHeaders: }
             //}
 
-            trs.push( create_grouped_m3u8_url__html(x) );
             group_by_av_cnt++;
+            if (!opt.hideGroupedUrls)
+                trs.push( create_grouped_m3u8_url__html(x, group_by_av_cnt) );
         }
         else {
-            //x = { url: m3u8_url, requestHeaders: requestHeaders_4_url }
-            trs.push( create_single_m3u8_url__html(x) );
+            //x = { url: , requestHeaders: }
+            if (!opt.hideSingleUrls)
+                trs.push( create_single_m3u8_url__html(x, ++no_group_cnt) );
         }
     }
-    set_content(content, trs, urls.length + group_by_av_cnt, group_by_av_cnt);
+    set_content(content, trs, urls.length + group_by_av_cnt, group_by_av_cnt, opt);
     append_common_EventListeners(content, handlers);
 
     if (group_by_av_cnt) {
@@ -182,33 +195,13 @@ function render_m3u8_urls(tabInfo, handlers) {
     let trs = [];
     for (let i = 0, cnt = m3u8_urls.length; i < cnt; i++) {
         const m3u8_url = m3u8_urls[i];
-        trs.push(create_single_m3u8_url__html({ url: m3u8_url, requestHeaders: requestHeaders[m3u8_url] || '' }));
+        trs.push(create_single_m3u8_url__html({ url: m3u8_url, requestHeaders: requestHeaders[m3u8_url] || '' }, i + 1));
     }
     set_content(content, trs, m3u8_urls.length);
     append_common_EventListeners(content, handlers);
 }
-function set_content(content, trs, urls_count, group_by_av_count) {
-    let clearUrlList            = '<td> <a id="clearUrlListButton" class="delete_all" title="clear all" href="#"><img src="img/delete_all.png" /></a> </td>';    
-    let auto_start_download_all = '<td> <a class="auto_start_download_all" title="auto start download all' + 
-                                                      (group_by_av_count ? ' single/non-grouped' : '') + '" href="#"><img src="img/auto_start_download.png" /></a> </td>';
-    let caption_total_count     = '<td> <h5 class="found"><a class="download_all" title="download all" href="#">total: ' + urls_count + '</a></h5> </td>';
 
-    let caption_grouped_count = '';
-    if (group_by_av_count) {
-        let non_grouped_count = (urls_count - 2 * group_by_av_count), non_grouped = '';
-        if (non_grouped_count) {
-            non_grouped = '<td> <a id="clearSingleUrlsButton" class="delete_all" title="delete all single/non-grouped" href="#"><img src="img/delete_all.png" /></a> </td>' + 
-                          '<td> <h5 class="found"><a class="download_all_singles" title="download all single/non-grouped" href="#">singles: ' + non_grouped_count + '</a></h5> </td>';
-        }
-        let grouped     = '<td> <a id="clearGroupedUrlsButton" class="delete_all" title="delete all grouped" href="#"><img src="img/delete_all.png" /></a> </td>' +
-                          '<td> <h5 class="found"><a class="download_all_grouped" title="download all grouped" href="#">grouped: ' + group_by_av_count + '/(' + (2*group_by_av_count) + ')</a></h5> </td>';
-        caption_grouped_count = grouped + non_grouped;
-    }
-
-    content.innerHTML   = '<table><tr>' + clearUrlList + auto_start_download_all + caption_total_count + caption_grouped_count + '</tr></table>' +
-                          '<table class="content">' + trs.join('') + '</table>';
-}
-function create_single_m3u8_url__html(x /*x = { url: m3u8_url, requestHeaders: requestHeaders_4_url }*/) {
+function create_single_m3u8_url__html(x, order_num /*x = { url: m3u8_url, requestHeaders: requestHeaders_4_url}*/) {
     //1.
     let a1 = document.createElement('a');
     a1.className = 'delete';
@@ -237,7 +230,7 @@ function create_single_m3u8_url__html(x /*x = { url: m3u8_url, requestHeaders: r
 
     //3.
     let a3 = document.createElement('a'); a3.className = 'download'; a3.href = x.url; a3.setAttribute('requestHeaders', x.requestHeaders);
-    a3.appendChild(document.createTextNode( get_trimmed_url(x.url) ));
+    a3.appendChild(document.createTextNode( get_trimmed_url(x.url) + ' (' + order_num + ')' ));
 
     let td3 = document.createElement('td'); td3.className = 'content'; td3.title = x.url;
     td3.appendChild(a3);
@@ -256,7 +249,7 @@ function create_single_m3u8_url__html(x /*x = { url: m3u8_url, requestHeaders: r
     //    '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td>' + 
     //'</tr>'
 }
-function create_grouped_m3u8_url__html(x) {
+function create_grouped_m3u8_url__html(x, order_num) {
     //x = {
     //    is_group_by_audio_video: true,
     //    video: { url: m3u8_url, requestHeaders: requestHeaders_4_url },
@@ -292,7 +285,7 @@ function create_grouped_m3u8_url__html(x) {
     a3.setAttribute('video-requestHeaders', x.video.requestHeaders);
     a3.setAttribute('audio-url'           , x.audio.url);
     a3.setAttribute('audio-requestHeaders', x.audio.requestHeaders);
-    a3.appendChild(document.createTextNode(get_trimmed_url(x.grouped_url_text)));
+    a3.appendChild(document.createTextNode( get_trimmed_url(x.grouped_url_text) + ' (' + order_num + ')' ));
 
     let td3 = document.createElement('td'); td3.className = 'content'; td3.title = x.grouped_url_text;
     td3.appendChild(a3);
@@ -306,6 +299,32 @@ function create_grouped_m3u8_url__html(x) {
     return (tr.outerHTML);
 }
 
+function set_no_requests(content) { content.innerHTML = '<h5 class="not-found">m3u8 requests no were made from this page</h5>'; }
+function set_content(content, trs, urls_count, group_by_av_count, opt) {
+    let clearUrlList            = '<td> <a id="clearUrlListButton" class="delete_all" title="clear all" href="#"><img src="img/delete_all.png" /></a> </td>';    
+    let auto_start_download_all = '<td> <a class="auto_start_download_all" title="auto start download all' + 
+                                                      (group_by_av_count ? ' single/non-grouped' : '') + '" href="#"><img src="img/auto_start_download.png" /></a> </td>';
+    let caption_total_count     = '<td> <h5 class="found"><a class="download_all" title="download all" href="#">total: ' + urls_count + '</a></h5> </td>';
+
+    let caption_grouped_count = '';
+    if (group_by_av_count) {
+        let non_grouped_count = (urls_count - 2*group_by_av_count), non_grouped = '';
+        if (non_grouped_count) {
+            non_grouped = '<td class="separator"></td>' + 
+                          '<td> <a id="clearSingleUrlsButton" class="delete_all" title="delete all single/non-grouped" href="#"><img src="img/delete_all.png" /></a> </td>' + 
+                          '<td> <h5 class="found"><a class="download_all_singles" title="download all single/non-grouped" href="#">singles: ' + non_grouped_count + '</a></h5> </td>' +
+                          '<td> <input id="showSingleUrlsCheckbox" type="checkbox" ' + (opt.hideSingleUrls ? '' : 'checked="checked"') + ' title="show / hide" /> </td>';
+        }
+        let grouped     = '<td class="separator"></td>' + 
+                          '<td> <a id="clearGroupedUrlsButton" class="delete_all" title="delete all grouped" href="#"><img src="img/delete_all.png" /></a> </td>' +
+                          '<td> <h5 class="found"><a class="download_all_grouped" title="download all grouped" href="#">grouped: ' + group_by_av_count + '/(' + (2*group_by_av_count) + ')</a></h5> </td>' + 
+                          '<td> <input id="showGroupedUrlsCheckbox" type="checkbox" ' + (opt.hideGroupedUrls ? '' : 'checked="checked"') + ' title="show / hide" /> </td>';
+        caption_grouped_count = grouped + non_grouped;
+    }
+
+    content.innerHTML   = '<table class="header' + (group_by_av_count ? '' : ' no-border') + '"><tr>' + clearUrlList + auto_start_download_all + caption_total_count + caption_grouped_count + '</tr></table>' +
+                          '<table class="content">' + trs.join('') + '</table>';
+}
 function append_common_EventListeners(content, handlers) {
     const set_click_handler__4_send2host_msgObj = (querySelector, auto_start_download) => {
         const aa = content.querySelectorAll(querySelector);
@@ -345,6 +364,8 @@ function append_common_EventListeners(content, handlers) {
     document.getElementById('clearUrlListButton')?.addEventListener('click', handlers.clearUrlListFunc);
     document.getElementById('clearSingleUrlsButton')?.addEventListener('click', handlers.clearSingleUrlsFunc);
     document.getElementById('clearGroupedUrlsButton')?.addEventListener('click', handlers.clearGroupedUrlsFunc);
+    document.getElementById('showSingleUrlsCheckbox')?.addEventListener('click', handlers.showSingleUrlsClick);
+    document.getElementById('showGroupedUrlsCheckbox')?.addEventListener('click', handlers.showGroupedUrlsClick);
 
     const aa = content.querySelectorAll('a.delete');
     for (let i = 0; i < aa.length; i++) {
@@ -358,7 +379,6 @@ function append_common_EventListeners(content, handlers) {
         });
     }
 }
-function set_no_requests(content) { content.innerHTML = '<h5 class="not-found">m3u8 requests no were made from this page</h5>'; }
 
 function create_grouped_msgObj(a, auto_start_download) {
     return {

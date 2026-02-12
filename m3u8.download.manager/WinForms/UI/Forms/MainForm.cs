@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -24,8 +23,6 @@ using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
-//using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
-using X = m3u8.download.manager.ipc.UrlInputParams;
 
 namespace m3u8.download.manager.ui
 {
@@ -36,7 +33,7 @@ namespace m3u8.download.manager.ui
     {
         #region [.fields.]
         private const int MAX_PASTE_URLS = 75; //100;
-        private X[] _InputParamsArray;
+        private UrlInputParams[] _InputParamsArray;
         private _ReceivedInputParamsArrayEventHandler_ _ReceivedInputParamsArrayEventHandler;
         private _ReceivedSend2FirstCopyEventHandler_   _ReceivedSend2FirstCopyEventHandler;        
 
@@ -126,7 +123,7 @@ namespace m3u8.download.manager.ui
             _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
             _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
         }
-        public MainForm( in X[] array ) : this() => _InputParamsArray = array;
+        public MainForm( in UrlInputParams[] array ) : this() => _InputParamsArray = array;
 
         protected override void Dispose( bool disposing )
         {
@@ -417,7 +414,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.event handlers methods.]
-        private void NamedPipeServer__Input_ReceivedInputParamsArray( X[] array ) => this.BeginInvoke( _ReceivedInputParamsArrayEventHandler, array );
+        private void NamedPipeServer__Input_ReceivedInputParamsArray( UrlInputParams[] array ) => this.BeginInvoke( _ReceivedInputParamsArrayEventHandler, array );
         private void NamedPipeServer__Input_ReceivedSend2FirstCopy() => this.BeginInvoke( _ReceivedSend2FirstCopyEventHandler );
         private void ReceivedSend2FirstCopy()
         {
@@ -1032,7 +1029,7 @@ namespace m3u8.download.manager.ui
             return (false);
         }
 
-        private void AddNewDownloads( X[] array )
+        private void AddNewDownloads( UrlInputParams[] array )
         {
 #pragma warning disable IDE0037 // Use inferred member name
             var p = (m3u8FileUrls     : (from t in array where (!t.isGroupByAudioVideo) select (t.m3u8FileUrl, t.requestHeaders)).ToList( array.Length ), 
@@ -1060,18 +1057,18 @@ namespace m3u8.download.manager.ui
                 if ( p.m3u8FileUrls.Count == 1 )
                 {
                     var frt = p.m3u8FileUrls.First();
-                    AddNewDownload( X.Create( frt.url, frt.requestHeaders, p.autoStartDownload ) );
+                    AddNewDownload( UrlInputParams.Create( frt.url, frt.requestHeaders, p.autoStartDownload ) );
                 }
                 else
                 {
-                    var action = new Action< X, (int n, int total) >( (X tp, (int n, int total) seriesInfo) => AddNewDownload( tp, seriesInfo ) );
+                    var action = new Action< UrlInputParams, (int n, int total) >( (UrlInputParams x, (int n, int total) seriesInfo) => AddNewDownload( x, seriesInfo ) );
 
                     var count = p.m3u8FileUrls.Count;
                     var n     = count;
                     foreach ( var t in p.m3u8FileUrls.Reverse() )
                     {
                         var seriesInfo = (n--, count);
-                        this.BeginInvoke( action, X.Create( t.url, t.requestHeaders, p.autoStartDownload ), seriesInfo );
+                        this.BeginInvoke( action, UrlInputParams.Create( t.url, t.requestHeaders, p.autoStartDownload ), seriesInfo );
                     }
                 }
             }
@@ -1080,16 +1077,16 @@ namespace m3u8.download.manager.ui
                 AddNewDownload( default/*(null, null, false)*/ );
             }
         }
-        private async void AddNewDownload( X p, (int n, int total)? seriesInfo = null )
+        private async void AddNewDownload( UrlInputParams x, (int n, int total)? seriesInfo = null )
         {
-            var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( p.requestHeaders, out var requestHeaders );
-            Debug.Assert( suc || p.requestHeaders.IsNullOrEmpty() );
+            var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.requestHeaders, out var requestHeaders );
+            Debug.Assert( suc || x.requestHeaders.IsNullOrEmpty() );
 
-            if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() && FileNameCleaner4UI.TryGetOutputFileNameByUrl( p.m3u8FileUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) )
+            if ( x.autoStartDownload && !x.m3u8FileUrl.IsNullOrWhiteSpace() && FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.m3u8FileUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) )
             {
-                if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
+                if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( x.m3u8FileUrl ) )
                 {
-                    var row = _DownloadListModel.AddRow( (p.m3u8FileUrl, requestHeaders, outputFileName, _SC.OutputFileDirectory/*, IsLiveStream: false, default*/) );
+                    var row = _DownloadListModel.AddRow( (x.m3u8FileUrl, requestHeaders, outputFileName, _SC.OutputFileDirectory/*, IsLiveStream: false, default*/) );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     _DC.Start( row );
                 }
@@ -1097,7 +1094,7 @@ namespace m3u8.download.manager.ui
             }
 
             #region [.AddNewDownloadForm as top-always-owner-form.]
-            AddNewDownloadForm.Add( this, _DC, _SC, p.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
+            AddNewDownloadForm.Add( this, _DC, _SC, x.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
             #endregion
 
             #region comm. [.AddNewDownloadForm as modal-dialog.]
@@ -1140,7 +1137,7 @@ namespace m3u8.download.manager.ui
             #endregion
         }
         
-        private void AddNewDownload_4_GroupedByAudioVideo( IReadOnlyList< X > xs )
+        private void AddNewDownload_4_GroupedByAudioVideo( IReadOnlyList< UrlInputParams > xs )
         {
             if ( xs.AnyEx_() )
             {
@@ -1151,7 +1148,7 @@ namespace m3u8.download.manager.ui
                 }
                 else
                 {
-                    var action = new Action< X, (int n, int total) >( (X x, (int n, int total) seriesInfo) => AddNewDownload_4_GroupedByAudioVideo( x, seriesInfo ) );
+                    var action = new Action< UrlInputParams, (int n, int total) >( (UrlInputParams x, (int n, int total) seriesInfo) => AddNewDownload_4_GroupedByAudioVideo( x, seriesInfo ) );
 
                     var count = xs.Count;
                     var n     = count;
@@ -1169,7 +1166,7 @@ namespace m3u8.download.manager.ui
         }
 
         private const string AUDIO_OUTPUTFILE_SUFFIX = "-a";
-        private async void AddNewDownload_4_GroupedByAudioVideo( X x, (int n, int total)? seriesInfo = null, string audioOutputFileSuffix = AUDIO_OUTPUTFILE_SUFFIX )
+        private async void AddNewDownload_4_GroupedByAudioVideo( UrlInputParams x, (int n, int total)? seriesInfo = null, string audioOutputFileSuffix = AUDIO_OUTPUTFILE_SUFFIX )
         {
             var suc_1 = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.videoRequestHeaders, out var videoRequestHeaders );
             Debug.Assert( suc_1 || x.videoRequestHeaders.IsNullOrEmpty() );

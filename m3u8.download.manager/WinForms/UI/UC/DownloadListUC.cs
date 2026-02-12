@@ -88,6 +88,7 @@ namespace m3u8.download.manager.ui
         #region [.column index's.]
         private const int OUTPUTFILENAME_COLUMN_INDEX            = 0;
         private const int OUTPUTDIRECTORY_COLUMN_INDEX           = 1;
+        private const int SPECIAL_OUTPUTFILENAME_COLUMN_INDEX    = -1;
         private const int STATUS_COLUMN_INDEX                    = 2;
         private const int DOWNLOAD_PROGRESS_COLUMN_INDEX         = 3;
         private const int DOWNLOAD_TIME_COLUMN_INDEX             = 4;
@@ -204,15 +205,59 @@ namespace m3u8.download.manager.ui
 
             CreateColumnsContextMenu();
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private sealed class EllipsisRenderer : ToolStripProfessionalRenderer
+        {
+            private int _MaxWidth;
+            public EllipsisRenderer( int max_width ) => _MaxWidth = max_width;
+            protected override void OnRenderItemText( ToolStripItemTextRenderEventArgs e )
+            {
+                /*
+                if ( _MaxWidth < e.TextRectangle.Width )
+                {
+                    var rc = e.TextRectangle;
+                    e.TextRectangle = new Rectangle( rc.Left, rc.Top, _MaxWidth, rc.Height );
+
+                    e.TextFormat |= TextFormatFlags.EndEllipsis;
+
+                    TextRenderer.DrawText(
+                        dc: e.Graphics,
+                        text: e.Text,
+                        font: e.TextFont,
+                        bounds: e.TextRectangle,
+                        foreColor: e.TextColor,
+                        flags: e.TextFormat );
+                }
+                else
+                {
+                    base.OnRenderItemText( e );
+                }
+                */
+
+                //*
+                e.TextFormat |= TextFormatFlags.EndEllipsis;
+                if ( _MaxWidth < e.TextRectangle.Width )
+                {
+                    var rc = e.TextRectangle;
+                    e.TextRectangle = new Rectangle( rc.Left, rc.Top, _MaxWidth - rc.Left, rc.Height );
+                }
+                base.OnRenderItemText( e );
+                //*/
+            }
+        }
         private void CreateColumnsContextMenu()
         {
-            _ColumnsContextMenu = new ContextMenuStrip();
+            const int MAX_WIDTH = 265;
+            _ColumnsContextMenu = new ContextMenuStrip() { MaximumSize = new Size(MAX_WIDTH, int.MaxValue), Renderer = new EllipsisRenderer( MAX_WIDTH ) };
             EventHandler menuItemClick = (s, _) =>
             {
                 var item = (ToolStripMenuItem) s;
                 ((DataGridViewTextBoxColumnEx) item.Tag).Visible = item.Checked;
             };
-            foreach ( var col in DGV.Columns.Cast< DataGridViewTextBoxColumnEx >() )
+            foreach ( var col in DGV.Columns.Cast<DataGridViewTextBoxColumnEx>() )
             {
                 _ColumnsContextMenu.Items.Add( new ToolStripMenuItem( col.HeaderText, null, menuItemClick ) { CheckOnClick = true, Tag = col, Enabled = (col.Index != OUTPUTFILENAME_COLUMN_INDEX) } );
             }
@@ -221,17 +266,29 @@ namespace m3u8.download.manager.ui
             _ColumnsContextMenu.Items.Add( new ToolStripSeparator() );
             EventHandler resetMenuItemClick = (_, _) =>
             {
-                foreach ( var item in _ColumnsContextMenu.Items.OfType< ToolStripMenuItem >() )
+                foreach ( var item in _ColumnsContextMenu.Items.OfType<ToolStripMenuItem>() )
                 {
                     if ( item.Tag is DataGridViewTextBoxColumnEx col )
                     {
-                        col.Visible      = col.Init_Visible;
-                        col.Width        = col.Init_Width; //Convert.ToInt32( col.FillWeight );
+                        col.Visible = col.Init_Visible;
+                        col.Width = col.Init_Width; //Convert.ToInt32( col.FillWeight );
                         col.DisplayIndex = col.Index;
                     }
                 }
             };
             _ColumnsContextMenu.Items.Add( new ToolStripMenuItem( "Reset all columns", null, resetMenuItemClick ) );
+            //-------------------------------------------------//
+
+            var extraSep = new ToolStripSeparator();
+            EventHandler specialSortByOutputFileName_MenuItemClick = (_, _) => SpecialSortByOutputFileNameRoutine();
+            var specialSortByOutputFileName_MenuItem = new ToolStripMenuItem(
+                /* ↕ ↑↓ ⇅ ⇕ */"(↑↓) Special sorting by output file name (used for types grouped by audio+video)" //"Special sorting by output file name" //"Special sorting by output file name\r\n(used for types grouped by audio+video)" //
+                , null, specialSortByOutputFileName_MenuItemClick ) 
+            {
+                //ToolTipText = "Special sorting by output file name (used for types grouped by audio+video)"
+                AutoToolTip = true,
+                Font = new Font( FontFamily.GenericSansSerif/*_ColumnsContextMenu.Font.FontFamily*/, /*10.0f*/_ColumnsContextMenu.Font.Size )
+            }; 
             //-------------------------------------------------//
 
             _ColumnsContextMenu.Opening += (_, _) =>
@@ -242,6 +299,17 @@ namespace m3u8.download.manager.ui
                     {
                         item.Checked = col.Visible;
                     }
+                }
+                
+                if ( 0 < _Model.RowsCount )
+                {
+                    if ( extraSep.Owner                             == null ) _ColumnsContextMenu.Items.Add( extraSep );
+                    if ( specialSortByOutputFileName_MenuItem.Owner == null ) _ColumnsContextMenu.Items.Add( specialSortByOutputFileName_MenuItem );
+                }
+                else
+                {
+                    if ( extraSep.Owner                             != null ) _ColumnsContextMenu.Items.Remove( extraSep );
+                    if ( specialSortByOutputFileName_MenuItem.Owner != null ) _ColumnsContextMenu.Items.Remove( specialSortByOutputFileName_MenuItem );
                 }
             };
         }
@@ -751,6 +819,11 @@ namespace m3u8.download.manager.ui
                 //SelectionChanged?.Invoke( GetSelectedDownloadRow() );
                 return;
             }
+            if ( columnIndex == SPECIAL_OUTPUTFILENAME_COLUMN_INDEX )
+            {
+                SpecialSortByOutputFileNameRoutine( callFromRestoreSort: true );
+                return;
+            }
 
             #region [.get comparison routine.]
             var comparison = default(Comparison< DownloadRow >);
@@ -823,6 +896,33 @@ namespace m3u8.download.manager.ui
             await Task.Delay( 1 );
             SelectDownloadRowInternal( row, true );
         }
+        private async void SpecialSortByOutputFileNameRoutine( bool callFromRestoreSort = false )
+        {
+            if ( !callFromRestoreSort ) 
+                            _LastSortInfo.SetSortOrderAndSaveCurrent_2State( SPECIAL_OUTPUTFILENAME_COLUMN_INDEX );
+            var sortOrder = _LastSortInfo.Order.GetValueOrDefault( SortOrder.Ascending );
+            //-------------------------------------------------//
+
+            var comparison = default(Comparison< DownloadRow >);
+            var comparer   = new PartOfString.Comparer();
+                comparison = (x, y) =>
+                {
+                    var d = y.OutputFileName.Length.CompareTo( x.OutputFileName.Length );
+                    if ( d == 0 ) d = comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) );
+                    return (d);
+                };
+            //-------------------------------------------------//
+
+            var coeff = ((sortOrder == SortOrder.Ascending) ? 1 : -1);
+            var row   = GetSelectedDownloadRow();
+
+            _Model.Sort( SortHelper.CreateComparison( comparison, coeff ) );
+
+            DGV.SetHeaderSortGlyphDirection( OUTPUTFILENAME_COLUMN_INDEX/*columnIndex*/, sortOrder );
+            await Task.Delay( 1 );
+            SelectDownloadRowInternal( row, true );
+        }
+
         private void CommonUpdateTimer_Tick( object sender, EventArgs e )
         {
             DGV.Refresh();
@@ -1196,7 +1296,7 @@ namespace m3u8.download.manager.ui
                 case MouseButtons.Left:
                     if ( DGV.IsColumnSortable( e.ColumnIndex ) )
                     {
-                        _LastSortInfo.SetSortOrderAndSaveCurrent( e.ColumnIndex );
+                        _LastSortInfo.SetSortOrderAndSaveCurrent_3State( e.ColumnIndex );
                         if ( !_LastSortInfo.HasSorting )
                         {
                             var row = GetSelectedDownloadRow();

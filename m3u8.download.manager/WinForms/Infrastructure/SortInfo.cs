@@ -33,7 +33,7 @@ namespace m3u8.download.manager.ui
             return (HasSorting);
         }
 
-        public void SetSortOrderAndSaveCurrent( int columnIndex )
+        public void SetSortOrderAndSaveCurrent_3State( int columnIndex )
         {
             if ( !this.ColumnIndex.HasValue || (this.ColumnIndex.Value != columnIndex) )
             {
@@ -51,6 +51,25 @@ namespace m3u8.download.manager.ui
             {
                 this.ColumnIndex = null;
                 this.Order       = null;
+            }
+        }
+        public void SetSortOrderAndSaveCurrent_2State( int columnIndex )
+        {
+            if ( !this.ColumnIndex.HasValue || (this.ColumnIndex.Value != columnIndex) )
+            {
+                this.ColumnIndex = columnIndex;
+                this.Order       = SortOrder.Ascending;
+            }
+            else if ( this.Order == SortOrder.Ascending )
+            {
+#if DEBUG
+                Debug.Assert( (this.ColumnIndex == columnIndex) );
+#endif
+                this.Order = SortOrder.Descending;
+            }
+            else
+            {
+                this.Order = SortOrder.Ascending;
             }
         }
         public string ToJson() => (new _4Json_() { ColumnIndex = ColumnIndex, Order = Order }).ToJSON();

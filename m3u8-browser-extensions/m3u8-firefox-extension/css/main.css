@@ -1,4 +1,4 @@
-html { overflow: hidden; max-width: 800px; }
+﻿html { overflow: hidden; max-width: 800px; }
 .body { /*font-family: verdana;*/font-family: monospace; overflow: hidden; margin: 3px 3px 0 3px; }
 .body_2 { margin-bottom: 10px }
 .right { text-align: right; }
@@ -10,9 +10,35 @@ div.content {
     /*max-width: 800px;*/
     /*direction: rtl;*/
 }
-table.content { /*font-size: 10px;*/font-size: 0.85em; }
+table.header { border-spacing: 0; border: 1px dotted gray; margin-top: 2px; }
+    table.header.no-border { border-color: transparent; }
+    table.header td { padding: 0 0 0 3px; }
+    table.header input[type="checkbox"] {
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        background-color: #fff;
+        position: relative;
+        margin: 1px 1px 0 1px;
+    }
+        table.header input[type="checkbox"]:checked {
+            background-color: #b8e3fd; /*rgb(113, 188, 29)*/ /* Цвет фона (вместо accent-color) */
+        }
+            table.header input[type="checkbox"]:checked::after {
+                content: '\2714'/*'✔'*/;
+                color: dodgerblue; /* ТОТ САМЫЙ ЦВЕТ ГАЛОЧКИ */
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
 
-h5.found { text-align: left; vertical-align: central; margin: 3px 0 3px 7px; color: forestgreen; }
+table.content { /*font-size: 10px;*/font-size: 0.85em; border-spacing: 0; }
+td.separator { border-left: 1px dotted gray; }
+
+h5.found { text-align: left; color: forestgreen; vertical-align: middle; margin: 0/*3px 0 3px 7px*/; }
     h5.found a.download_all { color: forestgreen; }
 h5.not-found { color: maroon; white-space: nowrap; margin-left: 10px; margin-right: 10px; }
 

@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name"       : "m3u8 file downloader 2.3",
-  "description": "m3u8 file downloader firefox extension 2.3",
-  "version"    : "2.3",
+  "name"       : "m3u8 file downloader 2.4",
+  "description": "m3u8 file downloader firefox extension 2.4",
+  "version"    : "2.4",
   "icons": {
     "32" : "img/m3u8.png",
     "128": "img/m3u8_128.png"
