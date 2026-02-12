@@ -964,7 +964,7 @@ namespace m3u8.download.manager.ui
         [M(O.AggressiveInlining)] private static bool Is_M3u8_Url( string text )
         {
             var suc = (text != null) &&
-                      (text.StartsWithOrdinalIgnoreCase( "http://" ) || text.StartsWithOrdinalIgnoreCase( "https://" )) &&
+                      (text.StartsWith_Ex( "http://" ) || text.StartsWith_Ex( "https://" )) &&
                       text.Split( '?' ).First().Split( '.' ).LastOrDefault().EqualIgnoreCase( "m3u8" );
             return (suc);
         }

@@ -537,8 +537,15 @@ namespace m3u8.download.manager.ui
                 case _CollectionChangedTypeEnum_.Remove:
                     if ( row != null )
                     {
-                        _LogRowsHeightStorer.Remove( row.Log );
-                        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                        goto case _CollectionChangedTypeEnum_.Remove_Bulk;
+                        //_LogRowsHeightStorer.Remove( row.Log );
+                        //foreach ( var offn in row.GetOutputFullFileNames() )
+                        //{
+                        //    if ( !_DownloadListModel.GetRows().Any( r => r.GetOutputFullFileNames().Contains( offn, StringComparer.InvariantCultureIgnoreCase ) ) )
+                        //    {
+                        //        _ExternalProgQueue.Remove( offn );
+                        //    }
+                        //}
                     }
                     break;
 
@@ -822,7 +829,7 @@ namespace m3u8.download.manager.ui
                             (row) =>
                             {
                                 _DownloadListModel.RemoveRow( row );
-                                _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                                //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                             }
                         );
 
@@ -841,7 +848,7 @@ namespace m3u8.download.manager.ui
                                     syncCtx.Invoke(() =>
                                     {
                                         _DownloadListModel.RemoveRow( row );
-                                        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                                        //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                                     });
                                 }
        
@@ -856,7 +863,7 @@ namespace m3u8.download.manager.ui
                         //    (row) =>
                         //    {
                         //        _DownloadListModel.RemoveRow( row );
-                        //        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                        //        //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                         //    }
                         //);
 
@@ -868,7 +875,7 @@ namespace m3u8.download.manager.ui
                                 statusTran.CommitStatus();
 
                                 _DownloadListModel.RemoveRow( row );
-                                _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                                //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                             }
                         }
                         //*/
@@ -893,14 +900,14 @@ namespace m3u8.download.manager.ui
                 /*foreach ( var row in rows )
                 {
                     ProcessDownloadCommand( DownloadCommandEnum.Delete, row );
-                    _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                    //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                 }*/
                 #endregion
 
                 #region [.variant #2.]
                 _DC.CancelAll( rows );
                 _DownloadListModel.RemoveRows( rows );
-                _ExternalProgQueue.Remove( rows.SelectMany( row => row.GetOutputFullFileNames() ) );
+                //---_ExternalProgQueue.Remove( rows.SelectMany( row => row.GetOutputFullFileNames() ) );
 
                 SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
                 #endregion
@@ -1164,9 +1171,7 @@ namespace m3u8.download.manager.ui
                 AddNewDownload( default );
             }
         }
-
-        private const string AUDIO_OUTPUTFILE_SUFFIX = "-a";
-        private async void AddNewDownload_4_GroupedByAudioVideo( UrlInputParams x, (int n, int total)? seriesInfo = null, string audioOutputFileSuffix = AUDIO_OUTPUTFILE_SUFFIX )
+        private async void AddNewDownload_4_GroupedByAudioVideo( UrlInputParams x, (int n, int total)? seriesInfo = null, string audioOutputFileSuffix = DownloadListUC.AUDIO_OUTPUTFILE_SUFFIX )
         {
             var suc_1 = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.videoRequestHeaders, out var videoRequestHeaders );
             Debug.Assert( suc_1 || x.videoRequestHeaders.IsNullOrEmpty() );

@@ -26,6 +26,8 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed partial class DownloadListUC : UserControl
     {
+        public const string AUDIO_OUTPUTFILE_SUFFIX = "-a";
+
         /// <summary>
         /// 
         /// </summary>
@@ -907,9 +909,22 @@ namespace m3u8.download.manager.ui
             var comparer   = new PartOfString.Comparer();
                 comparison = (x, y) =>
                 {
-                    var d = y.OutputFileName.Length.CompareTo( x.OutputFileName.Length );
-                    if ( d == 0 ) d = comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) );
-                    return (d);
+                    var x_fn = Path.GetFileNameWithoutExtension( x.OutputFileName );
+                    var y_fn = Path.GetFileNameWithoutExtension( y.OutputFileName );
+
+                    if ( x_fn.EndsWith_Ex( AUDIO_OUTPUTFILE_SUFFIX ) )
+                    {
+                        if ( !y_fn.EndsWith_Ex( AUDIO_OUTPUTFILE_SUFFIX ) ) return (-1);
+                    }
+                    else if ( y_fn.EndsWith_Ex( AUDIO_OUTPUTFILE_SUFFIX ) )
+                    {
+                        return (1);
+                    }
+
+                    //var d = y.OutputFileName.Length.CompareTo( x.OutputFileName.Length );
+                    //if ( d == 0 ) d = comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) );
+                    //return (d);
+                    return (comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) ));
                 };
             //-------------------------------------------------//
 
