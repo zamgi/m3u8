@@ -15,7 +15,8 @@ window.addEventListener('load', async function () {
     let ch = document.getElementById('saveUrlListBetweenTabReload');
     ch.checked = !!opt.saveUrlListBetweenTabReload;    
     ch.addEventListener('click', async function () {
-        await chrome.storage.local.set({ saveUrlListBetweenTabReload: this.checked });
+        opt.saveUrlListBetweenTabReload = this.checked;
+        await chrome.storage.local.set(opt);
     });
 
     let content = document.getElementById('content');
@@ -24,17 +25,18 @@ window.addEventListener('load', async function () {
     content.style.direction = ch.checked ? 'rtl' : '';
     ch.addEventListener('click', async function () {
         content.style.direction = this.checked ? 'rtl' : '';
-        await chrome.storage.local.set({ directionRtl: this.checked });
+        opt.directionRtl = this.checked;
+        await chrome.storage.local.set(opt);
     });
 
-    if (m3u8_urls && m3u8_urls.length) {
+    if (m3u8_urls?.length) {
         let bt = document.getElementById('clearUrlList');
         bt.style.display = '';
         bt.addEventListener('click', async function () {
-            render_m3u8_urls();
-            this.style.display = 'none';
-
             await workInfo.deleteTabUrls(tabId);
+            
+            this.style.display = 'none';
+            render_m3u8_urls();
         });
     }
 });
@@ -98,7 +100,7 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
     aa = content.querySelectorAll('a.download_all');
     if (0 < aa.length) {
         aa[0].addEventListener('click', function (e) {
-            let msgObjsArray = [], bb = content.querySelectorAll('a.download');
+            const msgObjsArray = [], bb = content.querySelectorAll('a.download');
             for (let j = 0; j < bb.length; j++) {
                 msgObjsArray.push( create_msgObj(bb[j].href, bb[j].getAttribute('requestHeaders') || '') );
             }
@@ -111,7 +113,7 @@ function render_m3u8_urls(m3u8_urls, requestHeaders) {
     aa = content.querySelectorAll('a.auto_start_download_all');
     if (0 < aa.length) {
         aa[0].addEventListener('click', function (e) {
-            let msgObjsArray = [], bb = content.querySelectorAll('a.auto_start_download');
+            const msgObjsArray = [], bb = content.querySelectorAll('a.auto_start_download');
             for (let j = 0; j < bb.length; j++) {
                 msgObjsArray.push( create_msgObj(bb[j].href, bb[j].getAttribute('requestHeaders') || '', true) );
             }

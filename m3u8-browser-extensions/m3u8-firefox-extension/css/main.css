@@ -6,6 +6,7 @@
 div.content {
     overflow: auto;
     min-width: 200px;
+    min-height: 50px;
     white-space: nowrap;
     /*max-width: 800px;*/
     /*direction: rtl;*/
@@ -46,10 +47,10 @@ input[type="checkbox"], label[for] { cursor: pointer; }
 
 a { outline: none; text-decoration: none; color: dimgrey; }
     a:hover { text-decoration: underline; color: black; }
-
-    a.auto_start_download > img, a.auto_start_download_all > img, a.delete > img, a.delete_all > img { border: 1px solid transparent; border-radius: 2px; height: 16px; }
-        a.auto_start_download > img:hover, a.auto_start_download_all > img:hover, a.delete > img:hover, a.delete_all > img:hover { border-color: silver; }
+    a > img { border: 1px solid transparent; border-radius: 2px; height: 16px; }
+        a > img:hover { border-color: silver; }
     a.auto_start_download_all { margin-left: 5px; }
+    #refreshButton { height: 16px; width: 16px; margin-right: 5px; }
 
 div.options_1 { background-color: whitesmoke; text-align: right; white-space: nowrap; 
                 display: flex; flex-wrap: nowrap; justify-content: flex-end; }
@@ -68,3 +69,5 @@ span.sign_2 { padding: 0 0 15px 5px }
 
 .is_group_by_audio_video { color: dodgerblue; }
     .is_group_by_audio_video:hover { color: #0081ff; }
+.vis_hidden { visibility: hidden; }
+.ord_num { color: silver; padding-left: 2px; }

@@ -1,11 +1,11 @@
-var conv_2_workInfo = function (saved_wi) { return (new workInfoType(saved_wi)); }
-var load_workInfo = async function () {
-    let opt = await chrome.storage.local.get();
+const conv_2_workInfo = saved_wi => new workInfoType(saved_wi);
+const load_workInfo = async () => {
+    const opt = await chrome.storage.local.get();
     return (new workInfoType(opt.workInfo));
 }
 
-var workInfoType = function (saved_wi) {
-    if (saved_wi && saved_wi.tabs) {
+const workInfoType = function (saved_wi) {
+    if (saved_wi?.tabs) {
         this.tabs = saved_wi.tabs;
     }
 };
@@ -26,7 +26,7 @@ workInfoType.prototype = {
         }
     },
     deleteTab: async function (tabId) {
-        let has = !!this.tabs[tabId];
+        const has = !!this.tabs[tabId];
         if (has) delete this.tabs[tabId];
 
         await chrome.action.disable(tabId);
@@ -34,7 +34,7 @@ workInfoType.prototype = {
         if (has) await this.save2Storage();
     },
     deleteTabUrls: async function (tabId) {
-        let has = !!this.tabs[tabId];
+        const has = !!this.tabs[tabId];
         if (has) delete this.tabs[tabId];
 
         await this.setUrlsCountText(tabId, null);
@@ -45,7 +45,7 @@ workInfoType.prototype = {
             need_save = false;
         for (let tabId in this.tabs) {
             let o = this.tabs[tabId];
-            if (!o || !o.m3u8_urls || !o.m3u8_urls.length || (openTabs.indexOf(tabId) === -1)) {
+            if (!o?.m3u8_urls?.length || (openTabs.indexOf(tabId) === -1)) {
                 delete this.tabs[tabId];
                 need_save = true;
             }
@@ -74,16 +74,16 @@ workInfoType.prototype = {
         if (need_save) await this.save2Storage();
     },
     setUrlsCountText: async function (tabId, o) {
-        let cnt = ((o && o.m3u8_urls && o.m3u8_urls.length) ? o.m3u8_urls.length : 0);
+        const cnt = (o?.m3u8_urls?.length || 0);
 
-        await chrome.action.setBadgeText({ text: (cnt ? cnt + '' : '') });
+        await chrome.action.setBadgeText({ text: (cnt || '') + '' });
         if (cnt) {
             await chrome.action.enable(tabId);
         }
     },
 
     getM3u8Urls: function (tabId) {
-        let o = this.tabs[tabId];
-        return ((o && o.m3u8_urls) ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
+        const o = this.tabs[tabId];
+        return (o?.m3u8_urls ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
     }
 };

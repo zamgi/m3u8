@@ -3,16 +3,18 @@
 <head>
     <title>m3u8 file downloader (manifest.v3)</title>
     <link type="image/png" rel="shortcut icon" href="img/m3u8.png" />
-    <link type="text/css"  rel="stylesheet"    href="css/m3u8.css" />
+    <link type="text/css"  rel="stylesheet"    href="css/main.css" />
     <script type="text/javascript" src="js/workInfoType.js"></script>
-    <script type="text/javascript" src="js/m3u8.js"></script>
+    <script type="text/javascript" src="js/popup.js"></script>
 </head>
 <body class="body">
     <div class="options_1">
         <input id="directionRtl" type="checkbox" checked="checked"/>
         <label for="directionRtl">direction: rtl</label>
+
         <input id="saveUrlListBetweenTabReload" type="checkbox" />
         <label for="saveUrlListBetweenTabReload">save url-list between tab reload</label>
+
         <button id="clearUrlList" title="clear url-list" style="display: none">clear</button>
     </div>
     <div id="content" class="content" style="direction: rtl;"></div>

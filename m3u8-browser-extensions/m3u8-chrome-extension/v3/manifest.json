@@ -13,11 +13,11 @@
     "128": "img/m3u8_148.png"
   },
   "options_ui": {
-    "page": "m3u8_options.html"
+    "page": "options.html"
   },
   "action": {
     "default_icon" : "img/m3u8.png",
-    "default_popup": "m3u8.html"
+    "default_popup": "popup.html"
   },
 
   "permissions": [

@@ -45,7 +45,7 @@ async function KeepAliveRoutine() {
 
 //urls-list will be saved between reloads.
 (async () => {
-    let opt = await chrome.storage.local.get();
+    const opt = await chrome.storage.local.get();
     if (!opt.saveUrlListBetweenTabReload) {
         await conv_2_workInfo().clear();
     } else {
@@ -53,32 +53,24 @@ async function KeepAliveRoutine() {
     }
 })();
 
-var requestHeaders_by_url = {};
-chrome.webRequest.onCompleted.addListener(async function (d/*details*/) {
-    let ext = (d.url.split('?')[0].split('.').pop() || '').toLowerCase();
+const requestHeaders_by_url = {};
+chrome.webRequest.onCompleted.addListener(async function (d) {
+    const ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
     if (ext === 'm3u8') {
-        //console.log('addM3u8Urls() => tabId: ' + d.tabId + ', url: ' + d.url );
-
-        var requestHeaders = requestHeaders_by_url[d.url];
+        const requestHeaders = requestHeaders_by_url[d.url];
         if (requestHeaders) delete requestHeaders_by_url[d.url];
         await (await load_workInfo()).addM3u8Urls(d.tabId, d.url, requestHeaders);
     }
-    //else console.log('discarded => tabId: ' + d.tabId + ', url: ' + d.url );
-}, {
-    urls: ['<all_urls>']
-});
+},
+{ urls: ['<all_urls>'] });
 
-chrome.webRequest.onBeforeSendHeaders.addListener(async function (d/*details*/) {
-    let ext = (d.url.split('?')[0].split('.').pop() || '').toLowerCase();
+chrome.webRequest.onBeforeSendHeaders.addListener(async function (d) {
+    const ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
     if (ext === 'm3u8') {
-        //console.log('onBeforeSendHeaders() => tabId: ' + d.tabId + ', url: ' + d.url );
-
         requestHeaders_by_url[d.url] = JSON.stringify(d.requestHeaders);
     }
-    //else console.log('discarded => tabId: ' + d.tabId + ', url: ' + d.url );
-}, {
-    urls: ['<all_urls>']
-}, ['requestHeaders', 'extraHeaders'] );
+},
+{ urls: ['<all_urls>'] }, ['requestHeaders', 'extraHeaders'] );
 
 
 // set handler to tabs
@@ -89,14 +81,14 @@ chrome.tabs.onRemoved.addListener(async (tabId) => await (await load_workInfo())
 // set handler to tabs
 chrome.tabs.onUpdated.addListener(async function (tabId, info, tab) {
     // if tab not-load
-    if (!info || !info.status || (info.status.toLowerCase() !== 'complete')) return;
+    if (!info?.status || (info.status.toLowerCase() !== 'complete')) return;
 
     // if user open empty tab or ftp protocol and etc.
-    if (!tab || !tab.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
+    if (!tab?.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
         await (await load_workInfo()).deleteTab(tabId);
     }
     else {
-        let opt = await chrome.storage.local.get();
+        const opt = await chrome.storage.local.get();
         if (!opt.saveUrlListBetweenTabReload) {
             await conv_2_workInfo(opt.workInfo).deleteTabUrls(tabId);
         }
