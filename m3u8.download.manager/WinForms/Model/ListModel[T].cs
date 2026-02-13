@@ -369,6 +369,9 @@ namespace m3u8.download.manager.models
         public int RowsCount { [M(O.AggressiveInlining)] get => _Rows.Count; }
         public T this[ int i ] { [M(O.AggressiveInlining)] get => _Rows[ i ]; }
 
+        
         [M(O.AggressiveInlining)] public IReadOnlyList< T > GetRows() => _Rows;
+        [M(O.AggressiveInlining)] public IEnumerable< T > GetRows_Enumerable() => _Rows;
+        [M(O.AggressiveInlining)] public T[] GetRows_ArrayCopy() => _Rows.ToArray();
     }
 }

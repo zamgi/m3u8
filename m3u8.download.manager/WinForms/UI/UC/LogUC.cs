@@ -443,8 +443,8 @@ namespace m3u8.download.manager.ui
                                                                                                 where (row.RequestRowType != RequestRowTypeEnum.Success)
                                                                                                 select row;
 
-                var rows = _ShowOnlyRequestRowsWithErrors ? GetRowsNotSuccess( _Model.GetRows() )
-                                                          : _Model.GetRows();
+                var rows = _ShowOnlyRequestRowsWithErrors ? GetRowsNotSuccess( _Model.GetRows_Enumerable() )
+                                                          : _Model.GetRows_Enumerable();
                 SetDataGridItems_UI( rows );
             }
             

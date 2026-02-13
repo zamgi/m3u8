@@ -118,6 +118,11 @@ namespace m3u8.download.manager
             list.AddRange( seq );
             return (list);
         }
+        public static T[] ReverseEx< T >( this T[] arr )
+        {
+            Array.Reverse( arr );
+            return (arr);
+        }
         //public static T[] ToArray< T >( this IEnumerable< T > seq, int size )
         //{
         //    var array = new T[ size ];

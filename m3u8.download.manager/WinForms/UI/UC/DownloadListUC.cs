@@ -135,6 +135,7 @@ namespace m3u8.download.manager.ui
 #endif
         private _SC_              _SC;
         private ContextMenuStrip  _ColumnsContextMenu;
+        private ToolStripMenuItem _SpecialSortByOutputFileName_MenuItem;
         #endregion
 #if DEBUG
         /// <summary>
@@ -199,7 +200,7 @@ namespace m3u8.download.manager.ui
             };
             _FinishedCellStyle = new CellStyle( DGV.DefaultCellStyle ) { Font = new Font( DGV.Font, FontStyle.Bold ) };
 
-            _RNP = RowNumbersPainter.Create( DGV );
+            _RNP = RowNumbersPainter.Create( DGV, additionDrawColumnsHeadersAction: DGV_AdditionDrawColumnsHeadersAction );
             _SF_Left   = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Near  , LineAlignment = StringAlignment.Center };
             _SF_Center = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
             _SF_Right  = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Far   , LineAlignment = StringAlignment.Center };
@@ -283,7 +284,7 @@ namespace m3u8.download.manager.ui
 
             var extraSep = new ToolStripSeparator();
             EventHandler specialSortByOutputFileName_MenuItemClick = (_, _) => SpecialSortByOutputFileNameRoutine();
-            var specialSortByOutputFileName_MenuItem = new ToolStripMenuItem(
+            _SpecialSortByOutputFileName_MenuItem = new ToolStripMenuItem(
                 /* ↕ ↑↓ ⇅ ⇕ */"(↑↓) Special sorting by output file name (used for types grouped by audio+video)" //"Special sorting by output file name" //"Special sorting by output file name\r\n(used for types grouped by audio+video)" //
                 , null, specialSortByOutputFileName_MenuItemClick ) 
             {
@@ -305,13 +306,13 @@ namespace m3u8.download.manager.ui
                 
                 if ( 0 < _Model.RowsCount )
                 {
-                    if ( extraSep.Owner                             == null ) _ColumnsContextMenu.Items.Add( extraSep );
-                    if ( specialSortByOutputFileName_MenuItem.Owner == null ) _ColumnsContextMenu.Items.Add( specialSortByOutputFileName_MenuItem );
+                    if ( extraSep.Owner                              == null ) _ColumnsContextMenu.Items.Add( extraSep );
+                    if ( _SpecialSortByOutputFileName_MenuItem.Owner == null ) _ColumnsContextMenu.Items.Add( _SpecialSortByOutputFileName_MenuItem );
                 }
                 else
                 {
-                    if ( extraSep.Owner                             != null ) _ColumnsContextMenu.Items.Remove( extraSep );
-                    if ( specialSortByOutputFileName_MenuItem.Owner != null ) _ColumnsContextMenu.Items.Remove( specialSortByOutputFileName_MenuItem );
+                    if ( extraSep.Owner                              != null ) _ColumnsContextMenu.Items.Remove( extraSep );
+                    if ( _SpecialSortByOutputFileName_MenuItem.Owner != null ) _ColumnsContextMenu.Items.Remove( _SpecialSortByOutputFileName_MenuItem );
                 }
             };
         }
@@ -900,8 +901,11 @@ namespace m3u8.download.manager.ui
         }
         private async void SpecialSortByOutputFileNameRoutine( bool callFromRestoreSort = false )
         {
-            if ( !callFromRestoreSort ) 
-                            _LastSortInfo.SetSortOrderAndSaveCurrent_2State( SPECIAL_OUTPUTFILENAME_COLUMN_INDEX );
+            if ( !callFromRestoreSort )
+            {
+                _LastSortInfo.SetSortOrderAndSaveCurrent_2State( SPECIAL_OUTPUTFILENAME_COLUMN_INDEX );
+                _SC.Settings.LastSortInfoJson = _LastSortInfo.ToJson();
+            }
             var sortOrder = _LastSortInfo.Order.GetValueOrDefault( SortOrder.Ascending );
             //-------------------------------------------------//
 
@@ -959,7 +963,7 @@ namespace m3u8.download.manager.ui
             var state           = SummaryDownloadInfo.StateEmun.NOP;
             var totalParts      = 0;
             var downloadedParts = 0;
-            foreach ( var row in _Model.GetRows() )
+            foreach ( var row in _Model.GetRows_Enumerable() )
             {
                 var st = row.Status;
                 switch ( st )
@@ -1199,6 +1203,39 @@ namespace m3u8.download.manager.ui
             rc.Inflate( -1, -1 );
             gr.FillRectangle( Brushes.White, rc );
             #endregion
+        }
+        private void DGV_AdditionDrawColumnsHeadersAction( DataGridViewCellPaintingEventArgs e )
+        {
+            Debug.Assert( e.RowIndex < 0 );
+            if ( e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX )
+            {
+                var headerCell = DGV.Columns[ e.ColumnIndex ].HeaderCell;
+                if ( _LastSortInfo.TryGetSorting( out var colIdx, out var sortOrder ) && (sortOrder != SortOrder.None) )
+                {
+                    //Debug.Assert( headerCell.SortGlyphDirection != SortOrder.None );
+
+                    //var sortOrderText = sortOrder switch { SortOrder.Ascending => "asc", SortOrder.Descending => "desc", _ => "none" };
+                    if ( colIdx == SPECIAL_OUTPUTFILENAME_COLUMN_INDEX )
+                    {
+                        headerCell.ToolTipText = $"{_SpecialSortByOutputFileName_MenuItem.Text}: {sortOrder/*sortOrderText*/}";
+                        //$"(↑↓) Special sorting by output file name (used for types grouped by audio+video): {sortOrder/*sortOrderText*/}";
+
+                        var rc = e.CellBounds;
+                        const float OFF = 8.5f;
+                        var h = rc.Height - OFF;
+                        var new_rc = new RectangleF( new PointF( rc.Right - (h + 3), rc.Y + OFF/2 ), new SizeF( h, h ) );
+                        e.Graphics.DrawEllipse( Pens.DimGray, new_rc );
+                    }
+                    else
+                    {
+                        headerCell.ToolTipText = $"sort by output file name: {sortOrder/*sortOrderText*/}";
+                    }
+                }
+                else
+                {
+                    headerCell.ToolTipText = null;
+                }
+            }
         }
         private void DGV_CellPainting( object sender, DataGridViewCellPaintingEventArgs e )
         {

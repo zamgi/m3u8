@@ -62,7 +62,7 @@ namespace m3u8.download.manager.models
         }
 
         [M(O.AggressiveInlining)] public bool HasAnyFinished() => GetAllFinished().Any();
-        [M(O.AggressiveInlining)] public IEnumerable< DownloadRow > GetAllFinished() => (from row in GetRows() where (row.Status == DownloadStatus.Finished) select row);
+        [M(O.AggressiveInlining)] public IEnumerable< DownloadRow > GetAllFinished() => (from row in GetRows_Enumerable() where (row.Status == DownloadStatus.Finished) select row);
 
         [M(O.AggressiveInlining)] public bool ContainsUrl( string url ) => (!url.IsNullOrEmpty() && _Urls.Contains( url ));
         [M(O.AggressiveInlining)] public bool ContainsAnyUrls( string url_1, string url_2, string url_3 ) => ContainsUrl( url_1 ) || ContainsUrl( url_2 ) || ContainsUrl( url_3 );
@@ -77,7 +77,7 @@ namespace m3u8.download.manager.models
             {
                 dict[ v ] = 0;
             }
-            foreach ( var row in base.GetRows() )
+            foreach ( var row in base.GetRows_Enumerable() )
             {
                 dict[ row.Status ]++;
             }
@@ -86,7 +86,7 @@ namespace m3u8.download.manager.models
         public bool TryGetSingleRunning( out DownloadRow singleRunningRow )
         {
             singleRunningRow = default;
-            foreach ( var row in GetRows() )
+            foreach ( var row in GetRows_Enumerable() )
             {
                 if ( row.Status == DownloadStatus.Running )
                 {

@@ -26,11 +26,14 @@ namespace m3u8.download.manager.ui
         private bool  _UseColumnsHoverHighlight;
         private Brush _BackBrushColumnHover;
         private Brush _BackBrushColumnHoverPushed;
+        private Action< DataGridViewCellPaintingEventArgs > _AdditionDrawColumnsHeadersAction;
 
-        public static RowNumbersPainter Create( DataGridView dgv, bool useSelectedBackColor = true, bool useColumnsHoverHighlight = true )
-            => new RowNumbersPainter( dgv, useSelectedBackColor, useColumnsHoverHighlight );
+        public static RowNumbersPainter Create( DataGridView dgv, bool useSelectedBackColor = true, bool useColumnsHoverHighlight = true
+            , Action< DataGridViewCellPaintingEventArgs > additionDrawColumnsHeadersAction = null )
+            => new RowNumbersPainter( dgv, useSelectedBackColor, useColumnsHoverHighlight, additionDrawColumnsHeadersAction );
 
-        private RowNumbersPainter( DataGridView dgv, bool useSelectedBackColor, bool useColumnsHoverHighlight )
+        private RowNumbersPainter( DataGridView dgv, bool useSelectedBackColor, bool useColumnsHoverHighlight
+            , Action< DataGridViewCellPaintingEventArgs > additionDrawColumnsHeadersAction )
         {
             _SF_RowNumbers = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
 
@@ -58,6 +61,7 @@ namespace m3u8.download.manager.ui
             {
                 _DGV.CellPainting += DGV_CellPaintingRowNumbers;
             }
+            _AdditionDrawColumnsHeadersAction = additionDrawColumnsHeadersAction ?? new Action< DataGridViewCellPaintingEventArgs >(e => { });
         }
         public void Dispose()
         {
@@ -160,7 +164,7 @@ namespace m3u8.download.manager.ui
         [M(O.AggressiveInlining)] private void DrawColumnsHeaders( DataGridViewCellPaintingEventArgs e )
         {
             e.Handled = true;
-            var gr   = e.Graphics;
+            var gr = e.Graphics;
 
             var br = (_UseColumnsHoverHighlight && e.CellBounds.Contains( _DGV.PointToClient( Control.MousePosition ) )
                                                 && _DGV.IsColumnSortable( e.ColumnIndex )) 
@@ -173,6 +177,8 @@ namespace m3u8.download.manager.ui
             gr.DrawRectangle( _BorderPen, rc );
 
             e.PaintContent( e.CellBounds );
+
+            _AdditionDrawColumnsHeadersAction( e );
         }
     }
 }

@@ -168,7 +168,7 @@ namespace m3u8.download.manager.ui
             if ( !base.DesignMode )
             {
                 _SC.MainFormPositionJson = FormPositionStorer.Save( this );
-                _SC.SetDownloadRows( _DownloadListModel.GetRows() );
+                _SC.SetDownloadRows( _DownloadListModel.GetRows_Enumerable() );
                 _SC.Settings.ShowOnlyRequestRowsWithErrors = logUC.ShowOnlyRequestRowsWithErrors;
                 _SC.Settings.ScrollToLastRow               = logUC.ScrollToLastRow;
                 _SC.SaveNoThrow_IfAnyChanged();
@@ -551,7 +551,7 @@ namespace m3u8.download.manager.ui
 
                 //case _CollectionChangedTypeEnum_.BulkUpdate:
                 case _CollectionChangedTypeEnum_.Remove_Bulk:
-                    existsRows = _DownloadListModel.GetRows();
+                    existsRows = _DownloadListModel.GetRows_ArrayCopy();
 
                     var existsLogs = existsRows.Select( r => r.Log );
                     _LogRowsHeightStorer.RemoveAllExcept( existsLogs );
@@ -573,7 +573,7 @@ namespace m3u8.download.manager.ui
                     break;
             }
 
-            _SC.SetDownloadRows_WithSaveIfChanged( existsRows ?? _DownloadListModel.GetRows() );
+            _SC.SetDownloadRows_WithSaveIfChanged( existsRows ?? _DownloadListModel.GetRows_ArrayCopy() );
         }
         private void DownloadListModel_RowPropertiesChanged( DownloadRow row, string propertyName )
         {
@@ -622,7 +622,7 @@ namespace m3u8.download.manager.ui
         private void _NotifyIcon_BalloonTipClosed( object sender, EventArgs e ) => _NotifyIcon.Visible = false;
         private void DownloadController_IsDownloadingChanged( bool isDownloading )
         {
-            bool any_running() => _DownloadListModel.GetRows().Any( row => row.Status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Wait => true, _ => false } );
+            bool any_running() => _DownloadListModel.GetRows_Enumerable().Any( row => row.Status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Wait => true, _ => false } );
 
             if ( !isDownloading && !any_running() )
             {
@@ -1447,7 +1447,7 @@ namespace m3u8.download.manager.ui
             if ( allowedAll )
             {
                 int start = 0, cancel = 0, pause = 0, delete = 0, deleteWithFiles = 0;
-                foreach ( var row in _DownloadListModel.GetRows() )
+                foreach ( var row in _DownloadListModel.GetRows_Enumerable() )
                 {
                     var status = row.Status;
                     start  += StartDownload_IsAllowed ( status ) && !status.IsFinished() ? 1 : 0;
@@ -1584,7 +1584,7 @@ namespace m3u8.download.manager.ui
 
         private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {
-            foreach ( var row in _DownloadListModel.GetRows() )
+            foreach ( var row in _DownloadListModel.GetRows_ArrayCopy() )
             {
                 var status = row.Status;
                 if ( StartDownload_IsAllowed( status ) && !status.IsFinished() )
@@ -1595,7 +1595,7 @@ namespace m3u8.download.manager.ui
         }
         private void pauseAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {
-            foreach ( var row in _DownloadListModel.GetRows() )
+            foreach ( var row in _DownloadListModel.GetRows_ArrayCopy() )
             {
                 if ( PauseDownload_IsAllowed( row.Status ) )
                 {
@@ -1605,7 +1605,7 @@ namespace m3u8.download.manager.ui
         }
         private void cancelAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {
-            foreach ( var row in _DownloadListModel.GetRows() )
+            foreach ( var row in _DownloadListModel.GetRows_ArrayCopy() )
             {
                 if ( CancelDownload_IsAllowed( row.Status ) )
                 {
@@ -1614,8 +1614,8 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void deleteAllDownloadsMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _DownloadListModel.GetRows().ToArrayEx(), deleteOutputFiles: false );
-        private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _DownloadListModel.GetRows().ToArrayEx(), deleteOutputFiles: true );
+        private void deleteAllDownloadsMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _DownloadListModel.GetRows_ArrayCopy(), deleteOutputFiles: false );
+        private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _DownloadListModel.GetRows_ArrayCopy(), deleteOutputFiles: true );
 
 
         private void moreOp_delOutputFileAndChangeExt2Mp3_MenuItem_Click( object sender, EventArgs e ) => DelOutputFileAndChangeExt( ".mp3" );

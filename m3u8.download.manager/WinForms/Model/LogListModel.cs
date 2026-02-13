@@ -11,7 +11,7 @@ namespace m3u8.download.manager.models
         public LogListModel( LogListModel o ) : base() 
         {
             base.BeginUpdate();
-            foreach ( var row in o.GetRows() )
+            foreach ( var row in o.GetRows_Enumerable() )
             {
                 base.Add( new LogRow( this, base._Fire_RowPropertiesChangedEventHandler, row ) );
             }

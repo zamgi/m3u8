@@ -288,7 +288,7 @@ namespace m3u8.download.manager.controllers
 #if DEBUG
                     Debug.Assert( 0 < allowedStartCount );
 #endif
-                    foreach ( var row in _Model.GetRows().ToArrayEx() )
+                    foreach ( var row in _Model.GetRows_ArrayCopy() )
                     {
                         if ( row.IsWait() /*&& _Dict.ContainsKey( row )*/ )
                         {
@@ -305,7 +305,7 @@ namespace m3u8.download.manager.controllers
                 {
                     if ( d < 0 )
                     {
-                        foreach ( var row in _Model.GetRows().Reverse().ToArray() )
+                        foreach ( var row in _Model.GetRows_ArrayCopy().ReverseEx() )
                         {
                             if ( row.IsRunning() )
                             {
@@ -322,7 +322,7 @@ namespace m3u8.download.manager.controllers
                 };
                 void StartAllWaitDownloads()
                 {
-                    foreach ( var row in _Model.GetRows().ToArrayEx() )
+                    foreach ( var row in _Model.GetRows_ArrayCopy() )
                     {
                         if ( row.IsWait() )
                         {
@@ -334,7 +334,7 @@ namespace m3u8.download.manager.controllers
                 if ( maxCrossDownloadInstance.HasValue ) //if used cross download instance restriction
                 {
                     var runningCount       = Volatile.Read( ref _RealRunningCount );
-                    var actualRunningCount = _Model.GetRows().Count( row => row.IsRunning() );
+                    var actualRunningCount = _Model.GetRows_Enumerable().Count( row => row.IsRunning() );
                     var d = maxCrossDownloadInstance.Value - runningCount;
 
                     if ( d == 0 ) //nothing todo => start downloads, whos was started and after be wait (because was changed 'MaxCrossDownloadInstance' value setting)
@@ -959,7 +959,7 @@ namespace m3u8.download.manager.controllers
                 t.cts.Cancel_NoThrow();
             }
 
-            foreach ( var row in _Model.GetRows() )
+            foreach ( var row in _Model.GetRows_ArrayCopy() )
             {
                 if ( row.IsWait() && !_Dict.ContainsKey( row ) )
                 {

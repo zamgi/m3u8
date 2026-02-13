@@ -1212,8 +1212,8 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void deleteAllDownloadsMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _VM.DownloadListModel.GetRows().ToArrayEx(), deleteOutputFiles: false );
-        private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _VM.DownloadListModel.GetRows().ToArrayEx(), deleteOutputFiles: true );
+        private void deleteAllDownloadsMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _VM.DownloadListModel.GetRows_ArrayCopy(), deleteOutputFiles: false );
+        private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _VM.DownloadListModel.GetRows_ArrayCopy(), deleteOutputFiles: true );
         #endregion
 
         #region [.Change output file-name.]
