@@ -2,11 +2,11 @@ const root = browser; //chrome;
 window.addEventListener('load', function () {
     window.workInfo = new workInfoType();
 
-    let requestHeaders_by_url = {};
+    const requestHeaders_by_url = {};
     root.webRequest.onCompleted.addListener(async d => {
-        let ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
+        const ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
         if (ext === 'm3u8') {
-            let requestHeaders = requestHeaders_by_url[d.url];
+            const requestHeaders = requestHeaders_by_url[d.url];
             if (requestHeaders) delete requestHeaders_by_url[d.url];
 
             window.workInfo.addM3u8Urls(d.tabId, d.url, requestHeaders);
@@ -16,7 +16,7 @@ window.addEventListener('load', function () {
     {urls: ['<all_urls>']});
 
     root.webRequest.onBeforeSendHeaders.addListener(d => {
-        let ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
+        const ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
         if (ext === 'm3u8') {
             requestHeaders_by_url[d.url] = JSON.stringify(d.requestHeaders);
         }
@@ -35,7 +35,7 @@ window.addEventListener('load', function () {
             if (tabId !== undefined) await root.browserAction.disable(tabId);
         }
         else {
-            let opt = await root.storage.local.get();
+            const opt = await root.storage.local.get();
             if (!opt.saveUrlListBetweenTabReload) {
                 window.workInfo.resetM3u8Urls(tabId);
             }
@@ -56,10 +56,8 @@ window.workInfoType.prototype = {
     activeTabId: null,
 
     activateTab: async function (tabId) {
-        // set active tab
         this.activeTabId = tabId;
 
-        let d = { m3u8_urls: [] };
         if (tabId !== undefined) {
             let o = this.tabs[tabId];
             if (!o) {
@@ -68,12 +66,11 @@ window.workInfoType.prototype = {
             else if (!o.m3u8_urls) {
                 o.m3u8_urls = [];
             }
-            d.m3u8_urls = o.m3u8_urls;
         }
         await this.setUrlsCountText(tabId);
     },
     deleteTab: async function (tabId) {
-        let has = !!this.tabs[tabId];
+        const has = !!this.tabs[tabId];
         if (has) {
             delete this.tabs[tabId];
             await this.setUrlsCountText(tabId);
@@ -82,7 +79,7 @@ window.workInfoType.prototype = {
     deleteAllUrlsFromTab: async function (tabId) { await this.deleteTab(tabId); },
     deleteUrlFromTab: async function (tabId, m3u8_url) {
         if ((tabId !== undefined) && m3u8_url) {
-            let o = this.tabs[tabId];
+            const o = this.tabs[tabId];
             if (o?.m3u8_urls) {
                 const i = o.m3u8_urls.indexOf(m3u8_url);
                 if (i !== -1) {
@@ -102,7 +99,7 @@ window.workInfoType.prototype = {
         //        await root.browserAction.setBadgeText({ text: (cnt || '') + '' });
         //    }
 
-        //    let opt = await root.storage.local.get();
+        //    const opt = await root.storage.local.get();
         //    if (!opt.enableButtonEvenIfNoUrls) {
         //        if (cnt) await root.browserAction.enable(tabId);
         //        else     await root.browserAction.disable(tabId)
@@ -110,7 +107,7 @@ window.workInfoType.prototype = {
         //}
 
         if (tabId !== undefined) {
-            let opt = await root.storage.local.get();
+            const opt = await root.storage.local.get();
             if (opt.enableButtonEvenIfNoUrls) {
                 await root.browserAction.enable(tabId);
 
@@ -157,7 +154,7 @@ window.workInfoType.prototype = {
         }
     },
     getM3u8UrlsByActiveTabId: function (activeTabId) {
-        let o = this.tabs[activeTabId] || this.tabs[this.activeTabId]
+        const o = this.tabs[activeTabId] || this.tabs[this.activeTabId]
         return (o?.m3u8_urls ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
     }
 };

@@ -4,7 +4,6 @@ window.addEventListener('load', async function () {
     let opt = await root.storage.local.get(); if (!opt) opt = {}; set_def_val(opt, 'groupByAudioVideo', true);
                                                                   set_def_val(opt, 'saveUrlListBetweenTabReload', false);
                                                                   set_def_val(opt, 'enableButtonEvenIfNoUrls'   , false);
-
     const set_checkbox_click_handler = (checkboxId, opt_prop) => {
         if (!opt_prop) opt_prop = checkboxId;
 

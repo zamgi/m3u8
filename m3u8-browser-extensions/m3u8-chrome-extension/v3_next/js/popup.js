@@ -1,27 +1,28 @@
-const root = browser; //chrome;
 window.addEventListener('load', async function () {
     const getActiveTabId = async () => {
         // Query for the active tab in the current window
         const tabs = await root.tabs.query({ active: true, currentWindow: true });
-        return (tabs?.length ? tabs[0].id : undefined);
+        return (tabs?.length ? tabs[ 0 ].id : undefined);
     }
 
     try {
         // get m3u8 urls for current active tab
-        const backgroundPage = root.extension.getBackgroundPage();
-        const activeTabId = await getActiveTabId();
-        const tabInfo = backgroundPage.workInfo.getM3u8UrlsByActiveTabId(activeTabId);
+        const activeTabId = await getActiveTabId();        
 
         const set_def_val = (d, prop, defVal) => { if (d[prop] === undefined) d[prop] = defVal; };
         let opt = await root.storage.local.get(); if (!opt) opt = {}; set_def_val(opt, 'groupByAudioVideo', true);
                                                                       set_def_val(opt, 'saveUrlListBetweenTabReload', false);
+        const getWorkInfo = async (opt) => {
+            if (!opt) opt = await root.storage.local.get();
+            return (conv_2_workInfo(opt.workInfo));
+        };
 
-        const set_checkbox_click_handler = (checkboxId, onClickFunc, opt_prop) => {
+        const set_checkbox_click_handler = async (checkboxId, onClickFunc, opt_prop) => {
             if (!opt_prop) opt_prop = checkboxId;
 
             const ch = document.getElementById(checkboxId);
             ch.checked = !!opt[opt_prop];
-            if (onClickFunc) onClickFunc(ch.checked);
+            if (onClickFunc) await onClickFunc(ch.checked);
             ch.addEventListener('click', async function () {                
                 opt[opt_prop] = this.checked;
                 await root.storage.local.set(opt);
@@ -30,57 +31,61 @@ window.addEventListener('load', async function () {
         };
 
         const clearUrlListFunc = async () => {
-            await backgroundPage.workInfo.deleteAllUrlsFromTab(activeTabId);
-
-            tabInfo.m3u8_urls = tabInfo.requestHeaders = null;
+            await (await getWorkInfo()).deleteAllUrlsFromTab(activeTabId);
             render_m3u8_urls();
         },
         deleteUrlFromListFunc = async d => {
-            if (d.is_group_by_audio_video) {
-                await backgroundPage.workInfo.deleteUrlFromTab(activeTabId, d.video_url); 
-                await backgroundPage.workInfo.deleteUrlFromTab(activeTabId, d.audio_url); 
+            const wi = await getWorkInfo();
+            if (d.is_group_by_audio_video) {                
+                await wi.deleteUrlFromTab(activeTabId, d.video_url, false); 
+                await wi.deleteUrlFromTab(activeTabId, d.audio_url); 
             }
             else {
-                await backgroundPage.workInfo.deleteUrlFromTab(activeTabId, d.m3u8_url); 
+                await wi.deleteUrlFromTab(activeTabId, d.m3u8_url); 
             }
-            renderFunc(opt.groupByAudioVideo);
+            await renderFunc(opt.groupByAudioVideo);
         },
         clearSingleUrlsFunc = async () => {
             const aa = document.querySelectorAll('a.download');
             if (aa.length) {
+                const wi = await getWorkInfo();
                 for (let i = 0; i < aa.length; i++) {
                     const d = create_msgObj(aa[i]);
-                    await backgroundPage.workInfo.deleteUrlFromTab(activeTabId, d.m3u8_url); 
+                    wi.deleteUrlFromTab(activeTabId, d.m3u8_url, false); 
                 }
-                renderFunc(opt.groupByAudioVideo);
+                await wi.save2Storage();
+                await renderFunc(opt.groupByAudioVideo);
             }
         },
         clearGroupedUrlsFunc = async () => {
             const aa = document.querySelectorAll('a.is_group_by_audio_video');
             if (aa.length) {
+                const wi = await getWorkInfo();
                 for (let i = 0; i < aa.length; i++) {
                     const d = create_grouped_msgObj(aa[i]);
-                    await backgroundPage.workInfo.deleteUrlFromTab(activeTabId, d.video_url);
-                    await backgroundPage.workInfo.deleteUrlFromTab(activeTabId, d.audio_url); 
+                    wi.deleteUrlFromTab(activeTabId, d.video_url, false);
+                    wi.deleteUrlFromTab(activeTabId, d.audio_url, false); 
                 }
-                renderFunc(opt.groupByAudioVideo);
+                await wi.save2Storage();
+                await renderFunc(opt.groupByAudioVideo);
             }
         },
         showSingleUrlsClick = async function () {
             opt.hideSingleUrls = !this.checked;
             await root.storage.local.set(opt);
 
-            renderFunc(opt.groupByAudioVideo);
+            await renderFunc(opt.groupByAudioVideo);
         },
         showGroupedUrlsClick = async function () {
             opt.hideGroupedUrls = !this.checked;
             await root.storage.local.set(opt);
 
-            renderFunc(opt.groupByAudioVideo);
+            await renderFunc(opt.groupByAudioVideo);
         };
 
         const handlers = { clearUrlListFunc, deleteUrlFromListFunc, clearSingleUrlsFunc, clearGroupedUrlsFunc, showSingleUrlsClick, showGroupedUrlsClick };
-        const renderFunc = groupByAudioVideo => {
+        const renderFunc = async groupByAudioVideo => {
+            const tabInfo = (await getWorkInfo()).getM3u8UrlsByActiveTabId(activeTabId);
             if (groupByAudioVideo) {
                 const urls = group_by_audio_video(tabInfo);
                 render_grouped_m3u8_urls(urls, handlers, opt);
@@ -89,13 +94,13 @@ window.addEventListener('load', async function () {
             }
         }
 
-        set_checkbox_click_handler('groupByAudioVideo', renderFunc/*render func call here first time*/);        
-        set_checkbox_click_handler('saveUrlListBetweenTabReload');
+        await set_checkbox_click_handler('groupByAudioVideo', renderFunc /*render func call here first time*/);        
+        await set_checkbox_click_handler('saveUrlListBetweenTabReload');
         //set_checkbox_click_handler('directionRtl', rtl => document.getElementById('content').style.direction = rtl ? 'rtl' : '');
 
         document.getElementById('refreshButton')?.addEventListener('click', () => {
             Array.from(document.getElementById('content').children).forEach(e => e.style.visibility = 'hidden');
-            setTimeout(() => renderFunc(opt.groupByAudioVideo), 100);
+            setTimeout(async () => await renderFunc(opt.groupByAudioVideo), 100);
         });
     }
     catch (ex) {
