@@ -160,7 +160,7 @@ const create_WorkInfoType = stored => {
         }
     },
     deleteAllUrlsFromTab = async tabId => await deleteTab(tabId),
-    deleteUrlFromTab = async (tabId, m3u8_url, save2Storage) => {
+    deleteUrlFromTab = async (tabId, m3u8_url, makeSave2Storage) => {
         if ((tabId !== undefined) && m3u8_url) {
             const o = _Store.tabs[tabId];
             if (o?.m3u8_urls) {
@@ -170,7 +170,7 @@ const create_WorkInfoType = stored => {
                     delete o.requestHeaders[m3u8_url];
 
                     await setUrlsCountText(tabId);
-                    if (save2Storage !== false) await save2Storage();
+                    if (makeSave2Storage !== false) await save2Storage();
                 }
             }
         }
