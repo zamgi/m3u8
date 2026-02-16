@@ -167,19 +167,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{0930BC31-112
 		m3u8-browser-extensions\m3u8-firefox-extension\css\main.css = m3u8-browser-extensions\m3u8-firefox-extension\css\main.css
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v3_next", "v3_next", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v3_next", "v3_next", "{D910DB62-8245-4739-ACEF-47B247BB3ED5}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\manifest.json = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\manifest.json
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\options.html = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\options.html
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\popup.html = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\popup.html
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{5C32920B-29AE-4060-84EC-D33893281461}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{D4D7C286-79E7-4BB2-A7AF-D6D6EF088C39}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\css\main.css = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\css\main.css
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{2D1AC515-7848-4710-AF15-2D9F979B027B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{E485FD8B-2732-4950-B1CF-9AC3C7AC8BB7}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\auto_start_download.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\auto_start_download.png
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\delete.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\delete.png
@@ -191,44 +191,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{2D1AC515-784
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\refresh.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\refresh.png
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{83D38341-69FD-4562-86DD-DF9F19B67955}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{22D06D5D-CC04-47C9-AED2-2A2C3C5BD466}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\options.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\options.js
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\popup.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\popup.js
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\serviceWorker.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\serviceWorker.js
 		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\workInfoType.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\workInfoType.js
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v3_next_2", "v3_next_2", "{D910DB62-8245-4739-ACEF-47B247BB3ED5}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\manifest.json = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\manifest.json
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\options.html = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\options.html
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\popup.html = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\popup.html
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{D4D7C286-79E7-4BB2-A7AF-D6D6EF088C39}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\css\main.css = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\css\main.css
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{E485FD8B-2732-4950-B1CF-9AC3C7AC8BB7}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\auto_start_download.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\auto_start_download.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\delete.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\delete.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\delete_all.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\delete_all.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\group_by_audio_video_1.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\group_by_audio_video_1.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\group_by_audio_video_2.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\group_by_audio_video_2.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\m3u8.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\m3u8.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\m3u8_128.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\m3u8_128.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\refresh.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\img\refresh.png
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{22D06D5D-CC04-47C9-AED2-2A2C3C5BD466}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\js\options.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\js\options.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\js\popup.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\js\popup.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\js\serviceWorker.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\js\serviceWorker.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\js\workInfoType.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next_2\js\workInfoType.js
 	EndProjectSection
 EndProject
 Global
@@ -295,10 +263,6 @@ Global
 		{51B282ED-408A-4969-9B05-D9806AA91A25} = {5F7272EB-A4D3-4D05-80AF-67D4348E03E7}
 		{697F351B-35FC-4D20-9622-E19BAE086BA6} = {5F7272EB-A4D3-4D05-80AF-67D4348E03E7}
 		{0930BC31-1120-4B78-9823-7AF7A961C834} = {5F7272EB-A4D3-4D05-80AF-67D4348E03E7}
-		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {96151C69-A1DB-49F5-BE3A-C61B5835D5E3}
-		{5C32920B-29AE-4060-84EC-D33893281461} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{2D1AC515-7848-4710-AF15-2D9F979B027B} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
-		{83D38341-69FD-4562-86DD-DF9F19B67955} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{D910DB62-8245-4739-ACEF-47B247BB3ED5} = {96151C69-A1DB-49F5-BE3A-C61B5835D5E3}
 		{D4D7C286-79E7-4BB2-A7AF-D6D6EF088C39} = {D910DB62-8245-4739-ACEF-47B247BB3ED5}
 		{E485FD8B-2732-4950-B1CF-9AC3C7AC8BB7} = {D910DB62-8245-4739-ACEF-47B247BB3ED5}
