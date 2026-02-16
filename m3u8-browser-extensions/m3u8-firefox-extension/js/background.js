@@ -73,7 +73,11 @@ window.workInfoType.prototype = {
         const has = !!this.tabs[tabId];
         if (has) {
             delete this.tabs[tabId];
-            await this.setUrlsCountText(tabId);
+            //await this.setUrlsCountText(tabId);
+
+            const tabs = await root.tabs.query({ active: true, currentWindow: true });
+            const activeTabId = (tabs?.length ? tabs[ 0 ].id : undefined);
+            await this.setUrlsCountText(activeTabId);
         }
     },
     deleteAllUrlsFromTab: async function (tabId) { await this.deleteTab(tabId); },

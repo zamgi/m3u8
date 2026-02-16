@@ -1,4 +1,4 @@
-self.importScripts('workInfoType.js');
+﻿self.importScripts('workInfoType.js');
 
 //urls-list will be saved between reloads.
 (async () => {
@@ -10,10 +10,14 @@ self.importScripts('workInfoType.js');
     }
 })();
 
+const is_match_url = url => {
+    const ext = (url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
+    return (ext === 'm3u8');
+};
+
 const requestHeaders_by_url = {};
 root.webRequest.onCompleted.addListener(async d => {
-    const ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
-    if (ext === 'm3u8') {
+    if (is_match_url(d.url)) {
         const requestHeaders = requestHeaders_by_url[d.url];
         if (requestHeaders) delete requestHeaders_by_url[d.url];
 
@@ -25,8 +29,7 @@ root.webRequest.onCompleted.addListener(async d => {
 { urls: ['<all_urls>'] });
 
 root.webRequest.onBeforeSendHeaders.addListener(d => {
-    const ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
-    if (ext === 'm3u8') {
+    if (is_match_url(d.url)) {
         requestHeaders_by_url[d.url] = JSON.stringify(d.requestHeaders);
     }
 },
@@ -36,7 +39,6 @@ root.tabs.onActivated.addListener(async d => await (await load_workInfo()).activ
 
 root.tabs.onRemoved.addListener(async tabId => await (await load_workInfo()).deleteTab(tabId));
 
-// set handler to tabs
 root.tabs.onUpdated.addListener(async (tabId, info, tab) => {
     if (!info?.status || (info.status.toLowerCase() !== 'complete')) return;
 
@@ -58,26 +60,9 @@ root.tabs.onUpdated.addListener(async (tabId, info, tab) => {
     }
 });
 
-/*
-// set handler to tabs
-root.tabs.onActivated.addListener(async (info) => await (await load_workInfo()).onActivateTab(info.tabId));
-
-root.tabs.onRemoved.addListener(async (tabId) => await (await load_workInfo()).onRemoveTab(tabId));
-
-// set handler to tabs
-root.tabs.onUpdated.addListener(async function (tabId, info, tab) {
-    // if tab not-load
-    if (!info?.status || (info.status.toLowerCase() !== 'complete')) return;
-
-    // if user open empty tab or ftp protocol and etc.
-    if (!tab?.url || ((tab.url.indexOf('http:') === -1) && (tab.url.indexOf('https:') === -1))) {
-        await (await load_workInfo()).deleteTab(tabId);
-    }
-    else {
-        const opt = await root.storage.local.get();
-        if (!opt.saveUrlListBetweenTabReload) {
-            await conv_2_workInfo(opt.workInfo).deleteTabUrls(tabId);
-        }
-    }    
-});
-*/
+//root.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+//    if (message.action === 'getData') {
+//        sendResponse({ data: 'Привет из Service Worker!' });
+//    }
+//    return (true); // Важно для асинхронного ответа
+//});

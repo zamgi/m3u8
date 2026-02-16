@@ -1,19 +1,12 @@
 ﻿window.addEventListener('load', async function () {
     try {
-        //---var resp = await root.runtime.sendMessage({ action: 'getData' }); console.log('Ответ от SW:', resp);
-        //root.runtime.sendMessage({ action: 'getData' }, resp => { console.log('Ответ от SW:', resp); });
-
         // get m3u8 urls for current active tab
-        const activeTabId = await getActiveTabId();        
+        const activeTabId = await getActiveTabId();
+        const rpcClient   = create_RpcClient();
 
         const set_def_val = (d, prop, defVal) => { if (d[prop] === undefined) d[prop] = defVal; };
         let opt = await root.storage.local.get(); if (!opt) opt = {}; set_def_val(opt, 'groupByAudioVideo', true);
                                                                       set_def_val(opt, 'saveUrlListBetweenTabReload', false);
-        const getWorkInfo = async (opt) => {
-            if (!opt) opt = await root.storage.local.get();
-            return (conv_2_workInfo(opt.workInfo));
-        };
-
         const set_checkbox_click_handler = async (checkboxId, onClickFunc, opt_prop) => {
             if (!opt_prop) opt_prop = checkboxId;
 
@@ -28,42 +21,39 @@
         };
 
         const clearUrlListFunc = async () => {
-            await (await getWorkInfo()).deleteAllUrlsFromTab(activeTabId);
+            await rpcClient.deleteAllUrlsFromTab(activeTabId);
             render_m3u8_urls();
         },
         deleteUrlFromListFunc = async d => {
-            const wi = await getWorkInfo();
             if (d.is_group_by_audio_video) {                
-                await wi.deleteUrlFromTab(activeTabId, d.video_url, false); 
-                await wi.deleteUrlFromTab(activeTabId, d.audio_url); 
+                await rpcClient.deleteUrlFromTab(activeTabId, d.video_url, false); 
+                await rpcClient.deleteUrlFromTab(activeTabId, d.audio_url); 
             }
             else {
-                await wi.deleteUrlFromTab(activeTabId, d.m3u8_url); 
+                await rpcClient.deleteUrlFromTab(activeTabId, d.m3u8_url); 
             }
             await renderFunc(opt.groupByAudioVideo);
         },
         clearSingleUrlsFunc = async () => {
             const aa = document.querySelectorAll('a.download');
             if (aa.length) {
-                const wi = await getWorkInfo();
                 for (let i = 0; i < aa.length; i++) {
                     const d = create_msgObj(aa[i]);
-                    wi.deleteUrlFromTab(activeTabId, d.m3u8_url, false); 
+                    rpcClient.deleteUrlFromTab(activeTabId, d.m3u8_url, false); 
                 }
-                await wi.save2Storage();
+                await rpcClient.save2Storage();
                 await renderFunc(opt.groupByAudioVideo);
             }
         },
         clearGroupedUrlsFunc = async () => {
             const aa = document.querySelectorAll('a.is_group_by_audio_video');
             if (aa.length) {
-                const wi = await getWorkInfo();
                 for (let i = 0; i < aa.length; i++) {
                     const d = create_grouped_msgObj(aa[i]);
-                    wi.deleteUrlFromTab(activeTabId, d.video_url, false);
-                    wi.deleteUrlFromTab(activeTabId, d.audio_url, false); 
+                    await rpcClient.deleteUrlFromTab(activeTabId, d.video_url, false);
+                    await rpcClient.deleteUrlFromTab(activeTabId, d.audio_url, false); 
                 }
-                await wi.save2Storage();
+                await rpcClient.save2Storage();
                 await renderFunc(opt.groupByAudioVideo);
             }
         },
@@ -82,7 +72,7 @@
 
         const handlers = { clearUrlListFunc, deleteUrlFromListFunc, clearSingleUrlsFunc, clearGroupedUrlsFunc, showSingleUrlsClick, showGroupedUrlsClick };
         const renderFunc = async groupByAudioVideo => {
-            const tabInfo = (await getWorkInfo()).getM3u8UrlsByActiveTabId(activeTabId);
+            const tabInfo = await rpcClient.getM3u8UrlsByActiveTabId(activeTabId);
             if (groupByAudioVideo) {
                 const urls = group_by_audio_video(tabInfo);
                 render_grouped_m3u8_urls(urls, handlers, opt);

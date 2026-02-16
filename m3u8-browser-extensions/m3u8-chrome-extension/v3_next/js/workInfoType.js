@@ -1,4 +1,4 @@
-const root = chrome;
+﻿const root = chrome;
 root.browserAction = root.browserAction || root.action;
 
 const conv_2_workInfo = saved_wi => new workInfoType(saved_wi);
@@ -12,6 +12,12 @@ const workInfoType = function (saved_wi) {
         if (saved_wi.tabs) this.tabs = saved_wi.tabs;
         if (saved_wi.activeTabId) this.activeTabId = saved_wi.activeTabId;
     }
+};
+
+const getActiveTabId = async () => {
+    // Query for the active tab in the current window
+    const tabs = await root.tabs.query({ active: true, currentWindow: true });
+    return (tabs?.length ? tabs[ 0 ].id : undefined);
 };
 
 workInfoType.prototype = {
@@ -51,16 +57,18 @@ workInfoType.prototype = {
             }
 
             await this.save2Storage();
-        }        
+        }
 
-        await this.setUrlsCountText(tabId);        
+        await this.setUrlsCountText(tabId);
     },
     deleteTab: async function (tabId) {
         const has = !!this.tabs[tabId];
         if (has) {
             delete this.tabs[tabId];
             await this.save2Storage();
-            await this.setUrlsCountText(tabId);
+
+            const activeTabId = await getActiveTabId();
+            await this.setUrlsCountText(activeTabId);
         }
     },
     deleteAllUrlsFromTab: async function (tabId) { await this.deleteTab(tabId); },
@@ -97,7 +105,7 @@ workInfoType.prototype = {
                 }
 
                 if (cnt) await root.browserAction.enable(tabId);
-                else     await root.browserAction.disable(tabId)
+                else try { await root.browserAction.disable(tabId); } catch (ex) { ; }
             }
         }
     },

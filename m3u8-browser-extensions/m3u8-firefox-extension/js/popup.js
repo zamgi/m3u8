@@ -3,7 +3,7 @@ window.addEventListener('load', async function () {
     const getActiveTabId = async () => {
         // Query for the active tab in the current window
         const tabs = await root.tabs.query({ active: true, currentWindow: true });
-        return (tabs?.length ? tabs[0].id : undefined);
+        return (tabs?.length ? tabs[ 0 ].id : undefined);
     }
 
     try {
