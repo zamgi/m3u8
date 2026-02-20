@@ -19,7 +19,7 @@ namespace m3u8.download.manager
     internal static class ClipboardHelper
     {
         private const char CLIP_BRD__URL_REQ_HEAD_SEP_CHAR = '\t'; //'\u0001';
-        public static bool TryGetM3u8FileUrlsFromClipboard( out IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls )
+        public static bool TryGetM3u8FileUrlsFromClipboard( out IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls, bool ignoreHostHeader )
         {
             var M3U8_EXTENSION_Q = Resources.M3U8_EXTENSION + '?';
             try
@@ -38,7 +38,7 @@ namespace m3u8.download.manager
                         var i              = s_row.IndexOf( CLIP_BRD__URL_REQ_HEAD_SEP_CHAR );
                         var url            = (i != -1) ? s_row.Substring( 0, i ) : s_row;
                         var requestHeaders = (i != -1) ? s_row.Substring( i + 1 ) : null;
-                        if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict ) || !dict.AnyEx() )
+                        if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict, ignoreHostHeader ) || !dict.AnyEx() )
                         {
                             requestHeaders = null;
                         }
@@ -68,8 +68,8 @@ namespace m3u8.download.manager
             m3u8FileUrls = default;
             return (false);
         }
-        public static IReadOnlyCollection< (string url, string requestHeaders) > TryGetM3u8FileUrlsFromClipboardOrDefault() => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls ) ? m3u8FileUrls : Array.Empty< (string url, string requestHeaders) >());
-        public static bool TryGetHttpUrlsFromClipboard( out IReadOnlyCollection< (string url, string requestHeaders) > urls )
+        public static IReadOnlyCollection< (string url, string requestHeaders) > TryGetM3u8FileUrlsFromClipboardOrDefault( bool ignoreHostHeader ) => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls, ignoreHostHeader ) ? m3u8FileUrls : Array.Empty< (string url, string requestHeaders) >());
+        public static bool TryGetHttpUrlsFromClipboard( out IReadOnlyCollection< (string url, string requestHeaders) > urls, bool ignoreHostHeader )
         {
             const string HTTP  = "http://";
             const string HTTPS = "https://";
@@ -80,7 +80,7 @@ namespace m3u8.download.manager
 
                 if ( !text.IsNullOrEmpty() )
                 {
-                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var array = text.Split( [ '\r', '\n' ], StringSplitOptions.RemoveEmptyEntries );
                     var hs  = new HashSet< string >( array.Length, StringComparer.InvariantCultureIgnoreCase );
                     var lst = new List< (string url, string requestHeaders) >( array.Length );
                     foreach ( var a in array )
@@ -94,7 +94,7 @@ namespace m3u8.download.manager
                             if ( hs.Add( url ) )
                             {
                                 var requestHeaders = (i != -1) ? s_row.Substring( i + 1 ) : null;
-                                if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict ) || !dict.AnyEx() )
+                                if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict, ignoreHostHeader ) || !dict.AnyEx() )
                                 {
                                     requestHeaders = null;
                                 }
@@ -120,7 +120,7 @@ namespace m3u8.download.manager
             Clipboard.SetText( txt, TextDataFormat.UnicodeText );
         }
 
-        public static bool TryGetHeadersFromClipboard( out IDictionary< string, string > headers )
+        public static bool TryGetHeadersFromClipboard( out IDictionary< string, string > headers, bool ignoreHostHeader )
         {
             const char COLON = ':';
             const char TAB   = '\t';

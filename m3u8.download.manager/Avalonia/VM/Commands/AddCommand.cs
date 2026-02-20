@@ -74,7 +74,7 @@ namespace m3u8.download.manager
         }
         public async void AddNewDownload( X p, (int n, int total)? seriesInfo = null )
         {
-            var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( p.requestHeaders, out var requestHeaders );
+            var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( p.requestHeaders, out var requestHeaders, ignoreHostHeader: p.autoStartDownload );
             Debug.Assert( suc || p.requestHeaders.IsNullOrEmpty() );
 
             if ( p.autoStartDownload && !p.m3u8FileUrl.IsNullOrWhiteSpace() &&

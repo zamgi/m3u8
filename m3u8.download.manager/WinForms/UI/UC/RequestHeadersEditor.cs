@@ -21,15 +21,15 @@ namespace m3u8.download.manager.ui
         /// </summary>
         private sealed class RequestHeader
         {
-            public RequestHeader( string name, string description, int? max_name_length = null )
+            public RequestHeader( string name, string description/*, int? max_name_length = null*/ )
             {
                 Name        = name;
                 DisplayName = name;
                 Description = description;
                 if ( description != null )
                 {
-                    var indent = new string( ' ', 2 + (max_name_length.GetValueOrDefault( name.Length ) - name.Length) );
-                    DisplayName += indent + description;
+                    //var indent = new string( ' ', 2 + (max_name_length.GetValueOrDefault( name.Length ) - name.Length) );
+                    DisplayName += /*indent +*/ description;
                 }
             }
             public RequestHeader( string name )
@@ -54,17 +54,14 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
-        public/*private*/ RequestHeadersEditor()
+        public RequestHeadersEditor()
         {
             InitializeComponent();
 
             DGV.DefaultCellStyle = DefaultColors.DGV.Create_Suc( DGV.DefaultCellStyle );
-
             _RPN = RowNumbersPainter.Create( DGV, useSelectedBackColor: false );
-
             SetRequestHeaders( null );
         }
-        public RequestHeadersEditor( Dictionary< string, string > requestHeaders ) : this() => SetRequestHeaders( requestHeaders );
 
         protected override void Dispose( bool disposing )
         {
@@ -147,74 +144,17 @@ namespace m3u8.download.manager.ui
             yield return ("Save-Data"                , "The Save-Data client hint request header available in Chrome, Opera, and Yandex browsers lets developers deliver lighter, faster applications to users who opt-in to data saving mode in their browser.");
             yield return ("Sec-GPC"                  , "The Sec-GPC (Global Privacy Control) request header indicates whether the user consents to a website or service selling or sharing their personal information with third parties.");
         }
-        //public void SetRequestHeaders( IDictionary< string, string > requestHeaders )
-        //{
-        //    var max_name_length = GetRegularRequestHeader().Max( t => t.name.Length );
-        //    if ( requestHeaders.AnyEx() )
-        //    {
-        //        max_name_length = Math.Max( max_name_length, requestHeaders.Keys.Max( k => k.Length ) );
-        //    }
-
-        //    _AllRequestHeaders4DropDown = new List< RequestHeader >( 100 );            
-        //    var hs_allRequestHeaders4DropDown = new HashSet< string >( 100 );
-        //    foreach ( var (name, descr)  in GetRegularRequestHeader() )
-        //    {
-        //        if ( hs_allRequestHeaders4DropDown.Add( name ) )
-        //        {
-        //            _AllRequestHeaders4DropDown.Add( new RequestHeader( name/*, descr, max_name_length*/ ) );
-        //        }
-        //    }
-        //    DGV_keyColumn.DropDownWidth = 250; // 750;
-
-        //    if ( requestHeaders.AnyEx() )
-        //    {
-        //        foreach ( var key in requestHeaders.Keys )
-        //        {
-        //            if ( hs_allRequestHeaders4DropDown.Add( key ) )
-        //            {
-        //                _AllRequestHeaders4DropDown.Add( new RequestHeader( key ) );
-        //            }
-        //        }
-        //    }
-        //    _AllRequestHeaders4DropDown.Sort( (x, y) => string.Compare( x.DisplayName, y.DisplayName, true ) );
-
-        //    keyBindingSource.DataSource = _AllRequestHeaders4DropDown;
-
-        //    //-------------------------------------------------//
-
-        //    if ( requestHeaders.AnyEx() )
-        //    {
-        //        //DGV.RowsAdded -= DGV_RowsAdded;
-        //        //try
-        //        //{
-        //        var rows = DGV.Rows;
-        //        rows.Clear();
-        //        foreach ( var p in requestHeaders )
-        //        {
-        //            rows.Add( true, p.Key, p.Value );
-        //        }
-        //        //}
-        //        //finally
-        //        //{
-        //        //    DGV.RowsAdded += DGV_RowsAdded;
-        //        //}
-        //    }
-        //    else
-        //    {
-        //        OnRequestHeadersCountChanged?.Invoke( DGV.RowCount - 1, 0 );
-        //    }
-
-        //    DGV_Resize( null, EventArgs.Empty );
-        //}
         public void SetRequestHeaders( ICollection< KeyValuePair< string, string > > requestHeaders )
         {
-            var max_name_length = GetRegularRequestHeader().Max( t => t.name.Length );
-            if ( requestHeaders.AnyEx() )
-            {
-                max_name_length = Math.Max( max_name_length, requestHeaders.Select( p => p.Key ).Max( k => k.Length ) );
-            }
+            #region comm.
+            //var max_name_length = GetRegularRequestHeader().Max( t => t.name.Length );
+            //if ( requestHeaders.AnyEx() )
+            //{
+            //    max_name_length = Math.Max( max_name_length, requestHeaders.Select( p => p.Key ).Max( k => k.Length ) );
+            //} 
+            #endregion
 
-            _AllRequestHeaders4DropDown = new List< RequestHeader >( 100 );            
+            _AllRequestHeaders4DropDown = new List< RequestHeader >( 100 );
             var hs_allRequestHeaders4DropDown = new HashSet< string >( 100 );
             foreach ( var (name, descr)  in GetRegularRequestHeader() )
             {
@@ -250,7 +190,7 @@ namespace m3u8.download.manager.ui
                 rows.Clear();
                 foreach ( var p in requestHeaders )
                 {
-                    rows.Add( true, p.Key, p.Value );
+                    rows.Add( !HttpHeaderHelper.IsHeader_Host( p.Key ), p.Key, p.Value );
                 }
                 //}
                 //finally
@@ -302,6 +242,9 @@ namespace m3u8.download.manager.ui
         }
         public IDictionary< string, string > GetRequestHeaders()
         {
+            //HTTP header names are generally case-insensitive according to HTTP specifications (RFC 9110).
+            //This means that Content-Type, content-type, and CONTENT-TYPE are all treated as the same header by compliant systems.
+
             //var dict = new Dictionary< string, string >( DGV.RowCount - 1, StringComparer.InvariantCultureIgnoreCase );
             var dict = new SortedDictionary< string, string >( StringComparer.InvariantCultureIgnoreCase );
             var rows = DGV.Rows;
@@ -315,6 +258,26 @@ namespace m3u8.download.manager.ui
                     var value = row.Cells[ VALUE_CELL_IDX ].Value?.ToString().Trim(); //if ( value.IsNullOrWhiteSpace() ) continue;
                     dict[ key ] = value;
                 }
+            }
+            return (dict);
+        }
+        private static IDictionary< string, string > GetRequestHeadersBySelectedRows( DataGridViewSelectedRowCollection selRows )
+        {
+            //HTTP header names are generally case-insensitive according to HTTP specifications (RFC 9110).
+            //This means that Content-Type, content-type, and CONTENT-TYPE are all treated as the same header by compliant systems.
+
+            //var dict = new Dictionary< string, string >( DGV.RowCount - 1, StringComparer.InvariantCultureIgnoreCase );
+            var dict = new SortedDictionary< string, string >( StringComparer.InvariantCultureIgnoreCase );
+            for ( var i = selRows.Count - 1; 0 <= i; i--  )
+            {
+                var row = selRows[ i ];
+                //if ( !row.IsNewRow )
+                //{
+                    //var isChecked = bool.TryParse( row.Cells[ CHECKED_CELL_IDX ].Value?.ToString(), out var b ) && b; if ( !isChecked ) continue;
+                    var key   = row.Cells[ KEY_CELL_IDX   ].Value?.ToString().Trim(); if ( key.IsNullOrWhiteSpace() ) continue;
+                    var value = row.Cells[ VALUE_CELL_IDX ].Value?.ToString().Trim(); //if ( value.IsNullOrWhiteSpace() ) continue;
+                    dict[ key ] = value;
+                //}
             }
             return (dict);
         }
@@ -481,8 +444,12 @@ namespace m3u8.download.manager.ui
                 case Keys.C:
                     if ( e.Control )
                     {
-                        ClipboardHelper.CopyHeadersToClipboard( GetRequestHeaders() );
-                        e.Handled = true;
+                        var srs = DGV.SelectedRows;
+                        if ( 0 < srs.Count )
+                        {
+                            ClipboardHelper.CopyHeadersToClipboard( GetRequestHeadersBySelectedRows( srs ) );
+                            e.Handled = true;
+                        }
                     }
                     break;
 
@@ -490,7 +457,7 @@ namespace m3u8.download.manager.ui
                     if ( e.Control ) goto case Keys.Insert;
                     break;
                 case Keys.Insert:
-                    if ( !this.ReadOnly && ClipboardHelper.TryGetHeadersFromClipboard( out var headers ) )
+                    if ( !this.ReadOnly && ClipboardHelper.TryGetHeadersFromClipboard( out var headers, ignoreHostHeader: false ) )
                     {
                         AppendRequestHeaders( headers );
                     }

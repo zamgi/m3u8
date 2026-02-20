@@ -220,7 +220,7 @@ namespace m3u8.download.manager.ui
             }
             else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() )
             {
-                var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard();
+                var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard( ignoreHostHeader: false );
                 if ( success )
                 {
                     m3u8FileUrls = m3u8FileUrls.Take( MAX_PASTE_URLS ).ToArray();
@@ -306,12 +306,12 @@ namespace m3u8.download.manager.ui
                 {
                     //case Key.M: throw new Exception( "TEST-Exception" );
                     case Key.V: //Paste
-                        var (success, urls) = await this.TryGetHttpUrlsFromClipboard();
+                        var autoStartDownload = e.KeyModifiers.HasFlag( KeyModifiers.Shift );
+                        var (success, urls) = await this.TryGetHttpUrlsFromClipboard( ignoreHostHeader: autoStartDownload );
                         if ( success )
                         {
                             e.Handled = true;
-
-                            var autoStartDownload = e.KeyModifiers.HasFlag( KeyModifiers.Shift );
+                            
                             if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
                             _VM.AddCommand.AddNewDownloads( (urls, autoStartDownload) );
                             return;
@@ -417,7 +417,7 @@ namespace m3u8.download.manager.ui
                     case Key.Insert: //add download dialog
                         {
                             e.Handled = true;
-                            var m3u8FileUrls = await this.TryGetM3u8FileUrlsFromClipboardOrDefault();
+                            var m3u8FileUrls = await this.TryGetM3u8FileUrlsFromClipboardOrDefault( ignoreHostHeader: false );
 #if DEBUG
                             if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ];
 #endif
@@ -980,10 +980,10 @@ namespace m3u8.download.manager.ui
         }
         private async void pasteToolButton_Click( object sender, EventArgs e )
         {
-            var (success, urls) = await this.TryGetHttpUrlsFromClipboard();
+            var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
+            var (success, urls) = await this.TryGetHttpUrlsFromClipboard( ignoreHostHeader: autoStartDownload );
             if ( success )
-            {
-                var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
+            {                
                 if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
                 _VM.AddCommand.AddNewDownloads( (urls, autoStartDownload) );
             }

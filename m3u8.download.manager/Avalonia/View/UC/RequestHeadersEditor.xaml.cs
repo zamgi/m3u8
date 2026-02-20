@@ -190,45 +190,12 @@ namespace m3u8.download.manager.ui
 
         public void SetRequestHeaders( IDictionary< string, string > requestHeaders )
         {
-            //var max_name_length = GetRegularRequestHeader().Max( t => t.name.Length );
-            //if ( requestHeaders.AnyEx() )
-            //{
-            //    max_name_length = Math.Max( max_name_length, requestHeaders.Keys.Max( k => k.Length ) );
-            //}
-
-            //_AllRequestHeaders4DropDown = new List< RequestHeader >( 100 );            
-            //var hs_allRequestHeaders4DropDown = new HashSet< string >( 100 );
-            //foreach ( var (name, descr)  in GetRegularRequestHeader() )
-            //{
-            //    if ( hs_allRequestHeaders4DropDown.Add( name ) )
-            //    {
-            //        _AllRequestHeaders4DropDown.Add( new RequestHeader( name/*, descr, max_name_length*/ ) );
-            //    }
-            //}
-            //DGV_keyColumn.DropDownWidth = 250; // 750;
-
-            //if ( requestHeaders.AnyEx() )
-            //{
-            //    foreach ( var key in requestHeaders.Keys )
-            //    {
-            //        if ( hs_allRequestHeaders4DropDown.Add( key ) )
-            //        {
-            //            _AllRequestHeaders4DropDown.Add( new RequestHeader( key ) );
-            //        }
-            //    }
-            //}
-            //_AllRequestHeaders4DropDown.Sort( (x, y) => string.Compare( x.DisplayName, y.DisplayName, true ) );
-
-            //keyBindingSource.DataSource = _AllRequestHeaders4DropDown;
-
-            //-------------------------------------------------//
-
             if ( requestHeaders.AnyEx() )
             {
                 var rhs = new List< RequestHeader >( requestHeaders.Count );
                 foreach ( var p in requestHeaders.OrderBy( p => p.Key ) )
                 {
-                    rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: true ) );
+                    rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: !HttpHeaderHelper.IsHeader_Host( p.Key ) ) );
                 }
                 DGV.ItemsSource = _DGVRows = new DataGridCollectionView( rhs );
                 _SelectRectExtension.SetModel( rhs );
@@ -246,7 +213,7 @@ namespace m3u8.download.manager.ui
                 {
                     if ( hs.Add( p.Key ) )
                     {
-                        rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: true ) );
+                        rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: !HttpHeaderHelper.IsHeader_Host( p.Key ) ) );
                     }
                 }
                 if ( cnt != hs.Count )
@@ -259,6 +226,9 @@ namespace m3u8.download.manager.ui
         }
         public IDictionary< string, string > GetRequestHeaders()
         {
+            //HTTP header names are generally case-insensitive according to HTTP specifications (RFC 9110).
+            //This means that Content-Type, content-type, and CONTENT-TYPE are all treated as the same header by compliant systems.
+
             var dict = new SortedDictionary< string, string >( StringComparer.InvariantCultureIgnoreCase );
             foreach ( var rh in _DGVRows.SourceCollection.Cast< RequestHeader >() )
             {
@@ -410,7 +380,7 @@ namespace m3u8.download.manager.ui
                 case Key.Insert:
                     if ( this.GetVisualRoot() is Window wnd )
                     {
-                        var (suc, headers) = await wnd.TryGetHeadersFromClipboard();
+                        var (suc, headers) = await wnd.TryGetHeadersFromClipboard( ignoreHostHeader: false );
                         if ( suc )
                         {
                             AppendRequestHeaders( headers );

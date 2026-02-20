@@ -533,7 +533,7 @@ namespace m3u8.download.manager.ui
                 case _CollectionChangedTypeEnum_.Remove_Bulk:
                     #region [.save selected row.]
                     var selRow = this.GetSelectedDownloadRow();
-                    var dgrow  = DGV.GetVisualDescendants().OfType< DataGridRow >().First( r => r.DataContext == selRow );
+                    var dgrow  = DGV.GetVisualDescendants().OfType< DataGridRow >().FirstOrDefault( r => r.DataContext == selRow );
                     var selVisibleIndex = (dgrow?.Index).GetValueOrDefault( -1 );
 
                     //if ( DGV.ItemsSource is DataGridCollectionView dcv )

@@ -19,12 +19,12 @@ namespace m3u8.download.manager
     internal static class ClipboardHelper
     {
         private const char CLIP_BRD__URL_REQ_HEAD_SEP_CHAR = '\t'; //'\u0001';
-        public static async Task< IReadOnlyCollection< (string url, string requestHeaders) > > TryGetM3u8FileUrlsFromClipboardOrDefault( this Window window )
+        public static async Task< IReadOnlyCollection< (string url, string requestHeaders) > > TryGetM3u8FileUrlsFromClipboardOrDefault( this Window window, bool ignoreHostHeader )
         {
-            var t = await window.TryGetM3u8FileUrlsFromClipboard();
+            var t = await window.TryGetM3u8FileUrlsFromClipboard( ignoreHostHeader );
             return (t.success ? t.m3u8FileUrls : Array.Empty< (string url, string requestHeaders) >());
         }
-        public static async Task< (bool success, IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls) > TryGetM3u8FileUrlsFromClipboard( this Window window )
+        public static async Task< (bool success, IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls) > TryGetM3u8FileUrlsFromClipboard( this Window window, bool ignoreHostHeader )
         {
             var M3U8_EXTENSION_Q = Resources.M3U8_EXTENSION + '?';
             try
@@ -41,7 +41,7 @@ namespace m3u8.download.manager
                         var i              = s_row.IndexOf( CLIP_BRD__URL_REQ_HEAD_SEP_CHAR );
                         var url            = (i != -1) ? s_row.Substring( 0, i ) : s_row;
                         var requestHeaders = (i != -1) ? s_row.Substring( i + 1 ) : null;
-                        if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict ) || !dict.AnyEx() )
+                        if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict, ignoreHostHeader ) || !dict.AnyEx() )
                         {
                             requestHeaders = null;
                         }
@@ -69,7 +69,7 @@ namespace m3u8.download.manager
 
             return (false, default);
         }
-        public static async Task< (bool success, IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls) > TryGetHttpUrlsFromClipboard( this Window window )
+        public static async Task< (bool success, IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls) > TryGetHttpUrlsFromClipboard( this Window window, bool ignoreHostHeader )
         {
             const string HTTP  = "http://";
             const string HTTPS = "https://";
@@ -78,7 +78,7 @@ namespace m3u8.download.manager
                 var text = (await window.Clipboard.TryGetTextAsync())?.Trim();
                 if ( !text.IsNullOrEmpty() )
                 {
-                    var array = text.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries );
+                    var array = text.Split( [ '\r', '\n' ], StringSplitOptions.RemoveEmptyEntries );
                     var hs    = new HashSet< string >( array.Length, StringComparer.InvariantCultureIgnoreCase );
                     var lst   = new List< (string url, string requestHeaders) >( array.Length );
                     foreach ( var a in array )
@@ -92,7 +92,7 @@ namespace m3u8.download.manager
                             if ( hs.Add( url ) )
                             {
                                 var requestHeaders = (i != -1) ? s_row.Substring( i + 1 ) : null;
-                                if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict ) || !dict.AnyEx() )
+                                if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict, ignoreHostHeader ) || !dict.AnyEx() )
                                 {
                                     requestHeaders = null;
                                 }
@@ -118,7 +118,7 @@ namespace m3u8.download.manager
         public static Task CopyToClipboard( this Window window, string txt ) => window.Clipboard.SetTextAsync( txt );
         public static Task< string > GetFromClipboard( this Window window ) => window.Clipboard.TryGetTextAsync();
 
-        public static async Task< (bool success, IDictionary< string, string > headers) > TryGetHeadersFromClipboard( this Window window )
+        public static async Task< (bool success, IDictionary< string, string > headers) > TryGetHeadersFromClipboard( this Window window, bool ignoreHostHeader )
         {
             const char COLON = ':';
             const char TAB   = '\t';
@@ -138,6 +138,7 @@ namespace m3u8.download.manager
                         var name  = s_row.Substring( 0,  i ).Trim(); if ( name.IsNullOrEmpty() ) break;
                         var value = s_row.Substring( i + 1 ).Trim();
 
+                        if ( ignoreHostHeader && HttpHeaderHelper.IsHeader_Host( name ) ) continue;
                         dict[ name ] = value;
                     }
                     return (dict.Any(), headers: dict);
