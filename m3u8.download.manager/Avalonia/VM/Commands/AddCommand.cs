@@ -83,7 +83,11 @@ namespace m3u8.download.manager
             {
                 if ( _VM.SettingsController.UniqueUrlsOnly && !_VM.DownloadListModel.ContainsUrl( p.m3u8FileUrl ) )
                 {
-                    var row = _VM.DownloadListModel.AddRow( (p.m3u8FileUrl, requestHeaders, outputFileName, _VM.SettingsController.OutputFileDirectory) );
+                    var outputFileDirectory = _VM.SettingsController.OutputFileDirectory;
+                    if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out var cuttedFileName ) )
+                        outputFileName = cuttedFileName;
+
+                    var row = _VM.DownloadListModel.AddRow( (p.m3u8FileUrl, requestHeaders, outputFileName, outputFileDirectory) );
                     _VM.DownloadController.Start( row );
                 }
                 return;

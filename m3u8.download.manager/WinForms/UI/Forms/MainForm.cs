@@ -1089,11 +1089,17 @@ namespace m3u8.download.manager.ui
             var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.requestHeaders, out var requestHeaders, ignoreHostHeader: x.autoStartDownload );
             Debug.Assert( suc || x.requestHeaders.IsNullOrEmpty() );
 
-            if ( x.autoStartDownload && !x.m3u8FileUrl.IsNullOrWhiteSpace() && FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.m3u8FileUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) )
+            if ( x.autoStartDownload && !x.m3u8FileUrl.IsNullOrWhiteSpace() && 
+                 FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.m3u8FileUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) 
+               )
             {
                 if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( x.m3u8FileUrl ) )
                 {
-                    var row = _DownloadListModel.AddRow( (x.m3u8FileUrl, requestHeaders, outputFileName, _SC.OutputFileDirectory/*, IsLiveStream: false, default*/) );
+                    var outputFileDirectory = _SC.OutputFileDirectory;
+                    if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out var cuttedFileName ) )
+                        outputFileName = cuttedFileName;
+
+                    var row = _DownloadListModel.AddRow( (x.m3u8FileUrl, requestHeaders, outputFileName, outputFileDirectory/*, IsLiveStream: false, default*/) );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     _DC.Start( row );
                 }
@@ -1181,16 +1187,26 @@ namespace m3u8.download.manager.ui
 
             string get_outputFileName_4_audio( string outputFileName ) => Path.GetFileNameWithoutExtension( outputFileName ) + audioOutputFileSuffix + Path.GetExtension( outputFileName );
 
-            if ( x.autoStartDownload && !x.videoUrl.IsNullOrWhiteSpace() && FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.videoUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) )
+            if ( x.autoStartDownload && !x.videoUrl.IsNullOrWhiteSpace() && 
+                 FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.videoUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) 
+               )
             {
                 if ( !_SC.UniqueUrlsOnly || (!_DownloadListModel.ContainsUrl( x.videoUrl ) && !_DownloadListModel.ContainsUrl( x.audioUrl )) )
                 {
-                    var outputFileName_a = get_outputFileName_4_audio( outputFileName );
-                    var row_1 = _DownloadListModel.AddRow( (x.audioUrl, audioRequestHeaders, outputFileName_a, _SC.OutputFileDirectory) );
+                    var outputFileDirectory = _SC.OutputFileDirectory;
+
+                    var outputFileName_a = get_outputFileName_4_audio( outputFileName );                    
+                    if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName_a, out var cuttedFileName ) )
+                        outputFileName_a = cuttedFileName;
+
+                    var row_1 = _DownloadListModel.AddRow( (x.audioUrl, audioRequestHeaders, outputFileName_a, outputFileDirectory) );
                     await downloadListUC.SelectDownloadRowDelay( row_1 );
                     _DC.Start( row_1 );
 
-                    var row_2 = _DownloadListModel.AddRow( (x.videoUrl, videoRequestHeaders, outputFileName, _SC.OutputFileDirectory) );
+                    if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out cuttedFileName ) )
+                        outputFileName = cuttedFileName;
+
+                    var row_2 = _DownloadListModel.AddRow( (x.videoUrl, videoRequestHeaders, outputFileName, outputFileDirectory) );
                     await downloadListUC.SelectDownloadRowDelay( row_2 );
                     _DC.Start( row_2 );
                 }

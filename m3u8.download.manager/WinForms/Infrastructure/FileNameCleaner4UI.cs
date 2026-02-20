@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+
 #if !(NETCOREAPP)
 using System.Linq;
 #endif
@@ -20,7 +22,11 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal static class FileNameCleaner4UI
     {
-        private static bool HasValidExtension( string outputFileName )
+        public const int MAX_FileName_LENGTH = 100;
+        public const int MAX_FULLPATH_LENGTH = 250;
+
+        private static string CutAtEndByMaxLen( this string s, int maxLength ) => (s != null) && (maxLength < s.Length) ? s.Substring( 0, maxLength ) : s;
+        private static bool HasValidExtension( string outputFileName, out string extension )
         {
             const int DEFAULT_EXTENSION_LEN = 4;
             const string MP3_EXT = "mp3";
@@ -29,6 +35,7 @@ namespace m3u8.download.manager.ui
             var ext = Path.GetExtension( outputFileName );
             if ( (ext != null) && (ext.Length == DEFAULT_EXTENSION_LEN) )
             {
+                extension = ext;
 #if NETCOREAPP
                 static bool is_match( ReadOnlySpan< char > ext, ReadOnlySpan< char > pattern ) => char.ToLower( ext[ 0 ] ) == char.ToLower( pattern[ 0 ] ) &&
                                                                                                   char.ToLower( ext[ 1 ] ) == char.ToLower( pattern[ 1 ] ) &&
@@ -50,19 +57,55 @@ namespace m3u8.download.manager.ui
                 return (ext.Skip( 1 ).All( c => char.IsLetter( c ) ));
 #endif
             }
+            else
+            {
+                extension = default;
+            }
             return (false);
         }
-        private static string AddOutputFileExtensionIfMissing( this string outputFileName, string outputFileExtension )
+        private static string AddOutputFileExtensionIfMissing( this string outputFileName, string outputFileExtension, int maxOutputFileNameLength )
         {
             if ( !outputFileName.IsNullOrEmpty() )
             {
-                if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) 
-                     && !HasValidExtension( outputFileName )
-                   )
+                static string cut_outputFileName_if( string outputFileName, string ext, int maxOutputFileNameLength ) 
                 {
+                    if ( (maxOutputFileNameLength < outputFileName.Length) && 
+                         (ext.Length < outputFileName.Length) &&
+                         (ext.Length < maxOutputFileNameLength)
+                       )
+                    {
+                        outputFileName = outputFileName.Substring( 0, outputFileName.Length - ext.Length )
+                                                       .CutAtEndByMaxLen( maxOutputFileNameLength - ext.Length )
+                                                       + ext;
+                    }
+                    return (outputFileName);
+                }
+
+                if ( outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
+                {
+                    outputFileName = cut_outputFileName_if( outputFileName, outputFileExtension, maxOutputFileNameLength );
+                }
+                else if ( HasValidExtension( outputFileName, out var validExtension ) )
+                {
+                    outputFileName = cut_outputFileName_if( outputFileName, validExtension, maxOutputFileNameLength );
+                }
+                else
+                {
+                    outputFileName = outputFileName.CutAtEndByMaxLen( maxOutputFileNameLength - outputFileExtension.Length );
+
                     if ( outputFileExtension.HasFirstCharNotDot() ) outputFileName += '.';
                     outputFileName += outputFileExtension;
                 }
+
+                //if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase )
+                //     && !HasValidExtension( outputFileName )
+                //   )
+                //{
+                //    outputFileName = outputFileName.CutAtEndByMaxLen( maxOutputFileNameLength - outputFileExtension.Length );
+
+                //    if ( outputFileExtension.HasFirstCharNotDot() ) outputFileName += '.';
+                //    outputFileName += outputFileExtension;
+                //}
             }
             return (outputFileName);
         }
@@ -79,7 +122,8 @@ namespace m3u8.download.manager.ui
             return (null);
         }
 
-        public static bool TryGetOutputFileNameByUrl( string m3u8FileUrlText, string outputFileExtension, out string outputFileName )
+        public static bool TryGetOutputFileNameByUrl( string m3u8FileUrlText, string outputFileExtension, out string outputFileName
+            , int maxOutputFileNameLength = MAX_FileName_LENGTH )
         {
             try
             {
@@ -90,7 +134,7 @@ namespace m3u8.download.manager.ui
                 if ( !fn.IsNullOrWhiteSpace() )
                 {
                     outputFileName = NameCleaner.Clean( fn )
-                                                .AddOutputFileExtensionIfMissing( outputFileExtension );
+                                                .AddOutputFileExtensionIfMissing( outputFileExtension, maxOutputFileNameLength );
                     return (!outputFileName.IsNullOrWhiteSpace());
                 }
             }
@@ -102,7 +146,8 @@ namespace m3u8.download.manager.ui
             outputFileName = default;
             return (false);
         }
-        public static async Task< string > SetOutputFileNameByUrl_Async( string m3u8FileUrlText, string outputFileExtension, Action< string > setOutputFileNameAction, int millisecondsDelay )
+        public static async Task< string > SetOutputFileNameByUrl_Async( string m3u8FileUrlText, string outputFileExtension, Action< string > setOutputFileNameAction, int millisecondsDelay
+            , int maxOutputFileNameLength = MAX_FileName_LENGTH )
         {
             setOutputFileNameAction( null );
             try
@@ -118,7 +163,7 @@ namespace m3u8.download.manager.ui
                     fn = NameCleaner.Clean( fn );
                     setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
 
-                    fn = AddOutputFileExtensionIfMissing( fn, outputFileExtension );
+                    fn = fn.AddOutputFileExtensionIfMissing( outputFileExtension, maxOutputFileNameLength );
                     setOutputFileNameAction( fn );
 
                     return (fn);
@@ -131,66 +176,54 @@ namespace m3u8.download.manager.ui
             return (null);
         }
 
-        public static string GetOutputFileName( string inputOutputFileName, string outputFileExtension, char? skipChar = null ) => (TryGetOutputFileName( inputOutputFileName, outputFileExtension, out string outputFileName, skipChar ) ? outputFileName : null);
-        public static bool TryGetOutputFileName( string inputOutputFileName, string outputFileExtension, out string outputFileName, char? skipChar = null )
+        public static string GetOutputFileName( string inputOutputFileName, string outputFileExtension, char? skipChar = null
+            , int maxOutputFileNameLength = MAX_FileName_LENGTH ) => (TryGetOutputFileName( inputOutputFileName, outputFileExtension, out string outputFileName, skipChar, maxOutputFileNameLength ) ? outputFileName : null);
+        public static bool TryGetOutputFileName( string inputOutputFileName, string outputFileExtension, out string outputFileName, char? skipChar = null
+            , int maxOutputFileNameLength = MAX_FileName_LENGTH )
         {
             var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName, skipChar: skipChar );
             if ( !fn.IsNullOrWhiteSpace() )
             {
                 outputFileName = fn.GetFileName_NoThrow()
-                                   .AddOutputFileExtensionIfMissing( outputFileExtension );
+                                   .AddOutputFileExtensionIfMissing( outputFileExtension, maxOutputFileNameLength );
                 return (!outputFileName.IsNullOrWhiteSpace());
             }
             outputFileName = default;
             return (false);
         }
-        /*public static async Task< string > SetOutputFileName_Async( string inputOutputFileName, Action< string > setOutputFileNameAction, int millisecondsDelay )
+
+
+        public static bool TryCutFileNameIfFullPathTooLong( string directoryPath, string fileName, out string cuttedFileName
+            , int maxFullpathLength = MAX_FULLPATH_LENGTH )
         {
-            setOutputFileNameAction( null );
-
-            var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
-            if ( !fn.IsNullOrWhiteSpace() )
+            var fullpath = Path.Combine( directoryPath, fileName );
+            var excess = fullpath.Length - maxFullpathLength;
+            if ( 0 < excess )
             {
-                setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
+                var remain_fn_len = fileName.Length - excess;
+                if ( 0 < remain_fn_len )
+                {
+                    var ext      = Path.GetExtension( fileName );
+                    var fn_noext = Path.GetFileNameWithoutExtension( fileName );
+                    var cut      = remain_fn_len - ext.Length;
+                    if ( (0 < cut) && (cut < fn_noext.Length) )
+                    {
+                        cuttedFileName = fn_noext.Substring( 0, cut ) + ext;
+                    }
+                    else
+                    {
+                        cuttedFileName = /*from start*/fileName.Substring( 0, remain_fn_len ); //---/*from end*/fileName.Substring( excess, remain_fn_len );
+                    }
 
-                fn = fn.GetFileName_NoThrow();
-                setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
-
-                fn = AddOutputFileExtensionIfMissing( fn );
-                setOutputFileNameAction( fn );
-
-                return (fn);
+                    Debug.Assert( Path.Combine( directoryPath, cuttedFileName ).Length <= maxFullpathLength );
+                    return (true);
+                }
             }
-            return (null);
-        }*/
-        /*public static async Task< string > SetOutputFileName_Async(
-            TextBox textBox, string inputOutputFileName, Action< string > setOutputFileNameAction, int millisecondsDelay )
-        {
-            var selectionStart = textBox.SelectionStart;
-            setOutputFileNameAction( null );
 
-            var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
-            if ( !fn.IsNullOrWhiteSpace() )
-            {
-                setOutputFileNameAction( fn );
-                    textBox.SelectionStart = Math.Min( selectionStart, fn.Length );
-                    selectionStart = textBox.SelectionStart;
-                await Task.Delay( millisecondsDelay );
+            cuttedFileName = default;
+            return (false);
+        }
 
-                fn = fn.GetFileName_NoThrow();
-                setOutputFileNameAction( fn ); 
-                    textBox.SelectionStart = Math.Min( selectionStart, fn.Length );
-                    selectionStart = textBox.SelectionStart;
-                await Task.Delay( millisecondsDelay );
-
-                fn = AddOutputFileExtensionIfMissing( fn );
-                setOutputFileNameAction( fn );
-                    textBox.SelectionStart = Math.Min( selectionStart, fn.Length );
-
-                return (fn);
-            }
-            return (null);
-        }*/
 
         /// <summary>
         /// 
