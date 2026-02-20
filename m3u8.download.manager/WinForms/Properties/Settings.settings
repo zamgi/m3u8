@@ -16,9 +16,9 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     -->
-    <Setting Name="UseCrossDownloadInstanceParallelism" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
+    <Setting Name="ShareMaxDownloadThreadsBetweenAllDownloadsInstance" Type="System.Boolean" Scope="User"> <!-- ex UseCrossDownloadInstanceParallelism -->
+      <Value Profile="(Default)">False</Value>
+    </Setting>   
     <Setting Name="MaxDegreeOfParallelism" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">8</Value>
     </Setting>
@@ -105,6 +105,9 @@
     </Setting>
     <Setting Name="LastChangeOutputDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
-    </Setting>    
+    </Setting>
+    <Setting Name="IgnoreHostHttpHeader" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

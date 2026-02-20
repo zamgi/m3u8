@@ -16,10 +16,10 @@ using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
-using _DC_ = m3u8.download.manager.controllers.DownloadController;
+using _DC_                                   = m3u8.download.manager.controllers.DownloadController;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
 using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
-using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -184,12 +184,9 @@ namespace m3u8.download.manager.ui
                 _InputParamsArray = null;
             }
             else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() &&
-                       ClipboardHelper.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls, ignoreHostHeader: false ) 
+                       ClipboardHelper.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls, _SC.IgnoreHostHttpHeader ) 
                     )
             {
-                //var frt = m3u8FileUrls.FirstOrDefault();
-                //AddNewDownload( (frt.url, frt.requestHeaders, false) );
-
                 m3u8FileUrls = m3u8FileUrls.Take( MAX_PASTE_URLS ).ToArray();
                 AddNewDownloads( (m3u8FileUrls, false) );
             }
@@ -245,12 +242,12 @@ namespace m3u8.download.manager.ui
             {
                 switch ( e.KeyCode )
                 {
-                    case Keys.V: //Paste
-                        var autoStartDownload = e.Shift;
-                        if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls, ignoreHostHeader: autoStartDownload ) )
-                        {
+                    case Keys.V: //Paste                        
+                        if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls, _SC.IgnoreHostHttpHeader ) )
+                        {                            
                             e.SuppressKeyPress = true;
-                            
+
+                            var autoStartDownload = e.Shift;
                             if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
                             AddNewDownloads( (urls, autoStartDownload) );
                             return;
@@ -362,7 +359,7 @@ namespace m3u8.download.manager.ui
                     case Keys.Insert: //add download dialog
                     {
                         e.SuppressKeyPress = true;
-                        var m3u8FileUrls = ClipboardHelper.TryGetM3u8FileUrlsFromClipboardOrDefault( ignoreHostHeader: false );
+                        var m3u8FileUrls = ClipboardHelper.TryGetM3u8FileUrlsFromClipboardOrDefault( _SC.IgnoreHostHttpHeader );
 #if DEBUG
                         if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ];
 #endif
@@ -1086,7 +1083,7 @@ namespace m3u8.download.manager.ui
         }
         private async void AddNewDownload( UrlInputParams x, (int n, int total)? seriesInfo = null )
         {
-            var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.requestHeaders, out var requestHeaders, ignoreHostHeader: x.autoStartDownload );
+            var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.requestHeaders, out var requestHeaders, ignoreHostHeader: _SC.IgnoreHostHttpHeader /*|| x.autoStartDownload*/ );
             Debug.Assert( suc || x.requestHeaders.IsNullOrEmpty() );
 
             if ( x.autoStartDownload && !x.m3u8FileUrl.IsNullOrWhiteSpace() && 
@@ -1179,10 +1176,10 @@ namespace m3u8.download.manager.ui
         }
         private async void AddNewDownload_4_GroupedByAudioVideo( UrlInputParams x, (int n, int total)? seriesInfo = null, string audioOutputFileSuffix = DownloadListUC.AUDIO_OUTPUTFILE_SUFFIX )
         {
-            var suc_1 = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.videoRequestHeaders, out var videoRequestHeaders, ignoreHostHeader: x.autoStartDownload );
+            var suc_1 = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.videoRequestHeaders, out var videoRequestHeaders, ignoreHostHeader: _SC.IgnoreHostHttpHeader /*|| x.autoStartDownload*/ );
             Debug.Assert( suc_1 || x.videoRequestHeaders.IsNullOrEmpty() );
 
-            var suc_2 = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.audioRequestHeaders, out var audioRequestHeaders, ignoreHostHeader: x.autoStartDownload );
+            var suc_2 = BrowserIPC.ExtensionRequestHeader.Try2Dict( x.audioRequestHeaders, out var audioRequestHeaders, ignoreHostHeader: _SC.IgnoreHostHttpHeader /*|| x.autoStartDownload*/ );
             Debug.Assert( suc_2 || x.audioRequestHeaders.IsNullOrEmpty() );
 
             string get_outputFileName_4_audio( string outputFileName ) => Path.GetFileNameWithoutExtension( outputFileName ) + audioOutputFileSuffix + Path.GetExtension( outputFileName );
@@ -1311,10 +1308,10 @@ namespace m3u8.download.manager.ui
             }
         }
         private void pasteToolButton_Click( object sender, EventArgs e )
-        {
-            var autoStartDownload = ((Control.ModifierKeys & Keys.Shift) == Keys.Shift);
-            if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls, ignoreHostHeader: autoStartDownload ) )
-            {                
+        {            
+            if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls, _SC.IgnoreHostHttpHeader ) )
+            {
+                var autoStartDownload = ((Control.ModifierKeys & Keys.Shift) == Keys.Shift);
                 if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
                 AddNewDownloads( (urls, autoStartDownload) );
             }

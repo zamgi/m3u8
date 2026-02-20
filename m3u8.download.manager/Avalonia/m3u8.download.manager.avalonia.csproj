@@ -52,7 +52,6 @@
     <None Remove="Resources\m3u8.png" />
     <None Remove="Resources\m3u8_148x166.ico" />
     <None Remove="Resources\menu\undo.png" />
-    <None Remove="View\SettingsForm.xaml" />
   </ItemGroup>
   
   <ItemGroup>
@@ -112,12 +111,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <AvaloniaResource Update="View\SettingsForm.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -127,9 +120,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Update="View\SettingsForm.xaml.cs">
-      <DependentUpon>SettingsForm.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   

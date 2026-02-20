@@ -27,8 +27,8 @@ namespace m3u8.download.manager
                 var st = vm.SettingsController.Settings;
 
                 #region [.parallelism.]
-                f.UseCrossDownloadInstanceParallelism = st.UseCrossDownloadInstanceParallelism;
-                f.MaxDegreeOfParallelism              = st.MaxDegreeOfParallelism;
+                f.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
+                f.MaxDegreeOfParallelism                             = st.MaxDegreeOfParallelism;
                 f.SetMaxCrossDownloadInstance( st.MaxCrossDownloadInstance, st.MaxCrossDownloadInstanceSaved );
                 f.SetMaxSpeedThresholdInMbps ( st.MaxSpeedThresholdInMbps , st.MaxSpeedThresholdInMbpsSaved  );
                 #endregion
@@ -41,13 +41,14 @@ namespace m3u8.download.manager
                 f.ShowAllDownloadsCompleted_Notification = st.ShowAllDownloadsCompleted_Notification;
                 f.OutputFileExtension                    = st.OutputFileExtension;
                 f.UniqueUrlsOnly                         = st.UniqueUrlsOnly;
+                f.IgnoreHostHttpHeader                   = st.IgnoreHostHttpHeader;
                 #endregion
 
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
                     #region [.parallelism.]
-                    st.UseCrossDownloadInstanceParallelism = f.UseCrossDownloadInstanceParallelism;
+                    st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = f.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
                     st.MaxDegreeOfParallelism              = f.MaxDegreeOfParallelism;
                     st.MaxCrossDownloadInstance            = f.MaxCrossDownloadInstance;
                     st.MaxCrossDownloadInstanceSaved       = f.MaxCrossDownloadInstanceSaved;
@@ -63,6 +64,7 @@ namespace m3u8.download.manager
                     st.ShowAllDownloadsCompleted_Notification = f.ShowAllDownloadsCompleted_Notification;
                     st.OutputFileExtension                    = f.OutputFileExtension;
                     st.UniqueUrlsOnly                         = f.UniqueUrlsOnly;
+                    st.IgnoreHostHttpHeader                   = f.IgnoreHostHttpHeader;
                     #endregion
 
                     vm.SettingsController.SaveNoThrow_IfAnyChanged();

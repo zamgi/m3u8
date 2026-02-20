@@ -9,8 +9,6 @@ using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
-using static System.Net.Mime.MediaTypeNames;
-
 namespace m3u8.download.manager
 {
     /// <summary>

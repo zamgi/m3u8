@@ -35,6 +35,7 @@
             this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox();
             this.requestTimeoutByPartDTP = new System.Windows.Forms.DateTimePicker();
             this.uniqueUrlsOnlyCheckBox = new System.Windows.Forms.CheckBox();
+            this.ignoreHostHttpHeaderCheckBox = new System.Windows.Forms.CheckBox();
             this.only4NotRunLabel1 = new System.Windows.Forms.Label();
             this.only4NotRunLabel2 = new System.Windows.Forms.Label();
             this.outputFileExtensionLabel = new System.Windows.Forms.Label();
@@ -61,7 +62,7 @@
             // gb1
             //            
             gb1.Location = new System.Drawing.Point(13, 7);
-            gb1.Size = new System.Drawing.Size(261, 150);
+            gb1.Size = new System.Drawing.Size(261, 172);
             gb1.TabIndex = 0;
             gb1.TabStop = false;
             gb1.Text = "Download params";
@@ -74,6 +75,7 @@
             gb1.Controls.Add(this.outputFileExtensionLabel);
             gb1.Controls.Add(this.outputFileExtensionTextBox);
             gb1.Controls.Add(this.uniqueUrlsOnlyCheckBox);
+            gb1.Controls.Add(this.ignoreHostHttpHeaderCheckBox);
             // 
             // l1
             // 
@@ -120,6 +122,37 @@
             this.uniqueUrlsOnlyCheckBox.Text = "use unique urls only";
             this.uniqueUrlsOnlyCheckBox.UseVisualStyleBackColor = true;
             // 
+            // ignoreHostHttpHeaderCheckBox
+            // 
+            this.ignoreHostHttpHeaderCheckBox.AutoSize = true;
+            this.ignoreHostHttpHeaderCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ignoreHostHttpHeaderCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ignoreHostHttpHeaderCheckBox.Location = new System.Drawing.Point(43, 120);
+            this.ignoreHostHttpHeaderCheckBox.Size = new System.Drawing.Size(117, 17);
+            this.ignoreHostHttpHeaderCheckBox.TabIndex = 5;
+            this.ignoreHostHttpHeaderCheckBox.Text = "ignore \"Host\" http-header";
+            this.ignoreHostHttpHeaderCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // outputFileExtensionLabel
+            // 
+            this.outputFileExtensionLabel.AutoSize = true;
+            this.outputFileExtensionLabel.Location = new System.Drawing.Point(20, 142);
+            this.outputFileExtensionLabel.Size = new System.Drawing.Size(139, 21);
+            this.outputFileExtensionLabel.TabIndex = 5;
+            this.outputFileExtensionLabel.Text = "default output file extension:";
+            // 
+            // outputFileExtensionTextBox
+            // 
+            this.outputFileExtensionTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.outputFileExtensionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.outputFileExtensionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
+            this.outputFileExtensionTextBox.Location = new System.Drawing.Point(167, 142);
+            this.outputFileExtensionTextBox.Size = new System.Drawing.Size(89, 26);
+            this.outputFileExtensionTextBox.TabIndex = 6;
+            this.outputFileExtensionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.outputFileExtensionTextBox.WordWrap = false;
+
+            // 
             // only4NotRunLabel1
             // 
             this.only4NotRunLabel1.AutoSize = true;
@@ -140,29 +173,9 @@
             this.only4NotRunLabel2.Text = "(only for not-running downloads)";
             this.only4NotRunLabel2.Visible = false;
             // 
-            // outputFileExtensionLabel
-            // 
-            this.outputFileExtensionLabel.AutoSize = true;
-            this.outputFileExtensionLabel.Location = new System.Drawing.Point(20, 120);
-            this.outputFileExtensionLabel.Size = new System.Drawing.Size(139, 21);
-            this.outputFileExtensionLabel.TabIndex = 5;
-            this.outputFileExtensionLabel.Text = "default output file extension:";
-            // 
-            // outputFileExtensionTextBox
-            // 
-            this.outputFileExtensionTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this.outputFileExtensionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.outputFileExtensionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
-            this.outputFileExtensionTextBox.Location = new System.Drawing.Point(167, 120);
-            this.outputFileExtensionTextBox.Size = new System.Drawing.Size(89, 26);
-            this.outputFileExtensionTextBox.TabIndex = 6;
-            this.outputFileExtensionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.outputFileExtensionTextBox.WordWrap = false;
-
-            // 
             // gb2
             // 
-            gb2.Location = new System.Drawing.Point(13, 163);
+            gb2.Location = new System.Drawing.Point(13, 185);
             gb2.Size = new System.Drawing.Size(261, 140);
             gb2.TabIndex = 1;
             gb2.TabStop = false;
@@ -358,7 +371,7 @@
             this.AutoScroll = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(560, 315);
+            this.ClientSize = new System.Drawing.Size(560, 337);
             this.Controls.Add(gb1);
             this.Controls.Add(gb2);            
             this.Controls.Add(gb3);
@@ -386,6 +399,7 @@
         private System.Windows.Forms.CheckBox useDirectorySelectDialogModernCheckBox;
         private System.Windows.Forms.Button testDirectorySelectDialog;
         private System.Windows.Forms.CheckBox uniqueUrlsOnlyCheckBox;
+        private System.Windows.Forms.CheckBox ignoreHostHttpHeaderCheckBox;
         private System.Windows.Forms.Label only4NotRunLabel1;
         private System.Windows.Forms.Label only4NotRunLabel2;
         private System.Windows.Forms.Label outputFileExtensionLabel;

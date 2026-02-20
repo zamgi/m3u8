@@ -303,7 +303,7 @@ namespace m3u8.download.manager.controllers
         #region [.ctor().]
         public download_threads_semaphore_factory( bool useCrossDownloadInstanceParallelism, int maxDegreeOfParallelism )
         {
-            this.UseCrossDownloadInstanceParallelism = useCrossDownloadInstanceParallelism;            
+            this.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = useCrossDownloadInstanceParallelism;            
             this.MaxDegreeOfParallelism              = maxDegreeOfParallelism;
             this.UseMaxDegreeOfParallelism           = (0 < maxDegreeOfParallelism);
 
@@ -331,9 +331,9 @@ namespace m3u8.download.manager.controllers
         }
         #endregion
 
-        public bool UseCrossDownloadInstanceParallelism { get; set; }
-        public bool UseMaxDegreeOfParallelism           { get; set; }
-        public int  MaxDegreeOfParallelism              { get; private set; }
+        public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { get; set; }
+        public bool UseMaxDegreeOfParallelism                          { get; set; }
+        public int  MaxDegreeOfParallelism                             { get; private set; }
 
         public async Task ResetMaxDegreeOfParallelism( int maxDegreeOfParallelism, int millisecondsDelay = 10 )
         {
@@ -360,7 +360,7 @@ namespace m3u8.download.manager.controllers
 
         public IDownloadThreadsSemaphoreEx Get()
         {
-            if ( this.UseCrossDownloadInstanceParallelism )
+            if ( this.ShareMaxDownloadThreadsBetweenAllDownloadsInstance )
             {
                 return (new cross_download_threads_semaphore( _CrossSemaphoreHolder ));
             }

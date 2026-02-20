@@ -33,7 +33,7 @@ namespace m3u8.download.manager.ui
         #region [.parallelism.]
         #region [.markup fields.]
         private NumericUpDown maxDegreeOfParallelismNUD;
-        private CheckBox      useCrossDownloadInstanceParallelismCheckBox;
+        private CheckBox      shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox;
         private CheckBox      useMaxCrossDownloadInstanceCheckBox;
         private TextBlock     maxCrossDownloadInstanceLabel1;
         private TextBlock     maxCrossDownloadInstanceLabel2;
@@ -47,7 +47,7 @@ namespace m3u8.download.manager.ui
         private void InitializeComponent_4_parallelism()
         {
             maxDegreeOfParallelismNUD                   = this.Find< NumericUpDown >( nameof(maxDegreeOfParallelismNUD) );
-            useCrossDownloadInstanceParallelismCheckBox = this.Find< CheckBox      >( nameof(useCrossDownloadInstanceParallelismCheckBox) );
+            shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox = this.Find< CheckBox      >( nameof(shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox) );
             useMaxCrossDownloadInstanceCheckBox         = this.Find< CheckBox      >( nameof(useMaxCrossDownloadInstanceCheckBox) );
             maxCrossDownloadInstanceLabel1              = this.Find< TextBlock     >( nameof(maxCrossDownloadInstanceLabel1) );
             maxCrossDownloadInstanceLabel2              = this.Find< TextBlock     >( nameof(maxCrossDownloadInstanceLabel2) );
@@ -67,10 +67,14 @@ namespace m3u8.download.manager.ui
             get => Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Convert.ToInt32( maxDegreeOfParallelismNUD.Value ) );
             set => maxDegreeOfParallelismNUD.Value = Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, value );
         }
-        public bool UseCrossDownloadInstanceParallelism
+        /// <summary>
+        /// share "max download threads"
+        /// between all downloads-instance
+        /// </summary>        
+        public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance //ex UseCrossDownloadInstanceParallelism
         {
-            get => useCrossDownloadInstanceParallelismCheckBox.IsChecked.GetValueOrDefault();
-            set => useCrossDownloadInstanceParallelismCheckBox.IsChecked = value;
+            get => shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.IsChecked.GetValueOrDefault();
+            set => shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.IsChecked = value;
         }
 
         public int? MaxCrossDownloadInstance => (useMaxCrossDownloadInstanceCheckBox.IsChecked.GetValueOrDefault() ? Convert.ToInt32( maxCrossDownloadInstanceNUD.Value ) : ((int?) null));
@@ -96,7 +100,7 @@ namespace m3u8.download.manager.ui
         private void DownloadController_IsDownloadingChanged_4_parallelism( bool isDownloading )
         {
             useMaxCrossDownloadInstanceCheckBox.IsEnabled =
-                useCrossDownloadInstanceParallelismCheckBox.IsEnabled = !isDownloading;
+                shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.IsEnabled = !isDownloading;
         }
         private void useMaxCrossDownloadInstanceCheckBox_Click( object sender, RoutedEventArgs e )
         {
@@ -121,6 +125,7 @@ namespace m3u8.download.manager.ui
         #region [.markup fields.]
         private NumericUpDown attemptRequestCountByPartNUD;
         private CheckBox      uniqueUrlsOnlyCheckBox;
+        private CheckBox      ignoreHostHttpHeaderCheckBox;
         private TextBlock     only4NotRunLabel1;
         private TextBlock     only4NotRunLabel2;
         //private DatePicker    requestTimeoutByPartDTP;
@@ -141,6 +146,7 @@ namespace m3u8.download.manager.ui
         {
             attemptRequestCountByPartNUD                   = this.Find< NumericUpDown >( nameof(attemptRequestCountByPartNUD) );
             uniqueUrlsOnlyCheckBox                         = this.Find< CheckBox      >( nameof(uniqueUrlsOnlyCheckBox) );
+            ignoreHostHttpHeaderCheckBox                   = this.Find< CheckBox      >( nameof(ignoreHostHttpHeaderCheckBox) );
             only4NotRunLabel1                              = this.Find< TextBlock     >( nameof(only4NotRunLabel1) );
             only4NotRunLabel2                              = this.Find< TextBlock     >( nameof(only4NotRunLabel2) );
             requestTimeoutByPartDTP                        = this.Find< TimePickerUC  >( nameof(requestTimeoutByPartDTP) );
@@ -248,6 +254,11 @@ namespace m3u8.download.manager.ui
         {
             get => CorrectOutputFileExtension( outputFileExtensionTextBox.Text );
             set => outputFileExtensionTextBox.Text = CorrectOutputFileExtension( value );
+        }
+        public bool     IgnoreHostHttpHeader
+        {
+            get => ignoreHostHttpHeaderCheckBox.IsChecked.GetValueOrDefault( true );
+            set => ignoreHostHttpHeaderCheckBox.IsChecked = value;
         }
         #endregion
         #endregion

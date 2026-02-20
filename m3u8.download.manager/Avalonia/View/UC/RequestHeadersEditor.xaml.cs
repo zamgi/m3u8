@@ -16,6 +16,8 @@ using Avalonia.VisualTree;
 
 using ReactiveUI;
 
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -63,7 +65,7 @@ namespace m3u8.download.manager.ui
             public RequestHeader() => IsChecked = true;
             public RequestHeader( string name, string value, bool isChecked = true, string description = null )
             {
-                Name        = name;                
+                Name        = name;
                 Value       = value;
                 Description = description;
                 IsChecked   = isChecked;
@@ -111,6 +113,7 @@ namespace m3u8.download.manager.ui
         private MenuItem    addRowMenuItem;
         private MenuItem    deleteRowMenuItem;
         private DataGrid_SelectRect_Extension< RequestHeader > _SelectRectExtension;
+        private _SC_ _SC;
         #endregion
 
         #region [.ctor().]
@@ -188,21 +191,22 @@ namespace m3u8.download.manager.ui
         public event RequestHeadersCountChangedEventHandler OnRequestHeadersCountChanged;        
         private void Fire_OnRequestHeadersCountChanged() => OnRequestHeadersCountChanged?.Invoke( _DGVRows.Count, GetEnabledCount() );
 
-        public void SetRequestHeaders( IDictionary< string, string > requestHeaders )
+        internal void SetSettingsController( _SC_ sc ) => _SC = sc;
+        public void SetRequestHeaders( IDictionary< string, string > requestHeaders, bool ignoreHostHttpHeader )
         {
             if ( requestHeaders.AnyEx() )
             {
                 var rhs = new List< RequestHeader >( requestHeaders.Count );
                 foreach ( var p in requestHeaders.OrderBy( p => p.Key ) )
                 {
-                    rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: !HttpHeaderHelper.IsHeader_Host( p.Key ) ) );
+                    rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: !ignoreHostHttpHeader || !HttpHeaderHelper.IsHeader_Host( p.Key ) ) );
                 }
                 DGV.ItemsSource = _DGVRows = new DataGridCollectionView( rhs );
                 _SelectRectExtension.SetModel( rhs );
             }
             Fire_OnRequestHeadersCountChanged();
         }
-        private void AppendRequestHeaders( IDictionary< string, string > requestHeaders )
+        private void AppendRequestHeaders( IDictionary< string, string > requestHeaders, bool ignoreHostHttpHeader )
         {
             if ( requestHeaders.AnyEx() && (_DGVRows.SourceCollection is List< RequestHeader > rhs) )
             {
@@ -213,7 +217,7 @@ namespace m3u8.download.manager.ui
                 {
                     if ( hs.Add( p.Key ) )
                     {
-                        rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: !HttpHeaderHelper.IsHeader_Host( p.Key ) ) );
+                        rhs.Add( new RequestHeader( p.Key, p.Value, isChecked: !ignoreHostHttpHeader || !HttpHeaderHelper.IsHeader_Host( p.Key ) ) );
                     }
                 }
                 if ( cnt != hs.Count )
@@ -383,7 +387,7 @@ namespace m3u8.download.manager.ui
                         var (suc, headers) = await wnd.TryGetHeadersFromClipboard( ignoreHostHeader: false );
                         if ( suc )
                         {
-                            AppendRequestHeaders( headers );
+                            AppendRequestHeaders( headers, _SC.IgnoreHostHttpHeader );
                         }
                     }
                     break;

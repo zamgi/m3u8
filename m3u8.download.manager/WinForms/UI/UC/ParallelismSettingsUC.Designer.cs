@@ -20,7 +20,7 @@
             System.Windows.Forms.ToolTip toolTip;
             this.components = new System.ComponentModel.Container();
             this.maxDegreeOfParallelismNUD = new System.Windows.Forms.NumericUpDownEx();
-            this.useCrossDownloadInstanceParallelismCheckBox = new System.Windows.Forms.CheckBox();
+            this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox = new System.Windows.Forms.CheckBox();
             this.maxCrossDownloadInstanceNUD = new System.Windows.Forms.NumericUpDownEx();
             this.useMaxCrossDownloadInstanceCheckBox = new System.Windows.Forms.CheckBox();
             this.maxDegreeOfParallelismLabel = new System.Windows.Forms.Label();
@@ -58,19 +58,18 @@
             this.maxDegreeOfParallelismNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.maxDegreeOfParallelismNUD.Value = new decimal( new int[] { 1, 0, 0, 0 } );
             // 
-            // useCrossDownloadInstanceParallelismCheckBox
+            // shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox
             // 
-            this.useCrossDownloadInstanceParallelismCheckBox.AutoSize = true;
-            this.useCrossDownloadInstanceParallelismCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.useCrossDownloadInstanceParallelismCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.useCrossDownloadInstanceParallelismCheckBox.Location = new System.Drawing.Point(44, 68);
-            this.useCrossDownloadInstanceParallelismCheckBox.Size = new System.Drawing.Size(166, 30);
-            this.useCrossDownloadInstanceParallelismCheckBox.TabIndex = 5;
-            this.useCrossDownloadInstanceParallelismCheckBox.Text = "share \"max download threads\"\r\nbetween all downloads-instance";          
-            this.useCrossDownloadInstanceParallelismCheckBox.UseVisualStyleBackColor = true;
-            toolTip.SetToolTip(this.useCrossDownloadInstanceParallelismCheckBox, "checked - share \"max download threads\" between all downloads-instance\r\n" +
+            this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.AutoSize = true;
+            this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.Location = new System.Drawing.Point(44, 68);
+            this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.Size = new System.Drawing.Size(166, 30);
+            this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.TabIndex = 5;
+            this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.Text = "share \"max download threads\"\r\nbetween all downloads-instance";          
+            this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.UseVisualStyleBackColor = true;
+            toolTip.SetToolTip(this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox, "checked - share \"max download threads\" between all downloads-instance\r\n" +
                                                                                  "unchecked - use \"max download threads\" per each downloads-instance" );
-            //---this.useCrossDownloadInstanceParallelismCheckBox.CheckedChanged += new System.EventHandler(this.useCrossDownloadInstanceParallelismCheckBox_CheckedChanged);
 
             // 
             // maxCrossDownloadInstanceLabel
@@ -139,7 +138,7 @@
             // 
             // gb1
             // 
-            gb1.Controls.Add(this.useCrossDownloadInstanceParallelismCheckBox);
+            gb1.Controls.Add(this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox);
             gb1.Controls.Add(this.maxDegreeOfParallelismLabel);
             gb1.Controls.Add(this.maxDegreeOfParallelismNUD);
             gb1.Location = new System.Drawing.Point(14, 9);
@@ -193,7 +192,7 @@
         }
         #endregion
 
-        private System.Windows.Forms.CheckBox        useCrossDownloadInstanceParallelismCheckBox;
+        private System.Windows.Forms.CheckBox        shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox;
         private System.Windows.Forms.Label           maxDegreeOfParallelismLabel;
         private System.Windows.Forms.NumericUpDownEx maxDegreeOfParallelismNUD;
         

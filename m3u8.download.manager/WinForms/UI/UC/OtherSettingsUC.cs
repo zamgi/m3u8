@@ -150,6 +150,12 @@ namespace m3u8.download.manager.ui
             get => useDirectorySelectDialogModernCheckBox.Checked;
             set => useDirectorySelectDialogModernCheckBox.Checked = value;
         }
+        [B(false)]
+        public bool     IgnoreHostHttpHeader
+        {
+            get => ignoreHostHttpHeaderCheckBox.Checked;
+            set => ignoreHostHttpHeaderCheckBox.Checked = value;
+        }
         #endregion
 
         #region [.private methods.]

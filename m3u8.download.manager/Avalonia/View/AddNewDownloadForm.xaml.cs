@@ -13,7 +13,6 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 
 using m3u8.download.manager.controllers;
-using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 
 using _AvaBrushes_ = Avalonia.Media.Brushes;
@@ -113,7 +112,8 @@ namespace m3u8.download.manager.ui
             _SC                = vm.SettingsController;
             _DownloadListModel = vm.DownloadController?.Model;
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
-            requestHeadersEditor.SetRequestHeaders( row.RequestHeaders );
+            requestHeadersEditor.SetSettingsController( _SC );
+            requestHeadersEditor.SetRequestHeaders( row.RequestHeaders, _SC.IgnoreHostHttpHeader );
 
             this.OutputFileName               = row.OutputFileName;
             this.OutputDirectory              = row.OutputDirectory;
@@ -144,7 +144,8 @@ namespace m3u8.download.manager.ui
             _SC                = vm.SettingsController;
             _DownloadListModel = vm.DownloadController?.Model;
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
-            requestHeadersEditor.SetRequestHeaders( requestHeaders );
+            requestHeadersEditor.SetSettingsController( _SC );
+            requestHeadersEditor.SetRequestHeaders( requestHeaders, _SC.IgnoreHostHttpHeader );            
 
             #region [.if setted outputFileName.]
             //before 'this.M3u8FileUrl = m3u8FileUrl;'

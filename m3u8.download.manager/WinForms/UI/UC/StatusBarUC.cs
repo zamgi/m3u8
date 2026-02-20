@@ -139,8 +139,8 @@ namespace m3u8.download.manager.ui
             var st = GetSettings();
             using ( var f = new SettingsForm( _DC, settingsTab ) )
             {
-                f.Parallelism.MaxDegreeOfParallelism              = st.MaxDegreeOfParallelism;
-                f.Parallelism.UseCrossDownloadInstanceParallelism = st.UseCrossDownloadInstanceParallelism;
+                f.Parallelism.MaxDegreeOfParallelism = st.MaxDegreeOfParallelism;
+                f.Parallelism.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
                 f.Parallelism.SetMaxCrossDownloadInstance( st.MaxCrossDownloadInstance, st.MaxCrossDownloadInstanceSaved );
                 f.Parallelism.SetMaxSpeedThresholdInMbps ( st.MaxSpeedThresholdInMbps , st.MaxSpeedThresholdInMbpsSaved  );
 
@@ -155,11 +155,13 @@ namespace m3u8.download.manager.ui
                 f.Other.ExternalProgApplyByDefault             = st.ExternalProgApplyByDefault;
                 f.Other.UseDirectorySelectDialogModern         = st.UseDirectorySelectDialogModern;
                 f.Other.UniqueUrlsOnly                         = st.UniqueUrlsOnly;
+                f.Other.IgnoreHostHttpHeader                   = st.IgnoreHostHttpHeader;
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
                     st.MaxDegreeOfParallelism              = f.Parallelism.MaxDegreeOfParallelism;
-                    st.UseCrossDownloadInstanceParallelism = f.Parallelism.UseCrossDownloadInstanceParallelism;
+                    st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance 
+                                                           = f.Parallelism.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
                     st.MaxCrossDownloadInstance            = f.Parallelism.MaxCrossDownloadInstance;
                     st.MaxCrossDownloadInstanceSaved       = f.Parallelism.MaxCrossDownloadInstanceSaved;
                     st.MaxSpeedThresholdInMbps             = f.Parallelism.MaxSpeedThresholdInMbps;
@@ -176,6 +178,7 @@ namespace m3u8.download.manager.ui
                     st.ExternalProgApplyByDefault             = f.Other.ExternalProgApplyByDefault;
                     st.UseDirectorySelectDialogModern         = f.Other.UseDirectorySelectDialogModern;
                     st.UniqueUrlsOnly                         = f.Other.UniqueUrlsOnly;
+                    st.IgnoreHostHttpHeader                   = f.Other.IgnoreHostHttpHeader;
 
                     _SC.SaveNoThrow_IfAnyChanged();
 
@@ -197,7 +200,7 @@ namespace m3u8.download.manager.ui
                     settingsLabel_set();
                     break;
 
-                case nameof(Settings.UseCrossDownloadInstanceParallelism):
+                case nameof(Settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance):
                 case nameof(Settings.MaxDegreeOfParallelism):
                 case nameof(Settings.MaxCrossDownloadInstance):
                     parallelismLabel_set();
@@ -223,7 +226,7 @@ namespace m3u8.download.manager.ui
         private void parallelismLabel_Click( object sender, EventArgs e ) => ShowDialog_ParallelismSettings();
         private void parallelismLabel_EnabledChanged( object sender, EventArgs e )
         {
-            if ( GetSettings().UseCrossDownloadInstanceParallelism )
+            if ( GetSettings().ShareMaxDownloadThreadsBetweenAllDownloadsInstance )
             {
 #if NETCOREAPP
                 parallelismLabel.BackColor = (parallelismLabel.Enabled ? Color.FromKnownColor( KnownColor.Control ) : Color.FromKnownColor( KnownColor.Control ));
@@ -238,19 +241,22 @@ namespace m3u8.download.manager.ui
         private void parallelismLabel_set()
         {
             var st = GetSettings();
+            var shareMaxDownloadThreads  = st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
+            var maxCrossDownloadInstance = st.MaxCrossDownloadInstance;
+
             parallelismLabel.Text        = $"degree of parallelism:  {st.MaxDegreeOfParallelism} " +
-                                           (st.MaxCrossDownloadInstance.HasValue ? $"\r\ndownload-instances:  {st.MaxCrossDownloadInstance.Value} " : null);
-            parallelismLabel.ToolTipText = $"share \"max download threads\"\r\nbetween all downloads-instance:  {st.UseCrossDownloadInstanceParallelism.ToString().ToLower()}";
+                                           (maxCrossDownloadInstance.HasValue ? $"\r\ndownload-instances:  {maxCrossDownloadInstance.Value} " : null);
+            parallelismLabel.ToolTipText = $"share \"max download threads\"\r\nbetween all downloads-instance:  {shareMaxDownloadThreads.ToString().ToLower()}";
 #if NETCOREAPP
-            parallelismLabel.ForeColor = (st.UseCrossDownloadInstanceParallelism ? Color.FromKnownColor( KnownColor.ControlText ) : Color.DimGray);
-            parallelismLabel.BackColor = (st.UseCrossDownloadInstanceParallelism ? Color.FromKnownColor( KnownColor.Control     ) : Color.FromKnownColor( KnownColor.Control ));
+            parallelismLabel.ForeColor = (shareMaxDownloadThreads ? Color.FromKnownColor( KnownColor.ControlText ) : Color.DimGray);
+            parallelismLabel.BackColor = (shareMaxDownloadThreads ? Color.FromKnownColor( KnownColor.Control     ) : Color.FromKnownColor( KnownColor.Control ));
 #else
-            parallelismLabel.ForeColor = (st.UseCrossDownloadInstanceParallelism ? Color.White   : Color.FromKnownColor( KnownColor.ControlText ));
-            parallelismLabel.BackColor = (st.UseCrossDownloadInstanceParallelism ? Color.DimGray : Color.FromKnownColor( KnownColor.Control ));
+            parallelismLabel.ForeColor = (shareMaxDownloadThreads ? Color.White   : Color.FromKnownColor( KnownColor.ControlText ));
+            parallelismLabel.BackColor = (shareMaxDownloadThreads ? Color.DimGray : Color.FromKnownColor( KnownColor.Control ));
 #endif
             //--------------------------------------------//
 
-            exceptionWordsLabel.Text = (st.MaxCrossDownloadInstance.HasValue ? "file name exception\r\nword editor" : "file name exceptions");
+            exceptionWordsLabel.Text = (maxCrossDownloadInstance.HasValue ? "file name exception\r\nword editor" : "file name exceptions");
         }
         private void settingsLabel_set()
         {

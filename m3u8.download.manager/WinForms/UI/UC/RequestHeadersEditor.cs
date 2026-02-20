@@ -60,7 +60,7 @@ namespace m3u8.download.manager.ui
 
             DGV.DefaultCellStyle = DefaultColors.DGV.Create_Suc( DGV.DefaultCellStyle );
             _RPN = RowNumbersPainter.Create( DGV, useSelectedBackColor: false );
-            SetRequestHeaders( null );
+            SetRequestHeaders( null, false );
         }
 
         protected override void Dispose( bool disposing )
@@ -144,7 +144,7 @@ namespace m3u8.download.manager.ui
             yield return ("Save-Data"                , "The Save-Data client hint request header available in Chrome, Opera, and Yandex browsers lets developers deliver lighter, faster applications to users who opt-in to data saving mode in their browser.");
             yield return ("Sec-GPC"                  , "The Sec-GPC (Global Privacy Control) request header indicates whether the user consents to a website or service selling or sharing their personal information with third parties.");
         }
-        public void SetRequestHeaders( ICollection< KeyValuePair< string, string > > requestHeaders )
+        public void SetRequestHeaders( ICollection< KeyValuePair< string, string > > requestHeaders, bool ignoreHostHeader )
         {
             #region comm.
             //var max_name_length = GetRegularRequestHeader().Max( t => t.name.Length );
@@ -190,7 +190,8 @@ namespace m3u8.download.manager.ui
                 rows.Clear();
                 foreach ( var p in requestHeaders )
                 {
-                    rows.Add( !HttpHeaderHelper.IsHeader_Host( p.Key ), p.Key, p.Value );
+                    var is_checked = !ignoreHostHeader || !HttpHeaderHelper.IsHeader_Host( p.Key );
+                    rows.Add( is_checked, p.Key, p.Value );
                 }
                 //}
                 //finally

@@ -43,7 +43,7 @@
                     <NumericUpDown x:Name="maxDegreeOfParallelismNUD" Minimum="1" Maximum="100" Value="1"
                                    AllowSpin="True" ClipValueToMinMax="True" FormatString="0"
                                    HorizontalAlignment="Center" Margin="0,5,35,0" Padding="0" />
-                    <CheckBox x:Name="useCrossDownloadInstanceParallelismCheckBox" Background="White" Cursor="Hand"
+                    <CheckBox x:Name="shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox" Background="White" Cursor="Hand"
                               ToolTip.Tip="checked - share &quot;max download threads&quot; between all downloads-instance &#xA; unchecked - use &quot;max download threads&quot; per each downloads-instance">
                       <StackPanel Margin="5">
                         <TextBlock>share "max download threads"</TextBlock>
@@ -91,7 +91,7 @@
                     Margin="7,3">
                 <TextBlock Grid.Row="0" Foreground="DodgerBlue">download params</TextBlock>
                 <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1" Padding="10">
-                  <Grid RowDefinitions="auto,auto,15,auto,auto,15,auto,15,auto"
+                  <Grid RowDefinitions="auto,auto,15,auto,auto,15,auto,15,auto,15,auto"
                         ColumnDefinitions="*,auto,auto,*" 
                     >
                     <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right"
@@ -120,10 +120,14 @@
                               x:Name="uniqueUrlsOnlyCheckBox" HorizontalAlignment="Right"
                               Background="White" Cursor="Hand">use unique urls only</CheckBox>
 
-                    <TextBlock Grid.Row="8" Grid.Column="1" 
+                    <CheckBox Grid.Row="8" Grid.Column="1"
+                              x:Name="ignoreHostHttpHeaderCheckBox" HorizontalAlignment="Right"
+                              Background="White" Cursor="Hand">ignore "Host" http-header</CheckBox>
+
+                    <TextBlock Grid.Row="10" Grid.Column="1" 
                                HorizontalAlignment="Right"
                                VerticalAlignment="Center">default output file extension:</TextBlock>
-                    <TextBox Grid.Row="8" Grid.Column="2"
+                    <TextBox Grid.Row="10" Grid.Column="2"
                              x:Name="outputFileExtensionTextBox"
                              HorizontalAlignment="Left" Margin="10,0,0,0"
                              TextAlignment="Center" TextWrapping="NoWrap"

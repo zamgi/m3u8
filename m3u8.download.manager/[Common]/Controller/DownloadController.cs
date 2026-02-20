@@ -106,9 +106,9 @@ namespace m3u8.download.manager.controllers
             _Dict = new ConcurrentDictionary< DownloadRow, Tuple >();
 
             _CrossDownloadInstanceRestriction = new cross_download_instance_restriction( _SettingsController.MaxCrossDownloadInstance );
-            _DownloadThreadsSemaphoreFactory  = new download_threads_semaphore_factory( _SettingsController.UseCrossDownloadInstanceParallelism,
+            _DownloadThreadsSemaphoreFactory  = new download_threads_semaphore_factory( _SettingsController.ShareMaxDownloadThreadsBetweenAllDownloadsInstance,
                                                                                         _SettingsController.MaxDegreeOfParallelism );
-            _DownloadThreadsSemaphoreFactory_2 = new download_threads_semaphore_factory( _SettingsController.UseCrossDownloadInstanceParallelism,
+            _DownloadThreadsSemaphoreFactory_2 = new download_threads_semaphore_factory( _SettingsController.ShareMaxDownloadThreadsBetweenAllDownloadsInstance,
                                                                                          _SettingsController.MaxDegreeOfParallelism );
 
             _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( _SettingsController.MaxDegreeOfParallelism );
@@ -189,10 +189,10 @@ namespace m3u8.download.manager.controllers
                 }
                 break;
 
-                case nameof(Settings.UseCrossDownloadInstanceParallelism):
+                case nameof(Settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance):
                 {
-                    _DownloadThreadsSemaphoreFactory.UseCrossDownloadInstanceParallelism = settings.UseCrossDownloadInstanceParallelism;
-                    _DownloadThreadsSemaphoreFactory_2.UseCrossDownloadInstanceParallelism = settings.UseCrossDownloadInstanceParallelism;
+                    _DownloadThreadsSemaphoreFactory.ShareMaxDownloadThreadsBetweenAllDownloadsInstance   = settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
+                    _DownloadThreadsSemaphoreFactory_2.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
                 }
                 break;
 

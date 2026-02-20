@@ -59,10 +59,10 @@ namespace m3u8.download.manager.ui
             set => maxDegreeOfParallelismNUD.Value = Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, value ) );
         }
         [B(false)]
-        public bool UseCrossDownloadInstanceParallelism
+        public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance
         {
-            get => useCrossDownloadInstanceParallelismCheckBox.Checked;
-            set => useCrossDownloadInstanceParallelismCheckBox.Checked = value;
+            get => shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.Checked;
+            set => shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.Checked = value;
         }
 
         [B(false)]
@@ -92,7 +92,7 @@ namespace m3u8.download.manager.ui
         private void DownloadController_IsDownloadingChanged( bool isDownloading )
         {
             useMaxCrossDownloadInstanceCheckBox.Enabled =
-                useCrossDownloadInstanceParallelismCheckBox.Enabled = !isDownloading;
+                shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.Enabled = !isDownloading;
         }
         private void useMaxCrossDownloadInstanceCheckBox_CheckedChanged( object sender, EventArgs e )
         {

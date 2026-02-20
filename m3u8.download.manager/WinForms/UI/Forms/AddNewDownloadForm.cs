@@ -68,7 +68,7 @@ namespace m3u8.download.manager.ui
         {
             _IsInEditMode      = true;
             _DownloadListModel = dc?.Model;
-            requestHeadersEditor.SetRequestHeaders( row.RequestHeaders );
+            requestHeadersEditor.SetRequestHeaders( row.RequestHeaders, sc.IgnoreHostHttpHeader );
 
             this.OutputFileName               = row.OutputFileName;
             this.OutputDirectory              = row.OutputDirectory;
@@ -102,7 +102,7 @@ namespace m3u8.download.manager.ui
             , in (int n, int total)? seriesInfo = null ) : this( dc, sc )
         {
             _DownloadListModel = dc?.Model;
-            requestHeadersEditor.SetRequestHeaders( requestHeaders );
+            requestHeadersEditor.SetRequestHeaders( requestHeaders, sc.IgnoreHostHttpHeader );
 
             _Initial_M3u8FileUrl = m3u8FileUrl;
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
@@ -139,7 +139,7 @@ namespace m3u8.download.manager.ui
             , in (int n, int total)? seriesInfo = null ) : this( dc, sc )
         {
             _DownloadListModel = dc?.Model;
-            requestHeadersEditor.SetRequestHeaders( requestHeaders );
+            requestHeadersEditor.SetRequestHeaders( requestHeaders, sc.IgnoreHostHttpHeader );
 
             _Initial_M3u8FileUrl = m3u8FileUrl;
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
