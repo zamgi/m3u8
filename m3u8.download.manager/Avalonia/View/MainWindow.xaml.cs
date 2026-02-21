@@ -496,7 +496,7 @@ namespace m3u8.download.manager.ui
                     ShowDownloadStatisticsInTitle();
                     break;
 
-                case nameof(Settings.MaxCrossDownloadInstance): // nameof(Settings.UseCrossDownloadInstanceParallelism):
+                case nameof(Settings.MaxCrossDownloadInstance): // nameof(Settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance):
                     downloadInstanceToolButton.SetValueAndIsVisible( settings.MaxCrossDownloadInstance );
                     is_need_save = true;
                     break;
@@ -1001,9 +1001,9 @@ namespace m3u8.download.manager.ui
 
         private void downloadInstanceToolButton_ValueChanged( int downloadInstanceValue )
         {
-            //if ( _VM.SettingsController.UseCrossDownloadInstanceParallelism )
+            //if ( _VM.SettingsController.ShareMaxDownloadThreadsBetweenAllDownloadsInstance )
             //{
-                _VM.SettingsController.MaxCrossDownloadInstance = downloadInstanceValue;
+            _VM.SettingsController.MaxCrossDownloadInstance = downloadInstanceValue;
             //}
         }
         private void degreeOfParallelismToolButton_ValueChanged( int value ) => _VM.SettingsController.MaxDegreeOfParallelism = value;

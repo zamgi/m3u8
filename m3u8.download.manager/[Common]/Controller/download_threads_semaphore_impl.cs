@@ -16,11 +16,10 @@ namespace m3u8.download.manager.controllers
         private volatile SemaphoreSlim _Semaphore;
         private ReaderWriterLockSlim   _RWLS;
 
-        public SemaphoreHolder( SemaphoreSlim semaphore, bool useCrossDownloadInstanceParallelism )
+        public SemaphoreHolder( SemaphoreSlim semaphore )
         {
             _Semaphore = semaphore;
             _RWLS      = new ReaderWriterLockSlim( LockRecursionPolicy.SupportsRecursion );
-            UseCrossDownloadInstanceParallelism = useCrossDownloadInstanceParallelism;
         }
         public void Dispose()
         {
@@ -33,7 +32,6 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-        public bool UseCrossDownloadInstanceParallelism { [M(O.AggressiveInlining)] get; }
         public bool HasSemaphore
         {
             [M(O.AggressiveInlining)] get
@@ -169,7 +167,7 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-        public bool UseCrossDownloadInstanceParallelism { [M(O.AggressiveInlining)] get => true; }
+        public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { [M(O.AggressiveInlining)] get => true; }
         public void ResetSemaphore( int degreeOfParallelism ) => throw (new InvalidOperationException());
 
         public void Wait( CancellationToken ct )
@@ -238,7 +236,7 @@ namespace m3u8.download.manager.controllers
         public self_download_threads_semaphore( int degreeOfParallelism )
         {
             _Semaphore       = new SemaphoreSlim( degreeOfParallelism, degreeOfParallelism );
-            _SemaphoreHolder = new SemaphoreHolder( _Semaphore, UseCrossDownloadInstanceParallelism );
+            _SemaphoreHolder = new SemaphoreHolder( _Semaphore );
         }
         public void Dispose()
         {
@@ -256,7 +254,7 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-        public bool UseCrossDownloadInstanceParallelism { [M(O.AggressiveInlining)] get => false; }
+        public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { [M(O.AggressiveInlining)] get => false; }
 
         public void ResetSemaphore( int degreeOfParallelism )
         {
@@ -285,7 +283,7 @@ namespace m3u8.download.manager.controllers
             [M(O.AggressiveInlining)] public dummy_download_threads_semaphore() { }
             [M(O.AggressiveInlining)] public void Dispose() { }
 
-            public bool UseCrossDownloadInstanceParallelism { [M(O.AggressiveInlining)] get => false; }
+            public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { [M(O.AggressiveInlining)] get => false; }
 
             [M(O.AggressiveInlining)] public void ResetSemaphore( int degreeOfParallelism ) { }
 
@@ -301,14 +299,14 @@ namespace m3u8.download.manager.controllers
         #endregion
 
         #region [.ctor().]
-        public download_threads_semaphore_factory( bool useCrossDownloadInstanceParallelism, int maxDegreeOfParallelism )
+        public download_threads_semaphore_factory( bool shareMaxDownloadThreadsBetweenAllDownloadsInstance, int maxDegreeOfParallelism )
         {
-            this.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = useCrossDownloadInstanceParallelism;            
-            this.MaxDegreeOfParallelism              = maxDegreeOfParallelism;
-            this.UseMaxDegreeOfParallelism           = (0 < maxDegreeOfParallelism);
+            this.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = shareMaxDownloadThreadsBetweenAllDownloadsInstance;            
+            this.MaxDegreeOfParallelism                             = maxDegreeOfParallelism;
+            this.UseMaxDegreeOfParallelism                          = (0 < maxDegreeOfParallelism);
 
             _CrossSemaphore       = new SemaphoreSlim( maxDegreeOfParallelism, maxDegreeOfParallelism );
-            _CrossSemaphoreHolder = new SemaphoreHolder( _CrossSemaphore, true );
+            _CrossSemaphoreHolder = new SemaphoreHolder( _CrossSemaphore );
 
             _dummy_download_threads_semaphore = new dummy_download_threads_semaphore();
         }

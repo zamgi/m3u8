@@ -247,7 +247,7 @@ namespace m3u8.download.manager.controllers
             _StreamPool.ChangeCapacity( maxDegreeOfParallelism );
             _RespBufPool.ChangeCapacity( maxDegreeOfParallelism );
 
-            ph.ResetMaxDegreeOfParallelism_For_NonUseCrossDownloadInstanceParallelism_DownloadThreadsSemaphore( maxDegreeOfParallelism );
+            ph.ResetMaxDegreeOfParallelism_For_NotShareMaxDownloadThreadsBetweenAllDownloadsInstance_DownloadThreadsSemaphore( maxDegreeOfParallelism );
             ph.ContinueAll_Paused( tuples );
         }
         #endregion
@@ -1069,15 +1069,15 @@ namespace m3u8.download.manager.controllers
                 }
             }
 
-            public void ResetMaxDegreeOfParallelism_For_NonUseCrossDownloadInstanceParallelism_DownloadThreadsSemaphore( int maxDegreeOfParallelism )
+            public void ResetMaxDegreeOfParallelism_For_NotShareMaxDownloadThreadsBetweenAllDownloadsInstance_DownloadThreadsSemaphore( int maxDegreeOfParallelism )
             {
                 foreach ( var t in _Dict.Values )
                 {
-                    if ( !t.downloadThreadsSemaphore.UseCrossDownloadInstanceParallelism )
+                    if ( !t.downloadThreadsSemaphore.ShareMaxDownloadThreadsBetweenAllDownloadsInstance )
                     {
                         t.downloadThreadsSemaphore.ResetSemaphore( maxDegreeOfParallelism );
                     }
-                    if ( (t.downloadThreadsSemaphore_2 != null) && !t.downloadThreadsSemaphore_2.UseCrossDownloadInstanceParallelism )
+                    if ( (t.downloadThreadsSemaphore_2 != null) && !t.downloadThreadsSemaphore_2.ShareMaxDownloadThreadsBetweenAllDownloadsInstance )
                     {
                         t.downloadThreadsSemaphore_2.ResetSemaphore( maxDegreeOfParallelism );
                     }

@@ -9,7 +9,7 @@ namespace m3u8
     /// </summary>
     internal interface I_download_threads_semaphore : IDisposable
     {
-        bool UseCrossDownloadInstanceParallelism { get; }
+        bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { get; } //bool UseCrossDownloadInstanceParallelism { get; }
 
         void Wait( CancellationToken ct );
         Task WaitAsync( CancellationToken ct );

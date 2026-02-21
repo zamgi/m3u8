@@ -229,55 +229,6 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-        private void Settings_PropertyChanged( object sender, PropertyChangedEventArgs e )
-        {
-            Call_PropChangedAction_With_Reflection_Cast_2_struct( e );
-
-            #region comm. prev.
-            /*
-            switch ( e.PropertyName )
-            {
-                case nameof(_Settings_.AttemptRequestCountByPart):
-                    PPC( e.PropertyName, this.Settings.AttemptRequestCountByPart );
-                break;
-                case nameof(_Settings_.RequestTimeoutByPart):
-                    PPC( e.PropertyName, this.Settings.RequestTimeoutByPart );
-                break;
-
-                case nameof(_Settings_.UseCrossDownloadInstanceParallelism):
-                    PPC( e.PropertyName, this.Settings.UseCrossDownloadInstanceParallelism );
-                break;
-
-                case nameof(_Settings_.MaxDegreeOfParallelism):
-                    PPC( e.PropertyName, this.Settings.MaxDegreeOfParallelism );
-                break;
-
-                case nameof(_Settings_.MaxCrossDownloadInstance):
-                    PPC( e.PropertyName, this.Settings.MaxCrossDownloadInstance );
-                break;
-
-                case nameof(_Settings_.ShowDownloadStatisticsInMainFormTitle):
-                    PPC( e.PropertyName, this.Settings.ShowDownloadStatisticsInMainFormTitle );
-                break;
-
-                case nameof(_Settings_.ShowOnlyRequestRowsWithErrors):
-                    PPC( e.PropertyName, this.Settings.ShowOnlyRequestRowsWithErrors );
-                break;
-
-                case nameof(_Settings_.ShowAllDownloadsCompleted_Notification):
-                    PPC( e.PropertyName, this.Settings.ShowAllDownloadsCompleted_Notification );
-                break;
-
-                case nameof(_Settings_.ScrollToLastRow):
-                    PPC( e.PropertyName, this.Settings.ScrollToLastRow );
-                break;
-
-                case nameof(_Settings_.MaxSpeedThresholdInMbps):
-                    PPC( e.PropertyName, this.Settings.MaxSpeedThresholdInMbps );
-                break;
-            }
-            */
-            #endregion
-        }
+        private void Settings_PropertyChanged( object sender, PropertyChangedEventArgs e ) => Call_PropChangedAction_With_Reflection_Cast_2_struct( e );
     }
 }

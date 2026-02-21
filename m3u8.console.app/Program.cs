@@ -493,7 +493,7 @@ namespace m3u8
                 private SemaphoreSlim _Semaphore;
                 public download_threads_semaphore_impl( int maxDegreeOfParallelism ) => _Semaphore = new SemaphoreSlim( maxDegreeOfParallelism, maxDegreeOfParallelism );
                 public void Dispose() => _Semaphore.Dispose();
-                public bool UseCrossDownloadInstanceParallelism => false;
+                public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance => false;
                 public void Release() => _Semaphore.Release();
                 public void Wait( CancellationToken ct ) => _Semaphore.Wait( ct );
                 public Task WaitAsync( CancellationToken ct ) => _Semaphore.WaitAsync( ct );
