@@ -288,6 +288,7 @@ namespace m3u8.download.manager.ui
             }
             return (dict);
         }
+
         public bool InEditMode => DGV.IsCurrentCellInEditMode;
         public bool ReadOnly
         {

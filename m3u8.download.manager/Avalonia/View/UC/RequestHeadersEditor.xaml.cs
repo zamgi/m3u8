@@ -244,6 +244,22 @@ namespace m3u8.download.manager.ui
             }
             return (dict);
         }
+        private static IDictionary< string, string > GetRequestHeadersBySelectedItems( IEnumerable< RequestHeader > selItems )
+        {
+            //HTTP header names are generally case-insensitive according to HTTP specifications (RFC 9110).
+            //This means that Content-Type, content-type, and CONTENT-TYPE are all treated as the same header by compliant systems.
+
+            var dict = new SortedDictionary< string, string >( StringComparer.InvariantCultureIgnoreCase );            
+            foreach ( var rh in selItems )
+            {
+                if ( rh.Name.IsNullOrWhiteSpace() ) continue;
+
+                var key   = rh.Name?.Trim(); if ( key.IsNullOrWhiteSpace() ) continue;
+                var value = rh.Value?.Trim(); //if ( value.IsNullOrWhiteSpace() ) continue;
+                dict[ key ] = value;
+            }
+            return (dict);
+        }
 
         private int GetEnabledCount()
         {
@@ -379,12 +395,27 @@ namespace m3u8.download.manager.ui
         {
             switch ( e.Key )
             {
+                case Key.C:
+                    if ( (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control )
+                    {
+                        if ( this.GetVisualRoot() is Window wnd )
+                        {
+                            var selItems = DGV.SelectedItems;
+                            if ( 0 < selItems.Count )
+                            {
+                                await wnd.CopyHeadersToClipboard( GetRequestHeadersBySelectedItems( selItems.Cast< RequestHeader >() ) );
+                                e.Handled = true;
+                            }
+                        }
+                    }
+                    break;
+
                 case Key.V:
                     if ( (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control ) goto case Key.Insert;
                     break;
 
                 case Key.Insert:
-                    if ( this.GetVisualRoot() is Window wnd )
+                    { if ( this.GetVisualRoot() is Window wnd )
                     {
                         var ignoreHostHttpHeader = _SC?.IgnoreHostHttpHeader ?? false;
                         var (suc, headers) = await wnd.TryGetHeadersFromClipboard( ignoreHostHttpHeader );
@@ -392,7 +423,7 @@ namespace m3u8.download.manager.ui
                         {
                             AppendRequestHeaders( headers, ignoreHostHttpHeader );
                         }
-                    }
+                    }}
                     break;
             }
         }

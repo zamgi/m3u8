@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using Avalonia.Controls;
@@ -150,6 +151,18 @@ namespace m3u8.download.manager
             }
 
             return (false, default);
+        }
+        public static Task CopyHeadersToClipboard( this Window window, IDictionary< string, string > headers )
+        {
+            const char COLON = ':';
+
+            var buf = new StringBuilder();
+            foreach ( var p in headers )
+            {
+                buf.Append( p.Key ).Append( COLON ).Append( p.Value ).AppendLine();
+            }
+            var txt = buf.ToString();
+            return (window.Clipboard.SetTextAsync( txt ));
         }
     }
 }
