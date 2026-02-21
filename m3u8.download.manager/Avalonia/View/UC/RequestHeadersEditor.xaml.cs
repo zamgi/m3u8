@@ -118,6 +118,8 @@ namespace m3u8.download.manager.ui
 
         #region [.ctor().]
         public RequestHeadersEditor() => this.InitializeComponent();
+        internal void SetSettingsController( _SC_ sc ) => _SC = sc ?? throw (new ArgumentNullException());
+
 
         private void InitializeComponent()
         {
@@ -191,7 +193,6 @@ namespace m3u8.download.manager.ui
         public event RequestHeadersCountChangedEventHandler OnRequestHeadersCountChanged;        
         private void Fire_OnRequestHeadersCountChanged() => OnRequestHeadersCountChanged?.Invoke( _DGVRows.Count, GetEnabledCount() );
 
-        internal void SetSettingsController( _SC_ sc ) => _SC = sc ?? throw (new ArgumentNullException());
         public void SetRequestHeaders( IDictionary< string, string > requestHeaders, bool ignoreHostHttpHeader )
         {
             if ( requestHeaders.AnyEx() )
@@ -385,10 +386,11 @@ namespace m3u8.download.manager.ui
                 case Key.Insert:
                     if ( this.GetVisualRoot() is Window wnd )
                     {
-                        var (suc, headers) = await wnd.TryGetHeadersFromClipboard( _SC.IgnoreHostHttpHeader );
+                        var ignoreHostHttpHeader = _SC?.IgnoreHostHttpHeader ?? false;
+                        var (suc, headers) = await wnd.TryGetHeadersFromClipboard( ignoreHostHttpHeader );
                         if ( suc )
                         {
-                            AppendRequestHeaders( headers, _SC.IgnoreHostHttpHeader );
+                            AppendRequestHeaders( headers, ignoreHostHttpHeader );
                         }
                     }
                     break;

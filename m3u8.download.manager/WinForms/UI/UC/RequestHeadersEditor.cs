@@ -464,7 +464,7 @@ namespace m3u8.download.manager.ui
                     if ( e.Control ) goto case Keys.Insert;
                     break;
                 case Keys.Insert:
-                    var ignoreHostHttpHeader = _SC?.IgnoreHostHttpHeader ?? true;
+                    var ignoreHostHttpHeader = _SC?.IgnoreHostHttpHeader ?? false;
                     if ( !this.ReadOnly && ClipboardHelper.TryGetHeadersFromClipboard( out var headers, ignoreHostHttpHeader ) )
                     {
                         AppendRequestHeaders( headers, ignoreHostHttpHeader );
