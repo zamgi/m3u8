@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
 namespace m3u8.download.manager.ui
 {
     /// <summary>
@@ -51,6 +53,7 @@ namespace m3u8.download.manager.ui
 
         private RowNumbersPainter _RPN;
         private List< RequestHeader > _AllRequestHeaders4DropDown;
+        private _SC_ _SC;
         #endregion
 
         #region [.ctor().]
@@ -60,8 +63,10 @@ namespace m3u8.download.manager.ui
 
             DGV.DefaultCellStyle = DefaultColors.DGV.Create_Suc( DGV.DefaultCellStyle );
             _RPN = RowNumbersPainter.Create( DGV, useSelectedBackColor: false );
-            SetRequestHeaders( null, false );
+            SetRequestHeaders( null, default/*never-mind*/ );
         }
+        public RequestHeadersEditor( _SC_ sc ) : this() => _SC = sc ?? throw (new ArgumentNullException()); //SetSettingsController( sc );
+        //internal void SetSettingsController( _SC_ sc ) => _SC = sc ?? throw (new ArgumentNullException());
 
         protected override void Dispose( bool disposing )
         {
@@ -206,7 +211,7 @@ namespace m3u8.download.manager.ui
 
             DGV_Resize( null, EventArgs.Empty );
         }
-        private void AppendRequestHeaders( IDictionary< string, string > requestHeaders )
+        private void AppendRequestHeaders( IDictionary< string, string > requestHeaders, bool ignoreHostHttpHeader )
         {            
             if ( !requestHeaders.AnyEx() )
             {
@@ -235,7 +240,8 @@ namespace m3u8.download.manager.ui
             var rows = DGV.Rows;
             foreach ( var p in requestHeaders )
             {
-                rows.Add( true, p.Key, p.Value );
+                var is_checked = !ignoreHostHttpHeader || !HttpHeaderHelper.IsHeader_Host( p.Key );
+                rows.Add( is_checked, p.Key, p.Value );
             }
             //-------------------------------------------------//
 
@@ -458,9 +464,10 @@ namespace m3u8.download.manager.ui
                     if ( e.Control ) goto case Keys.Insert;
                     break;
                 case Keys.Insert:
-                    if ( !this.ReadOnly && ClipboardHelper.TryGetHeadersFromClipboard( out var headers, ignoreHostHeader: false ) )
+                    var ignoreHostHttpHeader = _SC?.IgnoreHostHttpHeader ?? true;
+                    if ( !this.ReadOnly && ClipboardHelper.TryGetHeadersFromClipboard( out var headers, ignoreHostHttpHeader ) )
                     {
-                        AppendRequestHeaders( headers );
+                        AppendRequestHeaders( headers, ignoreHostHttpHeader );
                     }
                     break;
             }

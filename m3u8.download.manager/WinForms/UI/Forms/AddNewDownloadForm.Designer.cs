@@ -24,7 +24,7 @@ namespace m3u8.download.manager.ui
             this.tabControl = new System.Windows.Forms.TabControl();
             this.mainTabPage = new System.Windows.Forms.TabPage();
             this.requestHeadersTabPage = new System.Windows.Forms.TabPage();
-            this.requestHeadersEditor = new RequestHeadersEditor();
+            this.requestHeadersEditor = new RequestHeadersEditor( sc );
             this.m3u8FileUrlTextBox = new System.Windows.Forms.TextBox();
             this.outputFileNameTextBox = new TextBoxWithCustomPathPaste();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);

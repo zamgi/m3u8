@@ -138,6 +138,7 @@ namespace m3u8.download.manager
                         var s_row = a.Trim();
                         var i     = s_row.IndexOfAny( anyOf ); if ( i == -1 ) break;
                         var name  = s_row.Substring( 0,  i ).Trim(); if ( name.IsNullOrEmpty() ) break;
+                        if ( ignoreHostHeader && HttpHeaderHelper.IsHeader_Host( name ) ) continue;
                         var value = s_row.Substring( i + 1 ).Trim();
 
                         dict[ name ] = value;

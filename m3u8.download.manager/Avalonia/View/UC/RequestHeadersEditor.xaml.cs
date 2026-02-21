@@ -191,7 +191,7 @@ namespace m3u8.download.manager.ui
         public event RequestHeadersCountChangedEventHandler OnRequestHeadersCountChanged;        
         private void Fire_OnRequestHeadersCountChanged() => OnRequestHeadersCountChanged?.Invoke( _DGVRows.Count, GetEnabledCount() );
 
-        internal void SetSettingsController( _SC_ sc ) => _SC = sc;
+        internal void SetSettingsController( _SC_ sc ) => _SC = sc ?? throw (new ArgumentNullException());
         public void SetRequestHeaders( IDictionary< string, string > requestHeaders, bool ignoreHostHttpHeader )
         {
             if ( requestHeaders.AnyEx() )
@@ -381,10 +381,11 @@ namespace m3u8.download.manager.ui
                 case Key.V:
                     if ( (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control ) goto case Key.Insert;
                     break;
+
                 case Key.Insert:
                     if ( this.GetVisualRoot() is Window wnd )
                     {
-                        var (suc, headers) = await wnd.TryGetHeadersFromClipboard( ignoreHostHeader: false );
+                        var (suc, headers) = await wnd.TryGetHeadersFromClipboard( _SC.IgnoreHostHttpHeader );
                         if ( suc )
                         {
                             AppendRequestHeaders( headers, _SC.IgnoreHostHttpHeader );
