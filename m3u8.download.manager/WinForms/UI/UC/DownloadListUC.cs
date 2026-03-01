@@ -628,7 +628,7 @@ namespace m3u8.download.manager.ui
             var ts           = row.GetElapsed();
             var elapsed      = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
             var percent      = ((0 < row.TotalParts) ? Convert.ToByte( (100.0 * row.SuccessDownloadParts) / row.TotalParts ).ToString() : "-");
-            //var failedParts  = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
+            //var failedParts  = ((row.FailedDownloadParts != 0) ? $", [failed: {row.FailedDownloadParts}]" : null);
             var downloadInfo = $"{percent}%, ({elapsed})";
             
             #region [.speed.]
@@ -647,7 +647,7 @@ namespace m3u8.download.manager.ui
             return (downloadInfo);
         }
 
-        [M(O.AggressiveInlining)] private static bool TryGetDownloadProgress( DownloadRow row, out double part, out string progressText )
+        [M(O.AggressiveInlining)] private static bool TryGetDownloadProgress( DownloadRow row, out (double suc, double fail) parts, out string progressText )
         {
             var st = row.Status;
             switch ( st )
@@ -655,32 +655,35 @@ namespace m3u8.download.manager.ui
                 case DownloadStatus.Created:
                 case DownloadStatus.Started:
                 case DownloadStatus.Wait   :
-                    part         = default;
+                    parts        = default;
                     progressText = null;
                     return (false);
 
                 default:
+                    (var totalParts, var successDownloadParts, var failedDownloadParts) = (row.TotalParts, row.SuccessDownloadParts, row.FailedDownloadParts);
                     string percentText;
-                    if ( 0 < row.TotalParts )
+                    if ( 0 < totalParts )
                     {
-                        part        = (1.0 * row.SuccessDownloadParts) / row.TotalParts;                        
-                        var percent = (row.TotalParts <= (row.SuccessDownloadParts + row.FailedDownloadParts)) ? 100 : Extensions.Min( (byte) (100 * part), 99 );
+                        var suc  = (1.0 * successDownloadParts) / totalParts;
+                        var fail = (1.0 * failedDownloadParts) / totalParts; ;
+                        parts = (suc, fail);
+                        var percent = (totalParts <= (successDownloadParts + failedDownloadParts)) ? 100 : Extensions.Min( (byte) (100 * suc), 99 );
                         percentText = percent.ToString();
                     }
                     else if ( st == DownloadStatus.Canceled ) //not-started
                     {
-                        part         = default;
+                        parts        = default;
                         progressText = null;
                         return (false);
                     }
                     else
                     {
-                        part        = 0;
+                        parts       = (0, 0);
                         percentText = "-";
                     }
 
-                    var failedParts = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
-                    progressText = $"{percentText}%  ({row.SuccessDownloadParts} of {row.TotalParts}{failedParts})";
+                    var failedParts = ((failedDownloadParts != 0) ? $", [failed: {failedDownloadParts}]" : null);
+                    progressText = $"{percentText}%  ({successDownloadParts} of {totalParts}{failedParts})";
                     return (true);
             }
         }
@@ -1000,15 +1003,15 @@ namespace m3u8.download.manager.ui
             var row = _Model[ e.RowIndex ];
             switch ( e.ColumnIndex )
             {
-                case OUTPUTFILENAME_COLUMN_INDEX       : e.Value = row.OutputFileName;                                    break;
-                case OUTPUTDIRECTORY_COLUMN_INDEX      : e.Value = row.OutputDirectory;                                   break;
-                case STATUS_COLUMN_INDEX               : e.Value = row.Status.ToString()/*$"               {row.Status}"*/;break;
+                case OUTPUTFILENAME_COLUMN_INDEX       : e.Value = row.OutputFileName;  break;
+                case OUTPUTDIRECTORY_COLUMN_INDEX      : e.Value = row.OutputDirectory; break;
+                case STATUS_COLUMN_INDEX               : e.Value = row.Status.ToString() + new string(' ', 17); break;
                 case DOWNLOAD_PROGRESS_COLUMN_INDEX    : 
                     //e.Value = new string( ' ', 30 );
-                    e.Value = TryGetDownloadProgress( row, out _, out var progressText ) ? progressText : string.Empty/*new string( ' ', 30 )*/;
+                    e.Value = (TryGetDownloadProgress( row, out _, out var progressText ) ? progressText : string.Empty) + new string(' ', 10);
                     break;
-                case DOWNLOAD_TIME_COLUMN_INDEX            : e.Value = GetDownloadTimeText       ( row );                     break;
-                case APPROX_REMAINED_TIME_COLUMN_INDEX     : e.Value = GetApproxRemainedTimeText ( row );                     break;
+                case DOWNLOAD_TIME_COLUMN_INDEX            : e.Value = GetDownloadTimeText       ( row ) /*+ new string(' ', 1)*/; break;
+                case APPROX_REMAINED_TIME_COLUMN_INDEX     : e.Value = GetApproxRemainedTimeText ( row ) /*+ new string(' ', 1)*/; break;
                 case DOWNLOAD_SPEED_COLUMN_INDEX           : e.Value = GetDownloadSpeedText      ( row );                     break;
                 case DOWNLOAD_BYTES_COLUMN_INDEX           : e.Value = GetDisplaySizeText        ( row.DownloadBytesLength ); break;
                 case APPROX_REMAINED_BYTES_COLUMN_INDEX    : e.Value = GetApproxRemainedBytesText( row );                     break;
@@ -1027,17 +1030,17 @@ namespace m3u8.download.manager.ui
                 case DownloadStatus.Error:
                     e.CellStyle         = _ErrorCellStyle;
                     e.FormattingApplied = true;
-                break;
+                    break;
 
                 case DownloadStatus.Canceled:
                     e.CellStyle         = _CanceledCellStyle;
                     e.FormattingApplied = true;
-                break;
+                    break;
 
                 case DownloadStatus.Finished:
                     e.CellStyle         = _FinishedCellStyle;
                     e.FormattingApplied = true;
-                break;
+                    break;
             }
         }
         
@@ -1188,8 +1191,8 @@ namespace m3u8.download.manager.ui
 
             #region [.-1- bottom & right lines.]
             var rc = e.CellBounds; rc.Width--; rc.Height--;
-            gr.DrawLines( DefaultColors.DGV.GridLinesPen, new[] { new Point( rc.X    , rc.Bottom ), new Point( rc.Right, rc.Bottom ),
-                                                                  new Point( rc.Right, rc.Y      ), new Point( rc.Right, rc.Bottom ), } );
+            gr.DrawLines( DefaultColors.DGV.GridLinesPen, [ new Point( rc.X    , rc.Bottom ), new Point( rc.Right, rc.Bottom ),
+                                                            new Point( rc.Right, rc.Y      ), new Point( rc.Right, rc.Bottom ), ] );
             #endregion
             #region [.-2- fill background.]
             var backColor = (e.State.IsSelected() ? e.CellStyle.SelectionBackColor : e.CellStyle.BackColor);
@@ -1290,7 +1293,7 @@ namespace m3u8.download.manager.ui
 
                 #region [.progress-bar-text.]
                 var row  = _Model[ e.RowIndex ];
-                var has  = TryGetDownloadProgress( row, out var part, out var progressText );
+                var has  = TryGetDownloadProgress( row, out var parts, out var progressText );
 
                 var gr = e.Graphics;
                 var rc = e.CellBounds;
@@ -1299,15 +1302,29 @@ namespace m3u8.download.manager.ui
                 {
                     //rc.Inflate( -22, 0 );
                     sf = _SF_Center;
-                    if ( 0 < part )
+                    if ( (0 < parts.suc) || (0 < parts.fail) )
                     {
-                        var progressBar = rc;
-                        progressBar.Inflate( -3, -3 );
-                        progressBar.Height--;
-                        progressBar.Width = Convert.ToInt32( (progressBar.Width - 1) * part );
+                        var progressBarSuc = rc;
+                        progressBarSuc.Inflate( -3, -3 );
+                        progressBarSuc.Height--;
+                        var full_width = progressBarSuc.Width - 1;
+                        var suc_width  = Convert.ToInt32( full_width * parts.suc );
+                        progressBarSuc.Width = suc_width;
                         using ( var br = new SolidBrush( Color.LightBlue ) )
                         {
-                            gr.FillRectangle( br, progressBar );
+                            gr.FillRectangle( br, progressBarSuc );
+                        }
+
+                        if ( 0 < parts.fail )
+                        {
+                            var progressBarFail = progressBarSuc;
+                            progressBarFail.X += suc_width; 
+                            var fail_width        = Convert.ToInt32( full_width * parts.fail );
+                            progressBarFail.Width = fail_width;
+                            using ( var br = new SolidBrush( Color.FromArgb( 0xef, 0xb7, 0xb3 )/*some ligth-red*/ ) )
+                            {
+                                gr.FillRectangle( br, progressBarFail );
+                            }
                         }
                     }
                 }

@@ -586,7 +586,7 @@ namespace m3u8.downloader
                                 responseStepActionLabel.Text = $"received {p.SuccessReceivedPartCount} of {p.TotalPartCount}";
                                 if ( p.FailedReceivedPartCount != 0 )
                                 {
-                                    responseStepActionLabel.Text += $", (failed: {p.FailedReceivedPartCount})";
+                                    responseStepActionLabel.Text += $", [failed: {p.FailedReceivedPartCount}]";
                                 }
 
                                 if ( rows_Dict.TryGetValue( p.Part.OrderNumber, out var row ) )

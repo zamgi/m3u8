@@ -206,8 +206,8 @@ namespace m3u8.download.manager.models
             var call__RowPropertiesChanged = false;
             lock ( this )
             {
-                if ( 0 < p.BytesLength )
-                {
+                //if ( 0 < p.BytesLength )
+                //{
                     var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
                     var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
                     if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
@@ -218,7 +218,7 @@ namespace m3u8.download.manager.models
 
                         call__RowPropertiesChanged = true;
                     }
-                }
+                //}
 
                 if ( _InstantSpeedInMbps != p.InstantSpeedInMbps )
                 {
@@ -236,8 +236,8 @@ namespace m3u8.download.manager.models
             var call__RowPropertiesChanged = false;
             lock ( this )
             {
-                if ( 0 < p.BytesLength )
-                {
+                //if ( 0 < p.BytesLength )
+                //{
                     var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
                     var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
                     if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
@@ -248,7 +248,7 @@ namespace m3u8.download.manager.models
 
                         call__RowPropertiesChanged = true;
                     }
-                }
+                //}
 
                 //if ( _InstantSpeedInMbps != p.InstantSpeedInMbps )
                 //{
@@ -403,8 +403,8 @@ namespace m3u8.download.manager.models
                 return (_InstantSpeedInMbps);
             }
         }
-#if DEBUG
+//#if DEBUG
         public override string ToString() => $"{Status}, {(IsLiveStream ? "(LiveStream), " : null)}'{GetOutputFullFileName()}'";
-#endif
+//#endif
     }
 }

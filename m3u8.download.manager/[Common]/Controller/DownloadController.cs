@@ -634,7 +634,7 @@ namespace m3u8.download.manager.controllers
                     });
 
                     //-4-//
-                    _Dict.Remove( row ); Fire_IsDownloadingChanged();
+                    _Dict.Remove( row ); //Fire_IsDownloadingChanged();
 
                     #region [.remane output file if changed.]
                     var renameOutputFileException = default(Exception);
@@ -666,10 +666,12 @@ namespace m3u8.download.manager.controllers
                         row.StatusErrorWithNoLog();
                     }
                     #endregion
+
+                    Fire_IsDownloadingChanged();
                 }
                 catch ( Exception ex )
                 {
-                    _Dict.Remove( row ); Fire_IsDownloadingChanged();
+                    _Dict.Remove( row ); //Fire_IsDownloadingChanged();
 
                     if ( cts.IsCancellationRequested )
                     {
@@ -685,6 +687,8 @@ namespace m3u8.download.manager.controllers
                     {
                         row.StatusError( ex );
                     }
+
+                    Fire_IsDownloadingChanged();
                 }
             }
         }
@@ -814,7 +818,7 @@ namespace m3u8.download.manager.controllers
                     });
 
                     //-4-//
-                    _Dict.Remove( row ); Fire_IsDownloadingChanged();
+                    _Dict.Remove( row ); //Fire_IsDownloadingChanged();
 
                     #region comm. [.remane output file if changed.]
                     /*
@@ -857,10 +861,12 @@ namespace m3u8.download.manager.controllers
                         row.StatusErrorWithNoLog();
                     }
                     #endregion
+
+                    Fire_IsDownloadingChanged();
                 }
                 catch ( Exception ex )
                 {
-                    _Dict.Remove( row ); Fire_IsDownloadingChanged();
+                    _Dict.Remove( row ); //Fire_IsDownloadingChanged();
 
                     if ( cts.IsCancellationRequested )
                     {
@@ -876,6 +882,8 @@ namespace m3u8.download.manager.controllers
                     {
                         row.StatusError( ex );
                     }
+
+                    Fire_IsDownloadingChanged();
                 }
             }
         }

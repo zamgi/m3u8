@@ -240,8 +240,8 @@ namespace m3u8.download.manager.models
             var call__Fire_PropertyChanged_Events = false;
             lock ( this )
             {
-                if ( 0 < p.BytesLength )
-                {
+                //if ( 0 < p.BytesLength )
+                //{
                     var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
                     var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
                     if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
@@ -252,7 +252,7 @@ namespace m3u8.download.manager.models
 
                         call__Fire_PropertyChanged_Events = true;
                     }
-                }
+                //}
 
                 if ( _InstantSpeedInMbps != p.InstantSpeedInMbps )
                 {
@@ -271,8 +271,8 @@ namespace m3u8.download.manager.models
             var call__RowPropertiesChanged = false;
             lock ( this )
             {
-                if ( 0 < p.BytesLength )
-                {
+                //if ( 0 < p.BytesLength )
+                //{
                     var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
                     var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
                     if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
@@ -283,7 +283,7 @@ namespace m3u8.download.manager.models
 
                         call__RowPropertiesChanged = true;
                     }
-                }
+                //}
 
                 //if ( _InstantSpeedInMbps != p.InstantSpeedInMbps )
                 //{

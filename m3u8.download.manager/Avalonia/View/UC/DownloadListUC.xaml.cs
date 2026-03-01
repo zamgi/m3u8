@@ -605,7 +605,7 @@ namespace m3u8.download.manager.ui
             var elapsed      = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
             var percent      = ((0 < row.TotalParts) ? Convert.ToByte( (100.0 * row.SuccessDownloadParts) / row.TotalParts ).ToString() : "-");
             var downloadInfo = $"{percent}%, ({elapsed})";
-            //var failedParts  = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);            
+            //var failedParts  = ((row.FailedDownloadParts != 0) ? $", [failed: {row.FailedDownloadParts}]" : null);            
 
             #region [.speed.]
             if ( !st.IsPaused() )
@@ -652,7 +652,7 @@ namespace m3u8.download.manager.ui
                         percentText = "-";
                     }
 
-                    var failedParts = ((row.FailedDownloadParts != 0) ? $" (failed: {row.FailedDownloadParts})" : null);
+                    var failedParts = ((row.FailedDownloadParts != 0) ? $", [failed: {row.FailedDownloadParts}]" : null);
                     progressText = $"{percentText}%  ({row.SuccessDownloadParts} of {row.TotalParts}{failedParts})";
                     return (true);
             }

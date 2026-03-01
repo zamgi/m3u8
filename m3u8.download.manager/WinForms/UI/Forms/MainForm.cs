@@ -600,7 +600,11 @@ namespace m3u8.download.manager.ui
                     ShowDownloadStatisticsInTitle();
 
                     #region [.run External progs if need.]                    
-                    if ( row.IsFinished()/*.IsFinishedOrError()*/ && FileHelper.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && _ExternalProgQueue.Contains( outputFileName ) )
+                    if ( row.IsFinished()/*.IsFinishedOrError()*/ && 
+                         !row.HasAnyFailedDownloadParts() &&
+                         FileHelper.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && 
+                         _ExternalProgQueue.Contains( outputFileName ) 
+                       )
                     {
                         _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
 
