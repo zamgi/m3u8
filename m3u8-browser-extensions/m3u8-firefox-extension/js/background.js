@@ -1,13 +1,24 @@
 const root = browser; //chrome;
+
+const is_match_url = url => {
+    const ext = (url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
+    return (ext === 'm3u8');
+};
+const is_match_method = method => {
+    const m = (method || '').toLowerCase();
+    //return (m === 'get');
+    switch (m) { case 'get': case 'post': return (true); default: console.log(`skip req-method: ${method}`); break; }
+};
+const is_match_url_n_method = d => is_match_url(d.url) && is_match_method(d.method);
+
 window.addEventListener('load', function () {
     window.workInfo = new workInfoType();
 
-    const requestHeaders_by_url = {};
+    const _RequestHeadersByUrl = {};
     root.webRequest.onCompleted.addListener(async d => {
-        const ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
-        if (ext === 'm3u8') {
-            const requestHeaders = requestHeaders_by_url[d.url];
-            if (requestHeaders) delete requestHeaders_by_url[d.url];
+        if (is_match_url_n_method(d)/*is_match_url(d.url) && is_match_method(d.method)*/) {
+            const requestHeaders = _RequestHeadersByUrl[d.url];
+            if (requestHeaders) delete _RequestHeadersByUrl[d.url];
 
             window.workInfo.addM3u8Urls(d.tabId, d.url, requestHeaders);
             await window.workInfo.setUrlsCountText(d.tabId);
@@ -16,9 +27,8 @@ window.addEventListener('load', function () {
     {urls: ['<all_urls>']});
 
     root.webRequest.onBeforeSendHeaders.addListener(d => {
-        const ext = (d.url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
-        if (ext === 'm3u8') {
-            requestHeaders_by_url[d.url] = JSON.stringify(d.requestHeaders);
+        if (is_match_url_n_method(d)/*is_match_url(d.url) && is_match_method(d.method)*/) {
+            _RequestHeadersByUrl[d.url] = JSON.stringify(d.requestHeaders);
         }
     },
     {urls: ['<all_urls>']}, ['requestHeaders']);

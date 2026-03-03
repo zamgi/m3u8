@@ -23,17 +23,23 @@ const is_match_url = url => {
     const ext = (url.split('?')[ 0 ].split('.').pop() || '').toLowerCase();
     return (ext === 'm3u8');
 };
+const is_match_method = method => {
+    const m = (method || '').toLowerCase();
+    //return (m === 'get');
+    switch (m) { case 'get': case 'post': return (true); default: console.log(`skip req-method: ${method}`); break; }
+};
+const is_match_url_n_method = d => is_match_url(d.url) && is_match_method(d.method);
 
 const _RequestHeadersByUrl = {};
 root.webRequest.onBeforeSendHeaders.addListener(d => {
-    if (is_match_url(d.url)) {
+    if (is_match_url_n_method(d)/*is_match_url(d.url) && is_match_method(d.method)*/) {
         _RequestHeadersByUrl[d.url] = JSON.stringify(d.requestHeaders);
     }
 },
 { urls: ['<all_urls>'] }, ['requestHeaders', 'extraHeaders'] );
 
 root.webRequest.onCompleted.addListener(async d => {
-    if (is_match_url(d.url)) {
+    if (is_match_url_n_method(d)/*is_match_url(d.url) && is_match_method(d.method)*/) {
         const requestHeaders = _RequestHeadersByUrl[d.url];
         if (requestHeaders) delete _RequestHeadersByUrl[d.url];
 
@@ -42,7 +48,12 @@ root.webRequest.onCompleted.addListener(async d => {
 },
 { urls: ['<all_urls>'] });
 
-root.tabs.onActivated.addListener(async d => await _WorkInfo.activateTab(d.tabId));
+//---root.tabs.onActivated.addListener(async d => await _WorkInfo.activateTab(d.tabId));
+root.tabs.onActivated.addListener(async d => {
+    //console.log(`root.tabs.onActivated, _WorkInfo: ${(_WorkInfo ? `'${JSON.stringify(_WorkInfo)}'` : _WorkInfo)}`);
+    if (_WorkInfo) await _WorkInfo.activateTab(d.tabId);
+    else console.log(`root.tabs.onActivated, _WorkInfo: ${_WorkInfo}`);
+});
 
 root.tabs.onRemoved.addListener(async tabId => await _WorkInfo.deleteTab(tabId));
 
