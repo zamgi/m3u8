@@ -301,6 +301,9 @@ if ( (new Random()).Next( 10 ) == 0 )
                 }
                 catch ( Exception ex )
                 {
+                    dpsa.AttemptRequestNumber = _AttemptRequestCount - attemptRequestCount + 1;
+                    ip.DownloadPartStepAction?.Invoke( dpsa );
+
                     if ( (attemptRequestCount == 1) || ct.IsCancellationRequested )
                     {
                         part.SetError( ex );

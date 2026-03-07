@@ -346,7 +346,7 @@ namespace m3u8.download.manager
                 return (to_text( sizeInBytes / MEGABYTE) + " MB");
             if ( KILOBYTE < sizeInBytes )
                 return (to_text( sizeInBytes / KILOBYTE) + " KB");
-            return (sizeInBytes.ToString("#,#"/*"N0"*/) + " bytes");
+            return ((sizeInBytes != 0) ? sizeInBytes.ToString("#,#"/*"N0"*/) + " bytes" : "0 bytes");
         }
 
         public static string GetSizeInMbFormatted( long sizeInBytes )
