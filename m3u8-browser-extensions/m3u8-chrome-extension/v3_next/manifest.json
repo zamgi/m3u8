@@ -5,8 +5,8 @@
   "manifest_version": 3,
 
   "name"       : "m3u8 file downloader",
-  "description": "m3u8 file downloader chrome extension 2.5",
-  "version"    : "2.5",
+  "description": "m3u8 file downloader chrome extension 2.6",
+  "version"    : "2.6",
   "offline_enabled": true,
   "icons": {
     "32" : "img/m3u8.png",
