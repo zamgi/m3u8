@@ -451,7 +451,7 @@ namespace m3u8.download.manager.ui
                             var row = downloadListUC.GetSelectedDownloadRow();
                             if ( row != null )
                             {
-                                if ( row.IsFinishedOrError() )
+                                if ( row.IsFinishedOrErrorOrCreated() )
                                 {
                                     openOutputFileMenuItem_Click( this, EventArgs.Empty );
                                 }
@@ -1167,7 +1167,7 @@ namespace m3u8.download.manager.ui
         private async void openOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( (row != null) && row.IsFinishedOrError() && FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( (row != null) && row.IsFinishedOrErrorOrCreated() && FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
             {
                 try
                 {

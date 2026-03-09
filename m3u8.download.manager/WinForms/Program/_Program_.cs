@@ -21,14 +21,8 @@ namespace m3u8.download.manager
         //disallowed async/await => don't work Drag-N-Drop//
         [STAThread] private static void/*async Task*/ Main( string[] args )
         {
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault( false );
-            //Application.Run( new Form1() );
-            //return;
-            //----------------------------------------------------//
-
-            Application.ThreadException                  += (_, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
-            AppDomain  .CurrentDomain.UnhandledException += (_, e) => Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
+            Application.ThreadException                  += (_, e) => ErrorDialog.Show( "Application.ThreadException"               , e.Exception ); //e.Exception.MessageBox_ShowError( "Application.ThreadException" );
+            AppDomain  .CurrentDomain.UnhandledException += (_, e) => ErrorDialog.Show( "AppDomain.CurrentDomain.UnhandledException", e           ); //Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
             Application.SetUnhandledExceptionMode( UnhandledExceptionMode.Automatic, true );
 
             using ( var sca = SingleCopyApplication.Current )

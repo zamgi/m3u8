@@ -163,7 +163,7 @@ namespace m3u8.client.tests
 #endif
             using ( var mc = new m3u8_client( _HttpClient, default ) )
             {
-                var m3u8_file = await mc.DownloadFile( _M3u8Url );
+                var m3u8_file = await mc.DownloadFile( _M3u8Url, TestContext.Current.CancellationToken );
 
                 _Assert_( m3u8_file );
             }
@@ -184,12 +184,12 @@ namespace m3u8.client.tests
 #endif
             using ( var mc = new m3u8_client( _HttpClient, default ) )
             {
-                var m3u8_file = await mc.DownloadFile( _M3u8Url );
+                var m3u8_file = await mc.DownloadFile( _M3u8Url, TestContext.Current.CancellationToken );
 
                 _Assert_( m3u8_file );
 
                 var m3u8_part = m3u8_file.Parts.First();
-                var downloaded_m3u8_part = await mc.DownloadPart( m3u8_part, m3u8_file.BaseAddress );
+                var downloaded_m3u8_part = await mc.DownloadPart( m3u8_part, m3u8_file.BaseAddress, TestContext.Current.CancellationToken );
 
                 _Assert_( downloaded_m3u8_part );
             }

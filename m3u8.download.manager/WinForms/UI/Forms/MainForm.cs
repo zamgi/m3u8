@@ -21,8 +21,8 @@ using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC
 using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
 using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
-using M = System.Runtime.CompilerServices.MethodImplAttribute;
-using O = System.Runtime.CompilerServices.MethodImplOptions;
+using M                                      = System.Runtime.CompilerServices.MethodImplAttribute;
+using O                                      = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.download.manager.ui
 {
@@ -317,8 +317,9 @@ namespace m3u8.download.manager.ui
                         }
                         break;
                     case Keys.T: //Open output file with External progs
-                        if ( downloadListUC.HasFocus )
+                        //if ( downloadListUC.HasFocus )
                         {
+                            e.SuppressKeyPress = true;
                             openOutputFilesWithExternalMenuItem_Click( this, EventArgs.Empty );
                         }
                         break;
@@ -392,7 +393,7 @@ namespace m3u8.download.manager.ui
                             var row = downloadListUC.GetSelectedDownloadRow();
                             if ( row != null )
                             {
-                                if ( row.IsFinishedOrError() )
+                                if ( row.IsFinishedOrErrorOrCreated() )
                                 {
                                     openOutputFileMenuItem_Click( this, EventArgs.Empty );
                                 }
@@ -1530,7 +1531,7 @@ namespace m3u8.download.manager.ui
         private void openOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( (row != null) && row.IsFinishedOrError() && FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( (row != null) && row.IsFinishedOrErrorOrCreated() && FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
             {
 #if NETCOREAPP
                 using ( Process.Start( new ProcessStartInfo( outputFileName ) { UseShellExecute = true } ) ) {; }
@@ -1550,7 +1551,7 @@ namespace m3u8.download.manager.ui
 
             var rows = downloadListUC.GetSelectedDownloadRows();
             var outputFileNames = (from row in rows
-                                   where row.IsFinishedOrError()
+                                   where row.IsFinishedOrErrorOrCreated()
                                    let t = FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames() )
                                    where t.success
                                    select t.outputFileName
@@ -1569,9 +1570,9 @@ namespace m3u8.download.manager.ui
             }
 
             var outputFileNamesQueue = (from row in rows
-                                        where !row.IsFinishedOrError()
+                                        where !row.IsFinishedOrErrorOrCreated()
                                         select row.GetOutputFullFileName()
-                                       ).ToList();
+                                       ).ToList( rows.Count );
             if ( outputFileNamesQueue.Any() )
             {
                 var cst = openOutputFilesWithExternalMenuItem.CheckState;

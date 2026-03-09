@@ -10,11 +10,11 @@ using System.Windows.Forms;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
-using CellStyle = System.Windows.Forms.DataGridViewCellStyle;
-using _SC_      = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
-using M = System.Runtime.CompilerServices.MethodImplAttribute;
-using O = System.Runtime.CompilerServices.MethodImplOptions;
+using CellStyle                   = System.Windows.Forms.DataGridViewCellStyle;
+using _SC_                        = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using M                           = System.Runtime.CompilerServices.MethodImplAttribute;
+using O                           = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.download.manager.ui
 {
@@ -60,7 +60,7 @@ namespace m3u8.download.manager.ui
         private Action< LogRow >  _InvalidateRowAction;
         private Action            _Model_CollectionChanged_AddChangedType_Buf__UIRoutineAction;
         private Action< _CollectionChangedTypeEnum_, LogRow > _Model_CollectionChangedAction;        
-        private bool _WasAdjustColumnsWidthSprain; //_VScrollBarVisible;
+        //private bool _WasAdjustColumnsWidthSprain; //_VScrollBarVisible;
 
         private LogRowsHeightStorer _LogRowsHeightStorer;
         private Settings _Settings;
@@ -187,7 +187,10 @@ namespace m3u8.download.manager.ui
                 if ( _ScrollToLastRow != value )
                 {
                     _ScrollToLastRowMenuItem.Checked = _ScrollToLastRow = value;
-                    ScrollToLastRow_UI();
+                    if ( value )
+                    {
+                        ScrollToLastRow_UI();
+                    }
                 }
             }
         }
@@ -234,6 +237,8 @@ namespace m3u8.download.manager.ui
         public void AdjustColumnsWidthSprain() => DGV_Resize( null, null );
         public void AdjustRowsHeight()
         {
+            if ( !_AutoResizeRowsHeight ) return;
+
             const int DGV_ROWS_COUNT_MAX_THRESHOLD = 10_000 + 10;
 
             var endRowIndex = DGV.RowCount - 1;
@@ -395,7 +400,8 @@ namespace m3u8.download.manager.ui
 
                     case _CollectionChangedTypeEnum_.Clear:
                         ClearDataGridItems_UI();
-                        _WasAdjustColumnsWidthSprain = false;
+                        //_WasAdjustColumnsWidthSprain = false;
+                        _Prev_IsVerticalScrollBarVisible = false;
                         Set_DGV_RowCount();
                         break;
 
@@ -453,6 +459,7 @@ namespace m3u8.download.manager.ui
             DGV.ClearSelection();
 
             await Task.Delay( 1 );
+            _Prev_IsVerticalScrollBarVisible = !this.IsVerticalScrollBarVisible;
             AdjustColumnsWidthSprain_And_ScrollToLastRow();
         }
         private void ClearDataGridItems_UI()
@@ -549,18 +556,33 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        private bool _Prev_IsVerticalScrollBarVisible;
         private void AdjustColumnsWidthSprain_And_ScrollToLastRow()
         {
-            if ( !_WasAdjustColumnsWidthSprain && this.IsVerticalScrollBarVisible )
+            if ( !IsFormMinimized() )
             {
-                _WasAdjustColumnsWidthSprain = true;
-                AdjustColumnsWidthSprain();
+                var isVerticalScrollBarVisible = this.IsVerticalScrollBarVisible;
+                if ( _Prev_IsVerticalScrollBarVisible != isVerticalScrollBarVisible )
+                {
+                    _Prev_IsVerticalScrollBarVisible = isVerticalScrollBarVisible;
+                    AdjustColumnsWidthSprain();
+                }
             }
-            ScrollToLastRow_UI();
+
+            //if ( !_WasAdjustColumnsWidthSprain && isVerticalScrollBarVisible )
+            //{
+            //    _WasAdjustColumnsWidthSprain = true;
+            //    AdjustColumnsWidthSprain();
+            //}
+
+            if ( _ScrollToLastRow )
+            {
+                ScrollToLastRow_UI();
+            }
         }
         private void ScrollToLastRow_UI()
         {
-            if ( _ScrollToLastRow && (0 < _DGVRows.Count) )
+            if ( 0 < _DGVRows.Count )
             {
                 DGV.SetFirstDisplayedScrollingRowIndex( _DGVRows.Count - 1 );
             }
@@ -622,6 +644,12 @@ namespace m3u8.download.manager.ui
         private int GetColumnsResizeDiff() => (DGV.RowHeadersVisible ? DGV.RowHeadersWidth : 0) + 
                                               (IsVerticalScrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0) + //3 + 
                                               ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : SystemInformation.BorderSize.Width);
+        private Form _ParentForm;
+        private bool IsFormMinimized()
+        {
+            if ( _ParentForm == null ) _ParentForm = this.FindForm();
+            return ((_ParentForm != null) && (_ParentForm.WindowState == FormWindowState.Minimized));
+        }
 
         private void DGV_RowHeightChanged( object sender, DataGridViewRowEventArgs e ) => _LogRowsHeightStorer.StoreRowHeight( _Model, e.Row );
         private void DGV_ColumnWidthChanged( object sender, DataGridViewColumnEventArgs e )
@@ -696,7 +724,7 @@ namespace m3u8.download.manager.ui
         }
         private void DGV_Resize( object sender, EventArgs e )
         {
-            if ( this.FindForm()?.WindowState == FormWindowState.Minimized )
+            if ( IsFormMinimized() )
             {
                 return;
             }
@@ -717,10 +745,11 @@ namespace m3u8.download.manager.ui
                 DGV_requestColumn.Width = w;
             }
 
-            if ( sender != null )
-            {
-                AdjustRowsHeight();
-            }
+            ////if ( sender != null )
+            ////{
+            ////    AdjustRowsHeight();
+            ////}
+            
             //}
             //finally
             //{ 

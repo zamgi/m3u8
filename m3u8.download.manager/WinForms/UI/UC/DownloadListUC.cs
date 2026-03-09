@@ -13,11 +13,11 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
-using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
-using CellStyle   = System.Windows.Forms.DataGridViewCellStyle;
-using HitTestInfo = System.Windows.Forms.DataGridView.HitTestInfo;
-using M = System.Runtime.CompilerServices.MethodImplAttribute;
-using O = System.Runtime.CompilerServices.MethodImplOptions;
+using _SC_                        = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using CellStyle                   = System.Windows.Forms.DataGridViewCellStyle;
+using HitTestInfo                 = System.Windows.Forms.DataGridView.HitTestInfo;
+using M                           = System.Runtime.CompilerServices.MethodImplAttribute;
+using O                           = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.download.manager.ui
 {
