@@ -13,14 +13,14 @@ namespace m3u8.download.manager.ui
     {
         private static HashSet< TemplatedControl > _BlinkedControls = new HashSet< TemplatedControl >();
 
-        public static async void FocusAndBlinkBackColor( this TemplatedControl control, IBrush bgColor )
+        public static async void FocusAndBlinkBackColor( this TemplatedControl control, IBrush bgColor, int millisecondsDelay = 330 )
         {
             control.Focus();
             if ( _BlinkedControls.Add( control ) )
             {
                 var bc = control.Background;
                 control.Background = bgColor;
-                await Task.Delay( 330 );
+                await Task.Delay( millisecondsDelay );
                 control.Background = bc;
                 _BlinkedControls.Remove( control );
                 //Task.Delay( 330 ).ContinueWith( _ => control.BackColor = bc, TaskScheduler.FromCurrentSynchronizationContext() );

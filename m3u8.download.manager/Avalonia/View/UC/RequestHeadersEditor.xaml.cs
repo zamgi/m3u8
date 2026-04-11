@@ -398,7 +398,7 @@ namespace m3u8.download.manager.ui
                 case Key.C:
                     if ( (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control )
                     {
-                        if ( this.GetVisualRoot() is Window wnd )
+                        if ( this.VisualRoot is Window wnd )
                         {
                             var selItems = DGV.SelectedItems;
                             if ( 0 < selItems.Count )
@@ -415,7 +415,7 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case Key.Insert:
-                    { if ( this.GetVisualRoot() is Window wnd )
+                    { if ( this.VisualRoot is Window wnd )
                     {
                         var ignoreHostHttpHeader = _SC?.IgnoreHostHttpHeader ?? false;
                         var (suc, headers) = await wnd.TryGetHeadersFromClipboard( ignoreHostHttpHeader );

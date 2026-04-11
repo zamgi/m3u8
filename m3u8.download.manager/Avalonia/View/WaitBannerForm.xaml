@@ -7,7 +7,7 @@
         d:DesignWidth="261" d:DesignHeight="116"
         Width="261" Height="116"
         WindowStartupLocation="CenterOwner"
-        SystemDecorations="None"
+        WindowDecorations="None"
         Topmost="True"
         ShowInTaskbar="False"
         ><!--HasSystemDecorations="False"-->

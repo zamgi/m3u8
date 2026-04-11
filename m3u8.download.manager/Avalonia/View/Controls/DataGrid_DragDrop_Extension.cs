@@ -98,7 +98,7 @@ namespace m3u8.download.manager.ui
             _ScrollIfNeedTimer = new _Timer_() { Interval = ScrollDelayInMilliseconds, AutoReset = true, Enabled = false };
             _ScrollIfNeedTimer.Elapsed += async (_, _) => await Dispatcher.UIThread.InvokeAsync( scrollIfNeedTimer_Elapsed_Action );
 
-            DGV.AttachedToVisualTree += (_, e) => _TopVisual = (Visual) e.Root;
+            DGV.AttachedToVisualTree += (_, e) => _TopVisual = e.RootVisual;
         }
         #endregion
 
@@ -309,7 +309,8 @@ namespace m3u8.download.manager.ui
             try
             {
                 _IsInDragDrop = true;
-                var res = await DragDrop.DoDragDropAsync( e, dataTrans, DragDropEffects.Move | DragDropEffects.Copy );
+                var ee = new PointerPressedEventArgs( e.Source, e.Pointer, _TopVisual, pt, e.Timestamp, e.Properties, e.KeyModifiers );
+                var res = await DragDrop.DoDragDropAsync( ee, dataTrans, DragDropEffects.Move | DragDropEffects.Copy );
                 if ( res != DragDropEffects.None )
                 {
                     ((DataGridCollectionView) DGV.ItemsSource).Refresh();

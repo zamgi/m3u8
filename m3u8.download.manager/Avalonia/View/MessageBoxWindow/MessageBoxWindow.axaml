@@ -1,0 +1,71 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" 
+        d:DesignWidth="500" 
+        d:DesignHeight="250"
+        x:Class="m3u8.download.manager.MessageBoxWindow"
+        WindowStartupLocation="CenterOwner"        
+        ShowInTaskbar="False"
+        CanMaximize="False"
+        CanMinimize="False"
+        Icon="/Resources/m3u8_32x36.ico"
+        >    
+<Grid ShowGridLines="False">
+    <Grid.RowDefinitions>
+      <!--<RowDefinition Height="auto" />-->
+      <RowDefinition Height="50" />
+      <RowDefinition Height="*"  />
+      <RowDefinition Height="40" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="50" />
+      <ColumnDefinition Width="*"  />
+    </Grid.ColumnDefinitions>
+
+    <!-- Source="/Resources/m3u8_32x36.ico"  -->
+    <Image x:Name="iconImage" Grid.Row="0" Grid.Column="0"           
+           Stretch="UniformToFill"
+           StretchDirection="DownOnly"
+           Margin="0 10 0 0" />
+    <ScrollViewer Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                  VerticalScrollBarVisibility="Auto"
+                  Margin="5 10 10 0"
+                  >
+        <!-- Background="GreenYellow" -->
+        <TextBlock x:Name="messageTextBlock"                     
+                    FontSize="15"
+                    HorizontalAlignment="Center"
+                    TextWrapping="WrapWithOverflow"
+                    TextTrimming="CharacterEllipsis"
+                    Padding="0"
+                    >
+<!--
+    У женщин народа айну, жившего на северных островах Японии и в Сахалинском регионе, существовал древний обычай татуировать губы - узор, похожий на широкую «улыбку».
+
+    Эта традиция уходит корнями более чем на 10 000 лет назад и имела глубокий сакральный смысл.
+    Татуировка считалась знаком женственности, зрелости и оберегом от злых духов. Считалось, что девушка без этого узора не сможет выйти замуж и не найдёт покоя в загробном мире.
+
+    Обряд начинался рано - примерно с 7 лет. Маленьким девочкам сначала делали небольшие надрезы у уголков губ, а затем, по мере взросления, рисунок расширяли, пока он не превращался в полную «улыбку».
+    Раны заполняли сажей, чтобы линии стали чёрными и чёткими.
+
+    Когда японские власти в XIX веке запретили эту практику, айну продолжали следовать традиции тайно - вплоть до середины XX века.
+
+    Для них это было не проявление жестокости, а обряд силы, красоты и духовной защиты, связанный с их древним представлением о душе и переходе между мирами.
+-->
+        </TextBlock>
+    </ScrollViewer>
+
+    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"
+                Orientation="Horizontal" 
+                HorizontalAlignment="Center"
+                Margin="0 7"
+                >
+		<Button x:Name="okButton"     Width="100" Margin="5 0" Click="okButton_Click">Ok</Button>
+        <Button x:Name="cancelButton" Width="100" Margin="5 0" Click="cancelButton_Click">Cancel</Button>
+        <Button x:Name="yesButton"    Width="100" Margin="5 0" Click="yesButton_Click" IsVisible="False">Yes</Button>
+        <Button x:Name="noButton"     Width="100" Margin="5 0" Click="noButton_Click" IsVisible="False">No</Button>
+    </StackPanel>
+</Grid>
+</Window>

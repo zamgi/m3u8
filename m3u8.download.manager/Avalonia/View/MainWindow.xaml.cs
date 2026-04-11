@@ -12,7 +12,6 @@ using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using Avalonia.Platform;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -21,8 +20,9 @@ using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
-using MsBox.Avalonia.Enums;
+//using MsBox.Avalonia.Enums;
 
+using ButtonResult = m3u8.download.manager.MessageBoxWindow.ButtonTypeEnum; // MsBox.Avalonia.Enums.ButtonResult;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_ = m3u8.download.manager.Properties.Resources;
 using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
@@ -573,20 +573,20 @@ namespace m3u8.download.manager.ui
             {
                 _HostWindow_4_Notification?.Close();
                 _HostWindow_4_Notification = new Window() 
-                {
+                {                    
                     ShowInTaskbar                      = false,
                     BorderBrush                        = Brushes.Transparent,
                     Background                         = Brushes.Transparent,//null, //
                     TransparencyBackgroundFallback     = Brushes.Transparent,//null, //
-                    SystemDecorations                  = SystemDecorations.None,
-                    //---TransparencyLevelHint              = WindowTransparencyLevel.Transparent,
-                    TransparencyLevelHint              = new[] { WindowTransparencyLevel.Transparent },
+                    WindowDecorations                  = WindowDecorations.None,
+                    TransparencyLevelHint              = [ WindowTransparencyLevel.Transparent ],
                     ShowActivated                      = false,
                     CanResize                          = false,
                     IsTabStop                          = false,
-                    ExtendClientAreaToDecorationsHint  = true,
-                    ExtendClientAreaChromeHints        = ExtendClientAreaChromeHints.NoChrome,
+                    ExtendClientAreaToDecorationsHint  = true,                    
                     ExtendClientAreaTitleBarHeightHint = -1,
+                    SizeToContent                      = SizeToContent.WidthAndHeight,   
+                    //---ExtendClientAreaChromeHints        = ExtendClientAreaChromeHints.NoChrome,
                 };
                 //---var scr = this.Screens.ScreenFromWindow( this.PlatformImpl );
                 var scr = this.Screens.ScreenFromWindow( this );
@@ -610,7 +610,16 @@ namespace m3u8.download.manager.ui
                 _HostWindow_4_Notification.Show( /*this*/ );
                 this.Activate();
 
-                var notification = new Notification( GET_APP_TITLE(), _Resources_.ALL_DOWNLOADS_COMPLETED_NOTIFICATION, NotificationType.Information, TimeSpan.FromSeconds( 2_500 ),
+                var title = GET_APP_TITLE();
+                #region [.insert '\n' if more then len.]
+                const int XZ_LEN = 27;
+                if ( XZ_LEN < title.Length )
+                {
+                    var i = title.IndexOf( ' ', XZ_LEN );
+                    if ( i != -1 ) title = title.Substring( 0, i ) + '\n' + title.Substring( i + 1 );
+                }
+                #endregion
+                var notification = new Notification( title/*GET_APP_TITLE()*/, _Resources_.ALL_DOWNLOADS_COMPLETED_NOTIFICATION, NotificationType.Information, TimeSpan.FromSeconds( 2_500 ),
                     onClose: () => { _HostWindow_4_Notification.Close(); _HostWindow_4_Notification = null; } );
                 _NotificationManager.Show( notification );
             }   
@@ -812,7 +821,7 @@ namespace m3u8.download.manager.ui
                     return (await AskDeleteDownloadDialog( rows[ 0 ], askOnlyOutputFileExists, deleteOutputFile ));
                 default:
                     var msg = $"Delete {rows.Count} downloads{(deleteOutputFile ? " with output file" : null)} ?";
-                    var yes = ((await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo )) == ButtonResult.Yes);
+                    var yes = ((await this.MessageBox_ShowQuestion( msg, this.Title )) == ButtonResult.Yes);
                     return (yes);
             }            
         }
@@ -842,7 +851,7 @@ namespace m3u8.download.manager.ui
                     outputFileNameText = $"\n\n        '{outputFullFileName}'";
                 }
                 var msg = $"Delete download{deleteOutputFileText}:\n '{row.Url}' ?\n\nOutput file ({outputFileExistsText}):{outputFileNameText}";
-                var yes = ((await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo )) == ButtonResult.Yes);
+                var yes = ((await this.MessageBox_ShowQuestion( msg, this.Title )) == ButtonResult.Yes);
                 return (yes);
             }
             return (false);
@@ -858,7 +867,7 @@ namespace m3u8.download.manager.ui
             if ( ask ) 
             {
                 var msg = $"Only delete ({exists_fns.Count}) output files ? \r\n\r\n{string.Join( "\r\n", exists_fns )}";
-                var yes = ((await this.MessageBox_ShowQuestion( msg, this.Title, ButtonEnum.YesNo )) == ButtonResult.Yes);
+                var yes = ((await this.MessageBox_ShowQuestion( msg, this.Title )) == ButtonResult.Yes);
                 if ( !yes ) return;
             }
 

@@ -29,6 +29,7 @@
   
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);AVALONIA;THROTTLER__V2;</DefineConstants>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   
   <ItemGroup>
@@ -52,6 +53,17 @@
     <None Remove="Resources\m3u8.png" />
     <None Remove="Resources\m3u8_148x166.ico" />
     <None Remove="Resources\menu\undo.png" />
+    <None Remove="Resources\MessageBoxIcons\error.png" />
+    <None Remove="Resources\MessageBoxIcons\info.png" />
+    <None Remove="Resources\MessageBoxIcons\question.png" />
+    <None Remove="Resources\MessageBoxIcons\warning.png" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\MessageBoxIcons\error.png" />
+    <AvaloniaResource Include="Resources\MessageBoxIcons\info.png" />
+    <AvaloniaResource Include="Resources\MessageBoxIcons\question.png" />
+    <AvaloniaResource Include="Resources\MessageBoxIcons\warning.png" />
   </ItemGroup>
   
   <ItemGroup>
@@ -87,15 +99,15 @@
   </ItemGroup>
      
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.3.13" />
+    <PackageReference Include="Avalonia" Version="12.0.0" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.13" />    
     <PackageReference Include="ReactiveUI.Avalonia" Version="11.4.12" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.3.13" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.3.13" />    
-    <PackageReference Include="Avalonia.Themes.Simple" Version="11.3.13" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.0.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.0.0" />    
+    <PackageReference Include="Avalonia.Themes.Simple" Version="12.0.0" />
     <!--<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />-->
-    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="11.3.13" />
-    <PackageReference Include="MessageBox.Avalonia" Version="3.3.1.1" />    
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.0.0" />
+    <!--<PackageReference Include="MessageBox.Avalonia" Version="3.3.1.1" />-->
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.5" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Reactive" Version="6.1.0" />
@@ -103,11 +115,10 @@
     <PackageReference Include="System.Reactive.Interfaces" Version="6.1.0" />
     <PackageReference Include="System.Reactive.Linq" Version="6.1.0" />
     <PackageReference Include="System.Reactive.PlatformServices" Version="6.1.0" />
-    <!--<PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.1" />-->
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0-windows' ">
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="9.0.2" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.5" />
   </ItemGroup>
   
   <ItemGroup>

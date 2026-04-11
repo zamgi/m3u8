@@ -2,7 +2,6 @@
 using System.Windows.Input;
 
 using Avalonia.Media;
-using MsBox.Avalonia.Enums;
 
 namespace m3u8.download.manager
 {
@@ -52,18 +51,44 @@ namespace m3u8.download.manager
                 fontFamily = FontFamily.Default;
             }
 
-            var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.None/*Info*/, fontFamily );
-            await msgbox.ShowEx();
 
-            //if (  fontFamily != null )
+            await MessageBoxWindow.Show( text, CAPTION, MessageBoxWindow.ButtonTypeEnum.Ok, MessageBoxWindow.IconTypeEnum.None, fontFamily/*, new Size( 500, 250 )*/ );
+
+            #region comm.
+            //try
             //{
             //    var msgbox = Extensions.Create_MsBoxStandardWindow( text, CAPTION, ButtonEnum.Ok, Icon.None/*Info*/, fontFamily );
             //    await msgbox.ShowEx();
             //}
-            //else
+            //catch ( Exception ex )
             //{
-            //    await Extensions.MessageBox_Show( text, CAPTION, Icon.None/*Info*/ );
-            //}            
+            //    Debug.WriteLine( ex );
+
+            //    var wnd = new Window()
+            //    {
+            //        Title                 = CAPTION,
+            //        Content               = text,
+            //        SizeToContent         = SizeToContent.WidthAndHeight,
+            //        Padding               = new Thickness( 25 ),
+            //        WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            //        ShowInTaskbar         = false,
+            //        CanMaximize           = false,
+            //        CanMinimize           = false,
+            //        //WindowDecorations     = WindowDecorations.Full,
+            //        //Icon                  = new WindowIcon( ResourceLoader._GetResource_( "/Resources/m3u8_32x36.ico" ) ),
+            //    };
+            //    wnd.KeyDown += (s, e) => { if ( e.Key == Key.Escape ) wnd.Close(); };
+            //    var topWnd = Extensions.GetTopWindow();
+            //    if ( topWnd != null )
+            //    {
+            //        await wnd.ShowDialog( topWnd );
+            //    }
+            //    else
+            //    {
+            //        wnd.Show();
+            //    }
+            //}
+            #endregion
         }
     }
 }
