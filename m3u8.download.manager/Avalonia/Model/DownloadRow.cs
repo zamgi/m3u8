@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Net;
+
 
 //using _m3u8_processor_ = m3u8.m3u8_processor_adv;
 using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
@@ -123,6 +125,7 @@ namespace m3u8.download.manager.models
         private DateTime? _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
 
         public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; private set; }
+        public string UsedWebProxyAddress { [M(O.AggressiveInlining)] get; private set; }
 
         //--- USING FOR BINDING & UPDATE BINDING---//
         public DownloadRow MySelf { [M(O.AggressiveInlining)] get => this; }
@@ -193,6 +196,7 @@ namespace m3u8.download.manager.models
                 Fire_PropertyChanged_Events( nameof(LiveStreamMaxFileSizeInBytes) );
             }
         }
+        public void SetUsedWebProxyAddress( IWebProxy usedWebProxy ) => UsedWebProxyAddress = usedWebProxy?.GetProxy( m3u8_client_factory.EmptyUri ).ToString();
 
         public DownloadRow CreateCopy() => new DownloadRow( this );
         public DownloadRow Add2ModelFinishedCopy( DateTime createDateTime, IReadOnlyList< LogRow > logRows, DownloadRow rowSaveState )

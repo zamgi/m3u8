@@ -201,7 +201,8 @@ namespace m3u8.infrastructure
         /// </summary>
         public struct init_params
         {
-            public TimeSpan? Timeout { get; set; }
+            public TimeSpan? Timeout  { get; set; }
+            public IWebProxy WebProxy { get; set; }
         }
 
         /// <summary>
@@ -212,17 +213,19 @@ namespace m3u8.infrastructure
             /// <summary>
             /// 
             /// </summary>
-            public struct EqualityComparer : IEqualityComparer< tuple_t >
+            public sealed class EqualityComparer : IEqualityComparer< tuple_t >
             {
-                public bool Equals( tuple_t x, tuple_t y ) => (x.Timeout == y.Timeout);
-                public int GetHashCode( tuple_t obj ) => obj.Timeout.GetHashCode();
+                public EqualityComparer() { }
+                public bool Equals( tuple_t x, tuple_t y ) => (x.Timeout == y.Timeout) && (x.WebProxy.GetAddressUri() == y.WebProxy.GetAddressUri());
+                public int GetHashCode( tuple_t t ) => t.Timeout.GetHashCode() ^ (t.WebProxy.GetAddressUri()?.GetHashCode() ?? 0);
             }
 
             private tuple_t( TimeSpan timeout ) => Timeout = timeout;
-            public tuple_t( TimeSpan timeout, HttpClient httpClient ) => (Timeout, HttpClient, RefCount) = (timeout, httpClient, 0);
+            public tuple_t( TimeSpan timeout, in (HttpClient httpClient, IWebProxy WebProxy) x ) => (Timeout, HttpClient, WebProxy, RefCount) = (timeout, x.httpClient, x.WebProxy, 0);
 
             public TimeSpan   Timeout    { get; }
             public HttpClient HttpClient { get; }
+            public IWebProxy  WebProxy   { get; }
             public int        RefCount   { get; private set; }
 
             public int IncrementRefCount() => ++RefCount;
@@ -256,7 +259,7 @@ namespace m3u8.infrastructure
             }
         }
 
-        private static HttpClient CreateHttpClient( in TimeSpan? timeout )
+        private static (HttpClient httpClient, IWebProxy webProxy) CreateHttpClient( IWebProxy webProxy, in TimeSpan? timeout )
         {
 #if NETCOREAPP
             SocketsHttpHandler CreateSocketsHttpHandler( in TimeSpan? _timeout )
@@ -273,15 +276,19 @@ namespace m3u8.infrastructure
                     }
                 };
 
-                var h = new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.All };
-                    h.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-                    //set_Protocol( h.SslOptions, SslProtocols.Tls   );
-                    //set_Protocol( h.SslOptions, SslProtocols.Tls11 );
-                    set_Protocol( h.SslOptions, SslProtocols.Tls12 );
-                    set_Protocol( h.SslOptions, SslProtocols.Tls13 );
+                var h = new SocketsHttpHandler() 
+                { 
+                    AutomaticDecompression = DecompressionMethods.All,
+                    Proxy = webProxy
+                };
+                h.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                //set_Protocol( h.SslOptions, SslProtocols.Tls   );
+                //set_Protocol( h.SslOptions, SslProtocols.Tls11 );
+                set_Protocol( h.SslOptions, SslProtocols.Tls12 );
+                set_Protocol( h.SslOptions, SslProtocols.Tls13 );
 #pragma warning disable CS0618
-                    set_Protocol( h.SslOptions, SslProtocols.Ssl2  );
-                    set_Protocol( h.SslOptions, SslProtocols.Ssl3  );
+                set_Protocol( h.SslOptions, SslProtocols.Ssl2  );
+                set_Protocol( h.SslOptions, SslProtocols.Ssl3  );
 #pragma warning restore CS0618
                 if ( _timeout.HasValue )
                 {
@@ -290,6 +297,14 @@ namespace m3u8.infrastructure
                 return (h);
             };
             
+            /*
+            var handler = new HttpClientHandler() 
+            { 
+                AutomaticDecompression = DecompressionMethods.All, 
+                ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
+                Proxy = webProxy,
+            };
+            //*/
             var handler    = CreateSocketsHttpHandler( timeout );
             var httpClient = new HttpClient( handler, true );
 #else
@@ -310,7 +325,8 @@ namespace m3u8.infrastructure
                 var h = new HttpClientHandler() 
                 { 
                     ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true, 
-                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip 
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip,
+                    Proxy = webProxy,
                 };
 
                 //set_Protocol( h, SslProtocols.Tls   );
@@ -335,18 +351,18 @@ namespace m3u8.infrastructure
             {
                 httpClient.Timeout = timeout.Value;
             }
-            return (httpClient);
+            return (httpClient, webProxy);
         }
 
-        public static (HttpClient, IDisposable) Get( in init_params ip ) => Get( ip.Timeout );
-        public static (HttpClient, IDisposable) Get( in TimeSpan? timeout = null )
+        public static (HttpClient, IWebProxy, IDisposable) Get( in init_params ip ) => Get( ip.WebProxy, ip.Timeout );
+        public static (HttpClient, IWebProxy, IDisposable) Get( IWebProxy webProxy, in TimeSpan? timeout = null )
         {
             var key = tuple_t.key( timeout );
             lock ( _LRUCache )
             {
                 if ( !_LRUCache.TryGetValue( key, out var t ) )
                 {
-                    t = new tuple_t( key.Timeout, CreateHttpClient( in timeout ) );
+                    t = new tuple_t( key.Timeout, CreateHttpClient( webProxy, in timeout ) );
                     _LRUCache.Add( t );
                 }
                 t.IncrementRefCount();
@@ -361,7 +377,7 @@ namespace m3u8.infrastructure
                     et.HttpClient.Dispose();
                 }
                 //-----------------------------------------------//
-                return (t.HttpClient, new free_tuple( t ));
+                return (t.HttpClient, t.WebProxy, new free_tuple( t ));
             }
         }
 
@@ -413,13 +429,18 @@ namespace m3u8
     /// </summary>
     public static class m3u8_client_factory
     { 
-        public static m3u8_client Create() => Create( HttpClientFactory_WithRefCount.Get() );
-        public static m3u8_client Create( in (TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.timeout, t.attemptRequestCountByPart );
-        public static m3u8_client Create( in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( timeout ), attemptRequestCountByPart );
-        public static m3u8_client Create( in m3u8_client.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get(), ip );
+        public static Uri EmptyUri = new Uri( string.Empty, UriKind.Relative );
+        public static Uri GetAddressUri( this IWebProxy webProxy ) => webProxy?.GetProxy( EmptyUri );
+        public static string GetAddress( this IWebProxy webProxy ) => webProxy?.GetProxy( EmptyUri ).ToString();
 
-        private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, in m3u8_client.init_params ip ) => new m3u8_client( t, ip );
-        private static m3u8_client Create( in (HttpClient httpClient, IDisposable) t, int attemptRequestCountByPart = 10 )
+        public static m3u8_client Create( IWebProxy webProxy = null ) => Create( HttpClientFactory_WithRefCount.Get( webProxy ) );
+        public static m3u8_client Create( in (IWebProxy webProxy, TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.webProxy, t.timeout, t.attemptRequestCountByPart );
+        public static m3u8_client Create( /*IWebProxy webProxy,*/ in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( webProxy: null, timeout, attemptRequestCountByPart );
+        public static m3u8_client Create( IWebProxy webProxy, in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( webProxy, timeout ), attemptRequestCountByPart );
+        public static m3u8_client Create( in m3u8_client.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get( ip.WebProxy ), ip );
+
+        private static m3u8_client Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, in m3u8_client.init_params ip ) => new m3u8_client( t, ip );
+        private static m3u8_client Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
             => Create( t, new m3u8_client.init_params() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
 
         public static void ForceClearAndDisposeAll() => HttpClientFactory_WithRefCount.ForceClearAndDisposeAll();

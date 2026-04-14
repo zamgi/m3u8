@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Net;
 using System.Reflection;
 
 using m3u8.download.manager.models;
@@ -52,7 +53,30 @@ namespace m3u8.download.manager.controllers
 #endif
         public _Settings_ Settings { [M(O.AggressiveInlining)] get; }
 
-        public (TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams() => (Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
+        //public (TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams() => (Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
+        public (IWebProxy webProxy, TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams( bool suppressCreateWebProxyError = false )
+            => (CreateWebProxyIfUsed( suppressCreateWebProxyError ), Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
+        public IWebProxy CreateWebProxyIfUsed( bool suppressError = false )
+        {
+            if ( Settings.UseRequestWebProxy )
+            {
+                var requestWebProxyAddress = Settings.RequestWebProxyAddress;
+                if (  !requestWebProxyAddress.IsNullOrWhiteSpace() )
+                {
+                    IWebProxy webProxy;
+                    if ( suppressError )
+                    {
+                        webProxy = Uri.TryCreate( requestWebProxyAddress, UriKind.RelativeOrAbsolute, out var webProxyAddress ) ? new WebProxy( webProxyAddress ) : null;
+                    }
+                    else
+                    {
+                        webProxy = new WebProxy( new Uri( requestWebProxyAddress ) );
+                    }
+                    return (webProxy);
+                }
+            }
+            return (null);
+        }
 
         public IEnumerable< string > NameCleanerExcludesWords { [M(O.AggressiveInlining)] get => Settings.GetNameCleanerExcludesWords(); }
         public bool     ShowOnlyRequestRowsWithErrors       { [M(O.AggressiveInlining)] get => Settings.ShowOnlyRequestRowsWithErrors; }

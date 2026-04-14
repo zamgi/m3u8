@@ -6,11 +6,17 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Security;
+using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 using m3u8.ext;
+
+//using SocksSharp;
+//using SocksSharp.Proxy;
+//using Extensions = m3u8.ext.Extensions;
 
 namespace m3u8
 {
@@ -530,9 +536,20 @@ namespace m3u8
                 public double? Throttle( CancellationToken ct ) => null;
             }
 #endif
-            public static async Task run( string m3u8FileUrl, string outputFileName, CancellationToken ct, IDictionary< string, string > requestHeaders = null )
+            public static async Task run( 
+                  string m3u8FileUrl
+                , string outputFileName
+                , CancellationToken ct
+                , IWebProxy webProxy = null
+                , IDictionary< string, string > requestHeaders = null )
             {
-                using var mc = m3u8_client_next_factory.Create( new m3u8_client_next.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead } );
+                var ip = new m3u8_client_next.init_params() 
+                { 
+                    AttemptRequestCount = 1, 
+                    HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead,
+                    WebProxy = webProxy,
+                };
+                using var mc = m3u8_client_next_factory.Create( ip );
 
                 var m3u8File = await mc.DownloadFile( new Uri( m3u8FileUrl ), ct, requestHeaders ).CAX();
 
@@ -574,13 +591,157 @@ namespace m3u8
                     //RequestStepAction          = requestStepAction,
                     ResponseStepAction         = responseStepAction,
                     //DownloadPartStepAction     = downloadPartStepAction,
-                    MaxDegreeOfParallelism = maxDegreeOfParallelism,
+                    MaxDegreeOfParallelism     = maxDegreeOfParallelism,
                     DownloadThreadsSemaphore   = dts,
                     DownloadThreadsSemaphore_2 = dts_2,
                     WaitIfPausedEvent          = waitIfPausedEvent,
                     //WaitingIfPaused            = , //public Action
                     //WaitingIfPausedBefore_2    = , //public Action< m3u8_part_ts__v2 >   
                     //WaitingIfPausedAfter_2     = , //public Action< m3u8_part_ts__v2 >   
+                    ThrottlerBySpeed           = throttler_by_speed,
+                    StreamPool                 = streamPool,
+                    RespBufPool                = respBufPool,                    
+                };
+#if NETCOREAPP
+                await m3u8_processor_next.DownloadPartsAndSave_Async( p, requestHeaders ).CAX();
+#else
+                await m3u8_processor_next.DownloadPartsAndSave( p, requestHeaders ).CAX();
+#endif
+            }
+
+            private static HttpClient CreateHttpClient( IWebProxy webProxy, in TimeSpan? timeout = null )
+            {
+#if NETCOREAPP
+                SocketsHttpHandler CreateSocketsHttpHandler( in TimeSpan? _timeout )
+                {
+                    static void set_Protocol( SslClientAuthenticationOptions sslOptions, SslProtocols protocol )
+                    {
+                        try
+                        {
+                            sslOptions.EnabledSslProtocols |= protocol;
+                        }
+                        catch ( Exception ex )
+                        {
+                            Debug.WriteLine( ex );
+                        }
+                    }
+
+                    var h = new SocketsHttpHandler() 
+                    { 
+                        AutomaticDecompression = DecompressionMethods.All, 
+                        Proxy = webProxy 
+                    };
+                    h.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                    //set_Protocol( h.SslOptions, SslProtocols.Tls   );
+                    //set_Protocol( h.SslOptions, SslProtocols.Tls11 );
+                    set_Protocol( h.SslOptions, SslProtocols.Tls12 );
+                    set_Protocol( h.SslOptions, SslProtocols.Tls13 );
+#pragma warning disable CS0618
+                    set_Protocol( h.SslOptions, SslProtocols.Ssl2 );
+                    set_Protocol( h.SslOptions, SslProtocols.Ssl3 );
+#pragma warning restore CS0618
+
+                    if ( _timeout.HasValue )
+                    {
+                        h.ConnectTimeout = _timeout.Value;
+                    }
+                    return (h);
+                }
+
+                var handler = new HttpClientHandler() 
+                { 
+                    AutomaticDecompression = DecompressionMethods.All, 
+                    ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true,
+                    Proxy = webProxy,
+                };
+                //var handler = CreateSocketsHttpHandler( timeout );
+                var httpClient = new HttpClient( handler, true );
+#else
+            HttpClientHandler CreateHttpClientHandler( /*in TimeSpan? _timeout*/ )
+            {
+                static void set_Protocol( HttpClientHandler h, SslProtocols protocol )
+                {
+                    try
+                    {
+                        h.SslProtocols |= protocol;
+                    }
+                    catch ( Exception ex )
+                    {
+                        Debug.WriteLine( ex );
+                    }
+                }
+
+                var h = new HttpClientHandler() 
+                { 
+                    ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true, 
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip 
+                };
+
+                //set_Protocol( h, SslProtocols.Tls   );
+                //set_Protocol( h, SslProtocols.Tls11 );
+                set_Protocol( h, SslProtocols.Tls12 );
+                set_Protocol( h, SslProtocols.Tls13 );
+#pragma warning disable CS0618
+                set_Protocol( h, SslProtocols.Ssl2 );
+                set_Protocol( h, SslProtocols.Ssl3 );
+#pragma warning restore CS0618
+                //if ( _timeout.HasValue )
+                //{
+                //    h.ConnectTimeout = _timeout.Value;
+                //}
+                return (h);
+            }
+
+            var handler    = CreateHttpClientHandler( /*timeout*/ );
+            var httpClient = new HttpClient( handler, true );
+#endif
+                if ( timeout.HasValue )
+                {
+                    httpClient.Timeout = timeout.Value;
+                }
+                return (httpClient);
+            }
+            public static async Task run_over_proxy( string m3u8FileUrl, string outputFileName, CancellationToken ct, IDictionary< string, string > requestHeaders = null )
+            {
+                /*
+                var proxySettings = ProxySettings.Parse( "127.0.0.1:9150" );
+                var handler = new ProxyClientHandler< Socks5 >( proxySettings, useCookie: false, allowAutoRedirect: true, acceptAnyServerCertificate: true );
+                using var hc = new HttpClient( handler, true );
+                var maxDegreeOfParallelism = 1;
+                //*/
+
+                //*
+                var torWebProxy = new WebProxy() { Address = new Uri( "socks5://127.0.0.1:9150" ) };
+                using var hc = CreateHttpClient( torWebProxy );
+                var maxDegreeOfParallelism = 8;
+                //*/
+
+                using var mc = new m3u8_client( hc, new m3u8_client.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead } );
+
+                var m3u8File = await mc.DownloadFile( new Uri( m3u8FileUrl ), ct, requestHeaders ).CAX();
+               
+                var streamInPoolCapacity   = 1_024 * 1_024 * 5;
+                var bufInPoolCapacity      = 1_024 * 100;
+                using var waitIfPausedEvent  = new ManualResetEventSlim( true, 0 );
+                using var dts                = new download_threads_semaphore_impl( maxDegreeOfParallelism );
+                using var dts_2              = new download_threads_semaphore_impl( maxDegreeOfParallelism );
+                using var throttler_by_speed = new throttler_by_speed_impl__v2();
+                using var streamPool         = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
+                using var respBufPool        = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
+
+                var responseStepAction = new m3u8_processor_next.ResponseStepActionDelegate( (in m3u8_processor_next.ResponseStepActionParams p) => CONSOLE.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );                
+
+                var p = new m3u8_processor_next.DownloadPartsAndSaveInputParams()
+                {
+                    mc                         = new m3u8_client_next( mc ),
+                    m3u8File                   = m3u8_file_t__v2.Parse( m3u8File ),
+                    OutputFileName             = outputFileName,
+                    CancellationToken          = ct,
+                    ResponseStepAction         = responseStepAction,
+                    MaxDegreeOfParallelism     = maxDegreeOfParallelism,
+                    DownloadThreadsSemaphore   = dts,
+                    DownloadThreadsSemaphore_2 = dts_2,
+                    WaitIfPausedEvent          = waitIfPausedEvent,
                     ThrottlerBySpeed           = throttler_by_speed,
                     StreamPool                 = streamPool,
                     RespBufPool                = respBufPool,                    
@@ -608,43 +769,8 @@ namespace m3u8
                 ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13 | SecurityProtocolType.Ssl3);
                 #endregion
 #endif
-                var M3U8_FILE_URL   = ConfigurationManager.AppSettings[ "M3U8_FILE_URL"   ]; if ( M3U8_FILE_URL  .IsNullOrWhiteSpace() ) throw (new ArgumentNullException( nameof(M3U8_FILE_URL) ));
-                var OUTPUT_FILE_DIR = ConfigurationManager.AppSettings[ "OUTPUT_FILE_DIR" ]; if ( OUTPUT_FILE_DIR.IsNullOrWhiteSpace() ) OUTPUT_FILE_DIR = @"E:\\";
-                var OUTPUT_FILE_EXT = ConfigurationManager.AppSettings[ "OUTPUT_FILE_EXT" ]; if ( OUTPUT_FILE_EXT.IsNullOrWhiteSpace() ) OUTPUT_FILE_EXT = ".avi";
-
-                //v1.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
-                //v2.run__1( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
-                //v2.run__2( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
-                //await v3.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, default ).CAX();
-                //await v4.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, default ).CAX();
-
-                var requestHeaders = new Dictionary< string, string >
-                {
-                    //{ "Accept", "*/*" },
-                    //{ "Accept-Encoding", "gzip, deflate, br" },
-                    //{ "Accept-Language", "ru,en-US;q=0.9,en;q=0.8" },
-                    
-                    //{ "Cache-Control", "no-cache" },
-                    //{ "Pragma", "no-cache" },
-                    //{ "Connection", "keep-alive" },
-                    //{ "Host", "09b-8c6-300g0.v.plground.live:10403" },
-                    { "Origin" , "https://ollo-as.newplayjj.com:9443"  },
-                    //{ "Referer", "https://ollo-as.newplayjj.com:9443/" },
-                    //{ "Sec-Fetch-Dest", "empty" },
-                    //{ "Sec-Fetch-Mode", "cors" },
-                    //{ "Sec-Fetch-Site", "cross-site" },
-                    //{ "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36" },
-                    
-                    //{ "sec-ch-ua", "\"Not A(Brand\";v=\"99\", \"Google Chrome\";v=\"121\", \"Chromium\";v=\"121\"" },
-                    //{ "sec-ch-ua-mobile", "?0" },
-                    //{ "sec-ch-ua-platform", "\"Windows\"" }
-                };
-
-                using ( var cts = new CancellationTokenSource() )
-                {
-                    var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( M3U8_FILE_URL ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                    await next1.run( M3U8_FILE_URL, outputFileName, cts.Token, requestHeaders ).CAX(); //.WaitForTaskEndsOrKeyboardBreak( cts );
-                }
+                //await Run_1().CAX();
+                await Run_2().CAX();
             }
             catch ( Exception ex )
             {
@@ -652,6 +778,80 @@ namespace m3u8
             }
             CONSOLE.WriteLine( "\r\n\r\n[.....finita fusking comedy.....]\r\n\r\n", ConsoleColor.DarkGray );
             CONSOLE.ReadLine();
+        }
+
+        private static async Task Run_1()
+        {
+            var M3U8_FILE_URL   = ConfigurationManager.AppSettings[ "M3U8_FILE_URL"   ]; if ( M3U8_FILE_URL  .IsNullOrWhiteSpace() ) throw (new ArgumentNullException( nameof(M3U8_FILE_URL) ));
+            var OUTPUT_FILE_DIR = ConfigurationManager.AppSettings[ "OUTPUT_FILE_DIR" ]; if ( OUTPUT_FILE_DIR.IsNullOrWhiteSpace() ) OUTPUT_FILE_DIR = @"E:\\";
+            var OUTPUT_FILE_EXT = ConfigurationManager.AppSettings[ "OUTPUT_FILE_EXT" ]; if ( OUTPUT_FILE_EXT.IsNullOrWhiteSpace() ) OUTPUT_FILE_EXT = ".avi";
+
+            //v1.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
+            //v2.run__1( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
+            //v2.run__2( M3U8_FILE_URL, OUTPUT_FILE_DIR, OUTPUT_FILE_EXT );
+            //await v3.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, default ).CAX();
+            //await v4.run( M3U8_FILE_URL, OUTPUT_FILE_DIR, default ).CAX();
+
+            var requestHeaders = new Dictionary< string, string >
+            {
+                //{ "Accept", "*/*" },
+                //{ "Accept-Encoding", "gzip, deflate, br" },
+                //{ "Accept-Language", "ru,en-US;q=0.9,en;q=0.8" },
+                    
+                //{ "Cache-Control", "no-cache" },
+                //{ "Pragma", "no-cache" },
+                //{ "Connection", "keep-alive" },
+                //{ "Host", "09b-8c6-300g0.v.plground.live:10403" },
+                { "Origin" , "https://ollo-as.newplayjj.com:9443"  },
+                //{ "Referer", "https://ollo-as.newplayjj.com:9443/" },
+                //{ "Sec-Fetch-Dest", "empty" },
+                //{ "Sec-Fetch-Mode", "cors" },
+                //{ "Sec-Fetch-Site", "cross-site" },
+                //{ "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36" },
+                    
+                //{ "sec-ch-ua", "\"Not A(Brand\";v=\"99\", \"Google Chrome\";v=\"121\", \"Chromium\";v=\"121\"" },
+                //{ "sec-ch-ua-mobile", "?0" },
+                //{ "sec-ch-ua-platform", "\"Windows\"" }
+            };
+
+            using ( var cts = new CancellationTokenSource() )
+            {
+                var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( M3U8_FILE_URL ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
+                await next1.run( M3U8_FILE_URL, outputFileName, cts.Token, requestHeaders: requestHeaders ).CAX(); //.WaitForTaskEndsOrKeyboardBreak( cts );
+            }
+        }
+        private static async Task Run_2()
+        {
+            var M3U8_FILE_URL =
+"https://celestia.host.cinemap.cc/tvseries/85ebe1b31b246d489c4461250308f347f8f05af0/3b3670aa8d4d860281987f98c05d6bdd:2026041403/720.mp4:hls:manifest.m3u8"
+;
+            var OUTPUT_FILE_DIR = ConfigurationManager.AppSettings[ "OUTPUT_FILE_DIR" ]; if ( OUTPUT_FILE_DIR.IsNullOrWhiteSpace() ) OUTPUT_FILE_DIR = @"E:\\";
+            var OUTPUT_FILE_EXT = ConfigurationManager.AppSettings[ "OUTPUT_FILE_EXT" ]; if ( OUTPUT_FILE_EXT.IsNullOrWhiteSpace() ) OUTPUT_FILE_EXT = ".avi";
+
+            var requestHeaders = new Dictionary< string, string >
+            {
+                //{"Accept","*/*"},
+                //{"Accept-Encoding","gzip, deflate, br, zstd"},
+                //{"Accept-Language","ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"},
+                //{"Origin","https://ladoni.pro"},
+                //{"Referer","https://ladoni.pro/lat/20683?skips=1&adult_mode=2"},
+                //{"sec-ch-ua","\"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"144\", \"Google Chrome\";v=\"144\""},
+                //{"sec-ch-ua-mobile","?0"},
+                //{"sec-ch-ua-platform","\"Windows\""},
+                //{"Sec-Fetch-Dest","empty"},
+                //{"Sec-Fetch-Mode","cors"},
+                //{"Sec-Fetch-Site","same-site"},
+                //{"User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"}
+            };
+
+            var torWebProxy = new WebProxy() { Address = new Uri( "socks5://127.0.0.1:9150" ) };
+
+            using ( var cts = new CancellationTokenSource() )
+            {
+                var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( M3U8_FILE_URL ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
+                //---await next1.run_over_proxy( M3U8_FILE_URL, outputFileName, cts.Token, requestHeaders ).CAX();
+                await next1.run( M3U8_FILE_URL, outputFileName, cts.Token, torWebProxy, requestHeaders ).CAX();
+            }
         }
     }
     

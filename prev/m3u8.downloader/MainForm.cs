@@ -30,6 +30,7 @@ namespace m3u8.downloader
         private (string M3u8FileUrl, bool AutoStartDownload) _InputParams;
         private string               _OutputFileName;
         private M3u8FileResultUCBase _m3U8FileResultUC;
+        private Settings _Settings;
         #endregion
 
         #region [.ctor().]
@@ -37,9 +38,9 @@ namespace m3u8.downloader
         {
             InitializeComponent();
             this.Text = APP_TITLE;
-
+            _Settings = Settings.Default;
             //-------------------------------------//
-            this.DownloadLogUIType = Settings.Default.DownloadLogUIType.Try2Enum< DownloadLogUITypeEnum >().GetValueOrDefault( DownloadLogUITypeEnum.GridViewUIType );
+            this.DownloadLogUIType = _Settings.DownloadLogUIType.Try2Enum< DownloadLogUITypeEnum >().GetValueOrDefault( DownloadLogUITypeEnum.GridViewUIType );
             //-------------------------------------//
 
             m3u8FileUrlTextBox_TextChanged( this, EventArgs.Empty );
@@ -48,7 +49,7 @@ namespace m3u8.downloader
             parallelismLabel_set();
             settingsLabel_set();
 
-            NameCleaner.ResetExcludesWords( Settings.Default.NameCleanerExcludesWords?.Cast< string >() );
+            NameCleaner.ResetExcludesWords( _Settings.NameCleanerExcludesWords?.Cast< string >() );
         }
         public MainForm( in (string m3u8FileUrl, bool autoStartDownload) inputParams ) : this() => _InputParams = inputParams;
 
@@ -69,19 +70,19 @@ namespace m3u8.downloader
         {
             base.OnLoad( e );
 
-            if ( !base.DesignMode && Settings.Default.StoreMainFormPosition )
+            if ( !base.DesignMode && _Settings.StoreMainFormPosition )
             {
-                FormPositionStorer.Load( this, Settings.Default.MainFormPositionJson );
+                FormPositionStorer.Load( this, _Settings.MainFormPositionJson );
             }
         }
         protected override void OnClosed( EventArgs e )
         {
             base.OnClosed( e );
 
-            if ( !base.DesignMode && Settings.Default.StoreMainFormPosition )
+            if ( !base.DesignMode && _Settings.StoreMainFormPosition )
             {
-                Settings.Default.MainFormPositionJson = FormPositionStorer.Save( this );
-                Settings.Default.SaveNoThrow();
+                _Settings.MainFormPositionJson = FormPositionStorer.Save( this );
+                _Settings.SaveNoThrow();
             }
         }
         protected override void OnShown( EventArgs e )
@@ -216,8 +217,8 @@ namespace m3u8.downloader
                     m3u8FileResultPanel.Controls.Clear();
                     m3u8FileResultPanel.Controls.Add( _m3U8FileResultUC );
 
-                    Settings.Default.DownloadLogUIType = value.ToString();
-                    Settings.Default.SaveNoThrow();
+                    _Settings.DownloadLogUIType = value.ToString();
+                    _Settings.SaveNoThrow();
                 }
             }
         }
@@ -252,13 +253,13 @@ namespace m3u8.downloader
                 outputFileNameTextBox_Text = outputFileName;
 
                 await Task.Delay( 500 );
-                if ( !outputFileName.EndsWith( Settings.Default.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
+                if ( !outputFileName.EndsWith( _Settings.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
                 {
-                    if ( Settings.Default.OutputFileExtension.HasFirstCharNotDot() )
+                    if ( _Settings.OutputFileExtension.HasFirstCharNotDot() )
                     {
                         outputFileName += '.';
                     }
-                    outputFileName += Settings.Default.OutputFileExtension;
+                    outputFileName += _Settings.OutputFileExtension;
                 }
                 outputFileNameTextBox_Text = outputFileName;
 
@@ -268,7 +269,7 @@ namespace m3u8.downloader
                     _InputParams.AutoStartDownload = false;
                     if ( !outputFileName.IsNullOrWhiteSpace() )
                     {
-                        var fullOutputFileName = Path.Combine( Settings.Default.OutputFileDirectory, outputFileName );
+                        var fullOutputFileName = Path.Combine( _Settings.OutputFileDirectory, outputFileName );
                         m3u8FileWholeLoadAndSave( fullOutputFileName );
                     }
                 }
@@ -306,23 +307,23 @@ namespace m3u8.downloader
         {
             using ( var f = new ParallelismForm() )
             {
-                f.UseCrossAppInstanceDegreeOfParallelism = Settings.Default.UseCrossAppInstanceDegreeOfParallelism;
-                f.MaxDegreeOfParallelism                 = Settings.Default.MaxDegreeOfParallelism;
-                f.IsInfinity                             = (Settings.Default.MaxDegreeOfParallelism == int.MaxValue);
-                f.MaxDownloadAppInstance                 = Settings.Default.MaxDownloadAppInstance;
+                f.UseCrossAppInstanceDegreeOfParallelism = _Settings.UseCrossAppInstanceDegreeOfParallelism;
+                f.MaxDegreeOfParallelism                 = _Settings.MaxDegreeOfParallelism;
+                f.IsInfinity                             = (_Settings.MaxDegreeOfParallelism == int.MaxValue);
+                f.MaxDownloadAppInstance                 = _Settings.MaxDownloadAppInstance;
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
-                    Settings.Default.UseCrossAppInstanceDegreeOfParallelism = f.UseCrossAppInstanceDegreeOfParallelism;
-                    Settings.Default.MaxDegreeOfParallelism                 = f.MaxDegreeOfParallelism;
-                    Settings.Default.MaxDownloadAppInstance                 = f.MaxDownloadAppInstance;
-                    Settings.Default.SaveNoThrow();
+                    _Settings.UseCrossAppInstanceDegreeOfParallelism = f.UseCrossAppInstanceDegreeOfParallelism;
+                    _Settings.MaxDegreeOfParallelism                 = f.MaxDegreeOfParallelism;
+                    _Settings.MaxDownloadAppInstance                 = f.MaxDownloadAppInstance;
+                    _Settings.SaveNoThrow();
                     parallelismLabel_set();
                 }
             }
         }
         private void parallelismLabel_EnabledChanged( object sender, EventArgs e )
         {
-            if ( Settings.Default.UseCrossAppInstanceDegreeOfParallelism )
+            if ( _Settings.UseCrossAppInstanceDegreeOfParallelism )
             {
                 parallelismLabel.BackColor = (parallelismLabel.Enabled ? Color.DimGray : Color.FromKnownColor( KnownColor.Control ));
             }
@@ -335,49 +336,49 @@ namespace m3u8.downloader
                 {
                     NameCleaner.ResetExcludesWords( f.GetFileNameExcludesWords() );
 
-                    if ( Settings.Default.NameCleanerExcludesWords == null )
+                    if ( _Settings.NameCleanerExcludesWords == null )
                     {
-                        Settings.Default.NameCleanerExcludesWords = new StringCollection();
+                        _Settings.NameCleanerExcludesWords = new StringCollection();
                     }
                     else
                     {
-                        Settings.Default.NameCleanerExcludesWords.Clear();
+                        _Settings.NameCleanerExcludesWords.Clear();
                     }                    
-                    Settings.Default.NameCleanerExcludesWords.AddRange( NameCleaner.ExcludesWords.ToArray() );
-                    Settings.Default.SaveNoThrow();
+                    _Settings.NameCleanerExcludesWords.AddRange( NameCleaner.ExcludesWords.ToArray() );
+                    _Settings.SaveNoThrow();
                 }
             }
         }
         private void autoMinimizeWindowWhenStartsDownloadLabel_Click( object sender, EventArgs e )
         {
-            Settings.Default.AutoMinimizeWindowWhenStartsDownload = !Settings.Default.AutoMinimizeWindowWhenStartsDownload;
-            Settings.Default.SaveNoThrow();
+            _Settings.AutoMinimizeWindowWhenStartsDownload = !_Settings.AutoMinimizeWindowWhenStartsDownload;
+            _Settings.SaveNoThrow();
             autoMinimizeWindowWhenStartsDownloadLabel_set();
         }
         private void autoCloseApplicationWhenEndsDownloadLabel_Click( object sender, EventArgs e )
         {
-            Settings.Default.AutoCloseApplicationWhenEndsDownload = !Settings.Default.AutoCloseApplicationWhenEndsDownload;
-            Settings.Default.SaveNoThrow();
+            _Settings.AutoCloseApplicationWhenEndsDownload = !_Settings.AutoCloseApplicationWhenEndsDownload;
+            _Settings.SaveNoThrow();
             autoCloseApplicationWhenEndsDownloadLabel_set();
         }
         private void settingsLabel_Click( object sender, EventArgs e )
         {
             using ( var f = new SettingsForm() )
             {
-                f.AttemptRequestCountByPart     = Settings.Default.AttemptRequestCountByPart;
-                f.RequestTimeoutByPart          = Settings.Default.RequestTimeoutByPart;
-                f.StoreMainFormPosition         = Settings.Default.StoreMainFormPosition;
+                f.AttemptRequestCountByPart     = _Settings.AttemptRequestCountByPart;
+                f.RequestTimeoutByPart          = _Settings.RequestTimeoutByPart;
+                f.StoreMainFormPosition         = _Settings.StoreMainFormPosition;
                 f.DownloadLogUIType             = this.DownloadLogUIType;
                 f.ShowOnlyRequestRowsWithErrors = _m3U8FileResultUC.ShowOnlyRequestRowsWithErrors;
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
-                    Settings.Default.AttemptRequestCountByPart      = f.AttemptRequestCountByPart;
-                    Settings.Default.RequestTimeoutByPart           = f.RequestTimeoutByPart;
-                    Settings.Default.StoreMainFormPosition          = f.StoreMainFormPosition;
+                    _Settings.AttemptRequestCountByPart      = f.AttemptRequestCountByPart;
+                    _Settings.RequestTimeoutByPart           = f.RequestTimeoutByPart;
+                    _Settings.StoreMainFormPosition          = f.StoreMainFormPosition;
                     this.DownloadLogUIType                          = f.DownloadLogUIType;
                     _m3U8FileResultUC.ShowOnlyRequestRowsWithErrors = f.ShowOnlyRequestRowsWithErrors;
-                    Settings.Default.SaveNoThrow();
+                    _Settings.SaveNoThrow();
                     settingsLabel_set();
                 }
             }
@@ -400,32 +401,32 @@ namespace m3u8.downloader
 
         private void autoMinimizeWindowWhenStartsDownloadLabel_set()
         {
-            autoMinimizeWindowWhenStartsDownloadLabel.Image     = (Settings.Default.AutoMinimizeWindowWhenStartsDownload ? Resources._checked : Resources._unchecked).ToBitmap();
-            autoMinimizeWindowWhenStartsDownloadLabel.ForeColor = (Settings.Default.AutoMinimizeWindowWhenStartsDownload ? Color.Empty : Color.DimGray);
+            autoMinimizeWindowWhenStartsDownloadLabel.Image     = (_Settings.AutoMinimizeWindowWhenStartsDownload ? Resources._checked : Resources._unchecked).ToBitmap();
+            autoMinimizeWindowWhenStartsDownloadLabel.ForeColor = (_Settings.AutoMinimizeWindowWhenStartsDownload ? Color.Empty : Color.DimGray);
         }
 
         private void autoCloseApplicationWhenEndsDownloadLabel_set()
         {
-            autoCloseApplicationWhenEndsDownloadLabel.Image     = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Resources._checked : Resources._unchecked).ToBitmap();
-            autoCloseApplicationWhenEndsDownloadLabel.ForeColor = (Settings.Default.AutoCloseApplicationWhenEndsDownload ? Color.Empty : Color.DimGray);
+            autoCloseApplicationWhenEndsDownloadLabel.Image     = (_Settings.AutoCloseApplicationWhenEndsDownload ? Resources._checked : Resources._unchecked).ToBitmap();
+            autoCloseApplicationWhenEndsDownloadLabel.ForeColor = (_Settings.AutoCloseApplicationWhenEndsDownload ? Color.Empty : Color.DimGray);
         }
 
         private void parallelismLabel_set()
         {
-            var maxDownloadAppInstance   = (Settings.Default.MaxDownloadAppInstance.HasValue ? $"\r\napp-instance download:  {Settings.Default.MaxDownloadAppInstance} " : null);
-            parallelismLabel.Text        = $"degree of parallelism:  {((Settings.Default.MaxDegreeOfParallelism == int.MaxValue) ? "Infinity" : Settings.Default.MaxDegreeOfParallelism.ToString())} "
+            var maxDownloadAppInstance   = (_Settings.MaxDownloadAppInstance.HasValue ? $"\r\napp-instance download:  {_Settings.MaxDownloadAppInstance} " : null);
+            parallelismLabel.Text        = $"degree of parallelism:  {((_Settings.MaxDegreeOfParallelism == int.MaxValue) ? "Infinity" : _Settings.MaxDegreeOfParallelism.ToString())} "
                                            + maxDownloadAppInstance;
-            parallelismLabel.ToolTipText = $"use cross app-instance parallelism:  {Settings.Default.UseCrossAppInstanceDegreeOfParallelism.ToString().ToLower()}";
+            parallelismLabel.ToolTipText = $"use cross app-instance parallelism:  {_Settings.UseCrossAppInstanceDegreeOfParallelism.ToString().ToLower()}";
 
-            parallelismLabel.ForeColor   = Settings.Default.UseCrossAppInstanceDegreeOfParallelism ? Color.White   : Color.FromKnownColor( KnownColor.ControlText );
-            parallelismLabel.BackColor   = Settings.Default.UseCrossAppInstanceDegreeOfParallelism ? Color.DimGray : Color.FromKnownColor( KnownColor.Control );
+            parallelismLabel.ForeColor   = _Settings.UseCrossAppInstanceDegreeOfParallelism ? Color.White   : Color.FromKnownColor( KnownColor.ControlText );
+            parallelismLabel.BackColor   = _Settings.UseCrossAppInstanceDegreeOfParallelism ? Color.DimGray : Color.FromKnownColor( KnownColor.Control );
             //--------------------------------------------//
 
-            exceptionWordsLabel.Text = (Settings.Default.MaxDownloadAppInstance.HasValue ? "file name exception\r\nword editor" : "file name exceptions");
+            exceptionWordsLabel.Text = (_Settings.MaxDownloadAppInstance.HasValue ? "file name exception\r\nword editor" : "file name exceptions");
         }
 
         private void settingsLabel_set() =>
-            settingsLabel.ToolTipText = $"other settings =>\r\n attempt request count by part:  {Settings.Default.AttemptRequestCountByPart}\r\n request timeout by part:  {Settings.Default.RequestTimeoutByPart}";
+            settingsLabel.ToolTipText = $"other settings =>\r\n attempt request count by part:  {_Settings.AttemptRequestCountByPart}\r\n request timeout by part:  {_Settings.RequestTimeoutByPart}";
         #endregion
 
         #region [.m3u8FileTextContentLoadButton_Click.]
@@ -498,8 +499,8 @@ namespace m3u8.downloader
             #region [.save file-name dialog.]
             if ( outputFileName == null )
             {
-                using ( var sfd = new SaveFileDialog() { InitialDirectory = Settings.Default.OutputFileDirectory,
-                                                         DefaultExt       = Settings.Default.OutputFileExtension,
+                using ( var sfd = new SaveFileDialog() { InitialDirectory = _Settings.OutputFileDirectory,
+                                                         DefaultExt       = _Settings.OutputFileExtension,
                                                          AddExtension     = true, } )
                 {
                     sfd.FileName = PathnameCleaner.CleanPathnameAndFilename( outputFileNameTextBox_Text ).TrimStart( '-' );
@@ -509,8 +510,8 @@ namespace m3u8.downloader
                     }
 
                     _OutputFileName = sfd.FileName;
-                    Settings.Default.OutputFileDirectory = Path.GetDirectoryName( _OutputFileName );
-                    Settings.Default.SaveNoThrow();
+                    _Settings.OutputFileDirectory = Path.GetDirectoryName( _OutputFileName );
+                    _Settings.SaveNoThrow();
                     outputFileNameTextBox_Text = Path.GetFileName( _OutputFileName );
                     _m3U8FileResultUC.SetFocus();
                 }
@@ -524,7 +525,7 @@ namespace m3u8.downloader
             //----------------------------------------------------//
 
             #region [.auto minimize window when starts download.]
-            if ( Settings.Default.AutoMinimizeWindowWhenStartsDownload )
+            if ( _Settings.AutoMinimizeWindowWhenStartsDownload )
             {
                 this.WindowState = FormWindowState.Minimized;
             } 
@@ -631,11 +632,11 @@ namespace m3u8.downloader
                                 m3u8File                               = m3u8File,
                                 OutputFileName                         = _OutputFileName,
                                 CancellationToken                      = _Cts.Token,
-                                MaxDegreeOfParallelism                 = Settings.Default.MaxDegreeOfParallelism,
+                                MaxDegreeOfParallelism                 = _Settings.MaxDegreeOfParallelism,
                                 RequestStepAction                      = requestStepAction,
                                 ResponseStepAction                     = responseStepAction,
-                                UseCrossAppInstanceDegreeOfParallelism = Settings.Default.UseCrossAppInstanceDegreeOfParallelism,
-                                MaxDownloadAppInstance                 = Settings.Default.MaxDownloadAppInstance,
+                                UseCrossAppInstanceDegreeOfParallelism = _Settings.UseCrossAppInstanceDegreeOfParallelism,
+                                MaxDownloadAppInstance                 = _Settings.MaxDownloadAppInstance,
                                 WaitingForOtherAppInstanceFinished     = () => this.BeginInvoke( new Action( () => _Wb.WaitingForOtherAppInstanceFinished() ) ),
                             };                            
                             var result = m3u8_processor.DownloadPartsAndSave( ip );
@@ -689,7 +690,7 @@ namespace m3u8.downloader
                         this.MessageBox_ShowInformation( $"SUCCESS.\r\n\r\nelapsed: {sw.Elapsed}\r\n       file: '{res.OutputFileName}'\r\n      size: {to_text_format( res.TotalBytes >> 20 )} mb.", this.Text );
 
                         #region [.auto close application when ends download.]
-                        if ( Settings.Default.AutoCloseApplicationWhenEndsDownload && !anyErrorHappend && (renameOutputFileException == null) )
+                        if ( _Settings.AutoCloseApplicationWhenEndsDownload && !anyErrorHappend && (renameOutputFileException == null) )
                         {
                             this.Close();
                         }
@@ -758,8 +759,8 @@ namespace m3u8.downloader
             SetEnabledUI( false );
             UnsetResultUC();
 
-            _Mc  = m3u8_client_factory.Create( Settings.Default.RequestTimeoutByPart, 
-                                               attemptRequestCountByPart.GetValueOrDefault( Settings.Default.AttemptRequestCountByPart )
+            _Mc  = m3u8_client_factory.Create( webProxy: null, _Settings.RequestTimeoutByPart, 
+                                               attemptRequestCountByPart.GetValueOrDefault( _Settings.AttemptRequestCountByPart )
                                              );
             _Cts = new CancellationTokenSource();
             _Wb  = WaitBannerUC.Create( this, _Cts );
@@ -890,9 +891,9 @@ namespace m3u8.downloader
                 {
                     outputFileName = Path.GetFileName( outputFileName );
                     var ext = Path.GetExtension( outputFileName );
-                    if ( !ext.Equals( Settings.Default.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
+                    if ( !ext.Equals( _Settings.OutputFileExtension, StringComparison.InvariantCultureIgnoreCase ) )
                     {
-                        outputFileName += Settings.Default.OutputFileExtension;
+                        outputFileName += _Settings.OutputFileExtension;
                     }
                     outputFileNameTextBox_Text = outputFileName;
                 }
