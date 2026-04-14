@@ -663,6 +663,24 @@ namespace m3u8.download.manager.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to socks5://127.0.0.1:9150.
+        /// </summary>
+        internal static string TOR_BROWSER_SOCKS5_ADDRESS {
+            get {
+                return ResourceManager.GetString("TOR_BROWSER_SOCKS5_ADDRESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to socks5://127.0.0.1:9050.
+        /// </summary>
+        internal static string TOR_SERVER_SOCKS5_ADDRESS {
+            get {
+                return ResourceManager.GetString("TOR_SERVER_SOCKS5_ADDRESS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap undo {

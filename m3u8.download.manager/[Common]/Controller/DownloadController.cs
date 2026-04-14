@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -149,20 +150,25 @@ namespace m3u8.download.manager.controllers
         #endregion
 
         #region [.static 'GetFileTextContent'.]
-        public static Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( string m3u8FileUrlText, IDictionary< string, string > requestHeaders, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
-        {
-            #region [.url.]
-            if ( !UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText?.Trim(), out var t ) )
-            {
-                return Task.FromResult( (default(m3u8_file_t), t.error) );
-            }
-            #endregion
+        //public static Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( string m3u8FileUrlText, IDictionary< string, string > requestHeaders, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
+        //{
+        //    #region [.url.]
+        //    if ( !UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText?.Trim(), out var t ) )
+        //    {
+        //        return Task.FromResult( (default(m3u8_file_t), t.error) );
+        //    }
+        //    #endregion
 
-            return (GetFileTextContent( t.m3u8FileUrl, requestHeaders, requestTimeoutByPart, cts ));
-        }
-        public static async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( Uri m3u8FileUrl, IDictionary< string, string > requestHeaders, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
+        //    return (GetFileTextContent( t.m3u8FileUrl, requestHeaders, requestTimeoutByPart, cts ));
+        //}
+        public static async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( 
+              Uri m3u8FileUrl
+            , IDictionary< string, string > requestHeaders
+             ,IWebProxy webProxy
+            , TimeSpan requestTimeoutByPart
+            , CancellationTokenSource cts = null )
         {
-            using ( var mc = m3u8_client_next_factory.Create( requestTimeoutByPart, attemptRequestCountByPart: 1 ) )
+            using ( var mc = m3u8_client_next_factory.Create( webProxy, requestTimeoutByPart, attemptRequestCountByPart: 1 ) )
             {
                 try
                 {
@@ -477,6 +483,8 @@ namespace m3u8.download.manager.controllers
             using ( var downloadThreadsSemaphore   = _DownloadThreadsSemaphoreFactory.Get() )
             using ( var downloadThreadsSemaphore_2 = _DownloadThreadsSemaphoreFactory_2.Get() )
             {
+                row.SetUsedWebProxyAddress( mc.WebProxy );
+
                 var tup = Tuple.Create( mc, cts, waitIfPausedEvent, downloadThreadsSemaphore, downloadThreadsSemaphore_2, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
@@ -694,21 +702,23 @@ namespace m3u8.download.manager.controllers
         }
         private async Task StartLiveStreamRoutine( DownloadRow row, Uri m3u8FileUrl )
         {
-            var (timeout, _) = _SettingsController.GetCreateM3u8ClientParams();
-            var (hc, d) = HttpClientFactory_WithRefCount.Get( timeout );
+            var (webProxy, timeout, _) = _SettingsController.GetCreateM3u8ClientParams();
+            var (hc, webProxy2, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );
             using ( d )
             //using ( var mc                       = m3u8_client_factory.Create( _SettingsController.GetCreateM3u8ClientParams() ) )
             using ( var cts                      = new CancellationTokenSource() )
             using ( var waitIfPausedEvent        = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore = _DownloadThreadsSemaphoreFactory.Get() )
             {
+                row.SetUsedWebProxyAddress( webProxy2 );
+
                 var tup = Tuple.Create( /*mc,*/ cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
                 try
                 {
                     var sw = Stopwatch.StartNew();
-                    row.AddBeginRequest2Log();
+                    row.AddBeginRequest2Log();                    
 
                     //-1-//
                     var anyErrorHappend = false;
@@ -1140,18 +1150,22 @@ namespace m3u8.download.manager.controllers
     /// </summary>
     internal static class DownloadControllerExtensions
     {
-        public static void AddBeginRequest2Log( this DownloadRow row, bool clearLog = true ) => row.Log.AddBeginRequest2Log( row.Url, row.RequestHeaders, clearLog );
-        public static void AddBeginRequest2Log( this LogListModel log, string url, IDictionary< string, string > requestHeaders, bool clearLog = true )
+        public static void AddBeginRequest2Log( this DownloadRow row, bool clearLog = true ) => row.Log.AddBeginRequest2Log( row.Url, row.UsedWebProxyAddress, row.RequestHeaders, clearLog );
+        public static void AddBeginRequest2Log( this LogListModel log, string url, string usedWebProxyAddress, IDictionary< string, string > requestHeaders, bool clearLog = true )
         {
             if ( clearLog ) log.Clear();
             log.AddRequestRow( "url:" );
             log.AddRequestRow( url );
+            if ( !usedWebProxyAddress.IsNullOrEmpty() )
+            {
+                log.AddRequestRow( $"used web-proxy: {usedWebProxyAddress}" );
+            }
             log.OutputRequestHeaders( requestHeaders );
         }
 
         public static void Output( this LogListModel log, in m3u8_file_t m3u8File )
         {
-            var lines = m3u8File.RawText?.Split( new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries )
+            var lines = m3u8File.RawText?.Split( [ '\r', '\n' ], StringSplitOptions.RemoveEmptyEntries )
                                 .Where( line => !line.IsNullOrWhiteSpace() )
                                 ;//.ToList();
             if ( lines.AnyEx() )

@@ -484,8 +484,10 @@ namespace m3u8.download.manager.ui
             using ( WaitBannerForm.CreateAndShow( this, cts, visibleDelayInMilliseconds: 1_500 ) )
             {
 //await Task.Delay( 10_000 );
-                _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, clearLog: false );
-                var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl, requestHeaders, _SC.Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
+                var webproxy = _SC.CreateWebProxyIfUsed();
+                _Model.AddBeginRequest2Log( this.M3u8FileUrl, webproxy.GetAddress(), requestHeaders, clearLog: false );
+                var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl, requestHeaders, 
+                    webproxy, _SC.Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
 
                 if ( cts.IsCancellationRequested )
                 {

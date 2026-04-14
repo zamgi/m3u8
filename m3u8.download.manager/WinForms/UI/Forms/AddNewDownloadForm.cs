@@ -720,9 +720,11 @@ namespace m3u8.download.manager.ui
 
             using ( var cts = new CancellationTokenSource() )
             using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1_500 ) )
-            {                
-                _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, clearLog: false );
-                var t = await _DC_.GetFileTextContent( x.m3u8FileUrl, requestHeaders, _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
+            {
+                var webproxy = _SC.CreateWebProxyIfUsed();
+                _Model.AddBeginRequest2Log( this.M3u8FileUrl, webproxy.GetAddress(), requestHeaders, clearLog: false );
+                var t = await _DC_.GetFileTextContent( x.m3u8FileUrl, requestHeaders,
+                    webproxy, _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
 
                 if ( cts.IsCancellationRequested )
                 {

@@ -329,11 +329,13 @@ namespace m3u8
             public int?  AttemptRequestCount { get; set; }
             public bool? ConnectionClose     { get; set; }
             public HttpCompletionOption? HttpCompletionOption { get; set; }
+            public IWebProxy WebProxy { get; set; }
         }
 
         #region [.field's.]
         private HttpClient  _HttpClient;
-        private IDisposable _DisposableObj;
+        private IWebProxy   _WebProxy;
+        private IDisposable _DisposableObj;        
         private bool?       _ConnectionClose;
         private int         _AttemptRequestCount;
         private HttpCompletionOption _HttpCompletionOption;
@@ -349,8 +351,9 @@ namespace m3u8
             _HttpCompletionOption = ip.HttpCompletionOption.GetValueOrDefault( HttpCompletionOption.ResponseHeadersRead );
 
         }
-        internal m3u8_client( in (HttpClient httpClient, IDisposable disposableObj) t, in init_params ip ) : this( t.httpClient, in ip )
+        internal m3u8_client( in (HttpClient httpClient, IWebProxy webProxy, IDisposable disposableObj) t, in init_params ip ) : this( t.httpClient, in ip )
         {
+            _WebProxy      = t.webProxy;
             _DisposableObj = t.disposableObj;
         }
 
@@ -365,8 +368,11 @@ namespace m3u8
         #endregion
 
         public init_params InitParams { get; }
+        public IWebProxy WebProxy => _WebProxy;
 #if M3U8_CLIENT_TESTS
-        public HttpClient HttpClient => _HttpClient;
+        public HttpClient HttpClient => _HttpClient;        
+#else
+        internal HttpClient HttpClient => _HttpClient;
 #endif
         private static async Task< m3u8_Exception > create_m3u8_Exception( HttpResponseMessage resp, CancellationToken ct )
         {
@@ -386,14 +392,22 @@ namespace m3u8
             }
             return (new m3u8_Exception( resp.CreateExceptionMessage( responseText ) ));
         }
-        private HttpRequestMessage CreateRequstGet( Uri url )
+        private HttpRequestMessage CreateRequstGet( Uri url, IDictionary< string, string > requestHeaders = null )
         {
             var req = new HttpRequestMessage( HttpMethod.Get, url );
             req.Headers.ConnectionClose = _ConnectionClose;
+            if ( requestHeaders != null )
+            {
+                foreach ( var header in requestHeaders )
+                {
+                    var suc = req.Headers.TryAddWithoutValidation( header.Key, header.Value );
+                    Debug.Assert( suc );
+                }
+            }            
             return (req);
         }
 
-        public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default )
+        public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null )
         {
             if ( url == null ) throw (new m3u8_ArgumentException( nameof(url) ));
             //------------------------------------------------------------------//
@@ -402,10 +416,18 @@ namespace m3u8
             {
                 try
                 {
-                    using ( var requestMsg  = CreateRequstGet( url ) )
+                    using ( var requestMsg  = CreateRequstGet( url, requestHeaders ) )
                     using ( var responseMsg = await _HttpClient.SendAsync( requestMsg, _HttpCompletionOption, ct ).CAX() )
                     using ( var content     = responseMsg.Content )
                     {
+                        /*
+                        var charSet = content.Headers.ContentType?.CharSet;
+                        if ( charSet != null )
+                        {
+                            content.Headers.ContentType.CharSet = charSet.Replace( "\"", "" ).Replace( "utf8", "utf-8" );
+                        }
+                        //*/
+
                         if ( responseMsg.IsSuccessStatusCode )
                         {
 #if NETCOREAPP
@@ -418,6 +440,12 @@ namespace m3u8
                         }
 
                         throw (await create_m3u8_Exception( responseMsg, ct ).CAX());
+
+                        /*
+                        var bytes        = await content.ReadAsByteArrayAsync().CAX();
+                        var responseText = Encoding.UTF8.GetString( bytes );
+                        throw (new m3u8_Exception( responseMsg.CreateExceptionMessage( responseText ) ));
+                        */
                     }
                 }
                 catch ( Exception /*ex*/ )

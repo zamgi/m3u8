@@ -191,6 +191,30 @@ namespace m3u8.download.manager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RequestWebProxyAddress {
+            get {
+                return ((string)(this["RequestWebProxyAddress"]));
+            }
+            set {
+                this["RequestWebProxyAddress"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseRequestWebProxy {
+            get {
+                return ((bool)(this["UseRequestWebProxy"]));
+            }
+            set {
+                this["UseRequestWebProxy"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool ShowOnlyRequestRowsWithErrors {
             get {

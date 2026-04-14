@@ -132,4 +132,11 @@
   <data name="ALL_DOWNLOADS_COMPLETED_NOTIFICATION" xml:space="preserve">
     <value>All downloads completed/finished.</value>
   </data>
+
+  <data name="TOR_SERVER_SOCKS5_ADDRESS" xml:space="preserve">
+    <value>socks5://127.0.0.1:9050</value>
+  </data>
+  <data name="TOR_BROWSER_SOCKS5_ADDRESS" xml:space="preserve">
+    <value>socks5://127.0.0.1:9150</value>
+  </data>
 </root>

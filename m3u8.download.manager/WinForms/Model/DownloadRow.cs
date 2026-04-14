@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+
 
 //using _m3u8_processor_ = m3u8.m3u8_processor_adv;
 using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
@@ -113,6 +115,7 @@ namespace m3u8.download.manager.models
         private DateTime? _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
 
         public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; private set; }
+        public string UsedWebProxyAddress { [M(O.AggressiveInlining)] get; private set; }
 
         public LogListModel Log { [M(O.AggressiveInlining)] get; }
 
@@ -161,6 +164,8 @@ namespace m3u8.download.manager.models
                 _RowPropertiesChanged?.Invoke( this, nameof(LiveStreamMaxFileSizeInBytes) );
             }
         }
+        //public void SetUsedWebProxyAddress( string usedWebProxyAddress ) => UsedWebProxyAddress = usedWebProxyAddress;
+        public void SetUsedWebProxyAddress( IWebProxy usedWebProxy ) => UsedWebProxyAddress = usedWebProxy?.GetProxy( m3u8_client_factory.EmptyUri ).ToString();
 
         public DownloadRow CreateCopy() => new DownloadRow( this );
         public DownloadRow Add2ModelFinishedCopy( DateTime createDateTime, IReadOnlyList< LogRow > logRows, DownloadRow rowSaveState )
@@ -186,7 +191,8 @@ namespace m3u8.download.manager.models
             _CreatedOrStartedDateTime_4_LastPartOfLiveStream = DateTime.Now;
         }
 
-        public bool Update( string m3u8FileUrl, IDictionary< string, string > requestHeaders, string outputFileName, string outputDirectory, bool isLiveStream, long liveStreamMaxFileSizeInBytes )
+        public bool Update( string m3u8FileUrl, IDictionary< string, string > requestHeaders, string outputFileName
+                          , string outputDirectory, bool isLiveStream, long liveStreamMaxFileSizeInBytes )
         {
             var allowed = !Status.IsRunningOrPaused();
             if ( allowed )

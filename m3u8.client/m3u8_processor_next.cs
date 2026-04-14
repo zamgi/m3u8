@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,10 +35,12 @@ namespace m3u8
             public HttpCompletionOption? HttpCompletionOption { get; set; }
             public int?                  AttemptRequestCount  { get; set; }
             public bool?                 ConnectionClose      { get; set; }
+            public IWebProxy             WebProxy             { get; set; }
         }
 
         #region [.field's.]
-        private HttpClient _HttpClient;
+        private HttpClient  _HttpClient;
+        private IWebProxy   _WebProxy;
         private IDisposable _DisposableObj;
         private bool? _ConnectionClose;
         private int _AttemptRequestCount;
@@ -45,17 +48,32 @@ namespace m3u8
         #endregion
 
         #region [.ctor().]
+        public m3u8_client_next( m3u8_client mc )
+        {
+            var ip = new init_params()
+            {
+                AttemptRequestCount  = mc.InitParams.AttemptRequestCount,
+                ConnectionClose      = mc.InitParams.ConnectionClose,
+                HttpCompletionOption = mc.InitParams.HttpCompletionOption,
+            };
+            InitParams = ip;
+            Init( mc.HttpClient, ip );
+        }
         public m3u8_client_next( HttpClient httpClient, in init_params ip )
         {
-            _HttpClient = httpClient ?? throw (new ArgumentNullException( nameof( httpClient ) ));
-            InitParams  = ip;
+            InitParams = ip;
+            Init( httpClient, ip );
+        }
+        private void Init( HttpClient httpClient, in init_params ip )
+        {
+            _HttpClient = httpClient ?? throw (new ArgumentNullException( nameof( httpClient ) ));            
             _ConnectionClose      = ip.ConnectionClose;
             _AttemptRequestCount  = ip.AttemptRequestCount.GetValueOrDefault( 1 );
             _HttpCompletionOption = ip.HttpCompletionOption.GetValueOrDefault( HttpCompletionOption.ResponseHeadersRead );
-
         }
-        internal m3u8_client_next( in (HttpClient httpClient, IDisposable disposableObj) t, in init_params ip ) : this( t.httpClient, in ip )
+        internal m3u8_client_next( in (HttpClient httpClient, IWebProxy webProxy, IDisposable disposableObj) t, in init_params ip ) : this( t.httpClient, ip )
         {
+            _WebProxy      = t.webProxy;
             _DisposableObj = t.disposableObj;
         }
 
@@ -70,6 +88,7 @@ namespace m3u8
         #endregion
 
         public init_params InitParams { get; }
+        public IWebProxy WebProxy => _WebProxy;
 #if M3U8_CLIENT_TESTS
         public HttpClient HttpClient => _HttpClient;
 #endif
@@ -321,13 +340,13 @@ if ( (new Random()).Next( 10 ) == 0 )
     /// </summary>
     internal static class m3u8_client_next_factory
     {
-        public static m3u8_client_next Create() => Create( HttpClientFactory_WithRefCount.Get() );
-        public static m3u8_client_next Create( in (TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.timeout, t.attemptRequestCountByPart );
-        public static m3u8_client_next Create( in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( timeout ), attemptRequestCountByPart );
-        public static m3u8_client_next Create( in m3u8_client_next.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get(), ip );
+        public static m3u8_client_next Create( IWebProxy webProxy = null ) => Create( HttpClientFactory_WithRefCount.Get( webProxy ) );
+        public static m3u8_client_next Create( in (IWebProxy webProxy, TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.webProxy, t.timeout, t.attemptRequestCountByPart );
+        public static m3u8_client_next Create( IWebProxy webProxy, in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( webProxy, timeout ), attemptRequestCountByPart );
+        public static m3u8_client_next Create( in m3u8_client_next.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get( ip.WebProxy ), ip );
 
-        private static m3u8_client_next Create( in (HttpClient httpClient, IDisposable) t, in m3u8_client_next.init_params ip ) => new m3u8_client_next( t, ip );
-        private static m3u8_client_next Create( in (HttpClient httpClient, IDisposable) t, int attemptRequestCountByPart = 10 )
+        private static m3u8_client_next Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, in m3u8_client_next.init_params ip ) => new m3u8_client_next( t, ip );
+        private static m3u8_client_next Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
             => Create( t, new m3u8_client_next.init_params() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
 
         public static void ForceClearAndDisposeAll() => HttpClientFactory_WithRefCount.ForceClearAndDisposeAll();
