@@ -7,7 +7,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class TextBoxWithCustomPathPaste : TextBoxWithBorder
+    internal sealed class TextBoxWithCustomPathPaste : TextBoxEx
     {
         public TextBoxWithCustomPathPaste() { }
 

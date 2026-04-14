@@ -20,7 +20,7 @@
             this.DGV = new System.Windows.Forms.DataGridViewEx();
             this.DGV_excludesWordsColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.l1 = new System.Windows.Forms.Label();
-            this.filterTextBox = new System.Windows.Forms.TextBoxWithBorder();
+            this.filterTextBox = new System.Windows.Forms.TextBoxEx();
             this.clearFilterButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
@@ -143,7 +143,7 @@
         private System.Windows.Forms.DataGridViewEx DGV;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_excludesWordsColumn;
         private System.Windows.Forms.Label l1;
-        private System.Windows.Forms.TextBoxWithBorder filterTextBox;
+        private System.Windows.Forms.TextBoxEx filterTextBox;
         private System.Windows.Forms.Button clearFilterButton;
     }
 }

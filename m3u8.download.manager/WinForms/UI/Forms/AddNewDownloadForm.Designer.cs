@@ -17,14 +17,18 @@ namespace m3u8.download.manager.ui
         /// </summary>
         private void InitializeComponent( _DC_ dc, _SC_ sc )
         {
+            System.Windows.Forms.Label outputFileNameLabel;
+            System.Windows.Forms.Label outputDirectoryLabel;
             this.components = new System.ComponentModel.Container();
-            this.l1 = new System.Windows.Forms.Label();
-            this.l2 = new System.Windows.Forms.Label();
+            outputFileNameLabel = new System.Windows.Forms.Label();
+            outputDirectoryLabel = new System.Windows.Forms.Label();
             this.topPanel = new System.Windows.Forms.Panel();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.mainTabPage = new System.Windows.Forms.TabPage();
             this.requestHeadersTabPage = new System.Windows.Forms.TabPage();
+            this.webProxyTabPage = new System.Windows.Forms.TabPage();
             this.requestHeadersEditor = new RequestHeadersEditor( sc );
+            this.webProxyUC = new WebProxyUC( sc.Settings );
             this.m3u8FileUrlTextBox = new System.Windows.Forms.TextBox();
             this.outputFileNameTextBox = new TextBoxWithCustomPathPaste();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -51,6 +55,7 @@ namespace m3u8.download.manager.ui
             this.tabControl.SuspendLayout();
             this.mainTabPage.SuspendLayout();
             this.requestHeadersTabPage.SuspendLayout();
+            this.webProxyTabPage.SuspendLayout();
             this.logPanel.SuspendLayout();
             this.mainLayoutPanel.SuspendLayout();
             this.buttomPanel.SuspendLayout();
@@ -58,25 +63,25 @@ namespace m3u8.download.manager.ui
             // 
             // l1
             // 
-            this.l1.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this.l1.AutoSize = true;
-            this.l1.ForeColor = System.Drawing.Color.SteelBlue;
-            this.l1.Location = new System.Drawing.Point(6, 2);
-            this.l1.Size = new System.Drawing.Size(55, 26);
-            this.l1.TabIndex = 0;
-            this.l1.Text = "output \r\nfile name :";
-            this.l1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            outputFileNameLabel.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            outputFileNameLabel.AutoSize = true;
+            outputFileNameLabel.ForeColor = System.Drawing.Color.SteelBlue;
+            outputFileNameLabel.Location = new System.Drawing.Point(6, 2);
+            outputFileNameLabel.Size = new System.Drawing.Size(55, 26);
+            outputFileNameLabel.TabIndex = 0;
+            outputFileNameLabel.Text = "output \r\nfile name :";
+            outputFileNameLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // l2
             // 
-            this.l2.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this.l2.AutoSize = true;
-            this.l2.ForeColor = System.Drawing.Color.SteelBlue;
-            this.l2.Location = new System.Drawing.Point(6, 62);
-            this.l2.Size = new System.Drawing.Size(55, 26);
-            this.l2.TabIndex = 4;
-            this.l2.Text = "output \r\ndirectory :";
-            this.l2.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            outputDirectoryLabel.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            outputDirectoryLabel.AutoSize = true;
+            outputDirectoryLabel.ForeColor = System.Drawing.Color.SteelBlue;
+            outputDirectoryLabel.Location = new System.Drawing.Point(6, 62);
+            outputDirectoryLabel.Size = new System.Drawing.Size(55, 26);
+            outputDirectoryLabel.TabIndex = 4;
+            outputDirectoryLabel.Text = "output \r\ndirectory :";
+            outputDirectoryLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
 
             // 
             // topPanel
@@ -92,6 +97,7 @@ namespace m3u8.download.manager.ui
             // 
             this.tabControl.Controls.Add(this.mainTabPage);
             this.tabControl.Controls.Add(this.requestHeadersTabPage);
+            this.tabControl.Controls.Add(this.webProxyTabPage);
             this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Size = new System.Drawing.Size(803, 81);
@@ -103,7 +109,7 @@ namespace m3u8.download.manager.ui
             // mainTabPage
             // 
             this.mainTabPage.Controls.Add(this.logPanel);
-            this.mainTabPage.Controls.Add(this.buttomPanel);
+            //---this.mainTabPage.Controls.Add(this.buttomPanel);
             this.mainTabPage.Controls.Add(this.mainLayoutPanel);
             this.mainTabPage.Controls.Add(this.topPanel);
             this.mainTabPage.Location = new System.Drawing.Point(4, 22);
@@ -125,6 +131,17 @@ namespace m3u8.download.manager.ui
             this.requestHeadersTabPage.UseVisualStyleBackColor = true;
             this.requestHeadersTabPage.BackColor = System.Drawing.Color.WhiteSmoke;
             // 
+            // webProxyTabPage
+            // 
+            this.webProxyTabPage.Controls.Add(this.webProxyUC);
+            this.webProxyTabPage.Location = new System.Drawing.Point(4, 22);            
+            this.webProxyTabPage.Size = new System.Drawing.Size(288, 431);
+            this.webProxyTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.webProxyTabPage.TabIndex = 2;
+            this.webProxyTabPage.Text = "web proxy";
+            this.webProxyTabPage.UseVisualStyleBackColor = true;
+            this.webProxyTabPage.BackColor = System.Drawing.Color.WhiteSmoke;
+            // 
             // requestHeadersEditor
             // 
             this.requestHeadersEditor.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -132,6 +149,14 @@ namespace m3u8.download.manager.ui
             //this.requestHeadersEditor.Size = new System.Drawing.Size(800, 409);
             this.requestHeadersEditor.TabIndex = 0;
             this.requestHeadersEditor.OnRequestHeadersCountChanged += new RequestHeadersEditor.RequestHeadersCountChangedEventHandler(this.requestHeadersEditor_OnRequestHeadersCountChanged);
+            // 
+            // webProxyUC
+            // 
+            this.webProxyUC.Dock = System.Windows.Forms.DockStyle.Fill;
+            //this.webProxyUC.Location = new System.Drawing.Point(0, 0);
+            //this.webProxyUC.Size = new System.Drawing.Size(800, 409);
+            this.webProxyUC.TabIndex = 0;
+            this.webProxyUC.OnWebProxyChanged += new WebProxyUC.WebProxyChangedEventHandler(this.webProxyUC_OnWebProxyChanged);
             // 
             // m3u8FileUrlTextBox
             // 
@@ -248,13 +273,13 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.mainLayoutPanel.Controls.Add(this.l2, 0, 2);
+            this.mainLayoutPanel.Controls.Add(outputDirectoryLabel, 0, 2);
             this.mainLayoutPanel.Controls.Add(this.outputDirectoryTextBox, 1, 2);
             this.mainLayoutPanel.SetColumnSpan(this.outputDirectoryTextBox, 3);
             this.mainLayoutPanel.Controls.Add(this.outputDirectorySelectButton, 5, 2);
             this.mainLayoutPanel.Controls.Add(this.externalProgApplyByDefaultCheckBox, 1, 3);
             this.mainLayoutPanel.SetColumnSpan(this.externalProgApplyByDefaultCheckBox, 3);
-            this.mainLayoutPanel.Controls.Add(this.l1, 0, 0);
+            this.mainLayoutPanel.Controls.Add(outputFileNameLabel, 0, 0);
             this.mainLayoutPanel.Controls.Add(this.outputFileNameSelectButton, 5, 0);
             this.mainLayoutPanel.Controls.Add(this.outputFileNameTextBox, 1, 0);
             this.mainLayoutPanel.SetColumnSpan(this.outputFileNameTextBox, 3);            
@@ -472,6 +497,7 @@ namespace m3u8.download.manager.ui
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(803, 270);
             this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.buttomPanel);
             this.Controls.Add(this.statusBarUC);
             this.Icon = global::m3u8.download.manager.Properties.Resources.m3u8_32x36;
             this.MaximizeBox = false;
@@ -483,6 +509,7 @@ namespace m3u8.download.manager.ui
             this.tabControl.ResumeLayout(false);
             this.mainTabPage.ResumeLayout(false);
             this.requestHeadersTabPage.ResumeLayout(false);
+            this.webProxyTabPage.ResumeLayout(false);
             this.topPanel.ResumeLayout(false);
             this.logPanel.ResumeLayout(false);
             this.mainLayoutPanel.ResumeLayout(false);
@@ -495,7 +522,9 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.TabControl tabControl;
         private System.Windows.Forms.TabPage mainTabPage;
         private System.Windows.Forms.TabPage requestHeadersTabPage;
+        private System.Windows.Forms.TabPage webProxyTabPage;
         private m3u8.download.manager.ui.RequestHeadersEditor requestHeadersEditor;
+        private m3u8.download.manager.ui.WebProxyUC webProxyUC;
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.TextBox m3u8FileUrlTextBox;
         private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputFileNameTextBox;
@@ -519,7 +548,5 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;
         private LogUC logUC;
         private StatusBarUC statusBarUC;
-        private System.Windows.Forms.Label l1;
-        private System.Windows.Forms.Label l2;
     }
 }

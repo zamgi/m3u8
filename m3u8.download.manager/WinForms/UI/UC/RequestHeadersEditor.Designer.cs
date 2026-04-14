@@ -22,7 +22,7 @@
             this.DGV_keyColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.DGV_valueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.filterLabel = new System.Windows.Forms.Label();
-            this.filterTextBox = new System.Windows.Forms.TextBoxWithBorder();
+            this.filterTextBox = new System.Windows.Forms.TextBoxEx();
             this.clearFilterButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.keyBindingSource)).BeginInit();
@@ -162,7 +162,7 @@
         private System.Windows.Forms.DataGridViewComboBoxColumn DGV_keyColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_valueColumn;
         private System.Windows.Forms.Label filterLabel;
-        private System.Windows.Forms.TextBoxWithBorder filterTextBox;
+        private System.Windows.Forms.TextBoxEx filterTextBox;
         private System.Windows.Forms.Button clearFilterButton;
     }
 }

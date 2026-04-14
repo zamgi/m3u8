@@ -23,6 +23,9 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed partial class AddNewDownloadForm : Form
     {
+        private static string GetCaptionBySeriesInfo( in (int n, int total) seriesInfo ) => $" ({seriesInfo.n} of {seriesInfo.total})";
+        private static string GetCaptionBySeriesInfo( in (int n, int total)? seriesInfo ) => seriesInfo.HasValue ? GetCaptionBySeriesInfo( seriesInfo.Value ) : null;
+
         #region [.fields.]
         private LogListModel      _Model;
         private bool              _DownloadLater;
@@ -38,9 +41,6 @@ namespace m3u8.download.manager.ui
         private bool _IsInEditMode;
         private Func< AddNewDownloadForm, Task > _FormClosedAction;
         #endregion
-
-        private static string GetCaptionBySeriesInfo( in (int n, int total) seriesInfo ) => $" ({seriesInfo.n} of {seriesInfo.total})";
-        private static string GetCaptionBySeriesInfo( in (int n, int total)? seriesInfo ) => seriesInfo.HasValue ? GetCaptionBySeriesInfo( seriesInfo.Value ) : null;
 
         #region [.ctor().]
         private AddNewDownloadForm( _DC_ dc, _SC_ sc )
@@ -90,6 +90,8 @@ namespace m3u8.download.manager.ui
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
+
+            set_WebProxyInfo( !row.UsedWebProxyAddress.IsNullOrWhiteSpace(), row.UsedWebProxyAddress );
         }
 
         /// <summary>
@@ -212,6 +214,8 @@ namespace m3u8.download.manager.ui
         }
         private void InitAndShowWhenAdd( IWin32Window owner, string m3u8FileUrl, Func< AddNewDownloadForm, Task > formClosedAction )
         {
+            set_WebProxyInfo( _SC.Settings.UseRequestWebProxy, _SC.Settings.RequestWebProxyAddress );
+
             this.FormClosed += (_, _) => formClosedAction?.Invoke( this );
             var close = new EventHandler( (_, _) => this.Close() );
             this.downloadStartButton.Click += close;
@@ -769,6 +773,26 @@ namespace m3u8.download.manager.ui
             => requestHeadersTabPage.Text = (requestHeadersCount == enabledCount) ? $"request headers ({requestHeadersCount})" : $"request headers ({enabledCount} of {requestHeadersCount})";
         #endregion
 
+        #region [.web-proxy.]
+        private void set_WebProxyInfo( bool useRequestWebProxy, string webProxyAddress )
+        {
+            set_WebProxyTabPageText( useRequestWebProxy );
+            if ( useRequestWebProxy )
+            {
+                webProxyUC.WebProxyAddress = webProxyAddress;
+            }
+        }
+        private void set_WebProxyTabPageText( bool useRequestWebProxy )
+        {
+            webProxyTabPage.Text = "web proxy";
+
+            if ( useRequestWebProxy )
+            {
+                webProxyTabPage.Text += " (used)";
+            }
+        }
+        private void webProxyUC_OnWebProxyChanged( bool enabled, string addressRaw ) => set_WebProxyTabPageText( enabled );
+        #endregion
 
         private bool logUC_AllowDownloadAdditionalM3u8Url( string m3u8FileUrl ) => !this.M3u8FileUrl.Equals( m3u8FileUrl, StringComparison.InvariantCultureIgnoreCase );
         private void logUC_DownloadAdditionalM3u8Url( Uri m3u8FileUrl )

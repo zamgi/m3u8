@@ -141,6 +141,16 @@ namespace m3u8.download.manager
                 lst.AddRange( seq );
             }
         }
+        public static void ForEach< T >( this IEnumerable< T > seq, Action < T > action )
+        {
+            if ( seq != null )
+            {
+                foreach ( var t in seq )
+                {
+                    action( t );
+                }
+            }
+        }
 
         /// <summary>
         /// Copy user settings from previous application version if necessary
