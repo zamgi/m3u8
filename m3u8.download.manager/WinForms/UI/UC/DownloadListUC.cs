@@ -957,7 +957,7 @@ namespace m3u8.download.manager.ui
 
             Fire_UpdatedSummaryDownloadInfo();
 #if DEBUG
-            Debug.WriteLine( $"CommonUpdateTimer_Tick: '{DateTime.Now}'" );
+            //Debug.WriteLine( $"CommonUpdateTimer_Tick: '{DateTime.Now}'" );
 #endif
         }
         private void Fire_UpdatedSummaryDownloadInfo()

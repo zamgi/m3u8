@@ -48,6 +48,7 @@
     <Compile Include="..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
     <Compile Include="..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
     <Compile Include="..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
+    <Compile Include="..\m3u8.client\System.Runtime.CompilerServices.cs" Link="[-= m3u8.client =-]\System.Runtime.CompilerServices.cs" />
   </ItemGroup>
 
 </Project>

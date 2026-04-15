@@ -12,7 +12,7 @@ namespace m3u8.download.manager.ui
         public TextBoxWithCustomPathPaste() { }
 
 
-        private const int WM_PASTE   = 0x0302;
+        private const int WM_PASTE = 0x0302;
         #region comm. prev.
         /*
         protected override void WndProc( ref Message m )

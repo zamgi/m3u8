@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Policy;
 
 namespace m3u8.download.manager
 {
@@ -26,139 +27,105 @@ namespace m3u8.download.manager
             }
         }
         
-        public const string UriSchemeSocks5 = "socks5";
-        /// <summary>
-        /// 
-        /// </summary>
-        public enum WebProxyUrlEnumType
-        {
-            Http,
-            Socks5,
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public readonly struct ParseWebProxyUrlResult
-        {
-            public Uri       Url     { get; init; }
-            public string    Address { get; init; }
-            public int?      Port    { get; init; }
-            public WebProxyUrlEnumType UrlType { get; init; }
-            public Exception Error   { get; init; }
-        }
-        public static bool TryParseWebProxyUrl( string webProxyUrlWithScheme, out ParseWebProxyUrlResult res )
+        public static bool TryParseWebProxyUrl( string webProxyUrlWithScheme, out web_proxy_info webProxyInfo, out Exception error )
         {
             if ( !webProxyUrlWithScheme.IsNullOrEmpty() )
             {
-                try
+                var suc = Uri.TryCreate( webProxyUrlWithScheme, UriKind.Absolute, out var url );
+                if ( suc )
                 {
-                    var url = new Uri( webProxyUrlWithScheme );
-                    var is_http = (url.Scheme == Uri.UriSchemeHttp);
-                    if ( !is_http && (url.Scheme != UriSchemeSocks5) )
+                    try
                     {
-                        throw (new ArgumentException( $"Only '{Uri.UriSchemeHttp}' and '{UriSchemeSocks5}' schemes are allowed.", nameof(url) ));
+                        url = new Uri( webProxyUrlWithScheme );
+                        var is_http = (url.Scheme == Uri.UriSchemeHttp);
+                        if ( !is_http && (url.Scheme != web_proxy_info.UriSchemeSocks5) )
+                        {
+                            throw (new ArgumentException( $"Only '{Uri.UriSchemeHttp}' and '{web_proxy_info.UriSchemeSocks5}' schemes are allowed.", nameof(webProxyUrlWithScheme) ));
+                        }
+                        webProxyInfo = new web_proxy_info()
+                        {
+                            //Url         = url,
+                            Hostname    = url.Host,
+                            Port        = (url.Port != -1) ? url.Port : null,
+                            UrlType     = is_http ? WebProxyUrlEnumType.Http : WebProxyUrlEnumType.Socks5,
+                            UseWebProxy = true,
+                        };
+                        error = default;
+                        return (true);
                     }
-                    res = new ParseWebProxyUrlResult()
+                    catch ( Exception ex )
                     {
-                        Url     = url,
-                        Address = url.Host,
-                        Port    = (url.Port != -1) ? url.Port : null,
-                        UrlType = is_http ? WebProxyUrlEnumType.Http : WebProxyUrlEnumType.Socks5,
-                    };
-                    return (true);
-                }
-                catch ( Exception ex )
-                {
-                    res = new ParseWebProxyUrlResult() { Error = ex };
-                    return (false);
+                        (webProxyInfo, error) = (/*default*/web_proxy_info.Empty, ex);
+                        return (false);
+                    }
                 }
             }
 
-            res = default;
+            (webProxyInfo, error) = (/*default*/web_proxy_info.Empty, default);
             return (false);
         }
-        public static string GetWebProxyAddressText( this in ParseWebProxyUrlResult res )
-        {
-            if ( (res.Url == null) || (res.Error != null) || res.Address.IsNullOrEmpty() )
-            {
-                return (null);
-            }
+        //public static bool TryCreateWebProxyInfo( WebProxyUrlEnumType? urlType, string hostname, int? port, bool use, out web_proxy_info webProxyInfo )
+        //{
+        //    var suc = urlType.HasValue && !hostname.IsNullOrWhiteSpace();
+        //    webProxyInfo = new web_proxy_info()
+        //    { 
+        //        Hostname    = hostname,
+        //        Port        = port,
+        //        UrlType     = urlType.GetValueOrDefault(),
+        //        UseWebProxy = use,
+        //    };
+        //    return (suc);
+        //}
+        //public static string GetWebProxyAddressText( this in (web_proxy_info webProxyInfo, Exception error) res )
+        //{
+        //    if ( (res.webProxyInfo.Url == null) || (res.error != null) || res.webProxyInfo.Hostname.IsNullOrEmpty() )
+        //    {
+        //        return (null);
+        //    }
 
-            #region comm
-            //var scheme = res.UrlType switch
-            //{
-            //    WebProxyUrlEnumType.Http => Uri.UriSchemeHttp,
-            //    WebProxyUrlEnumType.Socks5 => UriSchemeSocks5,
-            //    _ => res.Url.Scheme
-            //};
+        //    return (res.webProxyInfo.GetWebProxyAddressText());
+        //}
 
-            //var webProxyAddress = $"{scheme}://{res.Address}" + (res.Port.HasValue ? $":{res.Port.Value}" : null);
-            //return (webProxyAddress); 
-            #endregion
-
-            return (GetWebProxyAddressText( res.UrlType, res.Address, res.Port ));
-        }
-        public static string GetWebProxyAddressText( WebProxyUrlEnumType urlType, string address, int? port )
-        {
-            if ( !address.IsNullOrWhiteSpace() )
-            {
-                var scheme = urlType switch
-                {
-                    WebProxyUrlEnumType.Http => Uri.UriSchemeHttp,
-                    WebProxyUrlEnumType.Socks5 => UriSchemeSocks5,
-                    _ => null
-                };
-
-                if ( scheme != null )
-                {
-                    var webProxyAddress = $"{scheme}://{address}" + (port.HasValue ? $":{port.Value}" : null);
-                    return (webProxyAddress); 
-                }
-            }
-
-            return (null);
-        }
-
-        public static bool TryParseHostnameAndPort( string hostnameAndPortRaw, out (string Address, int? Port, Exception Error) t, bool ignorePortErrors = true )
+        public static bool TryParseHostnameAndPort( string hostnameAndPortRaw, out (string Hostname, int? Port, Exception Error) t, bool ignorePortErrors = true )
         {
             if ( !hostnameAndPortRaw.IsNullOrEmpty() )
             {
                 try
                 {
                     var i = hostnameAndPortRaw.LastIndexOf(':');
-                    string address;
-                    int? port;
+                    string hostname;
+                    int?   port;
                     if ( i != -1 )
                     {
                         var portText = hostnameAndPortRaw.Substring( i + 1 );
                         var portSuc  = int.TryParse( portText, out var portInt ) && (0 < portInt) && (portInt <= 0XFFFF);
                         if ( ignorePortErrors )
                         {
-                            address = hostnameAndPortRaw.Substring( 0, i );
-                            port    = portSuc ? portInt : null;
+                            hostname = hostnameAndPortRaw.Substring( 0, i );
+                            port     = portSuc ? portInt : null;
                         }
                         else
                         {
                             if ( portSuc )
                             {
-                                port    = portInt;
-                                address = hostnameAndPortRaw.Substring( 0, i );
+                                port     = portInt;
+                                hostname = hostnameAndPortRaw.Substring( 0, i );
                             }
                             else
                             {
-                                port    = null;
-                                address = null;
+                                port     = null;
+                                hostname = null;
                             }
                         }
                     }
                     else
                     {
-                        address = hostnameAndPortRaw;
-                        port    = null;
+                        hostname = hostnameAndPortRaw;
+                        port     = null;
                     }
 
-                    t = (address, port, default);
-                    return (address != null);
+                    t = (hostname, port, default);
+                    return (hostname != null);
                 }
                 catch ( Exception ex )
                 {

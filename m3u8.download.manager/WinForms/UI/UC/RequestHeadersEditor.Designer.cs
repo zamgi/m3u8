@@ -23,7 +23,7 @@
             this.DGV_valueColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.filterLabel = new System.Windows.Forms.Label();
             this.filterTextBox = new System.Windows.Forms.TextBoxEx();
-            this.clearFilterButton = new System.Windows.Forms.Button();
+            //this.clearFilterButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.keyBindingSource)).BeginInit();
             this.SuspendLayout();
@@ -117,34 +117,33 @@
             // filterTextBox
             // 
             this.filterTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            //---this.filterTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.filterTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.5f/*11.5F*/);
             this.filterTextBox.Location = new System.Drawing.Point(45, 1);
-            this.filterTextBox.Size = new System.Drawing.Size(224, 18);
+            this.filterTextBox.Size = new System.Drawing.Size(241, 18);
             this.filterTextBox.TabIndex = 2;
             this.filterTextBox.WordWrap = false;
             this.filterTextBox.TextChanged += new System.EventHandler(this.filterTextBox_TextChanged);
-            // 
-            // clearFilterButton
-            // 
-            this.clearFilterButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.clearFilterButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.clearFilterButton.Location = new System.Drawing.Point(270, 2);
-            this.clearFilterButton.Size = new System.Drawing.Size(16, 18);
-            this.clearFilterButton.TabIndex = 3;
-            this.clearFilterButton.Text = "x";
-            this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.clearFilterButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.clearFilterButton.UseCompatibleTextRendering = true;
-            this.clearFilterButton.UseVisualStyleBackColor = true;
-            this.clearFilterButton.Visible = false;
-            this.clearFilterButton.Click += new System.EventHandler(this.clearFilterButton_Click);
+            //// 
+            //// clearFilterButton
+            //// 
+            //this.clearFilterButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            //this.clearFilterButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            //this.clearFilterButton.Location = new System.Drawing.Point(270, 2);
+            //this.clearFilterButton.Size = new System.Drawing.Size(16, 18);
+            //this.clearFilterButton.TabIndex = 3;
+            //this.clearFilterButton.Text = "x";
+            //this.clearFilterButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            //this.clearFilterButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            //this.clearFilterButton.UseCompatibleTextRendering = true;
+            //this.clearFilterButton.UseVisualStyleBackColor = true;
+            //this.clearFilterButton.Visible = false;
+            //this.clearFilterButton.Click += new System.EventHandler(this.clearFilterButton_Click);
             // 
             // RequestHeadersEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.clearFilterButton);
+            //this.Controls.Add(this.clearFilterButton);
             this.Controls.Add(this.filterTextBox);
             this.Controls.Add(this.filterLabel);
             this.Controls.Add(this.DGV);
@@ -163,6 +162,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn DGV_valueColumn;
         private System.Windows.Forms.Label filterLabel;
         private System.Windows.Forms.TextBoxEx filterTextBox;
-        private System.Windows.Forms.Button clearFilterButton;
+        //private System.Windows.Forms.Button clearFilterButton;
     }
 }

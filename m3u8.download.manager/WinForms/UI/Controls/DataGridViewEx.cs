@@ -400,7 +400,7 @@ namespace System.Windows.Forms
     /// <summary>
     /// 
     /// </summary>
-    internal static class Extensions
+    internal static partial class Extensions
     {
         public static void SetDoubleBuffered< T >( this T t, bool doubleBuffered ) where T : Control
         {          

@@ -69,6 +69,8 @@
     <Compile Include="m3u8_processor__v2.cs" />
     <Compile Include="obj_pool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System.Runtime.CompilerServices.cs" />
+    <Compile Include="web_proxy_info.cs" />
     <Compile Include="throttler_by_speed.cs" />
   </ItemGroup>
   <ItemGroup>

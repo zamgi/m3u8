@@ -90,6 +90,16 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap auto_start_download {
+            get {
+                object obj = ResourceManager.GetObject("auto_start_download", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap browse {
             get {
                 object obj = ResourceManager.GetObject("browse", resourceCulture);
@@ -214,6 +224,16 @@ namespace m3u8.download.manager.Properties {
             get {
                 object obj = ResourceManager.GetObject("delete_all", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon domain {
+            get {
+                object obj = ResourceManager.GetObject("domain", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
         

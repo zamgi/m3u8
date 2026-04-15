@@ -477,14 +477,13 @@ namespace m3u8.download.manager.controllers
         }
         private async Task StartRoutine( DownloadRow row, Uri m3u8FileUrl )
         {
-            using ( var mc                         = m3u8_client_next_factory.Create( _SettingsController.GetCreateM3u8ClientParams() ) )
+            var webProxy = row.WebProxyInfo.CreateWebProxyIfUsed();
+            using ( var mc                         = m3u8_client_next_factory.Create( webProxy, _SettingsController.GetCreateM3u8ClientParams() ) )
             using ( var cts                        = new CancellationTokenSource() )
             using ( var waitIfPausedEvent          = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore   = _DownloadThreadsSemaphoreFactory.Get() )
             using ( var downloadThreadsSemaphore_2 = _DownloadThreadsSemaphoreFactory_2.Get() )
             {
-                row.SetUsedWebProxyAddress( mc.WebProxy );
-
                 var tup = Tuple.Create( mc, cts, waitIfPausedEvent, downloadThreadsSemaphore, downloadThreadsSemaphore_2, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
@@ -702,7 +701,8 @@ namespace m3u8.download.manager.controllers
         }
         private async Task StartLiveStreamRoutine( DownloadRow row, Uri m3u8FileUrl )
         {
-            var (webProxy, timeout, _) = _SettingsController.GetCreateM3u8ClientParams();
+            var (timeout, _) = _SettingsController.GetCreateM3u8ClientParams();
+            var webProxy = row.WebProxyInfo.CreateWebProxyIfUsed();
             var (hc, webProxy2, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );
             using ( d )
             //using ( var mc                       = m3u8_client_factory.Create( _SettingsController.GetCreateM3u8ClientParams() ) )
@@ -710,15 +710,13 @@ namespace m3u8.download.manager.controllers
             using ( var waitIfPausedEvent        = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore = _DownloadThreadsSemaphoreFactory.Get() )
             {
-                row.SetUsedWebProxyAddress( webProxy2 );
-
                 var tup = Tuple.Create( /*mc,*/ cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
                 try
                 {
                     var sw = Stopwatch.StartNew();
-                    row.AddBeginRequest2Log();                    
+                    row.AddBeginRequest2Log();
 
                     //-1-//
                     var anyErrorHappend = false;
@@ -1150,15 +1148,15 @@ namespace m3u8.download.manager.controllers
     /// </summary>
     internal static class DownloadControllerExtensions
     {
-        public static void AddBeginRequest2Log( this DownloadRow row, bool clearLog = true ) => row.Log.AddBeginRequest2Log( row.Url, row.UsedWebProxyAddress, row.RequestHeaders, clearLog );
-        public static void AddBeginRequest2Log( this LogListModel log, string url, string usedWebProxyAddress, IDictionary< string, string > requestHeaders, bool clearLog = true )
+        public static void AddBeginRequest2Log( this DownloadRow row, bool clearLog = true ) => row.Log.AddBeginRequest2Log( row.Url, row.WebProxyInfo, row.RequestHeaders, clearLog );
+        public static void AddBeginRequest2Log( this LogListModel log, string url, in web_proxy_info webProxyInfo, IDictionary< string, string > requestHeaders, bool clearLog = true )
         {
             if ( clearLog ) log.Clear();
             log.AddRequestRow( "url:" );
             log.AddRequestRow( url );
-            if ( !usedWebProxyAddress.IsNullOrEmpty() )
+            if ( webProxyInfo.UseWebProxy )
             {
-                log.AddRequestRow( $"used web-proxy: {usedWebProxyAddress}" );
+                log.AddRequestRow( $"used web-proxy: {webProxyInfo.GetWebProxyAddressText()}" );
             }
             log.OutputRequestHeaders( requestHeaders );
         }

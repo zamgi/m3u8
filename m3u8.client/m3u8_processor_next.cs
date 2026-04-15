@@ -341,7 +341,7 @@ if ( (new Random()).Next( 10 ) == 0 )
     internal static class m3u8_client_next_factory
     {
         public static m3u8_client_next Create( IWebProxy webProxy = null ) => Create( HttpClientFactory_WithRefCount.Get( webProxy ) );
-        public static m3u8_client_next Create( in (IWebProxy webProxy, TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.webProxy, t.timeout, t.attemptRequestCountByPart );
+        public static m3u8_client_next Create( IWebProxy webProxy, in (TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( webProxy, t.timeout, t.attemptRequestCountByPart );
         public static m3u8_client_next Create( IWebProxy webProxy, in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( webProxy, timeout ), attemptRequestCountByPart );
         public static m3u8_client_next Create( in m3u8_client_next.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get( ip.WebProxy ), ip );
 
@@ -884,13 +884,3 @@ if ( (new Random()).Next( 10 ) == 0 )
         //-----------------------------------------------------------------------------//
     }
 }
-
-#if !NETCOREAPP
-namespace System.Runtime.CompilerServices
-{
-    /// <summary>
-    /// 
-    /// </summary>
-    internal static class IsExternalInit { }
-}
-#endif

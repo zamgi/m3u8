@@ -35,6 +35,7 @@ namespace m3u8.download.manager.controllers
             this.Settings = settings;
             _AllJson = ObjAsDict_JsonSerializer.ToJSON( Settings );
 
+            #region [.some preprocess.]
             var props = typeof(_Settings_).GetProperties();
             _PD = new Dictionary< string, object >( props.Length );
             foreach ( var prop in props )
@@ -44,6 +45,7 @@ namespace m3u8.download.manager.controllers
                     Call_AddProp4Track_With_Reflection_Cast_2_struct( prop );
                 }
             }
+            #endregion
 
             this.Settings.PropertyChanged += Settings_PropertyChanged;
         }
@@ -53,29 +55,26 @@ namespace m3u8.download.manager.controllers
 #endif
         public _Settings_ Settings { [M(O.AggressiveInlining)] get; }
 
-        //public (TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams() => (Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
-        public (IWebProxy webProxy, TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams( bool suppressCreateWebProxyError = false )
-            => (CreateWebProxyIfUsed( suppressCreateWebProxyError ), Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
-        public IWebProxy CreateWebProxyIfUsed( bool suppressError = false )
+        public (TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams() => (Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
+        //public (IWebProxy webProxy, TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams( bool suppressCreateWebProxyError = false )
+        //    => (CreateWebProxyIfUsed( suppressCreateWebProxyError ), Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
+        //public IWebProxy CreateWebProxyIfUsed( bool suppressError = false ) => GetDefaultWebProxyInfo( suppressError ).CreateWebProxyIfUsed( suppressError );
+        public web_proxy_info GetDefaultWebProxyInfo( bool suppressError = false )
         {
-            if ( Settings.UseRequestWebProxy )
+            var json = Settings.DefaultWebProxyInfo_Json;
+            if ( !json.IsNullOrWhiteSpace() )
             {
-                var requestWebProxyAddress = Settings.RequestWebProxyAddress;
-                if (  !requestWebProxyAddress.IsNullOrWhiteSpace() )
+                try
                 {
-                    IWebProxy webProxy;
-                    if ( suppressError )
-                    {
-                        webProxy = Uri.TryCreate( requestWebProxyAddress, UriKind.RelativeOrAbsolute, out var webProxyAddress ) ? new WebProxy( webProxyAddress ) : null;
-                    }
-                    else
-                    {
-                        webProxy = new WebProxy( new Uri( requestWebProxyAddress ) );
-                    }
-                    return (webProxy);
+                    var webProxyInfo = Extensions.FromJSON< web_proxy_info >( json );
+                    return (webProxyInfo);
+                }
+                catch ( Exception ex ) when ( suppressError )
+                {
+                    Debug.WriteLine( ex );
                 }
             }
-            return (null);
+            return (web_proxy_info.Empty);
         }
 
         public IEnumerable< string > NameCleanerExcludesWords { [M(O.AggressiveInlining)] get => Settings.GetNameCleanerExcludesWords(); }
@@ -95,16 +94,18 @@ namespace m3u8.download.manager.controllers
         public bool     IgnoreHostHttpHeader                { [M(O.AggressiveInlining)] get => Settings.IgnoreHostHttpHeader; [M(O.AggressiveInlining)] set => Settings.IgnoreHostHttpHeader = value; }
         
 
-        public IEnumerable<
-            (DateTime CreatedOrStartedDateTime,
-             string Url,
-             IDictionary< string, string > RequestHeaders,
-             string OutputFileName,
-             string OutputDirectory,
-             DownloadStatus Status,
-             bool IsLiveStream,
-             long LiveStreamMaxFileSizeInBytes)
-            > GetDownloadRows() => DownloadRowsSerializer.FromJSON( Settings.DownloadRowsJson );
+        //public IEnumerable<
+        //    (DateTime CreatedOrStartedDateTime,
+        //     string Url,
+        //     IDictionary< string, string > RequestHeaders,
+        //     string OutputFileName,
+        //     string OutputDirectory,
+        //     DownloadStatus Status,
+        //     bool IsLiveStream,
+        //     long LiveStreamMaxFileSizeInBytes)
+        //    > 
+        //    GetDownloadRows() => DownloadRowsSerializer.FromJSON( Settings.DownloadRowsJson );
+        public IEnumerable< DownloadRow_Definer_3 > GetDownloadRows() => DownloadRowsSerializer.FromJSON( Settings.DownloadRowsJson );
         public void SetDownloadRows_WithSaveIfChanged( IEnumerable< DownloadRow > rows )
         {
             var json = DownloadRowsSerializer.ToJSON( rows );

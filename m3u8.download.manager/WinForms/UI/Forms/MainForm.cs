@@ -147,7 +147,7 @@ namespace m3u8.download.manager.ui
             if ( !base.DesignMode )
             {
                 FormPositionStorer.Load( this, _SC.MainFormPositionJson );
-                _DownloadListModel.AddRows( _SC.GetDownloadRows() /*DownloadRowsSerializer.FromJSON( _SettingsController.DownloadRowsJson )*/ );
+                _DownloadListModel.AddRows( _SC.GetDownloadRows() );
                 logUC.ShowOnlyRequestRowsWithErrors = _SC.Settings.ShowOnlyRequestRowsWithErrors;
                 logUC.ScrollToLastRow               = _SC.Settings.ScrollToLastRow;
             }
@@ -1101,7 +1101,7 @@ namespace m3u8.download.manager.ui
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out var cuttedFileName ) )
                         outputFileName = cuttedFileName;
 
-                    var row = _DownloadListModel.AddRow( (x.m3u8FileUrl, requestHeaders, outputFileName, outputFileDirectory/*, IsLiveStream: false, default*/) );
+                    var row = _DownloadListModel.AddRow( (x.m3u8FileUrl, requestHeaders, outputFileName, outputFileDirectory) );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     _DC.Start( row );
                 }
@@ -1229,14 +1229,15 @@ namespace m3u8.download.manager.ui
             {
                 if ( f.DialogResult == DialogResult.OK )
                 {
-                    var (outFn, outDir, isLiveStream, liveStreamMaxFileSize, autoStart) = (f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes, f.AutoStartDownload);
+                    var (webProxyInfo, outFn, outDir, isLiveStream, liveStreamMaxFileSize, autoStart) 
+                        = (f.GetWebProxyInfo(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes, f.AutoStartDownload);
                     var outFn_a = get_outputFileName_4_audio( outFn );
 
-                    var row_1 = _DownloadListModel.AddRow( (x.audioUrl, audioRequestHeaders, outFn_a, outDir, isLiveStream, liveStreamMaxFileSize) );
+                    var row_1 = _DownloadListModel.AddRow( (x.audioUrl, audioRequestHeaders, webProxyInfo, outFn_a, outDir, isLiveStream, liveStreamMaxFileSize) );
                     await downloadListUC.SelectDownloadRowDelay( row_1 );
                     if ( autoStart ) _DC.Start( row_1 );
 
-                    var row_2 = _DownloadListModel.AddRow( (x.videoUrl, videoRequestHeaders, outFn, outDir, isLiveStream, liveStreamMaxFileSize) );
+                    var row_2 = _DownloadListModel.AddRow( (x.videoUrl, videoRequestHeaders, webProxyInfo, outFn, outDir, isLiveStream, liveStreamMaxFileSize) );
                     await downloadListUC.SelectDownloadRowDelay( row_2 );
                     if ( autoStart ) _DC.Start( row_2 );
                 }
@@ -1257,7 +1258,7 @@ namespace m3u8.download.manager.ui
         {
             if ( f.DialogResult == DialogResult.OK )
             {
-                var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
+                var row = _DownloadListModel.AddRow( f.GetParamsTuple()/*(f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes)*/ );
                 await downloadListUC.SelectDownloadRowDelay( row );
                 if ( f.AutoStartDownload )
                 {
@@ -1274,7 +1275,7 @@ namespace m3u8.download.manager.ui
         {
             if ( (f.DialogResult == DialogResult.OK) && !row.Status.IsRunningOrPaused() )
             {
-                row.Update( f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes );
+                row.Update( f.GetParamsTuple()/*f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes*/ );
             }
         }
 

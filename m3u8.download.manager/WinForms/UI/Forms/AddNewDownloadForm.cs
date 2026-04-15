@@ -39,7 +39,7 @@ namespace m3u8.download.manager.ui
         private string             _Initial_M3u8FileUrl;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
         private bool _IsInEditMode;
-        private Func< AddNewDownloadForm, Task > _FormClosedAction;
+        private Func< AddNewDownloadForm, Task > _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url;
         #endregion
 
         #region [.ctor().]
@@ -57,6 +57,11 @@ namespace m3u8.download.manager.ui
             logUC.ShowResponseColumn = false;
 
             _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
+
+            var imgLst = tabControl.ImageList = new ImageList() { ImageSize = new Size(16, 16) };
+            imgLst.Images.Add( Resources.download_inst ); mainTabPage          .ImageIndex = 0;
+            imgLst.Images.Add( Resources.listcheck     ); requestHeadersTabPage.ImageIndex = 1;
+            imgLst.Images.Add( Resources.domain        ); webProxyTabPage      .ImageIndex = 2;
         }
 
         /// <summary>
@@ -91,7 +96,7 @@ namespace m3u8.download.manager.ui
             _Model = new LogListModel();
             logUC.SetModel( _Model );
 
-            set_WebProxyInfo( !row.UsedWebProxyAddress.IsNullOrWhiteSpace(), row.UsedWebProxyAddress );
+            set_WebProxyInfo( row.WebProxyInfo ); //set_WebProxyInfo( !row.UsedWebProxyAddress.IsNullOrWhiteSpace(), row.UsedWebProxyAddress );
         }
 
         /// <summary>
@@ -195,7 +200,7 @@ namespace m3u8.download.manager.ui
             {
                 Icon = Resources.group_by_audio_video.CreateSafeIcon(), 
                 Text = "add new download (grouped by audio-video urls)" + GetCaptionBySeriesInfo( seriesInfo ),
-                _FormClosedAction = formClosedAction,
+                _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url = formClosedAction,
             };
             f.m3u8FileUrlTextBox       .ReadOnly = true;
             f.requestHeadersEditor     .ReadOnly = true;
@@ -209,12 +214,15 @@ namespace m3u8.download.manager.ui
             , in (int n, int total)? seriesInfo
             , Func< AddNewDownloadForm, Task > formClosedAction )
         {
-            var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, seriesInfo ) { _FormClosedAction = formClosedAction };
+            var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, seriesInfo ) 
+            { 
+                _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url = formClosedAction 
+            };
             f.InitAndShowWhenAdd( owner, m3u8FileUrl, formClosedAction );
         }
         private void InitAndShowWhenAdd( IWin32Window owner, string m3u8FileUrl, Func< AddNewDownloadForm, Task > formClosedAction )
         {
-            set_WebProxyInfo( _SC.Settings.UseRequestWebProxy, _SC.Settings.RequestWebProxyAddress );
+            set_WebProxyInfo( _SC.GetDefaultWebProxyInfo() );
 
             this.FormClosed += (_, _) => formClosedAction?.Invoke( this );
             var close = new EventHandler( (_, _) => this.Close() );
@@ -234,7 +242,7 @@ namespace m3u8.download.manager.ui
             { 
                 Icon = Resources.edit.CreateSafeIcon(),
                 Text = $"Edit, / '{row.OutputFileName}' /",
-                _FormClosedAction = formClosedAction_4_DownloadAdditionalM3u8Url,
+                _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url = formClosedAction_4_DownloadAdditionalM3u8Url,
             };
 
             f.FormClosing += (_, e) => formClosingAction?.Invoke( e );
@@ -450,17 +458,20 @@ namespace m3u8.download.manager.ui
         private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _Settings.OutputFileExtension, _OutputFileNamePatternProcessor.PatternChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();
-        public  bool   IsLiveStream
+        //public string GetUsedWebProxyAddress() => webProxyUC.GetUsedWebProxyAddress();
+        //public  bool  UsedWebProxyAddress => webProxyUC.UsedWebProxyAddress;
+        public web_proxy_info GetWebProxyInfo() => webProxyUC.GetWebProxyInfo();
+        public  bool  IsLiveStream
         { 
             get => isLiveStreamCheckBox.Checked;
             set => isLiveStreamCheckBox.Checked = value;
         }
-        public int     LiveStreamMaxFileSizeInMb
+        public int    LiveStreamMaxFileSizeInMb
         {
             get => (int) liveStreamMaxSizeInMbNumUpDn.Value;
             set => liveStreamMaxSizeInMbNumUpDn.Value = Math.Max( liveStreamMaxSizeInMbNumUpDn.Minimum, Math.Min( liveStreamMaxSizeInMbNumUpDn.Maximum, value ) );
         }
-        public long    LiveStreamMaxFileSizeInBytes
+        public long   LiveStreamMaxFileSizeInBytes
         {
             get => this.LiveStreamMaxFileSizeInMb << 20;
             set => this.LiveStreamMaxFileSizeInMb = (int) (value >> 20);
@@ -502,6 +513,17 @@ namespace m3u8.download.manager.ui
                 set_externalProgApplyByDefaultCheckBox_Color( value );
             }
         }
+
+        //public (string M3u8FileUrl, IDictionary< string, string > RequestHeaders, web_proxy_info WebProxyInfo,
+        //        string OutputFileName, string OutputDirectory, 
+        //        bool IsLiveStream, long LiveStreamMaxFileSizeInBytes)
+        //    GetParamsTuple() 
+        //=> (this.M3u8FileUrl, this.GetRequestHeaders(), this.GetWebProxyInfo(),
+        //    this.GetOutputFileName(), this.GetOutputDirectory(), 
+        //    this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
+        public DownloadRow_Definer_2 GetParamsTuple() => (this.M3u8FileUrl, this.GetRequestHeaders(), this.GetWebProxyInfo(),
+                                                          this.GetOutputFileName(), this.GetOutputDirectory(), 
+                                                          this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
 
         public bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
         #endregion
@@ -554,12 +576,12 @@ namespace m3u8.download.manager.ui
 
             Process_use_OutputFileNamePatternProcessor();
         }
-
-        private void outputFileNameClearButton_Click( object sender, EventArgs e )
-        {
-            this.OutputFileName = null;
-            outputFileNameTextBox.Focus();
-        }
+        private void outputFileNameTextBox_ClearButtonClick( object sender, EventArgs e ) => outputFileNameTextBox.Focus();
+        //private void outputFileNameClearButton_Click( object sender, EventArgs e )
+        //{
+        //    this.OutputFileName = null;
+        //    outputFileNameTextBox.Focus();
+        //}
         private void outputFileNameSelectButton_Click( object sender, EventArgs e )
         {
             using ( var sfd = new SaveFileDialog() { InitialDirectory = this.OutputDirectory,
@@ -702,7 +724,7 @@ namespace m3u8.download.manager.ui
             if ( !logPanel.Visible )
             {
                 logPanel.Visible = true;
-                Set_logPanel_Visible();
+                SetLayout_4_logPanel();
             }
 
             _Model.Clear();
@@ -725,10 +747,11 @@ namespace m3u8.download.manager.ui
             using ( var cts = new CancellationTokenSource() )
             using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1_500 ) )
             {
-                var webproxy = _SC.CreateWebProxyIfUsed();
-                _Model.AddBeginRequest2Log( this.M3u8FileUrl, webproxy.GetAddress(), requestHeaders, clearLog: false );
+                var webProxyInfo = webProxyUC.GetWebProxyInfo();
+                var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
+                _Model.AddBeginRequest2Log( this.M3u8FileUrl, webProxyInfo, requestHeaders, clearLog: false );
                 var t = await _DC_.GetFileTextContent( x.m3u8FileUrl, requestHeaders,
-                    webproxy, _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
+                    webProxy, _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
 
                 if ( cts.IsCancellationRequested )
                 {
@@ -748,7 +771,7 @@ namespace m3u8.download.manager.ui
 
             this.SetEnabledAllChildControls( true );
         }
-        private void Set_logPanel_Visible()
+        private void SetLayout_4_logPanel()
         {
             var json = _Settings.AddNewDownloadFormPositionLogVisibleJson;
             if ( !json.IsNullOrEmpty() )
@@ -774,28 +797,26 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.web-proxy.]
-        private void set_WebProxyInfo( bool useRequestWebProxy, string webProxyAddress )
+        private void set_WebProxyInfo( in web_proxy_info webProxyInfo )
         {
-            set_WebProxyTabPageText( useRequestWebProxy );
-            if ( useRequestWebProxy )
-            {
-                webProxyUC.WebProxyAddress = webProxyAddress;
-            }
+            set_WebProxyTabPageText( webProxyInfo.UseWebProxy, webProxyInfo.GetWebProxyAddressText() );
+            webProxyUC.SetWebProxyInfo( webProxyInfo );
         }
-        private void set_WebProxyTabPageText( bool useRequestWebProxy )
+        private void set_WebProxyTabPageText( bool useRequestWebProxy, string webProxyAddress )
         {
             webProxyTabPage.Text = "web proxy";
 
             if ( useRequestWebProxy )
             {
-                webProxyTabPage.Text += " (used)";
+                webProxyTabPage.Text += $" ({webProxyAddress})"; //" (used)";
             }
         }
-        private void webProxyUC_OnWebProxyChanged( bool enabled, string addressRaw ) => set_WebProxyTabPageText( enabled );
+        private void webProxyUC_OnWebProxyChanged( bool enabled, string addressRaw ) => set_WebProxyTabPageText( enabled, addressRaw );
         #endregion
 
         private bool logUC_AllowDownloadAdditionalM3u8Url( string m3u8FileUrl ) => !this.M3u8FileUrl.Equals( m3u8FileUrl, StringComparison.InvariantCultureIgnoreCase );
         private void logUC_DownloadAdditionalM3u8Url( Uri m3u8FileUrl )
-        => AddNewDownloadForm.Add( this, _DC, _SC, m3u8FileUrl.ToString(), this.requestHeadersEditor.GetRequestHeaders(), _OutputFileNamePatternProcessor, seriesInfo: null, _FormClosedAction );
+        => AddNewDownloadForm.Add( this, _DC, _SC, m3u8FileUrl.ToString(), this.requestHeadersEditor.GetRequestHeaders(), 
+            _OutputFileNamePatternProcessor, seriesInfo: null, _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url );
     }
 }

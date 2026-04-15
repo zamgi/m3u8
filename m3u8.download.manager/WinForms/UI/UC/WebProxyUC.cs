@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
 using m3u8.download.manager.Properties;
-
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace m3u8.download.manager.ui
 {
@@ -19,122 +15,180 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
-        public delegate void WebProxyChangedEventHandler( bool enabled, string addressRaw );
+        public delegate void WebProxyChangedEventHandler( bool used, string addressRaw );
 
         public event WebProxyChangedEventHandler OnWebProxyChanged;
-        private void Fire_OnWebProxyChanged( bool enabled, string addressRaw ) => OnWebProxyChanged?.Invoke( enabled, addressRaw );
-
-        private Settings _Settings;
-        private Color _UncheckColor = Color.Gray;
-        private Color _BlinkBackColor = Color.Khaki;
-        public WebProxyUC( Settings settings )
+        private void Fire_OnWebProxyChanged( bool used/*, string addressRaw*/ )
         {
-            _Settings = settings;
+            var addressRaw = GetUsedWebProxyAddressIfUsed( used );
+            OnWebProxyChanged?.Invoke( used && !addressRaw.IsNullOrWhiteSpace(), addressRaw );
+        }
+
+        private Color _UncheckColor   = Color.Gray;
+        private Color _BlinkBackColor = Color.Khaki;
+        public WebProxyUC()
+        {
             InitializeComponent();
 
             torBrowserSocks5CheckBox.CheckedChanged += torBrowserSocks5CheckBox_CheckedChanged;
-            torServerSocks5CheckBox.CheckedChanged += torServerSocks5CheckBox_CheckedChanged;
-            socks5CheckBox.CheckedChanged += socks5CheckBox_CheckedChanged;
-            httpCheckBox.CheckedChanged += httpCheckBox_CheckedChanged;
+            torServerSocks5CheckBox .CheckedChanged += torServerSocks5CheckBox_CheckedChanged;
+            socks5CheckBox          .CheckedChanged += socks5CheckBox_CheckedChanged;
+            httpCheckBox            .CheckedChanged += httpCheckBox_CheckedChanged;
+            addressTextBox          .TextChanged    += addressOrPortTextBox_TextChanged;
+            portTextBox             .TextChanged    += addressOrPortTextBox_TextChanged;
             editWebProxyGroupBox.Controls.OfType< CheckBox >().Where( c => !c.Checked ).ForEach( c => c.ForeColor = _UncheckColor );
             this.Controls.OfType< GroupBox >().ForEach( c => c.ForeColor = Color.DodgerBlue );
         }
 
-        private bool HasAnyEditWebProxyGroupBoxChecked() => editWebProxyGroupBox.Controls.OfType< CheckBox >().Any( c => c.Checked );
-        public UrlHelper.WebProxyUrlEnumType? Scheme
+        private bool _IgnoreTextChanged;
+        private void addressOrPortTextBox_TextChanged( object sender, EventArgs e )
         {
-            get
-            {
-                if ( torBrowserSocks5CheckBox.Checked || torServerSocks5CheckBox.Checked || socks5CheckBox.Checked )
-                {
-                    return (UrlHelper.WebProxyUrlEnumType.Socks5);
-                }
-                else if ( httpCheckBox.Checked )
-                {
-                    return (UrlHelper.WebProxyUrlEnumType.Http);
-                }
-                return (null);
-            }
-        }
-        public bool UsedWebProxyAddress
-        {
-            get
-            {
-                var suc = HasAnyEditWebProxyGroupBoxChecked();
-                return (suc && HasValidAddresPort());
-            }
-        }
-        public string WebProxyAddress
-        {
-            get
-            {
-                var scheme = this.Scheme;
-                var webProxyAddress = default(string);
-                if ( scheme.HasValue && TryParseUrlTexts( out var address, out var port ) )
-                {
-                    webProxyAddress = UrlHelper.GetWebProxyAddressText( scheme.Value, address, port );
-                }
-                return (webProxyAddress);
-            }
-            set
-            {
-                if ( UrlHelper.TryParseWebProxyUrl( value?.Trim(), out var t ) )
-                {
-                    switch ( t.UrlType )
-                    {
-                        case UrlHelper.WebProxyUrlEnumType.Http: httpCheckBox.Checked = true; break;
-                        case UrlHelper.WebProxyUrlEnumType.Socks5:
-                            var webProxyAddressText = t.GetWebProxyAddressText();
-                            if ( Resources.TOR_BROWSER_SOCKS5_ADDRESS.EqualIgnoreCase( webProxyAddressText ) )
-                            {
-                                torBrowserSocks5CheckBox.Checked = true;
-                            }
-                            else if ( Resources.TOR_BROWSER_SOCKS5_ADDRESS.EqualIgnoreCase( webProxyAddressText ) )
-                            {
-                                torServerSocks5CheckBox.Checked = true;
-                            }
-                            else
-                            {
-                                socks5CheckBox.Checked = true;
-                            }
-                            break;
-                    }
+            if ( _IgnoreTextChanged ) return;
 
-                    (addressTextBox.Text, portTextBox.Text) = (t.Address, t.Port.HasValue ? t.Port.ToString() : null);
-                }
-                else
-                {
-                    editWebProxyGroupBox.Controls.OfType< CheckBox >().ForEach( c => c.Checked = false );
-                }
-            }
+            Fire_OnWebProxyChanged( HasAnyEditWebProxyGroupBoxChecked() );
         }
-        public (string Username, string Password) Credentials
+
+        private void UncheckAllEditWebProxyGroupBox() => editWebProxyGroupBox.Controls.OfType< CheckBox >().ForEach( c => c.Checked = false );
+        private bool HasAnyEditWebProxyGroupBoxChecked() => editWebProxyGroupBox.Controls.OfType< CheckBox >().Any( c => c.Checked );        
+        private (string Username, string Password) Credentials
         {
             get => (userNameTextBox.Text.Trim(), passwordTextBox.Text.Trim());
             set => (userNameTextBox.Text, passwordTextBox.Text) = (value.Username?.Trim(), value.Password?.Trim());
         }
-
-        private void httpCheckBox_CheckedChanged( object sender, EventArgs e )
-        {            
-            AnyCheckBox_CheckedChanged( sender );
-        }
-        private void socks5CheckBox_CheckedChanged( object sender, EventArgs e )
+        private WebProxyUrlEnumType? GetUrlType()
         {
-            AnyCheckBox_CheckedChanged( sender );
+            if ( torBrowserSocks5CheckBox.Checked || torServerSocks5CheckBox.Checked || socks5CheckBox.Checked )
+            {
+                return (WebProxyUrlEnumType.Socks5);
+            }
+            else if ( httpCheckBox.Checked )
+            {
+                return (WebProxyUrlEnumType.Http);
+            }
+            return (null);
         }
+        private string GetUsedWebProxyAddressIfUsed( bool usedWebProxy )
+        {
+            //var used = usedWebProxy.HasValue ? usedWebProxy.Value : HasAnyEditWebProxyGroupBoxChecked();
+            var webProxyAddressText = default(string);
+            if ( usedWebProxy /*used*/ )
+            {
+                var urlType = this.GetUrlType();
+                if ( urlType.HasValue && TryParseUrlTexts( out var hostname, out var port ) )
+                {
+                    webProxyAddressText = web_proxy_info.GetWebProxyAddressText( urlType.Value, hostname, port );
+                }
+            }
+            return (webProxyAddressText);
+        }
+        //public bool SetUsedWebProxyAddress( string webProxyAddressText )
+        //{
+        //    if ( UrlHelper.TryParseWebProxyUrl( webProxyAddressText?.Trim(), out var t, out _ ) )
+        //    {
+        //        SetWebProxyInfo( t );
+        //        return (true);
+        //    }
+        //    else
+        //    {
+        //        UncheckAllEditWebProxyGroupBox();
+        //        return (false);
+        //    }
+        //}
+        //public void SetUsedWebProxyAddress( bool usedWebProxyAddress, string webProxyAddressText )
+        //{
+        //    var suc = SetUsedWebProxyAddress( webProxyAddressText );
+        //    if ( !suc || !usedWebProxyAddress ) UncheckAllEditWebProxyGroupBox();
+        //}
+        public web_proxy_info GetWebProxyInfo()
+        {
+            var addressRaw = addressTextBox.Text.Trim();
+
+            var suc = UrlHelper.TryParseWebProxyUrl( addressRaw, out var wpi, out _ );
+            if ( suc )
+            {
+                return (wpi);
+            }
+
+            suc = UrlHelper.TryParseHostnameAndPort( addressRaw, out var t );
+            if ( !suc )
+            {
+                var portRaw = portTextBox.Text.Trim();
+                if ( int.TryParse( portRaw, out var p ) && (0 < p) && (p <= 0xFFFF) )
+                {
+                    var i = addressRaw.LastIndexOf(':');
+                    if ( i != -1 ) addressRaw = addressRaw.Substring( 0, i );
+                    addressRaw += ':' + p.ToString();
+                }
+
+                suc = UrlHelper.TryParseHostnameAndPort( addressRaw, out t );
+            }
+
+            var urlType = this.GetUrlType();
+            var webProxyInfo = new web_proxy_info()
+            { 
+                Hostname    = t.Hostname,
+                Port        = t.Port,
+                UrlType     = urlType.GetValueOrDefault(),
+                UseWebProxy = HasAnyEditWebProxyGroupBoxChecked(),
+                Credentials = this.Credentials,
+            };
+            return (webProxyInfo);
+        }
+        public void SetWebProxyInfo( in web_proxy_info t/*, in (string Username, string Password) credentials*/ )
+        {
+            if ( t.UseWebProxy )
+            {
+                switch ( t.UrlType )
+                {
+                    case WebProxyUrlEnumType.Http: httpCheckBox.Checked = true; break;
+                    case WebProxyUrlEnumType.Socks5:
+                        var webProxyAddressText_local = t.GetWebProxyAddressText();
+                        if ( Resources.TOR_BROWSER_SOCKS5_ADDRESS.EqualIgnoreCase( webProxyAddressText_local ) )
+                        {
+                            torBrowserSocks5CheckBox.Checked = true;
+                        }
+                        else if ( Resources.TOR_BROWSER_SOCKS5_ADDRESS.EqualIgnoreCase( webProxyAddressText_local ) )
+                        {
+                            torServerSocks5CheckBox.Checked = true;
+                        }
+                        else
+                        {
+                            socks5CheckBox.Checked = true;
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                UncheckAllEditWebProxyGroupBox();
+            }
+
+            (addressTextBox.Text, portTextBox.Text) = (t.Hostname, t.Port.HasValue ? t.Port.ToString() : null);            
+
+            this.Credentials = t.Credentials;
+        }
+
+        private void httpCheckBox_CheckedChanged( object sender, EventArgs e ) => AnyCheckBox_CheckedChanged( sender );
+        private void socks5CheckBox_CheckedChanged( object sender, EventArgs e ) => AnyCheckBox_CheckedChanged( sender );
         private void torServerSocks5CheckBox_CheckedChanged( object sender, EventArgs e )
         {
             AnyCheckBox_CheckedChanged( sender );
 
             if ( torServerSocks5CheckBox.Checked )
+            {
                 Set_AddressPort( Resources.TOR_SERVER_SOCKS5_ADDRESS );
+                Fire_OnWebProxyChanged( true );
+            }
         }
         private void torBrowserSocks5CheckBox_CheckedChanged( object sender, EventArgs e )
         {
             AnyCheckBox_CheckedChanged( sender );
 
             if ( torBrowserSocks5CheckBox.Checked )
+            {
                 Set_AddressPort( Resources.TOR_BROWSER_SOCKS5_ADDRESS );
+                Fire_OnWebProxyChanged( true );
+            }
         }
 
         private bool _IgnoreCheckedChanged;
@@ -162,64 +216,62 @@ namespace m3u8.download.manager.ui
                     activeCheckBox.ForeColor = _UncheckColor;
                 }
 
-                Fire_OnWebProxyChanged( activeCheckBox.Checked/*this.UsedWebProxyAddress*/, this.WebProxyAddress );
+                Fire_OnWebProxyChanged( activeCheckBox.Checked );
                 _IgnoreCheckedChanged = false;
             }
         }
 
         private void Set_AddressPort( string addressRaw )
         {
-            if ( UrlHelper.TryParseWebProxyUrl( addressRaw, out var t ) )
+            _IgnoreTextChanged = true;
+            if ( UrlHelper.TryParseWebProxyUrl( addressRaw, out var t, out _ ) )
             {
-                addressTextBox.Text = t.Address;
-                portTextBox.Text    = t.Port?.ToString();
-                portTextBox.Visible = t.Port.HasValue;
-                //portNumUpDown.Maximum = Math.Min( portNumUpDown.Minimum, port );
-                //portNumUpDown.Maximum = Math.Max( portNumUpDown.Maximum, port );
-                //portNumUpDown.Value = port;
-                //portNumUpDown.Visible = true;
+                addressTextBox.Text    = t.Hostname;
+                portTextBox   .Text    = t.Port?.ToString();
+                portTextBox   .Visible = t.Port.HasValue;
                 BlinkManager.BlinkBackColor( portTextBox, _BlinkBackColor );
             }
             else
             {
-                addressTextBox.Text = addressRaw;
-                //portNumUpDown.Visible = false;
-                portTextBox.Visible = false;
+                addressTextBox.Text    = addressRaw;
+                portTextBox   .Text    = null;
+                portTextBox   .Visible = false;
             }
-
+            _IgnoreTextChanged = false;
             BlinkManager.BlinkBackColor( addressTextBox, _BlinkBackColor );
-            
         }
 
-        private bool HasValidAddresPort() => TryParseUrlTexts( out _, out _ );
-        private bool TryParseUrlTexts( out string address, out int? port ) => TryParseUrlTexts( addressTextBox.Text.Trim(), portTextBox.Text.Trim(), out address, out port );
-        private static bool TryParseUrlTexts( string addressRaw, string portRaw, out string address, out int? port )
+        private bool TryParseUrlTexts( out string hostname, out int? port ) => TryParseUrlTexts( addressTextBox.Text.Trim(), portTextBox.Text.Trim(), out hostname, out port );
+        private static bool TryParseUrlTexts( string addressRaw, string portRaw, out string hostname, out int? port )
         {
             addressRaw = addressRaw?.Trim() ?? string.Empty;
 
-            var suc = UrlHelper.TryParseWebProxyUrl( addressRaw, out var res );
+            var suc = UrlHelper.TryParseWebProxyUrl( addressRaw, out var t, out _ );
             if ( suc )
             {
-                (address, port) = (res.Address, res.Port);
+                (hostname, port) = (t.Hostname, t.Port);
                 return (true);
             }
 
-            suc = UrlHelper.TryParseHostnameAndPort( addressRaw, out var t );
-            if ( suc )
+            var sepIdx = addressRaw.LastIndexOf(':');
+            if ( sepIdx != -1 )
             {
-                (address, port) = (t.Address, t.Port);
-                return (true);
+                suc = UrlHelper.TryParseHostnameAndPort( addressRaw, out var x );
+                if ( suc )
+                {
+                    (hostname, port) = (x.Hostname, x.Port);
+                    return (true);
+                }
             }
 
             if ( int.TryParse( portRaw?.Trim(), out var p ) && (0 < p) && (p <= 0xFFFF) )
             {
-                var i = addressRaw.LastIndexOf(':');
-                if ( i != -1 ) addressRaw = addressRaw.Substring( 0, i );
+                if ( sepIdx != -1 ) addressRaw = addressRaw.Substring( 0, sepIdx );
                 addressRaw += ':' + p.ToString();
             }
 
-            suc = UrlHelper.TryParseHostnameAndPort( addressRaw, out t );
-            (address, port) = (t.Address, t.Port);
+            suc = UrlHelper.TryParseHostnameAndPort( addressRaw, out var y );
+            (hostname, port) = (y.Hostname, y.Port);
             return (suc);
         }
     }

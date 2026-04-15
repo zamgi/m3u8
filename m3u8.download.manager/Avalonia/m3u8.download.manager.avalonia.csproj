@@ -74,6 +74,7 @@
     <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
     <Compile Include="..\..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
     <Compile Include="..\..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
+    <Compile Include="..\..\m3u8.client\web_proxy_info.cs" Link="[-= m3u8.client =-]\web_proxy_info.cs" />
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
 
     <Compile Include="..\WinForms\Infrastructure\FileHelper.cs" Link="Infrastructure\FileHelper.cs" />

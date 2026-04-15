@@ -28,7 +28,8 @@ namespace m3u8.download.manager.ui
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-        {            
+        {
+            System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
             httpCheckBox = new System.Windows.Forms.CheckBox();
             socks5CheckBox = new System.Windows.Forms.CheckBox();
             torServerSocks5CheckBox = new System.Windows.Forms.CheckBox();
@@ -36,7 +37,6 @@ namespace m3u8.download.manager.ui
             addressGroupBox = new System.Windows.Forms.GroupBox();
             credentialsGroupBox = new System.Windows.Forms.GroupBox();
             userNameTextBox = new System.Windows.Forms.TextBoxEx();
-            //portNumUpDown = new System.Windows.Forms.NumericUpDown();
             portTextBox = new System.Windows.Forms.TextBoxEx();
             addressTextBox = new System.Windows.Forms.TextBoxEx();
             passwordTextBox = new System.Windows.Forms.TextBoxEx();
@@ -44,7 +44,6 @@ namespace m3u8.download.manager.ui
             editWebProxyGroupBox.SuspendLayout();
             addressGroupBox.SuspendLayout();
             credentialsGroupBox.SuspendLayout();
-            //((System.ComponentModel.ISupportInitialize) portNumUpDown).BeginInit();
             SuspendLayout();
             // 
             // editWebProxyGroupBox
@@ -83,8 +82,9 @@ namespace m3u8.download.manager.ui
             torServerSocks5CheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             torServerSocks5CheckBox.Location = new System.Drawing.Point( 30, 65 );
             torServerSocks5CheckBox.TabIndex = 1;
-            torServerSocks5CheckBox.Text = "Tor Server Socks5";
+            torServerSocks5CheckBox.Text = "Socks5 (Tor Server)";
             torServerSocks5CheckBox.UseVisualStyleBackColor = true;
+            toolTip.SetToolTip( torServerSocks5CheckBox, "use predefined Tor Server Socks5 web proxy" );
             // 
             // torBrowserSocks5CheckBox
             // 
@@ -92,8 +92,9 @@ namespace m3u8.download.manager.ui
             torBrowserSocks5CheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             torBrowserSocks5CheckBox.Location = new System.Drawing.Point( 30, 35 );
             torBrowserSocks5CheckBox.TabIndex = 0;
-            torBrowserSocks5CheckBox.Text = "Tor Browser Socks5";
+            torBrowserSocks5CheckBox.Text = "Socks5 (Tor Browser)";
             torBrowserSocks5CheckBox.UseVisualStyleBackColor = true;
+            toolTip.SetToolTip( torBrowserSocks5CheckBox, "use predefined Tor Browser Socks5 web proxy" );
             // 
             // addressGroupBox
             // 
@@ -121,12 +122,6 @@ namespace m3u8.download.manager.ui
             userNameTextBox.Size = new System.Drawing.Size( 237, 23 );
             userNameTextBox.TabIndex = 0;
             userNameTextBox.PlaceHolderText = "Username";
-            //// 
-            //// portNumUpDown
-            //// 
-            //portNumUpDown.Location = new System.Drawing.Point( 265, 27 );
-            //portNumUpDown.Size = new System.Drawing.Size( 60, 23 );
-            //portNumUpDown.TabIndex = 1;
             // 
             // portTextBox
             // 
@@ -163,7 +158,6 @@ namespace m3u8.download.manager.ui
             addressGroupBox.PerformLayout();
             credentialsGroupBox.ResumeLayout( false );
             credentialsGroupBox.PerformLayout();
-            //((System.ComponentModel.ISupportInitialize) portNumUpDown).EndInit();
             ResumeLayout( false );
         }
         #endregion
@@ -175,10 +169,8 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.CheckBox socks5CheckBox;
         private System.Windows.Forms.GroupBox addressGroupBox;
         private System.Windows.Forms.TextBoxEx addressTextBox;
-        //private System.Windows.Forms.NumericUpDown portNumUpDown;
         private System.Windows.Forms.TextBoxEx portTextBox;
         private System.Windows.Forms.GroupBox credentialsGroupBox;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
         private System.Windows.Forms.TextBoxEx userNameTextBox;
         private System.Windows.Forms.TextBoxEx passwordTextBox;
     }
