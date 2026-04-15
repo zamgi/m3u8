@@ -626,7 +626,7 @@ namespace m3u8.download.manager.ui
         {
             const int DEFAULT_HEIGHT_isLiveStream    = 30;
             const int DEFAULT_HEIGHT_mainLayoutPanel = 70 + 20;
-            const int DEFAULT_HEIGHT_this            = 315 + 20;
+            const int DEFAULT_HEIGHT_this            = 315 + 20 + 10;
 
             var is_extra_visible = isLiveStream_or_patternOutputFileName_visible.GetValueOrDefault( this.IsLiveStream || patternOutputFileNameLabel.Visible );
             var extra_height = is_extra_visible ? DEFAULT_HEIGHT_isLiveStream : 0;

@@ -20,6 +20,8 @@
             this.parallelismSettingsUC = new m3u8.download.manager.ui.ParallelismSettingsUC();
             this.otherTabPage = new System.Windows.Forms.TabPage();
             this.otherSettingsUC = new m3u8.download.manager.ui.OtherSettingsUC();
+            this.webProxyTabPage = new System.Windows.Forms.TabPage();
+            this.webProxyUC = new WebProxyUC();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
             tabControl = new System.Windows.Forms.TabControl();
@@ -27,6 +29,7 @@
             tabControl.SuspendLayout();
             this.parallelismTabPage.SuspendLayout();
             this.otherTabPage.SuspendLayout();
+            this.webProxyTabPage.SuspendLayout();
             bottomPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -34,6 +37,7 @@
             // 
             tabControl.Controls.Add(this.parallelismTabPage);
             tabControl.Controls.Add(this.otherTabPage);
+            tabControl.Controls.Add(this.webProxyTabPage);
             tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
             tabControl.Location = new System.Drawing.Point(0, 0);
             tabControl.Size = new System.Drawing.Size(296, 457);
@@ -77,6 +81,17 @@
             this.otherSettingsUC.Location = new System.Drawing.Point(3, 3);
             this.otherSettingsUC.Size = new System.Drawing.Size(282, 425);
             this.otherSettingsUC.TabIndex = 0;
+            // 
+            // webProxyTabPage
+            // 
+            this.webProxyTabPage.Controls.Add(this.webProxyUC);
+            this.webProxyTabPage.Location = new System.Drawing.Point(4, 22);
+            this.webProxyTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.webProxyTabPage.Size = new System.Drawing.Size(288, 431);
+            this.webProxyTabPage.TabIndex = 0;
+            this.webProxyTabPage.Text = "web proxy";
+            this.webProxyTabPage.UseVisualStyleBackColor = true;
+            this.webProxyTabPage.BackColor = System.Drawing.Color.WhiteSmoke;
             // 
             // bottomPanel
             // 
@@ -129,16 +144,19 @@
             tabControl.ResumeLayout(false);
             this.parallelismTabPage.ResumeLayout(false);
             this.otherTabPage.ResumeLayout(false);
+            this.webProxyTabPage.ResumeLayout(false);
             bottomPanel.ResumeLayout(false);
             this.ResumeLayout(false);
         }
         #endregion
 
-        private m3u8.download.manager.ui.ParallelismSettingsUC parallelismSettingsUC;
-        private m3u8.download.manager.ui.OtherSettingsUC otherSettingsUC;
-        private System.Windows.Forms.Button okButton;
-        private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.TabPage parallelismTabPage;
         private System.Windows.Forms.TabPage otherTabPage;
+        private System.Windows.Forms.TabPage webProxyTabPage;
+        private m3u8.download.manager.ui.ParallelismSettingsUC parallelismSettingsUC;
+        private m3u8.download.manager.ui.OtherSettingsUC otherSettingsUC;
+        private m3u8.download.manager.ui.WebProxyUC webProxyUC;
+        private System.Windows.Forms.Button okButton;
+        private System.Windows.Forms.Button cancelButton;
     }
 }

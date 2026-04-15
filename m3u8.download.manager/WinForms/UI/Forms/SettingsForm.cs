@@ -1,6 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Drawing;
+using System.Net;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
@@ -19,15 +19,17 @@ namespace m3u8.download.manager.ui
         {
             Parallelism,
             Other,
+            WebProxy,
             //More,
         }
 
         #region [.ctor().]
         private SettingsForm() => InitializeComponent();
-        public SettingsForm( DownloadController dc, SettingsTabEnum? settingsTab = default ) : this()
+        public SettingsForm( DownloadController dc, SettingsPropertyChangeController sc, SettingsTabEnum? settingsTab = default ) : this()
         {
             parallelismSettingsUC.Init( dc );
             otherSettingsUC      .Init( dc );
+            webProxyUC.SetWebProxyInfo( sc.GetDefaultWebProxyInfo() );
 
             if ( settingsTab.HasValue )
             {
@@ -35,6 +37,7 @@ namespace m3u8.download.manager.ui
                 {
                     case SettingsTabEnum.Parallelism: ((TabControl) parallelismTabPage.Parent).SelectedTab = parallelismTabPage; break;
                     case SettingsTabEnum.Other      : ((TabControl) otherTabPage      .Parent).SelectedTab = otherTabPage;       break;
+                    case SettingsTabEnum.WebProxy   : ((TabControl) otherTabPage      .Parent).SelectedTab = webProxyTabPage;    break;    
                     //case SettingsTabEnum.More       : ((TabControl) moreTabPage       .Parent).SelectedTab = moreTabPage;        break;
                 }
             }
@@ -76,7 +79,9 @@ namespace m3u8.download.manager.ui
             using var br = new SolidBrush( tabPage.BackColor );
             e.Graphics.FillRectangle( br, e.Bounds );
 
-            var color = (tabPage == parallelismTabPage) ? Brushes.DarkOliveGreen : ((tabPage == otherTabPage) ? Brushes.DarkOrange : Brushes.Silver);
+            var color = (tabPage == parallelismTabPage) ? Brushes.DarkOliveGreen 
+                                                        : ((tabPage == otherTabPage) ? Brushes.DarkOrange 
+                                                                                     : ((tabPage == webProxyTabPage) ? Brushes.DarkGreen : Brushes.Silver));
 
             using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.None, FormatFlags = StringFormatFlags.NoWrap };
             //      var fs = ((tabPage == moreTabPage) || ((e.State & DrawItemState.Selected) != DrawItemState.Selected)) ? FontStyle.Regular : FontStyle.Underline;
@@ -107,6 +112,7 @@ namespace m3u8.download.manager.ui
         #region [.public props.]
         public ParallelismSettingsUC Parallelism => parallelismSettingsUC;
         public OtherSettingsUC Other => otherSettingsUC;
+        public WebProxyUC WebProxy => webProxyUC;
         #endregion
     }
 }
