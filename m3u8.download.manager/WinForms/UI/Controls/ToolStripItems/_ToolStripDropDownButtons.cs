@@ -79,7 +79,7 @@ namespace System.Windows.Forms
                             mi.BackColor = this.SelectedBackColor;
                             mi.ForeColor = this.ForeColor;
                             mi.Font      = this.Font;
-                            mi.Image     = this.Image; //_Resources_.checked_blue_16.ToBitmap(); //
+                            mi.Image     = this.Image; //_Resources_.checked_blue.ToBitmap(); //
                         }
                         else
                         {
@@ -156,7 +156,7 @@ namespace System.Windows.Forms
         }
 
         protected override string MainToolTipText   => "degree of parallelism";
-        protected override Image  MainImage         => _Resources_.dop_16.ToBitmap();
+        protected override Image  MainImage         => _Resources_.dop.ToBitmap();
         protected override Color  MainForeColor     => Color.Green;
         protected override Color  SelectedBackColor => Color.LightGreen;
         protected override string Suffix            => "  (dop)";

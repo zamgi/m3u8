@@ -39,6 +39,8 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool ContainsIgnoreCase( this string s1, string s2 ) => ((s1 != null) && (s1.IndexOf( s2, StringComparison.InvariantCultureIgnoreCase ) != -1));
         [M(O.AggressiveInlining)] public static bool StartsWith_Ex( this string s1, string s2, StringComparison sc = StringComparison.OrdinalIgnoreCase ) => /*(s1 != null) &&*/ s1.StartsWith( s2, sc );
         [M(O.AggressiveInlining)] public static bool EndsWith_Ex( this string s1, string s2, StringComparison sc = StringComparison.OrdinalIgnoreCase ) => /*(s1 != null) &&*/ s1.EndsWith( s2, sc );
+        public static string Cut( this string s, int max_len ) => (s != null) ? ((max_len < s.Length) ? ((3 < max_len) ? $"{s.Substring( 0, max_len - 3 )}..." : s.Substring( 0, max_len )) : s) : s;
+       
         public static void Remove< T >( this HashSet< T > hs, IEnumerable< T > seq )
         {
             if ( seq != null )

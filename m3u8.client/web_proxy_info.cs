@@ -21,8 +21,6 @@ namespace m3u8
         public const string UriSchemeSocks5 = "socks5";
         
         required public bool UseWebProxy { get; init; }
-        //required public Uri    Url             { get; init; }
-        //required public string WebProxyAddress { get; init; }
         required public WebProxyUrlEnumType UrlType { get; init; }
         required public string Hostname { get; init; }
         required public int?   Port     { get; init; }
@@ -30,6 +28,8 @@ namespace m3u8
 
         public bool HasCredentials => !string.IsNullOrWhiteSpace( Credentials.Username ) || !string.IsNullOrWhiteSpace( Credentials.Password );
         public string GetWebProxyAddressText() => GetWebProxyAddressText( UrlType, Hostname, Port );
+        public string GetWebProxyAddressTextIfUsed() => UseWebProxy ? GetWebProxyAddressText() : null;
+        public string ToText() => GetWebProxyAddressText() + $", (use={UseWebProxy})" + (HasCredentials ? $", ({Credentials.Username}:{Credentials.Password})" : null);
         public IWebProxy CreateWebProxyIfUsed( bool suppressError = false )
         {
             if ( UseWebProxy )
@@ -52,8 +52,7 @@ namespace m3u8
             }
             return (null);
         }
-        //public IWebProxy CreateWebProxy() => new WebProxy( GetWebProxyAddressText() );
-        public Uri GetUri() => new Uri( GetWebProxyAddressText() );
+        
         public static string GetWebProxyAddressText( WebProxyUrlEnumType urlType, string hostname, int? port )
         {
             if ( !string.IsNullOrWhiteSpace( hostname ) )
@@ -74,14 +73,9 @@ namespace m3u8
 
             return (null);
         }
-        //public static bool TryCreate( WebProxyUrlEnumType? urlType, string hostname, int? port, out web_proxy_info wpi )
-        //{
-        //    if (  )
-        //    wpi = urlType.HasValue ? 
-        //}
 
         public static web_proxy_info Empty { get; } = new web_proxy_info() { UseWebProxy = false, Hostname = default, Port = default, UrlType = WebProxyUrlEnumType.Http };
 
-        public override string ToString() => GetWebProxyAddressText() + (HasCredentials ? $" ({Credentials.Username}:{Credentials.Password})" : null);
+        public override string ToString() => ToText();
     }
 }

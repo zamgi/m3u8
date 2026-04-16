@@ -103,6 +103,7 @@ namespace m3u8.download.manager.ui
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Size = new System.Drawing.Size(803, 81);
             this.tabControl.TabIndex = 0;
+            this.tabControl.Selected += tabControl_Selected;
             // 
             // mainTabPage
             // 
@@ -260,14 +261,15 @@ namespace m3u8.download.manager.ui
             this.logUC.Dock = System.Windows.Forms.DockStyle.Fill;
             this.logUC.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.logUC.Location = new System.Drawing.Point(0, 0);
+            this.logUC.Size = new System.Drawing.Size(803, 0);
+            this.logUC.TabIndex = 0;
             this.logUC.ShowOnlyRequestRowsWithErrors = false;
             this.logUC.ScrollToLastRow = true;
             this.logUC.ShowResponseColumn = true;
             this.logUC.AllowDrawDownloadButtonForM3u8Urls = true;
+            this.logUC.AdditionalM3u8UrlsDetectMethod = LogUC.AdditionalM3u8UrlsDetectMethodEnumType.EndingWithM3u8;
             this.logUC.DownloadAdditionalM3u8Url += new System.Action<System.Uri>(this.logUC_DownloadAdditionalM3u8Url);
-            this.logUC.AllowDownloadAdditionalM3u8Url = new System.Func<string, bool>(this.logUC_AllowDownloadAdditionalM3u8Url);
-            this.logUC.Size = new System.Drawing.Size(803, 0);
-            this.logUC.TabIndex = 0;
+            this.logUC.AllowDownloadAdditionalM3u8Url = new System.Func<string, bool>(this.logUC_AllowDownloadAdditionalM3u8Url);            
             // 
             // mainLayoutPanel
             // 
@@ -509,7 +511,8 @@ namespace m3u8.download.manager.ui
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttomPanel);
             this.Controls.Add(this.statusBarUC);
-            this.Icon = global::m3u8.download.manager.Properties.Resources.m3u8_32x36;
+            //---this.Icon = global::m3u8.download.manager.Properties.Resources.m3u8_32x36;
+            this.ShowIcon = false;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.ShowInTaskbar = false;

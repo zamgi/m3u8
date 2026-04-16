@@ -228,7 +228,7 @@ namespace m3u8.download.manager.ui
             // 
             this.fileNameExcludesWordsEditorToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.fileNameExcludesWordsEditorToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.fileNameExcludesWordsEditorToolButton.Image = global::m3u8.download.manager.Properties.Resources.listbullets_32;
+            this.fileNameExcludesWordsEditorToolButton.Image = global::m3u8.download.manager.Properties.Resources.listbullets;
             this.fileNameExcludesWordsEditorToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.fileNameExcludesWordsEditorToolButton.ToolTipText = "file name excludes words editor";
             this.fileNameExcludesWordsEditorToolButton.Click += new System.EventHandler(this.fileNameExcludesWordsEditorToolButton_Click);
@@ -237,7 +237,7 @@ namespace m3u8.download.manager.ui
             // 
             this.parallelismSettingsToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.parallelismSettingsToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.parallelismSettingsToolButton.Image = global::m3u8.download.manager.Properties.Resources.dop_settings_32.ToBitmap();
+            this.parallelismSettingsToolButton.Image = global::m3u8.download.manager.Properties.Resources.dop_settings.ToBitmap();
             this.parallelismSettingsToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.parallelismSettingsToolButton.ToolTipText = "Parallelism settings";
             this.parallelismSettingsToolButton.Click += new System.EventHandler(this.parallelismSettingsToolButton_Click);
@@ -246,7 +246,7 @@ namespace m3u8.download.manager.ui
             // 
             this.otherSettingsToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.otherSettingsToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.otherSettingsToolButton.Image = global::m3u8.download.manager.Properties.Resources.settings_32;
+            this.otherSettingsToolButton.Image = global::m3u8.download.manager.Properties.Resources.settings_png;
             this.otherSettingsToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.otherSettingsToolButton.ToolTipText = "Other settings";
             this.otherSettingsToolButton.Click += new System.EventHandler(this.otherSettingsToolButton_Click);
@@ -255,7 +255,7 @@ namespace m3u8.download.manager.ui
             // 
             this.webProxyInfoSettingsToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.webProxyInfoSettingsToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.webProxyInfoSettingsToolButton.Image = global::m3u8.download.manager.Properties.Resources.domain.ToBitmap();
+            this.webProxyInfoSettingsToolButton.Image = global::m3u8.download.manager.Properties.Resources.workgroup_32x32;
             this.webProxyInfoSettingsToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.webProxyInfoSettingsToolButton.ToolTipText = "Default Web Proxy settings";
             this.webProxyInfoSettingsToolButton.Click += new System.EventHandler(this.webProxyInfoSettingsToolButton_Click);
@@ -306,7 +306,8 @@ namespace m3u8.download.manager.ui
             this.downloadListUC.SelectionChanged += new m3u8.download.manager.ui.DownloadListUC.SelectionChangedEventHandler(this.downloadListUC_SelectionChanged);
             this.downloadListUC.OutputFileNameClick += new m3u8.download.manager.ui.DownloadListUC.OutputFileNameClickEventHandler(this.downloadListUC_OutputFileNameClick);
             this.downloadListUC.OutputDirectoryClick += new m3u8.download.manager.ui.DownloadListUC.OutputDirectoryClickEventHandler(this.downloadListUC_OutputDirectoryClick);
-            this.downloadListUC.LiveStreamMaxFileSizeClick += new m3u8.download.manager.ui.DownloadListUC.LiveStreamMaxFileSizeClickEventHandler( this.downloadListUC_LiveStreamMaxFileSizeClick);
+            this.downloadListUC.LiveStreamMaxFileSizeClick += new m3u8.download.manager.ui.DownloadListUC.LiveStreamMaxFileSizeClickEventHandler(this.downloadListUC_LiveStreamMaxFileSizeClick);
+            this.downloadListUC.UsedWebProxyClick += new m3u8.download.manager.ui.DownloadListUC.UsedWebProxyClickEventHandler(this.downloadListUC_UsedWebProxyClick);
             this.downloadListUC.IsDrawCheckMark += new DownloadListUC.IsDrawCheckMarkDelegate(this.downloadListUC_IsDrawCheckMark);
             // 
             // logUC

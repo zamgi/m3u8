@@ -15,7 +15,7 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
-        public enum SettingsTabEnum
+        public enum TabPageKind
         {
             Parallelism,
             Other,
@@ -25,28 +25,28 @@ namespace m3u8.download.manager.ui
 
         #region [.ctor().]
         private SettingsForm() => InitializeComponent();
-        public SettingsForm( DownloadController dc/*, SettingsPropertyChangeController sc*/, SettingsTabEnum? settingsTab = default ) : this()
+        public SettingsForm( DownloadController dc/*, SettingsPropertyChangeController sc*/, TabPageKind? tabPageKind = default ) : this()
         {
             parallelismSettingsUC.Init( dc );
             otherSettingsUC      .Init( dc );
             //webProxyUC.SetWebProxyInfo( sc.GetDefaultWebProxyInfo() );
 
-            if ( settingsTab.HasValue )
+            if ( tabPageKind.HasValue )
             {
-                switch ( settingsTab )
+                switch ( tabPageKind )
                 {
-                    case SettingsTabEnum.Parallelism: tabControl.SelectedTab = parallelismTabPage; break;
-                    case SettingsTabEnum.Other      : tabControl.SelectedTab = otherTabPage;       break;
-                    case SettingsTabEnum.WebProxy   : tabControl.SelectedTab = webProxyTabPage;    break;    
+                    case TabPageKind.Parallelism: tabControl.SelectedTab = parallelismTabPage; break;
+                    case TabPageKind.Other      : tabControl.SelectedTab = otherTabPage;       break;
+                    case TabPageKind.WebProxy   : tabControl.SelectedTab = webProxyTabPage;    break;    
                     //case SettingsTabEnum.More       : tabControl.SelectedTab = moreTabPage;        break;
                 }
             }
 
             #region [.ImageList 4 tabControl.]
             var imgLst = tabControl.ImageList = new ImageList() { ImageSize = new Size(16, 16) };
-            imgLst.Images.Add( Resources.dop_16   ); parallelismTabPage.ImageIndex = 0;
-            imgLst.Images.Add( Resources.settings ); otherTabPage      .ImageIndex = 1;
-            imgLst.Images.Add( Resources.domain   ); webProxyTabPage   .ImageIndex = 2;
+            imgLst.Images.Add( Resources.dop             ); parallelismTabPage.ImageIndex = 0;
+            imgLst.Images.Add( Resources.settings_ico    ); otherTabPage      .ImageIndex = 1;
+            imgLst.Images.Add( Resources.workgroup_16x16 ); webProxyTabPage   .ImageIndex = 2;
             #endregion
         }
 

@@ -90,16 +90,6 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap auto_start_download {
-            get {
-                object obj = ResourceManager.GetObject("auto_start_download", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap browse {
             get {
                 object obj = ResourceManager.GetObject("browse", resourceCulture);
@@ -230,9 +220,9 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon domain {
+        internal static System.Drawing.Icon dop {
             get {
-                object obj = ResourceManager.GetObject("domain", resourceCulture);
+                object obj = ResourceManager.GetObject("dop", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -240,19 +230,9 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon dop_16 {
+        internal static System.Drawing.Icon dop_settings {
             get {
-                object obj = ResourceManager.GetObject("dop_16", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon dop_settings_32 {
-            get {
-                object obj = ResourceManager.GetObject("dop_settings_32", resourceCulture);
+                object obj = ResourceManager.GetObject("dop_settings", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -418,9 +398,9 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap listbullets_32 {
+        internal static System.Drawing.Bitmap listbullets {
             get {
-                object obj = ResourceManager.GetObject("listbullets_32", resourceCulture);
+                object obj = ResourceManager.GetObject("listbullets", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -565,9 +545,9 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon settings {
+        internal static System.Drawing.Icon settings_ico {
             get {
-                object obj = ResourceManager.GetObject("settings", resourceCulture);
+                object obj = ResourceManager.GetObject("settings_ico", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -575,9 +555,9 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap settings_32 {
+        internal static System.Drawing.Bitmap settings_png {
             get {
-                object obj = ResourceManager.GetObject("settings_32", resourceCulture);
+                object obj = ResourceManager.GetObject("settings_png", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -716,6 +696,26 @@ namespace m3u8.download.manager.Properties {
         internal static System.Drawing.Bitmap wait {
             get {
                 object obj = ResourceManager.GetObject("wait", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap workgroup_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("workgroup_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap workgroup_32x32 {
+            get {
+                object obj = ResourceManager.GetObject("workgroup_32x32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

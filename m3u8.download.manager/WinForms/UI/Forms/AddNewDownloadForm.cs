@@ -23,6 +23,16 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed partial class AddNewDownloadForm : Form
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum TabPageKind
+        {
+            MainTabPage,
+            RequestHeadersTabPage,
+            WebProxyTabPage,
+        }
+
         private static string GetCaptionBySeriesInfo( in (int n, int total) seriesInfo ) => $" ({seriesInfo.n} of {seriesInfo.total})";
         private static string GetCaptionBySeriesInfo( in (int n, int total)? seriesInfo ) => seriesInfo.HasValue ? GetCaptionBySeriesInfo( seriesInfo.Value ) : null;
 
@@ -60,9 +70,9 @@ namespace m3u8.download.manager.ui
 
             #region [.ImageList 4 tabControl.]
             var imgLst = tabControl.ImageList = new ImageList() { ImageSize = new Size(16, 16) };
-            imgLst.Images.Add( Resources.download_inst ); mainTabPage          .ImageIndex = 0;
-            imgLst.Images.Add( Resources.listcheck     ); requestHeadersTabPage.ImageIndex = 1;
-            imgLst.Images.Add( Resources.domain        ); webProxyTabPage      .ImageIndex = 2;
+            imgLst.Images.Add( Resources.m3u8_32x36      ); mainTabPage          .ImageIndex = 0;
+            imgLst.Images.Add( Resources.listcheck       ); requestHeadersTabPage.ImageIndex = 1;
+            imgLst.Images.Add( Resources.workgroup_16x16 ); webProxyTabPage      .ImageIndex = 2;
             #endregion
         }
 
@@ -190,6 +200,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
+        #region [.static show-form methods.]
         public static void AddGrouped( IWin32Window owner, _DC_ dc, _SC_ sc
             , string m3u8FileUrl, in (string audio, string video) groupedUrls
             , string outputFileName
@@ -238,7 +249,8 @@ namespace m3u8.download.manager.ui
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
             , Action< FormClosingEventArgs > formClosingAction
             , Action< AddNewDownloadForm, DownloadRow > formClosedAction
-            , Func< AddNewDownloadForm, Task > formClosedAction_4_DownloadAdditionalM3u8Url )
+            , Func< AddNewDownloadForm, Task > formClosedAction_4_DownloadAdditionalM3u8Url
+            , TabPageKind? activeTabPageKind = null )
         {
             var f = new AddNewDownloadForm( dc, sc, row, outputFileNamePatternProcessor ) 
             { 
@@ -247,16 +259,30 @@ namespace m3u8.download.manager.ui
                 _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url = formClosedAction_4_DownloadAdditionalM3u8Url,
             };
 
+            f.SetActiveTabPageKind( activeTabPageKind );
             f.FormClosing += (_, e) => formClosingAction?.Invoke( e );
             f.FormClosed  += (_, _) => formClosedAction?.Invoke( f, row );
             var close = new EventHandler( (_, _) => f.Close() );
             f.downloadStartButton.Text = "Ok";
-            f.downloadLaterButton.Text = "Cancel";
+            f.downloadLaterButton.Text = "Cancel"; f.downloadLaterButton.DialogResult = DialogResult.Cancel;
             f.downloadStartButton.Click += close;
             f.downloadLaterButton.Click += close;
             f.Shown += (_, _) => f.setFocus2outputFileNameTextBox_Core();
             f.Show( owner );
         }
+        private void SetActiveTabPageKind( TabPageKind? tabPageKind )
+        {
+            if ( tabPageKind.HasValue )
+            {
+                switch ( tabPageKind )
+                {
+                    case TabPageKind.MainTabPage          : tabControl.SelectedTab = mainTabPage;           break;
+                    case TabPageKind.RequestHeadersTabPage: tabControl.SelectedTab = requestHeadersTabPage; break;
+                    case TabPageKind.WebProxyTabPage      : tabControl.SelectedTab = webProxyTabPage;       break;
+                }
+            }
+        }
+        #endregion
 
         #region [.TryGetOtherOpenedForm.]
         public static bool TryGetOpenedForm( out AddNewDownloadForm openedForm )
@@ -306,6 +332,10 @@ namespace m3u8.download.manager.ui
                     }
                 }
             }
+
+            #region [.track last active focused control for each tab-page.]            
+            tabControl.TabPages.Cast< TabPage >().ForEach( p => BindFocusTracking( p, p ) );
+            #endregion
         }
         protected override void OnFormClosed( FormClosedEventArgs e )
         {
@@ -810,15 +840,70 @@ namespace m3u8.download.manager.ui
 
             if ( useRequestWebProxy )
             {
-                webProxyTabPage.Text += $" ({webProxyAddress})"; //" (used)";
+                webProxyTabPage.Text += $" ({webProxyAddress.Cut( 70 )})"; //" (used)";
             }
         }
         private void webProxyUC_OnWebProxyChanged( bool enabled, string addressRaw ) => set_WebProxyTabPageText( enabled, addressRaw );
         #endregion
 
+        #region [.download additional m3u8Url's.]
         private bool logUC_AllowDownloadAdditionalM3u8Url( string m3u8FileUrl ) => !this.M3u8FileUrl.Equals( m3u8FileUrl, StringComparison.InvariantCultureIgnoreCase );
-        private void logUC_DownloadAdditionalM3u8Url( Uri m3u8FileUrl )
-        => AddNewDownloadForm.Add( this, _DC, _SC, m3u8FileUrl.ToString(), this.requestHeadersEditor.GetRequestHeaders(), 
+        private void logUC_DownloadAdditionalM3u8Url( Uri additionalM3u8Url )
+        {
+            string m3u8FileUrlText;
+            if ( additionalM3u8Url.IsAbsoluteUri )
+            {
+                m3u8FileUrlText = additionalM3u8Url.ToString();
+            }
+            else
+            {
+                var baseM3u8FileUrl = this.M3u8FileUrl;
+                if ( !UrlHelper.TryGetM3u8FileUrl( baseM3u8FileUrl, out var t ) )
+                {
+                    this.MessageBox_ShowError( $"Can parse main Url:\n '{baseM3u8FileUrl}' -> \r\n\r\n{t.error}", this.Text );
+                }
+                var combinedUrl = new Uri( t.m3u8FileUrl, additionalM3u8Url );
+                m3u8FileUrlText = combinedUrl.ToString();
+            }
+
+            AddNewDownloadForm.Add( this, _DC, _SC, m3u8FileUrlText, this.requestHeadersEditor.GetRequestHeaders(),
             _OutputFileNamePatternProcessor, seriesInfo: null, _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url );
+        }
+        #endregion
+
+        #region [.track last active focused control for each tab-page.]
+        private Dictionary< TabPage, Control > _LastFocusedControls = new Dictionary< TabPage, Control >();
+        private void BindFocusTracking( TabPage parentPage, Control container )
+        {
+            foreach ( Control c in container.Controls )
+            {
+                c.Enter += (s, _) => _LastFocusedControls[ parentPage ] = (Control) s;
+                
+                if ( c.HasChildren ) BindFocusTracking( parentPage, c );
+            }
+        }
+        private void tabControl_Selected( object sender, TabControlEventArgs e )
+        {
+            if ( _LastFocusedControls.TryGetValue( e.TabPage, out var lastControl ) )
+            {
+                if ( lastControl.IsHandleCreated &&!lastControl.IsDisposed )
+                {
+                    // Используем BeginInvoke, так как TabControl может пытаться перехватить фокус на себя сразу после отрисовки
+                    this.BeginInvoke( new Action( () => lastControl.Focus() ) );
+                }
+            }
+            else
+            {
+                if ( e.TabPage == requestHeadersTabPage )
+                {
+                    requestHeadersEditor.Activate();
+                }
+                else if ( e.TabPage == webProxyTabPage )
+                {
+                    webProxyUC.Activate();
+                }
+            }
+        }
+        #endregion
     }
 }

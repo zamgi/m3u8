@@ -30,6 +30,7 @@
             this.DGV_isLiveStreamColumn = new System.Windows.Forms.DataGridViewTextBoxColumnEx();
             this.DGV_liveStreamMaxFileSizeColumn = new System.Windows.Forms.DataGridViewTextBoxColumnEx();
             this.DGV_requestHeadersColumn = new System.Windows.Forms.DataGridViewTextBoxColumnEx();
+            this.DGV_webProxyColumn = new System.Windows.Forms.DataGridViewTextBoxColumnEx();
             this.DGV_urlColumn = new System.Windows.Forms.DataGridViewTextBoxColumnEx();            
             this.toolTip = new System.Windows.Forms.ToolTip();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
@@ -67,6 +68,7 @@
                 this.DGV_isLiveStreamColumn,
                 this.DGV_liveStreamMaxFileSizeColumn,
                 this.DGV_requestHeadersColumn,
+                this.DGV_webProxyColumn,
                 this.DGV_urlColumn
             });
             cs2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
@@ -188,6 +190,13 @@
             this.DGV_requestHeadersColumn.HeaderText = "Request Headers";
             this.DGV_requestHeadersColumn.Name = "DGV_requestHeadersColumn";
             // 
+            // DGV_webProxyColumn
+            // 
+            this.DGV_webProxyColumn.Width = 170;
+            this.DGV_webProxyColumn.Visible = false;
+            this.DGV_webProxyColumn.HeaderText = "Web Proxy";
+            this.DGV_webProxyColumn.Name = "DGV_webProxyColumn";
+            // 
             // DGV_urlColumn
             // 
             this.DGV_urlColumn.Width = 800;
@@ -223,6 +232,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumnEx DGV_isLiveStreamColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumnEx DGV_liveStreamMaxFileSizeColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumnEx DGV_requestHeadersColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumnEx DGV_webProxyColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumnEx DGV_urlColumn;
 
         private System.Windows.Forms.ToolTip toolTip;

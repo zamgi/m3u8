@@ -135,10 +135,10 @@ namespace m3u8.download.manager.ui
                 _SC.SaveNoThrow_IfAnyChanged();
             }
         }
-        public void ShowDialog_Settings( SettingsForm.SettingsTabEnum? settingsTab = default )
+        public void ShowDialog_Settings( SettingsForm.TabPageKind? tabPageKind = default )
         {
             var st = GetSettings();
-            using ( var f = new SettingsForm( _DC/*, _SC*/, settingsTab ) )
+            using ( var f = new SettingsForm( _DC/*, _SC*/, tabPageKind ) )
             {
                 f.Parallelism.MaxDegreeOfParallelism = st.MaxDegreeOfParallelism;
                 f.Parallelism.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
@@ -191,9 +191,9 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public void ShowDialog_ParallelismSettings() => ShowDialog_Settings( SettingsForm.SettingsTabEnum.Parallelism );
-        public void ShowDialog_OtherSettings() => ShowDialog_Settings( SettingsForm.SettingsTabEnum.Other );
-        public void ShowDialog_WebProxySettings() => ShowDialog_Settings( SettingsForm.SettingsTabEnum.WebProxy );
+        public void ShowDialog_ParallelismSettings() => ShowDialog_Settings( SettingsForm.TabPageKind.Parallelism );
+        public void ShowDialog_OtherSettings() => ShowDialog_Settings( SettingsForm.TabPageKind.Other );
+        public void ShowDialog_WebProxySettings() => ShowDialog_Settings( SettingsForm.TabPageKind.WebProxy );
         #endregion
 
         #region [.private methods.]

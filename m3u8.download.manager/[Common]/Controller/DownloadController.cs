@@ -703,14 +703,13 @@ namespace m3u8.download.manager.controllers
         {
             var (timeout, _) = _SettingsController.GetCreateM3u8ClientParams();
             var webProxy = row.WebProxyInfo.CreateWebProxyIfUsed();
-            var (hc, webProxy2, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );
+            var (hc, _/*webProxy2*/, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );
             using ( d )
-            //using ( var mc                       = m3u8_client_factory.Create( _SettingsController.GetCreateM3u8ClientParams() ) )
             using ( var cts                      = new CancellationTokenSource() )
             using ( var waitIfPausedEvent        = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore = _DownloadThreadsSemaphoreFactory.Get() )
             {
-                var tup = Tuple.Create( /*mc,*/ cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
+                var tup = Tuple.Create( cts, waitIfPausedEvent, downloadThreadsSemaphore, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
                 try

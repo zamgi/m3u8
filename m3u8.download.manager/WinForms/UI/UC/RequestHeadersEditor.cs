@@ -82,6 +82,28 @@ namespace m3u8.download.manager.ui
         #region [.public.]
         public event RequestHeadersCountChangedEventHandler OnRequestHeadersCountChanged;
         private void Fire_OnRequestHeadersCountChanged() => OnRequestHeadersCountChanged?.Invoke( DGV.RowCount - 1, GetEnabledCount() );
+        private int GetEnabledCount()
+        {
+            var rows = DGV.Rows;
+            var enabledCount = 0;
+            for ( var i = DGV.RowCount - 1; 0 <= i; i--  )
+            {
+                var row = rows[ i ];
+                if ( !row.IsNewRow )
+                {
+                    var isChecked = bool.TryParse( row.Cells[ CHECKED_CELL_IDX ].Value?.ToString(), out var b ) && b; 
+                    if ( isChecked )
+                    {
+                        var key = row.Cells[ KEY_CELL_IDX ].Value?.ToString().Trim();
+                        if ( !key.IsNullOrWhiteSpace() )
+                        {
+                            enabledCount++;
+                        }
+                    }
+                }
+            }
+            return (enabledCount);
+        }
 
         private static IEnumerable< (string name, string descr) > GetRegularRequestHeader()
         {
@@ -295,28 +317,12 @@ namespace m3u8.download.manager.ui
             get => DGV.ReadOnly;
             set => DGV.ReadOnly = value;
         }
-
-        private int GetEnabledCount()
+        public void Activate()
         {
-            var rows = DGV.Rows;
-            var enabledCount = 0;
-            for ( var i = DGV.RowCount - 1; 0 <= i; i--  )
+            if ( this.ActiveControl == null )
             {
-                var row = rows[ i ];
-                if ( !row.IsNewRow )
-                {
-                    var isChecked = bool.TryParse( row.Cells[ CHECKED_CELL_IDX ].Value?.ToString(), out var b ) && b; 
-                    if ( isChecked )
-                    {
-                        var key = row.Cells[ KEY_CELL_IDX ].Value?.ToString().Trim();
-                        if ( !key.IsNullOrWhiteSpace() )
-                        {
-                            enabledCount++;
-                        }
-                    }
-                }
+                this.BeginInvoke( new Action( () => DGV.Focus() ) );
             }
-            return (enabledCount);
         }
         #endregion
 

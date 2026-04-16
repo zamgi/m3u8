@@ -21,15 +21,15 @@ namespace System.Windows.Forms
         protected override bool ShowFocusCues => false;
         protected override bool ShowKeyboardCues => false;
 
-        public override Rectangle DisplayRectangle
-        {
-            get
-            {
-                const int OFF = 1;
-                var rect = base.DisplayRectangle;
-                return (new Rectangle( rect.Left - OFF, rect.Top - OFF, rect.Width + 2*OFF, rect.Height + 2*OFF ));
-            }
-        }
+        //public override Rectangle DisplayRectangle
+        //{
+        //    get
+        //    {
+        //        const int OFF = 1;
+        //        var rc = base.DisplayRectangle;
+        //        return (new Rectangle( rc.Left - OFF, rc.Top - OFF, rc.Width + 2*OFF, rc.Height + 2*OFF ));
+        //    }
+        //}
         protected override void WndProc( ref Message m )
         {            
             // Это сообщение обычно скрывает фокус после клика мышью.
@@ -76,7 +76,7 @@ namespace System.Windows.Forms
             gr.FillRectangle( br, rc );
             #endregion
 
-            #region [.icon image.]
+            #region [.draw icon image.]
             ImageList imageList;
             if ( (tabPage.ImageIndex != -1) && ((imageList = tabControl.ImageList) != null) )
             {
@@ -92,7 +92,7 @@ namespace System.Windows.Forms
             }
             #endregion
 
-            #region [.tab text.]
+            #region [.drawtab text.]
             var color = GetForecolorForTabPageText?.Invoke( tabPage ) ?? tabControl.ForeColor;
             using var fbr = new SolidBrush( color );
             //var color = (tabPage == parallelismTabPage) ? Brushes.DarkOliveGreen 
@@ -105,7 +105,7 @@ namespace System.Windows.Forms
             gr.DrawString( tabPage.Text, /*ft*/tabPage.Font, fbr, rc, sf );
             #endregion
 
-            #region [.focus rect.]
+            #region [.draw focus rect.]
             if ( (e.State & DrawItemState.Selected) == DrawItemState.Selected )
             {
                 rc = e.Bounds; rc.Inflate( -3, -3 );

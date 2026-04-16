@@ -11,8 +11,8 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.LogListModel.CollectionChangedTypeEnum;
-using CellStyle                   = System.Windows.Forms.DataGridViewCellStyle;
 using _SC_                        = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using CellStyle                   = System.Windows.Forms.DataGridViewCellStyle;
 using M                           = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                           = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -23,6 +23,15 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed partial class LogUC : UserControl
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum AdditionalM3u8UrlsDetectMethodEnumType
+        {
+            FullStrictUrl,
+            EndingWithM3u8,
+        }
+
         #region [.field's.]
         private RowNumbersPainter _RNP;
         private StringFormat      _SF;
@@ -230,6 +239,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        public AdditionalM3u8UrlsDetectMethodEnumType AdditionalM3u8UrlsDetectMethod { get; set; } = AdditionalM3u8UrlsDetectMethodEnumType.FullStrictUrl;
         public Func< string, bool > AllowDownloadAdditionalM3u8Url { get; set; }
         public event Action< Uri > DownloadAdditionalM3u8Url;
 
@@ -591,6 +601,54 @@ namespace m3u8.download.manager.ui
         private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;
         private void _ScrollToLastRow_Click( object sender, EventArgs e ) => this.ScrollToLastRow = !this.ScrollToLastRow;
         private void _AutoResizeRowsHeight_Click( object sender, EventArgs e ) => this.AutoResizeRowsHeight = !this.AutoResizeRowsHeight;
+
+        private bool TryGetAdditionalM3u8Url( string m3u8FileUrlText, out Uri m3u8FileUrl )
+        {
+            switch ( this.AdditionalM3u8UrlsDetectMethod )
+            {
+                case AdditionalM3u8UrlsDetectMethodEnumType.EndingWithM3u8:
+                    if ( Is_EndWithM3u8( m3u8FileUrlText ) && Uri.TryCreate( m3u8FileUrlText, UriKind.RelativeOrAbsolute, out m3u8FileUrl ) )
+                    {
+                        return (true);
+                    }
+                    break;
+
+                case AdditionalM3u8UrlsDetectMethodEnumType.FullStrictUrl:
+                default:
+                    if ( Is_M3u8_Url( m3u8FileUrlText ) && UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText, out var x ) )
+                    {
+                        m3u8FileUrl = x.m3u8FileUrl;
+                        return (true);
+                    }
+                    break;
+            }
+
+            m3u8FileUrl = default;
+            return (false);
+        }
+        private bool IsAdditionalM3u8Url( string m3u8FileUrlText )
+        {
+            switch ( this.AdditionalM3u8UrlsDetectMethod )
+            {
+                case AdditionalM3u8UrlsDetectMethodEnumType.EndingWithM3u8:
+                    if ( Is_EndWithM3u8( m3u8FileUrlText ) /*&& Uri.TryCreate( m3u8FileUrlText, UriKind.RelativeOrAbsolute, out m3u8FileUrl )*/ )
+                    {
+                        return (true);
+                    }
+                    break;
+
+                case AdditionalM3u8UrlsDetectMethodEnumType.FullStrictUrl:
+                default:
+                    if ( Is_M3u8_Url( m3u8FileUrlText ) /*&& UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText, out var x )*/ )
+                    {
+                        //m3u8FileUrl = x.m3u8FileUrl;
+                        return (true);
+                    }
+                    break;
+            }
+
+            return (false);
+        }
         #endregion
 
         #region [.get cell-styles.]
@@ -773,10 +831,10 @@ namespace m3u8.download.manager.ui
                         var m3u8_Url_ButtonRect = Get_M3u8_Url_ButtonRect( row_rc );
                         if ( m3u8_Url_ButtonRect.Contains( e.Location ) )
                         {
-                            var m3u8FileUrl = _Model[ hti.RowIndex ].RequestText;
-                            if ( Is_M3u8_Url( m3u8FileUrl ) && UrlHelper.TryGetM3u8FileUrl( m3u8FileUrl, out var x ) )
+                            var m3u8FileUrl = _Model[ hti.RowIndex ].RequestText;                            
+                            if ( TryGetAdditionalM3u8Url( m3u8FileUrl, out var url ) )
                             {
-                                DownloadAdditionalM3u8Url?.Invoke( x.m3u8FileUrl );
+                                DownloadAdditionalM3u8Url?.Invoke( url );
                             }
                         }
                     }
@@ -796,14 +854,14 @@ namespace m3u8.download.manager.ui
                 var m3u8_Url_ButtonRect = Get_M3u8_Url_ButtonRect( row_rc );
                 if ( m3u8_Url_ButtonRect.Contains( e.Location ) )
                 {
-                    var m3u8FileUrl = _Model[ hti.RowIndex ].RequestText;
-                    if ( Is_M3u8_Url( m3u8FileUrl ) && UrlHelper.TryGetM3u8FileUrl( m3u8FileUrl, out var x ) )
+                    var m3u8FileUrl = _Model[ hti.RowIndex ].RequestText;                    
+                    if ( TryGetAdditionalM3u8Url( m3u8FileUrl, out var url ) )
                     {
                         DGV.Cursor = Cursors.Hand;
                         DGV.ShowCellErrors = DGV.ShowRowErrors = false;
                         DGV.ShowCellToolTips = false;
                         var f = this.FindForm();
-                        toolTip.Show( $"Download Additional '.m3u8' url:  '{Ellipsis.MinimizePath( x.m3u8FileUrl.ToString(), 50 )}'", f, f.PointToClient( DGV.PointToScreen( e.Location ) ), duration: 1_500 );
+                        toolTip.Show( $"Download Additional '.m3u8' url:  '{Ellipsis.MinimizePath( url.ToString(), 50 )}'", f, f.PointToClient( DGV.PointToScreen( e.Location ) ), duration: 1_500 );
                         return;
                     }
                 }
@@ -921,7 +979,7 @@ namespace m3u8.download.manager.ui
                 if ( !text.IsNullOrEmpty() )
                 {
                     var rc                  = e.CellBounds;
-                    var is_M3u8_Url         = AllowDrawDownloadButtonForM3u8Urls && Is_M3u8_Url( text ) && (AllowDownloadAdditionalM3u8Url?.Invoke( text ) == true);
+                    var is_M3u8_Url         = AllowDrawDownloadButtonForM3u8Urls && IsAdditionalM3u8Url( text ) && (AllowDownloadAdditionalM3u8Url?.Invoke( text ) == true);
                     var m3u8_Url_ButtonRect = (is_M3u8_Url) ? Get_M3u8_Url_ButtonRect( rc ) : Rectangle.Empty;
 
                     using ( var br = new SolidBrush( (isSelected ? cs.SelectionForeColor : cs.ForeColor) ) )
@@ -973,8 +1031,10 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void DGV_DataError( object sender, DataGridViewDataErrorEventArgs e ) => Debug.WriteLine( $"{nameof( DGV_DataError )}::'{e.Context}'; [row={e.RowIndex}:col={e.ColumnIndex}] => '{e.Exception}'" );
+        private void DGV_DataError( object sender, DataGridViewDataErrorEventArgs e ) => Debug.WriteLine( $"{nameof(DGV_DataError)}::'{e.Context}'; [row={e.RowIndex}:col={e.ColumnIndex}] => '{e.Exception}'" );
+        #endregion
 
+        #region [.helter methods.]
         [M(O.AggressiveInlining)] private void MeasureCellText( Graphics gr, DataGridViewRow row, int columnIndex, int rowIndex, out SizeF sz )
         {
             var text = row.Cells[ columnIndex ].Value?.ToString();
@@ -997,6 +1057,7 @@ namespace m3u8.download.manager.ui
                       text.Split( '?' ).First().Split( '.' ).LastOrDefault().EqualIgnoreCase( "m3u8" );
             return (suc);
         }
+        [M(O.AggressiveInlining)] private static bool Is_EndWithM3u8( string text ) => (text != null) && text.EndsWith_Ex( ".m3u8" );
         #endregion
     }
 }

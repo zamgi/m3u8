@@ -1251,12 +1251,12 @@ namespace m3u8.download.manager.ui
             #endregion
         }
 
-        private void EditDownload( DownloadRow row )
+        private void EditDownload( DownloadRow row, AddNewDownloadForm.TabPageKind? activeTabPageKind = null )
         {
             if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
 
             AddNewDownloadForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor, null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/,
-                                     AddNewDownloadForm_when_Edit_formClosedAction, AddNewDownloadForm_when_Add_formClosedAction );
+                                     AddNewDownloadForm_when_Edit_formClosedAction, AddNewDownloadForm_when_Add_formClosedAction, activeTabPageKind );
         }
         private async Task AddNewDownloadForm_when_Add_formClosedAction( AddNewDownloadForm f )
         {
@@ -1280,6 +1280,7 @@ namespace m3u8.download.manager.ui
             if ( (f.DialogResult == DialogResult.OK) && !row.Status.IsRunningOrPaused() )
             {
                 row.Update( f.GetParamsTuple()/*f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes*/ );
+                downloadListUC.Invalidate( true );
             }
         }
 
@@ -1806,9 +1807,12 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
+        #region [.Used web-proxy icon click.]
+        private void downloadListUC_UsedWebProxyClick( DownloadRow row ) => EditDownload( row, AddNewDownloadForm.TabPageKind.WebProxyTabPage );
+        #endregion
 
         #region [.allowed Command by current status.]
-        [M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Created ) ||
+        [ M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Created ) ||
                                                                                                            (status == DownloadStatus.Paused  ) ||
                                                                                                            (status == DownloadStatus.Canceled) ||
                                                                                                            (status == DownloadStatus.Finished) ||

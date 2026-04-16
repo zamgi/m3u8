@@ -163,8 +163,17 @@
   <data name="m3u8_32x36" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\m3u8_32x36.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+  <data name="settings_ico" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\settings.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="settings_png" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dop_settings" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dop_settings.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="listbullets" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\listbullets.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="plus" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\menu\plus.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -247,8 +256,8 @@
   <data name="download_inst" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\download_inst.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="dop_16" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\dop_16.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="dop" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dop.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ExternalProgFilePath" xml:space="preserve">
     <value>C:\Program Files (x86)\Freemake\Freemake Video Converter\FreemakeVideoConverter.exe</value>
@@ -289,15 +298,6 @@
   <data name="speed_6" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\speed\speed_6.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="settings_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\settings.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="dop_settings_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\dop_settings.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="listbullets_32" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\listbullets.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="listcheck" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\listcheck.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -307,12 +307,22 @@
   <data name="group_by_audio_video" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\group_by_audio_video.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="workgroup_16x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\workgroup_16x16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="workgroup_32x32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\workgroup_32x32.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <!--
   <data name="domain" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\domain.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  -->
+  <!--
   <data name="auto_start_download" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\auto_start_download.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  -->
   
   <data name="TOR_SERVER_SOCKS5_ADDRESS" xml:space="preserve">
     <value>socks5://127.0.0.1:9050</value>

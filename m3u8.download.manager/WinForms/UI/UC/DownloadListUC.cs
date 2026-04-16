@@ -47,6 +47,10 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
+        public delegate void UsedWebProxyClickEventHandler( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
         public delegate void MouseClickRightButtonEventHandler( MouseEventArgs e, DownloadRow selectedRow, bool outOfGridArea );
         /// <summary>
         /// 
@@ -102,7 +106,8 @@ namespace m3u8.download.manager.ui
         private const int IS_LIVE_STREAM_COLUMN_INDEX            = 10;
         private const int LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX = 11;
         private const int REQUEST_HEADERS_COLUMN_INDEX           = 12;
-        private const int URL_COLUMN_INDEX                       = 13;
+        private const int WEB_PROXY_COLUMN_INDEX                 = 13;
+        private const int URL_COLUMN_INDEX                       = 14;
         #endregion
 
         #region [.field's.]
@@ -110,6 +115,7 @@ namespace m3u8.download.manager.ui
         public event OutputFileNameClickEventHandler        OutputFileNameClick;
         public event OutputDirectoryClickEventHandler       OutputDirectoryClick;
         public event LiveStreamMaxFileSizeClickEventHandler LiveStreamMaxFileSizeClick;
+        public event UsedWebProxyClickEventHandler          UsedWebProxyClick;
         public event MouseClickRightButtonEventHandler      MouseClickRightButton;
         public event UpdatedSingleRunningRowEventHandler    UpdatedSingleRunningRow;
         public event UpdatedSummaryDownloadInfoEventHandler UpdatedSummaryDownloadInfo;
@@ -872,7 +878,11 @@ namespace m3u8.download.manager.ui
 
                 case REQUEST_HEADERS_COLUMN_INDEX:
                     comparison = (x, y) => string.Compare( x.RequestHeaders.ToText(), y.RequestHeaders.ToText(), true );
-                break;
+                    break;
+
+                case WEB_PROXY_COLUMN_INDEX:
+                    comparison = (x, y) => string.Compare( x.WebProxyInfo.ToText(), y.WebProxyInfo.ToText(), true );
+                    break;
 
                 case IS_LIVE_STREAM_COLUMN_INDEX:
                     comparison = (x, y) => x.IsLiveStream.CompareTo( y.IsLiveStream );
@@ -1018,6 +1028,7 @@ namespace m3u8.download.manager.ui
                 case APPROX_TOTAL_BYTES_COLUMN_INDEX       : e.Value = GetApproxTotalBytesText   ( row );                     break;
                 case URL_COLUMN_INDEX                      : e.Value = row.Url;                                               break;
                 case REQUEST_HEADERS_COLUMN_INDEX          : e.Value = row.RequestHeaders.ToText(); break;
+                case WEB_PROXY_COLUMN_INDEX                : e.Value = row.WebProxyInfo.GetWebProxyAddressTextIfUsed(); break;
                 case IS_LIVE_STREAM_COLUMN_INDEX           : e.Value = row.IsLiveStream ? "YES" : "-"; break;
                 case LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX: e.Value = row.IsLiveStream ? $"{row.GetLiveStreamMaxFileSizeInMb()} mb" : "-"; break;
             }
@@ -1099,6 +1110,9 @@ namespace m3u8.download.manager.ui
 
                     case LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX:
                         return (_Model[ e.RowIndex ].IsLiveStream);
+                    //case WEB_PROXY_COLUMN_INDEX:
+                    //    return (_Model[ e.RowIndex ].WebProxyInfo.UseWebProxy);
+
                     default: 
                         return (false);
                 }
@@ -1120,15 +1134,26 @@ namespace m3u8.download.manager.ui
             if ( (e.Button == MouseButtons.None) && (0 <= e.RowIndex) && (e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX) )
             {
                 var row = _Model[ e.RowIndex ];
-                if ( row.IsLiveStream )
+                var useWebProxy = row.WebProxyInfo.UseWebProxy;
+                if ( row.IsLiveStream || useWebProxy )
                 {
-                    var rc = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
-                    var pt = DGV.PointToClient( Control.MousePosition );
-                    if ( rc.Contains( pt /*e.Location*/ ) )
+                    var isLiveStreamRect = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
+                    var pt               = DGV.PointToClient( Control.MousePosition );
+
+                    if ( row.IsLiveStream )
+                    {                        
+                        if ( isLiveStreamRect.Contains( pt /*e.Location*/ ) )
+                        {
+                            //toolTip.ShowAlways = true;
+                            var f = this.FindForm();
+                            toolTip.Show( $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)", f, f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
+                        }
+                        MakeUseWebProxyImageRect( ref isLiveStreamRect );
+                    }
+                    if ( useWebProxy && isLiveStreamRect.Contains( pt /*e.Location*/ ) )
                     {
-                        //toolTip.ShowAlways = true;
                         var f = this.FindForm();
-                        toolTip.Show( $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)", f, f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
+                        toolTip.Show( $"web proxy -> {row.WebProxyInfo.GetWebProxyAddressText()}", f, f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
                     }
                 }
             }
@@ -1142,13 +1167,24 @@ namespace m3u8.download.manager.ui
                     case OUTPUTFILENAME_COLUMN_INDEX:
                     {   
                         var row = _Model[ e.RowIndex ];
-                        if ( row.IsLiveStream )
+                        var useWebProxy = row.WebProxyInfo.UseWebProxy;
+                        if ( row.IsLiveStream || useWebProxy )
                         {
-                            var rc = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
-                            var pt = DGV.PointToClient( Control.MousePosition );
-                            if ( rc.Contains( pt ) )
+                            var isLiveStreamRect = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
+                            var pt               = DGV.PointToClient( Control.MousePosition );
+                            
+                            if ( row.IsLiveStream )
                             {
-                                LiveStreamMaxFileSizeClick?.Invoke( row );
+                                if ( isLiveStreamRect.Contains( pt ) )
+                                {
+                                    LiveStreamMaxFileSizeClick?.Invoke( row );
+                                    break;
+                                }
+                                MakeUseWebProxyImageRect( ref isLiveStreamRect );
+                            }
+                            if ( useWebProxy && isLiveStreamRect.Contains( pt /*e.Location*/ ) )
+                            {
+                                UsedWebProxyClick?.Invoke( row );
                                 break;
                             }
                         }
@@ -1179,6 +1215,18 @@ namespace m3u8.download.manager.ui
                         }
                     }
                     break;
+
+                    /*
+                    case WEB_PROXY_COLUMN_INDEX:
+                    {
+                        var row = _Model[ e.RowIndex ];
+                        if ( row.WebProxyInfo.UseWebProxy )
+                        {
+                            LiveStreamMaxFileSizeClick?.Invoke( row );
+                        }
+                    }
+                    break;
+                    //*/
                 }
             }
             _UserMade_DGV_SelectionChanged = false;
@@ -1339,25 +1387,34 @@ namespace m3u8.download.manager.ui
             }
             else if ( e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX )
             {
-                #region [.IsLiveStream image in output-filename.]
+                #region [.IsLiveStream & WebProxy image's in output-filename.]
                 var row = _Model[ e.RowIndex ];
-                if ( row.IsLiveStream )
+                var useWebProxy = row.WebProxyInfo.UseWebProxy;
+                if ( row.IsLiveStream || useWebProxy )
                 {
                     e.Handled = true;
                     e.Paint( e.ClipBounds, DataGridViewPaintParts.All );
 
-                    var rc = GetIsLiveStreamImageRect( e.CellBounds );
-                    e.Graphics.DrawImage( Resources.live_stream, rc );
+                    var isLiveStreamRect = GetIsLiveStreamImageRect( e.CellBounds );
+                    if ( row.IsLiveStream )
+                    {
+                        e.Graphics.DrawImage( Resources.live_stream, isLiveStreamRect );
+                        MakeUseWebProxyImageRect( ref isLiveStreamRect );
+                    }
+                    if ( useWebProxy )
+                    {                        
+                        e.Graphics.DrawImage( Resources.workgroup_16x16, isLiveStreamRect );
+                    }
                 }
+
+                Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );
                 #endregion
             }
         }
+        private const int IMAGE_HEIGHT = 16;
         [M(O.AggressiveInlining)] private static Rectangle GetIsLiveStreamImageRect( in Rectangle cellClipBounds )
-        {
-            const int IMAGE_HEIGHT = 16;
-            var rc = new Rectangle( cellClipBounds.Right - IMAGE_HEIGHT - 5, cellClipBounds.Y + (cellClipBounds.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
-            return (rc);
-        }
+            => new Rectangle( cellClipBounds.Right - IMAGE_HEIGHT - 5, cellClipBounds.Y + (cellClipBounds.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
+        [M(O.AggressiveInlining)] private static void MakeUseWebProxyImageRect( ref Rectangle isLiveStreamRect ) => isLiveStreamRect.X -= IMAGE_HEIGHT + 3;
         private void DGV_ColumnHeaderMouseClick( object sender, DataGridViewCellMouseEventArgs e )
         {
             switch ( e.Button )

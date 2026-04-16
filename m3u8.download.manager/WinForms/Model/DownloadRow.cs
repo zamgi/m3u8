@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Security.Policy;
+
 
 //using _m3u8_processor_ = m3u8.m3u8_processor_adv;
 using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
@@ -36,33 +38,29 @@ namespace m3u8.download.manager.models
         private long                   _DownloadBytesLength_BeforeRunning;
         private _RowPropertiesChanged_ _RowPropertiesChanged;
 
-        private DownloadRow( string url, IDictionary< string, string > requestHeaders, string outputFileName, string outputDirectory
+        internal DownloadRow( DownloadRow_Definer_1 t //in (string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory) t
             , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )
         {
             _RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));
 
             Status                   = DownloadStatus.Created;
             CreatedOrStartedDateTime = DateTime.Now;
-            Url                      = url;
-            OutputFileName           = outputFileName;
-            OutputDirectory          = outputDirectory;
-            RequestHeaders           = requestHeaders;
+            Url                      = t.Url;
+            RequestHeaders           = t.RequestHeaders;
+            WebProxyInfo             = t.WebProxyInfo;
+            OutputFileName           = t.OutputFileName;
+            OutputDirectory          = t.OutputDirectory;
 
             Log = new LogListModel();
         }
-        internal DownloadRow( DownloadRow_Definer_1 t //in (string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory) t
-            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) 
-            : this( t.Url, t.RequestHeaders, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged ) { }
         internal DownloadRow( DownloadRow_Definer_2 t //in (string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t
-            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) 
-            : this( t.Url, t.RequestHeaders, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged )
+            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : this( (DownloadRow_Definer_1) t, model, rowPropertiesChanged )
         {
             IsLiveStream                 = t.IsLiveStream;
             LiveStreamMaxFileSizeInBytes = t.LiveStreamMaxFileSizeInBytes;
         }
         internal DownloadRow( DownloadRow_Definer_3 t //in (DateTime CreatedOrStartedDateTime, string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, DownloadStatus Status, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t
-            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged )
-            : this( t.Url, t.RequestHeaders, t.OutputFileName, t.OutputDirectory, model, rowPropertiesChanged )
+            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : this( (DownloadRow_Definer_1) t, model, rowPropertiesChanged )
         {
             //---Status                       = DownloadStatus.Created; //t.Status;
             CreatedOrStartedDateTime     = t.CreatedOrStartedDateTime;// DateTime.Now;
@@ -164,8 +162,6 @@ namespace m3u8.download.manager.models
                 _RowPropertiesChanged?.Invoke( this, nameof(LiveStreamMaxFileSizeInBytes) );
             }
         }
-        //public void SetUsedWebProxyAddress( string usedWebProxyAddress ) => UsedWebProxyAddress = usedWebProxyAddress;
-        //public void SetUsedWebProxyAddress( IWebProxy usedWebProxy ) => UsedWebProxyAddress = usedWebProxy?.GetProxy( m3u8_client_factory.EmptyUri ).ToString();
         public void SetWebProxyInfo( in web_proxy_info webProxyInfo ) => WebProxyInfo = webProxyInfo;
 
         public DownloadRow CreateCopy() => new DownloadRow( this );

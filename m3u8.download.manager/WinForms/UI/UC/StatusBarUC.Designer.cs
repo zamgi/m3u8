@@ -83,7 +83,7 @@
             // settingsLabel
             // 
             this.settingsLabel.BorderSides = ((System.Windows.Forms.ToolStripStatusLabelBorderSides)((System.Windows.Forms.ToolStripStatusLabelBorderSides.Left | System.Windows.Forms.ToolStripStatusLabelBorderSides.Right)));
-            this.settingsLabel.Image = m3u8.download.manager.Properties.Resources.settings.ToBitmap();
+            this.settingsLabel.Image = m3u8.download.manager.Properties.Resources.settings_ico.ToBitmap();
             this.settingsLabel.Size = new System.Drawing.Size(20, 20);
             this.settingsLabel.ToolTipText = "settings";
             this.settingsLabel.Click += new System.EventHandler(this.settingsLabel_Click);
