@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Windows.Forms;
 
 using m3u8.download.manager.Properties;
+using m3u8.infrastructure;
 
 namespace m3u8.download.manager.ui
 {
@@ -18,6 +22,7 @@ namespace m3u8.download.manager.ui
         public delegate void WebProxyChangedEventHandler( bool used, string addressRaw );
 
         public event WebProxyChangedEventHandler OnWebProxyChanged;
+        //public event EventHandler OnTestConnectionButtonClick;
 
         #region [.ctor().]
         private Color _UncheckColor   = Color.Gray;
@@ -174,6 +179,8 @@ namespace m3u8.download.manager.ui
             if ( _IgnoreTextChanged ) return;
 
             Fire_OnWebProxyChanged( HasAnyEditWebProxyGroupBoxChecked() );
+
+            testConnectionButton.Visible = !addressTextBox.Text.IsNullOrWhiteSpace();
         }
 
         private void UncheckAllEditWebProxyGroupBox() => editWebProxyGroupBox.Controls.OfType< CheckBox >().ForEach( c => c.Checked = false );
@@ -314,6 +321,42 @@ namespace m3u8.download.manager.ui
             suc = UrlHelper.TryParseHostnameAndPort( addressRaw, out var y );
             (hostname, port) = (y.Hostname, y.Port);
             return (suc);
+        }
+
+        public async void testConnectionButton_Click( object sender, EventArgs e ) //=> OnTestConnectionButtonClick?.Invoke( this/*sender*/, e );
+        {
+            const string TEST_URL = "https://google.com";
+            const string CAPTION  = "web proxy";
+
+            var webProxyAddressText = default(string);
+            try
+            {
+                var webProxyInfo        = this.GetWebProxyInfo();
+                    webProxyAddressText = webProxyInfo.GetWebProxyAddressText();
+                var webProxy            = new WebProxy( webProxyAddressText );
+
+                using ( var cts = new CancellationTokenSource() )
+                using ( WaitBannerUC.Create( this, cts/*, visibleDelayInMilliseconds: 1_500*/ ) )
+                {                    
+                    var timeout = TimeSpan.FromSeconds( 10 ); //var (timeout, _) = _SC.GetCreateM3u8ClientParams();
+                    var (hc, _, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );
+                    using ( d )
+                    {
+                        using var resp = await hc.GetAsync( TEST_URL, HttpCompletionOption.ResponseHeadersRead, cts.Token );
+                        if ( resp.IsSuccessStatusCode )
+                        {
+                            this.FindForm().MessageBox_ShowInformation( $"test connection use web proxy -> success. \r\n({webProxyAddressText})", CAPTION );
+                        }
+                    }
+                }
+            }
+            catch ( Exception ex )
+            {
+                var msg = $"test connection use web proxy -> failed " + 
+                          (webProxyAddressText.IsNullOrWhiteSpace() ? null : $"\r\n({webProxyAddressText})") + 
+                          $" -> \r\n\r\n{ex}";
+                this.FindForm().MessageBox_ShowError( msg, CAPTION );
+            }
         }
         #endregion
     }

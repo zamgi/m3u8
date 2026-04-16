@@ -58,8 +58,8 @@
             // parallelismSettingsUC
             // 
             this.parallelismSettingsUC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.parallelismSettingsUC.Location = new System.Drawing.Point(3, 3);
-            this.parallelismSettingsUC.Size = new System.Drawing.Size(282, 425);
+            //this.parallelismSettingsUC.Location = new System.Drawing.Point(3, 3);
+            //this.parallelismSettingsUC.Size = new System.Drawing.Size(282, 425);
             this.parallelismSettingsUC.TabIndex = 0;
             // 
             // otherTabPage
@@ -76,8 +76,8 @@
             // otherSettingsUC
             // 
             this.otherSettingsUC.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.otherSettingsUC.Location = new System.Drawing.Point(3, 3);
-            this.otherSettingsUC.Size = new System.Drawing.Size(282, 425);
+            //this.otherSettingsUC.Location = new System.Drawing.Point(3, 3);
+            //this.otherSettingsUC.Size = new System.Drawing.Size(282, 425);
             this.otherSettingsUC.TabIndex = 0;
             // 
             // webProxyTabPage
@@ -90,6 +90,13 @@
             this.webProxyTabPage.Text = "web proxy";
             this.webProxyTabPage.UseVisualStyleBackColor = true;
             this.webProxyTabPage.BackColor = System.Drawing.Color.WhiteSmoke;
+            // 
+            // webProxyUC
+            // 
+            this.webProxyUC.Dock = System.Windows.Forms.DockStyle.Fill;
+            //this.webProxyUC.Location = new System.Drawing.Point(3, 3);
+            //this.webProxyUC.Size = new System.Drawing.Size(282, 425);
+            this.webProxyUC.TabIndex = 0;
             // 
             // bottomPanel
             // 

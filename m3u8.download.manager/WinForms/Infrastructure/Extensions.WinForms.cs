@@ -15,6 +15,7 @@ namespace m3u8.download.manager
     /// </summary>
     internal static partial class Extensions//_WinForms
     {
+        //public static void MessageBox_ShowInformation( this Form f, string message ) => f.MessageBox_ShowInformation( message, f.Text );
         public static void MessageBox_ShowInformation( this IWin32Window owner, string text, string caption ) => MessageBox.Show( owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Information );
         public static void MessageBox_ShowError( this IWin32Window owner, string text, string caption ) => MessageBox.Show( owner, text, caption, MessageBoxButtons.OK, MessageBoxIcon.Error );
         public static void MessageBox_ShowError( this Exception ex, string caption ) => MessageBox_ShowError( ex.ToString(), caption );

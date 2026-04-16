@@ -40,6 +40,7 @@ namespace m3u8.download.manager.ui
             portTextBox = new System.Windows.Forms.TextBoxEx();
             addressTextBox = new System.Windows.Forms.TextBoxEx();
             passwordTextBox = new System.Windows.Forms.TextBoxEx();
+            testConnectionButton = new System.Windows.Forms.ButtonWithFocusCues();
             editWebProxyGroupBox = new System.Windows.Forms.GroupBox();
             editWebProxyGroupBox.SuspendLayout();
             addressGroupBox.SuspendLayout();
@@ -98,18 +99,33 @@ namespace m3u8.download.manager.ui
             // 
             // addressGroupBox
             // 
-            addressGroupBox.Controls.Add( portTextBox/*portNumUpDown*/ );
-            addressGroupBox.Controls.Add( addressTextBox );
+            addressGroupBox.Controls.Add(portTextBox);
+            addressGroupBox.Controls.Add(addressTextBox);            
             addressGroupBox.Location = new System.Drawing.Point( 205, 20 );
             addressGroupBox.Size = new System.Drawing.Size( 345, 72 );
             addressGroupBox.TabIndex = 1;
             addressGroupBox.TabStop = false;
             addressGroupBox.Text = "Address";
             // 
+            // addressTextBox
+            // 
+            addressTextBox.Location = new System.Drawing.Point( 20, 27 );
+            addressTextBox.Size = new System.Drawing.Size( 237, 23 );
+            addressTextBox.TabIndex = 0;
+            addressTextBox.PlaceHolderText = "Hostname";
+            // 
+            // portTextBox
+            // 
+            portTextBox.Location = new System.Drawing.Point( 265, 27 );
+            portTextBox.Size = new System.Drawing.Size( 60, 23 );
+            portTextBox.TabIndex = 1;
+            portTextBox.PlaceHolderText = "Port";
+            // 
             // credentialsGroupBox
             // 
             credentialsGroupBox.Controls.Add( passwordTextBox );
             credentialsGroupBox.Controls.Add( userNameTextBox );
+            credentialsGroupBox.Controls.Add( testConnectionButton );
             credentialsGroupBox.Location = new System.Drawing.Point( 205, 98 );
             credentialsGroupBox.Size = new System.Drawing.Size( 345, 100 );
             credentialsGroupBox.TabIndex = 2;
@@ -123,20 +139,6 @@ namespace m3u8.download.manager.ui
             userNameTextBox.TabIndex = 0;
             userNameTextBox.PlaceHolderText = "Username";
             // 
-            // portTextBox
-            // 
-            portTextBox.Location = new System.Drawing.Point( 265, 27 );
-            portTextBox.Size = new System.Drawing.Size( 60, 23 );
-            portTextBox.TabIndex = 1;
-            portTextBox.PlaceHolderText = "Port";
-            // 
-            // addressTextBox
-            // 
-            addressTextBox.Location = new System.Drawing.Point( 20, 27 );
-            addressTextBox.Size = new System.Drawing.Size( 237, 23 );
-            addressTextBox.TabIndex = 0;
-            addressTextBox.PlaceHolderText = "Hostname";
-            // 
             // passwordTextBox
             // 
             passwordTextBox.Location = new System.Drawing.Point( 20, 60 );
@@ -144,14 +146,29 @@ namespace m3u8.download.manager.ui
             passwordTextBox.TabIndex = 1;
             passwordTextBox.PlaceHolderText = "Password";
             // 
+            // testConnectionButton
+            // 
+            this.testConnectionButton.AutoEllipsis = true;
+            this.testConnectionButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.testConnectionButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.testConnectionButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.testConnectionButton.Location = new System.Drawing.Point(265, 27);
+            this.testConnectionButton.Size = new System.Drawing.Size(70, 21);
+            this.testConnectionButton.TabIndex = 3;
+            this.testConnectionButton.Text = "test link...";
+            this.testConnectionButton.UseVisualStyleBackColor = true;
+            this.testConnectionButton.Visible = false;
+            this.testConnectionButton.Click += new System.EventHandler(this.testConnectionButton_Click);
+            // 
             // WebProxyUC
             // 
-            AutoScaleDimensions = new System.Drawing.SizeF( 7F, 15F );
+            AutoScroll = true;
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            Controls.Add( credentialsGroupBox );
-            Controls.Add( addressGroupBox );
-            Controls.Add( editWebProxyGroupBox );
-            Size = new System.Drawing.Size( 570, 320 );
+            Size = new System.Drawing.Size(570, 320);
+            Controls.Add(credentialsGroupBox);
+            Controls.Add(addressGroupBox);
+            Controls.Add(editWebProxyGroupBox);
             editWebProxyGroupBox.ResumeLayout( false );
             editWebProxyGroupBox.PerformLayout();
             addressGroupBox.ResumeLayout( false );
@@ -159,6 +176,7 @@ namespace m3u8.download.manager.ui
             credentialsGroupBox.ResumeLayout( false );
             credentialsGroupBox.PerformLayout();
             ResumeLayout( false );
+            PerformLayout();
         }
         #endregion
 
@@ -173,5 +191,6 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.GroupBox credentialsGroupBox;
         private System.Windows.Forms.TextBoxEx userNameTextBox;
         private System.Windows.Forms.TextBoxEx passwordTextBox;
+        private System.Windows.Forms.ButtonWithFocusCues testConnectionButton;
     }
 }

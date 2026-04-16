@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,6 +14,7 @@ using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
+using m3u8.infrastructure;
 
 using _DC_ = m3u8.download.manager.controllers.DownloadController;
 using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
@@ -844,6 +847,33 @@ namespace m3u8.download.manager.ui
             }
         }
         private void webProxyUC_OnWebProxyChanged( bool enabled, string addressRaw ) => set_WebProxyTabPageText( enabled, addressRaw );
+        //private async void webProxyUC_OnTestConnectionButtonClick( object sender, EventArgs e )
+        //{
+        //    try
+        //    {
+        //        var webProxyInfo = webProxyUC.GetWebProxyInfo();
+        //        var webProxy     = new WebProxy( webProxyInfo.GetWebProxyAddressText() ); //webProxyInfo.CreateWebProxyIfUsed();
+
+        //        using ( var cts = new CancellationTokenSource() )
+        //        using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1_500 ) )
+        //        {
+        //            var (timeout, _) = _SC.GetCreateM3u8ClientParams();
+        //            var (hc, _, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );
+        //            using ( d )
+        //            {
+        //                using var resp = await hc.GetAsync( "https://google.com", HttpCompletionOption.ResponseHeadersRead, cts.Token );
+        //                if ( resp.IsSuccessStatusCode )
+        //                {
+        //                    this.MessageBox_ShowInformation( "success" , this.Text );
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch ( Exception ex )
+        //    {
+        //        this.MessageBox_ShowError( ex.ToString(), this.Text );
+        //    }
+        //}
         #endregion
 
         #region [.download additional m3u8Url's.]

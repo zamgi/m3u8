@@ -144,18 +144,15 @@ namespace m3u8.download.manager.ui
             // requestHeadersEditor
             // 
             this.requestHeadersEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-            //this.requestHeadersEditor.Location = new System.Drawing.Point(0, 0);
-            //this.requestHeadersEditor.Size = new System.Drawing.Size(800, 409);
             this.requestHeadersEditor.TabIndex = 0;
             this.requestHeadersEditor.OnRequestHeadersCountChanged += new RequestHeadersEditor.RequestHeadersCountChangedEventHandler(this.requestHeadersEditor_OnRequestHeadersCountChanged);
             // 
             // webProxyUC
             // 
             this.webProxyUC.Dock = System.Windows.Forms.DockStyle.Fill;
-            //this.webProxyUC.Location = new System.Drawing.Point(0, 0);
-            //this.webProxyUC.Size = new System.Drawing.Size(800, 409);
             this.webProxyUC.TabIndex = 0;
-            this.webProxyUC.OnWebProxyChanged += new WebProxyUC.WebProxyChangedEventHandler(this.webProxyUC_OnWebProxyChanged);
+            //this.webProxyUC.OnTestConnectionButtonClick += new System.EventHandler(this.webProxyUC_OnTestConnectionButtonClick);
+            this.webProxyUC.OnWebProxyChanged += new WebProxyUC.WebProxyChangedEventHandler(this.webProxyUC_OnWebProxyChanged);            
             // 
             // m3u8FileUrlTextBox
             // 

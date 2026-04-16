@@ -150,17 +150,6 @@ namespace m3u8.download.manager.controllers
         #endregion
 
         #region [.static 'GetFileTextContent'.]
-        //public static Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( string m3u8FileUrlText, IDictionary< string, string > requestHeaders, TimeSpan requestTimeoutByPart, CancellationTokenSource cts = null )
-        //{
-        //    #region [.url.]
-        //    if ( !UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText?.Trim(), out var t ) )
-        //    {
-        //        return Task.FromResult( (default(m3u8_file_t), t.error) );
-        //    }
-        //    #endregion
-
-        //    return (GetFileTextContent( t.m3u8FileUrl, requestHeaders, requestTimeoutByPart, cts ));
-        //}
         public static async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( 
               Uri m3u8FileUrl
             , IDictionary< string, string > requestHeaders
