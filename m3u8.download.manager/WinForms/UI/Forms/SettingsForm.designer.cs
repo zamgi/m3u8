@@ -13,8 +13,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-        {
-            System.Windows.Forms.TabControl tabControl;
+        {            
             System.Windows.Forms.Panel bottomPanel;
             this.parallelismTabPage = new System.Windows.Forms.TabPage();
             this.parallelismSettingsUC = new m3u8.download.manager.ui.ParallelismSettingsUC();
@@ -24,7 +23,7 @@
             this.webProxyUC = new WebProxyUC();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
-            tabControl = new System.Windows.Forms.TabControl();
+            tabControl = new System.Windows.Forms.TabControlEx();
             bottomPanel = new System.Windows.Forms.Panel();
             tabControl.SuspendLayout();
             this.parallelismTabPage.SuspendLayout();
@@ -42,9 +41,8 @@
             tabControl.Location = new System.Drawing.Point(0, 0);
             tabControl.Size = new System.Drawing.Size(296, 457);
             tabControl.TabIndex = 0;
-            tabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            tabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.TabControl_DrawItem);
-            tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControl_Selected);
+            tabControl.GetForecolorForTabPageText = tabControl_GetForecolorForTabPageText;
+            tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
             // 
             // parallelismTabPage
             // 
@@ -150,6 +148,7 @@
         }
         #endregion
 
+        private System.Windows.Forms.TabControlEx tabControl;
         private System.Windows.Forms.TabPage parallelismTabPage;
         private System.Windows.Forms.TabPage otherTabPage;
         private System.Windows.Forms.TabPage webProxyTabPage;

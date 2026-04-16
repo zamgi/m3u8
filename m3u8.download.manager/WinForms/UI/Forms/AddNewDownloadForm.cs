@@ -58,10 +58,12 @@ namespace m3u8.download.manager.ui
 
             _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
 
+            #region [.ImageList 4 tabControl.]
             var imgLst = tabControl.ImageList = new ImageList() { ImageSize = new Size(16, 16) };
             imgLst.Images.Add( Resources.download_inst ); mainTabPage          .ImageIndex = 0;
             imgLst.Images.Add( Resources.listcheck     ); requestHeadersTabPage.ImageIndex = 1;
             imgLst.Images.Add( Resources.domain        ); webProxyTabPage      .ImageIndex = 2;
+            #endregion
         }
 
         /// <summary>

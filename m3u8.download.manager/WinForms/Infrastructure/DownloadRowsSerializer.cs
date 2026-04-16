@@ -40,7 +40,7 @@ namespace m3u8.download.manager
                 Credentials = Credentials,
             };
 
-            [ DataMember(Name="u")] public bool UseWebProxy { get; set; }
+            [DataMember(Name="u")] public bool UseWebProxy { get; set; }
             [DataMember(Name="t")] public WebProxyUrlEnumType UrlType { get; set; }
             [DataMember(Name="h")] public string Hostname { get; set; }
             [DataMember(Name="p")] public int?   Port     { get; set; }
@@ -129,6 +129,24 @@ namespace m3u8.download.manager
                 }
             }
             return (Enumerable.Empty< DownloadRow_Definer_3 >());
+        }
+
+        public static string ToJSON( in web_proxy_info t ) => (new web_proxy_info_4_Serialize( t )).ToJSON();
+        public static web_proxy_info FromJSON_2_WebProxyInfo( string json, bool suppressError = false )
+        {
+            if ( !json.IsNullOrWhiteSpace() )
+            {
+                try
+                {
+                    var webProxyInfo = Extensions.FromJSON< web_proxy_info_4_Serialize >( json );
+                    return (webProxyInfo.ToWebProxyInfo());
+                }
+                catch ( Exception ex ) when ( suppressError )
+                {
+                    Debug.WriteLine( ex );
+                }
+            }
+            return (web_proxy_info.Empty);
         }
     }
 }

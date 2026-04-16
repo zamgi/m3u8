@@ -23,7 +23,7 @@ namespace m3u8.download.manager.ui
             outputFileNameLabel = new System.Windows.Forms.Label();
             outputDirectoryLabel = new System.Windows.Forms.Label();
             this.topPanel = new System.Windows.Forms.Panel();
-            this.tabControl = new System.Windows.Forms.TabControl();
+            this.tabControl = new System.Windows.Forms.TabControlEx();
             this.mainTabPage = new System.Windows.Forms.TabPage();
             this.requestHeadersTabPage = new System.Windows.Forms.TabPage();
             this.webProxyTabPage = new System.Windows.Forms.TabPage();
@@ -95,6 +95,7 @@ namespace m3u8.download.manager.ui
             // 
             // tabControl
             // 
+            this.tabControl.DrawMode = System.Windows.Forms.TabDrawMode.Normal;
             this.tabControl.Controls.Add(this.mainTabPage);
             this.tabControl.Controls.Add(this.requestHeadersTabPage);
             this.tabControl.Controls.Add(this.webProxyTabPage);
@@ -102,9 +103,6 @@ namespace m3u8.download.manager.ui
             this.tabControl.Location = new System.Drawing.Point(0, 0);
             this.tabControl.Size = new System.Drawing.Size(803, 81);
             this.tabControl.TabIndex = 0;
-            //tabControl.DrawMode = System.Windows.Forms.TabDrawMode.OwnerDrawFixed;
-            //tabControl.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.TabControl_DrawItem);
-            //tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControl_Selected);
             // 
             // mainTabPage
             // 
@@ -531,7 +529,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabControlEx tabControl;
         private System.Windows.Forms.TabPage mainTabPage;
         private System.Windows.Forms.TabPage requestHeadersTabPage;
         private System.Windows.Forms.TabPage webProxyTabPage;

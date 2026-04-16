@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using System.Net;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
+using m3u8.download.manager.Properties;
 
 namespace m3u8.download.manager.ui
 {
@@ -25,22 +25,29 @@ namespace m3u8.download.manager.ui
 
         #region [.ctor().]
         private SettingsForm() => InitializeComponent();
-        public SettingsForm( DownloadController dc, SettingsPropertyChangeController sc, SettingsTabEnum? settingsTab = default ) : this()
+        public SettingsForm( DownloadController dc/*, SettingsPropertyChangeController sc*/, SettingsTabEnum? settingsTab = default ) : this()
         {
             parallelismSettingsUC.Init( dc );
             otherSettingsUC      .Init( dc );
-            webProxyUC.SetWebProxyInfo( sc.GetDefaultWebProxyInfo() );
+            //webProxyUC.SetWebProxyInfo( sc.GetDefaultWebProxyInfo() );
 
             if ( settingsTab.HasValue )
             {
                 switch ( settingsTab )
                 {
-                    case SettingsTabEnum.Parallelism: ((TabControl) parallelismTabPage.Parent).SelectedTab = parallelismTabPage; break;
-                    case SettingsTabEnum.Other      : ((TabControl) otherTabPage      .Parent).SelectedTab = otherTabPage;       break;
-                    case SettingsTabEnum.WebProxy   : ((TabControl) otherTabPage      .Parent).SelectedTab = webProxyTabPage;    break;    
-                    //case SettingsTabEnum.More       : ((TabControl) moreTabPage       .Parent).SelectedTab = moreTabPage;        break;
+                    case SettingsTabEnum.Parallelism: tabControl.SelectedTab = parallelismTabPage; break;
+                    case SettingsTabEnum.Other      : tabControl.SelectedTab = otherTabPage;       break;
+                    case SettingsTabEnum.WebProxy   : tabControl.SelectedTab = webProxyTabPage;    break;    
+                    //case SettingsTabEnum.More       : tabControl.SelectedTab = moreTabPage;        break;
                 }
             }
+
+            #region [.ImageList 4 tabControl.]
+            var imgLst = tabControl.ImageList = new ImageList() { ImageSize = new Size(16, 16) };
+            imgLst.Images.Add( Resources.dop_16   ); parallelismTabPage.ImageIndex = 0;
+            imgLst.Images.Add( Resources.settings ); otherTabPage      .ImageIndex = 1;
+            imgLst.Images.Add( Resources.domain   ); webProxyTabPage   .ImageIndex = 2;
+            #endregion
         }
 
         protected override void Dispose( bool disposing )
@@ -70,38 +77,14 @@ namespace m3u8.download.manager.ui
 
             otherSettingsUC.OnClosing( DialogResult, e );
         }
-        private void TabControl_DrawItem( object sender, DrawItemEventArgs e )
+        private Color tabControl_GetForecolorForTabPageText( TabPage tabPage )
         {
-            var tabControl = (TabControl) sender;
-            var tabPage    = tabControl.TabPages[ e.Index ];
-            
-            //e.DrawBackground();
-            using var br = new SolidBrush( tabPage.BackColor );
-            e.Graphics.FillRectangle( br, e.Bounds );
-
-            var color = (tabPage == parallelismTabPage) ? Brushes.DarkOliveGreen 
-                                                        : ((tabPage == otherTabPage) ? Brushes.DarkOrange 
-                                                                                     : ((tabPage == webProxyTabPage) ? Brushes.DarkGreen : Brushes.Silver));
-
-            using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center, Trimming = StringTrimming.None, FormatFlags = StringFormatFlags.NoWrap };
-            //      var fs = ((tabPage == moreTabPage) || ((e.State & DrawItemState.Selected) != DrawItemState.Selected)) ? FontStyle.Regular : FontStyle.Underline;
-            //using var ft = new Font( tabPage.Font, fs );
-            e.Graphics.DrawString( tabPage.Text, /*ft*/tabPage.Font, color, e.Bounds, sf );
-
-            #region comm.
-            //ALWAYS DRAW ITS OWNER CONTROL
-            //if ( (e.State & DrawItemState.Selected) == DrawItemState.Selected ) //if ( (e.State & DrawItemState.Focus) == DrawItemState.Focus )
-            //{
-            //    var rc = e.Bounds;
-            //    rc.Inflate( -2, -2 );
-
-            //    ControlPaint.DrawFocusRectangle( e.Graphics, rc );
-            //    //e.Graphics.DrawRectangle( Pens.Silver, rc );
-            //    //e.DrawFocusRectangle();
-            //}
-            #endregion
+            var color = (tabPage == parallelismTabPage) ? Color.DarkOliveGreen
+                                                        : ((tabPage == otherTabPage) ? Color.DarkOrange
+                                                                                     : ((tabPage == webProxyTabPage) ? Color.Blue : Color.Silver));
+            return (color);
         }
-        private void TabControl_Selected( object sender, TabControlEventArgs e )
+        private void tabControl_Selected( object sender, TabControlEventArgs e )
         {
             if ( e.TabPage == otherTabPage )
             {

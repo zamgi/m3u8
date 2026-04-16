@@ -383,6 +383,10 @@ namespace m3u8.download.manager.ui
                         aboutToolButton_Click( this, EventArgs.Empty );
                         break;
 
+                    case Keys.F4:
+                        statusBarUC.ShowDialog_Settings();
+                        break;
+
                     case Keys.F11:
                         this.WindowState = (this.WindowState == FormWindowState.Normal) ? FormWindowState.Maximized : FormWindowState.Normal;
                         break;

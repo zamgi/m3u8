@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Net;
 using System.Windows.Forms;
 
 using m3u8.download.manager.infrastructure;
@@ -137,7 +138,7 @@ namespace m3u8.download.manager.ui
         public void ShowDialog_Settings( SettingsForm.SettingsTabEnum? settingsTab = default )
         {
             var st = GetSettings();
-            using ( var f = new SettingsForm( _DC, _SC, settingsTab ) )
+            using ( var f = new SettingsForm( _DC/*, _SC*/, settingsTab ) )
             {
                 f.Parallelism.MaxDegreeOfParallelism = st.MaxDegreeOfParallelism;
                 f.Parallelism.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
@@ -156,6 +157,8 @@ namespace m3u8.download.manager.ui
                 f.Other.UseDirectorySelectDialogModern         = st.UseDirectorySelectDialogModern;
                 f.Other.UniqueUrlsOnly                         = st.UniqueUrlsOnly;
                 f.Other.IgnoreHostHttpHeader                   = st.IgnoreHostHttpHeader;
+
+                f.WebProxy.SetWebProxyInfo( _SC.GetDefaultWebProxyInfo() );
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
@@ -179,6 +182,8 @@ namespace m3u8.download.manager.ui
                     st.UseDirectorySelectDialogModern         = f.Other.UseDirectorySelectDialogModern;
                     st.UniqueUrlsOnly                         = f.Other.UniqueUrlsOnly;
                     st.IgnoreHostHttpHeader                   = f.Other.IgnoreHostHttpHeader;
+
+                    _SC.SetDefaultWebProxyInfo( f.WebProxy.GetWebProxyInfo() );
 
                     _SC.SaveNoThrow_IfAnyChanged();
 

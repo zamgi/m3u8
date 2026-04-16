@@ -109,14 +109,19 @@ namespace m3u8.download.manager.ui
                 return (wpi);
             }
 
-            suc = UrlHelper.TryParseHostnameAndPort( addressRaw, out var t );
+            var t = default((string Hostname, int? Port, Exception Error));
+            var sepIdx = addressRaw.LastIndexOf(':');
+            if ( sepIdx != -1 )
+            {
+                suc = UrlHelper.TryParseHostnameAndPort( addressRaw, out t );
+            }
+
             if ( !suc )
             {
                 var portRaw = portTextBox.Text.Trim();
-                if ( int.TryParse( portRaw, out var p ) && (0 < p) && (p <= 0xFFFF) )
+                if ( int.TryParse( portRaw?.Trim(), out var p ) && (0 < p) && (p <= 0xFFFF) )
                 {
-                    var i = addressRaw.LastIndexOf(':');
-                    if ( i != -1 ) addressRaw = addressRaw.Substring( 0, i );
+                    if ( sepIdx != -1 ) addressRaw = addressRaw.Substring( 0, sepIdx );
                     addressRaw += ':' + p.ToString();
                 }
 
@@ -129,7 +134,7 @@ namespace m3u8.download.manager.ui
                 Hostname    = t.Hostname,
                 Port        = t.Port,
                 UrlType     = urlType.GetValueOrDefault(),
-                UseWebProxy = HasAnyEditWebProxyGroupBoxChecked(),
+                UseWebProxy = suc && HasAnyEditWebProxyGroupBoxChecked(),
                 Credentials = this.Credentials,
             };
             return (webProxyInfo);

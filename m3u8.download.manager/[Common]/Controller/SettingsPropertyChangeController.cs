@@ -59,23 +59,8 @@ namespace m3u8.download.manager.controllers
         //public (IWebProxy webProxy, TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams( bool suppressCreateWebProxyError = false )
         //    => (CreateWebProxyIfUsed( suppressCreateWebProxyError ), Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
         //public IWebProxy CreateWebProxyIfUsed( bool suppressError = false ) => GetDefaultWebProxyInfo( suppressError ).CreateWebProxyIfUsed( suppressError );
-        public web_proxy_info GetDefaultWebProxyInfo( bool suppressError = false )
-        {
-            var json = Settings.DefaultWebProxyInfo_Json;
-            if ( !json.IsNullOrWhiteSpace() )
-            {
-                try
-                {
-                    var webProxyInfo = Extensions.FromJSON< web_proxy_info >( json );
-                    return (webProxyInfo);
-                }
-                catch ( Exception ex ) when ( suppressError )
-                {
-                    Debug.WriteLine( ex );
-                }
-            }
-            return (web_proxy_info.Empty);
-        }
+        public web_proxy_info GetDefaultWebProxyInfo( bool suppressError = false ) => DownloadRowsSerializer.FromJSON_2_WebProxyInfo( Settings.DefaultWebProxyInfo_Json, suppressError );
+        public void SetDefaultWebProxyInfo( in web_proxy_info webProxyInfo ) => Settings.DefaultWebProxyInfo_Json = DownloadRowsSerializer.ToJSON( webProxyInfo );
 
         public IEnumerable< string > NameCleanerExcludesWords { [M(O.AggressiveInlining)] get => Settings.GetNameCleanerExcludesWords(); }
         public bool     ShowOnlyRequestRowsWithErrors       { [M(O.AggressiveInlining)] get => Settings.ShowOnlyRequestRowsWithErrors; }
