@@ -193,6 +193,7 @@ namespace m3u8.download.manager.ui
         }
         public void ShowDialog_ParallelismSettings() => ShowDialog_Settings( SettingsForm.SettingsTabEnum.Parallelism );
         public void ShowDialog_OtherSettings() => ShowDialog_Settings( SettingsForm.SettingsTabEnum.Other );
+        public void ShowDialog_WebProxySettings() => ShowDialog_Settings( SettingsForm.SettingsTabEnum.WebProxy );
         #endregion
 
         #region [.private methods.]

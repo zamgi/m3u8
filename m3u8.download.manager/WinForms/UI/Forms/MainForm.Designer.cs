@@ -50,6 +50,7 @@ namespace m3u8.download.manager.ui
             this.fileNameExcludesWordsEditorToolButton = new System.Windows.Forms.ToolStripButton();
             this.parallelismSettingsToolButton = new System.Windows.Forms.ToolStripButton();
             this.otherSettingsToolButton = new System.Windows.Forms.ToolStripButton();
+            this.webProxyInfoSettingsToolButton = new System.Windows.Forms.ToolStripButton();
             this.aboutToolButton = new System.Windows.Forms.ToolStripButton();
             this.degreeOfParallelismToolButton = new System.Windows.Forms.DegreeOfParallelismToolButton();
             this.downloadInstanceToolButton = new System.Windows.Forms.DownloadInstanceToolButton();
@@ -117,6 +118,7 @@ namespace m3u8.download.manager.ui
                 this.speedThresholdToolButton,
                 s9,
                 this.aboutToolButton,
+                this.webProxyInfoSettingsToolButton,
                 this.otherSettingsToolButton,                
                 this.parallelismSettingsToolButton,
                 this.columnsVisibilityEditorToolButton,
@@ -248,6 +250,15 @@ namespace m3u8.download.manager.ui
             this.otherSettingsToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.otherSettingsToolButton.ToolTipText = "Other settings";
             this.otherSettingsToolButton.Click += new System.EventHandler(this.otherSettingsToolButton_Click);
+            // 
+            // webProxyInfoSettingsToolButton
+            // 
+            this.webProxyInfoSettingsToolButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.webProxyInfoSettingsToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.webProxyInfoSettingsToolButton.Image = global::m3u8.download.manager.Properties.Resources.domain.ToBitmap();
+            this.webProxyInfoSettingsToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.webProxyInfoSettingsToolButton.ToolTipText = "Default Web Proxy settings";
+            this.webProxyInfoSettingsToolButton.Click += new System.EventHandler(this.webProxyInfoSettingsToolButton_Click);
             // 
             // aboutToolButton
             // 
@@ -512,6 +523,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ToolStripButton fileNameExcludesWordsEditorToolButton;
         private System.Windows.Forms.ToolStripButton parallelismSettingsToolButton;
         private System.Windows.Forms.ToolStripButton otherSettingsToolButton;
+        private System.Windows.Forms.ToolStripButton webProxyInfoSettingsToolButton;
         private System.Windows.Forms.ToolStripButton aboutToolButton;        
         private DownloadListUC downloadListUC;
         private System.Windows.Forms.SplitContainer mainSplitContainer;

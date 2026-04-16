@@ -1334,6 +1334,7 @@ namespace m3u8.download.manager.ui
         private void fileNameExcludesWordsEditorToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_FileNameExcludesWordsEditor();
         private void parallelismSettingsToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_ParallelismSettings();
         private void otherSettingsToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_OtherSettings();
+        private void webProxyInfoSettingsToolButton_Click( object sender, EventArgs e ) => statusBarUC.ShowDialog_WebProxySettings();
         private void aboutToolButton_Click( object sender, EventArgs e )
         {
             var text = $"\"{AssemblyInfoHelper.AssemblyTitle}\" {AssemblyInfoHelper.FrameWorkName}" +
