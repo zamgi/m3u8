@@ -40,7 +40,8 @@ namespace m3u8.download.manager.ui
             portTextBox = new System.Windows.Forms.TextBoxEx();
             addressTextBox = new System.Windows.Forms.TextBoxEx();
             passwordTextBox = new System.Windows.Forms.TextBoxEx();
-            testConnectionButton = new System.Windows.Forms.ButtonWithFocusCues();
+            //testConnectionButton = new System.Windows.Forms.ButtonWithFocusCues();
+            testConnectionButton = new System.Windows.Forms.Button();
             editWebProxyGroupBox = new System.Windows.Forms.GroupBox();
             editWebProxyGroupBox.SuspendLayout();
             addressGroupBox.SuspendLayout();
@@ -145,15 +146,16 @@ namespace m3u8.download.manager.ui
             passwordTextBox.Size = new System.Drawing.Size( 237, 23 );
             passwordTextBox.TabIndex = 1;
             passwordTextBox.PlaceHolderText = "Password";
+            passwordTextBox.UseSystemPasswordChar = true;
             // 
             // testConnectionButton
             // 
             this.testConnectionButton.AutoEllipsis = true;
             this.testConnectionButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.testConnectionButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.testConnectionButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.testConnectionButton.Location = new System.Drawing.Point(265, 27);
-            this.testConnectionButton.Size = new System.Drawing.Size(70, 21);
+            this.testConnectionButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;//Popup;
+            this.testConnectionButton.Location = new System.Drawing.Point(265, 25);
+            this.testConnectionButton.Size = new System.Drawing.Size(70, 24);
             this.testConnectionButton.TabIndex = 3;
             this.testConnectionButton.Text = "test link...";
             this.testConnectionButton.UseVisualStyleBackColor = true;
@@ -191,6 +193,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.GroupBox credentialsGroupBox;
         private System.Windows.Forms.TextBoxEx userNameTextBox;
         private System.Windows.Forms.TextBoxEx passwordTextBox;
-        private System.Windows.Forms.ButtonWithFocusCues testConnectionButton;
+        //private System.Windows.Forms.ButtonWithFocusCues testConnectionButton;
+        private System.Windows.Forms.Button testConnectionButton;
     }
 }

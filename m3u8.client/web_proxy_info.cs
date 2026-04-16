@@ -9,8 +9,8 @@ namespace m3u8
     /// </summary>
     public enum WebProxyUrlEnumType
     {
-        Http,
         Socks5,
+        Http,
     }
 
     /// <summary>
@@ -28,7 +28,9 @@ namespace m3u8
 
         public bool HasCredentials => !string.IsNullOrWhiteSpace( Credentials.Username ) || !string.IsNullOrWhiteSpace( Credentials.Password );
         public string GetWebProxyAddressText() => GetWebProxyAddressText( UrlType, Hostname, Port );
+        public string GetWebProxyAddressText( WebProxyUrlEnumType urlType ) => GetWebProxyAddressText( urlType, Hostname, Port );
         public string GetWebProxyAddressTextIfUsed() => UseWebProxy ? GetWebProxyAddressText() : null;
+        public ICredentials GetCredentialsIfUsed() => HasCredentials ? new CredentialsImpl( Credentials ) : null;
         public string ToText() => GetWebProxyAddressText() + $", (use={UseWebProxy})" + (HasCredentials ? $", ({Credentials.Username}:{Credentials.Password})" : null);
         public IWebProxy CreateWebProxyIfUsed( bool suppressError = false )
         {
@@ -38,7 +40,7 @@ namespace m3u8
                 {
                     try
                     {
-                        return (new WebProxy( GetWebProxyAddressText() ));
+                        return (new WebProxy( GetWebProxyAddressText() ) { Credentials = GetCredentialsIfUsed() });
                     }
                     catch ( Exception ex )
                     {
@@ -47,12 +49,14 @@ namespace m3u8
                 }
                 else
                 {
-                    return (new WebProxy( GetWebProxyAddressText() ));
+                    return (new WebProxy( GetWebProxyAddressText() ) { Credentials = GetCredentialsIfUsed() });
                 }
             }
             return (null);
         }
-        
+        public IWebProxy CreateWebProxy() => new WebProxy( GetWebProxyAddressText() ) { Credentials = GetCredentialsIfUsed() };
+        public IWebProxy CreateWebProxy( string webProxyAddressText ) => new WebProxy( webProxyAddressText ) { Credentials = GetCredentialsIfUsed() };
+
         public static string GetWebProxyAddressText( WebProxyUrlEnumType urlType, string hostname, int? port )
         {
             if ( !string.IsNullOrWhiteSpace( hostname ) )
@@ -77,5 +81,15 @@ namespace m3u8
         public static web_proxy_info Empty { get; } = new web_proxy_info() { UseWebProxy = false, Hostname = default, Port = default, UrlType = WebProxyUrlEnumType.Http };
 
         public override string ToString() => ToText();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal readonly struct CredentialsImpl : ICredentials
+    {
+        private (string Username, string Password) _Cred { get; }
+        public CredentialsImpl( in (string Username, string Password) t ) => _Cred = t;
+        public NetworkCredential GetCredential( Uri uri, string authType ) => new NetworkCredential( _Cred.Username, _Cred.Password );
     }
 }
