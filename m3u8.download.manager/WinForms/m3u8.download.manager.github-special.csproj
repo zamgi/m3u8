@@ -54,6 +54,8 @@
     <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
     <Compile Include="..\..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
     <Compile Include="..\..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
+    <Compile Include="..\..\m3u8.client\web_proxy_info.cs" Link="[-= m3u8.client =-]\web_proxy_info.cs" />
+    <Compile Include="..\..\m3u8.client\System.Runtime.CompilerServices.cs" Link="[-= m3u8.client =-]\System.Runtime.CompilerServices.cs" />    
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
 
     <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs" Link="Controller\throttler_by_speed_impl.cs" />
@@ -78,7 +80,7 @@
   </ItemGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0-windows' ">
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.5" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.6" />
   </ItemGroup>
   
   <ItemGroup>

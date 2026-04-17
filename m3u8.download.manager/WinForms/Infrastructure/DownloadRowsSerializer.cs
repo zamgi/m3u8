@@ -20,36 +20,6 @@ namespace m3u8.download.manager
         /// <summary>
         /// 
         /// </summary>
-        [DataContract] private sealed class web_proxy_info_4_Serialize
-        {
-            public web_proxy_info_4_Serialize() { }
-            public web_proxy_info_4_Serialize( in web_proxy_info t )
-            {
-                UseWebProxy = t.UseWebProxy;
-                UrlType     = t.UrlType;
-                Hostname    = t.Hostname;
-                Port        = t.Port;
-                Credentials = t.Credentials;
-            }
-            public web_proxy_info ToWebProxyInfo() => new web_proxy_info()
-            {
-                UseWebProxy = UseWebProxy,
-                UrlType     = UrlType,
-                Hostname    = Hostname,
-                Port        = Port,
-                Credentials = Credentials,
-            };
-
-            [DataMember(Name="u")] public bool UseWebProxy { get; set; }
-            [DataMember(Name="t")] public WebProxyUrlEnumType UrlType { get; set; }
-            [DataMember(Name="h")] public string Hostname { get; set; }
-            [DataMember(Name="p")] public int?   Port     { get; set; }
-            [DataMember(Name="c")] public (string Username, string Password) Credentials { get; set; }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
         [DataContract] private sealed class DownloadRow_4_Serialize
         {
             public DownloadRow_4_Serialize() { }
@@ -82,6 +52,36 @@ namespace m3u8.download.manager
             [DataMember(Name="y")] public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; set; }
             [DataMember(Name="r")] public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; set; }
             [DataMember(Name="w")] public web_proxy_info_4_Serialize WebProxyInfo { [M(O.AggressiveInlining)] get; set; }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataContract] private sealed class web_proxy_info_4_Serialize
+        {
+            public web_proxy_info_4_Serialize() { }
+            public web_proxy_info_4_Serialize( in web_proxy_info t )
+            {
+                UseWebProxy = t.UseWebProxy;
+                UrlType     = t.UrlType;
+                Hostname    = t.Hostname;
+                Port        = t.Port;
+                Credentials = t.Credentials;
+            }
+            public web_proxy_info ToWebProxyInfo() => new web_proxy_info()
+            {
+                UseWebProxy = UseWebProxy,
+                UrlType     = UrlType,
+                Hostname    = Hostname,
+                Port        = Port,
+                Credentials = Credentials,
+            };
+
+            [DataMember(Name="u")] public bool UseWebProxy { get; set; }
+            [DataMember(Name="t")] public WebProxyUrlEnumType UrlType { get; set; }
+            [DataMember(Name="h")] public string Hostname { get; set; }
+            [DataMember(Name="p")] public int?   Port     { get; set; }
+            [DataMember(Name="c")] public (string Username, string Password) Credentials { get; set; }
         }
 
         public static string ToJSON( IEnumerable< DownloadRow > rows ) => rows.Select( r => new DownloadRow_4_Serialize( r ) ).ToJSON();

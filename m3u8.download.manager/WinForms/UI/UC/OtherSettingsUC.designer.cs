@@ -1,4 +1,7 @@
-﻿namespace m3u8.download.manager.ui
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace m3u8.download.manager.ui
 {
     partial class OtherSettingsUC
     {
@@ -30,16 +33,16 @@
             this.useDirectorySelectDialogModernCheckBox = new System.Windows.Forms.CheckBox();
             this.testDirectorySelectDialog = new System.Windows.Forms.Button();
             this.externalProgFilePathButton = new System.Windows.Forms.Button();
-            this.externalProgFilePathTextBox = new System.Windows.Forms.TextBox();
-            this.externalProgCaptionTextBox = new System.Windows.Forms.TextBox();
+            this.externalProgFilePathTextBox = new System.Windows.Forms.TextBoxEx();
+            this.externalProgCaptionTextBox = new System.Windows.Forms.TextBoxEx();
             this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox();
-            this.requestTimeoutByPartDTP = new System.Windows.Forms.DateTimePicker();
+            this.requestTimeoutByPartDTP = new System.Windows.Forms.BorderDateTimePicker();
             this.uniqueUrlsOnlyCheckBox = new System.Windows.Forms.CheckBox();
             this.ignoreHostHttpHeaderCheckBox = new System.Windows.Forms.CheckBox();
             this.only4NotRunLabel1 = new System.Windows.Forms.Label();
             this.only4NotRunLabel2 = new System.Windows.Forms.Label();
             this.outputFileExtensionLabel = new System.Windows.Forms.Label();
-            this.outputFileExtensionTextBox = new System.Windows.Forms.TextBox();
+            this.outputFileExtensionTextBox = new System.Windows.Forms.TextBoxEx();
             this.attemptRequestCountByPartNUD = new System.Windows.Forms.NumericUpDownEx();            
             this.externalProgResetButton = new System.Windows.Forms.Button();
             this.collectGarbageButton = new System.Windows.Forms.Button();
@@ -86,7 +89,7 @@
             l1.Text = "attempt request count by part:";
             // 
             // l2
-            // 
+            //  
             l2.AutoSize = true;
             l2.Location = new System.Drawing.Point(43, 62);
             l2.Size = new System.Drawing.Size(117, 13);
@@ -95,7 +98,7 @@
             // 
             // attemptRequestCountByPartNUD
             // 
-            this.attemptRequestCountByPartNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.attemptRequestCountByPartNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.attemptRequestCountByPartNUD.Location = new System.Drawing.Point(167, 18);
             this.attemptRequestCountByPartNUD.Minimum = new decimal(new int[] { 1, 0, 0, 0 } );
             this.attemptRequestCountByPartNUD.Size = new System.Drawing.Size(89, 16);
@@ -144,13 +147,15 @@
             // outputFileExtensionTextBox
             // 
             this.outputFileExtensionTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this.outputFileExtensionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.outputFileExtensionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.outputFileExtensionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.outputFileExtensionTextBox.Location = new System.Drawing.Point(167, 142);
             this.outputFileExtensionTextBox.Size = new System.Drawing.Size(89, 26);
             this.outputFileExtensionTextBox.TabIndex = 6;
             this.outputFileExtensionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.outputFileExtensionTextBox.WordWrap = false;
+            this.outputFileExtensionTextBox.PlaceHolderText = "extension";
+            this.outputFileExtensionTextBox.DrawClearButton = false;
 
             // 
             // only4NotRunLabel1
@@ -278,35 +283,39 @@
             this.externalProgFilePathButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.externalProgFilePathButton.Location = new System.Drawing.Point(245, 85);
             this.externalProgFilePathButton.Size = new System.Drawing.Size(16, 18);
-            this.externalProgFilePathButton.TabIndex = 9;
-            this.toolTip.SetToolTip(this.externalProgFilePathButton, "browse");
-            this.externalProgFilePathButton.UseVisualStyleBackColor = true;
-            this.externalProgFilePathButton.Click += new System.EventHandler(this.externalProgFilePathButton_Click);
+            this.externalProgFilePathButton.TabIndex = 9;            
+            this.externalProgFilePathButton.UseVisualStyleBackColor = true;            
             this.externalProgFilePathButton.Image = new System.Drawing.Bitmap( Properties.Resources.browse, new System.Drawing.Size( 10, 10 ) );
             this.externalProgFilePathButton.Margin = new System.Windows.Forms.Padding(0);
+            this.externalProgFilePathButton.Click += new System.EventHandler(this.externalProgFilePathButton_Click);
+            this.toolTip.SetToolTip(this.externalProgFilePathButton, "browse");
             // 
             // externalProgFilePathTextBox
             // 
             this.externalProgFilePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.externalProgFilePathTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.externalProgFilePathTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.externalProgFilePathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.externalProgFilePathTextBox.Location = new System.Drawing.Point(6, 85);
             this.externalProgFilePathTextBox.Size = new System.Drawing.Size(239, 18);
             this.externalProgFilePathTextBox.TabIndex = 8;
             this.externalProgFilePathTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.externalProgFilePathTextBox.WordWrap = false;
+            this.externalProgFilePathTextBox.PlaceHolderText = "path to external program";
+            this.externalProgFilePathTextBox.DrawClearButton = false;
             this.externalProgFilePathTextBox.TextChanged += new System.EventHandler(this.externalProgFilePathTextBox_TextChanged);
             // 
             // externalProgCaptionTextBox
             // 
             this.externalProgCaptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            this.externalProgCaptionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.externalProgCaptionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.externalProgCaptionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.externalProgCaptionTextBox.Location = new System.Drawing.Point(19, 35);
             this.externalProgCaptionTextBox.Size = new System.Drawing.Size(226, 18);
             this.externalProgCaptionTextBox.TabIndex = 7;
             this.externalProgCaptionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.externalProgCaptionTextBox.WordWrap = false;
+            this.externalProgCaptionTextBox.PlaceHolderText = "caption of external program";
+            this.externalProgCaptionTextBox.DrawClearButton = false;
             this.externalProgCaptionTextBox.TextChanged += new System.EventHandler(this.externalProgCaptionTextBox_TextChanged);
             // 
             // externalProgResetButton
@@ -392,7 +401,7 @@
         #endregion
 
         private System.Windows.Forms.NumericUpDownEx attemptRequestCountByPartNUD;
-        private System.Windows.Forms.DateTimePicker requestTimeoutByPartDTP;
+        private System.Windows.Forms.BorderDateTimePicker requestTimeoutByPartDTP;
         private System.Windows.Forms.CheckBox showOnlyRequestRowsWithErrorsCheckBox;
         private System.Windows.Forms.CheckBox showDownloadStatisticsInMainFormTitleCheckBox;
         private System.Windows.Forms.CheckBox showAllDownloadsCompleted_NotificationCheckBox;
@@ -403,9 +412,9 @@
         private System.Windows.Forms.Label only4NotRunLabel1;
         private System.Windows.Forms.Label only4NotRunLabel2;
         private System.Windows.Forms.Label outputFileExtensionLabel;
-        private System.Windows.Forms.TextBox outputFileExtensionTextBox;
-        private System.Windows.Forms.TextBox externalProgFilePathTextBox;
-        private System.Windows.Forms.TextBox externalProgCaptionTextBox;
+        private System.Windows.Forms.TextBoxEx outputFileExtensionTextBox;
+        private System.Windows.Forms.TextBoxEx externalProgFilePathTextBox;
+        private System.Windows.Forms.TextBoxEx externalProgCaptionTextBox;
         private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;        
         private System.Windows.Forms.Button externalProgFilePathButton;
         private System.Windows.Forms.Button externalProgResetButton;

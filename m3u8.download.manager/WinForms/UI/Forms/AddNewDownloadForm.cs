@@ -4,8 +4,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,7 +12,6 @@ using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
-using m3u8.infrastructure;
 
 using _DC_ = m3u8.download.manager.controllers.DownloadController;
 using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
@@ -92,7 +89,7 @@ namespace m3u8.download.manager.ui
 
             this.OutputFileName               = row.OutputFileName;
             this.OutputDirectory              = row.OutputDirectory;
-            this.IsLiveStream                 = row.IsLiveStream;
+            this.IsLiveStream                 = row.IsLiveStream; if ( row.IsLiveStream ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
             this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;
             
             _Initial_M3u8FileUrl = row.Url;
@@ -493,8 +490,6 @@ namespace m3u8.download.manager.ui
         private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _Settings.OutputFileExtension, _OutputFileNamePatternProcessor.PatternChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();
-        //public string GetUsedWebProxyAddress() => webProxyUC.GetUsedWebProxyAddress();
-        //public  bool  UsedWebProxyAddress => webProxyUC.UsedWebProxyAddress;
         public web_proxy_info GetWebProxyInfo() => webProxyUC.GetWebProxyInfo();
         public  bool  IsLiveStream
         { 
@@ -612,11 +607,6 @@ namespace m3u8.download.manager.ui
             Process_use_OutputFileNamePatternProcessor();
         }
         private void outputFileNameTextBox_ClearButtonClick( object sender, EventArgs e ) => outputFileNameTextBox.Focus();
-        //private void outputFileNameClearButton_Click( object sender, EventArgs e )
-        //{
-        //    this.OutputFileName = null;
-        //    outputFileNameTextBox.Focus();
-        //}
         private void outputFileNameSelectButton_Click( object sender, EventArgs e )
         {
             using ( var sfd = new SaveFileDialog() { InitialDirectory = this.OutputDirectory,

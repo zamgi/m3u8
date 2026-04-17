@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.Properties;
+
 using B = System.ComponentModel.BrowsableAttribute;
 
 namespace m3u8.download.manager.ui

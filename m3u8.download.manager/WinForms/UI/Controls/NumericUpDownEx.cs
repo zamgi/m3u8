@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Drawing;
+using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -13,134 +14,40 @@ namespace System.Windows.Forms
     internal class NumericUpDownEx : NumericUpDown
     {
         private StringBuilder _Buf;
-        public NumericUpDownEx() => _Buf = new StringBuilder();
+        public NumericUpDownEx() //=> _Buf = new StringBuilder();
+        {
+            _Buf = new StringBuilder();
+            this.BorderStyle = BorderStyle.FixedSingle;
+        }
 
-        //public new int DecimalPlaces
-        //{
-        //    [M(O.AggressiveInlining)] get => base.DecimalPlaces;
-        //    set
-        //    {
-        //        base.DecimalPlaces = value;
-        //        this.InitialDecimalPlaces = value;
-        //    }
-        //}
 
-        //private int? _InitialDecimalPlaces;
-        //private int InitialDecimalPlaces 
-        //{ 
-        //    get => _InitialDecimalPlaces.GetValueOrDefault( base.DecimalPlaces );
-        //    set
-        //    {
-        //        _InitialDecimalPlaces = value;
+        public Color? BorderColor    { get; set; } = Color.Silver;
+        public float  BorderThikness { get; set; } = 1;
 
-        //        this.ValueChanged -= NumericUpDownEx_ValueChanged;
-        //        if ( value != 0 )
-        //        {
-        //            this.ValueChanged += NumericUpDownEx_ValueChanged;
-        //        }
-        //    }
-        //}
+        protected override void WndProc( ref Message m )
+        {
+            const int WM_PAINT = 0x0F;
 
-        ////private static (int trimLength, bool trimDecimalSeparator) TrimEndDecimalPlaces( string s, char decimalSeparator )
-        ////{
-        ////    var trimLength           = 0;
-        ////    var trimDecimalSeparator = false;
-        ////    for ( var i = s.Length - 1; 0 <= i; i-- )
-        ////    {
-        ////        var ch = s[ i ];
-        ////        if ( ch != '0' )
-        ////        {
-        ////            if ( ch == '.' || ch == ',' )
-        ////            {
-        ////                trimDecimalSeparator = true;
-        ////            }
-        ////            break;
-        ////        }
-        ////        trimLength++;
-        ////    }
-        ////    return (trimLength, trimDecimalSeparator);
-        ////}
-        //private static (int trimLength, bool trimDecimalSeparator) TrimEndDecimalPlaces( string s, string decimalSeparator )
-        //{
-        //    var sep_idx = s.IndexOf( decimalSeparator );
-        //    if ( sep_idx == -1 ) return (0, false);
+            base.WndProc( ref m );
 
-        //    var trimLength           = 0;
-        //    var trimDecimalSeparator = false;
-        //    for ( var i = s.Length - 1; sep_idx <= i; i-- )
-        //    {
-        //        var ch = s[ i ];
-        //        if ( ch != '0' )
-        //        {
-        //            trimDecimalSeparator = (i == sep_idx);
-        //            break;
-        //        }
-        //        trimLength++;
-        //    }
-        //    return (trimLength, trimDecimalSeparator);
-        //}
-        //private static (int trimLength, bool trimDecimalSeparator) TrimEndDecimalPlaces( string s, int decimalSeparatorIndex )
-        //{
-        //    if ( decimalSeparatorIndex == -1 ) return (0, false);
+            if ( (m.Msg == WM_PAINT) && this.BorderColor.HasValue )
+            {
+                using ( var gr = Graphics.FromHwnd( this.Handle ) )
+                {
+                    using ( var pen = new Pen( this.Parent.BackColor, 2 ) )
+                    {
+                        gr.DrawRectangle( pen, 0, 0, this.Width, this.Height );
+                    }
 
-        //    var trimLength           = 0;
-        //    var trimDecimalSeparator = false;
-        //    for ( var i = s.Length - 1; decimalSeparatorIndex <= i; i-- )
-        //    {
-        //        var ch = s[ i ];
-        //        if ( ch != '0' )
-        //        {
-        //            trimDecimalSeparator = (i == decimalSeparatorIndex);
-        //            break;
-        //        }
-        //        trimLength++;
-        //    }
-        //    return (trimLength, trimDecimalSeparator);
-        //}
-        //private static (int count, int decimalSeparatorIndex) GetDigitCountAfterDecimalSeparator( string s, string decimalSeparator )
-        //{
-        //    var sep_idx = s.IndexOf( decimalSeparator );
-        //    if ( sep_idx == -1 ) return (0, -1);
-
-        //    var cnt = s.Length - sep_idx - 1;
-        //    return (cnt, sep_idx);
-        //}
-        //private void Set_DecimalPlaces_IfChanged( int dp )
-        //{
-        //    if ( base.DecimalPlaces != dp ) base.DecimalPlaces = dp;
-        //}
-        //private void NumericUpDownEx_ValueChanged( object sender, EventArgs e )
-        //{
-        //    var idp = this.InitialDecimalPlaces;
-        //    if ( idp == 0 )
-        //    {
-        //        this.ValueChanged -= NumericUpDownEx_ValueChanged;
-        //        return;
-        //    }
-
-        //    var v     = this.Value;
-        //    var v_i32 = (int) v;
-        //    if ( v == v_i32 )
-        //    {
-        //        Set_DecimalPlaces_IfChanged( 0 );
-        //    }
-        //    else
-        //    {
-        //        var v_txt = v.ToString();
-        //        var (count, decimalSeparatorIndex) = GetDigitCountAfterDecimalSeparator( v_txt, Application.CurrentCulture.NumberFormat.NumberDecimalSeparator );
-        //            v_txt = v_txt.PadRight( v_txt.Length + Math.Max( 0, idp - count ), '0' );
-        //        var (trimLength, trimDecimalSeparator) = TrimEndDecimalPlaces( v_txt, decimalSeparatorIndex );
-        //        if ( 0 < trimLength )
-        //        {
-        //            Set_DecimalPlaces_IfChanged( trimDecimalSeparator ? 0 : Math.Max( 0, idp - trimLength ) );
-        //        }
-        //        else
-        //        {
-        //            Set_DecimalPlaces_IfChanged( idp );
-        //        }
-        //    }
-        //}
-
+                    // Draw over the default border with the parent's background color
+                    var bt = this.BorderThikness;
+                    using ( var pen = new Pen( this.BorderColor.Value, bt ) )
+                    {
+                        gr.DrawRectangle( pen, 0, 0, this.Width - bt, this.Height - bt );
+                    }
+                }
+            }
+        }
 
         protected override void UpdateEditText()
         {
@@ -205,7 +112,6 @@ namespace System.Windows.Forms
             var n_s = buf.Clear().Append( s, 0, s.Length - trimLength - (trimDecimalSeparator ? 1 : 0) ).ToString();
             return (n_s);
         }
-
 
         public decimal? Increment_MouseWheel { get; set; }
         public bool     Round2NextTenGroup   { get; set; }
@@ -273,7 +179,7 @@ namespace System.Windows.Forms
                     case WM_NCHITTEST:
                     case WM_SETFOCUS:
                         m.Result = new IntPtr( HTTRANSPARENT ); 
-                    return;
+                        return;
                 }
                 base.WndProc( ref m );
             }

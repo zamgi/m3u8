@@ -78,7 +78,7 @@ namespace m3u8
             return (null);
         }
 
-        public static web_proxy_info Empty { get; } = new web_proxy_info() { UseWebProxy = false, Hostname = default, Port = default, UrlType = WebProxyUrlEnumType.Http };
+        public static web_proxy_info Empty { get; } = new web_proxy_info() { UseWebProxy = false, Hostname = default, Port = default, UrlType = WebProxyUrlEnumType.Socks5 };
 
         public override string ToString() => ToText();
     }
@@ -88,8 +88,8 @@ namespace m3u8
     /// </summary>
     internal readonly struct CredentialsImpl : ICredentials
     {
-        private (string Username, string Password) _Cred { get; }
-        public CredentialsImpl( in (string Username, string Password) t ) => _Cred = t;
-        public NetworkCredential GetCredential( Uri uri, string authType ) => new NetworkCredential( _Cred.Username, _Cred.Password );
+        public CredentialsImpl( in (string Username, string Password) t ) => Credentials = t;
+        public (string Username, string Password) Credentials { get; }
+        public NetworkCredential GetCredential( Uri uri, string authType ) => new NetworkCredential( Credentials.Username, Credentials.Password );
     }
 }

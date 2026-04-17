@@ -136,11 +136,12 @@ namespace m3u8.download.manager.ui
         }
         private void cancelButton_Click( object sender, EventArgs e ) => this.Close();
 
-        private void outputFileNameClearButton_Click( object sender, EventArgs e )
-        {
-            this.OutputFileName = null;
-            outputFileNameTextBox.Focus();
-        }
+        //private void outputFileNameClearButton_Click( object sender, EventArgs e )
+        //{
+        //    this.OutputFileName = null;
+        //    outputFileNameTextBox.Focus();
+        //}
+        private void outputFileNameTextBox_ClearButtonClick( object sender, EventArgs e ) => outputFileNameTextBox.Focus();
         private void outputFileNameTextBox_TextChanged( object sender, EventArgs e ) => _FNCP.FileNameTextBox_TextChanged();
 
         private void set_outputFileNameTextBox_Selection_Position( string outputFileName )

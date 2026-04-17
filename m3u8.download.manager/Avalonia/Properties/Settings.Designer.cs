@@ -230,24 +230,12 @@ namespace m3u8.download.manager.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string RequestWebProxyAddress {
+        public string DefaultWebProxyInfo_Json {
             get {
-                return ((string)(this["RequestWebProxyAddress"]));
+                return ((string)(this["DefaultWebProxyInfo_Json"]));
             }
             set {
-                this["RequestWebProxyAddress"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UseRequestWebProxy {
-            get {
-                return ((bool)(this["UseRequestWebProxy"]));
-            }
-            set {
-                this["UseRequestWebProxy"] = value;
+                this["DefaultWebProxyInfo_Json"] = value;
             }
         }
         

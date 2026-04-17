@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -180,9 +179,14 @@ namespace m3u8.download.manager.ui
             if ( !_IgnoreTextChanged )
             {
                 Fire_OnWebProxyChanged( HasAnyEditWebProxyGroupBoxChecked() );
-            }            
+            }
 
-            testConnectionButton.Visible = !addressTextBox.Text.IsNullOrWhiteSpace();
+            var isVisible_testConnectionButton = !addressTextBox.Text.IsNullOrWhiteSpace();
+            if ( testConnectionButton.Visible != isVisible_testConnectionButton )
+            {
+                testConnectionButton.Visible = isVisible_testConnectionButton;
+                if ( isVisible_testConnectionButton ) BlinkManager.BlinkBackColor( testConnectionButton, _BlinkBackColor );
+            }
         }
 
         private void UncheckAllEditWebProxyGroupBox() => editWebProxyGroupBox.Controls.OfType< CheckBox >().ForEach( c => c.Checked = false );
@@ -325,6 +329,8 @@ namespace m3u8.download.manager.ui
             return (suc);
         }
 
+
+        #region [.test connection.]
         private async void testConnectionButton_Click( object sender, EventArgs e ) //=> OnTestConnectionButtonClick?.Invoke( this/*sender*/, e );
         {
             const string TEST_URL = "https://google.com";
@@ -368,7 +374,7 @@ namespace m3u8.download.manager.ui
             try
             {
                 var webProxyAddressText = webProxyInfo.GetWebProxyAddressText();
-                var webProxy            = webProxyInfo.CreateWebProxy( webProxyAddressText ); //new WebProxy( webProxyAddressText ) { Credentials = webProxyInfo.GetCredentialsIfUsed() };
+                var webProxy            = webProxyInfo.CreateWebProxy( webProxyAddressText );
                 var (hc, _, d) = HttpClientFactory_WithRefCount.Get( webProxy/*, timeout*/ );
                 using ( d )
                 {
@@ -389,7 +395,7 @@ namespace m3u8.download.manager.ui
                     try
                     {
                         var webProxyAddressText = webProxyInfo.GetWebProxyAddressText( urlType );
-                        var webProxy            = webProxyInfo.CreateWebProxy( webProxyAddressText ); //new WebProxy( webProxyAddressText );
+                        var webProxy            = webProxyInfo.CreateWebProxy( webProxyAddressText );
                         var (hc, _, d) = HttpClientFactory_WithRefCount.Get( webProxy/*, timeout*/ );
                         using ( d )
                         {
@@ -412,6 +418,8 @@ namespace m3u8.download.manager.ui
                 throw;
             }
         }
+        #endregion
+
         #endregion
     }
 }

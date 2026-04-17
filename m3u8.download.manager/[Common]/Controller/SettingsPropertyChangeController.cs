@@ -55,9 +55,6 @@ namespace m3u8.download.manager.controllers
         public _Settings_ Settings { [M(O.AggressiveInlining)] get; }
 
         public (TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams() => (Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
-        //public (IWebProxy webProxy, TimeSpan timeout, int attemptRequestCountByPart) GetCreateM3u8ClientParams( bool suppressCreateWebProxyError = false )
-        //    => (CreateWebProxyIfUsed( suppressCreateWebProxyError ), Settings.RequestTimeoutByPart, Settings.AttemptRequestCountByPart);
-        //public IWebProxy CreateWebProxyIfUsed( bool suppressError = false ) => GetDefaultWebProxyInfo( suppressError ).CreateWebProxyIfUsed( suppressError );
         public web_proxy_info GetDefaultWebProxyInfo( bool suppressError = false ) => DownloadRowsSerializer.FromJSON_2_WebProxyInfo( Settings.DefaultWebProxyInfo_Json, suppressError );
         public void SetDefaultWebProxyInfo( in web_proxy_info webProxyInfo ) => Settings.DefaultWebProxyInfo_Json = DownloadRowsSerializer.ToJSON( webProxyInfo );
 

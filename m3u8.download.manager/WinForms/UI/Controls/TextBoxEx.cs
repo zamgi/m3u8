@@ -48,11 +48,11 @@ namespace System.Windows.Forms
         //}
         public int BorderThickness { get; set; } = BORDER_THICKNESS;
 
-        public Color ClearButtonColor           { get; set; } = Color.Silver;
-        public Color ClearButtonColorHover      { get; set; } = Color.Black;
+        public Color  ClearButtonColor          { get; set; } = Color.Silver;
+        public Color  ClearButtonColorHover     { get; set; } = Color.Black;
         public Color? ClearButtonBackcolor      { get; set; }
         public Color? ClearButtonBackcolorHover { get; set; }
-        public int ClearButtonThickness { get; set; } = CLEAR_BUTTON_THICKNESS;
+        public int    ClearButtonThickness      { get; set; } = CLEAR_BUTTON_THICKNESS;
 
         public string PlaceHolderText { get; set; }
         public bool   DrawClearButton { get; set; } = true;
@@ -226,26 +226,34 @@ namespace System.Windows.Forms
                     break;
 
                 case WinApi.WM_PAINT:
+                    base.WndProc( ref m );
+
+                    if ( BorderColor.HasValue )
+                    {
+                        DrawBorder_Routine( m.HWnd, BorderColor.Value );
+                    }
+
                     if ( this.Text.IsNullOrEmpty() )
                     {
                         if ( !this.PlaceHolderText.IsNullOrEmpty() )
                         {
-                            base.WndProc( ref m );
+                            //base.WndProc( ref m );
 
                             DrawPlaceHolderText_Routine( m.HWnd );
                             m.Result = IntPtr.Zero;
-                            return;
+                            //return;
                         }
                     }
                     else if ( DrawClearButton )
                     {
-                        base.WndProc( ref m );
+                        //base.WndProc( ref m );
 
                         DrawClearButton_Routine( m.HWnd );
                         m.Result = IntPtr.Zero;
-                        return;
+                        //return;
                     }
-                    break;
+                    //break;
+                    return;
 
                 case WinApi.WM_MOUSEMOVE:
                     if ( !this.Text.IsNullOrEmpty() )
@@ -319,14 +327,42 @@ namespace System.Windows.Forms
             var hdc = WinApi.GetWindowDC( hWnd );
             if ( hdc != IntPtr.Zero )
             {
-                //var color = this.Focused ? ControlPaint.Dark( borderColor ) : borderColor;
-                var color = this.Focused ? borderColor : ControlPaint.Light( borderColor );
-                using ( var g = Graphics.FromHdc( hdc ) )
-                using ( var pen = new Pen( color, this.BorderThickness ) )
+                using ( var gr = Graphics.FromHdc( hdc ) )
                 {
-                    g.DrawRectangle( /*Pens.Red*/pen, 0, 0, Width - this.BorderThickness, Height - this.BorderThickness );
+                    ClearBorder_Routine( gr );
+
+                    //var color = this.Focused ? ControlPaint.Dark( borderColor ) : borderColor;
+                    var color = this.Focused ? borderColor : ControlPaint.Light( borderColor );
+                    var bt = this.BorderThickness;
+                    using ( var pen = new Pen( color, bt ) )
+                    {
+                        gr.DrawRectangle( /*Pens.Red*/pen, 0, 0, Width - bt, Height - bt );
+                    }
                 }
+
                 WinApi.ReleaseDC( hWnd, hdc );
+            }
+        }
+        //private void ClearBorder_Routine( IntPtr hWnd )
+        //{
+        //    var hdc = WinApi.GetWindowDC( hWnd );
+        //    if ( hdc != IntPtr.Zero )
+        //    {
+        //        using ( var gr = Graphics.FromHdc( hdc ) )
+        //        {
+        //            ClearBorder_Routine( gr );
+        //        }
+
+        //        WinApi.ReleaseDC( hWnd, hdc );
+        //    }
+        //}
+        private void ClearBorder_Routine( Graphics gr )
+        {
+            // Draw over the default border with the parent's background color
+            const int BORDER_THICKNESS = 2;
+            using ( var pen = new Pen( /*Color.Red*/this.Parent.BackColor, BORDER_THICKNESS ) )
+            {
+                gr.DrawRectangle( pen, 1, 1, this.Width - 2, this.Height - 2 );
             }
         }
 

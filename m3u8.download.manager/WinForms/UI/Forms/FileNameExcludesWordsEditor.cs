@@ -161,7 +161,7 @@ namespace m3u8.download.manager.ui
                 - ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : SystemInformation.BorderSize.Width);
         }
 
-        private void clearFilterButton_Click( object sender, EventArgs e ) => filterTextBox.Text = null;
+        //private void clearFilterButton_Click( object sender, EventArgs e ) => filterTextBox.Text = null;
 
         private string _LastFilterText;
         private async void filterTextBox_TextChanged( object sender, EventArgs e )
@@ -177,7 +177,7 @@ namespace m3u8.download.manager.ui
 
             var isEmpty = text.IsNullOrEmpty();
 
-            clearFilterButton.Visible = !isEmpty;
+            //clearFilterButton.Visible = !isEmpty;
 
             DGV.SuspendDrawing();
             try

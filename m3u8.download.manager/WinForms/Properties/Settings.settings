@@ -49,14 +49,6 @@
     <Setting Name="RequestTimeoutByPart" Type="System.TimeSpan" Scope="User">
       <Value Profile="(Default)">00:00:45</Value>
     </Setting>
-    <!--
-    <Setting Name="RequestWebProxyAddress" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="UseRequestWebProxy" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    -->
     <Setting Name="DefaultWebProxyInfo_Json" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>    

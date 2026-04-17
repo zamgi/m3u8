@@ -16,8 +16,8 @@
         {
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.outputFileNameTextBox = new System.Windows.Forms.TextBox();
-            this.outputFileNameClearButton = new System.Windows.Forms.ButtonWithFocusCues();
+            this.outputFileNameTextBox = new System.Windows.Forms.TextBoxEx();
+            //this.outputFileNameClearButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.SuspendLayout();
             // 
             // okButton
@@ -48,25 +48,30 @@
             // 
             // outputFileNameTextBox
             // 
-            this.outputFileNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.outputFileNameTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.outputFileNameTextBox.Location = new System.Drawing.Point(12, 12);
-            this.outputFileNameTextBox.Size = new System.Drawing.Size(310, 18);
+            this.outputFileNameTextBox.Size = new System.Drawing.Size(325, 18);
             this.outputFileNameTextBox.TabIndex = 0;
             this.outputFileNameTextBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 11.5F );
-            this.outputFileNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.outputFileNameTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.outputFileNameTextBox.WordWrap = false;
-            // 
-            // outputFileNameClearButton
-            // 
-            this.outputFileNameClearButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.outputFileNameClearButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.outputFileNameClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.outputFileNameClearButton.Location = new System.Drawing.Point(325, 12);
-            this.outputFileNameClearButton.Size = new System.Drawing.Size(19, 18);
-            this.outputFileNameClearButton.TabIndex = 1;
-            this.outputFileNameClearButton.Text = "X";
-            this.outputFileNameClearButton.UseVisualStyleBackColor = true;
-            this.outputFileNameClearButton.Click += new System.EventHandler(this.outputFileNameClearButton_Click);
+            this.outputFileNameTextBox.PlaceHolderText = "output file name";
+            this.outputFileNameTextBox.ClearButtonColor = System.Drawing.Color.Gray; //System.Drawing.Color.DodgerBlue;
+            this.outputFileNameTextBox.ClearButtonBackcolor = System.Drawing.Color.White;// Smoke;
+            this.outputFileNameTextBox.ClearButtonBackcolorHover = System.Drawing.Color.White;// Smoke;
+            this.outputFileNameTextBox.ClearButtonClick += new System.EventHandler(this.outputFileNameTextBox_ClearButtonClick);
+            //// 
+            //// outputFileNameClearButton
+            //// 
+            //this.outputFileNameClearButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            //this.outputFileNameClearButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            //this.outputFileNameClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            //this.outputFileNameClearButton.Location = new System.Drawing.Point(325, 12);
+            //this.outputFileNameClearButton.Size = new System.Drawing.Size(19, 18);
+            //this.outputFileNameClearButton.TabIndex = 1;
+            //this.outputFileNameClearButton.Text = "X";
+            //this.outputFileNameClearButton.UseVisualStyleBackColor = true;
+            //this.outputFileNameClearButton.Click += new System.EventHandler(this.outputFileNameClearButton_Click);            
             // 
             // ChangeOutputFileForm
             // 
@@ -75,7 +80,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(345, 91);
-            this.Controls.Add(this.outputFileNameClearButton);
+            //this.Controls.Add(this.outputFileNameClearButton);
             this.Controls.Add(this.outputFileNameTextBox);
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
@@ -93,7 +98,7 @@
 
         private System.Windows.Forms.Button okButton;
         private System.Windows.Forms.Button cancelButton;
-        private System.Windows.Forms.TextBox outputFileNameTextBox;
-        private System.Windows.Forms.ButtonWithFocusCues outputFileNameClearButton;
+        private System.Windows.Forms.TextBoxEx outputFileNameTextBox;
+        //private System.Windows.Forms.ButtonWithFocusCues outputFileNameClearButton;
     }
 }

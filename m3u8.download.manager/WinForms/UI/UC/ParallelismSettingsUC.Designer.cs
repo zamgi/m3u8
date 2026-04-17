@@ -50,7 +50,7 @@
             // 
             // maxDegreeOfParallelismNUD
             // 
-            this.maxDegreeOfParallelismNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.maxDegreeOfParallelismNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.maxDegreeOfParallelismNUD.Location = new System.Drawing.Point(44, 42);
             this.maxDegreeOfParallelismNUD.Minimum = new decimal( new int[] { 1, 0, 0, 0 } );
             this.maxDegreeOfParallelismNUD.Size = new System.Drawing.Size(89, 16);
@@ -69,8 +69,7 @@
             this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.Text = "share \"max download threads\"\r\nbetween all downloads-instance";          
             this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox.UseVisualStyleBackColor = true;
             toolTip.SetToolTip(this.shareMaxDownloadThreadsBetweenAllDownloadsInstanceCheckBox, "checked - share \"max download threads\" between all downloads-instance\r\n" +
-                                                                                 "unchecked - use \"max download threads\" per each downloads-instance" );
-
+                                                                                                "unchecked - use \"max download threads\" per each downloads-instance" );
             // 
             // maxCrossDownloadInstanceLabel
             // 
@@ -82,7 +81,7 @@
             // 
             // maxCrossDownloadInstanceNUD
             // 
-            this.maxCrossDownloadInstanceNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.maxCrossDownloadInstanceNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.maxCrossDownloadInstanceNUD.Location = new System.Drawing.Point(44, 55);
             this.maxCrossDownloadInstanceNUD.Minimum = new decimal( new int[] { 1, 0, 0, 0 } );
             this.maxCrossDownloadInstanceNUD.Size = new System.Drawing.Size(89, 16);
@@ -125,7 +124,7 @@
             // 
             // maxSpeedThresholdNUD
             // 
-            this.maxSpeedThresholdNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.maxSpeedThresholdNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.maxSpeedThresholdNUD.Location = new System.Drawing.Point(41, 75);            
             this.maxSpeedThresholdNUD.Size = new System.Drawing.Size(89, 16);
             this.maxSpeedThresholdNUD.TabIndex = 1;

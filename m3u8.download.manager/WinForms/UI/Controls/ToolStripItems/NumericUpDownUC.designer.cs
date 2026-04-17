@@ -32,7 +32,7 @@
             // 
             // numericUpDownEx
             // 
-            this.numericUpDownEx.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.numericUpDownEx.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.numericUpDownEx.Location = new System.Drawing.Point(3, 3);
             this.numericUpDownEx.Size = new System.Drawing.Size( 55, 16 );
             this.numericUpDownEx.TabIndex = 0;
