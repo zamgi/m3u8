@@ -24,9 +24,15 @@
     -->
   </Window.Styles>
   
-  <Grid>
-    <TabControl>
-      <TabItem x:Name="mainTabItem" Header=".m3u8 file url:">
+  <Grid RowDefinitions="*,auto">
+    <TabControl Grid.Row="0">
+      <TabItem x:Name="mainTabItem">
+        <TabItem.Header>
+            <DockPanel>
+                <Image Source="/Resources/m3u8_32x36.ico" Width="16" />
+			    <TextBlock Margin="5 0 0 0">.m3u8 file url:</TextBlock>
+            </DockPanel>
+        </TabItem.Header>
         <Grid Background="PowderBlue"
               Margin="5,0,5,5">
           <Grid Background="White"
@@ -89,17 +95,25 @@
             <local-ui:RequestLogUC x:Name="logUC" Grid.Row="1" 
                                    Margin="5,0" MinHeight="120"
                                    BorderBrush="LightGray" BorderThickness="1" />
-    
+            <!--
             <DockPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
               <Button x:Name="startDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" FontWeight="Bold" Margin="0,0,10,0">Start Download</Button>
               <Button x:Name="laterDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" Margin="10,0,0,0">Download later</Button>
             </DockPanel>
+            -->
             </Grid>
           </Grid>
         </Grid>
       </TabItem>
       
-      <TabItem x:Name="requestHeadersTabItem" Header="request header">
+      <TabItem x:Name="requestHeadersTabItem">
+        <TabItem.Header>
+            <DockPanel>
+                <Image Source="/Resources/listcheck.png" Width="16" />
+			    <TextBlock x:Name="requestHeadersTabItem_TextBlock" 
+                           Margin="5 0 0 0">request header</TextBlock>
+            </DockPanel>
+        </TabItem.Header>
         <Grid Background="PowderBlue"
               Margin="5,0,5,5">
           <Grid Background="White"
@@ -110,7 +124,32 @@
           </Grid>
         </Grid>
       </TabItem>
+
+      <TabItem x:Name="webProxyTabItem">
+        <TabItem.Header>
+            <DockPanel>
+                <Image Source="/Resources/workgroup_16x16.png" Width="16" />
+			    <TextBlock x:Name="webProxyTabItem_TextBlock" 
+                           Margin="5 0 0 0">web proxy</TextBlock>
+            </DockPanel>
+        </TabItem.Header>
+        <Grid Background="PowderBlue"
+              Margin="5,0,5,5">
+          <Grid Background="White"
+                Margin="2">
+            <DockPanel LastChildFill="True" Margin="0">
+              <local-ui:WebProxyUC x:Name="webProxyUC" />
+            </DockPanel>
+          </Grid>
+        </Grid>
+      </TabItem>
+
     </TabControl>
+
+    <DockPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
+        <Button x:Name="startDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" FontWeight="Bold" Margin="0,0,10,0">Start Download</Button>
+        <Button x:Name="laterDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" Margin="10,0,0,0">Download later</Button>
+    </DockPanel>
   </Grid>
   
 </Window>

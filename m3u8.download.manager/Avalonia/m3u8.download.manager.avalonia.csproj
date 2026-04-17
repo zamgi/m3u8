@@ -124,6 +124,12 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0-windows' ">
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.5" />
   </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Update="View\UC\WebProxyUC.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaResource>
+  </ItemGroup>
   
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

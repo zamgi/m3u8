@@ -108,7 +108,7 @@ namespace m3u8.download.manager.ui
             _Model = new LogListModel();
             logUC.SetModel( _Model );
 
-            set_WebProxyInfo( row.WebProxyInfo ); //set_WebProxyInfo( !row.UsedWebProxyAddress.IsNullOrWhiteSpace(), row.UsedWebProxyAddress );
+            set_WebProxyInfo( row.WebProxyInfo );
         }
 
         /// <summary>

@@ -97,7 +97,8 @@ namespace m3u8.download.manager.ui
         private bool _IsInWaitingForOtherAppInstanceFinished;
         public void WaitingForOtherAppInstanceFinished() => _IsInWaitingForOtherAppInstanceFinished = true;
 
-        public void SetCaptionText( string captionText, bool showPercentSteps = true ) => (_CaptionText, _ShowPercentSteps) = (captionText, showPercentSteps);
+        public void SetCaptionText( string captionText ) => _CaptionText = captionText;
+        public void SetCaptionText( string captionText, bool showPercentSteps ) => (_CaptionText, _ShowPercentSteps) = (captionText, showPercentSteps);
 
         public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, int visibleDelayInMilliseconds ) => Create( parent, cts, CAPTION_TEXT, visibleDelayInMilliseconds );
         public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, string captionText = CAPTION_TEXT, int? visibleDelayInMilliseconds = null )

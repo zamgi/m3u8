@@ -16,7 +16,7 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal readonly struct web_proxy_info
+    public/*internal*/ readonly struct web_proxy_info
     {
         public const string UriSchemeSocks5 = "socks5";
         

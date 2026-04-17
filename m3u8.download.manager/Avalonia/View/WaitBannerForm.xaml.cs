@@ -31,7 +31,8 @@ namespace m3u8.download.manager.ui
         private int      _TotalSteps;
         private int      _PercentSteps;
         private string   _SpeedText;
-        private int?     _VisibleDelayInMilliseconds;        
+        private int?     _VisibleDelayInMilliseconds;
+        private bool?    _ShowPercentSteps;
         #endregion
 
         #region [.ctor().]
@@ -85,8 +86,10 @@ namespace m3u8.download.manager.ui
                         _VisibleDelayInMilliseconds = null;
                     }
                 }
-                captionLabel .Text      = (_IsInWaitingForOtherAppInstanceFinished ? "...waiting for other app-instance finished..." : $"{_CaptionText}{_PercentSteps}%");
-                progressLabel.Text      = $"{_CurrentSteps} of {_TotalSteps}";
+                var showPercentSteps = _ShowPercentSteps.GetValueOrDefault( true );
+                captionLabel .Text      = (_IsInWaitingForOtherAppInstanceFinished ? "...waiting for other app-instance finished..."
+                                                                                   : (showPercentSteps ? $"{_CaptionText}{_PercentSteps}%" : _CaptionText));
+                progressLabel.Text      = ShowCurrentAndTotalSteps ? $"{_CurrentSteps} of {_TotalSteps}" : null;
                 elapsedLabel .Text      = '(' + ts.ToString( HH_MM_SS ) + ')';
                 speedLabel   .Text      = (_SpeedText.IsNullOrEmpty() ? null : ('[' + _SpeedText + ']'));
                 speedLabel   .IsVisible = !_SpeedText.IsNullOrEmpty();
@@ -102,6 +105,8 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public.]
+        public bool ShowCurrentAndTotalSteps { get; set; } = true;
+        public bool ShowPercentSteps { get => _ShowPercentSteps.GetValueOrDefault( true ); set => _ShowPercentSteps = value; }
         public void SetTotalSteps( int totalSteps ) => _TotalSteps = totalSteps;
         public void IncreaseSteps( string speedText )
         {            
@@ -116,6 +121,7 @@ namespace m3u8.download.manager.ui
         public void WaitingForOtherAppInstanceFinished() => _IsInWaitingForOtherAppInstanceFinished = true;
 
         public void SetCaptionText( string captionText ) => _CaptionText = captionText;
+        public void SetCaptionText( string captionText, bool showPercentSteps ) => (_CaptionText, _ShowPercentSteps) = (captionText, showPercentSteps);
 
         /// <summary>
         /// 

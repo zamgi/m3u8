@@ -98,7 +98,7 @@ namespace m3u8.download.manager
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
-                    var row = _VM.DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes) );
+                    var row = _VM.DownloadListModel.AddRow( f.GetParamsTuple() );
                     if ( f.AutoStartDownload )
                     {
                         _VM.DownloadController.Start( row );

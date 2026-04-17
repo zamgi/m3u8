@@ -1,0 +1,78 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local-ui="clr-namespace:m3u8.download.manager.ui"
+        mc:Ignorable="d"
+        x:Class="m3u8.download.manager.ui.WebProxyUC"
+        d:DesignWidth="580" d:DesignHeight="320"
+        Background="WhiteSmoke"
+        >
+  
+  <UserControl.Styles>
+
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="auto,60,auto,*" ColumnDefinitions="auto,auto" Margin="25, 15">
+    <TextBlock Grid.Row="0" Foreground="DodgerBlue" Margin="5 0 0 0">edit web proxy</TextBlock>
+    <Border Grid.Row="1" Grid.RowSpan="3" BorderBrush="LightGray" BorderThickness="1" 
+            VerticalAlignment="Top"
+            Padding="25, 15, 25, 50">
+        <StackPanel x:Name="editWebProxyStackPanel">
+            <CheckBox x:Name="torBrowserSocks5CheckBox" Background="White" Cursor="Hand"
+                        ToolTip.Tip="use predefined Tor Browser Socks5 web proxy">
+                <StackPanel Margin="5">
+                <TextBlock>Socks5 (Tor Browser)</TextBlock>
+                </StackPanel>
+            </CheckBox>
+
+            <CheckBox x:Name="torServerSocks5CheckBox" Background="White" Cursor="Hand"
+                        ToolTip.Tip="use predefined Tor Server Socks5 web proxy">
+                <StackPanel Margin="5">
+                <TextBlock>Socks5 (Tor Server)</TextBlock>
+                </StackPanel>
+            </CheckBox>
+
+            <CheckBox x:Name="socks5CheckBox" Background="White" Cursor="Hand"
+                        ToolTip.Tip="Socks5">
+                <StackPanel Margin="5">
+                <TextBlock>Socks5</TextBlock>
+                </StackPanel>
+            </CheckBox>
+
+            <CheckBox x:Name="httpCheckBox" Background="White" Cursor="Hand"
+                        ToolTip.Tip="HTTP">
+                <StackPanel Margin="5">
+                <TextBlock>HTTP</TextBlock>
+                </StackPanel>
+            </CheckBox>
+        </StackPanel>
+    </Border>
+
+    <TextBlock Grid.Row="0" Grid.Column="1" Foreground="DodgerBlue" Margin="15 0 0 0">address</TextBlock>
+    <Border Grid.Row="1" Grid.Column="1" BorderBrush="LightGray" BorderThickness="1" 
+            VerticalAlignment="Top"
+            Margin="10 0 0 0" Padding="15">
+        <StackPanel Orientation="Horizontal" Width="300">
+            <TextBox x:Name="addressTextBox" PlaceholderText="Hostname" Width="237"></TextBox>
+            <TextBox x:Name="portTextBox"    PlaceholderText="Port"     Width="60" Margin="5 0 0 0"></TextBox>
+        </StackPanel>
+    </Border>
+
+    <TextBlock Grid.Row="2" Grid.Column="1" Foreground="DodgerBlue" Margin="15 5 0 0">credentials (optional)</TextBlock>
+    <Border Grid.Row="3" Grid.Column="1" BorderBrush="LightGray" BorderThickness="1" 
+            VerticalAlignment="Top"
+            Margin="10 0 0 0" Padding="15">
+        <StackPanel Orientation="Horizontal" Width="300">
+            <StackPanel VerticalAlignment="Top">
+                <TextBox x:Name="userNameTextBox" PlaceholderText="Username" Width="237"></TextBox>
+                <TextBox x:Name="passwordTextBox" PlaceholderText="Password" Width="237" Margin="0 5 0 0"></TextBox>
+            </StackPanel>
+            <Button x:Name="testConnectionButton" Width="60" Margin="5 0 0 0" VerticalAlignment="Top" Cursor="Hand" IsVisible="false">
+                <TextBlock>test link...</TextBlock>                
+            </Button>
+        </StackPanel>
+    </Border>
+  </Grid>
+
+</UserControl>

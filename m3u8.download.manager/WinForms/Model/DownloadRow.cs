@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Security.Policy;
-
 
 //using _m3u8_processor_ = m3u8.m3u8_processor_adv;
-using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
+using _m3u8_processor_       = m3u8.m3u8_processor_adv__v2;
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
@@ -88,6 +85,7 @@ namespace m3u8.download.manager.models
             _PausedOrWaitElapsed               = r._PausedOrWaitElapsed;
             _DownloadBytesLength_BeforeRunning = r._DownloadBytesLength_BeforeRunning;
             RequestHeaders                     = r.RequestHeaders;
+            WebProxyInfo                       = r.WebProxyInfo;
 
             //Log = rows.AnyEx() ? new LogListModel( rows ) : new LogListModel( r.Log );
             Log = rows.AnyEx() ? new LogListModel( rows ) : new LogListModel();
@@ -112,7 +110,6 @@ namespace m3u8.download.manager.models
         private DateTime? _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
 
         public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; private set; }
-        //public string UsedWebProxyAddress { [M(O.AggressiveInlining)] get; private set; }
         public web_proxy_info WebProxyInfo { [M(O.AggressiveInlining)] get; private set; }
 
         public LogListModel Log { [M(O.AggressiveInlining)] get; }

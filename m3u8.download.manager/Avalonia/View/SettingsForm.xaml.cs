@@ -27,6 +27,7 @@ namespace m3u8.download.manager.ui
         {
             Parallelism,
             Other,
+            WebProxy,
             //More,
         }
 
@@ -304,19 +305,21 @@ namespace m3u8.download.manager.ui
             if ( settingsTab.HasValue )
             {
                 var parallelismTabItem = this.Find< TabItem >( "parallelismTabItem" );
-                var otherTabItem       = this.Find< TabItem >( "otherTabItem" );
+                var otherTabItem       = this.Find< TabItem >( "otherTabItem"       );
+                var webProxyTabItem    = this.Find< TabItem >( "webProxyTabItem"    );
                 switch ( settingsTab )
                 {
                     case SettingsTabEnum.Parallelism: ((TabControl) parallelismTabItem.Parent).SelectedItem = parallelismTabItem; break;
                     case SettingsTabEnum.Other      : ((TabControl) otherTabItem      .Parent).SelectedItem = otherTabItem;       break;
+                    case SettingsTabEnum.WebProxy   : ((TabControl) webProxyTabItem   .Parent).SelectedItem = webProxyTabItem;    break;
                 }
             }
         }
 
         private void InitializeComponent()
         {
-            this.Find< Button >( "okButton"     ).Click += (s, e) => OkButtonProcess();
-            this.Find< Button >( "cancelButton" ).Click += (s, e) => this.Close();
+            this.Find< Button >( "okButton"     ).Click += (_, _) => OkButtonProcess();
+            this.Find< Button >( "cancelButton" ).Click += (_, _) => this.Close();
         }
 
         protected override void OnOpened( EventArgs e )

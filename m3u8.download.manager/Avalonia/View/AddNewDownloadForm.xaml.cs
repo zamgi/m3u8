@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -48,7 +49,11 @@ namespace m3u8.download.manager.ui
 
         private TabItem              mainTabItem;
         private TabItem              requestHeadersTabItem;
-        private RequestHeadersEditor requestHeadersEditor;        
+        private TextBlock            requestHeadersTabItem_TextBlock;
+        private RequestHeadersEditor requestHeadersEditor;
+        private TabItem              webProxyTabItem;
+        private TextBlock            webProxyTabItem_TextBlock;
+        private WebProxyUC           webProxyUC;
         #endregion
 
         #region [.fields.]
@@ -68,15 +73,19 @@ namespace m3u8.download.manager.ui
         {
             AvaloniaXamlLoader.Load( this );
 
-            m3u8FileUrlTextBox     = this.Find< TextBox >( nameof(m3u8FileUrlTextBox) );
-            outputFileNameTextBox  = this.Find< TextBox >( nameof(outputFileNameTextBox) );
-            outputDirectoryTextBox = this.Find< TextBox >( nameof(outputDirectoryTextBox) );
-            logUC                  = this.Find< RequestLogUC >( nameof(logUC) );
-            mainTabItem            = this.Find< TabItem      >( nameof(mainTabItem) );
-            requestHeadersTabItem  = this.Find< TabItem      >( nameof(requestHeadersTabItem) );
-            requestHeadersEditor   = this.Find< RequestHeadersEditor >( nameof(requestHeadersEditor) ); 
+            m3u8FileUrlTextBox              = this.Find< TextBox >( nameof(m3u8FileUrlTextBox) );
+            outputFileNameTextBox           = this.Find< TextBox >( nameof(outputFileNameTextBox) );
+            outputDirectoryTextBox          = this.Find< TextBox >( nameof(outputDirectoryTextBox) );
+            logUC                           = this.Find< RequestLogUC >( nameof(logUC) );
+            mainTabItem                     = this.Find< TabItem      >( nameof(mainTabItem) );
+            requestHeadersTabItem           = this.Find< TabItem      >( nameof(requestHeadersTabItem) );
+            requestHeadersTabItem_TextBlock = this.Find< TextBlock    >( nameof(requestHeadersTabItem_TextBlock) );
+            requestHeadersEditor            = this.Find< RequestHeadersEditor >( nameof(requestHeadersEditor) ); 
             requestHeadersEditor.OnRequestHeadersCountChanged += requestHeadersEditor_OnRequestHeadersCountChanged;
             requestHeadersEditor.OnPageDown_N_PageUp          += () => OnKeyDown( new KeyEventArgs() { Key = Key.PageDown, KeyModifiers = KeyModifiers.Control } );
+            webProxyTabItem           = this.Find< TabItem    >( nameof(webProxyTabItem) );
+            webProxyTabItem_TextBlock = this.Find< TextBlock  >( nameof(webProxyTabItem_TextBlock) );
+            webProxyUC                = this.Find< WebProxyUC >( nameof(webProxyUC) ); webProxyUC.OnWebProxyChanged += webProxyUC_OnWebProxyChanged;
 
             patternOutputFileNameLabelCaption = this.Find< TextBlock     >( nameof(patternOutputFileNameLabelCaption) );
             patternOutputFileNameLabel        = this.Find< TextBlock     >( nameof(patternOutputFileNameLabel) );
@@ -102,6 +111,9 @@ namespace m3u8.download.manager.ui
             this.AttachDevTools();
 #endif
         }
+        /// <summary>
+        /// Edit
+        /// </summary>
         private AddNewDownloadForm( MainVM vm
             , DownloadRow row
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor ) : this()
@@ -117,7 +129,7 @@ namespace m3u8.download.manager.ui
 
             this.OutputFileName               = row.OutputFileName;
             this.OutputDirectory              = row.OutputDirectory;
-            this.IsLiveStream                 = row.IsLiveStream;
+            this.IsLiveStream                 = row.IsLiveStream; if ( row.IsLiveStream ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, null/*RoutedEventArgs.Empty*/ );
             this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;            
 
             #region [.if setted outputFileName.]
@@ -132,7 +144,12 @@ namespace m3u8.download.manager.ui
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
+
+            set_WebProxyInfo( row.WebProxyInfo );
         }
+        /// <summary>
+        /// Add
+        /// </summary>
         private AddNewDownloadForm( MainVM vm
             , string m3u8FileUrl
             , IDictionary< string, string > requestHeaders
@@ -160,6 +177,8 @@ namespace m3u8.download.manager.ui
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
+
+            set_WebProxyInfo( _SC.GetDefaultWebProxyInfo() );
 
             #region [.seriesInfo.]
             if ( seriesInfo.HasValue )
@@ -193,7 +212,8 @@ namespace m3u8.download.manager.ui
                 Title = $"Edit, / '{row.OutputFileName}' /",
             };
             f.startDownloadButton.Content = "Ok";
-            f.laterDownloadButton.Content = "Cancel";
+            f.laterDownloadButton.Content = "Cancel"; f.laterDownloadButton.Click -= f.laterDownloadButton_Click;
+            f.laterDownloadButton.Click += (_, _) => f.Close();
             f.Opened += (_, _) => f.setFocus2outputFileNameTextBox_Core();
             return (f);
         }
@@ -415,7 +435,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region [.Start Download.]
+        #region [.private method's.]
         private bool IsWaitBannerShown() => !this.IsEnabled;
 
         private async Task< bool > IsValid()
@@ -483,11 +503,11 @@ namespace m3u8.download.manager.ui
             using ( var cts = new CancellationTokenSource() )
             using ( WaitBannerForm.CreateAndShow( this, cts, visibleDelayInMilliseconds: 1_500 ) )
             {
-//await Task.Delay( 10_000 );
-                var webproxy = _SC.CreateWebProxyIfUsed();
-                _Model.AddBeginRequest2Log( this.M3u8FileUrl, webproxy.GetAddress(), requestHeaders, clearLog: false );
+                var webProxyInfo = webProxyUC.GetWebProxyInfo();
+                var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
+                _Model.AddBeginRequest2Log( this.M3u8FileUrl, webProxyInfo, requestHeaders, clearLog: false );
                 var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl, requestHeaders, 
-                    webproxy, _SC.Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
+                    webProxy, _SC.Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
 
                 if ( cts.IsCancellationRequested )
                 {
@@ -569,10 +589,31 @@ namespace m3u8.download.manager.ui
         }
 
         private void requestHeadersEditor_OnRequestHeadersCountChanged( int requestHeadersCount, int enabledCount )
-            => requestHeadersTabItem.Header = (requestHeadersCount == enabledCount) ? $"request headers ({requestHeadersCount})" : $"request headers ({enabledCount} of {requestHeadersCount})";
+            => requestHeadersTabItem_TextBlock.Text = (requestHeadersCount == enabledCount) ? $"request headers ({requestHeadersCount})" : $"request headers ({enabledCount} of {requestHeadersCount})";
+        #endregion
+
+        #region [.web-proxy.]
+        private void set_WebProxyInfo( in web_proxy_info webProxyInfo )
+        {
+            set_WebProxyTabPageText( webProxyInfo.UseWebProxy, webProxyInfo.GetWebProxyAddressText() );
+            webProxyUC.SetWebProxyInfo( webProxyInfo );
+        }
+        private void set_WebProxyTabPageText( bool useRequestWebProxy, string webProxyAddress )
+        {
+            webProxyTabItem_TextBlock.Text = "web proxy";
+
+            if ( useRequestWebProxy )
+            {
+                webProxyTabItem_TextBlock.Text += $" ({webProxyAddress.Cut( 70 )})"; //" (used)";
+            }
+        }
+        private void webProxyUC_OnWebProxyChanged( bool enabled, string addressRaw ) => set_WebProxyTabPageText( enabled, addressRaw );
         #endregion
 
         #region [.public methods.]
+        public DownloadRow_Definer_2 GetParamsTuple() => (this.M3u8FileUrl, this.GetRequestHeaders(), this.GetWebProxyInfo(),
+                                                          this.GetOutputFileName(), this.GetOutputDirectory(), 
+                                                          this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
         public bool Success { get; private set; }
         public bool AutoStartDownload => !_DownloadLater;
         public string M3u8FileUrl
@@ -596,6 +637,7 @@ namespace m3u8.download.manager.ui
         }       
         public string GetOutputDirectory() => this.OutputDirectory;
         public IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();
+        public web_proxy_info GetWebProxyInfo() => webProxyUC.GetWebProxyInfo();
         public  bool   IsLiveStream
         { 
             get => isLiveStreamCheckBox.IsChecked.GetValueOrDefault();

@@ -36,7 +36,7 @@ namespace m3u8.download.manager
                 await f.ShowDialogEx();
                 if ( f.Success && !row.Status.IsRunningOrPaused() )
                 {
-                    row.Update( f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes );
+                    row.Update( f.GetParamsTuple() );
                 }
             }
         }
