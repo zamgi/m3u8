@@ -27,11 +27,11 @@ namespace m3u8.download.manager
         public void Execute( object parameter ) => EditDownload( (DownloadRow) parameter );
         #endregion
 
-        public async void EditDownload( DownloadRow row )
+        public async void EditDownload( DownloadRow row, AddNewDownloadForm.TabPageKind? activeTabPageKind = null )
         {
             if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
 
-            var f = AddNewDownloadForm.Edit( _VM, row, _OutputFileNamePatternProcessor );
+            var f = AddNewDownloadForm.Edit( _VM, row, _OutputFileNamePatternProcessor, activeTabPageKind );
             {
                 await f.ShowDialogEx();
                 if ( f.Success && !row.Status.IsRunningOrPaused() )

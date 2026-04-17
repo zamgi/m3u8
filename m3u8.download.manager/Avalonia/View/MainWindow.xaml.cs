@@ -167,6 +167,7 @@ namespace m3u8.download.manager.ui
             downloadListUC.OutputFileNameClick        += downloadListUC_OutputFileNameClick;
             downloadListUC.OutputDirectoryClick       += downloadListUC_OutputDirectoryClick;
             downloadListUC.LiveStreamMaxFileSizeClick += downloadListUC_LiveStreamMaxFileSizeClick;
+            downloadListUC.WebProxyClick              += downloadListUC_WebProxyClick;
             downloadListUC.UpdatedSingleRunningRow    += downloadListUC_UpdatedSingleRunningRow;
             downloadListUC.MouseClickRightButton      += downloadListUC_MouseClickRightButton;
             downloadListUC.MouseClickColumnHeader     += downloadListUC_MouseClickColumnHeader;
@@ -1413,5 +1414,8 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
+        #region [.Web-Proxy settings for row.]
+        private void downloadListUC_WebProxyClick( DownloadRow row ) => _VM.EditCommand.EditDownload( row, AddNewDownloadForm.TabPageKind.WebProxyTabPage );
+        #endregion
     }
 }

@@ -26,6 +26,7 @@ namespace m3u8.download.manager
             EditCommand                        = new EditCommand( this );
             ParallelismCommand                 = new ParallelismCommand( this );
             SettingsCommand                    = new SettingsCommand( this );
+            WebProxyCommand                    = new WebProxyCommand( this );
             AboutCommand                       = new AboutCommand();
             FileNameExcludesWordsEditorCommand = new FileNameExcludesWordsEditorCommand( this );
             ColumnsVisibilityEditorCommand     = new ColumnsVisibilityEditorCommand( mainWindow );
@@ -51,6 +52,7 @@ namespace m3u8.download.manager
         public EditCommand                        EditCommand                        { get; }
         public ParallelismCommand                 ParallelismCommand                 { get; }
         public SettingsCommand                    SettingsCommand                    { get; }
+        public WebProxyCommand                    WebProxyCommand                    { get; }
         public AboutCommand                       AboutCommand                       { get; }
         public FileNameExcludesWordsEditorCommand FileNameExcludesWordsEditorCommand { get; }
         public ColumnsVisibilityEditorCommand     ColumnsVisibilityEditorCommand     { get; }

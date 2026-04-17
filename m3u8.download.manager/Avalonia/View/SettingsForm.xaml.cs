@@ -264,6 +264,19 @@ namespace m3u8.download.manager.ui
         #endregion
         #endregion
 
+        #region [.web-proxy.]
+        #region [.markup fields.]
+        private WebProxyUC webProxyUC;
+        #endregion
+
+        #region [.private methods.]
+        private void InitializeComponent_4_webProxy() => webProxyUC = this.Find< WebProxyUC >( nameof(webProxyUC) );
+        #endregion
+
+        public web_proxy_info GetWebProxyInfo() => webProxyUC.GetWebProxyInfo();
+        public void SetWebProxyInfo( in web_proxy_info t ) => webProxyUC.SetWebProxyInfo( t );
+        #endregion
+
         #region [.fields.]
         private DownloadController _DownloadController;
         #endregion
@@ -274,6 +287,7 @@ namespace m3u8.download.manager.ui
             AvaloniaXamlLoader.Load( this );
             this.InitializeComponent_4_parallelism();
             this.InitializeComponent_4_other();
+            this.InitializeComponent_4_webProxy();
             this.InitializeComponent();
 #if DEBUG
             this.AttachDevTools();

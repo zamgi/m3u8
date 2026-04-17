@@ -25,7 +25,7 @@
   </Window.Styles>
   
   <Grid RowDefinitions="*,auto">
-    <TabControl Grid.Row="0">
+    <TabControl x:Name="tabControl" Grid.Row="0">
       <TabItem x:Name="mainTabItem">
         <TabItem.Header>
             <DockPanel>
@@ -39,7 +39,7 @@
                 Margin="2">
             <Grid RowDefinitions="auto,*,auto">
             <StackPanel Margin="5" Grid.Row="0">
-              <TextBox x:Name="m3u8FileUrlTextBox" AcceptsReturn="True" TextWrapping="Wrap" Height="75"></TextBox>
+              <TextBox x:Name="m3u8FileUrlTextBox" AcceptsReturn="True" TextWrapping="Wrap" Height="75" PlaceholderText="m3u8 file url"></TextBox>
     
               <Grid RowDefinitions="auto,2,auto,2,auto" ColumnDefinitions="80,auto,auto,*,auto,auto,auto"
                     Margin="0,5,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
@@ -49,7 +49,7 @@
                            TextWrapping="Wrap" TextTrimming="CharacterEllipsis">
                   output file name :
                 </TextBlock>
-                <TextBox x:Name="outputFileNameTextBox"      Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="0,0,3,0"></TextBox>
+                <TextBox x:Name="outputFileNameTextBox"      Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="0,0,3,0" PlaceholderText="output file name"></TextBox>
                 <Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="4" Width="25" Cursor="Hand" Margin="0,0,3,0">&#x26CC;</Button>
                 <Button  x:Name="outputFileNameSelectButton" Grid.Row="0" Grid.Column="5" Width="25" Cursor="Hand" Margin="0,0,3,0">=</Button>
                 <!--=== pattern ===========================================-->
@@ -86,7 +86,7 @@
                            TextWrapping="Wrap" TextTrimming="CharacterEllipsis">
                   output directory :
                 </TextBlock>
-                <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" IsReadOnly="True" Margin="0,0,3,0"></TextBox>
+                <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" IsReadOnly="True" Margin="0,0,3,0" PlaceholderText="output directory"></TextBox>
                 <Button  x:Name="outputDirectorySelectButton" Grid.Row="4" Grid.Column="5" Width="25" Cursor="Hand" Margin="0,0,3,0">=</Button>
                 <Button  x:Name="loadM3u8FileContentButton"   Grid.Row="4" Grid.Column="6" Cursor="Hand" Margin="0">(load .m3u8 file-content)</Button>    
               </Grid>
@@ -137,9 +137,9 @@
               Margin="5,0,5,5">
           <Grid Background="White"
                 Margin="2">
-            <DockPanel LastChildFill="True" Margin="0">
-              <local-ui:WebProxyUC x:Name="webProxyUC" />
-            </DockPanel>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <local-ui:WebProxyUC x:Name="webProxyUC" />
+            </ScrollViewer>              
           </Grid>
         </Grid>
       </TabItem>

@@ -121,6 +121,8 @@ namespace m3u8.download.manager.models
 
         public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; private set; }
         public web_proxy_info WebProxyInfo { [M( O.AggressiveInlining )] get; private set; }
+        public bool UseWebProxy { [M(O.AggressiveInlining)] get => WebProxyInfo.UseWebProxy; }
+
 
         //--- USING FOR BINDING & UPDATE BINDING---//
         public DownloadRow MySelf { [M(O.AggressiveInlining)] get => this; }
@@ -234,7 +236,7 @@ namespace m3u8.download.manager.models
                 Fire_PropertyChanged_Events( nameof(MySelf) );
                 Fire_PropertyChanged_Events( nameof(Url) );
                 Fire_PropertyChanged_Events( nameof(RequestHeaders) );
-                Fire_PropertyChanged_Events( nameof(WebProxyInfo) );
+                Fire_PropertyChanged_Events( nameof(WebProxyInfo) ); Fire_PropertyChanged_Events( nameof(UseWebProxy) );
                 Fire_PropertyChanged_Events( nameof(OutputFileName) );
                 Fire_PropertyChanged_Events( nameof(OutputDirectory) );
                 Fire_PropertyChanged_Events( nameof(IsLiveStream) );

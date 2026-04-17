@@ -27,6 +27,16 @@ namespace m3u8.download.manager.ui
     /// </summary>
     public sealed class AddNewDownloadForm : Window, IDisposable
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum TabPageKind
+        {
+            MainTabPage,
+            RequestHeadersTabPage,
+            WebProxyTabPage,
+        }
+
         #region [.markup fields.]
         private TextBox m3u8FileUrlTextBox;
         private TextBox outputFileNameTextBox;
@@ -204,18 +214,35 @@ namespace m3u8.download.manager.ui
             , in (int n, int total)? seriesInfo = null ) => new AddNewDownloadForm( vm, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, seriesInfo );
         internal static AddNewDownloadForm Edit( MainVM vm
             , DownloadRow row
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor )
+            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
+            , TabPageKind? activeTabPageKind = null )
         {
             var f = new AddNewDownloadForm( vm, row, outputFileNamePatternProcessor )
             {
                 Icon  = new WindowIcon( ResourceLoader._GetResource_( "/Resources/edit.png" ) ),
                 Title = $"Edit, / '{row.OutputFileName}' /",
             };
+            f.SetActiveTabPageKind( activeTabPageKind );
             f.startDownloadButton.Content = "Ok";
             f.laterDownloadButton.Content = "Cancel"; f.laterDownloadButton.Click -= f.laterDownloadButton_Click;
             f.laterDownloadButton.Click += (_, _) => f.Close();
             f.Opened += (_, _) => f.setFocus2outputFileNameTextBox_Core();
             return (f);
+        }
+        private void SetActiveTabPageKind( TabPageKind? tabPageKind )
+        {
+            if ( tabPageKind.HasValue )
+            {
+                var tabControl = (mainTabItem.Parent as TabControl);
+                if ( tabControl == null ) this.Find< TabControl >( "tabControl" );
+                if ( tabControl != null )
+                switch ( tabPageKind )
+                {
+                    case TabPageKind.MainTabPage          : tabControl.SelectedItem = mainTabItem;           break;
+                    case TabPageKind.RequestHeadersTabPage: tabControl.SelectedItem = requestHeadersTabItem; break;
+                    case TabPageKind.WebProxyTabPage      : tabControl.SelectedItem = webProxyTabItem;       break;
+                }
+            }
         }
 
         #region [.override.]

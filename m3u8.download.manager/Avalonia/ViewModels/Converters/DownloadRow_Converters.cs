@@ -190,4 +190,23 @@ namespace m3u8.download.manager.ui
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
             => ((value is DownloadRow row) ? Convert2Text( row.RequestHeaders, lines_separator: "\r\n" ) : value);
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class WebProxy_Converter : _RequestHeaders_Converter_Base
+    {
+        public WebProxy_Converter() { }
+        public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
+            => ((value is DownloadRow row) ? row.WebProxyInfo.GetWebProxyAddressText() : value);
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class WebProxy_ToolTip_Converter : _RequestHeaders_Converter_Base
+    {
+        public WebProxy_ToolTip_Converter() { }
+        public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
+            => ((value is DownloadRow row) ? $"web proxy -> {row.WebProxyInfo.GetWebProxyAddressText()}" : value);
+    }
 }

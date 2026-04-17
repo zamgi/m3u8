@@ -129,7 +129,7 @@
           </MenuItem.Header>
         </MenuItem>        
         
-        <MenuItem Command="{Binding ParallelismCommand}" ToolTip.Tip="Parallelism settings" HorizontalAlignment="Right" Padding="0">
+        <MenuItem Command="{Binding ParallelismCommand}" ToolTip.Tip="Parallelism settings" HotKey="F4" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
             <Image Source="/Resources/dop_settings.ico" />
           </MenuItem.Header>
@@ -141,6 +141,12 @@
           </MenuItem.Header>
         </MenuItem>
         
+        <MenuItem Command="{Binding WebProxyCommand}" ToolTip.Tip="Default Web Proxy settings" HorizontalAlignment="Right" Padding="0">
+          <MenuItem.Header>
+            <Image Source="/Resources/workgroup_32x32.png" />
+          </MenuItem.Header>
+        </MenuItem>
+
         <MenuItem Command="{Binding AboutCommand}" ToolTip.Tip="About" HotKey="F1" HorizontalAlignment="Right" Padding="0">
           <MenuItem.Header>
             <Image Source="/Resources/menu/help.png" />

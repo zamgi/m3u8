@@ -44,6 +44,7 @@ namespace m3u8.download.manager.ui
         public event DownloadRowEventHandler            OutputFileNameClick;
         public event DownloadRowEventHandler            OutputDirectoryClick;
         public event DownloadRowEventHandler            LiveStreamMaxFileSizeClick;
+        public event DownloadRowEventHandler            WebProxyClick;
         public event MouseClickRightButtonEventHandler  MouseClickRightButton;
         public event MouseClickColumnHeaderEventHandler MouseClickColumnHeader;
         public event EventHandler                       DoubleClickEx;
@@ -358,15 +359,22 @@ namespace m3u8.download.manager.ui
                                 {                                    
                                     case OutputDirectory_Column_DisplayIndex: evnt = OutputDirectoryClick; break;
                                     case OutputFileName_Column_DisplayIndex:
-                                        if ( (pargs.Source is Image img) && (img.Name == "live_stream") && _Model[ rowIndex ].IsLiveStream )
+                                        if ( pargs.Source is Image img )
                                         {
-                                            evnt = LiveStreamMaxFileSizeClick;
-                                        }
-                                        else
-                                        {
-                                            evnt = OutputFileNameClick;
-                                        }
+                                            if ( (img.Name == "live_stream") && _Model[ rowIndex ].IsLiveStream )
+                                            {
+                                                evnt = LiveStreamMaxFileSizeClick;
+                                                break;
+                                            }
+                                            else if ( (img.Name == "web_proxy") && _Model[ rowIndex ].UseWebProxy )
+                                            {
+                                                evnt = WebProxyClick;
+                                                break;
+                                            }
+                                        }                                        
+                                        evnt = OutputFileNameClick;
                                         break;
+
                                     case LiveStreamMaxFileSize_Column_DisplayIndex:
                                         if ( _Model[ rowIndex ].IsLiveStream )
                                         {

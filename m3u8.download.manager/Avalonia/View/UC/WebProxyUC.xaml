@@ -13,7 +13,7 @@
 
   </UserControl.Styles>
 
-  <Grid RowDefinitions="auto,60,auto,*" ColumnDefinitions="auto,auto" Margin="25, 15">
+  <Grid RowDefinitions="auto,60,auto,*" ColumnDefinitions="auto,auto" Margin="25,15,0,0">
     <TextBlock Grid.Row="0" Foreground="DodgerBlue" Margin="5 0 0 0">edit web proxy</TextBlock>
     <Border Grid.Row="1" Grid.RowSpan="3" BorderBrush="LightGray" BorderThickness="1" 
             VerticalAlignment="Top"

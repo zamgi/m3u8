@@ -24,7 +24,8 @@ namespace m3u8.download.manager
         {
             var f = new SettingsForm( vm, settingsTab );
             {
-                var st = vm.SettingsController.Settings;
+                var sc = vm.SettingsController;
+                var st = sc.Settings;
 
                 #region [.parallelism.]
                 f.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
@@ -42,6 +43,10 @@ namespace m3u8.download.manager
                 f.OutputFileExtension                    = st.OutputFileExtension;
                 f.UniqueUrlsOnly                         = st.UniqueUrlsOnly;
                 f.IgnoreHostHttpHeader                   = st.IgnoreHostHttpHeader;
+                #endregion
+
+                #region [.web-proxy.]
+                f.SetWebProxyInfo( sc.GetDefaultWebProxyInfo() );
                 #endregion
 
                 await f.ShowDialogEx();
@@ -67,7 +72,11 @@ namespace m3u8.download.manager
                     st.IgnoreHostHttpHeader                   = f.IgnoreHostHttpHeader;
                     #endregion
 
-                    vm.SettingsController.SaveNoThrow_IfAnyChanged();
+                    #region [.web-proxy.]
+                    sc.SetDefaultWebProxyInfo( f.GetWebProxyInfo() );
+                    #endregion
+
+                    sc.SaveNoThrow_IfAnyChanged();
                 }
             }
         }
