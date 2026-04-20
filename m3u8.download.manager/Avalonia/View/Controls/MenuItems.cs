@@ -157,7 +157,7 @@ namespace m3u8.download.manager.ui
     {
         public DownloadInstanceMenuItem() { }
 
-        protected override Bitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/downloadInstance.ico" ) );
+        protected override Bitmap MainImage          => new Bitmap( ResourceLoader._GetResource_( "/Resources/download_inst.ico" ) );
         protected override string MainToolTipText    => "downloads instance count";
         protected override IBrush MainForeground     => Brushes.DodgerBlue;
         protected override IBrush SelectedBackground => Brushes.LightBlue;
