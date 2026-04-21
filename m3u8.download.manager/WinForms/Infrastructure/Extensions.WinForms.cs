@@ -162,5 +162,25 @@ namespace m3u8.download.manager
             var field = typeof(T).GetProperty( "DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance );
             field?.SetValue( t, doubleBuffered );
         }
+
+        //[M(O.AggressiveInlining)] public static void PaintAll( this DataGridViewCellPaintingEventArgs e ) => e.Paint( e.ClipBounds, DataGridViewPaintParts.All );
+        [M(O.AggressiveInlining)] public static void PaintEx( this DataGridViewCellPaintingEventArgs e, DataGridViewPaintParts paintParts ) => e.Paint( e.ClipBounds, paintParts );
+        [M(O.AggressiveInlining)] public static DataGridViewCellPaintingEventArgs Create( this DataGridViewCellPaintingEventArgs e
+            , DataGridView DGV, in Rectangle cellBounds ) => 
+            new DataGridViewCellPaintingEventArgs(
+                            DGV,
+                            e.Graphics,
+                            e.ClipBounds,
+                            cellBounds,
+                            e.RowIndex,
+                            e.ColumnIndex,
+                            e.State,
+                            e.Value,
+                            e.FormattedValue,
+                            e.ErrorText,
+                            e.CellStyle,
+                            e.AdvancedBorderStyle,
+                            e.PaintParts
+                        );
     }
 }

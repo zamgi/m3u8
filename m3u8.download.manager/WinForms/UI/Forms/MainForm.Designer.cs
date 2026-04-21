@@ -28,18 +28,19 @@ namespace m3u8.download.manager.ui
             System.Windows.Forms.ToolStripSeparator s7 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s8 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s9 = new System.Windows.Forms.ToolStripSeparator();
+            System.Windows.Forms.ToolStripSeparator s10 = new System.Windows.Forms.ToolStripSeparator();
 
             System.Windows.Forms.ToolStripSeparator s20 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s21 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s22 = new System.Windows.Forms.ToolStripSeparator();
             System.Windows.Forms.ToolStripSeparator s23 = new System.Windows.Forms.ToolStripSeparator();
-            System.Windows.Forms.ToolStripSeparator s24 = new System.Windows.Forms.ToolStripSeparator();
 
             this.mainToolStrip = new System.Windows.Forms.ToolStrip();
             this.addNewDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.startDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.pauseDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.cancelDownloadToolButton = new System.Windows.Forms.ToolStripButton();
+            this.editDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.deleteDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.deleteAllFinishedDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.undoToolButton = new System.Windows.Forms.ToolStripButton();
@@ -74,6 +75,7 @@ namespace m3u8.download.manager.ui
             this.openOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputFilesWithExternalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeOutputDirectoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeOutputDirectoryMenuItem_Separator = new System.Windows.Forms.ToolStripSeparator();
             this.deleteAllFinishedDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.startAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pauseAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -101,22 +103,24 @@ namespace m3u8.download.manager.ui
                 this.pauseDownloadToolButton,
                 this.cancelDownloadToolButton,
                 s2,
+                this.editDownloadToolButton,
+                s3,
                 this.deleteDownloadToolButton,
                 this.deleteAllFinishedDownloadToolButton,
-                s3,
-                this.undoToolButton,
                 s4,
-                this.showLogToolButton,
+                this.undoToolButton,
                 s5,
+                this.showLogToolButton,
+                s6,
                 this.copyToolButton,
                 this.pasteToolButton,
-                s6,
-                this.degreeOfParallelismToolButton,
                 s7,
-                this.downloadInstanceToolButton,
+                this.degreeOfParallelismToolButton,
                 s8,
-                this.speedThresholdToolButton,
+                this.downloadInstanceToolButton,
                 s9,
+                this.speedThresholdToolButton,
+                s10,
                 this.aboutToolButton,
                 this.webProxyInfoSettingsToolButton,
                 this.otherSettingsToolButton,                
@@ -160,6 +164,15 @@ namespace m3u8.download.manager.ui
             this.cancelDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cancelDownloadToolButton.ToolTipText = "Cancel download  (Ctrl + X)";
             this.cancelDownloadToolButton.Click += new System.EventHandler(this.cancelDownloadToolButton_Click);
+            // 
+            // editDownloadToolButton
+            // 
+            this.editDownloadToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.editDownloadToolButton.Enabled = false;
+            this.editDownloadToolButton.Image = global::m3u8.download.manager.Properties.Resources.edit;
+            this.editDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.editDownloadToolButton.ToolTipText = "Edit download  (Ctrl + E)";
+            this.editDownloadToolButton.Click += new System.EventHandler(this.editDownloadMenuItem_Click);
             // 
             // deleteDownloadToolButton
             // 
@@ -323,7 +336,7 @@ namespace m3u8.download.manager.ui
                 this.startDownloadMenuItem,
                 this.pauseDownloadMenuItem,
                 this.cancelDownloadMenuItem,
-
+                
                 this.editDownloadMenuItem_Separator,
                 this.editDownloadMenuItem,
                 s20,
@@ -331,18 +344,19 @@ namespace m3u8.download.manager.ui
                 this.deleteWithOutputFileMenuItem,
                 this.onlyDeleteOutputFileMenuItem,
                 this.moreOpMenuItem,
-                s21,
+                
+                this.changeOutputDirectoryMenuItem_Separator,
                 this.browseOutputFileMenuItem,
                 this.openOutputFileMenuItem,
                 this.openOutputFilesWithExternalMenuItem,
                 this.changeOutputDirectoryMenuItem,
-                s22,
+                s21,
                 this.deleteAllFinishedDownloadMenuItem,
-                s23,
+                s22,
                 this.startAllDownloadsMenuItem,
                 this.pauseAllDownloadsMenuItem,
                 this.cancelAllDownloadsMenuItem,
-                s24,
+                s23,
                 this.deleteAllDownloadsMenuItem,
                 this.deleteAllWithOutputFilesMenuItem
             });
@@ -511,6 +525,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ToolStripButton startDownloadToolButton;
         private System.Windows.Forms.ToolStripButton pauseDownloadToolButton;
         private System.Windows.Forms.ToolStripButton cancelDownloadToolButton;
+        private System.Windows.Forms.ToolStripButton editDownloadToolButton;
         private System.Windows.Forms.ToolStripButton deleteDownloadToolButton;
         private System.Windows.Forms.ToolStripButton deleteAllFinishedDownloadToolButton;
         private System.Windows.Forms.ToolStripButton undoToolButton;
@@ -547,6 +562,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ToolStripMenuItem openOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFilesWithExternalMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeOutputDirectoryMenuItem;
+        private System.Windows.Forms.ToolStripSeparator changeOutputDirectoryMenuItem_Separator;
         private System.Windows.Forms.ToolStripMenuItem deleteAllFinishedDownloadMenuItem;       
         private System.Windows.Forms.ToolStripMenuItem startAllDownloadsMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pauseAllDownloadsMenuItem;

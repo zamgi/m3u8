@@ -1338,19 +1338,22 @@ namespace m3u8.download.manager.ui
                     }
                     #endregion
 
+                    #region [.-6.1- draw-check-mark.]
                     var isDrawCheckMark = (IsDrawCheckMark?.Invoke( row ) == true);
-
-                    #region [.-5- status text.]
-                    const int OFFSET = 18;
-                    rc = e.CellBounds; rc.X += OFFSET; rc.Width -= OFFSET + (isDrawCheckMark ? 12 : 0); //rc.Inflate( -OFFSET, 0 );
-                    gr.DrawString( row.Status.ToString(), DGV.Font, Brushes.Black, rc, _SF_Left );
                     #endregion
 
-                    #region [.-6- draw-check-mark.]
+                    #region [.-5- status text.]
+                    var defCellFont = DGV.DefaultCellStyle.Font ?? DGV.Font;
+
+                    rc = e.CellBounds; rc.X += STATUS_TEXT_OFFSET_X; rc.Width -= STATUS_TEXT_OFFSET_X + (isDrawCheckMark ? CHECK_MARK_WIDTH : 0); //rc.Inflate( -OFFSET, 0 );
+                    gr.DrawString( row.Status.ToString(), defCellFont, Brushes.Black, rc, _SF_Left );
+                    #endregion
+
+                    #region [.-6.2- draw-check-mark.]
                     if ( isDrawCheckMark )
                     {
                         rc = e.CellBounds; //rc.Inflate( -2, 0 );
-                        gr.DrawString( "\u2713", DGV.Font, Brushes.Green, rc, _SF_Right );
+                        gr.DrawString( "\u2713", defCellFont, Brushes.Green, rc, _SF_Right );
                     }
                     #endregion
                 }
@@ -1403,7 +1406,9 @@ namespace m3u8.download.manager.ui
                         sf           = _SF_Left;
                         progressText = "-";
                     }
-                    gr.DrawString( progressText, DGV.Font, Brushes.Black, rc, sf );
+
+                    var defCellFont = DGV.DefaultCellStyle.Font ?? DGV.Font;
+                    gr.DrawString( progressText, defCellFont, Brushes.Black, rc, sf );
                     #endregion
                 }
                 break;
@@ -1415,21 +1420,51 @@ namespace m3u8.download.manager.ui
                     var useWebProxy = row.WebProxyInfo.UseWebProxy;
                     if ( row.IsLiveStream || useWebProxy )
                     {
-                        e.Handled = true;
-                        e.Paint( e.ClipBounds, DataGridViewPaintParts.All );
+                        const DataGridViewPaintParts BackgroundAndBorder = DataGridViewPaintParts.Background | DataGridViewPaintParts.SelectionBackground | DataGridViewPaintParts.Border;
 
-                        var isLiveStreamRect = GetIsLiveStreamImageRect( e.CellBounds );
+                        e.Handled = true;
+                        e.PaintEx( BackgroundAndBorder );
+
+                        var cellBounds = e.CellBounds;
+                        var rc_IsLiveStream = GetIsLiveStreamImageRect( e.CellBounds );
+                        var rc_useWebProxy  = rc_IsLiveStream;
+                        if ( row.IsLiveStream && useWebProxy )
+                        {
+                            MakeUseWebProxyImageRect( ref rc_useWebProxy );
+                        }
+
+                        cellBounds.Width = rc_useWebProxy.X - cellBounds.X;
+                        var ee = e.Create( DGV, cellBounds );
+                        ee.PaintEx( DataGridViewPaintParts.All & ~BackgroundAndBorder );
+
                         if ( row.IsLiveStream )
                         {
-                            e.Graphics.FillRectangle( Brushes.White, isLiveStreamRect );
-                            e.Graphics.DrawImage( Resources.live_stream, isLiveStreamRect );
-                            MakeUseWebProxyImageRect( ref isLiveStreamRect );
+                            e.Graphics.FillRectangle( Brushes.White, rc_IsLiveStream );
+                            e.Graphics.DrawImage( Resources.live_stream, rc_IsLiveStream );
                         }
                         if ( useWebProxy )
                         {
-                            e.Graphics.FillRectangle( Brushes.White, isLiveStreamRect );
-                            e.Graphics.DrawImage( Resources.workgroup_16x16, isLiveStreamRect );
+                            e.Graphics.FillRectangle( Brushes.White, rc_useWebProxy );
+                            e.Graphics.DrawImage( Resources.workgroup_16x16, rc_useWebProxy );
                         }
+
+                        #region comm.
+                        //e.Handled = true;
+                        //e.PaintEx( DataGridViewPaintParts.All );
+                        //
+                        //var rc = GetIsLiveStreamImageRect( e.CellBounds );
+                        //if ( row.IsLiveStream )
+                        //{
+                        //    e.Graphics.FillRectangle( Brushes.White, rc );
+                        //    e.Graphics.DrawImage( Resources.live_stream, rc );
+                        //    MakeUseWebProxyImageRect( ref rc );
+                        //}
+                        //if ( useWebProxy )
+                        //{
+                        //    e.Graphics.FillRectangle( Brushes.White, rc );
+                        //    e.Graphics.DrawImage( Resources.workgroup_16x16, rc );
+                        //}
+                        #endregion
                     }
 
                     Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );
@@ -1439,10 +1474,80 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private const int IMAGE_HEIGHT = 16;
+        private const int STATUS_TEXT_OFFSET_X = 18, CHECK_MARK_WIDTH = 12;
+        private const int IMAGE_HEIGHT = 16, IsLiveStream_IMAGE_PAD_RIGHT = 5, UseWebProxy_IMAGE_PAD_RIGHT = 3;
         [M(O.AggressiveInlining)] private static Rectangle GetIsLiveStreamImageRect( in Rectangle cellClipBounds )
-            => new Rectangle( cellClipBounds.Right - IMAGE_HEIGHT - 5, cellClipBounds.Y + (cellClipBounds.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
-        [M(O.AggressiveInlining)] private static void MakeUseWebProxyImageRect( ref Rectangle isLiveStreamRect ) => isLiveStreamRect.X -= IMAGE_HEIGHT + 3;
+            => new Rectangle( cellClipBounds.Right - (IMAGE_HEIGHT + IsLiveStream_IMAGE_PAD_RIGHT), cellClipBounds.Y + (cellClipBounds.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
+        [M(O.AggressiveInlining)] private static void MakeUseWebProxyImageRect( ref Rectangle isLiveStreamRect ) => isLiveStreamRect.X -= IMAGE_HEIGHT + UseWebProxy_IMAGE_PAD_RIGHT;
+
+        private void DGV_ColumnDividerDoubleClick( object sender, DataGridViewColumnDividerDoubleClickEventArgs e )
+        {
+            switch ( e.ColumnIndex )
+            {
+                case STATUS_COLUMN_INDEX:
+                    e.Handled = true;
+                    using ( var sf = StringFormat.GenericDefault )
+                    AutoSizeColumnWidth( e.ColumnIndex, sf, r => r.Status.ToString(), 
+                        r => (IsDrawCheckMark?.Invoke( r ) == true) ? /*IMAGE_HEIGHT*/CHECK_MARK_WIDTH : 0, STATUS_TEXT_OFFSET_X );
+                    break;
+
+                //case DOWNLOAD_PROGRESS_COLUMN_INDEX:
+                //    e.Handled = true;
+                //    using ( var sf = StringFormat.GenericDefault )
+                //    AutoSizeColumnWidth( e.ColumnIndex, sf, r => TryGetDownloadProgress( r, out _, out var progressText ) ? progressText : "-", _ => false, 0, unconditionalIncreaseWidth: 66 );
+                //    break;
+
+                case OUTPUTFILENAME_COLUMN_INDEX:
+                    e.Handled = true;
+                    using ( var sf = StringFormat.GenericTypographic )
+                    AutoSizeColumnWidth( e.ColumnIndex, sf, r => r.OutputFileName, 
+                        r => {
+                            var w = 0;
+                            if ( r.IsLiveStream )
+                            {
+                                w += IMAGE_HEIGHT + IsLiveStream_IMAGE_PAD_RIGHT;
+                                if ( r.WebProxyInfo.UseWebProxy ) w += IMAGE_HEIGHT + UseWebProxy_IMAGE_PAD_RIGHT;
+                            }
+                            else if ( r.WebProxyInfo.UseWebProxy ) w += IMAGE_HEIGHT + IsLiveStream_IMAGE_PAD_RIGHT;
+                            return (w);
+                        },
+                        unconditionalIncreaseWidth: -10
+                    );
+                    break;
+            }
+        }
+        private void AutoSizeColumnWidth( int columnIndex
+            , StringFormat stringFormat
+            , Func< DownloadRow, string > getValueFunc
+            , Func< DownloadRow, int > getIncreaseWidth
+            , int unconditionalIncreaseWidth = 0 )
+        {
+            using var gr = Graphics.FromHwnd( DGV.Handle );
+
+            var rows = _Model.GetRows();
+            var dgvRows = DGV.Rows;
+            var defCellFont = DGV.DefaultCellStyle.Font ?? DGV.Font;
+            var max_width = 0f;
+            for ( var i = rows.Count - 1; 0 <= i; i-- )
+            {
+                var r = rows[ i ];
+
+                var dgvRow  = dgvRows[ i ];
+                var dgvCell = dgvRow.Cells[ columnIndex ];
+                var font    = dgvCell.Style.Font ?? dgvRow.DefaultCellStyle.Font ?? defCellFont;
+
+                var width = gr.MeasureString( getValueFunc( r ), font, Point.Empty, stringFormat ).Width + unconditionalIncreaseWidth;
+                width += getIncreaseWidth( r );
+                if ( max_width < width )
+                {
+                    max_width = width;
+                }
+            }
+
+            var col = DGV.Columns[ columnIndex ];
+            //var max_width = col.GetPreferredWidth( DataGridViewAutoSizeColumnMode.AllCells, fixedHeight: true );
+            col.Width = (int) (max_width + 0.5f);
+        }
 
         private void DGV_ColumnHeaderMouseClick( object sender, DataGridViewCellMouseEventArgs e )
         {

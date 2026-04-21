@@ -100,6 +100,7 @@
             this.DGV.CellMouseLeave += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_CellMouseLeave);
             this.DGV.CellMouseMove += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DGV_CellMouseMove);
             this.DGV.ColumnHeaderMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.DGV_ColumnHeaderMouseClick);
+            this.DGV.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.DGV_ColumnDividerDoubleClick);
             this.DGV.MouseDown +=new System.Windows.Forms.MouseEventHandler(this.DGV_MouseDown);
             this.DGV.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseClick);
             this.DGV.DoubleClick += new System.EventHandler(this.DGV_DoubleClick);

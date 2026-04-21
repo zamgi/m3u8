@@ -793,7 +793,8 @@ namespace m3u8.download.manager.ui
                 startDownloadToolButton.Enabled =
                     cancelDownloadToolButton.Enabled =
                         pauseDownloadToolButton.Enabled =
-                            deleteDownloadToolButton.Enabled = false;
+                            deleteDownloadToolButton.Enabled =
+                                editDownloadToolButton.Enabled = false;
                 deleteAllFinishedDownloadToolButton.Enabled = _DownloadListModel.HasAnyFinished();
             }
             else
@@ -802,6 +803,7 @@ namespace m3u8.download.manager.ui
                 startDownloadToolButton .Enabled = StartDownload_IsAllowed ( status );
                 cancelDownloadToolButton.Enabled = CancelDownload_IsAllowed( status );
                 pauseDownloadToolButton .Enabled = PauseDownload_IsAllowed ( status );
+                editDownloadToolButton  .Enabled = !status.IsRunningOrPaused(); //EditDownload_IsAllowed  ( status );
 
                 deleteDownloadToolButton.Enabled = true;
                 deleteAllFinishedDownloadToolButton.Enabled = (status.IsFinished() || _DownloadListModel.HasAnyFinished());
@@ -1431,7 +1433,8 @@ namespace m3u8.download.manager.ui
                         openOutputFilesWithExternalMenuItem.CheckState = CheckState.Unchecked;
                     }
 
-                    changeOutputDirectoryMenuItem.Visible = true;// (from r in rows where !r.IsFinished() select selectedRow).Any();
+                    changeOutputDirectoryMenuItem.Visible =
+                        changeOutputDirectoryMenuItem_Separator.Visible = true;// (from r in rows where !r.IsFinished() select selectedRow).Any();
                     #endregion
 
                     #region [.onlyDeleteOutputFileMenuItem.]
@@ -1454,7 +1457,8 @@ namespace m3u8.download.manager.ui
                 else
                 {
                     changeOutputDirectoryMenuItem.Visible =
-                        openOutputFilesWithExternalMenuItem.Visible = false;
+                        changeOutputDirectoryMenuItem_Separator.Visible =
+                            openOutputFilesWithExternalMenuItem.Visible = false;
 
                     onlyDeleteOutputFileMenuItem.Enabled = false;
 
@@ -1833,6 +1837,11 @@ namespace m3u8.download.manager.ui
                                                                                                            (status == DownloadStatus.Paused  );
         [M(O.AggressiveInlining)] private static bool PauseDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Started ) ||
                                                                                                            (status == DownloadStatus.Running );
+        //[M(O.AggressiveInlining)] private static bool EditDownload_IsAllowed( DownloadStatus status ) => (status == DownloadStatus.Created ) ||
+        //                                                                                                 //(status == DownloadStatus.Paused  ) ||
+        //                                                                                                 (status == DownloadStatus.Canceled) ||
+        //                                                                                                 (status == DownloadStatus.Finished) ||
+        //                                                                                                 (status == DownloadStatus.Error   );
         #endregion
 
         #region [.Collect_Garbage.]
