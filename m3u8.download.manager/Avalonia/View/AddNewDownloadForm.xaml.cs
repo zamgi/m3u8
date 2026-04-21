@@ -532,7 +532,7 @@ namespace m3u8.download.manager.ui
             {
                 var webProxyInfo = webProxyUC.GetWebProxyInfo();
                 var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
-                _Model.AddBeginRequest2Log( this.M3u8FileUrl, webProxyInfo, requestHeaders, clearLog: false );
+                _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, webProxyInfo, clearLog: false );
                 var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl, requestHeaders, 
                     webProxy, _SC.Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
 

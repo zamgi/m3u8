@@ -1136,8 +1136,8 @@ namespace m3u8.download.manager.controllers
     /// </summary>
     internal static class DownloadControllerExtensions
     {
-        public static void AddBeginRequest2Log( this DownloadRow row, bool clearLog = true ) => row.Log.AddBeginRequest2Log( row.Url, row.WebProxyInfo, row.RequestHeaders, clearLog );
-        public static void AddBeginRequest2Log( this LogListModel log, string url, in web_proxy_info webProxyInfo, IDictionary< string, string > requestHeaders, bool clearLog = true )
+        public static void AddBeginRequest2Log( this DownloadRow row, bool clearLog = true ) => row.Log.AddBeginRequest2Log( row.Url, row.RequestHeaders, row.WebProxyInfo, clearLog );
+        public static void AddBeginRequest2Log( this LogListModel log, string url, IDictionary< string, string > requestHeaders, in web_proxy_info webProxyInfo, bool clearLog = true )
         {
             if ( clearLog ) log.Clear();
             log.AddRequestRow( "url:" );

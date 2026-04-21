@@ -220,8 +220,8 @@ namespace m3u8.infrastructure
                 public int GetHashCode( tuple_t t ) => t.Timeout.GetHashCode() ^ (t.WebProxy.GetAddressUri()?.GetHashCode() ?? 0);
             }
 
-            private tuple_t( TimeSpan timeout ) => Timeout = timeout;
-            public tuple_t( TimeSpan timeout, in (HttpClient httpClient, IWebProxy WebProxy) x ) => (Timeout, HttpClient, WebProxy, RefCount) = (timeout, x.httpClient, x.WebProxy, 0);
+            private tuple_t( IWebProxy webProxy, TimeSpan timeout ) => (WebProxy, Timeout) = (webProxy, timeout);
+            public tuple_t( in (HttpClient httpClient, IWebProxy WebProxy) x, TimeSpan timeout ) => (HttpClient, WebProxy, Timeout, RefCount) = (x.httpClient, x.WebProxy, timeout, 0);
 
             public TimeSpan   Timeout    { get; }
             public HttpClient HttpClient { get; }
@@ -231,7 +231,7 @@ namespace m3u8.infrastructure
             public int IncrementRefCount() => ++RefCount;
             public int DecrementRefCount() => --RefCount;
 
-            public static tuple_t key( TimeSpan? timeout ) => new tuple_t( timeout.GetValueOrDefault( TimeSpan.Zero ) );
+            public static tuple_t key( IWebProxy webProxy, TimeSpan? timeout ) => new tuple_t( webProxy, timeout.GetValueOrDefault( TimeSpan.Zero ) );
 #if DEBUG
             public override string ToString() => $"{Timeout}, (ref: {RefCount})";
 #endif
@@ -357,12 +357,12 @@ namespace m3u8.infrastructure
         public static (HttpClient, IWebProxy, IDisposable) Get( in init_params ip ) => Get( ip.WebProxy, ip.Timeout );
         public static (HttpClient, IWebProxy, IDisposable) Get( IWebProxy webProxy, in TimeSpan? timeout = null )
         {
-            var key = tuple_t.key( timeout );
+            var key = tuple_t.key( webProxy, timeout );
             lock ( _LRUCache )
             {
                 if ( !_LRUCache.TryGetValue( key, out var t ) )
                 {
-                    t = new tuple_t( key.Timeout, CreateHttpClient( webProxy, in timeout ) );
+                    t = new tuple_t( CreateHttpClient( webProxy, in timeout ), key.Timeout );
                     _LRUCache.Add( t );
                 }
                 t.IncrementRefCount();
