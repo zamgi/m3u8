@@ -1338,13 +1338,16 @@ namespace m3u8.download.manager.ui
                     }
                     #endregion
 
+                    var isDrawCheckMark = (IsDrawCheckMark?.Invoke( row ) == true);
+
                     #region [.-5- status text.]
-                    rc = e.CellBounds; rc.Inflate( -22, 0 );
+                    const int OFFSET = 18;
+                    rc = e.CellBounds; rc.X += OFFSET; rc.Width -= OFFSET + (isDrawCheckMark ? 12 : 0); //rc.Inflate( -OFFSET, 0 );
                     gr.DrawString( row.Status.ToString(), DGV.Font, Brushes.Black, rc, _SF_Left );
                     #endregion
 
                     #region [.-6- draw-check-mark.]
-                    if ( (IsDrawCheckMark != null) && IsDrawCheckMark( row ) )
+                    if ( isDrawCheckMark )
                     {
                         rc = e.CellBounds; //rc.Inflate( -2, 0 );
                         gr.DrawString( "\u2713", DGV.Font, Brushes.Green, rc, _SF_Right );
@@ -1418,11 +1421,13 @@ namespace m3u8.download.manager.ui
                         var isLiveStreamRect = GetIsLiveStreamImageRect( e.CellBounds );
                         if ( row.IsLiveStream )
                         {
+                            e.Graphics.FillRectangle( Brushes.White, isLiveStreamRect );
                             e.Graphics.DrawImage( Resources.live_stream, isLiveStreamRect );
                             MakeUseWebProxyImageRect( ref isLiveStreamRect );
                         }
                         if ( useWebProxy )
-                        {                        
+                        {
+                            e.Graphics.FillRectangle( Brushes.White, isLiveStreamRect );
                             e.Graphics.DrawImage( Resources.workgroup_16x16, isLiveStreamRect );
                         }
                     }

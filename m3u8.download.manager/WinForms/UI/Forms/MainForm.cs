@@ -1563,10 +1563,10 @@ namespace m3u8.download.manager.ui
                                    where t.success
                                    select t.outputFileName
                                   )
-                                  .ToArray();
-            if ( outputFileNames.Any() )
+                                  .ToList( rows.Count );
+            if ( outputFileNames.AnyEx() )
             {
-                var buf = new StringBuilder( 0x100 * outputFileNames.Length );
+                var buf = new StringBuilder( 0x100 * outputFileNames.Count );
                 foreach ( var fn in outputFileNames )
                 {
                     buf.Append( '"' ).Append( fn ).Append( '"' ).Append( ' ' );
@@ -1575,12 +1575,22 @@ namespace m3u8.download.manager.ui
 
                 ExternalProg_Run( externalProgFilePath, args );
             }
-
-            var outputFileNamesQueue = (from row in rows
-                                        where !row.IsFinishedOrErrorOrCreated()
-                                        select row.GetOutputFullFileName()
-                                       ).ToList( rows.Count );
-            if ( outputFileNamesQueue.Any() )
+            #region comm.
+            //var outputFileNamesQueue = (from row in rows
+            //                            let suc = row.Status switch
+            //                            { 
+            //                                DownloadStatus.Finished => false,
+            //                                DownloadStatus.Error => false,
+            //                                DownloadStatus.Created => !FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames() ).success,
+            //                                _ => true
+            //                            }
+            //                            where (suc)
+            //                            //where !row.IsFinishedOrErrorOrCreated()
+            //                            select row.GetOutputFullFileName()
+            //                           ).ToList( rows.Count );
+            #endregion
+            var outputFileNamesQueue = (from row in rows select row.GetOutputFullFileName()).Except( outputFileNames ).ToList( rows.Count - outputFileNames.Count );
+            if ( outputFileNamesQueue.AnyEx() )
             {
                 var cst = openOutputFilesWithExternalMenuItem.CheckState;
                 if ( cst == CheckState.Unchecked )
