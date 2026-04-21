@@ -371,7 +371,7 @@ namespace m3u8.download.manager.ui
                                                 evnt = WebProxyClick;
                                                 break;
                                             }
-                                        }                                        
+                                        }
                                         evnt = OutputFileNameClick;
                                         break;
 

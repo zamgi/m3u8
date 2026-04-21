@@ -6,8 +6,8 @@ using System.IO;
 //using _m3u8_processor_ = m3u8.m3u8_processor_adv;
 using _m3u8_processor_       = m3u8.m3u8_processor_adv__v2;
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
-using M = System.Runtime.CompilerServices.MethodImplAttribute;
-using O = System.Runtime.CompilerServices.MethodImplOptions;
+using M                      = System.Runtime.CompilerServices.MethodImplAttribute;
+using O                      = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.download.manager.models
 {

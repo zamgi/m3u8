@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,8 +16,8 @@ using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 
 using _AvaBrushes_ = Avalonia.Media.Brushes;
-using _AvaColor_ = Avalonia.Media.Color;
-using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using _AvaColor_   = Avalonia.Media.Color;
+using _SC_         = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 
 namespace m3u8.download.manager.ui
 {

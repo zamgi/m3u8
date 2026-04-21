@@ -95,12 +95,6 @@
             <local-ui:RequestLogUC x:Name="logUC" Grid.Row="1" 
                                    Margin="5,0" MinHeight="120"
                                    BorderBrush="LightGray" BorderThickness="1" />
-            <!--
-            <DockPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
-              <Button x:Name="startDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" FontWeight="Bold" Margin="0,0,10,0">Start Download</Button>
-              <Button x:Name="laterDownloadButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" Margin="10,0,0,0">Download later</Button>
-            </DockPanel>
-            -->
             </Grid>
           </Grid>
         </Grid>
