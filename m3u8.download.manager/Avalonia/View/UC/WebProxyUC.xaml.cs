@@ -115,7 +115,7 @@ namespace m3u8.download.manager.ui
         #region [.public methods.]
         public web_proxy_info GetWebProxyInfo()
         {
-            var addressRaw = addressTextBox.Text?.Trim();
+            var addressRaw = addressTextBox.Text?.Trim() ?? string.Empty;
 
             var suc = UrlHelper.TryParseWebProxyUrl( addressRaw, out var wpi, out _ );
             if ( suc )
@@ -132,7 +132,7 @@ namespace m3u8.download.manager.ui
 
             if ( !suc )
             {
-                var portRaw = portTextBox.Text?.Trim();
+                var portRaw = portTextBox.Text?.Trim() ?? string.Empty;
                 if ( int.TryParse( portRaw?.Trim(), out var p ) && (0 < p) && (p <= 0xFFFF) )
                 {
                     if ( sepIdx != -1 ) addressRaw = addressRaw.Substring( 0, sepIdx );
