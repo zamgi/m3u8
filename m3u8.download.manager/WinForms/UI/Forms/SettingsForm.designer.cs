@@ -23,7 +23,7 @@
             this.webProxyUC = new WebProxyUC();
             this.cancelButton = new System.Windows.Forms.Button();
             this.okButton = new System.Windows.Forms.Button();
-            tabControl = new System.Windows.Forms.TabControlEx();
+            this.tabControl = new System.Windows.Forms.TabControlEx();
             bottomPanel = new System.Windows.Forms.Panel();
             tabControl.SuspendLayout();
             this.parallelismTabPage.SuspendLayout();
@@ -34,15 +34,15 @@
             // 
             // tabControl
             // 
-            tabControl.Controls.Add(this.parallelismTabPage);
-            tabControl.Controls.Add(this.otherTabPage);
-            tabControl.Controls.Add(this.webProxyTabPage);
-            tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            tabControl.Location = new System.Drawing.Point(0, 0);
-            tabControl.Size = new System.Drawing.Size(296, 457);
-            tabControl.TabIndex = 0;
-            tabControl.GetForecolorForTabPageText = tabControl_GetForecolorForTabPageText;
-            tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
+            this.tabControl.Controls.Add(this.parallelismTabPage);
+            this.tabControl.Controls.Add(this.otherTabPage);
+            this.tabControl.Controls.Add(this.webProxyTabPage);
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.Location = new System.Drawing.Point(0, 0);
+            this.tabControl.Size = new System.Drawing.Size(296, 457);
+            this.tabControl.TabIndex = 0;
+            this.tabControl.GetForecolorForTabPageText = tabControl_GetForecolorForTabPageText;
+            this.tabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.tabControl_Selected);
             // 
             // parallelismTabPage
             // 
@@ -97,6 +97,7 @@
             //this.webProxyUC.Location = new System.Drawing.Point(3, 3);
             //this.webProxyUC.Size = new System.Drawing.Size(282, 425);
             this.webProxyUC.TabIndex = 0;
+            this.webProxyUC.OnWebProxyChanged += webProxyUC_OnWebProxyChanged;
             // 
             // bottomPanel
             // 

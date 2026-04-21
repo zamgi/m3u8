@@ -25,22 +25,23 @@ namespace m3u8.download.manager.ui
 
         #region [.ctor().]
         private SettingsForm() => InitializeComponent();
-        public SettingsForm( DownloadController dc/*, SettingsPropertyChangeController sc*/, TabPageKind? tabPageKind = default ) : this()
+        public SettingsForm( DownloadController dc, TabPageKind? tabPageKind = default ) : this()
         {
             parallelismSettingsUC.Init( dc );
             otherSettingsUC      .Init( dc );
-            //webProxyUC.SetWebProxyInfo( sc.GetDefaultWebProxyInfo() );
 
+            #region [.set active tab.]
             if ( tabPageKind.HasValue )
             {
                 switch ( tabPageKind )
                 {
                     case TabPageKind.Parallelism: tabControl.SelectedTab = parallelismTabPage; break;
                     case TabPageKind.Other      : tabControl.SelectedTab = otherTabPage;       break;
-                    case TabPageKind.WebProxy   : tabControl.SelectedTab = webProxyTabPage;    break;    
+                    case TabPageKind.WebProxy   : tabControl.SelectedTab = webProxyTabPage;    break;
                     //case SettingsTabEnum.More       : tabControl.SelectedTab = moreTabPage;        break;
                 }
             }
+            #endregion
 
             #region [.ImageList 4 tabControl.]
             var imgLst = tabControl.ImageList = new ImageList() { ImageSize = new Size(16, 16) };
@@ -77,6 +78,7 @@ namespace m3u8.download.manager.ui
 
             otherSettingsUC.OnClosing( DialogResult, e );
         }
+        
         private Color tabControl_GetForecolorForTabPageText( TabPage tabPage )
         {
             var color = (tabPage == parallelismTabPage) ? Color.DarkOliveGreen
@@ -91,6 +93,23 @@ namespace m3u8.download.manager.ui
                 otherSettingsUC.StartShowTotalMemory();
             }
         }
+
+        //private void set_WebProxyInfo( in web_proxy_info webProxyInfo )
+        //{
+        //    set_WebProxyTabPageText( webProxyInfo.UseWebProxy, webProxyInfo.GetWebProxyAddressText() );
+        //    webProxyUC.SetWebProxyInfo( webProxyInfo );
+        //}
+        private void set_WebProxyTabPageText( bool useRequestWebProxy, string webProxyAddress )
+        {
+            webProxyTabPage.Text = "web proxy";
+
+            if ( useRequestWebProxy )
+            {
+                webProxyTabPage.Text += $" ({webProxyAddress.Cut( 70 )})"; //" (used)";
+            }
+        }
+        private void webProxyUC_OnWebProxyChanged( bool enabled, string addressRaw ) => set_WebProxyTabPageText( enabled, addressRaw );
+
 
         #region [.public props.]
         public ParallelismSettingsUC Parallelism => parallelismSettingsUC;
