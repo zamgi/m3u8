@@ -256,7 +256,7 @@ namespace System.Windows.Forms
                     return;
 
                 case WinApi.WM_MOUSEMOVE:
-                    if ( !this.Text.IsNullOrEmpty() )
+                    if ( DrawClearButton && !this.Text.IsNullOrEmpty() )
                     {
                         var pt = WinApi.GetMousePos( m.HWnd, Control.MousePosition );
                         var rc = GetClearButtonRect( m.HWnd );
@@ -273,7 +273,7 @@ namespace System.Windows.Forms
                     break;
 
                 case WinApi.WM_LBUTTONDOWN:
-                    if ( !this.Text.IsNullOrEmpty() )
+                    if ( DrawClearButton && !this.Text.IsNullOrEmpty() )
                     {
                         var pt = WinApi.GetMousePos( m.HWnd, Control.MousePosition );
                         var rc = GetClearButtonRect( m.HWnd );
@@ -296,7 +296,7 @@ namespace System.Windows.Forms
                     break;
 
                 case WinApi.WM_LBUTTONUP:
-                    if ( _IsPushed_ClearButton && !this.Text.IsNullOrEmpty() )
+                    if ( DrawClearButton && _IsPushed_ClearButton && !this.Text.IsNullOrEmpty() )
                     {
                         _IsPushed_ClearButton = false;
 

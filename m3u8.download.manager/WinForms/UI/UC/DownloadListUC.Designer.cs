@@ -32,7 +32,7 @@
             this.DGV_requestHeadersColumn = new System.Windows.Forms.DataGridViewTextBoxColumnEx();
             this.DGV_webProxyColumn = new System.Windows.Forms.DataGridViewTextBoxColumnEx();
             this.DGV_urlColumn = new System.Windows.Forms.DataGridViewTextBoxColumnEx();            
-            this.toolTip = new System.Windows.Forms.ToolTip();
+            this.toolTip = new System.Windows.Forms.ToolTipEx();
             ((System.ComponentModel.ISupportInitialize)(this.DGV)).BeginInit();
             this.SuspendLayout();
             // 
@@ -235,6 +235,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumnEx DGV_webProxyColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumnEx DGV_urlColumn;
 
-        private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.ToolTipEx toolTip;
     }
 }

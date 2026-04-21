@@ -157,7 +157,7 @@ namespace m3u8.download.manager.ui
             // m3u8FileUrlTextBox
             // 
             //this.m3u8FileUrlTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this.m3u8FileUrlTextBox.Dock = System.Windows.Forms.DockStyle.Fill;;
+            this.m3u8FileUrlTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.m3u8FileUrlTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.m3u8FileUrlTextBox.Location = new System.Drawing.Point(0, 0);
             this.m3u8FileUrlTextBox.Multiline = true;

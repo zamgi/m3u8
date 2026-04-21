@@ -159,7 +159,7 @@ namespace m3u8.download.manager.models
                 _RowPropertiesChanged?.Invoke( this, nameof(LiveStreamMaxFileSizeInBytes) );
             }
         }
-        public void SetWebProxyInfo( in web_proxy_info webProxyInfo ) => WebProxyInfo = webProxyInfo;
+        //---public void SetWebProxyInfo( in web_proxy_info webProxyInfo ) => WebProxyInfo = webProxyInfo;
 
         public DownloadRow CreateCopy() => new DownloadRow( this );
         public DownloadRow Add2ModelFinishedCopy( DateTime createDateTime, IReadOnlyList< LogRow > logRows, DownloadRow rowSaveState )

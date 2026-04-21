@@ -1131,31 +1131,45 @@ namespace m3u8.download.manager.ui
         private void DGV_CellMouseLeave( object sender, DataGridViewCellEventArgs e ) => DGV.SetDefaultCursorIfHand();
         private void DGV_CellMouseMove( object sender, DataGridViewCellMouseEventArgs e )
         {
-            if ( (e.Button == MouseButtons.None) && (0 <= e.RowIndex) && (e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX) )
+            if ( (e.Button == MouseButtons.None) && (0 <= e.RowIndex) )
             {
-                var row = _Model[ e.RowIndex ];
-                var useWebProxy = row.WebProxyInfo.UseWebProxy;
-                if ( row.IsLiveStream || useWebProxy )
+                switch ( e.ColumnIndex )
                 {
-                    var isLiveStreamRect = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
-                    var pt               = DGV.PointToClient( Control.MousePosition );
-
-                    if ( row.IsLiveStream )
-                    {                        
-                        if ( isLiveStreamRect.Contains( pt /*e.Location*/ ) )
-                        {
-                            //toolTip.ShowAlways = true;
-                            var f = this.FindForm();
-                            toolTip.Show( $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)", f, f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
-                        }
-                        MakeUseWebProxyImageRect( ref isLiveStreamRect );
-                    }
-                    if ( useWebProxy && isLiveStreamRect.Contains( pt /*e.Location*/ ) )
+                    case OUTPUTFILENAME_COLUMN_INDEX:
                     {
-                        var f = this.FindForm();
-                        toolTip.Show( $"web proxy -> {row.WebProxyInfo.GetWebProxyAddressText()}", f, f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
+                        var row = _Model[ e.RowIndex ];
+                        var useWebProxy = row.WebProxyInfo.UseWebProxy;
+                        if ( row.IsLiveStream || useWebProxy )
+                        {
+                            var isLiveStreamRect = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
+                            var pt               = DGV.PointToClient( Control.MousePosition );
+
+                            if ( row.IsLiveStream )
+                            {                        
+                                if ( isLiveStreamRect.Contains( pt /*e.Location*/ ) )
+                                {
+                                    //toolTip.ShowAlways = true;
+                                    var f = this.FindForm();
+                                    toolTip.Show( f, $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)", f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
+                                    return;
+                                }
+                                MakeUseWebProxyImageRect( ref isLiveStreamRect );
+                            }
+                            if ( useWebProxy && isLiveStreamRect.Contains( pt /*e.Location*/ ) )
+                            {
+                                var f = this.FindForm();
+                                toolTip.Show( f, $"web proxy -> {row.WebProxyInfo.GetWebProxyAddressText()}", f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
+                                return;
+                            }
+                        }
                     }
+                    break;
                 }
+            }
+
+            if ( toolTip.IsShown )
+            {
+                toolTip.Hide();
             }
         }
         private void DGV_CellClick( object sender, DataGridViewCellEventArgs e )
@@ -1292,129 +1306,139 @@ namespace m3u8.download.manager.ui
         {
             if ( e.RowIndex < 0 ) return;
 
-            if ( e.ColumnIndex == STATUS_COLUMN_INDEX )
+            switch ( e.ColumnIndex )
             {
-                CellPaintRoutine( e );
-
-                #region [.-4- status image.]
-                var row = _Model[ e.RowIndex ];
-                var img = default(Image);
-                switch ( row.Status )
+                case STATUS_COLUMN_INDEX:
                 {
-                    case DownloadStatus.Created : img = Resources.created ; break;
-                    case DownloadStatus.Started : img = Resources.running ; break;
-                    case DownloadStatus.Running : img = Resources.running ; break;
-                    case DownloadStatus.Paused  : img = Resources.paused  ; break;
-                    case DownloadStatus.Wait    : img = Resources.wait    ; break;
-                    case DownloadStatus.Canceled: img = Resources.canceled; break;
-                    case DownloadStatus.Finished: img = Resources.finished; break;
-                    case DownloadStatus.Error   : img = Resources.error   ; break;
-                }
+                    CellPaintRoutine( e );
 
-                var gr = e.Graphics;
-                Rectangle rc;
-                if ( img != null )
-                {
-                    const int IMAGE_HEIGHT = 16;
-                    rc = e.CellBounds;
-                    rc = new Rectangle( rc.X + 2, rc.Y + (rc.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
-                    gr.DrawImage( img, rc );
-                }
-                #endregion
-
-                #region [.-5- status text.]
-                rc = e.CellBounds; rc.Inflate( -22, 0 );
-                gr.DrawString( row.Status.ToString(), DGV.Font, Brushes.Black, rc, _SF_Left );
-                #endregion
-
-                #region [.-6- draw-check-mark.]
-                if ( (IsDrawCheckMark != null) && IsDrawCheckMark( row ) )
-                {
-                    rc = e.CellBounds; //rc.Inflate( -2, 0 );
-                    gr.DrawString( "\u2713", DGV.Font, Brushes.Green, rc, _SF_Right );
-                }
-                #endregion
-            }
-            else if ( e.ColumnIndex == DOWNLOAD_PROGRESS_COLUMN_INDEX )
-            {
-                CellPaintRoutine( e );
-
-                #region [.progress-bar-text.]
-                var row  = _Model[ e.RowIndex ];
-                var has  = TryGetDownloadProgress( row, out var parts, out var progressText );
-
-                var gr = e.Graphics;
-                var rc = e.CellBounds;
-                StringFormat sf;
-                if ( has )
-                {
-                    //rc.Inflate( -22, 0 );
-                    sf = _SF_Center;
-                    if ( (0 < parts.suc) || (0 < parts.fail) )
+                    #region [.-4- status image.]
+                    var row = _Model[ e.RowIndex ];
+                    var img = default(Image);
+                    switch ( row.Status )
                     {
-                        var progressBarSuc = rc;
-                        progressBarSuc.Inflate( -3, -3 );
-                        progressBarSuc.Height--;
-                        var full_width = progressBarSuc.Width - 1;
-                        var suc_width  = Convert.ToInt32( full_width * parts.suc );
-                        progressBarSuc.Width = suc_width;
-                        using ( var br = new SolidBrush( Color.LightBlue ) )
-                        {
-                            gr.FillRectangle( br, progressBarSuc );
-                        }
+                        case DownloadStatus.Created : img = Resources.created ; break;
+                        case DownloadStatus.Started : img = Resources.running ; break;
+                        case DownloadStatus.Running : img = Resources.running ; break;
+                        case DownloadStatus.Paused  : img = Resources.paused  ; break;
+                        case DownloadStatus.Wait    : img = Resources.wait    ; break;
+                        case DownloadStatus.Canceled: img = Resources.canceled; break;
+                        case DownloadStatus.Finished: img = Resources.finished; break;
+                        case DownloadStatus.Error   : img = Resources.error   ; break;
+                    }
 
-                        if ( 0 < parts.fail )
+                    var gr = e.Graphics;
+                    Rectangle rc;
+                    if ( img != null )
+                    {
+                        const int IMAGE_HEIGHT = 16;
+                        rc = e.CellBounds;
+                        rc = new Rectangle( rc.X + 2, rc.Y + (rc.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
+                        gr.DrawImage( img, rc );
+                    }
+                    #endregion
+
+                    #region [.-5- status text.]
+                    rc = e.CellBounds; rc.Inflate( -22, 0 );
+                    gr.DrawString( row.Status.ToString(), DGV.Font, Brushes.Black, rc, _SF_Left );
+                    #endregion
+
+                    #region [.-6- draw-check-mark.]
+                    if ( (IsDrawCheckMark != null) && IsDrawCheckMark( row ) )
+                    {
+                        rc = e.CellBounds; //rc.Inflate( -2, 0 );
+                        gr.DrawString( "\u2713", DGV.Font, Brushes.Green, rc, _SF_Right );
+                    }
+                    #endregion
+                }
+                break;
+
+                case DOWNLOAD_PROGRESS_COLUMN_INDEX:
+                {
+                    CellPaintRoutine( e );
+
+                    #region [.progress-bar-text.]
+                    var row  = _Model[ e.RowIndex ];
+                    var has  = TryGetDownloadProgress( row, out var parts, out var progressText );
+
+                    var gr = e.Graphics;
+                    var rc = e.CellBounds;
+                    StringFormat sf;
+                    if ( has )
+                    {
+                        //rc.Inflate( -22, 0 );
+                        sf = _SF_Center;
+                        if ( (0 < parts.suc) || (0 < parts.fail) )
                         {
-                            var progressBarFail = progressBarSuc;
-                            progressBarFail.X += suc_width; 
-                            var fail_width        = Convert.ToInt32( full_width * parts.fail );
-                            progressBarFail.Width = fail_width;
-                            using ( var br = new SolidBrush( Color.FromArgb( 0xef, 0xb7, 0xb3 )/*some ligth-red*/ ) )
+                            var progressBarSuc = rc;
+                            progressBarSuc.Inflate( -3, -3 );
+                            progressBarSuc.Height--;
+                            var full_width = progressBarSuc.Width - 1;
+                            var suc_width  = Convert.ToInt32( full_width * parts.suc );
+                            progressBarSuc.Width = suc_width;
+                            using ( var br = new SolidBrush( Color.LightBlue ) )
                             {
-                                gr.FillRectangle( br, progressBarFail );
+                                gr.FillRectangle( br, progressBarSuc );
+                            }
+
+                            if ( 0 < parts.fail )
+                            {
+                                var progressBarFail = progressBarSuc;
+                                progressBarFail.X += suc_width; 
+                                var fail_width        = Convert.ToInt32( full_width * parts.fail );
+                                progressBarFail.Width = fail_width;
+                                using ( var br = new SolidBrush( Color.FromArgb( 0xef, 0xb7, 0xb3 )/*some ligth-red*/ ) )
+                                {
+                                    gr.FillRectangle( br, progressBarFail );
+                                }
                             }
                         }
                     }
-                }
-                else
-                {
-                    rc.Inflate( -10, 0 );
-                    sf           = _SF_Left;
-                    progressText = "-";
-                }
-                gr.DrawString( progressText, DGV.Font, Brushes.Black, rc, sf );
-                #endregion
-            }
-            else if ( e.ColumnIndex == OUTPUTFILENAME_COLUMN_INDEX )
-            {
-                #region [.IsLiveStream & WebProxy image's in output-filename.]
-                var row = _Model[ e.RowIndex ];
-                var useWebProxy = row.WebProxyInfo.UseWebProxy;
-                if ( row.IsLiveStream || useWebProxy )
-                {
-                    e.Handled = true;
-                    e.Paint( e.ClipBounds, DataGridViewPaintParts.All );
-
-                    var isLiveStreamRect = GetIsLiveStreamImageRect( e.CellBounds );
-                    if ( row.IsLiveStream )
+                    else
                     {
-                        e.Graphics.DrawImage( Resources.live_stream, isLiveStreamRect );
-                        MakeUseWebProxyImageRect( ref isLiveStreamRect );
+                        rc.Inflate( -10, 0 );
+                        sf           = _SF_Left;
+                        progressText = "-";
                     }
-                    if ( useWebProxy )
-                    {                        
-                        e.Graphics.DrawImage( Resources.workgroup_16x16, isLiveStreamRect );
-                    }
+                    gr.DrawString( progressText, DGV.Font, Brushes.Black, rc, sf );
+                    #endregion
                 }
+                break;
 
-                Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );
-                #endregion
+                case OUTPUTFILENAME_COLUMN_INDEX:
+                {
+                    #region [.IsLiveStream & WebProxy image's in output-filename.]
+                    var row = _Model[ e.RowIndex ];
+                    var useWebProxy = row.WebProxyInfo.UseWebProxy;
+                    if ( row.IsLiveStream || useWebProxy )
+                    {
+                        e.Handled = true;
+                        e.Paint( e.ClipBounds, DataGridViewPaintParts.All );
+
+                        var isLiveStreamRect = GetIsLiveStreamImageRect( e.CellBounds );
+                        if ( row.IsLiveStream )
+                        {
+                            e.Graphics.DrawImage( Resources.live_stream, isLiveStreamRect );
+                            MakeUseWebProxyImageRect( ref isLiveStreamRect );
+                        }
+                        if ( useWebProxy )
+                        {                        
+                            e.Graphics.DrawImage( Resources.workgroup_16x16, isLiveStreamRect );
+                        }
+                    }
+
+                    Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );
+                    #endregion
+                }
+                break;
             }
         }
+
         private const int IMAGE_HEIGHT = 16;
         [M(O.AggressiveInlining)] private static Rectangle GetIsLiveStreamImageRect( in Rectangle cellClipBounds )
             => new Rectangle( cellClipBounds.Right - IMAGE_HEIGHT - 5, cellClipBounds.Y + (cellClipBounds.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
         [M(O.AggressiveInlining)] private static void MakeUseWebProxyImageRect( ref Rectangle isLiveStreamRect ) => isLiveStreamRect.X -= IMAGE_HEIGHT + 3;
+
         private void DGV_ColumnHeaderMouseClick( object sender, DataGridViewCellMouseEventArgs e )
         {
             switch ( e.Button )

@@ -1812,7 +1812,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.allowed Command by current status.]
-        [ M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Created ) ||
+        [M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed ( DownloadStatus status ) => (status == DownloadStatus.Created ) ||
                                                                                                            (status == DownloadStatus.Paused  ) ||
                                                                                                            (status == DownloadStatus.Canceled) ||
                                                                                                            (status == DownloadStatus.Finished) ||

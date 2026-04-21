@@ -544,13 +544,6 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        //public (string M3u8FileUrl, IDictionary< string, string > RequestHeaders, web_proxy_info WebProxyInfo,
-        //        string OutputFileName, string OutputDirectory, 
-        //        bool IsLiveStream, long LiveStreamMaxFileSizeInBytes)
-        //    GetParamsTuple() 
-        //=> (this.M3u8FileUrl, this.GetRequestHeaders(), this.GetWebProxyInfo(),
-        //    this.GetOutputFileName(), this.GetOutputDirectory(), 
-        //    this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
         public DownloadRow_Definer_2 GetParamsTuple() => (this.M3u8FileUrl, this.GetRequestHeaders(), this.GetWebProxyInfo(),
                                                           this.GetOutputFileName(), this.GetOutputDirectory(), 
                                                           this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
