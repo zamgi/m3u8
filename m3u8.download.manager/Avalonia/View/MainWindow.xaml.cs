@@ -22,10 +22,10 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 //using MsBox.Avalonia.Enums;
 
-using ButtonResult = m3u8.download.manager.MessageBoxWindow.ButtonTypeEnum; // MsBox.Avalonia.Enums.ButtonResult;
+using ButtonResult                = m3u8.download.manager.MessageBoxWindow.ButtonTypeEnum; // MsBox.Avalonia.Enums.ButtonResult;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
-using _Resources_ = m3u8.download.manager.Properties.Resources;
-using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
+using _Resources_                 = m3u8.download.manager.Properties.Resources;
+using X                           = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
 
 namespace m3u8.download.manager.ui
 {
@@ -41,6 +41,7 @@ namespace m3u8.download.manager.ui
         private MenuItem startDownloadToolButton;
         private MenuItem pauseDownloadToolButton;
         private MenuItem cancelDownloadToolButton;
+        private MenuItem editDownloadToolButton;
         private MenuItem deleteDownloadToolButton;
         private MenuItem deleteAllFinishedDownloadToolButton;
         private MenuItem undoToolButton;
@@ -63,6 +64,7 @@ namespace m3u8.download.manager.ui
         private MenuItem browseOutputFileMenuItem;
         private MenuItem openOutputFileMenuItem;
         private MenuItem changeOutputDirectoryMenuItem;
+        private MenuItem changeOutputDirectoryMenuItem_Separator;
         private MenuItem deleteAllFinishedDownloadMenuItem;
         private MenuItem startAllDownloadsMenuItem;
         private MenuItem cancelAllDownloadsMenuItem;
@@ -107,9 +109,10 @@ namespace m3u8.download.manager.ui
             #endregion
 
             #region [.menu.]
-            startDownloadToolButton  = this.Find_Ex< MenuItem >( nameof(startDownloadToolButton)  ); startDownloadToolButton.Click  += startDownloadToolButton_Click;
-            pauseDownloadToolButton  = this.Find_Ex< MenuItem >( nameof(pauseDownloadToolButton)  ); pauseDownloadToolButton.Click  += pauseDownloadToolButton_Click;
+            startDownloadToolButton  = this.Find_Ex< MenuItem >( nameof(startDownloadToolButton)  ); startDownloadToolButton .Click += startDownloadToolButton_Click;
+            pauseDownloadToolButton  = this.Find_Ex< MenuItem >( nameof(pauseDownloadToolButton)  ); pauseDownloadToolButton .Click += pauseDownloadToolButton_Click;
             cancelDownloadToolButton = this.Find_Ex< MenuItem >( nameof(cancelDownloadToolButton) ); cancelDownloadToolButton.Click += cancelDownloadToolButton_Click;
+            editDownloadToolButton   = this.Find_Ex< MenuItem >( nameof(editDownloadToolButton)   ); editDownloadToolButton  .Click += editDownloadMenuItem_Click;
             deleteDownloadToolButton = this.Find_Ex< MenuItem >( nameof(deleteDownloadToolButton) ); deleteDownloadToolButton.Click += deleteDownloadToolButton_Click;
             deleteAllFinishedDownloadToolButton = this.Find_Ex< MenuItem >( nameof(deleteAllFinishedDownloadToolButton) ); deleteAllFinishedDownloadToolButton.Click += deleteAllFinishedDownloadToolButton_Click;
 
@@ -136,6 +139,7 @@ namespace m3u8.download.manager.ui
             browseOutputFileMenuItem          = mainContextMenu.Find_MenuItem( nameof(browseOutputFileMenuItem) ); browseOutputFileMenuItem.Click += browseOutputFileMenuItem_Click;
             openOutputFileMenuItem            = mainContextMenu.Find_MenuItem( nameof(openOutputFileMenuItem) ); openOutputFileMenuItem.Click += openOutputFileMenuItem_Click;
             changeOutputDirectoryMenuItem     = mainContextMenu.Find_MenuItem( nameof(changeOutputDirectoryMenuItem) ); changeOutputDirectoryMenuItem.Click += changeOutputDirectoryMenuItem_Click;
+            changeOutputDirectoryMenuItem_Separator = mainContextMenu.Find_MenuItem( nameof(changeOutputDirectoryMenuItem_Separator) );
             deleteAllFinishedDownloadMenuItem = mainContextMenu.Find_MenuItem( nameof(deleteAllFinishedDownloadMenuItem) ); deleteAllFinishedDownloadMenuItem.Click += deleteAllFinishedDownloadToolButton_Click;
             startAllDownloadsMenuItem         = mainContextMenu.Find_MenuItem( nameof(startAllDownloadsMenuItem) ); startAllDownloadsMenuItem.Click += startAllDownloadsMenuItem_Click;
             cancelAllDownloadsMenuItem        = mainContextMenu.Find_MenuItem( nameof(cancelAllDownloadsMenuItem) ); cancelAllDownloadsMenuItem.Click += cancelAllDownloadsMenuItem_Click;
@@ -652,7 +656,8 @@ namespace m3u8.download.manager.ui
                 startDownloadToolButton.IsEnabled =
                     cancelDownloadToolButton.IsEnabled =
                         pauseDownloadToolButton.IsEnabled =
-                            deleteDownloadToolButton.IsEnabled = false;
+                            deleteDownloadToolButton.IsEnabled =
+                                editDownloadToolButton.IsEnabled = false;
                 deleteAllFinishedDownloadToolButton.IsEnabled = _VM.DownloadListModel.HasAnyFinished();
             }
             else
@@ -661,6 +666,7 @@ namespace m3u8.download.manager.ui
                 startDownloadToolButton .IsEnabled = status.StartDownload_IsAllowed();
                 cancelDownloadToolButton.IsEnabled = status.CancelDownload_IsAllowed();
                 pauseDownloadToolButton .IsEnabled = status.PauseDownload_IsAllowed();
+                editDownloadToolButton  .IsEnabled = !status.IsRunningOrPaused(); //status.EditDownload_IsAllowed();
 
                 deleteDownloadToolButton.IsEnabled = true;
                 deleteAllFinishedDownloadToolButton.IsEnabled = (status.IsFinished() || _VM.DownloadListModel.HasAnyFinished());
@@ -1036,7 +1042,8 @@ namespace m3u8.download.manager.ui
                 openOutputFileMenuItem           .IsVisible = deleteWithOutputFileMenuItem.IsEnabled;
                 deleteAllFinishedDownloadMenuItem.IsEnabled = deleteAllFinishedDownloadToolButton.IsEnabled;
 
-                changeOutputDirectoryMenuItem.IsVisible = (selectedRow != null);
+                changeOutputDirectoryMenuItem.IsVisible =
+                    changeOutputDirectoryMenuItem_Separator.IsVisible = (selectedRow != null);
 
                 SetAllDownloadsMenuItemsEnabled( allowedAll: (selectedRow == null) || (1 < _VM.DownloadListModel.RowsCount) );
 
