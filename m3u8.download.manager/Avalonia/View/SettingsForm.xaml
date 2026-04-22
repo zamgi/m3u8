@@ -143,7 +143,7 @@
                              x:Name="outputFileExtensionTextBox"
                              HorizontalAlignment="Left" Margin="10,0,0,0"
                              TextAlignment="Center" TextWrapping="NoWrap"
-                             MinWidth="90" />
+                             MinWidth="90" Classes="noClearButton" />
                   </Grid>
                 </Border>
 

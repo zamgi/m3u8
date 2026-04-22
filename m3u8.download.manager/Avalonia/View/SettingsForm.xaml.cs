@@ -316,6 +316,7 @@ namespace m3u8.download.manager.ui
             getTotalMemoryTimer_Elapsed();
             #endregion
 
+            #region [.select tab.]
             if ( settingsTab.HasValue )
             {
                 var parallelismTabItem = this.Find< TabItem >( "parallelismTabItem" );
@@ -328,6 +329,7 @@ namespace m3u8.download.manager.ui
                     case SettingsTabEnum.WebProxy   : ((TabControl) webProxyTabItem   .Parent).SelectedItem = webProxyTabItem;    break;
                 }
             }
+            #endregion
         }
 
         private void InitializeComponent()

@@ -10,7 +10,6 @@
         >
   
   <UserControl.Styles>
-
   </UserControl.Styles>
 
   <Grid RowDefinitions="auto,60,auto,*" ColumnDefinitions="auto,auto" Margin="25,15,0,0">

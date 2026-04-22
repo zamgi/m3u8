@@ -54,7 +54,7 @@ namespace m3u8.download.manager.ui
         #region [.fields.]
         private DataGrid DGV;
         private TextBox  filterTextBox;
-        private Button   clearFilterButton;
+        //private Button   clearFilterButton;
         private DataGridCollectionView _DGVRows;
         private bool _HasChanges;
         private IDisposable filterTextBox_SubscribeDisposable;
@@ -87,8 +87,8 @@ namespace m3u8.download.manager.ui
             DGV.PointerPressed += DGV_PointerPressed;
             //---DGV.Styles.Add( GlobalStyles.Dark );
 
-            filterTextBox     = this.Find< TextBox >( nameof(filterTextBox) );
-            clearFilterButton = this.Find< Button  >( nameof(clearFilterButton) ); clearFilterButton.Click += clearFilterButton_Click;
+            filterTextBox = this.Find< TextBox >( nameof(filterTextBox) );
+            //clearFilterButton = this.Find< Button  >( nameof(clearFilterButton) ); clearFilterButton.Click += clearFilterButton_Click;
 
             this.Find< Button >( "addNewRowButton" ).Click += addNewRowToDGV;
             this.Find< Button >( "okButton"        ).Click += (s, e) => OkButtonProcess();
@@ -328,7 +328,7 @@ namespace m3u8.download.manager.ui
             #region [.main routine.]
             var isEmpty = text.IsNullOrEmpty();
 
-            clearFilterButton.IsVisible = !isEmpty;
+            //clearFilterButton.IsVisible = !isEmpty;
 
             if ( _DGVRows != null )
             {
@@ -343,7 +343,7 @@ namespace m3u8.download.manager.ui
             }
             #endregion            
         }
-        private void clearFilterButton_Click( object sender, RoutedEventArgs e ) => filterTextBox.Text = null;
+        //private void clearFilterButton_Click( object sender, RoutedEventArgs e ) => filterTextBox.Text = null;
         #endregion
     }
 }

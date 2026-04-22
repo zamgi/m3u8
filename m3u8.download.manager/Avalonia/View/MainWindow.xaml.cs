@@ -446,6 +446,10 @@ namespace m3u8.download.manager.ui
                         _VM.AboutCommand.Execute( null );
                         break;
 
+                    //case Key.F4: //settings
+                    //    _VM.SettingsCommand.Execute( null );
+                    //    break;
+
                     case Key.F11:
                         this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
                         break;
@@ -1065,7 +1069,7 @@ namespace m3u8.download.manager.ui
 
                     #region [.editDownloadMenuItem.]
                     editDownloadMenuItem.IsVisible =
-                        editDownloadMenuItem_Separator.IsVisible = (rows.Count == 1) && !selectedRow.Status.IsRunningOrPaused();
+                        editDownloadMenuItem_Separator.IsVisible = /*(rows.Count == 1) &&*/ !selectedRow.Status.IsRunningOrPaused();
                     #endregion
                 }
                 else

@@ -8,21 +8,21 @@
              d:DesignWidth="1200" d:DesignHeight="350"
              >
   <UserControl.Resources>
-    <local:ProgressText_Converter              x:Key="ProgressText" />
-    <local:ProgressPartValue_Converter         x:Key="ProgressPartValue" />
-    <local:DownloadTimeText_Converter          x:Key="DownloadTimeText" />
-    <local:ApproxRemainedTimeText_Converter    x:Key="ApproxRemainedTimeText" />
-    <local:DownloadSpeedText_Converter         x:Key="DownloadSpeedText" />
-    <local:DisplaySizeText_Converter           x:Key="DisplaySizeText" />
-    <local:ApproxRemainedBytesText_Converter   x:Key="ApproxRemainedBytesText" />
-    <local:ApproxTotalBytesText_Converter      x:Key="ApproxTotalBytesText" />
-    <local:StatusImage_Converter               x:Key="StatusImage" />
-    <local:RequestHeaders_Converter            x:Key="RequestHeaders" />
-    <local:RequestHeaders_ToolTip_Converter    x:Key="RequestHeaders_ToolTip" />
-    <local:WebProxy_Converter                  x:Key="WebProxy" />
-    <local:WebProxy_ToolTip_Converter          x:Key="WebProxy_ToolTip" />      
-    <local:IsLiveStream_Converter              x:Key="IsLiveStream" />
-    <local:LiveStreamMaxFileSizeInMb_Converter x:Key="LiveStreamMaxFileSizeInMb" />
+    <local:ProgressText_Converter                      x:Key="ProgressText" />
+    <local:ProgressPartValue_Converter                 x:Key="ProgressPartValue" />
+    <local:DownloadTimeText_Converter                  x:Key="DownloadTimeText" />
+    <local:ApproxRemainedTimeText_Converter            x:Key="ApproxRemainedTimeText" />
+    <local:DownloadSpeedText_Converter                 x:Key="DownloadSpeedText" />
+    <local:DisplaySizeText_Converter                   x:Key="DisplaySizeText" />
+    <local:ApproxRemainedBytesText_Converter           x:Key="ApproxRemainedBytesText" />
+    <local:ApproxTotalBytesText_Converter              x:Key="ApproxTotalBytesText" />
+    <local:StatusImage_Converter                       x:Key="StatusImage" />
+    <local:RequestHeaders_Converter                    x:Key="RequestHeaders" />
+    <local:RequestHeaders_ToolTip_Converter            x:Key="RequestHeaders_ToolTip" />
+    <local:WebProxy_Converter                          x:Key="WebProxy" />
+    <local:WebProxy_ToolTip_Converter                  x:Key="WebProxy_ToolTip" />      
+    <local:IsLiveStream_Converter                      x:Key="IsLiveStream" />
+    <local:LiveStreamMaxFileSizeInMb_Converter         x:Key="LiveStreamMaxFileSizeInMb" />
     <local:LiveStreamMaxFileSizeInMb_ToolTip_Converter x:Key="LiveStreamMaxFileSizeInMb_ToolTip" />
 
     <ContextMenu x:Key="columnsContextMenu" x:Name="columnsContextMenu">
@@ -109,16 +109,29 @@
         </DataGridTemplateColumn.Header>
         <DataGridTemplateColumn.CellTemplate>
           <DataTemplate>
-            <DockPanel>
-              <TextBlock Text="{Binding OutputFileName}" ToolTip.Tip="{Binding $self.Text}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" Padding="5,0,0,0" />
-              <DockPanel HorizontalAlignment="Right">
-                  <Image Name="web_proxy"
-                         Source="/Resources/workgroup_16x16.png" Stretch="Fill" Width="16" Height="16" Margin="0,0,5,0" Cursor="Hand"
-                         IsVisible="{Binding UseWebProxy}" ToolTip.Tip="{Binding MySelf, Mode=OneWay, Converter={StaticResource WebProxy_ToolTip}}" />
-                  <Image Name="live_stream"
-                         Source="/Resources/live_stream.png" Stretch="Fill" Width="16" Height="16" Margin="0,0,5,0" Cursor="Hand"
-                         IsVisible="{Binding IsLiveStream}" ToolTip.Tip="{Binding MySelf, Mode=OneWay, Converter={StaticResource LiveStreamMaxFileSizeInMb_ToolTip}}" />
-              </DockPanel>
+            <DockPanel LastChildFill="True">
+                <!-- 1. Сначала описываем правую часть. Она "откусит" место справа -->
+                <StackPanel DockPanel.Dock="Right" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Right" 
+                            VerticalAlignment="Center">
+                    <Border Background="White" Margin="0,0,5,0" IsVisible="{Binding UseWebProxy}">
+                        <Image Name="web_proxy" Source="/Resources/workgroup_16x16.png" Width="16" Height="16" Cursor="Hand"
+                               ToolTip.Tip="{Binding MySelf, Converter={StaticResource WebProxy_ToolTip}}" />
+                    </Border>
+                    <Border Background="White" Margin="0,0,5,0" IsVisible="{Binding IsLiveStream}">
+                        <Image Name="live_stream" Source="/Resources/live_stream.png" Width="16" Height="16" Cursor="Hand"
+                               ToolTip.Tip="{Binding MySelf, Converter={StaticResource LiveStreamMaxFileSizeInMb_ToolTip}}" />
+                    </Border>
+                </StackPanel>
+
+                <!-- 2. Текст идет последним БЕЗ указания Dock. 
+                     Он заполнит всё оставшееся пространство СЛЕВА от иконок. -->
+                <TextBlock Text="{Binding OutputFileName}" 
+                           ToolTip.Tip="{Binding $self.Text}" 
+                           VerticalAlignment="Center" 
+                           TextTrimming="CharacterEllipsis" 
+                           Padding="5,0,0,0" />
             </DockPanel>
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>

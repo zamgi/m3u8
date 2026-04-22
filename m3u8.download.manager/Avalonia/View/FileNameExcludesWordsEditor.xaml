@@ -56,9 +56,11 @@
       <TextBlock Grid.Row="0" Grid.Column="0" 
                  VerticalAlignment="Center">filter:</TextBlock>
       <TextBox x:Name="filterTextBox" Grid.Row="0" Grid.Column="1"
-               Margin="10,0,3,0" TextWrapping="NoWrap" />
-      <Button x:Name="clearFilterButton" Grid.Row="0" Grid.Column="2"
-              Width="22" Cursor="Hand" IsVisible="False">&#x26CC;</Button>
+               Margin="10,0,3,2" Height="24" ScrollViewer.VerticalScrollBarVisibility="Disabled"
+               TextWrapping="NoWrap"
+               />
+      <!--<Button x:Name="clearFilterButton" Grid.Row="0" Grid.Column="2"
+               Width="22" Cursor="Hand" IsVisible="False">&#x26CC;</Button>-->
 
       <DataGrid x:Name="DGV" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
                 SelectionMode="Extended"

@@ -133,7 +133,7 @@ namespace m3u8.download.manager.ui
             if ( !suc )
             {
                 var portRaw = portTextBox.Text?.Trim() ?? string.Empty;
-                if ( int.TryParse( portRaw?.Trim(), out var p ) && (0 < p) && (p <= 0xFFFF) )
+                if ( int.TryParse( portRaw.Trim(), out var p ) && (0 < p) && (p <= 0xFFFF) )
                 {
                     if ( sepIdx != -1 ) addressRaw = addressRaw.Substring( 0, sepIdx );
                     addressRaw += ':' + p.ToString();

@@ -7,7 +7,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 
-using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 
 using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
@@ -44,7 +43,7 @@ namespace m3u8.download.manager.ui
             (Row, this.OutputFileName) = (row, row.OutputFileName);
 
             set_outputFileNameTextBox_Selection_Position( this.OutputFileName );
-            _FNCP.FileNameTextBox_TextChanged( outputFileName => set_outputFileNameTextBox_Selection_Position( outputFileName ) );
+            _FNCP.FileNameTextBox_TextChanged( set_outputFileNameTextBox_Selection_Position );
         }
         public void Dispose() => _FNCP.Dispose_NoThrow();
         private void InitializeComponent()
@@ -52,9 +51,9 @@ namespace m3u8.download.manager.ui
             AvaloniaXamlLoader.Load( this );
 
             outputFileNameTextBox = this.Find< TextBox >( nameof(outputFileNameTextBox) );
-            this.Find< Button >( "outputFileNameClearButton" ).Click += outputFileNameClearButton_Click;
-            this.Find< Button >( "okButton"                  ).Click += (s, e) => OkButtonProcess();
-            this.Find< Button >( "cancelButton"              ).Click += (s, e)  => this.Close();
+            //this.Find< Button >( "outputFileNameClearButton" ).Click += outputFileNameClearButton_Click;
+            this.Find< Button >( "okButton"     ).Click += (_, _) => OkButtonProcess();
+            this.Find< Button >( "cancelButton" ).Click += (_, _)  => this.Close();
 
             _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
 
@@ -130,11 +129,11 @@ namespace m3u8.download.manager.ui
             return (false);
         }
 
-        private void outputFileNameClearButton_Click( object sender, EventArgs e )
-        {
-            this.OutputFileName = null;
-            outputFileNameTextBox.Focus();
-        }
+        //private void outputFileNameClearButton_Click( object sender, EventArgs e )
+        //{
+        //    this.OutputFileName = null;
+        //    outputFileNameTextBox.Focus();
+        //}
         private void outputFileNameTextBox_TextChanged( string value )
         {
             if ( !_IsTurnOff__outputFileNameTextBox_TextChanged )

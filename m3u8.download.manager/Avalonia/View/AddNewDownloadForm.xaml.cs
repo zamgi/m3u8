@@ -104,7 +104,7 @@ namespace m3u8.download.manager.ui
             liveStreamMaxSizeInMbTextBlock = this.Find< TextBlock     >( nameof(liveStreamMaxSizeInMbTextBlock) );
             liveStreamMaxSizeInMbNumUpDn   = this.Find< NumericUpDown >( nameof(liveStreamMaxSizeInMbNumUpDn) );
 
-            this.Find< Button >( "outputFileNameClearButton"   ).Click += outputFileNameClearButton_Click;
+            //this.Find< Button >( "outputFileNameClearButton"   ).Click += outputFileNameClearButton_Click;
             this.Find< Button >( "outputFileNameSelectButton"  ).Click += outputFileNameSelectButton_Click;
             this.Find< Button >( "outputDirectorySelectButton" ).Click += outputDirectorySelectButton_Click;
             this.Find< Button >( "loadM3u8FileContentButton"   ).Click += loadM3u8FileContentButton_Click;
@@ -357,11 +357,11 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void outputFileNameClearButton_Click( object sender, RoutedEventArgs e )
-        {
-            this.OutputFileName = null;
-            outputFileNameTextBox.Focus();
-        }
+        //private void outputFileNameClearButton_Click( object sender, RoutedEventArgs e )
+        //{
+        //    this.OutputFileName = null;
+        //    outputFileNameTextBox.Focus();
+        //}
         private async void outputFileNameSelectButton_Click( object sender, RoutedEventArgs e )
         {
             var sf = await this.StorageProvider.SaveFilePickerAsync( new FilePickerSaveOptions()
