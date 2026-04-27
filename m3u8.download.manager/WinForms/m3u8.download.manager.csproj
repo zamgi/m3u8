@@ -114,6 +114,7 @@
     <Compile Include="..\[Common]\UrlHelper.cs" Link="Infrastructure\UrlHelper.cs" />
     <Compile Include="..\[Common]\HttpHeaderHelper.cs" Link="Infrastructure\HttpHeaderHelper.cs" />
     <Compile Include="..\[Common]\DigitLetterSort.cs" Link="Infrastructure\DigitLetterSort.cs" />
+    <Compile Include="..\[Common]\TestWebProxyConnectionHelper.cs" Link="Infrastructure\TestWebProxyConnectionHelper.cs" />
   </ItemGroup>
 
   <ItemGroup>

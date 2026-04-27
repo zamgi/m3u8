@@ -22,8 +22,7 @@ namespace m3u8.download.manager.ui
         public delegate void WebProxyChangedEventHandler( bool used, string addressRaw );
 
         public event WebProxyChangedEventHandler OnWebProxyChanged;
-        //public event EventHandler OnTestConnectionButtonClick;
-
+        
         #region [.ctor().]
         private Color _UncheckColor   = Color.Gray;
         private Color _BlinkBackColor = Color.Khaki;
@@ -40,46 +39,6 @@ namespace m3u8.download.manager.ui
             editWebProxyGroupBox.Controls.OfType< CheckBox >().Where( c => !c.Checked ).ForEach( c => c.ForeColor = _UncheckColor );
             this.Controls.OfType< GroupBox >().ForEach( c => c.ForeColor = Color.DodgerBlue );
         }
-
-        //private TabControl _TabControl;
-        //private TabPage    _TabPage;
-        //protected override void OnParentChanged( EventArgs e )
-        //{
-        //    base.OnParentChanged( e );
-
-        //    if ( _TabControl != null ) _TabControl.Selected -= tabControl_Selected;
-
-        //    for ( var p = this.Parent; p != null; )
-        //    {
-        //        if ( (p is TabPage tabPage) && (p.Parent is TabControl tabControl) )
-        //        {
-        //            _TabPage = tabPage;
-        //            (_TabControl = tabControl).Selected += tabControl_Selected;
-        //            break;
-        //        }
-        //    }
-        //}
-        //private void tabControl_Selected( object sender, TabControlEventArgs e )
-        //{
-        //    if ( e.TabPage == _TabPage )
-        //    {
-
-        //    }
-        //    else
-        //    {
-
-        //    }
-        //}
-        //protected override void OnEnter( EventArgs e )
-        //{
-        //    base.OnEnter( e );
-        //}
-        //protected override void OnLeave( EventArgs e )
-        //{
-        //    base.OnLeave( e );
-
-        //    if ( this.ActiveControl != null ) _LastActiveControl = this.ActiveControl;
-        //}
         #endregion
 
         #region [.public.]
@@ -210,9 +169,8 @@ namespace m3u8.download.manager.ui
         }
         private string GetUsedWebProxyAddressIfUsed( bool usedWebProxy )
         {
-            //var used = usedWebProxy.HasValue ? usedWebProxy.Value : HasAnyEditWebProxyGroupBoxChecked();
             var webProxyAddressText = default(string);
-            if ( usedWebProxy /*used*/ )
+            if ( usedWebProxy )
             {
                 var urlType = this.GetUrlType();
                 if ( urlType.HasValue && TryParseUrlTexts( out var hostname, out var port ) )
@@ -331,10 +289,9 @@ namespace m3u8.download.manager.ui
 
 
         #region [.test connection.]
-        private async void testConnectionButton_Click( object sender, EventArgs e ) //=> OnTestConnectionButtonClick?.Invoke( this/*sender*/, e );
+        private async void testConnectionButton_Click( object sender, EventArgs e )
         {
-            const string TEST_URL = "https://google.com";
-            const string CAPTION  = "web proxy";
+            const string CAPTION = "web proxy";
 
             var webProxyInfo = this.GetWebProxyInfo();
             var webProxyAddressText = default(string);
@@ -345,7 +302,7 @@ namespace m3u8.download.manager.ui
                 using ( var wb = WaitBannerUC.Create( this, cts, captionText: "test link..." ) )
                 {
                     wb.ShowCurrentAndTotalSteps = false;
-                    (var resp, webProxyAddressText) = await TestConnection_Routine( webProxyInfo, TEST_URL, cts.Token, 
+                    (var resp, webProxyAddressText) = await TestWebProxyConnectionHelper.TestConnection_Routine( webProxyInfo, cts.Token, 
                                 webProxyAddressText => wb.BeginInvoke(() => wb.SetCaptionText( $"web proxy -> {webProxyAddressText}", showPercentSteps: false ) ) );
                     using ( resp )
                     {
@@ -365,57 +322,6 @@ namespace m3u8.download.manager.ui
                           (webProxyAddressText.IsNullOrWhiteSpace() ? null : $"\r\n({webProxyAddressText})") +                          
                           $" -> \r\n\r\n{ex.GetType().FullName}: \r\n{ex.Message}"; //$" -> \r\n\r\n{ex}";
                 this.FindForm().MessageBox_ShowError( msg, CAPTION );
-            }
-        }
-        private static async Task< (HttpResponseMessage resp, string webProxyAddressText) > TestConnection_Routine( 
-            web_proxy_info webProxyInfo, string test_url, CancellationToken ct, Action< string > changeWebProxyAddressAction )
-        {
-            //var timeout  = TimeSpan.FromSeconds( 10 ); //var (timeout, _) = _SC.GetCreateM3u8ClientParams();
-            try
-            {
-                var webProxyAddressText = webProxyInfo.GetWebProxyAddressText();
-                var webProxy            = webProxyInfo.CreateWebProxy( webProxyAddressText );
-                var (hc, _, d) = HttpClientFactory_WithRefCount.Get( webProxy/*, timeout*/ );
-                using ( d )
-                {
-                    changeWebProxyAddressAction( webProxyAddressText );
-                    //await Task.Delay( 5000 );
-                    var resp = await hc.GetAsync( test_url, HttpCompletionOption.ResponseHeadersRead, ct );
-                    return (resp, webProxyAddressText);
-                }
-            }
-            catch ( OperationCanceledException ) when (ct.IsCancellationRequested)
-            {
-                throw;
-            }
-            catch ( Exception /*ex*/ ) when (!webProxyInfo.UseWebProxy && (webProxyInfo.UrlType == default))
-            {
-                foreach ( var urlType in Enum.GetValues( typeof(WebProxyUrlEnumType) ).Cast< WebProxyUrlEnumType >().Where( x => x != default ) )
-                {
-                    try
-                    {
-                        var webProxyAddressText = webProxyInfo.GetWebProxyAddressText( urlType );
-                        var webProxy            = webProxyInfo.CreateWebProxy( webProxyAddressText );
-                        var (hc, _, d) = HttpClientFactory_WithRefCount.Get( webProxy/*, timeout*/ );
-                        using ( d )
-                        {
-                            changeWebProxyAddressAction( webProxyAddressText );
-                            //await Task.Delay( 1000 );
-                            var resp = await hc.GetAsync( test_url, HttpCompletionOption.ResponseHeadersRead, ct );
-                            return (resp, webProxyAddressText);
-                        }
-                    }
-                    catch ( OperationCanceledException ) when ( ct.IsCancellationRequested )
-                    {
-                        throw;
-                    }
-                    catch ( Exception /*inner_ex*/ )
-                    {
-                        ;
-                    }
-                }
-
-                throw;
             }
         }
         #endregion

@@ -77,6 +77,7 @@ namespace m3u8.download.manager.ui
             _DownloadListModel.CollectionChanged    += DownloadListModel_CollectionChanged;
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
             _DC = new _DC_( _DownloadListModel, _SC, M3U8_CLIENT_NEXT_FACTORY_TYPE );
+            TestWebProxyConnectionHelper.m3u8_client_next_factory_type = M3U8_CLIENT_NEXT_FACTORY_TYPE;
 
             _UndoModel = new UndoModel( _DownloadListModel );
             _UndoModel.UndoChanged += () => { undoToolButton.Enabled = _UndoModel.HasUndo; undoToolButton.ToolTipText = $"Undo step count: {_UndoModel.UndoCount}  (Ctrl + Z)"; };

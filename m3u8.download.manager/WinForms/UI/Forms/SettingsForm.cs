@@ -110,7 +110,6 @@ namespace m3u8.download.manager.ui
         }
         private void webProxyUC_OnWebProxyChanged( bool enabled, string addressRaw ) => set_WebProxyTabPageText( enabled, addressRaw );
 
-
         #region [.public props.]
         public ParallelismSettingsUC Parallelism => parallelismSettingsUC;
         public OtherSettingsUC Other => otherSettingsUC;

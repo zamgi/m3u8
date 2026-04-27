@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,11 +17,6 @@ using m3u8.infrastructure;
 using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
-#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
-using m3u8_live_stream_downloader = m3u8.m3u8_live_stream_downloader__with_HttpMessageInvoker;
-#else
-using m3u8_live_stream_downloader = m3u8.m3u8_live_stream_downloader__with_HttpClient;
-#endif
 
 namespace m3u8.download.manager.controllers
 {
@@ -81,6 +77,7 @@ namespace m3u8.download.manager.controllers
         private const int MILLISECONDSDELAY_M3U8FILE_OUTPUT_PAUSE = 500; //3_000;
         private const int STREAM_IN_POOL_CAPACITY                 = 1_024 * 1_024 * 5;
         private const int RESP_BUF_IN_POOL_CAPACITY               = 1_024 * 100;
+
         private i_m3u8_client_next_factory                 _m3u8_client_next_factory;
         private m3u8_client_next_factory_enum_type         _m3u8_client_next_factory_type;
         private DownloadListModel                          _Model;
@@ -114,6 +111,7 @@ namespace m3u8.download.manager.controllers
 
             _m3u8_client_next_factory_type = m3u8_client_next_factory_type;
             _m3u8_client_next_factory = m3u8_client_next_factory_maker.get( m3u8_client_next_factory_type );
+
             _CrossDownloadInstanceRestriction = new cross_download_instance_restriction( _SettingsController.MaxCrossDownloadInstance );
             _DownloadThreadsSemaphoreFactory  = new download_threads_semaphore_factory( _SettingsController.ShareMaxDownloadThreadsBetweenAllDownloadsInstance,
                                                                                         _SettingsController.MaxDegreeOfParallelism );
@@ -700,11 +698,23 @@ namespace m3u8.download.manager.controllers
         {
             var (timeout, _) = _SettingsController.GetCreateM3u8ClientParams();
             var webProxy = row.WebProxyInfo.CreateWebProxyIfUsed();
-#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
-            var (hi, _/*webProxy2*/, d) = HttpInvokerFactory_WithRefCount.Get( webProxy/*, timeout*/ );
-#else            
-            var (hc, _/*webProxy2*/, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );            
-#endif
+
+            IDisposable d; HttpClient httpClient; HttpMessageInvoker httpInvoker;
+            switch ( _m3u8_client_next_factory_type )
+            {
+                case m3u8_client_next_factory_enum_type.HttpClient:
+                    (httpClient, _/*webProxy2*/, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );
+                    httpInvoker = default;
+                    break;
+
+                case m3u8_client_next_factory_enum_type.HttpMessageInvoker:
+                    (httpInvoker, _/*webProxy2*/, d) = HttpInvokerFactory_WithRefCount.Get( webProxy/*, timeout*/ );
+                    httpClient = default;
+                    break;
+                default:
+                    throw (new ArgumentException( _m3u8_client_next_factory_type.ToString() ));
+            }
+
             using ( d )
             using ( var cts                      = new CancellationTokenSource() )
             using ( var waitIfPausedEvent        = new ManualResetEventSlim( true, 0 ) )
@@ -738,7 +748,7 @@ namespace m3u8.download.manager.controllers
                         var queued_cnt      = 0;
                         var output_file_cnt = 0;
 
-                        var downloadContentAction = new m3u8_live_stream_downloader.DownloadContentDelegate( part_url =>
+                        var downloadContentAction = new i_m3u8_live_stream_downloader.DownloadContentDelegate( part_url =>
                         {
                             lock ( localLock )
                             {
@@ -746,7 +756,7 @@ namespace m3u8.download.manager.controllers
                                 rows_Dict[ part_url ] = row.Log.AddRequestRow( $"{++queued_cnt}). [queued]: {part_url}" );
                             }
                         });
-                        var downloadContentErrorAction = new m3u8_live_stream_downloader.DownloadContentErrorDelegate( (part_url, ex) =>
+                        var downloadContentErrorAction = new i_m3u8_live_stream_downloader.DownloadContentErrorDelegate( (part_url, ex) =>
                         {
                             lock ( localLock )
                             {
@@ -754,7 +764,7 @@ namespace m3u8.download.manager.controllers
                                 rows_Dict[ part_url ] = row.Log.AddResponseErrorRow( $"{++queued_cnt}).[queued]: {part_url}", ex.ToString() );
                             }
                         });
-                        var downloadPartAction = new m3u8_live_stream_downloader.DownloadPartDelegate( (part_url, partBytes, totalBytes, instantSpeedInMbps) =>
+                        var downloadPartAction = new i_m3u8_live_stream_downloader.DownloadPartDelegate( (part_url, partBytes, totalBytes, instantSpeedInMbps) =>
                         {
                             lock ( localLock )
                             {
@@ -767,7 +777,7 @@ namespace m3u8.download.manager.controllers
                                 //$"[DOWNLOAD]: {part_url} => ok. (part-size: {(1.0 * partBytes / 1024):N2} KB, total-size: {(1.0 * totalBytes / (1024 * 1024)):N2} MB)";
                             }
                         });
-                        var downloadPartErrorAction = new m3u8_live_stream_downloader.DownloadPartErrorDelegate( (part_url, ex) =>
+                        var downloadPartErrorAction = new i_m3u8_live_stream_downloader.DownloadPartErrorDelegate( (part_url, ex) =>
                         {
                             lock ( localLock )
                             {
@@ -780,7 +790,7 @@ namespace m3u8.download.manager.controllers
                                 }
                             }
                         });
-                        var downloadCreateOutputFileAction = new m3u8_live_stream_downloader.DownloadCreateOutputFileDelegate( fn =>
+                        var downloadCreateOutputFileAction = new i_m3u8_live_stream_downloader.DownloadCreateOutputFileDelegate( fn =>
                         {
                             lock ( localLock )
                             {
@@ -804,13 +814,9 @@ namespace m3u8.download.manager.controllers
                             }
                         });
 
-                        var p = new m3u8_live_stream_downloader.InitParams()
+                        var p = new i_m3u8_live_stream_downloader.InitParams()
                         {
-#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
-                            HttpInvoker = hi,
-#else
-                            HttpClient = hc,
-#endif
+                            Timeout = timeout,
                             M3u8Url = m3u8FileUrl.ToString(),
                             OutputFileName = veryFirstOutputFullFileName,
 
@@ -824,11 +830,16 @@ namespace m3u8.download.manager.controllers
                             DownloadPartError        = downloadPartErrorAction,
                             DownloadCreateOutputFile = downloadCreateOutputFileAction
                         };
-#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
-                        await m3u8_live_stream_downloader._Download_( p, timeout, cts.Token, () => row.LiveStreamMaxFileSizeInBytes, row.RequestHeaders );
-#else
-                        await m3u8_live_stream_downloader._Download_( p, cts.Token, () => row.LiveStreamMaxFileSizeInBytes, row.RequestHeaders );
-#endif
+
+                        //var dtype = _m3u8_client_next_factory_type switch
+                        //{
+                        //    m3u8_client_next_factory_enum_type.HttpClient         => m3u8_live_stream_downloader.enum_type.HttpClient,
+                        //    m3u8_client_next_factory_enum_type.HttpMessageInvoker => m3u8_live_stream_downloader.enum_type.HttpMessageInvoker,
+                        //    _ => throw (new ArgumentException( _m3u8_client_next_factory_type.ToString() ))
+                        //};
+                        //await m3u8_live_stream_downloader._Download_( dtype, p, cts.Token, () => row.LiveStreamMaxFileSizeInBytes, row.RequestHeaders );
+
+                        await m3u8_live_stream_downloader._Download_( (httpClient, httpInvoker), p, cts.Token, () => row.LiveStreamMaxFileSizeInBytes, row.RequestHeaders );
                     });
 
                     //-4-//

@@ -44,21 +44,10 @@ namespace m3u8
         public Stream Stream => _Stream;
     }
 
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //internal interface i_m3u8_live_stream_downloader
-    //{
-    //    string M3u8Url        { get; }
-    //    string OutputFileName { get; }
-    //    Task Download( CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 );
-    //    Task Download( CancellationToken ct, Func< long > get_max_output_file_size_func, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 );
-    //}
-
     /// <summary>
     /// 
     /// </summary>
-    internal abstract class m3u8_live_stream_downloader_base< TInvoker > : /*i_m3u8_live_stream_downloader,*/ IDisposable where TInvoker : HttpMessageInvoker
+    internal interface i_m3u8_live_stream_downloader : IDisposable
     {
         public delegate void DownloadContentDelegate( string part_url );
         public delegate void DownloadContentErrorDelegate( string m3u8_url, Exception ex );        
@@ -71,22 +60,38 @@ namespace m3u8
         /// </summary>
         public struct InitParams
         {
+            public const bool      DEFAULT_CONNECTIONCLOSE    = true;
+            public const int       DEFAULT_TIMEOUT_IN_SECONDS = 100;
+            public static TimeSpan DEFAULT_TIMEOUT            => TimeSpan.FromSeconds( DEFAULT_TIMEOUT_IN_SECONDS );
+
             public string M3u8Url        { get; set; }
             public string OutputFileName { get; set; }
 
-            public TInvoker HttpInvoker { get; set; }
+            private TimeSpan? _Timeout;
+            public TimeSpan Timeout { get => _Timeout.GetValueOrDefault( DEFAULT_TIMEOUT ); set => _Timeout = value; }
             
             public ManualResetEventSlim       WaitIfPausedEvent { [M(O.AggressiveInlining)] get; set; }
             public Action                     WaitingIfPaused   { [M(O.AggressiveInlining)] get; set; }
             public I_throttler_by_speed__v2_t ThrottlerBySpeed  { [M(O.AggressiveInlining)] get; set; }
 
-            public DownloadContentDelegate          DownloadContent          { get; set; }
+            public DownloadContentDelegate DownloadContent          { get; set; }
             public DownloadContentErrorDelegate     DownloadContentError     { get; set; }
             public DownloadPartDelegate             DownloadPart             { get; set; }
             public DownloadPartErrorDelegate        DownloadPartError        { get; set; }
             public DownloadCreateOutputFileDelegate DownloadCreateOutputFile { get; set; }
         }
 
+        string M3u8Url        { get; }
+        string OutputFileName { get; }
+        Task Download( CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 );
+        Task Download( CancellationToken ct, Func< long > get_max_output_file_size_func, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal abstract class m3u8_live_stream_downloader_base< TInvoker > : i_m3u8_live_stream_downloader, IDisposable where TInvoker : HttpMessageInvoker
+    {
         /// <summary>
         /// 
         /// </summary>
@@ -99,20 +104,21 @@ namespace m3u8
         #region [.ctor().]
         protected TInvoker _HttpInvoker;
         private bool       _Dispose_HttpInvoker;
-        private InitParams _IP;
-        private BlockingCollection< string > _PartUrls;
-        private Dictionary< string, PartUrlStatusEnum > _PartUrlsStatus;
+        private i_m3u8_live_stream_downloader.InitParams _IP;
+        private BlockingCollection< string >             _PartUrls;
+        private Dictionary< string, PartUrlStatusEnum >  _PartUrlsStatus;
         private I_ThrottlerBySpeed_InDownloadProcessUser _ThrottlerBySpeed_User;
 
-        protected m3u8_live_stream_downloader_base( in InitParams ip )
+        //protected m3u8_live_stream_downloader_base( in i_m3u8_live_stream_downloader.InitParams ip ) : this( null, ip ) { }
+        protected m3u8_live_stream_downloader_base( TInvoker httpInvoker, in i_m3u8_live_stream_downloader.InitParams ip )
         {
             M3u8Url        = ip.M3u8Url        ?? throw (new ArgumentNullException( nameof(ip.M3u8Url) ));
             OutputFileName = ip.OutputFileName ?? throw (new ArgumentNullException( nameof(ip.OutputFileName) ));
 
             _IP = ip;
 
-            _HttpInvoker         = ip.HttpInvoker ?? CreateHttpInvoker();
-            _Dispose_HttpInvoker = (ip.HttpInvoker == null);
+            _HttpInvoker         = httpInvoker ?? CreateHttpInvoker();
+            _Dispose_HttpInvoker = (httpInvoker == null);
 
             _PartUrls           = new BlockingCollection< string >();
             _PartUrlsStatus     = new Dictionary< string, PartUrlStatusEnum >();
@@ -480,7 +486,8 @@ namespace m3u8
     internal sealed class m3u8_live_stream_downloader__with_HttpClient : m3u8_live_stream_downloader_base< HttpClient >
     {
         #region [.ctor().]
-        public m3u8_live_stream_downloader__with_HttpClient( in InitParams ip ) : base( ip ) { }
+        public m3u8_live_stream_downloader__with_HttpClient( HttpClient httpClient, in i_m3u8_live_stream_downloader.InitParams ip ) : base( httpClient, ip ) { }
+        public m3u8_live_stream_downloader__with_HttpClient( in i_m3u8_live_stream_downloader.InitParams ip ) : this( null, ip ) { }
         #endregion
 
         protected override HttpClient CreateHttpInvoker( TimeSpan? timeout = null )
@@ -498,23 +505,6 @@ namespace m3u8
             => _HttpInvoker.GetStreamAsync_Ex( requestUri, requestHeaders, ct );
         protected override Task< string > GetStringContent( string requestUri, IDictionary< string, string > requestHeaders, CancellationToken ct )
             => _HttpInvoker.GetStringAsync_Ex( requestUri, requestHeaders, ct );
-
-        //-------------------------------------------------------------------------------------------//
-        public static async Task _Download_( string m3u8_url, string output_file_name, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
-        {
-            using var m = new m3u8_live_stream_downloader__with_HttpClient( new InitParams() { M3u8Url = m3u8_url, OutputFileName = output_file_name } );
-            await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
-        }
-        public static async Task _Download_( InitParams ip, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
-        {
-            using var m = new m3u8_live_stream_downloader__with_HttpClient( ip );
-            await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
-        }
-        public static async Task _Download_( InitParams ip, CancellationToken ct, Func< long > get_max_output_file_size_func, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
-        {
-            using var m = new m3u8_live_stream_downloader__with_HttpClient( ip );
-            await m.Download( ct, get_max_output_file_size_func, requestHeaders, milliseconds_delay_between_request ).CAX();
-        }
     }
 
     /// <summary>
@@ -522,16 +512,13 @@ namespace m3u8
     /// </summary>
     internal sealed class m3u8_live_stream_downloader__with_HttpMessageInvoker : m3u8_live_stream_downloader_base< HttpMessageInvoker >
     {
-        public const bool      DEFAULT_CONNECTIONCLOSE    = true;
-        public const int       DEFAULT_TIMEOUT_IN_SECONDS = 100;
-        public static TimeSpan DEFAULT_TIMEOUT            => TimeSpan.FromSeconds( DEFAULT_TIMEOUT_IN_SECONDS );
-
         #region [.ctor().]
         private TimeSpan _Timeout;
-        public m3u8_live_stream_downloader__with_HttpMessageInvoker( in InitParams ip, TimeSpan? timeout = null ) : base( ip ) 
+        public m3u8_live_stream_downloader__with_HttpMessageInvoker( HttpMessageInvoker httpInvoker, in i_m3u8_live_stream_downloader.InitParams ip ) : base( httpInvoker, ip )
         {
-            _Timeout = timeout.GetValueOrDefault( /*i_m3u8_client.init_params.*/DEFAULT_TIMEOUT );
+            _Timeout = ip.Timeout;
         }
+        public m3u8_live_stream_downloader__with_HttpMessageInvoker( in i_m3u8_live_stream_downloader.InitParams ip ) : this( null, ip ) { }
         #endregion
 
         protected override HttpMessageInvoker CreateHttpInvoker( TimeSpan? timeout = null )
@@ -545,56 +532,76 @@ namespace m3u8
             => _HttpInvoker.GetStreamAsync_Ex( requestUri, requestHeaders, _Timeout, ct );
         protected override Task< string > GetStringContent( string requestUri, IDictionary< string, string > requestHeaders, CancellationToken ct )
             => _HttpInvoker.GetStringAsync_Ex( requestUri, requestHeaders, _Timeout, ct );
-
-
-        //-------------------------------------------------------------------------------------------//
-        public static async Task _Download_( string m3u8_url, string output_file_name, TimeSpan? timeout, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
-        {
-            using var m = new m3u8_live_stream_downloader__with_HttpMessageInvoker( new InitParams() { M3u8Url = m3u8_url, OutputFileName = output_file_name }, timeout );
-            await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
-        }
-        public static async Task _Download_( InitParams ip, TimeSpan? timeout, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
-        {
-            using var m = new m3u8_live_stream_downloader__with_HttpMessageInvoker( ip, timeout );
-            await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
-        }
-        public static async Task _Download_( InitParams ip, TimeSpan? timeout, CancellationToken ct, Func< long > get_max_output_file_size_func, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
-        {
-            using var m = new m3u8_live_stream_downloader__with_HttpMessageInvoker( ip, timeout );
-            await m.Download( ct, get_max_output_file_size_func, requestHeaders, milliseconds_delay_between_request ).CAX();
-        }
     }
 
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //internal interface i_m3u8_live_stream_downloader< TInvoker > where TInvoker : HttpMessageInvoker
-    //{
-    //    Task _Download_( string m3u8_url, string output_file_name, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 );
-    //    Task _Download_( InitParams ip, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 );
+    /// <summary>
+    /// 
+    /// </summary>
+    internal static class m3u8_live_stream_downloader
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum enum_type
+        {
+            HttpClient,
+            HttpMessageInvoker
+        }
 
-    //}
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //internal static class m3u8_live_stream_downloader< TInvoker > where TInvoker : HttpMessageInvoker
-    //{
-    //    public static async Task _Download_( string m3u8_url, string output_file_name, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
-    //    {
-    //        using var m = new m3u8_live_stream_downloader( new InitParams() { M3u8Url = m3u8_url, OutputFileName = output_file_name } );
-    //        await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
-    //    }
-    //    public static async Task _Download_( InitParams ip, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
-    //    {
-    //        using var m = new m3u8_live_stream_downloader( ip );
-    //        await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
-    //    }
-    //    public static async Task _Download_( InitParams ip, CancellationToken ct, Func< long > get_max_output_file_size_func, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
-    //    {
-    //        using var m = new m3u8_live_stream_downloader( ip );
-    //        await m.Download( ct, get_max_output_file_size_func, requestHeaders, milliseconds_delay_between_request ).CAX();
-    //    }
-    //}
+        public static async Task _Download_( enum_type type, 
+            string m3u8_url, string output_file_name, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
+        {
+            var ip = new i_m3u8_live_stream_downloader.InitParams() { M3u8Url = m3u8_url, OutputFileName = output_file_name };
+            using var m = Create( type, ip );
+            await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
+        }
+        public static async Task _Download_( enum_type type, 
+            i_m3u8_live_stream_downloader.InitParams ip, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
+        {
+            using var m = Create( type, ip );
+            await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
+        }
+        public static async Task _Download_( enum_type type, 
+            i_m3u8_live_stream_downloader.InitParams ip, CancellationToken ct, Func< long > get_max_output_file_size_func, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
+        {
+            using var m = Create( type, ip );
+            await m.Download( ct, get_max_output_file_size_func, requestHeaders, milliseconds_delay_between_request ).CAX();
+        }
+
+        private static i_m3u8_live_stream_downloader Create( enum_type type, in i_m3u8_live_stream_downloader.InitParams ip )
+        {
+            switch ( type )
+            {
+                case enum_type.HttpClient        : return (new m3u8_live_stream_downloader__with_HttpClient( ip ));
+                case enum_type.HttpMessageInvoker: return (new m3u8_live_stream_downloader__with_HttpMessageInvoker( ip ));
+                default: throw (new ArgumentException( type.ToString() ));
+            }
+        }
+
+
+        public static async Task _Download_( (HttpClient httpClient, HttpMessageInvoker httpInvoker) net,
+            i_m3u8_live_stream_downloader.InitParams ip, CancellationToken ct, Func< long > get_max_output_file_size_func, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
+        {
+            i_m3u8_live_stream_downloader m;
+            if ( net.httpInvoker != null )
+            {
+                m = new m3u8_live_stream_downloader__with_HttpMessageInvoker( net.httpInvoker, ip );
+            }
+            else if ( net.httpClient != null )
+            {
+                m = new m3u8_live_stream_downloader__with_HttpClient( net.httpClient, ip );
+            }
+            else
+            {
+                throw (new ArgumentNullException( $"{nameof(net.httpClient)} & {nameof(net.httpInvoker)}" ));
+            }
+
+            using ( m )
+            {
+                await m.Download( ct, get_max_output_file_size_func, requestHeaders, milliseconds_delay_between_request ).CAX();
+            }
+        }
+    }
 
 
     /// <summary>

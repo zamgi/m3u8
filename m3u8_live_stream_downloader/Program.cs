@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 
 #if M3U8_LIVE_STREAM_DOWNLOADER__HttpMessageInvoker
-using m3u8_live_stream_downloader = m3u8.m3u8_live_stream_downloader__with_HttpMessageInvoker;
+using m3u8_live_stream_downloader_impl = m3u8.m3u8_live_stream_downloader__with_HttpMessageInvoker;
 #else
-using m3u8_live_stream_downloader = m3u8.m3u8_live_stream_downloader__with_HttpClient;
+using m3u8_live_stream_downloader_impl = m3u8.m3u8_live_stream_downloader__with_HttpClient;
 #endif
 
 namespace m3u8
@@ -36,10 +36,11 @@ namespace m3u8
                 $" (MAX_OUTPUT_FILE_SZIE_IN_MB: '{MAX_OUTPUT_FILE_SZIE_IN_MB:0,0}')".ToConsole();
                 $"---------------------------------------------\r\n".ToConsole();
 
-                var p = new m3u8_live_stream_downloader.InitParams()
+                var p = new i_m3u8_live_stream_downloader.InitParams()
                 { 
                     M3u8Url        = M3U8_URL,
                     OutputFileName = OUTPUT_FILENAME,
+                    //Timeout        = null,
 
                     DownloadContent      = (p)                  => $"[ QUEUEED]: {p}".ToConsole( cts ),
                     DownloadContentError = (p, ex)              => $"[ QUEUEED]: {p} => {ex}".ToConsole( ConsoleColor.Red, cts ),
@@ -72,11 +73,7 @@ namespace m3u8
                     //{ "sec-ch-ua-mobile", "?0" },
                     //{ "sec-ch-ua-platform", "\"Windows\"" }
                 };
-#if M3U8_LIVE_STREAM_DOWNLOADER__HttpMessageInvoker
-                using var m = new m3u8_live_stream_downloader( p, timeout: null );
-#else
-                using var m = new m3u8_live_stream_downloader( p );
-#endif
+                using var m = new m3u8_live_stream_downloader_impl( p );
                 await m.Download( cts.Token, max_output_file_size, requestHeaders ).CAX();
                 //-------------------------------------------------------------------//
             }

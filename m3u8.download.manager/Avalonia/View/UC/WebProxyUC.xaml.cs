@@ -69,47 +69,6 @@ namespace m3u8.download.manager.ui
 
             testConnectionButton = this.Find< Button >( nameof(testConnectionButton) ); testConnectionButton.Click += testConnectionButton_Click;
         }
-
-        //protected override void OnLoaded( RoutedEventArgs e )
-        //{
-        //    base.OnLoaded( e );
-
-        //    CorrectCheckBoxesStyle();
-        //    DGV.Focus();
-        //}
-        protected override void OnKeyDown( KeyEventArgs e )
-        {
-            //switch ( e.Key )
-            //{
-            //    case Key.Space:
-            //        if ( DGV.IsFocused_SelfOrDescendants() )
-            //        {
-            //            TryCheckByKey();
-            //        }
-            //        break;
-
-            //    case Key.Insert:
-            //        if ( DGV.IsFocused_SelfOrDescendants() )
-            //        {
-            //            addRowMenuItem_Click( null, EventArgs.Empty );
-            //        }
-            //        break;
-
-            //    case Key.Delete:
-            //        if ( DGV.IsFocused_SelfOrDescendants() )
-            //        {
-            //            deleteRowMenuItem_Click( null, EventArgs.Empty );
-            //        }
-            //        break;
-
-            //    case Key.PageDown:
-            //    case Key.PageUp:
-            //        e.Handled = ((e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control);
-            //        return;
-            //}
-
-            base.OnKeyDown( e );
-        }
         #endregion
 
         #region [.public methods.]
@@ -354,8 +313,7 @@ namespace m3u8.download.manager.ui
         #region [.test connection.]
         private async void testConnectionButton_Click( object sender, EventArgs e ) //=> OnTestConnectionButtonClick?.Invoke( this/*sender*/, e );
         {
-            const string TEST_URL = "https://google.com";
-            const string CAPTION  = "web proxy";
+            const string CAPTION = "web proxy";
 
             var webProxyInfo = this.GetWebProxyInfo();
             var webProxyAddressText = default(string);
@@ -367,7 +325,7 @@ namespace m3u8.download.manager.ui
                 using ( WaitBannerForm.CreateAndShow( topWindow, cts, captionText: "test link...", null, out var wb ) )
                 {
                     wb.ShowCurrentAndTotalSteps = false; wb.ShowPercentSteps = false;
-                    (var resp, webProxyAddressText) = await TestConnection_Routine( webProxyInfo, TEST_URL, cts.Token, 
+                    (var resp, webProxyAddressText) = await TestWebProxyConnectionHelper.TestConnection_Routine( webProxyInfo, cts.Token, 
                                 webProxyAddressText => wb.SetCaptionText( $"web proxy -> {webProxyAddressText}"/*, showPercentSteps: false*/ ));
                     using ( resp )
                     {
@@ -387,57 +345,6 @@ namespace m3u8.download.manager.ui
                           (webProxyAddressText.IsNullOrWhiteSpace() ? null : $"\r\n({webProxyAddressText})") +                          
                           $" -> \r\n\r\n{ex.GetType().FullName}: \r\n{ex.Message}"; //$" -> \r\n\r\n{ex}";
                 await /*this.FindForm()*/topWindow.MessageBox_ShowError( msg, CAPTION );
-            }
-        }
-        private static async Task< (HttpResponseMessage resp, string webProxyAddressText) > TestConnection_Routine( 
-            web_proxy_info webProxyInfo, string test_url, CancellationToken ct, Action< string > changeWebProxyAddressAction )
-        {
-            //var timeout  = TimeSpan.FromSeconds( 10 ); //var (timeout, _) = _SC.GetCreateM3u8ClientParams();
-            try
-            {
-                var webProxyAddressText = webProxyInfo.GetWebProxyAddressText();
-                var webProxy            = webProxyInfo.CreateWebProxy( webProxyAddressText );
-                var (hc, _, d) = HttpClientFactory_WithRefCount.Get( webProxy/*, timeout*/ );
-                using ( d )
-                {
-                    changeWebProxyAddressAction?.Invoke( webProxyAddressText );
-                    //await Task.Delay( 5000 );
-                    var resp = await hc.GetAsync( test_url, HttpCompletionOption.ResponseHeadersRead, ct );
-                    return (resp, webProxyAddressText);
-                }
-            }
-            catch ( OperationCanceledException ) when (ct.IsCancellationRequested)
-            {
-                throw;
-            }
-            catch ( Exception /*ex*/ ) when (!webProxyInfo.UseWebProxy && (webProxyInfo.UrlType == default))
-            {
-                foreach ( var urlType in Enum.GetValues( typeof(WebProxyUrlEnumType) ).Cast< WebProxyUrlEnumType >().Where( x => x != default ) )
-                {
-                    try
-                    {
-                        var webProxyAddressText = webProxyInfo.GetWebProxyAddressText( urlType );
-                        var webProxy            = webProxyInfo.CreateWebProxy( webProxyAddressText );
-                        var (hc, _, d) = HttpClientFactory_WithRefCount.Get( webProxy/*, timeout*/ );
-                        using ( d )
-                        {
-                            changeWebProxyAddressAction?.Invoke( webProxyAddressText );
-                            //await Task.Delay( 1000 );
-                            var resp = await hc.GetAsync( test_url, HttpCompletionOption.ResponseHeadersRead, ct );
-                            return (resp, webProxyAddressText);
-                        }
-                    }
-                    catch ( OperationCanceledException ) when ( ct.IsCancellationRequested )
-                    {
-                        throw;
-                    }
-                    catch ( Exception /*inner_ex*/ )
-                    {
-                        ;
-                    }
-                }
-
-                throw;
             }
         }
         #endregion

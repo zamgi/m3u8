@@ -157,6 +157,7 @@ namespace m3u8.download.manager.ui
             #region [.-1-.]
             this.Title = GET_APP_TITLE();
             this.DataContext = _VM = new MainVM( this, Settings.Default, M3U8_CLIENT_NEXT_FACTORY_TYPE );
+            TestWebProxyConnectionHelper.m3u8_client_next_factory_type = M3U8_CLIENT_NEXT_FACTORY_TYPE;
 
             _VM.DownloadListModel.RowPropertiesChanged     += DownloadListModel_RowPropertiesChanged;
             _VM.SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;

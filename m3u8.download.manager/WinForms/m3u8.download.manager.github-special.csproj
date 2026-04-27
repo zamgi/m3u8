@@ -72,19 +72,6 @@
 
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
 
-    <!--
-    <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />    
-    <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8_processor_next.cs" Link="[-= m3u8.client =-]\m3u8_processor_next.cs" />
-    <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
-    <Compile Include="..\..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
-    <Compile Include="..\..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
-    <Compile Include="..\..\m3u8.client\web_proxy_info.cs" Link="[-= m3u8.client =-]\web_proxy_info.cs" />
-    <Compile Include="..\..\m3u8.client\System.Runtime.CompilerServices.cs" Link="[-= m3u8.client =-]\System.Runtime.CompilerServices.cs" />    
-    <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
-    -->
-
     <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs" Link="Controller\throttler_by_speed_impl.cs" />
     <Compile Include="..\[Common]\Controller\download_threads_semaphore_impl.cs" Link="Controller\download_threads_semaphore_impl.cs" />
     <Compile Include="..\[Common]\Controller\interlocked_lock.cs" Link="Controller\interlocked_lock.cs" />
@@ -95,7 +82,8 @@
     <Compile Include="..\[Common]\UndoModel.cs" Link="Model\UndoModel.cs" />
     <Compile Include="..\[Common]\UrlHelper.cs" Link="Infrastructure\UrlHelper.cs" />
     <Compile Include="..\[Common]\HttpHeaderHelper.cs" Link="Infrastructure\HttpHeaderHelper.cs" />
-    <Compile Include="..\[Common]\DigitLetterSort.cs" Link="Infrastructure\DigitLetterSort.cs" />    
+    <Compile Include="..\[Common]\DigitLetterSort.cs" Link="Infrastructure\DigitLetterSort.cs" />
+    <Compile Include="..\[Common]\TestWebProxyConnectionHelper.cs" Link="Infrastructure\TestWebProxyConnectionHelper.cs" />
   </ItemGroup>
 
   <ItemGroup>
