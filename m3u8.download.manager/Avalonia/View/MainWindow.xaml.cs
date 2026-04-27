@@ -34,6 +34,11 @@ namespace m3u8.download.manager.ui
     /// </summary>
     public sealed class MainWindow : StoreBoundsWindowBase/*Window*/, IDisposable
     {
+#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
+        const m3u8_client_next_factory_enum_type M3U8_CLIENT_NEXT_FACTORY_TYPE = m3u8_client_next_factory_enum_type.HttpMessageInvoker;
+#else
+        const m3u8_client_next_factory_enum_type M3U8_CLIENT_NEXT_FACTORY_TYPE = m3u8_client_next_factory_enum_type.HttpClient;
+#endif
         #region [.fields from markup.]
         private DownloadListUC downloadListUC;
         private LogUC logUC;
@@ -151,7 +156,7 @@ namespace m3u8.download.manager.ui
 
             #region [.-1-.]
             this.Title = GET_APP_TITLE();
-            this.DataContext = _VM = new MainVM( this, Settings.Default );
+            this.DataContext = _VM = new MainVM( this, Settings.Default, M3U8_CLIENT_NEXT_FACTORY_TYPE );
 
             _VM.DownloadListModel.RowPropertiesChanged     += DownloadListModel_RowPropertiesChanged;
             _VM.SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;

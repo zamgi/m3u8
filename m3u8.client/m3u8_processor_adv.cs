@@ -6,8 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8.ext;
-
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 #if THROTTLER__V1
@@ -391,7 +389,7 @@ namespace m3u8
         /// </summary>
         public struct DownloadPartsAndSaveInputParams
         {
-            public m3u8_client                  mc                       { [M(O.AggressiveInlining)] get; set; }
+            public i_m3u8_client                mc                       { [M(O.AggressiveInlining)] get; set; }
             public m3u8_file_t                  m3u8File                 { [M(O.AggressiveInlining)] get; set; }
             public string                       OutputFileName           { [M(O.AggressiveInlining)] get; set; }
             public CancellationTokenSource      Cts                      { [M(O.AggressiveInlining)] get; set; }
@@ -447,7 +445,7 @@ namespace m3u8
             if ( !Directory.Exists( directoryName ) ) Directory.CreateDirectory( directoryName );
             
             //-3.2-//
-            using ( var fs = Extensions.File_Open4Write( ip.OutputFileName ) )
+            using ( var fs = m3u8_FileHelper.File_Open4Write( ip.OutputFileName ) )
             {
                 foreach ( var downloadPart in downloadParts )
                 {
@@ -489,7 +487,7 @@ namespace m3u8
                 Directory.CreateDirectory( directoryName );
             }
             //-3.2-//
-            using ( var fs = Extensions.File_Open4Write( ip.OutputFileName ) )
+            using ( var fs = m3u8_FileHelper.File_Open4Write( ip.OutputFileName ) )
             {
                 await foreach ( var downloadPart in downloadParts )
                 {

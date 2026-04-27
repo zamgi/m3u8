@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8.ext;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -251,7 +250,7 @@ namespace m3u8
         /// </summary>
         private struct download_m3u8File_parts_parallel_params_t
         {
-            public download_m3u8File_parts_parallel_params_t( m3u8_client _mc, in m3u8_file_t__v2 _m3u8File, in DownloadFileAndSaveInputParams ip )
+            public download_m3u8File_parts_parallel_params_t( i_m3u8_client _mc, in m3u8_file_t__v2 _m3u8File, in DownloadFileAndSaveInputParams ip )
             {
                 mc                     = _mc;
                 m3u8File               = _m3u8File;
@@ -274,7 +273,7 @@ namespace m3u8
                 useCrossAppInstanceDegreeOfParallelism = ip.UseCrossAppInstanceDegreeOfParallelism;
             }
         
-            public m3u8_client     mc       { get; set; }
+            public i_m3u8_client   mc       { get; set; }
             public m3u8_file_t__v2 m3u8File { get; set; }
 
             public CancellationToken          cancellationToken      { get; set; }
@@ -507,14 +506,14 @@ namespace m3u8
                 set => _MaxDegreeOfParallelism = Math.Max( 1, value );
             }
 
-            private m3u8_client.init_params? _NetParams;
-            public m3u8_client.init_params NetParams
+            private i_m3u8_client.init_params? _NetParams;
+            public i_m3u8_client.init_params NetParams
             {
                 get
                 {
                     if ( !_NetParams.HasValue )
                     {
-                        _NetParams = new m3u8_client.init_params()
+                        _NetParams = new i_m3u8_client.init_params()
                         {
                             AttemptRequestCount = DEFAULT_ATTEMPTREQUESTCOUNTBYPART,
                         };
@@ -556,7 +555,8 @@ namespace m3u8
             //---------------------------------------------------------------------------------------------------------//
 
             var m3u8FileUrl = new Uri( ip.m3u8FileUrl );
-            
+
+            var m3u8_client_factory = m3u8_client_factory_maker.get( m3u8_client_factory_enum_type.HttpClient );
             using ( var mc = m3u8_client_factory.Create( ip.NetParams ) )
             {
                 var res = new DownloadFileAndSaveResult( ip );
@@ -587,7 +587,7 @@ namespace m3u8
                     if ( !Directory.Exists( directoryName ) ) Directory.CreateDirectory( directoryName );
 
                     //-3-//                    
-                    using ( var fs = Extensions.File_Open4Write( ip.OutputFileName ) )
+                    using ( var fs = m3u8_FileHelper.File_Open4Write( ip.OutputFileName ) )
                     {
                         foreach ( var downloadPart in downloadParts )
                         {
@@ -625,7 +625,7 @@ namespace m3u8
         /// </summary>
         public struct DownloadPartsAndSaveInputParams
         {
-            public m3u8_client     mc             { get; set; }
+            public i_m3u8_client   mc             { get; set; }
             public m3u8_file_t__v2 m3u8File       { get; set; }
             public string          OutputFileName { get; set; }
 
@@ -691,7 +691,7 @@ namespace m3u8
                 if ( !Directory.Exists( directoryName ) ) Directory.CreateDirectory( directoryName );
 
                 //-3-//
-                using ( var fs = Extensions.File_Open4Write( ip.OutputFileName ) )
+                using ( var fs = m3u8_FileHelper.File_Open4Write( ip.OutputFileName ) )
                 {
                     foreach ( var downloadPart in downloadParts )
                     {

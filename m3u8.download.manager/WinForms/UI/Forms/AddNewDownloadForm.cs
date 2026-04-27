@@ -768,7 +768,7 @@ namespace m3u8.download.manager.ui
                 var webProxyInfo = this.GetWebProxyInfo();
                 var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
                 _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, webProxyInfo, clearLog: false );
-                var t = await _DC_.GetFileTextContent( x.m3u8FileUrl, requestHeaders,
+                var t = await _DC.GetFileTextContent( x.m3u8FileUrl, requestHeaders,
                     webProxy, _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
 
                 if ( cts.IsCancellationRequested )

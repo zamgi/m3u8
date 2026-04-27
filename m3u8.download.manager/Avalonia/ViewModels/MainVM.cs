@@ -13,13 +13,13 @@ namespace m3u8.download.manager
     /// </summary>
     internal sealed class MainVM : IDisposable, INotifyPropertyChanged
     {
-        public MainVM( MainWindow mainWindow, Settings settings )
+        public MainVM( MainWindow mainWindow, Settings settings, m3u8_client_next_factory_enum_type m3u8_client_next_factory_type )
         {
             SettingsController = new SettingsPropertyChangeController( settings );
 
             DownloadListModel  = new DownloadListModel();
             DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
-            DownloadController = new DownloadController( DownloadListModel, SettingsController );
+            DownloadController = new DownloadController( DownloadListModel, SettingsController, m3u8_client_next_factory_type );
             UndoModel          = new UndoModel( DownloadListModel );
 
             AddCommand                         = new AddCommand( this );

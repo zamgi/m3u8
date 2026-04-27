@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8.ext;
-using m3u8.infrastructure;
-
+using _DownloadPartInputParams_ = m3u8.i_m3u8_client_next.DownloadPartInputParams;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 #if THROTTLER__V1
@@ -22,336 +18,6 @@ using ThrottlerBySpeed_InDownloadProcessUser = m3u8.ThrottlerBySpeed_InDownloadP
 
 namespace m3u8
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    internal sealed class m3u8_client_next : IDisposable
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        public struct init_params
-        {
-            public HttpCompletionOption? HttpCompletionOption { get; set; }
-            public int?                  AttemptRequestCount  { get; set; }
-            public bool?                 ConnectionClose      { get; set; }
-            public IWebProxy             WebProxy             { get; set; }
-        }
-
-        #region [.field's.]
-        private HttpClient  _HttpClient;
-        private IWebProxy   _WebProxy;
-        private IDisposable _DisposableObj;
-        private bool? _ConnectionClose;
-        private int _AttemptRequestCount;
-        private HttpCompletionOption _HttpCompletionOption;
-        #endregion
-
-        #region [.ctor().]
-        public m3u8_client_next( m3u8_client mc )
-        {
-            var ip = new init_params()
-            {
-                AttemptRequestCount  = mc.InitParams.AttemptRequestCount,
-                ConnectionClose      = mc.InitParams.ConnectionClose,
-                HttpCompletionOption = mc.InitParams.HttpCompletionOption,
-            };
-            InitParams = ip;
-            Init( mc.HttpClient, ip );
-        }
-        public m3u8_client_next( HttpClient httpClient, in init_params ip )
-        {
-            InitParams = ip;
-            Init( httpClient, ip );
-        }
-        private void Init( HttpClient httpClient, in init_params ip )
-        {
-            _HttpClient = httpClient ?? throw (new ArgumentNullException( nameof( httpClient ) ));            
-            _ConnectionClose      = ip.ConnectionClose;
-            _AttemptRequestCount  = ip.AttemptRequestCount.GetValueOrDefault( 1 );
-            _HttpCompletionOption = ip.HttpCompletionOption.GetValueOrDefault( HttpCompletionOption.ResponseHeadersRead );
-        }
-        internal m3u8_client_next( in (HttpClient httpClient, IWebProxy webProxy, IDisposable disposableObj) t, in init_params ip ) : this( t.httpClient, ip )
-        {
-            _WebProxy      = t.webProxy;
-            _DisposableObj = t.disposableObj;
-        }
-
-        public void Dispose()
-        {
-            if ( _DisposableObj != null )
-            {
-                _DisposableObj.Dispose();
-                _DisposableObj = null;
-            }
-        }
-        #endregion
-
-        public init_params InitParams { get; }
-        public IWebProxy WebProxy => _WebProxy;
-#if M3U8_CLIENT_TESTS
-        public HttpClient HttpClient => _HttpClient;
-#endif
-        private static async Task< m3u8_Exception > create_m3u8_Exception( HttpResponseMessage resp, CancellationToken ct )
-        {
-            var responseText = default(string);
-            try
-            {
-#if NETCOREAPP
-                responseText = await resp.Content.ReadAsStringAsync( ct ).CAX();
-#else
-                responseText = await resp.Content.ReadAsStringAsync( /*ct*/ ).CAX();
-#endif                
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-                resp.EnsureSuccessStatusCode();
-            }
-            return (new m3u8_Exception( resp.CreateExceptionMessage( responseText ) ));
-        }
-        private static bool TryGetContentLength( HttpContent responseContent, out (string errorReason, long contentLength, string contentMediaType) t )
-        {
-            var rch = responseContent.Headers;
-
-            var contentRange = rch.ContentRange;
-            if ( (contentRange != null) && contentRange.HasLength )
-            {
-                var contentLength    = contentRange.Length.Value;
-                var contentMediaType = rch.ContentType?.MediaType;
-                t = (null, contentLength, contentMediaType);
-                return (true);
-            }
-            else
-            {
-                if ( rch.ContentLength.HasValue )
-                {
-                    var contentLength    = rch.ContentLength.Value;
-                    var contentMediaType = rch.ContentType?.MediaType;
-                    t = (null, contentLength, contentMediaType);
-                    return (true);
-                }
-
-                if ( contentRange == null )
-                {
-                    t = ("Content-Range (response-header) is null", 0, null);
-                    return (false);
-                }
-                //if ( !contentRange.HasLength )
-                //{
-                t = ("Content-Range (response-header) => not has length", 0, null);
-                return (false);
-                //}
-            }
-        }
-        private HttpRequestMessage CreateRequstGet( Uri url, IDictionary< string, string > requestHeaders = null )
-        {
-            var req = new HttpRequestMessage( HttpMethod.Get, url );
-            req.Headers.ConnectionClose = _ConnectionClose;
-            if ( requestHeaders != null )
-            {
-                foreach ( var header in requestHeaders )
-                {
-                    var suc = req.Headers.TryAddWithoutValidation( header.Key, header.Value );
-                    Debug.Assert( suc );
-                }
-            }            
-            return (req);
-        }
-
-        public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null )
-        {
-            if ( url == null ) throw (new m3u8_ArgumentException( nameof(url) ));
-            //------------------------------------------------------------------//
-
-            for ( var attemptRequestCount = _AttemptRequestCount; 0 < attemptRequestCount; attemptRequestCount-- )
-            {
-                try
-                {
-                    using ( var req  = CreateRequstGet( url, requestHeaders ) )
-                    using ( var resp = await _HttpClient.SendAsync( req, _HttpCompletionOption, ct ).CAX() )
-                    using ( var content = resp.Content )
-                    {
-                        if ( resp.IsSuccessStatusCode )
-                        {
-#if NETCOREAPP
-                            var text = await content.ReadAsStringAsync( ct ).CAX();
-#else
-                            var text = await content.ReadAsStringAsync( /*ct*/ ).CAX();
-#endif
-                            var m3u8File = m3u8_file_t.Parse( text, url );
-                            return (m3u8File);
-                        }
-
-                        throw (await create_m3u8_Exception( resp, ct ).CAX());
-                    }
-                }
-                catch ( Exception /*ex*/ )
-                {
-                    if ( (attemptRequestCount == 1) || ct.IsCancellationRequested )
-                    {
-                        throw;
-                    }
-                }
-            }
-
-            throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
-        }
-
-        //------------------------------------------------------------------------------------------//
-        /// <summary>
-        /// 
-        /// </summary>
-        public struct DownloadPartStepActionParams
-        {
-            public DownloadPartStepActionParams( in m3u8_part_ts__v2 part ) => Part = part;
-            public m3u8_part_ts__v2 Part        { get; init; }
-            public long?   TotalContentLength   { get; internal set; }
-            public long    TotalBytesReaded     { get; internal set; }            
-            public int     BytesReaded          { get; internal set; }
-            public double? InstantSpeedInMbps   { get; internal set; }
-            public int     AttemptRequestNumber { get; internal set; }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public delegate void DownloadPartStepActionDelegate( in DownloadPartStepActionParams ip );//( in m3u8_part_ts__v2 part, long totalBytesReaded, int bytesReaded, double? instantSpeedInMbps );
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public struct DownloadPartInputParams
-        {
-            public I_ThrottlerBySpeed_InDownloadProcessUser ThrottlerBySpeed_User  { [M(O.AggressiveInlining)] get; set; }
-            public ObjectPool< byte[] >                     RespBufPool            { [M(O.AggressiveInlining)] get; set; }
-            public DownloadPartStepActionDelegate           DownloadPartStepAction { [M(O.AggressiveInlining)] get; set; }
-
-            public I_download_threads_semaphore             DownloadThreadsSemaphore { [M(O.AggressiveInlining)] get; set; }
-        
-            public ManualResetEventSlim                     WaitIfPausedEvent        { [M(O.AggressiveInlining)] get; set; }
-            public Action< m3u8_part_ts__v2 >               WaitingIfPausedBefore    { [M(O.AggressiveInlining)] get; set; }
-            public Action< m3u8_part_ts__v2 >               WaitingIfPausedAfter     { [M(O.AggressiveInlining)] get; set; }
-        }
-
-        public async Task< m3u8_part_ts__v2 > DownloadPart( m3u8_part_ts__v2 part, Uri baseAddress
-            , DownloadPartInputParams ip, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null )
-        {
-            if ( baseAddress == null ) throw (new m3u8_ArgumentException( nameof(baseAddress) ));
-            if ( part.Stream == null ) throw (new m3u8_ArgumentException( nameof(part.Stream) ));
-            if ( part.RelativeUrlName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(part.RelativeUrlName) ));
-            if ( ip.ThrottlerBySpeed_User    == null ) throw (new m3u8_ArgumentException( nameof(ip.ThrottlerBySpeed_User) ));
-            if ( ip.RespBufPool              == null ) throw (new m3u8_ArgumentException( nameof(ip.RespBufPool) ));
-            if ( ip.DownloadThreadsSemaphore == null ) throw (new m3u8_ArgumentException( nameof(ip.DownloadThreadsSemaphore) ));
-            //if ( ip.WaitIfPausedEvent        == null ) throw (new m3u8_ArgumentException( nameof(ip.WaitIfPausedEvent) ));
-            //----------------------------------------------------------------------------------------------------------------//
-
-            var url = part.GetPartUrl( baseAddress );
-            var dpsa = new DownloadPartStepActionParams( part );
-
-            for ( var attemptRequestCount = _AttemptRequestCount; 0 < attemptRequestCount; attemptRequestCount-- )
-            {
-                try
-                {
-                    using ( var req  = CreateRequstGet( url, requestHeaders ) )
-                    using ( var resp = await _HttpClient.SendAsync( req, _HttpCompletionOption, ct ).CAX() )
-                    {
-                        if ( resp.IsSuccessStatusCode )
-                        {
-#if NETCOREAPP
-                            using var downloadStream = await resp.Content.ReadAsStreamAsync( ct ).CAX();
-#else
-                            using var downloadStream = await resp.Content.ReadAsStreamAsync( /*ct*/ ).CAX();
-#endif
-                            dpsa.TotalContentLength = TryGetContentLength( resp.Content, out var x ) ? x.contentLength : null;
-
-                            using var holder = ip.RespBufPool.GetHolder();
-                            var buf = holder.Value;
-                            for ( var totalBytesReaded = 0L; ; )
-                            {
-                                #region comm, because fall off by timeout. [.check 'waitIfPausedEvent'.]
-                                //if ( !ip.WaitIfPausedEvent.IsSet )
-                                //{
-                                //    ip.WaitingIfPausedBefore?.Invoke( part );
-                                //    ip.WaitIfPausedEvent.Wait( ct );
-                                //    ip.WaitingIfPausedAfter?.Invoke( part );
-                                //    ip.ThrottlerBySpeed_User.Restart();
-                                //}
-                                #endregion
-
-                                #region [.throttler by speed.]
-                                var instantSpeedInMbps = ip.ThrottlerBySpeed_User.Throttle( ct /*joinedCts.Token*/ );
-                                #endregion
-
-                                await ip.DownloadThreadsSemaphore.WaitAsync( ct ).CAX();
-                                int bytesReaded;
-                                try
-                                {
-                                    bytesReaded = await downloadStream.ReadAsync( buf, 0, buf.Length, ct ).CAX();
-                                }
-                                finally
-                                {
-                                    ip.DownloadThreadsSemaphore.Release();
-                                }
-                                if ( bytesReaded == 0 )
-                                    break;
-/*
-if ( (new Random()).Next( 10 ) == 0 )
-{
-    throw new Exception( "(new Random()).Next( 10 ) == 0" );
-}
-*/
-                                await part.Stream.WriteAsync( buf, 0, bytesReaded, ct ).CAX();
-                                totalBytesReaded += bytesReaded;
-
-                                ip.ThrottlerBySpeed_User.TakeIntoAccountDownloadedBytes( bytesReaded );
-
-                                dpsa.InstantSpeedInMbps   = instantSpeedInMbps;
-                                dpsa.TotalBytesReaded     = totalBytesReaded;
-                                dpsa.BytesReaded          = bytesReaded;
-                                dpsa.AttemptRequestNumber = _AttemptRequestCount - attemptRequestCount + 1;
-                                ip.DownloadPartStepAction?.Invoke( dpsa );
-                            }
-
-                            return (part);
-                        }
-
-                        throw (await create_m3u8_Exception( resp, ct ).CAX());
-                    }
-                }
-                catch ( Exception ex )
-                {
-                    dpsa.AttemptRequestNumber = _AttemptRequestCount - attemptRequestCount + 1;
-                    ip.DownloadPartStepAction?.Invoke( dpsa );
-
-                    if ( (attemptRequestCount == 1) || ct.IsCancellationRequested )
-                    {
-                        part.SetError( ex );
-                        return (part);
-                    }
-                }
-            }
-
-            throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    internal static class m3u8_client_next_factory
-    {
-        public static m3u8_client_next Create( IWebProxy webProxy = null ) => Create( HttpClientFactory_WithRefCount.Get( webProxy ) );
-        public static m3u8_client_next Create( IWebProxy webProxy, in (TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( webProxy, t.timeout, t.attemptRequestCountByPart );
-        public static m3u8_client_next Create( IWebProxy webProxy, in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( webProxy, timeout ), attemptRequestCountByPart );
-        public static m3u8_client_next Create( in m3u8_client_next.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get( ip.WebProxy ), ip );
-
-        private static m3u8_client_next Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, in m3u8_client_next.init_params ip ) => new m3u8_client_next( t, ip );
-        private static m3u8_client_next Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
-            => Create( t, new m3u8_client_next.init_params() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
-
-        public static void ForceClearAndDisposeAll() => HttpClientFactory_WithRefCount.ForceClearAndDisposeAll();
-    }
-
     /// <summary>
     /// 
     /// </summary>
@@ -377,7 +43,7 @@ if ( (new Random()).Next( 10 ) == 0 )
             using ( var joinedCts             = CancellationTokenSource.CreateLinkedTokenSource( ip.CancellationToken, innerCts.Token ) )
             using ( var canExtractPartEvent   = new AutoResetEvent( false ) )
             {
-                var t = new m3u8_client_next.DownloadPartInputParams()
+                var t = new _DownloadPartInputParams_()
                 {
                     ThrottlerBySpeed_User    = throttlerBySpeed_User,
                     RespBufPool              = ip.RespBufPool,
@@ -544,7 +210,7 @@ if ( (new Random()).Next( 10 ) == 0 )
             using ( var joinedCts             = CancellationTokenSource.CreateLinkedTokenSource( ip.CancellationToken, innerCts.Token ) )
             using ( var canExtractPartEvent   = new AutoResetEvent( false ) )
             {
-                var t = new m3u8_client_next.DownloadPartInputParams()
+                var t = new _DownloadPartInputParams_()
                 {
                     ThrottlerBySpeed_User    = throttlerBySpeed_User,
                     RespBufPool              = ip.RespBufPool,
@@ -755,7 +421,7 @@ if ( (new Random()).Next( 10 ) == 0 )
         /// </summary>
         public struct DownloadPartsAndSaveInputParams
         {
-            public m3u8_client_next             mc                         { [M(O.AggressiveInlining)] get; set; }
+            public i_m3u8_client_next           mc                         { [M(O.AggressiveInlining)] get; set; }
             public m3u8_file_t__v2              m3u8File                   { [M(O.AggressiveInlining)] get; set; }
             public string                       OutputFileName             { [M(O.AggressiveInlining)] get; set; }
             public CancellationToken            CancellationToken          { [M(O.AggressiveInlining)] get; set; }
@@ -771,7 +437,7 @@ if ( (new Random()).Next( 10 ) == 0 )
             public I_throttler_by_speed__v2_t   ThrottlerBySpeed           { [M(O.AggressiveInlining)] get; set; }
             public ObjectPool< Stream >         StreamPool                 { [M(O.AggressiveInlining)] get; set; }
             public ObjectPool< byte[] >         RespBufPool                { [M(O.AggressiveInlining)] get; set; }
-            public m3u8_client_next.DownloadPartStepActionDelegate DownloadPartStepAction { [M(O.AggressiveInlining)] get; set; }
+            public i_m3u8_client_next.DownloadPartStepActionDelegate DownloadPartStepAction { [M(O.AggressiveInlining)] get; set; }
         }
         /// <summary>
         /// 
@@ -814,7 +480,7 @@ if ( (new Random()).Next( 10 ) == 0 )
             if ( !Directory.Exists( directoryName ) ) Directory.CreateDirectory( directoryName );
             
             //-3.2-//
-            using ( var fs = Extensions.File_Open4Write( ip.OutputFileName ) )
+            using ( var fs = m3u8_FileHelper.File_Open4Write( ip.OutputFileName ) )
             {
                 foreach ( var downloadPart in downloadParts )
                 {
@@ -858,7 +524,7 @@ if ( (new Random()).Next( 10 ) == 0 )
             if ( !Directory.Exists( directoryName ) ) Directory.CreateDirectory( directoryName );
             
             //-3.2-//
-            using ( var fs = Extensions.File_Open4Write( ip.OutputFileName ) )
+            using ( var fs = m3u8_FileHelper.File_Open4Write( ip.OutputFileName ) )
             {
                 await foreach ( var downloadPart in downloadParts )
                 {

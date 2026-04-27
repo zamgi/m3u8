@@ -306,7 +306,7 @@ namespace m3u8.download.manager.models
                 Fire_PropertyChanged_Events( nameof(MySelf) );
             }
         }
-        [M(O.AggressiveInlining)] internal void SetDownloadPartStepParams( in m3u8_client_next.DownloadPartStepActionParams p, bool raiseRowPropertiesChangedEvent )
+        [M(O.AggressiveInlining)] internal void SetDownloadPartStepParams( in i_m3u8_client_next.DownloadPartStepActionParams p, bool raiseRowPropertiesChangedEvent )
         {
             if ( raiseRowPropertiesChangedEvent )
             {

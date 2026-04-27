@@ -23,7 +23,7 @@ namespace m3u8.downloader
         private const string APP_TITLE      = ".m3u8 file downloader";
         private const string M3U8_EXTENSION = ".m3u8";
 
-        private m3u8_client             _Mc;
+        private i_m3u8_client           _Mc;
         private CancellationTokenSource _Cts;
         private WaitBannerUC            _Wb;
 
@@ -759,6 +759,7 @@ namespace m3u8.downloader
             SetEnabledUI( false );
             UnsetResultUC();
 
+            var m3u8_client_factory = m3u8_client_factory_maker.get( m3u8_client_factory_enum_type.HttpClient );
             _Mc  = m3u8_client_factory.Create( webProxy: null, _Settings.RequestTimeoutByPart, 
                                                attemptRequestCountByPart.GetValueOrDefault( _Settings.AttemptRequestCountByPart )
                                              );

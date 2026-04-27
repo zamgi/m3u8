@@ -43,10 +43,36 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <DefineConstants>THROTTLER__V2;</DefineConstants>
+    <DefineConstants>THROTTLER__V2;M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker;</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>
+    <Compile Include="..\..\m3u8.client\infrastructure\HttpClientFactory_WithRefCount.cs" Link="[-= m3u8.client =-]\infrastructure\HttpClientFactory_WithRefCount.cs" />
+    <Compile Include="..\..\m3u8.client\infrastructure\HttpInvokerFactory_WithRefCount.cs" Link="[-= m3u8.client =-]\infrastructure\HttpInvokerFactory_WithRefCount.cs" />
+    <Compile Include="..\..\m3u8.client\infrastructure\LRUCache.cs" Link="[-= m3u8.client =-]\infrastructure\LRUCache.cs" />
+    <Compile Include="..\..\m3u8.client\infrastructure\System.Runtime.CompilerServices.cs" Link="[-= m3u8.client =-]\infrastructure\System.Runtime.CompilerServices.cs" />
+
+    <Compile Include="..\..\m3u8.client\client\i_m3u8_client.cs" Link="[-= m3u8.client =-]\client\i_m3u8_client.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8.stuff.cs" Link="[-= m3u8.client =-]\client\m3u8.stuff.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8_client.cs" Link="[-= m3u8.client =-]\client\m3u8_client.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8_client_factory.cs" Link="[-= m3u8.client =-]\client\m3u8_client_factory.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8_client_v2.cs" Link="[-= m3u8.client =-]\client\m3u8_client_v2.cs" />
+
+    <Compile Include="..\..\m3u8.client\client_next\i_m3u8_client_next.cs" Link="[-= m3u8.client =-]\client_next\i_m3u8_client_next.cs" />
+    <Compile Include="..\..\m3u8.client\client_next\m3u8_client_next.cs" Link="[-= m3u8.client =-]\client_next\m3u8_client_next.cs" />
+    <Compile Include="..\..\m3u8.client\client_next\m3u8_client_next_factory.cs" Link="[-= m3u8.client =-]\client_next\m3u8_client_next_factory.cs" />
+    <Compile Include="..\..\m3u8.client\client_next\m3u8_client_next_v2.cs" Link="[-= m3u8.client =-]\client_next\m3u8_client_next_v2.cs" />
+    <Compile Include="..\..\m3u8.client\client_next\m3u8_processor_next.cs" Link="[-= m3u8.client =-]\client_next\m3u8_processor_next.cs" />
+
+    <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
+    <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
+    <Compile Include="..\..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
+    <Compile Include="..\..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
+    <Compile Include="..\..\m3u8.client\web_proxy_info.cs" Link="[-= m3u8.client =-]\web_proxy_info.cs" />
+
+    <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
+
+    <!--
     <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />    
     <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
     <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
@@ -57,6 +83,7 @@
     <Compile Include="..\..\m3u8.client\web_proxy_info.cs" Link="[-= m3u8.client =-]\web_proxy_info.cs" />
     <Compile Include="..\..\m3u8.client\System.Runtime.CompilerServices.cs" Link="[-= m3u8.client =-]\System.Runtime.CompilerServices.cs" />    
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
+    -->
 
     <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs" Link="Controller\throttler_by_speed_impl.cs" />
     <Compile Include="..\[Common]\Controller\download_threads_semaphore_impl.cs" Link="Controller\download_threads_semaphore_impl.cs" />
@@ -80,7 +107,11 @@
   </ItemGroup>
   
   <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0-windows' ">
-    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.6" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="10.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Pipelines" Version="10.0.7" />
   </ItemGroup>
   
   <ItemGroup>

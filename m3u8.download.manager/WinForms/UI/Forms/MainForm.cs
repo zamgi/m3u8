@@ -15,11 +15,11 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 
-using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _DC_                                   = m3u8.download.manager.controllers.DownloadController;
+using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
 using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
-using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using M                                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                                      = System.Runtime.CompilerServices.MethodImplOptions;
@@ -31,6 +31,11 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed partial class MainForm : Form, IDisposable
     {
+#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
+        const m3u8_client_next_factory_enum_type M3U8_CLIENT_NEXT_FACTORY_TYPE = m3u8_client_next_factory_enum_type.HttpMessageInvoker;
+#else
+        const m3u8_client_next_factory_enum_type M3U8_CLIENT_NEXT_FACTORY_TYPE = m3u8_client_next_factory_enum_type.HttpClient;
+#endif
         #region [.fields.]
         private const int MAX_PASTE_URLS = 75; //100;
         private UrlInputParams[] _InputParamsArray;
@@ -71,7 +76,7 @@ namespace m3u8.download.manager.ui
             _DownloadListModel = new DownloadListModel();
             _DownloadListModel.CollectionChanged    += DownloadListModel_CollectionChanged;
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
-            _DC = new _DC_( _DownloadListModel, _SC );
+            _DC = new _DC_( _DownloadListModel, _SC, M3U8_CLIENT_NEXT_FACTORY_TYPE );
 
             _UndoModel = new UndoModel( _DownloadListModel );
             _UndoModel.UndoChanged += () => { undoToolButton.Enabled = _UndoModel.HasUndo; undoToolButton.ToolTipText = $"Undo step count: {_UndoModel.UndoCount}  (Ctrl + Z)"; };

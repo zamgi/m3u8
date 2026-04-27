@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
-using m3u8.ext;
 using m3u8.infrastructure;
 
 using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
@@ -35,7 +34,7 @@ namespace m3u8.download.manager.controllers
         private struct Tuple
         {
             [M(O.AggressiveInlining)]
-            public static Tuple Create( m3u8_client mc, CancellationTokenSource cts
+            public static Tuple Create( i_m3u8_client mc, CancellationTokenSource cts
                                       , ManualResetEventSlim waitIfPausedEvent
                                       , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
                                       , int startOrderNumber ) 
@@ -53,7 +52,7 @@ namespace m3u8.download.manager.controllers
                                , downloadThreadsSemaphore = downloadThreadsSemaphore
                                , startOrderNumber         = startOrderNumber };
             [M(O.AggressiveInlining)]
-            public static Tuple Create( m3u8_client_next mc_next, CancellationTokenSource cts
+            public static Tuple Create( i_m3u8_client_next mc_next, CancellationTokenSource cts
                                       , ManualResetEventSlim waitIfPausedEvent
                                       , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
                                       , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_2
@@ -64,8 +63,8 @@ namespace m3u8.download.manager.controllers
                                , downloadThreadsSemaphore_2 = downloadThreadsSemaphore_2
                                , startOrderNumber           = startOrderNumber };
 
-            public m3u8_client                 mc                         { [M(O.AggressiveInlining)] get; private set; }
-            public m3u8_client_next            mc_next                    { [M(O.AggressiveInlining)] get; private set; }
+            public i_m3u8_client               mc                         { [M(O.AggressiveInlining)] get; private set; }
+            public i_m3u8_client_next          mc_next                    { [M(O.AggressiveInlining)] get; private set; }
             public CancellationTokenSource     cts                        { [M(O.AggressiveInlining)] get; private set; }
             public ManualResetEventSlim        waitIfPausedEvent          { [M(O.AggressiveInlining)] get; private set; }
             public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore   { [M(O.AggressiveInlining)] get; private set; }
@@ -77,6 +76,8 @@ namespace m3u8.download.manager.controllers
         private const int MILLISECONDSDELAY_M3U8FILE_OUTPUT_PAUSE = 500; //3_000;
         private const int STREAM_IN_POOL_CAPACITY                 = 1_024 * 1_024 * 5;
         private const int RESP_BUF_IN_POOL_CAPACITY               = 1_024 * 100;
+        private i_m3u8_client_next_factory                 _m3u8_client_next_factory;
+        private m3u8_client_next_factory_enum_type         _m3u8_client_next_factory_type;
         private DownloadListModel                          _Model;
         private SettingsPropertyChangeController           _SettingsController;
         private ConcurrentDictionary< DownloadRow, Tuple > _Dict;
@@ -97,7 +98,7 @@ namespace m3u8.download.manager.controllers
             => new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
 
         #region [.ctor().]
-        public DownloadController( DownloadListModel model, SettingsPropertyChangeController sc )
+        public DownloadController( DownloadListModel model, SettingsPropertyChangeController sc, m3u8_client_next_factory_enum_type m3u8_client_next_factory_type )
         {
             _Model = model ?? throw (new ArgumentNullException( nameof(model) ));
 
@@ -106,6 +107,8 @@ namespace m3u8.download.manager.controllers
 
             _Dict = new ConcurrentDictionary< DownloadRow, Tuple >();
 
+            _m3u8_client_next_factory_type = m3u8_client_next_factory_type;
+            _m3u8_client_next_factory = m3u8_client_next_factory_maker.get( m3u8_client_next_factory_type );
             _CrossDownloadInstanceRestriction = new cross_download_instance_restriction( _SettingsController.MaxCrossDownloadInstance );
             _DownloadThreadsSemaphoreFactory  = new download_threads_semaphore_factory( _SettingsController.ShareMaxDownloadThreadsBetweenAllDownloadsInstance,
                                                                                         _SettingsController.MaxDegreeOfParallelism );
@@ -125,7 +128,7 @@ namespace m3u8.download.manager.controllers
 
         public void Dispose()
         {
-            m3u8_client_factory.ForceClearAndDisposeAll();
+            m3u8_client_factory_maker.ForceClearAndDisposeAll();
 
             _DefaultConnectionLimitSaver.Dispose();
             _ThrottlerBySpeed.Dispose();
@@ -150,14 +153,14 @@ namespace m3u8.download.manager.controllers
         #endregion
 
         #region [.static 'GetFileTextContent'.]
-        public static async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( 
+        public async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( 
               Uri m3u8FileUrl
             , IDictionary< string, string > requestHeaders
              ,IWebProxy webProxy
             , TimeSpan requestTimeoutByPart
             , CancellationTokenSource cts = null )
         {
-            using ( var mc = m3u8_client_next_factory.Create( webProxy, requestTimeoutByPart, attemptRequestCountByPart: 1 ) )
+            using ( var mc = _m3u8_client_next_factory.Create( webProxy, requestTimeoutByPart, attemptRequestCountByPart: 1 ) )
             {
                 try
                 {
@@ -467,7 +470,7 @@ namespace m3u8.download.manager.controllers
         private async Task StartRoutine( DownloadRow row, Uri m3u8FileUrl )
         {
             var webProxy = row.WebProxyInfo.CreateWebProxyIfUsed();
-            using ( var mc                         = m3u8_client_next_factory.Create( webProxy, _SettingsController.GetCreateM3u8ClientParams() ) )
+            using ( var mc                         = _m3u8_client_next_factory.Create( webProxy, _SettingsController.GetCreateM3u8ClientParams() ) )
             using ( var cts                        = new CancellationTokenSource() )
             using ( var waitIfPausedEvent          = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore   = _DownloadThreadsSemaphoreFactory.Get() )
@@ -536,7 +539,7 @@ namespace m3u8.download.manager.controllers
                                 }
                             }
                         });
-                        var downloadPartStepAction  = new m3u8_client_next.DownloadPartStepActionDelegate( (in m3u8_client_next.DownloadPartStepActionParams p) =>
+                        var downloadPartStepAction  = new i_m3u8_client_next.DownloadPartStepActionDelegate( (in i_m3u8_client_next.DownloadPartStepActionParams p) =>
                         {
                             var ts = Stopwatch.GetTimestamp();
                             var raiseRowPropertiesChangedEvent = InterlockedExtension.ExchangeIfNewValueBigger( ref start_ts, ts, ts - (100 * InterlockedExtension.TicksPerMillisecond) );

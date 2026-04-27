@@ -18,6 +18,7 @@ using m3u8.download.manager.models;
 using _AvaBrushes_ = Avalonia.Media.Brushes;
 using _AvaColor_   = Avalonia.Media.Color;
 using _SC_         = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using _DC_         = m3u8.download.manager.controllers.DownloadController;
 
 namespace m3u8.download.manager.ui
 {
@@ -37,17 +38,17 @@ namespace m3u8.download.manager.ui
         }
 
         #region [.markup fields.]
-        private TextBox m3u8FileUrlTextBox;
-        private TextBox outputFileNameTextBox;
-        private TextBox outputDirectoryTextBox;
+        private TextBox      m3u8FileUrlTextBox;
+        private TextBox      outputFileNameTextBox;
+        private TextBox      outputDirectoryTextBox;
         private RequestLogUC logUC;
 
-        private TextBlock patternOutputFileNameLabelCaption;
-        private TextBlock patternOutputFileNameLabel;
+        private TextBlock     patternOutputFileNameLabelCaption;
+        private TextBlock     patternOutputFileNameLabel;
         private NumericUpDown patternOutputFileNameNumUpDn;
 
-        private CheckBox isLiveStreamCheckBox;
-        private TextBlock liveStreamMaxSizeInMbTextBlock;
+        private CheckBox      isLiveStreamCheckBox;
+        private TextBlock     liveStreamMaxSizeInMbTextBlock;
         private NumericUpDown liveStreamMaxSizeInMbNumUpDn;
 
         private IDisposable m3u8FileUrlTextBox_SubscribeDisposable;
@@ -69,6 +70,7 @@ namespace m3u8.download.manager.ui
         private LogListModel _Model;
         private bool _DownloadLater;
         private _SC_ _SC;
+        private _DC_ _DC;
         private DownloadListModel _DownloadListModel;
         private FileNameCleaner4UI.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
@@ -131,6 +133,7 @@ namespace m3u8.download.manager.ui
             this.DataContext = new AddNewDownloadFormVM( this );
 
             _SC                = vm.SettingsController;
+            _DC                = vm.DownloadController;
             _DownloadListModel = vm.DownloadController?.Model;
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
             requestHeadersEditor.SetSettingsController( _SC );
@@ -168,6 +171,7 @@ namespace m3u8.download.manager.ui
             this.DataContext = new AddNewDownloadFormVM( this );
 
             _SC                = vm.SettingsController;
+            _DC                = vm.DownloadController;
             _DownloadListModel = vm.DownloadController?.Model;
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
             requestHeadersEditor.SetSettingsController( _SC );
@@ -532,7 +536,7 @@ namespace m3u8.download.manager.ui
                 var webProxyInfo = webProxyUC.GetWebProxyInfo();
                 var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
                 _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, webProxyInfo, clearLog: false );
-                var t = await DownloadController.GetFileTextContent( x.m3u8FileUrl, requestHeaders, 
+                var t = await _DC.GetFileTextContent( x.m3u8FileUrl, requestHeaders, 
                     webProxy, _SC.Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
 
                 if ( cts.IsCancellationRequested )

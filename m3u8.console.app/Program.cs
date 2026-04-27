@@ -6,13 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+#if !(NET_CORE)
 using System.Net.Security;
+#endif
 using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-using m3u8.ext;
 
 //using SocksSharp;
 //using SocksSharp.Proxy;
@@ -30,7 +30,7 @@ namespace m3u8
         /// </summary>
         private static class v1
         {
-            private static IReadOnlyCollection< m3u8_part_ts > download_m3u8File_parallel( m3u8_client mc, m3u8_file_t m3u8_file
+            private static IReadOnlyCollection< m3u8_part_ts > download_m3u8File_parallel( i_m3u8_client mc, m3u8_file_t m3u8_file
                 , CancellationTokenSource cts = null, int maxDegreeOfParallelism = 64 )
             {
                 var ct = (cts?.Token).GetValueOrDefault( CancellationToken.None );
@@ -81,6 +81,7 @@ namespace m3u8
 
             public static void run( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
+                var m3u8_client_factory = m3u8_client_factory_maker.get( m3u8_client_factory_enum_type.HttpClient );
                 using ( var mc  = m3u8_client_factory.Create() )
                 using ( var cts = new CancellationTokenSource() )
                 {
@@ -99,7 +100,7 @@ namespace m3u8
 
                         //-3-//
                         var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.AbsolutePath ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                        using ( var fs = Extensions.File_Open4Write( outputFileName ) )
+                        using ( var fs = m3u8_FileHelper.File_Open4Write( outputFileName ) )
                         {
                             foreach ( var downloadPart in downloadParts )
                             {
@@ -138,7 +139,7 @@ namespace m3u8
         /// </summary>
         private static class v2
         {
-            private static IReadOnlyCollection< m3u8_part_ts > download_m3u8File_parallel__v1( m3u8_client mc, m3u8_file_t m3u8_file
+            private static IReadOnlyCollection< m3u8_part_ts > download_m3u8File_parallel__v1( i_m3u8_client mc, m3u8_file_t m3u8_file
                 , CancellationTokenSource cts = null, int maxDegreeOfParallelism = 64 )
             {
                 var ct                = (cts?.Token).GetValueOrDefault( CancellationToken.None );
@@ -241,6 +242,7 @@ namespace m3u8
 
             public static void run__1( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
+                var m3u8_client_factory = m3u8_client_factory_maker.get( m3u8_client_factory_enum_type.HttpClient );
                 using ( var mc  = m3u8_client_factory.Create() )
                 using ( var cts = new CancellationTokenSource() )
                 {
@@ -259,7 +261,7 @@ namespace m3u8
 
                         //-3-//
                         var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.AbsolutePath ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                        using ( var fs = Extensions.File_Open4Write( outputFileName ) )
+                        using ( var fs = m3u8_FileHelper.File_Open4Write( outputFileName ) )
                         {
                             foreach ( var downloadPart in downloadParts )
                             {
@@ -293,7 +295,7 @@ namespace m3u8
             }
 
 
-            private static IEnumerable< m3u8_part_ts > download_m3u8File_parallel__v2( m3u8_client mc, m3u8_file_t m3u8_file
+            private static IEnumerable< m3u8_part_ts > download_m3u8File_parallel__v2( i_m3u8_client mc, m3u8_file_t m3u8_file
                 , CancellationTokenSource cts = null, int maxDegreeOfParallelism = 64 )
             {
                 var ct                = (cts?.Token).GetValueOrDefault( CancellationToken.None );
@@ -386,6 +388,7 @@ namespace m3u8
 
             public static void run__2( string M3U8_FILE_URL, string OUTPUT_FILE_DIR, string OUTPUT_FILE_EXT )
             {
+                var m3u8_client_factory = m3u8_client_factory_maker.get( m3u8_client_factory_enum_type.HttpClient );
                 using ( var mc  = m3u8_client_factory.Create() )
                 using ( var cts = new CancellationTokenSource() )
                 {
@@ -408,7 +411,7 @@ namespace m3u8
                         var totalBytes = 0;
 
                         var outputFileName = Path.Combine( OUTPUT_FILE_DIR, PathnameCleaner.CleanPathnameAndFilename( m3u8FileUrl.AbsolutePath ).TrimStart( '-' ) + OUTPUT_FILE_EXT );
-                        using ( var fs = Extensions.File_Open4Write( outputFileName ) )
+                        using ( var fs = m3u8_FileHelper.File_Open4Write( outputFileName ) )
                         {
                             foreach ( var downloadPart in downloadParts )
                             {
@@ -457,7 +460,7 @@ namespace m3u8
                     CancellationToken  = ct,
                     m3u8FileUrl        = m3u8FileUrl,
                     OutputFileName     = outputFileName,
-                    NetParams          = new m3u8_client.init_params() { AttemptRequestCount = 1, },
+                    NetParams          = new i_m3u8_client.init_params() { AttemptRequestCount = 1, },
                     ResponseStepAction = new m3u8_processor.ResponseStepActionDelegate( t => CONSOLE.WriteLine( $"{t.Part.OrderNumber} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),                    
                 };
 
@@ -477,7 +480,7 @@ namespace m3u8
                     CancellationToken  = ct,
                     m3u8FileUrl        = m3u8FileUrl,
                     OutputFileName     = outputFileName,
-                    NetParams          = new m3u8_client.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead },
+                    NetParams          = new i_m3u8_client.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead },
                     ResponseStepAction = new m3u8_processor__v2.ResponseStepActionDelegate( t => CONSOLE.WriteLine( $"{t.Part.OrderNumber + 1} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),
                     //MaxDegreeOfParallelism = 8,
                 };
@@ -543,7 +546,8 @@ namespace m3u8
                 , IWebProxy webProxy = null
                 , IDictionary< string, string > requestHeaders = null )
             {
-                var ip = new m3u8_client_next.init_params() 
+                var m3u8_client_next_factory = m3u8_client_next_factory_maker.get( m3u8_client_next_factory_enum_type.HttpClient );
+                var ip = new i_m3u8_client_next.init_params() 
                 { 
                     AttemptRequestCount = 1, 
                     HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead,
@@ -716,7 +720,7 @@ namespace m3u8
                 var maxDegreeOfParallelism = 8;
                 //*/
 
-                using var mc = new m3u8_client( hc, new m3u8_client.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead } );
+                using var mc = new m3u8_client( hc, new i_m3u8_client.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead } );
 
                 var m3u8File = await mc.DownloadFile( new Uri( m3u8FileUrl ), ct, requestHeaders ).CAX();
                
@@ -974,48 +978,8 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal struct DefaultConnectionLimitSaver : IDisposable
-    {
-#if !(NETCOREAPP)
-        private readonly int _DefaultConnectionLimit;
-#endif        
-        private DefaultConnectionLimitSaver( int connectionLimit )
-        {
-#if !(NETCOREAPP)
-            if ( ServicePointManager.DefaultConnectionLimit < connectionLimit )
-            {
-                _DefaultConnectionLimit = ServicePointManager.DefaultConnectionLimit;
-                ServicePointManager.DefaultConnectionLimit = connectionLimit;
-            }
-            else
-            {
-                _DefaultConnectionLimit = -1;
-            }
-#endif
-        }        
-        public void Dispose()
-        {
-#if !(NETCOREAPP)
-            if ( 0 < _DefaultConnectionLimit )
-            {
-                ServicePointManager.DefaultConnectionLimit = _DefaultConnectionLimit;
-            }
-#endif
-        }
-
-        public static DefaultConnectionLimitSaver Create( int connectionLimit ) => new DefaultConnectionLimitSaver( connectionLimit );
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
     internal static class _Extensions
     {
-        public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
-        public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
-
-        public static bool AnyEx< T >( this IEnumerable< T > seq ) => (seq != null && seq.Any());
-
         public static void WaitForTaskEndsOrKeyboardBreak( this Task task, CancellationTokenSource cts )
         {
             const int TASK_WAIT_MILLISECONDS_TIMEOUT = 100;

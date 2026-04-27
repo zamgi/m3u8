@@ -46,8 +46,8 @@ namespace m3u8
 
             public HttpClient HttpClient { get; set; }
 
-            public ManualResetEventSlim   WaitIfPausedEvent { [M(O.AggressiveInlining)] get; set; }
-            public Action                 WaitingIfPaused   { [M(O.AggressiveInlining)] get; set; }
+            public ManualResetEventSlim       WaitIfPausedEvent { [M(O.AggressiveInlining)] get; set; }
+            public Action                     WaitingIfPaused   { [M(O.AggressiveInlining)] get; set; }
             public I_throttler_by_speed__v2_t ThrottlerBySpeed  { [M(O.AggressiveInlining)] get; set; }
 
             public DownloadContentDelegate          DownloadContent          { get; set; }
@@ -462,9 +462,9 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal static class m3u8_live_stream_downloader_extensions
+    internal static partial class m3u8_live_stream_downloader_extensions
     {
-        private static HttpRequestMessage CreateRequstGet( Uri url, IDictionary< string, string > requestHeaders )
+        private static HttpRequestMessage CreateRequestGet( Uri url, IDictionary< string, string > requestHeaders )
         {
             var req = new HttpRequestMessage( HttpMethod.Get, url );
             //req.Headers.ConnectionClose = _ConnectionClose;
@@ -480,7 +480,7 @@ namespace m3u8
         }
         [M(O.AggressiveInlining)] public static async Task< string > GetStringAsync_Ex( this HttpClient hc,  string requestUri, IDictionary< string, string > requestHeaders, CancellationToken ct )
         {
-            using ( var req  = CreateRequstGet( new Uri( requestUri ), requestHeaders ) )
+            using ( var req  = CreateRequestGet( new Uri( requestUri ), requestHeaders ) )
             using ( var resp = await hc.SendAsync( req, /*_HttpCompletionOption*/HttpCompletionOption.ResponseContentRead, ct ).CAX() )
             using ( var content = resp.Content )
             {
@@ -519,7 +519,7 @@ namespace m3u8
         }
         [M(O.AggressiveInlining)] public static async Task< GetStreamAsync_Ex_Result > GetStreamAsync_Ex( this HttpClient hc,  string requestUri, IDictionary< string, string > requestHeaders, CancellationToken ct )
         {
-            using ( var req = CreateRequstGet( new Uri( requestUri ), requestHeaders ) )
+            using ( var req = CreateRequestGet( new Uri( requestUri ), requestHeaders ) )
             {
                 var resp = await hc.SendAsync( req, /*_HttpCompletionOption*/HttpCompletionOption.ResponseContentRead, ct ).CAX();
                 //using ( var content = resp.Content )
@@ -545,12 +545,6 @@ namespace m3u8
                 }
             }
         }
-
-        [M(O.AggressiveInlining)] public static bool IsNullOrEmpty( this string s ) => string.IsNullOrEmpty( s );
-        [M(O.AggressiveInlining)] public static bool IsNullOrWhiteSpace( this string s ) => string.IsNullOrWhiteSpace( s );
-
-        [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );
-        [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable CAX( this Task task ) => task.ConfigureAwait( false );
 
         [M(O.AggressiveInlining)] public static HashSet< T > ToFillHashSet< T >( this IEnumerable< T > seq, HashSet< T > hs )
         {
