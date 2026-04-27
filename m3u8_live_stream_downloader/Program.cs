@@ -5,6 +5,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+#if M3U8_LIVE_STREAM_DOWNLOADER__HttpMessageInvoker
+using m3u8_live_stream_downloader = m3u8.m3u8_live_stream_downloader__with_HttpMessageInvoker;
+#else
+using m3u8_live_stream_downloader = m3u8.m3u8_live_stream_downloader__with_HttpClient;
+#endif
+
 namespace m3u8
 {
     /// <summary>
@@ -66,8 +72,11 @@ namespace m3u8
                     //{ "sec-ch-ua-mobile", "?0" },
                     //{ "sec-ch-ua-platform", "\"Windows\"" }
                 };
-
+#if M3U8_LIVE_STREAM_DOWNLOADER__HttpMessageInvoker
+                using var m = new m3u8_live_stream_downloader( p, timeout: null );
+#else
                 using var m = new m3u8_live_stream_downloader( p );
+#endif
                 await m.Download( cts.Token, max_output_file_size, requestHeaders ).CAX();
                 //-------------------------------------------------------------------//
             }

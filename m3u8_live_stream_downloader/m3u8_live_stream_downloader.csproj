@@ -20,7 +20,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <DefineConstants>THROTTLER__V2;</DefineConstants>
+    <DefineConstants>THROTTLER__V2;M3U8_LIVE_STREAM_DOWNLOADER__HttpMessageInvoker;</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>
@@ -33,5 +33,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.7" />
+    <PackageReference Include="System.IO.Pipelines" Version="10.0.7" />
   </ItemGroup>
 </Project>

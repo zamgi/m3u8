@@ -212,9 +212,9 @@ public partial class MessageBoxWindow : Window
     }
 
     private void okButton_Click( object sender, RoutedEventArgs e ) => CloseDialog( ButtonTypeEnum.Ok );
-    private void cancelButton_Click( object? sender, RoutedEventArgs e ) => CloseDialog( ButtonTypeEnum.Cancel );
-    private void yesButton_Click( object? sender, RoutedEventArgs e ) => CloseDialog( ButtonTypeEnum.Yes );
-    private void noButton_Click( object? sender, RoutedEventArgs e ) => CloseDialog( ButtonTypeEnum.No );
+    private void cancelButton_Click( object sender, RoutedEventArgs e ) => CloseDialog( ButtonTypeEnum.Cancel );
+    private void yesButton_Click( object sender, RoutedEventArgs e ) => CloseDialog( ButtonTypeEnum.Yes );
+    private void noButton_Click( object sender, RoutedEventArgs e ) => CloseDialog( ButtonTypeEnum.No );
     private void CloseDialog( ButtonTypeEnum dialogResult )
     {
         _DialogResult = dialogResult; 

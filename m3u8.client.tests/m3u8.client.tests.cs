@@ -72,10 +72,13 @@ namespace m3u8.client.tests
                     {
                         Debug.WriteLine( ex );
                     }
-                };
+                }
 
-                var h = new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.All };
-                h.SslOptions.RemoteCertificateValidationCallback = ( sender, certificate, chain, sslPolicyErrors ) => true;
+                var h = new SocketsHttpHandler() 
+                { 
+                    AutomaticDecompression = DecompressionMethods.All 
+                };
+                h.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
                 //set_Protocol( h.SslOptions, SslProtocols.Tls   );
                 //set_Protocol( h.SslOptions, SslProtocols.Tls11 );
                 set_Protocol( h.SslOptions, SslProtocols.Tls12 );
@@ -106,7 +109,7 @@ namespace m3u8.client.tests
                     {
                         Debug.WriteLine( ex );
                     }
-                };
+                }
 
                 var h = new HttpClientHandler() 
                 { 

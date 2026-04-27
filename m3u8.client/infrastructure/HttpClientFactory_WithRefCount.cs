@@ -141,7 +141,7 @@ namespace m3u8.infrastructure
                     {
                         Debug.WriteLine( ex );
                     }
-                };
+                }
 
                 var h = new HttpClientHandler() 
                 { 

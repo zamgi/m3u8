@@ -16,6 +16,11 @@ using m3u8.infrastructure;
 using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
+#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
+using m3u8_live_stream_downloader = m3u8.m3u8_live_stream_downloader__with_HttpMessageInvoker;
+#else
+using m3u8_live_stream_downloader = m3u8.m3u8_live_stream_downloader__with_HttpClient;
+#endif
 
 namespace m3u8.download.manager.controllers
 {
@@ -695,7 +700,11 @@ namespace m3u8.download.manager.controllers
         {
             var (timeout, _) = _SettingsController.GetCreateM3u8ClientParams();
             var webProxy = row.WebProxyInfo.CreateWebProxyIfUsed();
-            var (hc, _/*webProxy2*/, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );
+#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
+            var (hi, _/*webProxy2*/, d) = HttpInvokerFactory_WithRefCount.Get( webProxy/*, timeout*/ );
+#else            
+            var (hc, _/*webProxy2*/, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );            
+#endif
             using ( d )
             using ( var cts                      = new CancellationTokenSource() )
             using ( var waitIfPausedEvent        = new ManualResetEventSlim( true, 0 ) )
@@ -796,10 +805,13 @@ namespace m3u8.download.manager.controllers
                         });
 
                         var p = new m3u8_live_stream_downloader.InitParams()
-                        { 
+                        {
+#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
+                            HttpInvoker = hi,
+#else
                             HttpClient = hc,
-
-                            M3u8Url        = m3u8FileUrl.ToString(),
+#endif
+                            M3u8Url = m3u8FileUrl.ToString(),
                             OutputFileName = veryFirstOutputFullFileName,
 
                             WaitIfPausedEvent = waitIfPausedEvent,
@@ -812,8 +824,11 @@ namespace m3u8.download.manager.controllers
                             DownloadPartError        = downloadPartErrorAction,
                             DownloadCreateOutputFile = downloadCreateOutputFileAction
                         };
-
+#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
+                        await m3u8_live_stream_downloader._Download_( p, timeout, cts.Token, () => row.LiveStreamMaxFileSizeInBytes, row.RequestHeaders );
+#else
                         await m3u8_live_stream_downloader._Download_( p, cts.Token, () => row.LiveStreamMaxFileSizeInBytes, row.RequestHeaders );
+#endif
                     });
 
                     //-4-//
