@@ -15,11 +15,11 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 
-using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
-using _DC_                                   = m3u8.download.manager.controllers.DownloadController;
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using _DC_                                   = m3u8.download.manager.controllers.DownloadController;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
 using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
+using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using M                                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                                      = System.Runtime.CompilerServices.MethodImplOptions;
@@ -161,9 +161,9 @@ namespace m3u8.download.manager.ui
             if ( _DownloadListModel.RowsCount == 0 )
             {
                 var dir = _SC.Settings.OutputFileDirectory;
-                _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , null, "xz-1", dir) );
-                _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", null, "xz-2", dir) );
-                _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", null, "xz-3", dir) );
+                _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( "http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , null, "xz-1", dir) );
+                _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( "http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", null, "xz-2", dir) );
+                _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( "http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", null, "xz-3", dir) );
             }
 #endif
         }
@@ -348,6 +348,14 @@ namespace m3u8.download.manager.ui
                         if ( downloadListUC.HasFocus )
                         {
                             EditDownload( downloadListUC.GetSelectedDownloadRow() );
+                        }
+                        break;
+
+                    case Keys.M: // [Ctrl + M]
+                        //if ( downloadListUC.HasFocus )
+                        {
+                            var suc = ChangeSettingsParams4DownloadRow( downloadListUC.GetSelectedDownloadRow() );
+                            e.SuppressKeyPress = suc;
                         }
                         break;
 
@@ -800,7 +808,8 @@ namespace m3u8.download.manager.ui
                     cancelDownloadToolButton.Enabled =
                         pauseDownloadToolButton.Enabled =
                             deleteDownloadToolButton.Enabled =
-                                editDownloadToolButton.Enabled = false;
+                                editDownloadToolButton.Enabled =
+                                    changeSettingsParams4DownloadRow_ToolButton.Enabled = false;
                 deleteAllFinishedDownloadToolButton.Enabled = _DownloadListModel.HasAnyFinished();
             }
             else
@@ -809,7 +818,8 @@ namespace m3u8.download.manager.ui
                 startDownloadToolButton .Enabled = StartDownload_IsAllowed ( status );
                 cancelDownloadToolButton.Enabled = CancelDownload_IsAllowed( status );
                 pauseDownloadToolButton .Enabled = PauseDownload_IsAllowed ( status );
-                editDownloadToolButton  .Enabled = !status.IsRunningOrPaused(); //EditDownload_IsAllowed  ( status );
+                editDownloadToolButton  .Enabled = !status.IsRunningOrPaused();
+                changeSettingsParams4DownloadRow_ToolButton.Enabled = !editDownloadToolButton.Enabled;
 
                 deleteDownloadToolButton.Enabled = true;
                 deleteAllFinishedDownloadToolButton.Enabled = (status.IsFinished() || _DownloadListModel.HasAnyFinished());
@@ -1113,7 +1123,7 @@ namespace m3u8.download.manager.ui
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out var cuttedFileName ) )
                         outputFileName = cuttedFileName;
 
-                    var row = _DownloadListModel.AddRow( (x.m3u8FileUrl, requestHeaders, outputFileName, outputFileDirectory) );
+                    var row = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.m3u8FileUrl, requestHeaders, _SC.GetDefaultWebProxyInfo(), outputFileName, outputFileDirectory ) );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     _DC.Start( row );
                 }
@@ -1122,45 +1132,6 @@ namespace m3u8.download.manager.ui
 
             #region [.AddNewDownloadForm as top-always-owner-form.]
             AddNewDownloadForm.Add( this, _DC, _SC, x.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
-            #endregion
-
-            #region comm. [.AddNewDownloadForm as modal-dialog.]
-            /*
-            AddNewDownloadForm.ShowModalDialog( this, _DownloadController, _SettingsController, p.m3u8FileUrl, seriesInfo, async f =>
-            {
-                var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory()) );
-                await downloadListUC.SelectDownloadRowDelay( row );
-                if ( f.AutoStartDownload )
-                {
-                    _DownloadController.Start( row );
-                }
-            });
-
-            if ( AddNewDownloadForm.TryGetOpenedForm( out var openedForm ) )
-            {
-                openedForm.ActivateAfterCloseOther();
-            }
-            //*/
-
-            /*
-            using ( var f = new AddNewDownloadForm( _DownloadController, _SettingsController, p.m3u8FileUrl, seriesInfo ) )
-            {
-                if ( f.ShowDialog( this ) == DialogResult.OK )
-                {
-                    var row = _DownloadListModel.AddRow( (f.M3u8FileUrl, f.GetOutputFileName(), f.GetOutputDirectory()) );
-                    await downloadListUC.SelectDownloadRowDelay( row );
-                    if ( f.AutoStartDownload )
-                    {
-                        _DownloadController.Start( row );
-                    }
-                }
-            }
-
-            if ( AddNewDownloadForm.TryGetOpenedForm( out var openedForm ) )
-            {
-                openedForm.ActivateAfterCloseOther();
-            }
-            //*/
             #endregion
         }
         
@@ -1208,19 +1179,20 @@ namespace m3u8.download.manager.ui
                 if ( !_SC.UniqueUrlsOnly || (!_DownloadListModel.ContainsUrl( x.videoUrl ) && !_DownloadListModel.ContainsUrl( x.audioUrl )) )
                 {
                     var outputFileDirectory = _SC.OutputFileDirectory;
+                    var webProxyInfo        = _SC.GetDefaultWebProxyInfo();
 
                     var outputFileName_a = get_outputFileName_4_audio( outputFileName );                    
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName_a, out var cuttedFileName ) )
                         outputFileName_a = cuttedFileName;
 
-                    var row_1 = _DownloadListModel.AddRow( (x.audioUrl, audioRequestHeaders, outputFileName_a, outputFileDirectory) );
+                    var row_1 = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, outputFileName_a, outputFileDirectory ) );
                     await downloadListUC.SelectDownloadRowDelay( row_1 );
                     _DC.Start( row_1 );
 
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out cuttedFileName ) )
                         outputFileName = cuttedFileName;
 
-                    var row_2 = _DownloadListModel.AddRow( (x.videoUrl, videoRequestHeaders, outputFileName, outputFileDirectory) );
+                    var row_2 = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, outputFileName, outputFileDirectory ) );
                     await downloadListUC.SelectDownloadRowDelay( row_2 );
                     _DC.Start( row_2 );
                 }
@@ -1245,11 +1217,11 @@ namespace m3u8.download.manager.ui
                         = (f.GetWebProxyInfo(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes, f.AutoStartDownload);
                     var outFn_a = get_outputFileName_4_audio( outFn );
 
-                    var row_1 = _DownloadListModel.AddRow( (x.audioUrl, audioRequestHeaders, webProxyInfo, outFn_a, outDir, isLiveStream, liveStreamMaxFileSize) );
+                    var row_1 = _DownloadListModel.AddRow( DownloadRow_Definer_2.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, outFn_a, outDir, isLiveStream, liveStreamMaxFileSize ) );
                     await downloadListUC.SelectDownloadRowDelay( row_1 );
                     if ( autoStart ) _DC.Start( row_1 );
 
-                    var row_2 = _DownloadListModel.AddRow( (x.videoUrl, videoRequestHeaders, webProxyInfo, outFn, outDir, isLiveStream, liveStreamMaxFileSize) );
+                    var row_2 = _DownloadListModel.AddRow( DownloadRow_Definer_2.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, outFn, outDir, isLiveStream, liveStreamMaxFileSize ) );
                     await downloadListUC.SelectDownloadRowDelay( row_2 );
                     if ( autoStart ) _DC.Start( row_2 );
                 }
@@ -1264,13 +1236,15 @@ namespace m3u8.download.manager.ui
             if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
 
             AddNewDownloadForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor, null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/,
-                                     AddNewDownloadForm_when_Edit_formClosedAction, AddNewDownloadForm_when_Add_formClosedAction, activeTabPageKind );
+                                     AddNewDownloadForm_when_Edit_formClosedAction, 
+                                     AddNewDownloadForm_when_Add_formClosedAction, 
+                                     activeTabPageKind );
         }
         private async Task AddNewDownloadForm_when_Add_formClosedAction( AddNewDownloadForm f )
         {
             if ( f.DialogResult == DialogResult.OK )
             {
-                var row = _DownloadListModel.AddRow( f.GetParamsTuple()/*(f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes)*/ );
+                var row = _DownloadListModel.AddRow( f.GetParamsTuple() );
                 await downloadListUC.SelectDownloadRowDelay( row );
                 if ( f.AutoStartDownload )
                 {
@@ -1287,8 +1261,47 @@ namespace m3u8.download.manager.ui
         {
             if ( (f.DialogResult == DialogResult.OK) && !row.Status.IsRunningOrPaused() )
             {
-                row.Update( f.GetParamsTuple()/*f.M3u8FileUrl, f.GetRequestHeaders(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes*/ );
+                var tp = f.GetParamsTuple();
+                row.Update( tp );
+                ChangeOutputDirectory( row, tp.OutputDirectory );
+                ChangeOutputFileName ( row, tp.OutputFileName  );
                 downloadListUC.Invalidate( true );
+            }
+        }
+
+        private bool ChangeSettingsParams4DownloadRow( DownloadRow row, ChangeSettingsParams4DownloadRowForm.TabPageKind? activeTabPageKind = null )
+        {
+            var suc = (row != null) && row.Status.IsRunningOrPaused();
+            if ( suc )
+            ChangeSettingsParams4DownloadRowForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor,
+                                                       ChangeSettingsParams4DownloadRow_formClosedAction,
+                                                       AddNewDownloadForm_when_Add_formClosedAction, activeTabPageKind );
+            return (suc);
+        }
+        private void ChangeSettingsParams4DownloadRow_formClosedAction( ChangeSettingsParams4DownloadRowForm f, DownloadRow row )
+        {
+            if ( f.DialogResult == DialogResult.OK )
+            {
+                var tp = f.GetParamsTuple();
+
+                var suc = _DC.TryChangeSettings( row, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount );
+                if ( suc ) //must be RunningOrPaused if suc
+                {
+                    ChangeOutputDirectory( row, tp.OutputDirectory );
+                    ChangeOutputFileName ( row, tp.OutputFileName  );
+                    downloadListUC.Invalidate( true );
+                }
+                else if ( !row.Status.IsRunningOrPaused() )
+                {
+                    row.Update( (f.M3u8FileUrl, tp.RequestHeaders, tp.WebProxyInfo, tp.LiveStreamMaxFileSizeInBytes, tp.Timeout, tp.AttemptRequestCount /*, tp.OutputFileName, tp.OutputDirectory*/) );
+                    ChangeOutputDirectory( row, tp.OutputDirectory );
+                    ChangeOutputFileName ( row, tp.OutputFileName  );
+                    downloadListUC.Invalidate( true );
+                }
+                else
+                {
+                    this.MessageBox_ShowError( $"Failed change settings for download row: '{row.OutputFileName}'.", $"Change settings, / '{row.OutputFileName}' /" );
+                }
             }
         }
 
@@ -1456,8 +1469,11 @@ namespace m3u8.download.manager.ui
                     #endregion
 
                     #region [.editDownloadMenuItem.]
-                    editDownloadMenuItem.Visible = 
-                        editDownloadMenuItem_Separator.Visible = (rows.Count == 1) && !selectedRow.Status.IsRunningOrPaused();
+                    var vis = (rows.Count == 1) && !selectedRow.Status.IsRunningOrPaused();
+                    editDownloadMenuItem.Visible =
+                        /*editDownloadMenuItem_Separator.Visible =*/ vis;
+                    changeSettingsParams4DownloadRow_MenuItem.Visible = !vis;
+                    editDownloadMenuItem_Separator.Visible = true;
                     #endregion
                 }
                 else
@@ -1469,7 +1485,8 @@ namespace m3u8.download.manager.ui
                     onlyDeleteOutputFileMenuItem.Enabled = false;
 
                     editDownloadMenuItem.Visible = 
-                        editDownloadMenuItem_Separator.Visible = false;
+                        editDownloadMenuItem_Separator.Visible =
+                            changeSettingsParams4DownloadRow_MenuItem.Visible = false;
                 }
 
                 SetAllDownloadsMenuItemsEnabled( allowedAll: (selectedRow == null) || (1 < _DownloadListModel.RowsCount) );
@@ -1531,6 +1548,7 @@ namespace m3u8.download.manager.ui
         private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
 
         private void editDownloadMenuItem_Click( object sender, EventArgs e ) => EditDownload( downloadListUC.GetSelectedDownloadRow() );
+        private void changeSettingsParams4DownloadRow_MenuItem_Click( object sender, EventArgs e ) => ChangeSettingsParams4DownloadRow( downloadListUC.GetSelectedDownloadRow() );
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
         private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRows().ToArrayEx(), deleteOutputFiles: true );
@@ -1722,98 +1740,109 @@ namespace m3u8.download.manager.ui
         }
         private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _SC.Settings.LastChangeOutputDirectory ) ?? row.OutputDirectory;
 
-        private void ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
-        private void ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
-        private void ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
-        {
-            var prev_outputFullFileName = row.GetOutputFullFileName();
-            var need_add = _ExternalProgQueue.Remove( prev_outputFullFileName );
+        private Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );            
+        private Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
+        private Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
+            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, outputFileName_or_outputDirectory, change_outputDirectory, _ExternalProgQueue
+                , new_outputFullFileName => Task.FromResult( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) == DialogResult.Yes )
+                , error => { this.MessageBox_ShowError( error, "Move/Remane output file" ); return Task.CompletedTask; } );
 
-            string prev_outputFileName_or_outputDirectory;
-            if ( change_outputDirectory )
-            {
-                prev_outputFileName_or_outputDirectory = row.OutputDirectory;
-                row.SetOutputDirectory( outputFileName_or_outputDirectory );
-            }
-            else
-            {
-                prev_outputFileName_or_outputDirectory = row.OutputFileName;
-                row.SetOutputFileName( outputFileName_or_outputDirectory );
-            }
-            var new_outputFullFileName = row.GetOutputFullFileName();
+        //private void ChangeOutputFileName_Or_OutputDirectory__( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
+        //{
+        //    if ( outputFileName_or_outputDirectory.EqualIgnoreCase( change_outputDirectory ? row.OutputDirectory : row.OutputFileName ) )
+        //    {
+        //        return;
+        //    }
 
-            if ( need_add ) _ExternalProgQueue.Add( new_outputFullFileName );
+        //    //----------------------------------------------------------//
+        //    var prev_outputFullFileName = row.GetOutputFullFileName();
+        //    var need_add = _ExternalProgQueue.Remove( prev_outputFullFileName );
 
-            var res = MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName );
-            switch ( res )
-            {
-                //case MoveFileByRenameResultEnum.Postponed: break;
-                case MoveFileByRenameResultEnum.Suc:
-                    row.SaveVeryFirstOutputFullFileName( null );
-                    break;
-                case MoveFileByRenameResultEnum.Canceled:
-                case MoveFileByRenameResultEnum.Fail:
-                    //rollback
-                    if ( change_outputDirectory )
-                    {
-                        row.SetOutputDirectory( prev_outputFileName_or_outputDirectory );
-                    }
-                    else
-                    {
-                        row.SetOutputFileName( prev_outputFileName_or_outputDirectory );
-                    }
-                    if ( need_add )
-                    {
-                        _ExternalProgQueue.Remove( new_outputFullFileName );
-                        _ExternalProgQueue.Add( prev_outputFullFileName );
-                    }
-                    break;
-            }
-        }
+        //    string prev_outputFileName_or_outputDirectory;
+        //    if ( change_outputDirectory )
+        //    {
+        //        prev_outputFileName_or_outputDirectory = row.OutputDirectory;
+        //        row.SetOutputDirectory( outputFileName_or_outputDirectory );
+        //    }
+        //    else
+        //    {
+        //        prev_outputFileName_or_outputDirectory = row.OutputFileName;
+        //        row.SetOutputFileName( outputFileName_or_outputDirectory );
+        //    }
+        //    var new_outputFullFileName = row.GetOutputFullFileName();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private enum MoveFileByRenameModeEnum { OverwriteAsk, OverwriteSilent, SkipIfAlreadyExists }
-        private enum MoveFileByRenameResultEnum { Postponed, Canceled, Suc, Fail }
-        private MoveFileByRenameResultEnum MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
-            , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
-        {
-            if ( (!row.Status.IsRunningOrPaused() || FileHelper.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
-            {
-                switch ( mode )
-                {
-                    case MoveFileByRenameModeEnum.OverwriteSilent:
-                        break;
-                    case MoveFileByRenameModeEnum.OverwriteAsk:
-                        if ( File.Exists( new_outputFullFileName ) )
-                        {
-                            if ( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) != DialogResult.Yes )
-                            {
-                                return (MoveFileByRenameResultEnum.Canceled);
-                            }
-                        }
-                        break;
-                    case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
-                        if ( File.Exists( new_outputFullFileName ) )
-                        {
-                            return (MoveFileByRenameResultEnum.Canceled);
-                        }
-                        break;
-                }
+        //    if ( need_add ) _ExternalProgQueue.Add( new_outputFullFileName );
 
-                if ( FileHelper.TryMoveFile_NoThrow( prev_outputFullFileName, new_outputFullFileName, out var error ) )
-                {
-                    return (MoveFileByRenameResultEnum.Suc);
-                }
-                else
-                {
-                    this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" );
-                    return (MoveFileByRenameResultEnum.Fail);
-                }
-            }
-            return (MoveFileByRenameResultEnum.Postponed);
-        }
+        //    var res = MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName );
+        //    switch ( res )
+        //    {
+        //        //case MoveFileByRenameResultEnum.Postponed: break;
+        //        case MoveFileByRenameResultEnum.Suc:
+        //            row.SaveVeryFirstOutputFullFileName( null );
+        //            break;
+        //        case MoveFileByRenameResultEnum.Canceled:
+        //        case MoveFileByRenameResultEnum.Fail:
+        //            //rollback
+        //            if ( change_outputDirectory )
+        //            {
+        //                row.SetOutputDirectory( prev_outputFileName_or_outputDirectory );
+        //            }
+        //            else
+        //            {
+        //                row.SetOutputFileName( prev_outputFileName_or_outputDirectory );
+        //            }
+        //            if ( need_add )
+        //            {
+        //                _ExternalProgQueue.Remove( new_outputFullFileName );
+        //                _ExternalProgQueue.Add( prev_outputFullFileName );
+        //            }
+        //            break;
+        //    }
+        //}
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //private enum MoveFileByRenameModeEnum { OverwriteAsk, OverwriteSilent, SkipIfAlreadyExists }
+        //private enum MoveFileByRenameResultEnum { Postponed, Canceled, Suc, Fail }
+        //private MoveFileByRenameResultEnum MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
+        //    , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
+        //{
+        //    if ( (!row.Status.IsRunningOrPaused() || FileHelper.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
+        //    {
+        //        switch ( mode )
+        //        {
+        //            case MoveFileByRenameModeEnum.OverwriteSilent:
+        //                break;
+        //            case MoveFileByRenameModeEnum.OverwriteAsk:
+        //                if ( File.Exists( new_outputFullFileName ) )
+        //                {
+        //                    if ( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) != DialogResult.Yes )
+        //                    {
+        //                        return (MoveFileByRenameResultEnum.Canceled);
+        //                    }
+        //                }
+        //                break;
+        //            case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
+        //                if ( File.Exists( new_outputFullFileName ) )
+        //                {
+        //                    return (MoveFileByRenameResultEnum.Canceled);
+        //                }
+        //                break;
+        //        }
+
+        //        if ( FileHelper.TryMoveFile_NoThrow( prev_outputFullFileName, new_outputFullFileName, out var error ) )
+        //        {
+        //            return (MoveFileByRenameResultEnum.Suc);
+        //        }
+        //        else
+        //        {
+        //            this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" );
+        //            return (MoveFileByRenameResultEnum.Fail);
+        //        }
+        //    }
+        //    return (MoveFileByRenameResultEnum.Postponed);
+        //}
         #endregion
 
         #region [.LiveStream change max-file-size.]

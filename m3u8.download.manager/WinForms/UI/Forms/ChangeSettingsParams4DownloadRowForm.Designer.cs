@@ -1,0 +1,519 @@
+﻿using _DC_ = m3u8.download.manager.controllers.DownloadController;
+using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+
+namespace m3u8.download.manager.ui
+{
+    partial class ChangeSettingsParams4DownloadRowForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        #region Windows Form Designer generated code
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent( _DC_ dc, _SC_ sc )
+        {
+            System.Windows.Forms.Label outputFileNameLabel;
+            System.Windows.Forms.Label outputDirectoryLabel;
+            this.components = new System.ComponentModel.Container();
+            outputFileNameLabel = new System.Windows.Forms.Label();
+            outputDirectoryLabel = new System.Windows.Forms.Label();
+            this.topPanel = new System.Windows.Forms.Panel();
+            this.tabControl = new System.Windows.Forms.TabControlEx();
+            this.mainTabPage = new System.Windows.Forms.TabPage();
+            this.requestHeadersTabPage = new System.Windows.Forms.TabPage();
+            this.webProxyTabPage = new System.Windows.Forms.TabPage();
+            this.requestHeadersEditor = new RequestHeadersEditor( sc );
+            this.webProxyUC = new WebProxyUC();
+            this.m3u8FileUrlTextBox = new System.Windows.Forms.TextBoxEx();
+            this.outputFileNameTextBox = new TextBoxWithCustomPathPaste();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.outputDirectorySelectButton = new System.Windows.Forms.ButtonWithFocusCues();
+            this.outputFileNameSelectButton = new System.Windows.Forms.ButtonWithFocusCues();
+            this.logPanel = new System.Windows.Forms.Panel();
+            this.logUC = new m3u8.download.manager.ui.LogUC( sc );
+            this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.outputDirectoryTextBox = new TextBoxWithCustomPathPaste();
+            this.isLiveStreamCheckBox = new System.Windows.Forms.CheckBox();
+            this.liveStreamMaxSizeInMbLabel = new System.Windows.Forms.Label();
+            this.liveStreamMaxSizeInMbNumUpDn = new System.Windows.Forms.NumericUpDownEx();
+            this.requestTimeoutByPartLabel = new System.Windows.Forms.Label();
+            this.requestTimeoutByPartDTP = new System.Windows.Forms.BorderDateTimePicker();
+            this.attemptRequestCountByPartLabel = new System.Windows.Forms.Label();
+            this.attemptRequestCountByPartNUD = new System.Windows.Forms.NumericUpDownEx();            
+            this.loadM3u8FileContentButton = new System.Windows.Forms.ButtonWithFocusCues();
+            this.buttomPanel = new System.Windows.Forms.Panel();
+            this.okButton = new System.Windows.Forms.ButtonWithFocusCues();
+            this.cancelButton = new System.Windows.Forms.ButtonWithFocusCues();
+            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC( dc, sc );
+            this.topPanel.SuspendLayout();
+            this.tabControl.SuspendLayout();
+            this.mainTabPage.SuspendLayout();
+            this.requestHeadersTabPage.SuspendLayout();
+            this.webProxyTabPage.SuspendLayout();
+            this.logPanel.SuspendLayout();
+            this.mainLayoutPanel.SuspendLayout();
+            this.buttomPanel.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // l1
+            // 
+            outputFileNameLabel.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            outputFileNameLabel.AutoSize = true;
+            outputFileNameLabel.ForeColor = System.Drawing.Color.SteelBlue;
+            outputFileNameLabel.Location = new System.Drawing.Point(6, 2);
+            outputFileNameLabel.Size = new System.Drawing.Size(55, 26);
+            outputFileNameLabel.TabIndex = 0;
+            outputFileNameLabel.Text = "output \r\nfile name :";
+            outputFileNameLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // l2
+            // 
+            outputDirectoryLabel.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            outputDirectoryLabel.AutoSize = true;
+            outputDirectoryLabel.ForeColor = System.Drawing.Color.SteelBlue;
+            outputDirectoryLabel.Location = new System.Drawing.Point(6, 62);
+            outputDirectoryLabel.Size = new System.Drawing.Size(55, 26);
+            outputDirectoryLabel.TabIndex = 4;
+            outputDirectoryLabel.Text = "output \r\ndirectory :";
+            outputDirectoryLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            // 
+            // topPanel
+            // 
+            this.topPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.topPanel.Controls.Add(this.m3u8FileUrlTextBox);
+            this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.topPanel.Location = new System.Drawing.Point(0, 0);
+            this.topPanel.Size = new System.Drawing.Size(803, 81);
+            this.topPanel.TabIndex = 0;
+            // 
+            // tabControl
+            // 
+            this.tabControl.DrawMode = System.Windows.Forms.TabDrawMode.Normal;
+            this.tabControl.Controls.Add(this.mainTabPage);
+            this.tabControl.Controls.Add(this.requestHeadersTabPage);
+            this.tabControl.Controls.Add(this.webProxyTabPage);
+            this.tabControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl.Location = new System.Drawing.Point(0, 0);
+            this.tabControl.Size = new System.Drawing.Size(803, 81);
+            this.tabControl.TabIndex = 0;
+            this.tabControl.Selected += tabControl_Selected;
+            // 
+            // mainTabPage
+            // 
+            this.mainTabPage.Controls.Add(this.logPanel);
+            //---this.mainTabPage.Controls.Add(this.buttomPanel);
+            this.mainTabPage.Controls.Add(this.mainLayoutPanel);
+            this.mainTabPage.Controls.Add(this.topPanel);
+            this.mainTabPage.Location = new System.Drawing.Point(4, 22);
+            this.mainTabPage.Size = new System.Drawing.Size(288, 431);
+            this.mainTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.mainTabPage.TabIndex = 0;
+            this.mainTabPage.Text = ".m3u8 file url:";
+            this.mainTabPage.UseVisualStyleBackColor = true;
+            this.mainTabPage.BackColor = System.Drawing.Color.WhiteSmoke;
+            // 
+            // requestHeadersTabPage
+            // 
+            this.requestHeadersTabPage.Controls.Add(this.requestHeadersEditor);
+            this.requestHeadersTabPage.Location = new System.Drawing.Point(4, 22);            
+            this.requestHeadersTabPage.Size = new System.Drawing.Size(288, 431);
+            this.requestHeadersTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.requestHeadersTabPage.TabIndex = 1;
+            this.requestHeadersTabPage.Text = "request headers";
+            this.requestHeadersTabPage.UseVisualStyleBackColor = true;
+            this.requestHeadersTabPage.BackColor = System.Drawing.Color.WhiteSmoke;
+            // 
+            // webProxyTabPage
+            // 
+            this.webProxyTabPage.Controls.Add(this.webProxyUC);
+            this.webProxyTabPage.Location = new System.Drawing.Point(4, 22);            
+            this.webProxyTabPage.Size = new System.Drawing.Size(288, 431);
+            this.webProxyTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.webProxyTabPage.TabIndex = 2;
+            this.webProxyTabPage.Text = "web proxy";
+            this.webProxyTabPage.UseVisualStyleBackColor = true;
+            this.webProxyTabPage.BackColor = System.Drawing.Color.WhiteSmoke;
+            // 
+            // requestHeadersEditor
+            // 
+            this.requestHeadersEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.requestHeadersEditor.TabIndex = 0;
+            this.requestHeadersEditor.OnRequestHeadersCountChanged += new RequestHeadersEditor.RequestHeadersCountChangedEventHandler(this.requestHeadersEditor_OnRequestHeadersCountChanged);
+            // 
+            // webProxyUC
+            // 
+            this.webProxyUC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.webProxyUC.TabIndex = 0;
+            this.webProxyUC.OnWebProxyChanged += new WebProxyUC.WebProxyChangedEventHandler(this.webProxyUC_OnWebProxyChanged);            
+            // 
+            // m3u8FileUrlTextBox
+            // 
+            //this.m3u8FileUrlTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.m3u8FileUrlTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.m3u8FileUrlTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
+            this.m3u8FileUrlTextBox.Location = new System.Drawing.Point(0, 0);
+            this.m3u8FileUrlTextBox.Multiline = true;
+            this.m3u8FileUrlTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.m3u8FileUrlTextBox.Size = new System.Drawing.Size(790, 54);
+            this.m3u8FileUrlTextBox.TabIndex = 1;
+            this.m3u8FileUrlTextBox.PlaceHolderText = "m3u8 file url";
+            this.m3u8FileUrlTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.m3u8FileUrlTextBox.BorderColor = null;
+            //this.m3u8FileUrlTextBox.ClearButtonColor = System.Drawing.Color.LightBlue;
+            //this.m3u8FileUrlTextBox.ClearButtonColorHover = System.Drawing.Color.Blue;
+            this.m3u8FileUrlTextBox.TextChanged += new System.EventHandler(this.m3u8FileUrlTextBox_TextChanged);
+            // 
+            // outputFileNameTextBox
+            // 
+            this.outputFileNameTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.outputFileNameTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
+            this.outputFileNameTextBox.Location = new System.Drawing.Point(67, 6);
+            this.outputFileNameTextBox.Size = new System.Drawing.Size(539, 18);
+            this.outputFileNameTextBox.TabIndex = 1;
+            this.outputFileNameTextBox.WordWrap = false;
+            this.outputFileNameTextBox.PlaceHolderText = "output file name";
+            this.outputFileNameTextBox.ClearButtonColor = System.Drawing.Color.Gray; //System.Drawing.Color.DodgerBlue;
+            //this.outputFileNameTextBox.ClearButtonColorHover = System.Drawing.Color.Blue;
+            this.outputFileNameTextBox.ClearButtonBackcolor = System.Drawing.Color.White;// Smoke;
+            this.outputFileNameTextBox.ClearButtonBackcolorHover = System.Drawing.Color.White;// Smoke;
+            this.outputFileNameTextBox.ClearButtonClick += new System.EventHandler(this.outputFileNameTextBox_ClearButtonClick);
+            this.outputFileNameTextBox.TextChanged += new System.EventHandler(this.outputFileNameTextBox_TextChanged);
+            // 
+            // outputDirectoryTextBox
+            // 
+            this.outputDirectoryTextBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.outputDirectoryTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
+            this.outputDirectoryTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
+            this.outputDirectoryTextBox.Location = new System.Drawing.Point(67, 66);
+            this.outputDirectoryTextBox.Size = new System.Drawing.Size(539, 18);
+            this.outputDirectoryTextBox.TabIndex = 5;
+            this.outputDirectoryTextBox.WordWrap = false;
+            this.outputDirectoryTextBox.PlaceHolderText = "output directory";
+            this.outputDirectoryTextBox.DrawClearButton = false;
+            // 
+            // outputDirectorySelectButton
+            // 
+            this.outputDirectorySelectButton.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.outputDirectorySelectButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.outputDirectorySelectButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.outputDirectorySelectButton.Location = new System.Drawing.Point(641, 68);
+            this.outputDirectorySelectButton.Size = new System.Drawing.Size(23, 23);
+            this.outputDirectorySelectButton.TabIndex = 6;
+            this.outputDirectorySelectButton.Text = "≡";
+            this.outputDirectorySelectButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;            
+            this.outputDirectorySelectButton.UseCompatibleTextRendering = true;
+            this.outputDirectorySelectButton.UseVisualStyleBackColor = true;
+            this.outputDirectorySelectButton.Click += new System.EventHandler(this.outputDirectorySelectButton_Click);
+            this.toolTip.SetToolTip(this.outputDirectorySelectButton, "select \'output directory\'");
+            // 
+            // outputFileNameSelectButton
+            // 
+            this.outputFileNameSelectButton.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.outputFileNameSelectButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.outputFileNameSelectButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.outputFileNameSelectButton.Location = new System.Drawing.Point(641, 3);
+            this.outputFileNameSelectButton.Size = new System.Drawing.Size(23, 23);
+            this.outputFileNameSelectButton.TabIndex = 3;
+            this.outputFileNameSelectButton.Text = "≡";
+            this.outputFileNameSelectButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;            
+            this.outputFileNameSelectButton.UseCompatibleTextRendering = true;
+            this.outputFileNameSelectButton.UseVisualStyleBackColor = true;
+            this.outputFileNameSelectButton.Click += new System.EventHandler(this.outputFileNameSelectButton_Click);
+            this.toolTip.SetToolTip(this.outputFileNameSelectButton, "select \'output file name\'");
+            // 
+            // logPanel
+            // 
+            this.logPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.logPanel.Controls.Add(this.logUC);
+            this.logPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logPanel.Location = new System.Drawing.Point(0, 171);
+            this.logPanel.Size = new System.Drawing.Size(803, 0);
+            this.logPanel.TabIndex = 2;
+            // 
+            // logUC
+            // 
+            this.logUC.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logUC.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
+            this.logUC.Location = new System.Drawing.Point(0, 0);
+            this.logUC.Size = new System.Drawing.Size(803, 0);
+            this.logUC.TabIndex = 0;
+            this.logUC.ShowOnlyRequestRowsWithErrors = false;
+            this.logUC.ScrollToLastRow = true;
+            this.logUC.ShowResponseColumn = true;
+            this.logUC.AllowDrawDownloadButtonForM3u8Urls = true;
+            this.logUC.AdditionalM3u8UrlsDetectMethod = LogUC.AdditionalM3u8UrlsDetectMethodEnumType.EndingWithM3u8;
+            this.logUC.DownloadAdditionalM3u8Url += new System.Action<System.Uri>(this.logUC_DownloadAdditionalM3u8Url);
+            this.logUC.AllowDownloadAdditionalM3u8Url = new System.Func<string, bool>(this.logUC_AllowDownloadAdditionalM3u8Url);            
+            // 
+            // mainLayoutPanel
+            // 
+            this.mainLayoutPanel.ColumnCount = 9;
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle()); //0
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F/*70F*/));//1
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));//2
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));//3
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));//4            
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));//6
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));//5
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 29F));//7
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());//8
+            
+            this.mainLayoutPanel.Controls.Add(outputFileNameLabel, 0, 0);
+            this.mainLayoutPanel.Controls.Add(this.outputFileNameTextBox, 1, 0);
+            this.mainLayoutPanel.SetColumnSpan(this.outputFileNameTextBox, 6/*3*/);
+            this.mainLayoutPanel.Controls.Add(this.outputFileNameSelectButton, 7, 0);
+
+            this.mainLayoutPanel.Controls.Add(this.liveStreamMaxSizeInMbLabel  , 3, 1);
+            this.mainLayoutPanel.SetColumnSpan(this.liveStreamMaxSizeInMbLabel , 5);
+            this.mainLayoutPanel.Controls.Add(this.liveStreamMaxSizeInMbNumUpDn, 8, 1);
+            this.mainLayoutPanel.Controls.Add(this.isLiveStreamCheckBox        , 8, 0);
+
+            this.mainLayoutPanel.Controls.Add(outputDirectoryLabel, 0, 2);
+            this.mainLayoutPanel.Controls.Add(this.outputDirectoryTextBox, 1, 2);
+            this.mainLayoutPanel.SetColumnSpan(this.outputDirectoryTextBox, 6/*3*/);
+            this.mainLayoutPanel.Controls.Add(this.outputDirectorySelectButton, 7, 2);
+
+            this.mainLayoutPanel.Controls.Add(this.requestTimeoutByPartLabel      , 0, 3);
+            this.mainLayoutPanel.SetColumnSpan(this.requestTimeoutByPartLabel     , 2);
+            this.mainLayoutPanel.Controls.Add(this.requestTimeoutByPartDTP        , 2, 3);
+            this.mainLayoutPanel.Controls.Add(this.attemptRequestCountByPartLabel , 3, 3);
+            this.mainLayoutPanel.SetColumnSpan(this.attemptRequestCountByPartLabel, 2);
+            this.mainLayoutPanel.Controls.Add(this.attemptRequestCountByPartNUD   , 5, 3);
+
+            this.mainLayoutPanel.Controls.Add(this.loadM3u8FileContentButton, 8, 2);
+
+            this.mainLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.mainLayoutPanel.Location = new System.Drawing.Point(0, 81);
+            this.mainLayoutPanel.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.mainLayoutPanel.RowCount = 5;
+            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize, 30F));
+            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.mainLayoutPanel.Size = new System.Drawing.Size(803, 80 + 20);
+            this.mainLayoutPanel.TabIndex = 1;
+            //---this.mainLayoutPanel.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Inset;
+            // 
+            // liveStreamMaxSizeInMbLabel
+            // 
+            this.liveStreamMaxSizeInMbLabel.AutoSize = true;
+            this.liveStreamMaxSizeInMbLabel.AutoEllipsis = true;
+            this.liveStreamMaxSizeInMbLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.liveStreamMaxSizeInMbLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.liveStreamMaxSizeInMbLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.liveStreamMaxSizeInMbLabel.ForeColor = System.Drawing.Color.DimGray;
+            this.liveStreamMaxSizeInMbLabel.MinimumSize = new System.Drawing.Size(100, 17);
+            this.liveStreamMaxSizeInMbLabel.TabIndex = 7;
+            this.liveStreamMaxSizeInMbLabel.Text = "max single output file size in mb:";
+            this.liveStreamMaxSizeInMbLabel.Visible = false;
+            // 
+            // liveStreamMaxSizeInMbNumUpDn
+            // 
+            //this.liveStreamMaxSizeInMbNumUpDn.AutoSize = true;
+            this.liveStreamMaxSizeInMbNumUpDn.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.liveStreamMaxSizeInMbNumUpDn.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.liveStreamMaxSizeInMbNumUpDn.ForeColor = System.Drawing.Color.DimGray;
+            this.liveStreamMaxSizeInMbNumUpDn.Size = new System.Drawing.Size(70, 17);
+            this.liveStreamMaxSizeInMbNumUpDn.TabIndex = 7;
+            this.liveStreamMaxSizeInMbNumUpDn.ThousandsSeparator = true;
+            this.liveStreamMaxSizeInMbNumUpDn.Minimum = 1;
+            this.liveStreamMaxSizeInMbNumUpDn.Maximum = int.MaxValue;
+            this.liveStreamMaxSizeInMbNumUpDn.Value = 250;
+            //---this.liveStreamMaxSizeInMbNumUpDn.Increment = 10;
+            this.liveStreamMaxSizeInMbNumUpDn.Set_Increment_MouseWheel( 10 );
+            this.liveStreamMaxSizeInMbNumUpDn.Round2NextTenGroup = true;
+            this.liveStreamMaxSizeInMbNumUpDn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.toolTip.SetToolTip(this.liveStreamMaxSizeInMbNumUpDn, "max single output file size in mb for live stream" );
+            this.liveStreamMaxSizeInMbNumUpDn.Visible = false;
+            // 
+            // isLiveStreamCheckBox
+            // 
+            this.isLiveStreamCheckBox.AutoSize = true;
+            this.isLiveStreamCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;            
+            this.isLiveStreamCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.isLiveStreamCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.isLiveStreamCheckBox.ForeColor = System.Drawing.Color.Silver;
+            this.isLiveStreamCheckBox.TabIndex = 7;
+            this.isLiveStreamCheckBox.Text = "this is a live stream";
+            this.isLiveStreamCheckBox.UseVisualStyleBackColor = true;
+            //this.isLiveStreamCheckBox.Click += new System.EventHandler(this.isLiveStreamCheckBox_Click);
+            this.isLiveStreamCheckBox.Enabled = false;
+            this.isLiveStreamCheckBox.Visible = false;
+
+            // 
+            // requestTimeoutByPartLabel
+            // 
+            this.requestTimeoutByPartLabel.AutoSize = true;
+            this.requestTimeoutByPartLabel.AutoEllipsis = true;
+            this.requestTimeoutByPartLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.requestTimeoutByPartLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.requestTimeoutByPartLabel.ForeColor = System.Drawing.Color.DarkBlue;
+            this.requestTimeoutByPartLabel.MinimumSize = new System.Drawing.Size(100, 17);
+            this.requestTimeoutByPartLabel.TabIndex = 0;
+            this.requestTimeoutByPartLabel.Text = "request timeout by part:";
+            // 
+            // requestTimeoutByPartDTP
+            // 
+            this.requestTimeoutByPartDTP.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.requestTimeoutByPartDTP.ShowUpDown = true;
+            this.requestTimeoutByPartDTP.TabIndex = 1;            
+            // 
+            // attemptRequestCountByPartLabel
+            // 
+            this.attemptRequestCountByPartLabel.AutoSize = true;
+            this.attemptRequestCountByPartLabel.AutoEllipsis = true;
+            this.attemptRequestCountByPartLabel.MinimumSize = new System.Drawing.Size(100, 17);
+            this.attemptRequestCountByPartLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.attemptRequestCountByPartLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;            
+            this.attemptRequestCountByPartLabel.ForeColor = System.Drawing.Color.DarkBlue;            
+            this.attemptRequestCountByPartLabel.TabIndex = 2;
+            this.attemptRequestCountByPartLabel.Text = "attempt request count by part:";
+            // 
+            // attemptRequestCountByPartNUD
+            // 
+            this.attemptRequestCountByPartNUD.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.attemptRequestCountByPartNUD.ForeColor = System.Drawing.Color.DimGray;
+            this.attemptRequestCountByPartNUD.TabIndex = 3;
+            this.attemptRequestCountByPartNUD.ThousandsSeparator = true;
+            this.attemptRequestCountByPartNUD.Minimum = 1;
+            this.attemptRequestCountByPartNUD.Maximum = int.MaxValue;
+            this.attemptRequestCountByPartNUD.Value = 1;
+            this.attemptRequestCountByPartNUD.Set_Increment_MouseWheel( 1 );
+            this.attemptRequestCountByPartNUD.Round2NextTenGroup = false;
+            this.attemptRequestCountByPartNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;            
+
+            // 
+            // loadM3u8FileContentButton
+            // 
+            this.loadM3u8FileContentButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.loadM3u8FileContentButton.AutoSize = true;
+            this.loadM3u8FileContentButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.loadM3u8FileContentButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.loadM3u8FileContentButton.ForeColor = System.Drawing.Color.FromArgb(70, 70, 70);
+            this.loadM3u8FileContentButton.Location = new System.Drawing.Point(670, 63);
+            this.loadM3u8FileContentButton.Size = new System.Drawing.Size(130, 23);
+            this.loadM3u8FileContentButton.TabIndex = 7;
+            this.loadM3u8FileContentButton.Text = "(load .m3u8 file-content)";
+            this.loadM3u8FileContentButton.UseVisualStyleBackColor = true;
+            this.loadM3u8FileContentButton.Click += new System.EventHandler(this.loadM3u8FileContentButton_Click);
+            // 
+            // buttomPanel
+            // 
+            this.buttomPanel.BackColor = System.Drawing.Color.White;
+            this.buttomPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.buttomPanel.Controls.Add(this.okButton);
+            this.buttomPanel.Controls.Add(this.cancelButton);
+            this.buttomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.buttomPanel.Location = new System.Drawing.Point(0, 150);
+            this.buttomPanel.Size = new System.Drawing.Size(803, 36);
+            this.buttomPanel.TabIndex = 3;
+            // 
+            // downloadStartButton
+            // 
+            this.okButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.okButton.AutoSize = true;
+            this.okButton.BackColor = System.Drawing.SystemColors.Control;
+            this.okButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.okButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.okButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.okButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold);
+            this.okButton.ForeColor = System.Drawing.Color.FromArgb(70, 70, 70);
+            this.okButton.Location = new System.Drawing.Point(233, 5);
+            this.okButton.Size = new System.Drawing.Size(159, 23);
+            this.okButton.TabIndex = 0;
+            this.okButton.Text = "Ok";
+            this.okButton.UseVisualStyleBackColor = false;
+            // 
+            // downloadLaterButton
+            // 
+            this.cancelButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.cancelButton.AutoSize = true;
+            this.cancelButton.BackColor = System.Drawing.SystemColors.Control;
+            this.cancelButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.cancelButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.cancelButton.ForeColor = System.Drawing.Color.FromArgb(70, 70, 70);
+            this.cancelButton.Location = new System.Drawing.Point(413, 5);
+            this.cancelButton.Size = new System.Drawing.Size(159, 23);
+            this.cancelButton.TabIndex = 1;
+            this.cancelButton.Text = "Cancel";
+            this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancelButton.UseVisualStyleBackColor = false;
+            // 
+            // statusBarUC
+            // 
+            this.statusBarUC.AutoSize = true;
+            this.statusBarUC.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.statusBarUC.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.statusBarUC.IsVisibleExcludesWordsLabel = true;
+            this.statusBarUC.IsVisibleParallelismLabel = true;
+            this.statusBarUC.IsVisibleSettingsLabel = true;
+            this.statusBarUC.Location = new System.Drawing.Point(0, 186);
+            this.statusBarUC.Margin = new System.Windows.Forms.Padding(0);
+            this.statusBarUC.Size = new System.Drawing.Size(803, 39);
+            this.statusBarUC.TabIndex = 4;
+            // 
+            // ChangeSettingsParams4DownloadRowForm
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(803, 280);
+            this.Controls.Add(this.tabControl);
+            this.Controls.Add(this.buttomPanel);
+            this.Controls.Add(this.statusBarUC);
+            this.ShowIcon = false;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.ShowInTaskbar = false;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "change settings for download row";
+            this.tabControl.ResumeLayout(false);
+            this.mainTabPage.ResumeLayout(false);
+            this.requestHeadersTabPage.ResumeLayout(false);
+            this.webProxyTabPage.ResumeLayout(false);
+            this.topPanel.ResumeLayout(false);
+            this.logPanel.ResumeLayout(false);
+            this.mainLayoutPanel.ResumeLayout(false);
+            this.buttomPanel.ResumeLayout(false);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+        }
+        #endregion
+
+        private System.Windows.Forms.TabControlEx tabControl;
+        private System.Windows.Forms.TabPage mainTabPage;
+        private System.Windows.Forms.TabPage requestHeadersTabPage;
+        private System.Windows.Forms.TabPage webProxyTabPage;
+        private m3u8.download.manager.ui.RequestHeadersEditor requestHeadersEditor;
+        private m3u8.download.manager.ui.WebProxyUC webProxyUC;
+        private System.Windows.Forms.Panel topPanel;
+        private System.Windows.Forms.TextBoxEx m3u8FileUrlTextBox;
+        private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputFileNameTextBox;
+        private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.ButtonWithFocusCues loadM3u8FileContentButton;
+        private System.Windows.Forms.CheckBox isLiveStreamCheckBox;
+        private System.Windows.Forms.Label liveStreamMaxSizeInMbLabel;
+        private System.Windows.Forms.NumericUpDownEx liveStreamMaxSizeInMbNumUpDn;
+        private System.Windows.Forms.Label attemptRequestCountByPartLabel;        
+        private System.Windows.Forms.NumericUpDownEx attemptRequestCountByPartNUD;
+        private System.Windows.Forms.Label requestTimeoutByPartLabel;
+        private System.Windows.Forms.BorderDateTimePicker requestTimeoutByPartDTP;
+        private System.Windows.Forms.Panel logPanel;
+        private System.Windows.Forms.TableLayoutPanel mainLayoutPanel;
+        private System.Windows.Forms.ButtonWithFocusCues outputFileNameSelectButton;
+        private System.Windows.Forms.Panel buttomPanel;
+        private System.Windows.Forms.ButtonWithFocusCues okButton;
+        private System.Windows.Forms.ButtonWithFocusCues cancelButton;
+        private System.Windows.Forms.ButtonWithFocusCues outputDirectorySelectButton;
+        private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputDirectoryTextBox;
+        private LogUC logUC;
+        private StatusBarUC statusBarUC;
+    }
+}

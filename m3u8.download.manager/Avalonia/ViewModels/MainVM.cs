@@ -23,7 +23,7 @@ namespace m3u8.download.manager
             UndoModel          = new UndoModel( DownloadListModel );
 
             AddCommand                         = new AddCommand( this );
-            EditCommand                        = new EditCommand( this );
+            EditCommand                        = new EditCommand( this, mainWindow );
             ParallelismCommand                 = new ParallelismCommand( this );
             SettingsCommand                    = new SettingsCommand( this );
             WebProxyCommand                    = new WebProxyCommand( this );

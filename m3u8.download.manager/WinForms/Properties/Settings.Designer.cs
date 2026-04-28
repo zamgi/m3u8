@@ -276,6 +276,30 @@ namespace m3u8.download.manager.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ChangeSettingsParams4DownloadRowForm_PosJson {
+            get {
+                return ((string)(this["ChangeSettingsParams4DownloadRowForm_PosJson"]));
+            }
+            set {
+                this["ChangeSettingsParams4DownloadRowForm_PosJson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ChangeSettingsParams4DownloadRowForm_PosLogVisibleJson {
+            get {
+                return ((string)(this["ChangeSettingsParams4DownloadRowForm_PosLogVisibleJson"]));
+            }
+            set {
+                this["ChangeSettingsParams4DownloadRowForm_PosLogVisibleJson"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string MainFormPositionJson {
             get {
                 return ((string)(this["MainFormPositionJson"]));

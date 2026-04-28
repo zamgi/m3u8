@@ -32,6 +32,8 @@ namespace m3u8.download.manager
                 LiveStreamMaxFileSizeInBytes = r.LiveStreamMaxFileSizeInBytes;
                 RequestHeaders               = r.RequestHeaders;
                 WebProxyInfo                 = new web_proxy_info_4_Serialize( r.WebProxyInfo );
+                Timeout                      = r.Timeout;
+                AttemptRequestCount          = r.AttemptRequestCount;
 
                 if ( r.IsLiveStream && !r.VeryFirstOutputFullFileName.IsNullOrEmpty() )
                 {
@@ -52,6 +54,8 @@ namespace m3u8.download.manager
             [DataMember(Name="y")] public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; set; }
             [DataMember(Name="r")] public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; set; }
             [DataMember(Name="w")] public web_proxy_info_4_Serialize WebProxyInfo { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="t")] public TimeSpan? Timeout             { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="a")] public int?      AttemptRequestCount { [M(O.AggressiveInlining)] get; set; }
         }
 
         /// <summary>
@@ -85,23 +89,6 @@ namespace m3u8.download.manager
         }
 
         public static string ToJSON( IEnumerable< DownloadRow > rows ) => rows.Select( r => new DownloadRow_4_Serialize( r ) ).ToJSON();
-        //public static IEnumerable< (DateTime CreatedOrStartedDateTime, string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, DownloadStatus Status, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) > FromJSON( string json )
-        //{
-        //    if ( !json.IsNullOrWhiteSpace() )
-        //    {
-        //        try
-        //        {
-        //            var rows = Extensions.FromJSON< List< DownloadRow_4_Serialize > >( json ).Select( r => 
-        //                (r.CreatedOrStartedDateTime, r.Url, r.RequestHeaders, r.OutputFileName, r.OutputDirectory, DownloadStatus.Created/*r.Status*/, r.IsLiveStream, r.LiveStreamMaxFileSizeInBytes) );
-        //            return (rows);
-        //        }
-        //        catch ( Exception ex )
-        //        {
-        //            Debug.WriteLine( ex );
-        //        }
-        //    }
-        //    return (Enumerable.Empty< (DateTime CreatedOrStartedDateTime, string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, DownloadStatus Status, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) >());
-        //}
         public static IEnumerable< DownloadRow_Definer_3 > FromJSON( string json )
         {
             if ( !json.IsNullOrWhiteSpace() )
@@ -115,6 +102,8 @@ namespace m3u8.download.manager
                                    Url                          = r.Url,
                                    RequestHeaders               = r.RequestHeaders, 
                                    WebProxyInfo                 = r.WebProxyInfo?.ToWebProxyInfo() ?? web_proxy_info.Empty,
+                                   Timeout                      = r.Timeout,
+                                   AttemptRequestCount          = r.AttemptRequestCount,
                                    OutputFileName               = r.OutputFileName, 
                                    OutputDirectory              = r.OutputDirectory, 
                                    Status                       = DownloadStatus.Created/*r.Status*/,

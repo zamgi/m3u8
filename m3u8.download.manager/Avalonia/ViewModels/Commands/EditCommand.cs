@@ -12,10 +12,12 @@ namespace m3u8.download.manager
     internal sealed class EditCommand : ICommand
     {
         private MainVM _VM;
+        private MainWindow _MainWindow;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
-        public EditCommand( MainVM vm )
+        public EditCommand( MainVM vm, MainWindow mainWindow )
         {
             _VM = vm;
+            _MainWindow = mainWindow;
             _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
         }
 
@@ -36,7 +38,10 @@ namespace m3u8.download.manager
                 await f.ShowDialogEx();
                 if ( f.Success && !row.Status.IsRunningOrPaused() )
                 {
-                    row.Update( f.GetParamsTuple() );
+                    var tp = f.GetParamsTuple();
+                    row.Update( tp );
+                    await _MainWindow.ChangeOutputDirectory( row, tp.OutputDirectory );
+                    await _MainWindow.ChangeOutputFileName ( row, tp.OutputFileName  );
                 }
             }
         }

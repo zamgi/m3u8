@@ -13,11 +13,11 @@ namespace m3u8.download.manager
     /// </summary>
     internal static partial class TestWebProxyConnectionHelper
     {
+        private const string TEST_URL = "https://google.com";
+
         private static async Task< (HttpResponseMessage resp, string webProxyAddressText) > TestConnection_Routine__use_HttpClient(
             web_proxy_info webProxyInfo, CancellationToken ct, Action< string > changeWebProxyAddressAction )
         {
-            const string TEST_URL = "https://google.com";
-
             //var timeout  = TimeSpan.FromSeconds( 10 ); //var (timeout, _) = _SC.GetCreateM3u8ClientParams();
             try
             {
@@ -70,8 +70,6 @@ namespace m3u8.download.manager
         private static async Task< (HttpResponseMessage resp, string webProxyAddressText) > TestConnection_Routine__use_HttpInvoker(
             web_proxy_info webProxyInfo, CancellationToken ct, Action< string > changeWebProxyAddressAction )
         {
-            const string TEST_URL = "https://google.com";
-
             //var timeout = TimeSpan.FromSeconds( 10 ); //var (timeout, _) = _SC.GetCreateM3u8ClientParams();
             var timeout = i_m3u8_client.init_params.DEFAULT_TIMEOUT;
             try

@@ -84,6 +84,7 @@
     <Compile Include="..\[Common]\HttpHeaderHelper.cs" Link="Infrastructure\HttpHeaderHelper.cs" />
     <Compile Include="..\[Common]\DigitLetterSort.cs" Link="Infrastructure\DigitLetterSort.cs" />
     <Compile Include="..\[Common]\TestWebProxyConnectionHelper.cs" Link="Infrastructure\TestWebProxyConnectionHelper.cs" />
+    <Compile Include="..\[Common]\ChangeFilenameOrDirectoryHelper.cs" Link="Infrastructure\ChangeFilenameOrDirectoryHelper.cs" />
   </ItemGroup>
 
   <ItemGroup>

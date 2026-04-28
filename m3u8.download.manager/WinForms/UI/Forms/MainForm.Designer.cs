@@ -41,6 +41,7 @@ namespace m3u8.download.manager.ui
             this.pauseDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.cancelDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.editDownloadToolButton = new System.Windows.Forms.ToolStripButton();
+            this.changeSettingsParams4DownloadRow_ToolButton = new System.Windows.Forms.ToolStripButton();
             this.deleteDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.deleteAllFinishedDownloadToolButton = new System.Windows.Forms.ToolStripButton();
             this.undoToolButton = new System.Windows.Forms.ToolStripButton();
@@ -65,6 +66,7 @@ namespace m3u8.download.manager.ui
             this.cancelDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editDownloadMenuItem_Separator = new System.Windows.Forms.ToolStripSeparator();
             this.editDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.changeSettingsParams4DownloadRow_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteWithOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.onlyDeleteOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -104,6 +106,7 @@ namespace m3u8.download.manager.ui
                 this.cancelDownloadToolButton,
                 s2,
                 this.editDownloadToolButton,
+                this.changeSettingsParams4DownloadRow_ToolButton,
                 s3,
                 this.deleteDownloadToolButton,
                 this.deleteAllFinishedDownloadToolButton,
@@ -173,6 +176,15 @@ namespace m3u8.download.manager.ui
             this.editDownloadToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editDownloadToolButton.ToolTipText = "Edit download  (Ctrl + E)";
             this.editDownloadToolButton.Click += new System.EventHandler(this.editDownloadMenuItem_Click);
+            // 
+            // changeSettingsParams4DownloadRow_ToolButton
+            // 
+            this.changeSettingsParams4DownloadRow_ToolButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.changeSettingsParams4DownloadRow_ToolButton.Enabled = false;
+            this.changeSettingsParams4DownloadRow_ToolButton.Image = global::m3u8.download.manager.Properties.Resources.network_tools;
+            this.changeSettingsParams4DownloadRow_ToolButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.changeSettingsParams4DownloadRow_ToolButton.ToolTipText = "Change settings  (Ctrl + M)";
+            this.changeSettingsParams4DownloadRow_ToolButton.Click += new System.EventHandler(this.changeSettingsParams4DownloadRow_MenuItem_Click);
             // 
             // deleteDownloadToolButton
             // 
@@ -339,6 +351,7 @@ namespace m3u8.download.manager.ui
                 
                 this.editDownloadMenuItem_Separator,
                 this.editDownloadMenuItem,
+                this.changeSettingsParams4DownloadRow_MenuItem,
                 s20,
                 this.deleteDownloadMenuItem,
                 this.deleteWithOutputFileMenuItem,
@@ -388,6 +401,13 @@ namespace m3u8.download.manager.ui
             this.editDownloadMenuItem.ShortcutKeyDisplayString = "(Ctrl + E)";
             this.editDownloadMenuItem.Text = "Edit...";
             this.editDownloadMenuItem.Click += new System.EventHandler(this.editDownloadMenuItem_Click);
+            // 
+            // changeSettingsParams4DownloadRow_MenuItem
+            // 
+            this.changeSettingsParams4DownloadRow_MenuItem.Image = global::m3u8.download.manager.Properties.Resources.network_tools;
+            this.changeSettingsParams4DownloadRow_MenuItem.ShortcutKeyDisplayString = "(Ctrl + M)";
+            this.changeSettingsParams4DownloadRow_MenuItem.Text = "Change settings...";
+            this.changeSettingsParams4DownloadRow_MenuItem.Click += new System.EventHandler(this.changeSettingsParams4DownloadRow_MenuItem_Click);            
             // 
             // deleteDownloadMenuItem
             // 
@@ -526,6 +546,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ToolStripButton pauseDownloadToolButton;
         private System.Windows.Forms.ToolStripButton cancelDownloadToolButton;
         private System.Windows.Forms.ToolStripButton editDownloadToolButton;
+        private System.Windows.Forms.ToolStripButton changeSettingsParams4DownloadRow_ToolButton;
         private System.Windows.Forms.ToolStripButton deleteDownloadToolButton;
         private System.Windows.Forms.ToolStripButton deleteAllFinishedDownloadToolButton;
         private System.Windows.Forms.ToolStripButton undoToolButton;
@@ -552,6 +573,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ToolStripMenuItem cancelDownloadMenuItem;
         private System.Windows.Forms.ToolStripSeparator editDownloadMenuItem_Separator;
         private System.Windows.Forms.ToolStripMenuItem editDownloadMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem changeSettingsParams4DownloadRow_MenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteDownloadMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteWithOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem onlyDeleteOutputFileMenuItem;

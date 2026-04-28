@@ -146,7 +146,7 @@ namespace m3u8.download.manager.ui
         {
             if ( !outputFileName.IsNullOrEmpty() )
             {
-                var idx = outputFileName.IndexOf( '.' );
+                var idx = outputFileName.LastIndexOf( '.' );
                 outputFileNameTextBox.SelectionStart =
                         outputFileNameTextBox.SelectionEnd = ((idx != -1) ? idx : outputFileName.Length);
             }

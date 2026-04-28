@@ -33,9 +33,21 @@ namespace m3u8
             public TimeSpan Timeout { get => _Timeout.GetValueOrDefault( DEFAULT_TIMEOUT ); set => _Timeout = value; }
         }
 
-
         init_params InitParams { get; }
         IWebProxy   WebProxy   { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public struct ChangeSettingsParams
+        {
+            public (HttpClient         httpClient , IDisposable disposableObj)? NetHttpClient  { get; set; }
+            public (HttpMessageInvoker httpInvoker, IDisposable disposableObj)? NetHttpInvoker { get; set; }
+            public IWebProxy WebProxy            { get; set; }
+            public int?      AttemptRequestCount { get; set; }
+            public TimeSpan? Timeout             { get; set; }
+        }
+        void ChangeSettings( in ChangeSettingsParams csp );
 
         Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null );
 

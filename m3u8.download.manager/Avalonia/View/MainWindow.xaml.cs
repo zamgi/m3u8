@@ -243,9 +243,9 @@ namespace m3u8.download.manager.ui
             if ( _VM.DownloadListModel.RowsCount == 0 )
             {
                 var dir = Settings.Default.OutputFileDirectory;
-                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , null, "xz-1", dir) );
-                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", null, "xz-2", dir) );
-                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", null, "xz-3", dir) );
+                _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( "http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , null, "xz-1", dir ) );
+                _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( "http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", null, "xz-2", dir ) );
+                _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( "http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", null, "xz-3", dir ) );
             }
 #endif
             var suc = downloadListUC.DataGrid.Focus();
@@ -1243,7 +1243,7 @@ namespace m3u8.download.manager.ui
         private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _VM.DownloadListModel.GetRows_ArrayCopy(), deleteOutputFiles: true );
         #endregion
 
-        #region [.Change output file-name.]
+        #region [.change OutputFileName & OutputDirectory.]
         private async void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
             using var f = new ChangeOutputFileForm( _VM.SettingsController, row );
@@ -1251,7 +1251,6 @@ namespace m3u8.download.manager.ui
                 await f.ShowDialog( this );
                 if ( f.Success && FileNameCleaner4UI.TryGetOutputFileName( f.OutputFileName, _VM.SettingsController.OutputFileExtension, out var outputFileName ) )
                 {
-                    //row.SetOutputFileName( outputFileName );
                     await ChangeOutputFileName( row, outputFileName );
                 }
             }
@@ -1268,7 +1267,6 @@ namespace m3u8.download.manager.ui
                 var directory = sf[ 0 ].Path.LocalPath.ToString();
                 if ( !directory.IsNullOrWhiteSpace() )
                 {
-                    //row.SetOutputDirectory( directory );
                     await ChangeOutputDirectory( row, directory );
                 }
             }
@@ -1330,91 +1328,97 @@ namespace m3u8.download.manager.ui
             }
         }
         private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _VM.SettingsController.Settings.LastChangeOutputDirectory ) ?? row.OutputDirectory;
-        private Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
-        private Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
-        private async Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
-        {
-            var prev_outputFullFileName = row.GetOutputFullFileName();
+        
+        public Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
+        public Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
+        private Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
+            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, outputFileName_or_outputDirectory, change_outputDirectory, null/*_ExternalProgQueue*/
+                , async new_outputFullFileName => ((await this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" )) == ButtonResult.Yes)
+                , error => this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" ) );
 
-            string prev_outputFileName_or_outputDirectory;
-            if ( change_outputDirectory )
-            {
-                prev_outputFileName_or_outputDirectory = row.OutputDirectory;
-                row.SetOutputDirectory( outputFileName_or_outputDirectory );
-            }
-            else
-            {
-                prev_outputFileName_or_outputDirectory = row.OutputFileName;
-                row.SetOutputFileName( outputFileName_or_outputDirectory );
-            }
-            var new_outputFullFileName = row.GetOutputFullFileName();
+        //private async Task ChangeOutputFileName_Or_OutputDirectory__( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
+        //{
+        //    var prev_outputFullFileName = row.GetOutputFullFileName();
 
-            var res = await MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName );
-            switch ( res )
-            {
-                //case MoveFileByRenameResultEnum.Postponed: break;
-                case MoveFileByRenameResultEnum.Suc:
-                    row.SaveVeryFirstOutputFullFileName( null );
-                    break;
-                case MoveFileByRenameResultEnum.Canceled:
-                case MoveFileByRenameResultEnum.Fail:
-                    //rollback
-                    if ( change_outputDirectory )
-                    {
-                        row.SetOutputDirectory( prev_outputFileName_or_outputDirectory );
-                    }
-                    else
-                    {
-                        row.SetOutputFileName( prev_outputFileName_or_outputDirectory );
-                    }
-                    break;
-            }
-        }
+        //    string prev_outputFileName_or_outputDirectory;
+        //    if ( change_outputDirectory )
+        //    {
+        //        prev_outputFileName_or_outputDirectory = row.OutputDirectory;
+        //        row.SetOutputDirectory( outputFileName_or_outputDirectory );
+        //    }
+        //    else
+        //    {
+        //        prev_outputFileName_or_outputDirectory = row.OutputFileName;
+        //        row.SetOutputFileName( outputFileName_or_outputDirectory );
+        //    }
+        //    var new_outputFullFileName = row.GetOutputFullFileName();
 
-        /// <summary>
-        /// 
-        /// </summary>
-        private enum MoveFileByRenameModeEnum { OverwriteAsk, OverwriteSilent, SkipIfAlreadyExists }
-        private enum MoveFileByRenameResultEnum { Postponed, Canceled, Suc, Fail }
-        private async Task< MoveFileByRenameResultEnum > MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
-            , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
-        {
-            if ( (!row.Status.IsRunningOrPaused() || FileHelper.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
-            {
-                switch ( mode )
-                {
-                    case MoveFileByRenameModeEnum.OverwriteSilent:
-                        break;
-                    case MoveFileByRenameModeEnum.OverwriteAsk:
-                        if ( File.Exists( new_outputFullFileName ) )
-                        {
-                            var yes = ((await this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" )) == ButtonResult.Yes);
-                            if ( !yes )
-                            {
-                                return (MoveFileByRenameResultEnum.Canceled);
-                            }
-                        }
-                        break;
-                    case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
-                        if ( File.Exists( new_outputFullFileName ) )
-                        {
-                            return (MoveFileByRenameResultEnum.Canceled);
-                        }
-                        break;
-                }
+        //    var res = await MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName );
+        //    switch ( res )
+        //    {
+        //        //case MoveFileByRenameResultEnum.Postponed: break;
+        //        case MoveFileByRenameResultEnum.Suc:
+        //            row.SaveVeryFirstOutputFullFileName( null );
+        //            break;
+        //        case MoveFileByRenameResultEnum.Canceled:
+        //        case MoveFileByRenameResultEnum.Fail:
+        //            //rollback
+        //            if ( change_outputDirectory )
+        //            {
+        //                row.SetOutputDirectory( prev_outputFileName_or_outputDirectory );
+        //            }
+        //            else
+        //            {
+        //                row.SetOutputFileName( prev_outputFileName_or_outputDirectory );
+        //            }
+        //            break;
+        //    }
+        //}
 
-                if ( FileHelper.TryMoveFile_NoThrow( prev_outputFullFileName, new_outputFullFileName, out var error ) )
-                {
-                    return (MoveFileByRenameResultEnum.Suc);
-                }
-                else
-                {
-                    await this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" );
-                    return (MoveFileByRenameResultEnum.Fail);
-                }
-            }
-            return (MoveFileByRenameResultEnum.Postponed);
-        }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //private enum MoveFileByRenameModeEnum { OverwriteAsk, OverwriteSilent, SkipIfAlreadyExists }
+        //private enum MoveFileByRenameResultEnum { Postponed, Canceled, Suc, Fail }
+        //private async Task< MoveFileByRenameResultEnum > MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
+        //    , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
+        //{
+        //    if ( (!row.Status.IsRunningOrPaused() || FileHelper.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
+        //    {
+        //        switch ( mode )
+        //        {
+        //            case MoveFileByRenameModeEnum.OverwriteSilent:
+        //                break;
+        //            case MoveFileByRenameModeEnum.OverwriteAsk:
+        //                if ( File.Exists( new_outputFullFileName ) )
+        //                {
+        //                    var yes = ((await this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" )) == ButtonResult.Yes);
+        //                    if ( !yes )
+        //                    {
+        //                        return (MoveFileByRenameResultEnum.Canceled);
+        //                    }
+        //                }
+        //                break;
+        //            case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
+        //                if ( File.Exists( new_outputFullFileName ) )
+        //                {
+        //                    return (MoveFileByRenameResultEnum.Canceled);
+        //                }
+        //                break;
+        //        }
+
+        //        if ( FileHelper.TryMoveFile_NoThrow( prev_outputFullFileName, new_outputFullFileName, out var error ) )
+        //        {
+        //            return (MoveFileByRenameResultEnum.Suc);
+        //        }
+        //        else
+        //        {
+        //            await this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" );
+        //            return (MoveFileByRenameResultEnum.Fail);
+        //        }
+        //    }
+        //    return (MoveFileByRenameResultEnum.Postponed);
+        //}
         #endregion
 
         #region [.LiveStream change max-file-size.]

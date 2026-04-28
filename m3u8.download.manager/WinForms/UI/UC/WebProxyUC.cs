@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Drawing;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.Properties;
-using m3u8.infrastructure;
 
 namespace m3u8.download.manager.ui
 {
@@ -286,6 +283,7 @@ namespace m3u8.download.manager.ui
             (hostname, port) = (y.Hostname, y.Port);
             return (suc);
         }
+        #endregion
 
 
         #region [.test connection.]
@@ -324,8 +322,6 @@ namespace m3u8.download.manager.ui
                 this.FindForm().MessageBox_ShowError( msg, CAPTION );
             }
         }
-        #endregion
-
         #endregion
     }
 }

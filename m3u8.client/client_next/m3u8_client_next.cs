@@ -6,8 +6,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using _init_params_             = m3u8.i_m3u8_client_next.init_params;
 using _DownloadPartInputParams_ = m3u8.i_m3u8_client_next.DownloadPartInputParams;
+using _init_params_             = m3u8.i_m3u8_client_next.init_params;
+using _ChangeSettingsParams_    = m3u8.i_m3u8_client_next.ChangeSettingsParams;
 
 namespace m3u8
 {
@@ -17,12 +18,49 @@ namespace m3u8
     internal sealed class m3u8_client_next : i_m3u8_client_next, IDisposable
     {
         #region [.field's.]
-        private HttpClient  _HttpClient;
-        private IWebProxy   _WebProxy;
-        private IDisposable _DisposableObj;
-        private bool? _ConnectionClose;
-        private int _AttemptRequestCount;
+        private HttpClient           __HttpClient__;
+        private _init_params_        _InitParams;
+        private IDisposable          _DisposableObj;
+        private bool?                _ConnectionClose;
+        private int                  __AttemptRequestCount__;
         private HttpCompletionOption _HttpCompletionOption;
+
+        private ReaderWriterLockSlim _RwLock = new ReaderWriterLockSlim( LockRecursionPolicy.SupportsRecursion );
+        #endregion
+
+        #region [.safety/protected props.]
+        private int _AttemptRequestCount
+        {
+            get
+            {
+                _RwLock.EnterReadLock();
+                var v = __AttemptRequestCount__;
+                _RwLock.ExitReadLock();
+                return (v);
+            }
+            set
+            {
+                _RwLock.EnterWriteLock();
+                __AttemptRequestCount__ = value;
+                _RwLock.ExitWriteLock();
+            }
+        }
+        private HttpClient _HttpClient
+        {
+            get
+            {
+                _RwLock.EnterReadLock();
+                var v = __HttpClient__;
+                _RwLock.ExitReadLock();
+                return (v);
+            }
+            set
+            {
+                _RwLock.EnterWriteLock();
+                __HttpClient__ = value;
+                _RwLock.ExitWriteLock();
+            }
+        }
         #endregion
 
         #region [.ctor().]
@@ -34,12 +72,12 @@ namespace m3u8
                 ConnectionClose      = mc.InitParams.ConnectionClose,
                 HttpCompletionOption = mc.InitParams.HttpCompletionOption,
             };
-            InitParams = ip;
+            _InitParams = ip;
             Init( mc.HttpClient, ip );
         }
         public m3u8_client_next( HttpClient httpClient, in _init_params_ ip )
         {
-            InitParams = ip;
+            _InitParams = ip;
             Init( httpClient, ip );
         }
         private void Init( HttpClient httpClient, in _init_params_ ip )
@@ -51,11 +89,12 @@ namespace m3u8
         }
         internal m3u8_client_next( in (HttpClient httpClient, IWebProxy webProxy, IDisposable disposableObj) t, in _init_params_ ip ) : this( t.httpClient, ip )
         {
-            _WebProxy      = t.webProxy;
-            _DisposableObj = t.disposableObj;
+            _InitParams.WebProxy = t.webProxy; //_WebProxy = t.webProxy;
+            _DisposableObj       = t.disposableObj;
         }
 
-        public void Dispose()
+        public void Dispose() => Dispose_DisposableObj();
+        private void Dispose_DisposableObj()
         {
             if ( _DisposableObj != null )
             {
@@ -65,11 +104,31 @@ namespace m3u8
         }
         #endregion
 
-        public _init_params_ InitParams { get; }
-        public IWebProxy   WebProxy => _WebProxy;
+        public _init_params_ InitParams => _InitParams;
+        public IWebProxy     WebProxy   => _InitParams.WebProxy;
 #if M3U8_CLIENT_TESTS
         public HttpClient HttpClient => _HttpClient;
 #endif
+        public void ChangeSettings( in _ChangeSettingsParams_ csp )
+        {
+            //if ( csp.Timeout.HasValue ) _Timeout = csp.Timeout.Value;
+            if ( csp.AttemptRequestCount.HasValue ) _AttemptRequestCount = csp.AttemptRequestCount.Value;
+            //if ( csp.HttpClient != null ) _HttpClient = csp.HttpClient;
+            _InitParams.WebProxy = csp.WebProxy;
+
+            if ( csp.NetHttpClient.HasValue )
+            {
+                var t = csp.NetHttpClient.Value;
+                if ( _HttpClient != t.httpClient )
+                {
+                    _HttpClient = t.httpClient ?? throw (new ArgumentNullException( nameof( t.httpClient ) ));
+
+                    Dispose_DisposableObj();
+                    _DisposableObj = t.disposableObj;
+                }
+            }
+        }
+
         private static bool TryGetContentLength( HttpContent responseContent, out (string errorReason, long contentLength, string contentMediaType) t )
         {
             var rch = responseContent.Headers;

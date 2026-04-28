@@ -641,9 +641,9 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public methods.]
-        public DownloadRow_Definer_2 GetParamsTuple() => (this.M3u8FileUrl, this.GetRequestHeaders(), this.GetWebProxyInfo(),
-                                                          this.GetOutputFileName(), this.GetOutputDirectory(), 
-                                                          this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
+        public DownloadRow_Definer_2 GetParamsTuple() => DownloadRow_Definer_2.Create( this.M3u8FileUrl, this.GetRequestHeaders(), this.GetWebProxyInfo(),
+                                                                                       this.GetOutputFileName(), this.GetOutputDirectory(), 
+                                                                                       this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
         public bool Success { get; private set; }
         public bool AutoStartDownload => !_DownloadLater;
         public string M3u8FileUrl

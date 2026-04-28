@@ -74,18 +74,6 @@ namespace m3u8.download.manager.controllers
         public bool     ShowLog                             { [M(O.AggressiveInlining)] get => Settings.ShowLog; [M(O.AggressiveInlining)] set => Settings.ShowLog = value; }
         public bool     IgnoreHostHttpHeader                { [M(O.AggressiveInlining)] get => Settings.IgnoreHostHttpHeader; [M(O.AggressiveInlining)] set => Settings.IgnoreHostHttpHeader = value; }
         
-
-        //public IEnumerable<
-        //    (DateTime CreatedOrStartedDateTime,
-        //     string Url,
-        //     IDictionary< string, string > RequestHeaders,
-        //     string OutputFileName,
-        //     string OutputDirectory,
-        //     DownloadStatus Status,
-        //     bool IsLiveStream,
-        //     long LiveStreamMaxFileSizeInBytes)
-        //    > 
-        //    GetDownloadRows() => DownloadRowsSerializer.FromJSON( Settings.DownloadRowsJson );
         public IEnumerable< DownloadRow_Definer_3 > GetDownloadRows() => DownloadRowsSerializer.FromJSON( Settings.DownloadRowsJson );
         public void SetDownloadRows_WithSaveIfChanged( IEnumerable< DownloadRow > rows )
         {

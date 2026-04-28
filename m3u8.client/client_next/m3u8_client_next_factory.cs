@@ -83,21 +83,4 @@ namespace m3u8
         private static m3u8_client_next_v2 Create( in (HttpMessageInvoker httpInvoker, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
             => Create( t, new _init_params_() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
     }
-
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //internal static class m3u8_client_next_factory
-    //{
-    //    public static m3u8_client_next Create( IWebProxy webProxy = null ) => Create( HttpClientFactory_WithRefCount.Get( webProxy ) );
-    //    public static m3u8_client_next Create( IWebProxy webProxy, in (TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( webProxy, t.timeout, t.attemptRequestCountByPart );
-    //    public static m3u8_client_next Create( IWebProxy webProxy, in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( webProxy, timeout ), attemptRequestCountByPart );
-    //    public static m3u8_client_next Create( in _init_params_ ip ) => Create( HttpClientFactory_WithRefCount.Get( ip.WebProxy ), ip );
-
-    //    private static m3u8_client_next Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, in _init_params_ ip ) => new m3u8_client_next( t, ip );
-    //    private static m3u8_client_next Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
-    //        => Create( t, new _init_params_() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
-
-    //    public static void ForceClearAndDisposeAll() => HttpClientFactory_WithRefCount.ForceClearAndDisposeAll();
-    //}
 }

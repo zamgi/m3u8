@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
-using System.Threading.Tasks;
 
 using Avalonia.Controls;
-using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Styling;
-
-using m3u8.infrastructure;
 
 using _Resources_ = m3u8.download.manager.Properties.Resources;
 using _SC_        = m3u8.download.manager.controllers.SettingsPropertyChangeController;

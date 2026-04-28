@@ -70,6 +70,12 @@
     <Setting Name="AddNewDownloadFormPositionLogVisibleJson" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="ChangeSettingsParams4DownloadRowForm_PosJson" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="ChangeSettingsParams4DownloadRowForm_PosLogVisibleJson" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
     <Setting Name="MainFormPositionJson" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

@@ -6,8 +6,8 @@ using System.Windows.Input;
 
 using Avalonia.Threading;
 
-using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
+using m3u8.download.manager.models;
 using m3u8.download.manager.ui;
 
 using X = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
@@ -87,7 +87,8 @@ namespace m3u8.download.manager
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out var cuttedFileName ) )
                         outputFileName = cuttedFileName;
 
-                    var row = _VM.DownloadListModel.AddRow( (p.m3u8FileUrl, requestHeaders, outputFileName, outputFileDirectory) );
+                    var webProxyInfo = _VM.SettingsController.GetDefaultWebProxyInfo();
+                    var row = _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( p.m3u8FileUrl, requestHeaders, webProxyInfo, outputFileName, outputFileDirectory ) );
                     _VM.DownloadController.Start( row );
                 }
                 return;

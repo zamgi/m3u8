@@ -132,6 +132,7 @@ namespace m3u8.download.manager.controllers
         public void Dispose()
         {
             m3u8_client_factory_maker.ForceClearAndDisposeAll();
+            m3u8_client_next_factory_maker.ForceClearAndDisposeAll();
 
             _DefaultConnectionLimitSaver.Dispose();
             _ThrottlerBySpeed.Dispose();
@@ -831,54 +832,13 @@ namespace m3u8.download.manager.controllers
                             DownloadCreateOutputFile = downloadCreateOutputFileAction
                         };
 
-                        //var dtype = _m3u8_client_next_factory_type switch
-                        //{
-                        //    m3u8_client_next_factory_enum_type.HttpClient         => m3u8_live_stream_downloader.enum_type.HttpClient,
-                        //    m3u8_client_next_factory_enum_type.HttpMessageInvoker => m3u8_live_stream_downloader.enum_type.HttpMessageInvoker,
-                        //    _ => throw (new ArgumentException( _m3u8_client_next_factory_type.ToString() ))
-                        //};
-                        //await m3u8_live_stream_downloader._Download_( dtype, p, cts.Token, () => row.LiveStreamMaxFileSizeInBytes, row.RequestHeaders );
-
                         await m3u8_live_stream_downloader._Download_( (httpClient, httpInvoker), p, cts.Token, () => row.LiveStreamMaxFileSizeInBytes, row.RequestHeaders );
                     });
 
                     //-4-//
-                    _Dict.Remove( row ); //Fire_IsDownloadingChanged();
-
-                    #region comm. [.remane output file if changed.]
-                    /*
-                    var renameOutputFileException = default(Exception);
-
-                    var desiredOutputFullFileName = row.GetOutputFullFileName();
-                    if ( dpsr.OutputFileName != desiredOutputFullFileName )
-                    {
-                        try
-                        {
-                            if ( !dpsr.OutputFileName.EqualIgnoreCase( desiredOutputFullFileName ) )
-                            {
-                                Extensions.DeleteFile_NoThrow( desiredOutputFullFileName );
-                            }
-                            File.Move( dpsr.OutputFileName, desiredOutputFullFileName );
-                            dpsr.ResetOutputFileName( desiredOutputFullFileName );
-                        }
-                        catch ( Exception ex )
-                        {
-                            renameOutputFileException = ex;
-                        }
-                    }
-                    //*/
-                    #endregion
+                    _Dict.Remove( row ); 
 
                     row.StatusFinished( /*dpsr,*/ sw.StopAndElapsed() );
-
-                    #region comm. [.error rename output-file happen.]
-                    /*
-                    if ( renameOutputFileException != null )
-                    {
-                        row.StatusErrorIfRenameOutputFile( renameOutputFileException );
-                    }
-                    //*/
-                    #endregion
 
                     #region [.any error happen.]
                     if ( anyErrorHappend )
@@ -891,7 +851,7 @@ namespace m3u8.download.manager.controllers
                 }
                 catch ( Exception ex )
                 {
-                    _Dict.Remove( row ); //Fire_IsDownloadingChanged();
+                    _Dict.Remove( row );
 
                     if ( cts.IsCancellationRequested )
                     {
@@ -1120,7 +1080,6 @@ namespace m3u8.download.manager.controllers
         }
         #endregion
 
-
         #region [.Delete rows with output-files.]
         public Task DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( IReadOnlyList< DownloadRow > rows, CancellationToken ct, 
             Action< DownloadRow, CancellationToken > deleteFilesAction, 
@@ -1158,6 +1117,45 @@ namespace m3u8.download.manager.controllers
             }
         }
         #endregion
+
+        public bool TryChangeSettings( DownloadRow row, in web_proxy_info webProxyInfo, TimeSpan? timeout, int? attemptRequestCount )
+        {
+            if ( (row != null) && _Dict.TryGetValue( row, out var t ) )
+            {
+                var webProxy = webProxyInfo.CreateWebProxyIfUsed();
+
+                IDisposable d; HttpClient httpClient; HttpMessageInvoker httpInvoker;
+                switch ( _m3u8_client_next_factory_type )
+                {
+                    case m3u8_client_next_factory_enum_type.HttpClient:
+                        (httpClient, _/*webProxy2*/, d) = HttpClientFactory_WithRefCount.Get( webProxy, timeout );
+                        httpInvoker = default;
+                        break;
+
+                    case m3u8_client_next_factory_enum_type.HttpMessageInvoker:
+                        (httpInvoker, _/*webProxy2*/, d) = HttpInvokerFactory_WithRefCount.Get( webProxy/*, timeout*/ );
+                        httpClient = default;
+                        break;
+                    default:
+                        throw (new ArgumentException( _m3u8_client_next_factory_type.ToString() ));
+                }
+                
+                var csp = new i_m3u8_client_next.ChangeSettingsParams()
+                {
+                    NetHttpClient       = (httpClient , d),
+                    NetHttpInvoker      = (httpInvoker, d),
+                    WebProxy            = webProxy,
+                    Timeout             = timeout,
+                    AttemptRequestCount = attemptRequestCount,
+                };
+                t.mc_next.ChangeSettings( csp );
+                row.SetWebProxyInfo( webProxyInfo );
+                row.SetTimeout( timeout );
+                row.SetAttemptRequestCount( attemptRequestCount ); 
+                return (true);
+            }
+            return (false);
+        }
     }
 
     /// <summary>

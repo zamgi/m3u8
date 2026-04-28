@@ -196,7 +196,7 @@ namespace m3u8
             //---await task.ContinueWith( t => throw t.Exception, TaskContinuationOptions.OnlyOnFaulted ).CAX();
         }
 
-        protected HttpMessageHandler CreateHandler( TimeSpan? timeout = null )
+        protected static HttpMessageHandler CreateHandler( TimeSpan? timeout = null )
         {
 #if NETCOREAPP
             SocketsHttpHandler CreateSocketsHttpHandler( in TimeSpan? _timeout )

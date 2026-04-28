@@ -95,18 +95,6 @@
 
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
     
-    <!--
-    <Compile Include="..\..\m3u8.client\m3u8.client.cs" Link="[-= m3u8.client =-]\m3u8.client.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8.client.factory.cs" Link="[-= m3u8.client =-]\m3u8.client.factory.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
-    <Compile Include="..\..\m3u8.client\m3u8_processor_next.cs" Link="[-= m3u8.client =-]\m3u8_processor_next.cs" />
-    <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
-    <Compile Include="..\..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
-    <Compile Include="..\..\m3u8.client\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
-    <Compile Include="..\..\m3u8.client\web_proxy_info.cs" Link="[-= m3u8.client =-]\web_proxy_info.cs" />
-    <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
-    -->
-
     <Compile Include="..\WinForms\Infrastructure\FileHelper.cs" Link="Infrastructure\FileHelper.cs" />
     <Compile Include="..\WinForms\Infrastructure\FileNameCleaner4UI.cs" Link="Infrastructure\FileNameCleaner4UI.cs" />
     <Compile Include="..\WinForms\Infrastructure\ObjAsDict_JsonSerializer.cs" Link="Infrastructure\ObjAsDict_JsonSerializer.cs" />
@@ -128,17 +116,18 @@
     <Compile Include="..\[Common]\HttpHeaderHelper.cs" Link="Infrastructure\HttpHeaderHelper.cs" />
     <!--<Compile Include="..\[Common]\DigitLetterSort.cs" Link="Infrastructure\DigitLetterSort.cs" />-->
     <Compile Include="..\[Common]\TestWebProxyConnectionHelper.cs" Link="Infrastructure\TestWebProxyConnectionHelper.cs" />
+    <Compile Include="..\[Common]\ChangeFilenameOrDirectoryHelper.cs" Link="Infrastructure\ChangeFilenameOrDirectoryHelper.cs" />
   </ItemGroup>
      
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="12.0.1" />
+    <PackageReference Include="Avalonia" Version="12.0.2" />
     <PackageReference Include="Avalonia.Diagnostics" Version="11.3.14" />    
     <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.1" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.0.0" />
-    <PackageReference Include="Avalonia.Desktop" Version="12.0.1" />    
-    <PackageReference Include="Avalonia.Themes.Simple" Version="12.0.1" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.0.2" />    
+    <PackageReference Include="Avalonia.Themes.Simple" Version="12.0.2" />
     <!--<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />-->
-    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.0.1" />
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.0.2" />
     <!--<PackageReference Include="MessageBox.Avalonia" Version="3.3.1.1" />-->
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.7" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
