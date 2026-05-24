@@ -50,8 +50,8 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.IO.Pipelines, Version=10.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.IO.Pipelines.10.0.7\lib\net462\System.IO.Pipelines.dll</HintPath>
+    <Reference Include="System.IO.Pipelines, Version=10.0.0.8, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.IO.Pipelines.10.0.8\lib\net462\System.IO.Pipelines.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath>
@@ -84,7 +84,6 @@
     <Compile Include="..\..\m3u8.client\infrastructure\System.Runtime.CompilerServices.cs">
       <Link>[-= m3u8.client =-]\infrastructure\System.Runtime.CompilerServices.cs</Link>
     </Compile>
-
     <Compile Include="..\..\m3u8.client\client\i_m3u8_client.cs">
       <Link>[-= m3u8.client =-]\client\i_m3u8_client.cs</Link>
     </Compile>
