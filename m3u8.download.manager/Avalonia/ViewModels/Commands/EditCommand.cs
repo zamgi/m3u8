@@ -26,10 +26,10 @@ namespace m3u8.download.manager
         public event EventHandler CanExecuteChanged;
 #pragma warning restore
         public bool CanExecute( object parameter ) => (parameter is DownloadRow row) && !row.Status.IsRunningOrPaused();
-        public void Execute( object parameter ) => EditDownload( (DownloadRow) parameter );
+        public void Execute( object parameter ) => Run( (DownloadRow) parameter );
         #endregion
 
-        public async void EditDownload( DownloadRow row, AddNewDownloadForm.TabPageKind? activeTabPageKind = null )
+        public async void Run( DownloadRow row, AddNewDownloadForm.TabPageKind? activeTabPageKind = null )
         {
             if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
 

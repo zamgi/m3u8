@@ -17,6 +17,6 @@ namespace m3u8.download.manager
         public event EventHandler CanExecuteChanged;
 #pragma warning restore
         public bool CanExecute( object parameter ) => true;
-        public async void Execute( object parameter ) => await SettingsCommand.Show( _VM, SettingsForm.SettingsTabEnum.WebProxy );
+        public async void Execute( object parameter ) => await SettingsCommand.Run( _VM, SettingsForm.SettingsTabEnum.WebProxy );
     }
 }

@@ -231,7 +231,7 @@ namespace m3u8.download.manager.ui
 
             if ( _InputParamsArray.AnyEx() )
             {
-                _VM.AddCommand.AddNewDownloads( _InputParamsArray );
+                _VM.AddCommand.Run( _InputParamsArray );
                 _InputParamsArray = null;
             }
             else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() )
@@ -240,7 +240,7 @@ namespace m3u8.download.manager.ui
                 if ( success )
                 {
                     m3u8FileUrls = m3u8FileUrls.Take( MAX_PASTE_URLS ).ToArray();
-                    _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
+                    _VM.AddCommand.Run( (m3u8FileUrls, false) );
                 }
             }
             _VM.DownloadListModel.AddRows( _VM.SettingsController.GetDownloadRows() /*DownloadRowsSerializer.FromJSON( _VM.SettingsController.DownloadRowsJson )*/ );
@@ -329,7 +329,7 @@ namespace m3u8.download.manager.ui
 
                             var autoStartDownload = e.KeyModifiers.HasFlag( KeyModifiers.Shift );
                             if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
-                            _VM.AddCommand.AddNewDownloads( (urls, autoStartDownload) );
+                            _VM.AddCommand.Run( (urls, autoStartDownload) );
                             return;
                         }
                         else
@@ -407,7 +407,14 @@ namespace m3u8.download.manager.ui
                     case Key.E: // [Ctrl + E]
                         if ( downloadListUC.HasFocus )
                         {
-                            _VM.EditCommand.EditDownload( downloadListUC.GetSelectedDownloadRow() );
+                            _VM.EditCommand.Run( downloadListUC.GetSelectedDownloadRow() );
+                        }
+                        break;
+
+                    case Key.M: // [Ctrl + M]
+                        if ( downloadListUC.HasFocus )
+                        {
+                            _VM.ChangeSettingsParams4DownloadRowCommand.Run( downloadListUC.GetSelectedDownloadRow() );
                         }
                         break;
 
@@ -437,7 +444,7 @@ namespace m3u8.download.manager.ui
 #if DEBUG
                             if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ];
 #endif
-                            _VM.AddCommand.AddNewDownloads( (m3u8FileUrls, false) );
+                            _VM.AddCommand.Run( (m3u8FileUrls, false) );
                         }
                         return;
 
@@ -1018,7 +1025,7 @@ namespace m3u8.download.manager.ui
             {
                 var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );
                 if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
-                _VM.AddCommand.AddNewDownloads( (urls, autoStartDownload) );
+                _VM.AddCommand.Run( (urls, autoStartDownload) );
             }
             else
             {
@@ -1169,8 +1176,8 @@ namespace m3u8.download.manager.ui
         private void pauseDownloadMenuItem_Click ( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Pause  );
         private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
 
-        private void editDownloadMenuItem_Click( object sender, EventArgs e ) => _VM.EditCommand.EditDownload( downloadListUC.GetSelectedDownloadRow() );
-        private void changeSettingsParams4DownloadRow_MenuItem_Click( object sender, EventArgs e ) => _VM.ChangeSettingsParams4DownloadRowCommand.ChangeSettingsParams4DownloadRow( downloadListUC.GetSelectedDownloadRow() );
+        private void editDownloadMenuItem_Click( object sender, EventArgs e ) => _VM.EditCommand.Run( downloadListUC.GetSelectedDownloadRow() );
+        private void changeSettingsParams4DownloadRow_MenuItem_Click( object sender, EventArgs e ) => _VM.ChangeSettingsParams4DownloadRowCommand.Run( downloadListUC.GetSelectedDownloadRow() );
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
         private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRows(), deleteOutputFiles: true );
@@ -1448,7 +1455,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.Web-Proxy settings for row.]
-        private void downloadListUC_WebProxyClick( DownloadRow row ) => _VM.EditCommand.EditDownload( row, AddNewDownloadForm.TabPageKind.WebProxyTabPage );
+        private void downloadListUC_WebProxyClick( DownloadRow row ) => _VM.EditCommand.Run( row, AddNewDownloadForm.TabPageKind.WebProxyTabPage );
         #endregion
     }
 }

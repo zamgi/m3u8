@@ -18,9 +18,9 @@ namespace m3u8.download.manager
         public event EventHandler CanExecuteChanged;
 #pragma warning restore
         public bool CanExecute( object parameter ) => true;
-        public async void Execute( object parameter ) => await Show( _VM, SettingsForm.SettingsTabEnum.Other );
+        public async void Execute( object parameter ) => await Run( _VM, SettingsForm.SettingsTabEnum.Other );
 
-        public static async Task Show( MainVM vm, SettingsForm.SettingsTabEnum settingsTab )
+        public static async Task Run( MainVM vm, SettingsForm.SettingsTabEnum settingsTab )
         {
             var f = new SettingsForm( vm, settingsTab );
             {

@@ -28,34 +28,34 @@ namespace m3u8.download.manager
 
             PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArray += NamedPipeServer__Input_ReceivedInputParamsArray;
         }
-        private async void NamedPipeServer__Input_ReceivedInputParamsArray( X[] array ) => await Dispatcher.UIThread.InvokeAsync( () => AddNewDownloads( array ) );     
+        private async void NamedPipeServer__Input_ReceivedInputParamsArray( X[] array ) => await Dispatcher.UIThread.InvokeAsync( () => Run( array ) );     
 
         #region [.ICommand.]
 #pragma warning disable CS0067
         public event EventHandler CanExecuteChanged;
 #pragma warning restore
         public bool CanExecute( object parameter ) => true;
-        public void Execute( object parameter ) => AddNewDownload( (null, null, false) );
+        public void Execute( object parameter ) => Run( (null, null, false) );
         #endregion
 
-        public void AddNewDownloads( X[] array )
+        public void Run( X[] array )
         {
             var p = (m3u8FileUrls     : (from t in array select (t.m3u8FileUrl, t.requestHeaders)).ToArray(), 
                      autoStartDownload: array.FirstOrDefault().autoStartDownload);
-            AddNewDownloads( p );
+            Run( p );
         }
-        public async void AddNewDownloads( (IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls, bool autoStartDownload) p ) //, bool forceShowEmptyDialog )
+        public async void Run( (IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls, bool autoStartDownload) p ) //, bool forceShowEmptyDialog )
         {
             if ( p.m3u8FileUrls.AnyEx() )
             {
                 if ( p.m3u8FileUrls.Count == 1 )
                 {
                     var frt = p.m3u8FileUrls.First();
-                    AddNewDownload( (frt.url, frt.requestHeaders, p.autoStartDownload) );
+                    Run( (frt.url, frt.requestHeaders, p.autoStartDownload) );
                 }
                 else
                 {
-                    var action = new Action< X, (int n, int total) >( (X tp, (int n, int total) seriesInfo ) => AddNewDownload( tp, seriesInfo ) );
+                    var action = new Action< X, (int n, int total) >( (X tp, (int n, int total) seriesInfo ) => Run( tp, seriesInfo ) );
 
                     var n     = p.m3u8FileUrls.Count;
                     var count = n;
@@ -69,10 +69,10 @@ namespace m3u8.download.manager
             }
             else //if ( forceShowEmptyDialog )
             {
-                AddNewDownload( (null, null, false) );
+                Run( (null, null, false) );
             }
         }
-        public async void AddNewDownload( X p, (int n, int total)? seriesInfo = null )
+        public async void Run( X p, (int n, int total)? seriesInfo = null )
         {
             var suc = BrowserIPC.ExtensionRequestHeader.Try2Dict( p.requestHeaders, out var requestHeaders, _VM.SettingsController.IgnoreHostHttpHeader /*p.autoStartDownload*/ );
             Debug.Assert( suc || p.requestHeaders.IsNullOrEmpty() );

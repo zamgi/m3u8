@@ -2,7 +2,6 @@
 using System.Windows.Input;
 
 using m3u8.download.manager.infrastructure;
-using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui;
 
 using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;

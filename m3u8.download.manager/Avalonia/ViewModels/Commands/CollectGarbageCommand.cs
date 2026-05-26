@@ -15,9 +15,9 @@ namespace m3u8.download.manager
 #pragma warning restore
         public bool CanExecute( object parameter ) => true;
 
-        public void Execute( object parameter ) => Collect_Garbage( out _ );
+        public void Execute( object parameter ) => Run( out _ );
 
-        public static void Collect_Garbage( out long totalMemoryBytes )
+        public static void Run( out long totalMemoryBytes )
         {
             GCSettings.LargeObjectHeapCompactionMode = GCLargeObjectHeapCompactionMode.CompactOnce;
             totalMemoryBytes = GC.GetTotalMemory( forceFullCollection: true );

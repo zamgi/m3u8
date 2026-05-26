@@ -194,7 +194,7 @@ namespace m3u8.download.manager.ui
 
         private void getTotalMemoryTimer_Elapsed()
         {
-            CollectGarbageCommand.Collect_Garbage( out var totalMemoryBytes );
+            CollectGarbageCommand.Run( out var totalMemoryBytes );
             currentMemoryTextBlock.Text = $"Current Memory: {GetTotalMemoryFormatText( totalMemoryBytes )}.";
         }
         private static string GetTotalMemoryFormatText( long totalMemoryBytes ) => $"{(totalMemoryBytes / (1024.0 * 1024)):N2} MB";
@@ -204,7 +204,7 @@ namespace m3u8.download.manager.ui
             btn.Content = "...";
             btn.IsEnabled = false;
 
-            CollectGarbageCommand.Collect_Garbage( out var totalMemoryBytes );
+            CollectGarbageCommand.Run( out var totalMemoryBytes );
 
             var text        = GetTotalMemoryFormatText( totalMemoryBytes );
             var toolTipText = $"Collect Garbage. Total Memory: {text}.";
