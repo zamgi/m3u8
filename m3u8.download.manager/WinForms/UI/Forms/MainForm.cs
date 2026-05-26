@@ -819,7 +819,7 @@ namespace m3u8.download.manager.ui
                 cancelDownloadToolButton.Enabled = CancelDownload_IsAllowed( status );
                 pauseDownloadToolButton .Enabled = PauseDownload_IsAllowed ( status );
                 editDownloadToolButton  .Enabled = !status.IsRunningOrPaused();
-                changeSettingsParams4DownloadRow_ToolButton.Enabled = !editDownloadToolButton.Enabled;
+                changeSettingsParams4DownloadRow_ToolButton.Enabled = status.IsRunningOrPaused();
 
                 deleteDownloadToolButton.Enabled = true;
                 deleteAllFinishedDownloadToolButton.Enabled = (status.IsFinished() || _DownloadListModel.HasAnyFinished());
@@ -1122,8 +1122,8 @@ namespace m3u8.download.manager.ui
                     var outputFileDirectory = _SC.OutputFileDirectory;
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out var cuttedFileName ) )
                         outputFileName = cuttedFileName;
-
-                    var row = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.m3u8FileUrl, requestHeaders, _SC.GetDefaultWebProxyInfo(), outputFileName, outputFileDirectory ) );
+                    
+                    var row = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.m3u8FileUrl, requestHeaders, _SC.GetDefaultWebProxyInfo(), _SC.GetCreateM3u8ClientParams(), outputFileName, outputFileDirectory ) );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     _DC.Start( row );
                 }
@@ -1180,19 +1180,20 @@ namespace m3u8.download.manager.ui
                 {
                     var outputFileDirectory = _SC.OutputFileDirectory;
                     var webProxyInfo        = _SC.GetDefaultWebProxyInfo();
+                    var cp                  = _SC.GetCreateM3u8ClientParams();
 
                     var outputFileName_a = get_outputFileName_4_audio( outputFileName );                    
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName_a, out var cuttedFileName ) )
                         outputFileName_a = cuttedFileName;
 
-                    var row_1 = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, outputFileName_a, outputFileDirectory ) );
+                    var row_1 = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, cp, outputFileName_a, outputFileDirectory ) );
                     await downloadListUC.SelectDownloadRowDelay( row_1 );
                     _DC.Start( row_1 );
 
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out cuttedFileName ) )
                         outputFileName = cuttedFileName;
 
-                    var row_2 = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, outputFileName, outputFileDirectory ) );
+                    var row_2 = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, cp, outputFileName, outputFileDirectory ) );
                     await downloadListUC.SelectDownloadRowDelay( row_2 );
                     _DC.Start( row_2 );
                 }
@@ -1213,15 +1214,15 @@ namespace m3u8.download.manager.ui
             {
                 if ( f.DialogResult == DialogResult.OK )
                 {
-                    var (webProxyInfo, outFn, outDir, isLiveStream, liveStreamMaxFileSize, autoStart) 
-                        = (f.GetWebProxyInfo(), f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes, f.AutoStartDownload);
+                    var (webProxyInfo, timeout, attemptRequestCount, outFn, outDir, isLiveStream, liveStreamMaxFileSize, autoStart) 
+                        = (f.GetWebProxyInfo(), f.Timeout, f.AttemptRequestCount, f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes, f.AutoStartDownload);
                     var outFn_a = get_outputFileName_4_audio( outFn );
 
-                    var row_1 = _DownloadListModel.AddRow( DownloadRow_Definer_2.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, outFn_a, outDir, isLiveStream, liveStreamMaxFileSize ) );
+                    var row_1 = _DownloadListModel.AddRow( DownloadRow_Definer_2.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, timeout, attemptRequestCount, outFn_a, outDir, isLiveStream, liveStreamMaxFileSize ) );
                     await downloadListUC.SelectDownloadRowDelay( row_1 );
                     if ( autoStart ) _DC.Start( row_1 );
 
-                    var row_2 = _DownloadListModel.AddRow( DownloadRow_Definer_2.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, outFn, outDir, isLiveStream, liveStreamMaxFileSize ) );
+                    var row_2 = _DownloadListModel.AddRow( DownloadRow_Definer_2.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, timeout, attemptRequestCount, outFn, outDir, isLiveStream, liveStreamMaxFileSize ) );
                     await downloadListUC.SelectDownloadRowDelay( row_2 );
                     if ( autoStart ) _DC.Start( row_2 );
                 }
@@ -1469,10 +1470,10 @@ namespace m3u8.download.manager.ui
                     #endregion
 
                     #region [.editDownloadMenuItem.]
-                    var vis = (rows.Count == 1) && !selectedRow.Status.IsRunningOrPaused();
-                    editDownloadMenuItem.Visible =
-                        /*editDownloadMenuItem_Separator.Visible =*/ vis;
-                    changeSettingsParams4DownloadRow_MenuItem.Visible = !vis;
+                    //var isOneRow = (rows.Count == 1);
+                    var isRunningOrPaused = selectedRow.Status.IsRunningOrPaused();
+                    editDownloadMenuItem                     .Visible = /*isOneRow &&*/ !isRunningOrPaused;
+                    changeSettingsParams4DownloadRow_MenuItem.Visible = isRunningOrPaused;
                     editDownloadMenuItem_Separator.Visible = true;
                     #endregion
                 }

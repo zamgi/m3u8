@@ -42,6 +42,10 @@ namespace m3u8.download.manager.ui
             this.isLiveStreamCheckBox = new System.Windows.Forms.CheckBox();
             this.liveStreamMaxSizeInMbLabel = new System.Windows.Forms.Label();
             this.liveStreamMaxSizeInMbNumUpDn = new System.Windows.Forms.NumericUpDownEx();
+            this.requestTimeoutByPartLabel = new System.Windows.Forms.Label();
+            this.requestTimeoutByPartDTP = new System.Windows.Forms.BorderDateTimePicker();
+            this.attemptRequestCountByPartLabel = new System.Windows.Forms.Label();
+            this.attemptRequestCountByPartNUD = new System.Windows.Forms.NumericUpDownEx();
             this.patternOutputFileNameLabelCaption = new System.Windows.Forms.Label();
             this.patternOutputFileNameLabel = new System.Windows.Forms.Label();
             this.patternOutputFileNameNumUpDn = new System.Windows.Forms.NumericUpDownEx();
@@ -270,47 +274,62 @@ namespace m3u8.download.manager.ui
             // 
             // mainLayoutPanel
             // 
-            this.mainLayoutPanel.ColumnCount = 7;
-            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute/*System.Windows.Forms.SizeType.Absolute, 29F*/));
-            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
-            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.mainLayoutPanel.ColumnCount = 9;
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle()); //0
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F/*70F*/));//1
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));//2
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 90F));//3
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));//4            
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));//6
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));//5
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 29F));//7
+            this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());//8
+
+            this.mainLayoutPanel.Controls.Add(outputFileNameLabel, 0, 0);
+            this.mainLayoutPanel.Controls.Add(this.outputFileNameTextBox, 1, 0);
+            this.mainLayoutPanel.SetColumnSpan(this.outputFileNameTextBox, 6/*3*/);
+            this.mainLayoutPanel.Controls.Add(this.outputFileNameSelectButton, 7, 0);
+            //this.mainLayoutPanel.Controls.Add(this.outputFileNameClearButton, 4, 0);
+
+            this.mainLayoutPanel.Controls.Add(this.liveStreamMaxSizeInMbLabel  , 3, 1);
+            this.mainLayoutPanel.SetColumnSpan(this.liveStreamMaxSizeInMbLabel , 5);
+            this.mainLayoutPanel.Controls.Add(this.liveStreamMaxSizeInMbNumUpDn, 8, 1);
+            this.mainLayoutPanel.Controls.Add(this.isLiveStreamCheckBox        , 8, 0);
+
             this.mainLayoutPanel.Controls.Add(outputDirectoryLabel, 0, 2);
             this.mainLayoutPanel.Controls.Add(this.outputDirectoryTextBox, 1, 2);
-            this.mainLayoutPanel.SetColumnSpan(this.outputDirectoryTextBox, 4/*3*/);
-            this.mainLayoutPanel.Controls.Add(this.outputDirectorySelectButton, 5, 2);
-            this.mainLayoutPanel.Controls.Add(this.externalProgApplyByDefaultCheckBox, 1, 3);
-            this.mainLayoutPanel.SetColumnSpan(this.externalProgApplyByDefaultCheckBox, 3);
-            this.mainLayoutPanel.Controls.Add(outputFileNameLabel, 0, 0);
-            this.mainLayoutPanel.Controls.Add(this.outputFileNameSelectButton, 5, 0);
-            this.mainLayoutPanel.Controls.Add(this.outputFileNameTextBox, 1, 0);
-            this.mainLayoutPanel.SetColumnSpan(this.outputFileNameTextBox, 4/*3*/);
-            //this.mainLayoutPanel.Controls.Add(this.outputFileNameClearButton, 4, 0);
+            this.mainLayoutPanel.SetColumnSpan(this.outputDirectoryTextBox, 6/*3*/);
+            this.mainLayoutPanel.Controls.Add(this.outputDirectorySelectButton, 7, 2);
 
             this.mainLayoutPanel.Controls.Add(this.patternOutputFileNameLabelCaption, 0, 1);
             this.mainLayoutPanel.Controls.Add(this.patternOutputFileNameLabel, 1, 1);
             this.mainLayoutPanel.Controls.Add(this.patternOutputFileNameNumUpDn, 2, 1);
 
-            this.mainLayoutPanel.Controls.Add(this.liveStreamMaxSizeInMbLabel, 3, 1);
-            //this.mainLayoutPanel.Controls.Add(this.liveStreamMaxSizeInMbLabel, 1, 1);
-            this.mainLayoutPanel.SetColumnSpan(this.liveStreamMaxSizeInMbLabel, 3);
-            this.mainLayoutPanel.Controls.Add(this.liveStreamMaxSizeInMbNumUpDn, 6, 1);
-            this.mainLayoutPanel.Controls.Add(this.isLiveStreamCheckBox, 6, 0);
+            this.mainLayoutPanel.Controls.Add(this.requestTimeoutByPartLabel      , 0, 3);
+            this.mainLayoutPanel.SetColumnSpan(this.requestTimeoutByPartLabel     , 2);
+            this.mainLayoutPanel.Controls.Add(this.requestTimeoutByPartDTP        , 2, 3);
+            this.mainLayoutPanel.Controls.Add(this.attemptRequestCountByPartLabel , 3, 3);
+            this.mainLayoutPanel.SetColumnSpan(this.attemptRequestCountByPartLabel, 2);
+            this.mainLayoutPanel.Controls.Add(this.attemptRequestCountByPartNUD   , 5, 3);
 
-            this.mainLayoutPanel.Controls.Add(this.loadM3u8FileContentButton, 6, 2);
+            this.mainLayoutPanel.Controls.Add(this.externalProgApplyByDefaultCheckBox, 1, 4);
+            this.mainLayoutPanel.SetColumnSpan(this.externalProgApplyByDefaultCheckBox, 6/*3*/);
+
+            this.mainLayoutPanel.Controls.Add(this.loadM3u8FileContentButton, 8, 2);
+
             this.mainLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.mainLayoutPanel.Location = new System.Drawing.Point(0, 81);
             this.mainLayoutPanel.Padding = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.mainLayoutPanel.RowCount = 4;
+            this.mainLayoutPanel.RowCount = 5;
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize, 30F));
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.mainLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.mainLayoutPanel.Size = new System.Drawing.Size(803, 60 + 20);
+            this.mainLayoutPanel.Size = new System.Drawing.Size(803, 95 + 20);
             this.mainLayoutPanel.TabIndex = 1;
+            //---this.mainLayoutPanel.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Inset;
+
             // 
             // liveStreamMaxSizeInMbLabel
             // 
@@ -360,6 +379,48 @@ namespace m3u8.download.manager.ui
             this.isLiveStreamCheckBox.Text = "this is a live stream";
             this.isLiveStreamCheckBox.UseVisualStyleBackColor = true;
             this.isLiveStreamCheckBox.Click += new System.EventHandler(this.isLiveStreamCheckBox_Click);
+
+            // 
+            // requestTimeoutByPartLabel
+            // 
+            this.requestTimeoutByPartLabel.AutoSize = true;
+            this.requestTimeoutByPartLabel.AutoEllipsis = true;
+            this.requestTimeoutByPartLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.requestTimeoutByPartLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.requestTimeoutByPartLabel.ForeColor = System.Drawing.Color.DarkBlue;
+            this.requestTimeoutByPartLabel.MinimumSize = new System.Drawing.Size(100, 17);
+            this.requestTimeoutByPartLabel.TabIndex = 0;
+            this.requestTimeoutByPartLabel.Text = "request timeout by part:";
+            // 
+            // requestTimeoutByPartDTP
+            // 
+            this.requestTimeoutByPartDTP.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+            this.requestTimeoutByPartDTP.ShowUpDown = true;
+            this.requestTimeoutByPartDTP.TabIndex = 1;            
+            // 
+            // attemptRequestCountByPartLabel
+            // 
+            this.attemptRequestCountByPartLabel.AutoSize = true;
+            this.attemptRequestCountByPartLabel.AutoEllipsis = true;
+            this.attemptRequestCountByPartLabel.MinimumSize = new System.Drawing.Size(100, 17);
+            this.attemptRequestCountByPartLabel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.attemptRequestCountByPartLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;            
+            this.attemptRequestCountByPartLabel.ForeColor = System.Drawing.Color.DarkBlue;            
+            this.attemptRequestCountByPartLabel.TabIndex = 2;
+            this.attemptRequestCountByPartLabel.Text = "attempt request count by part:";
+            // 
+            // attemptRequestCountByPartNUD
+            // 
+            this.attemptRequestCountByPartNUD.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.attemptRequestCountByPartNUD.ForeColor = System.Drawing.Color.DimGray;
+            this.attemptRequestCountByPartNUD.TabIndex = 3;
+            this.attemptRequestCountByPartNUD.ThousandsSeparator = true;
+            this.attemptRequestCountByPartNUD.Minimum = 1;
+            this.attemptRequestCountByPartNUD.Maximum = int.MaxValue;
+            this.attemptRequestCountByPartNUD.Value = 1;
+            this.attemptRequestCountByPartNUD.Set_Increment_MouseWheel( 1 );
+            this.attemptRequestCountByPartNUD.Round2NextTenGroup = false;
+            this.attemptRequestCountByPartNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 
             // 
             // patternOutputFileNameLabelCaption
@@ -504,7 +565,7 @@ namespace m3u8.download.manager.ui
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(803, 280);
+            this.ClientSize = new System.Drawing.Size(803, 300);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.buttomPanel);
             this.Controls.Add(this.statusBarUC);
@@ -556,6 +617,10 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ButtonWithFocusCues outputDirectorySelectButton;
         private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputDirectoryTextBox;
         private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;
+        private System.Windows.Forms.Label attemptRequestCountByPartLabel;
+        private System.Windows.Forms.NumericUpDownEx attemptRequestCountByPartNUD;
+        private System.Windows.Forms.Label requestTimeoutByPartLabel;
+        private System.Windows.Forms.BorderDateTimePicker requestTimeoutByPartDTP;
         private LogUC logUC;
         private StatusBarUC statusBarUC;
     }

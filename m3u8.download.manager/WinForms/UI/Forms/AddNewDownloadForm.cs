@@ -62,6 +62,17 @@ namespace m3u8.download.manager.ui
             InitializeComponent( dc, sc );
             //----------------------------------------//
 
+            #region [.Timeout & AttemptRequestCount.]
+            requestTimeoutByPartDTP     .ValueChanged += requestTimeoutByPartDTP_ValueChanged;
+            attemptRequestCountByPartNUD.ValueChanged += attemptRequestCountByPartNUD_ValueChanged;
+
+            (var timeout, attemptRequestCountByPartNUD.ValueAsInt32) = sc.GetCreateM3u8ClientParams();
+            requestTimeoutByPartDTP.Value = requestTimeoutByPartDTP.MinDate.Date + timeout;
+
+            //requestTimeoutByPartDTP     .ValueChanged += requestTimeoutByPartDTP_ValueChanged;
+            //attemptRequestCountByPartNUD.ValueChanged += attemptRequestCountByPartNUD_ValueChanged;
+            #endregion
+
             //---statusBarUC.IsVisibleParallelismLabel = false;
             logPanel.Visible = false;
             logUC.ShowResponseColumn = false;
@@ -91,7 +102,12 @@ namespace m3u8.download.manager.ui
             this.OutputDirectory              = row.OutputDirectory;
             this.IsLiveStream                 = row.IsLiveStream; if ( row.IsLiveStream ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
             this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;
-            
+
+            #region [.Timeout & AttemptRequestCount.]
+            if ( row.Timeout            .HasValue ) requestTimeoutByPartDTP     .Value        = requestTimeoutByPartDTP.MinDate.Date + row.Timeout.Value;
+            if ( row.AttemptRequestCount.HasValue ) attemptRequestCountByPartNUD.ValueAsInt32 = row.AttemptRequestCount.Value;
+            #endregion
+
             _Initial_M3u8FileUrl = row.Url;
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
 
@@ -490,7 +506,11 @@ namespace m3u8.download.manager.ui
         private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _Settings.OutputFileExtension, _OutputFileNamePatternProcessor.PatternChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();
+
         public web_proxy_info GetWebProxyInfo() => webProxyUC.GetWebProxyInfo();
+        public TimeSpan? Timeout             { get; set; }
+        public int?      AttemptRequestCount { get; set; }
+
         public  bool  IsLiveStream
         { 
             get => isLiveStreamCheckBox.Checked;
@@ -544,7 +564,8 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        public DownloadRow_Definer_2 GetParamsTuple() => DownloadRow_Definer_2.Create( this.M3u8FileUrl, this.GetRequestHeaders(), this.GetWebProxyInfo(),
+        public DownloadRow_Definer_2 GetParamsTuple() => DownloadRow_Definer_2.Create( this.M3u8FileUrl, this.GetRequestHeaders(), 
+                                                                                       this.GetWebProxyInfo(), this.Timeout, this.AttemptRequestCount,
                                                                                        this.GetOutputFileName(), this.GetOutputDirectory(), 
                                                                                        this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes );
 
@@ -643,8 +664,8 @@ namespace m3u8.download.manager.ui
         private void set_mainLayoutPanel_Height( bool? isLiveStream_or_patternOutputFileName_visible = null )
         {
             const int DEFAULT_HEIGHT_isLiveStream    = 30;
-            const int DEFAULT_HEIGHT_mainLayoutPanel = 70 + 20;
-            const int DEFAULT_HEIGHT_this            = 315 + 20 + 10;
+            const int DEFAULT_HEIGHT_mainLayoutPanel = 110 + 20;
+            const int DEFAULT_HEIGHT_this            = 345 + 20 + 10;
 
             var is_extra_visible = isLiveStream_or_patternOutputFileName_visible.GetValueOrDefault( this.IsLiveStream || patternOutputFileNameLabel.Visible );
             var extra_height = is_extra_visible ? DEFAULT_HEIGHT_isLiveStream : 0;
@@ -734,6 +755,9 @@ namespace m3u8.download.manager.ui
             patternOutputFileNameLabel.Text = outputFileName;
             toolTip.SetToolTip( patternOutputFileNameLabel, outputFileName );
         }
+
+        private void requestTimeoutByPartDTP_ValueChanged( object sender, EventArgs e ) => this.Timeout = requestTimeoutByPartDTP.Value.TimeOfDay;
+        private void attemptRequestCountByPartNUD_ValueChanged( object sender, EventArgs e ) => this.AttemptRequestCount = attemptRequestCountByPartNUD.ValueAsInt32;
         #endregion
 
         #region [.loadM3u8FileContentButton.]

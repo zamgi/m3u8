@@ -199,12 +199,14 @@ namespace m3u8.download.manager.models
             var allowed = !Status.IsRunningOrPaused();
             if ( allowed )
             {
-                Url             = t.Url;
-                RequestHeaders  = t.RequestHeaders;
-                WebProxyInfo    = t.WebProxyInfo;
-                //OutputFileName  = t.OutputFileName;
-                //OutputDirectory = t.OutputDirectory;
-                IsLiveStream    = t.IsLiveStream;
+                Url                 = t.Url;
+                RequestHeaders      = t.RequestHeaders;
+                WebProxyInfo        = t.WebProxyInfo;
+                Timeout             = t.Timeout;
+                AttemptRequestCount = t.AttemptRequestCount;
+                //OutputFileName      = t.OutputFileName;
+                //OutputDirectory     = t.OutputDirectory;
+                IsLiveStream        = t.IsLiveStream;
                 LiveStreamMaxFileSizeInBytes = t.LiveStreamMaxFileSizeInBytes;
             }
             return (allowed);
@@ -442,35 +444,39 @@ namespace m3u8.download.manager.models
     {
         required public string Url { get; init; }
         required public IDictionary< string, string > RequestHeaders { get; init; }
-        required public web_proxy_info WebProxyInfo { get; init; }
+        required public web_proxy_info WebProxyInfo   { get; init; }
         required public TimeSpan? Timeout             { get; init; }
         required public int?      AttemptRequestCount { get; init; }
-        required public string OutputFileName  { get; init; }
-        required public string OutputDirectory { get; init; }
+        required public string    OutputFileName      { get; init; }
+        required public string    OutputDirectory     { get; init; }
 
         public static DownloadRow_Definer_1 Create( 
-            string url, IDictionary< string, string > requestHeaders, in web_proxy_info webProxyInfo, string outputFileName, string outputDirectory )
+            string url, IDictionary< string, string > requestHeaders, 
+            in web_proxy_info webProxyInfo, in (TimeSpan timeout, int attemptRequestCountByPart) z,
+            string outputFileName, string outputDirectory )
         => new DownloadRow_Definer_1()
         {
-            Url             = url,
-            RequestHeaders  = requestHeaders,
-            OutputFileName  = outputFileName,
-            OutputDirectory = outputDirectory,
-            WebProxyInfo    = webProxyInfo,
-            Timeout         = default,
-            AttemptRequestCount = default,
+            Url                 = url,
+            RequestHeaders      = requestHeaders,
+            OutputFileName      = outputFileName,
+            OutputDirectory     = outputDirectory,
+            WebProxyInfo        = webProxyInfo,
+            Timeout             = z.timeout,
+            AttemptRequestCount = z.attemptRequestCountByPart,
         };
+
 #if DEBUG
         public static DownloadRow_Definer_1 Create( 
-            string url, IDictionary< string, string > requestHeaders, string outputFileName, string outputDirectory )
+            string url, IDictionary< string, string > requestHeaders, 
+            string outputFileName, string outputDirectory )
         => new DownloadRow_Definer_1()
         {
-            Url             = url,
-            RequestHeaders  = requestHeaders,
-            OutputFileName  = outputFileName,
-            OutputDirectory = outputDirectory,
-            WebProxyInfo    = default,
-            Timeout         = default,
+            Url                 = url,
+            RequestHeaders      = requestHeaders,
+            OutputFileName      = outputFileName,
+            OutputDirectory     = outputDirectory,
+            WebProxyInfo        = default,
+            Timeout             = default,
             AttemptRequestCount = default,
         };
 #endif
@@ -484,16 +490,19 @@ namespace m3u8.download.manager.models
         required public long LiveStreamMaxFileSizeInBytes { get; init; }
 
         public static DownloadRow_Definer_2 Create(
-            string url, IDictionary< string, string > requestHeaders, in web_proxy_info webProxyInfo, string outputFileName, string outputDirectory, bool isLiveStream, long liveStreamMaxFileSizeInBytes )
+            string url, IDictionary< string, string > requestHeaders, 
+            in web_proxy_info webProxyInfo, TimeSpan? timeout, int? attemptRequestCount,
+            string outputFileName, string outputDirectory, 
+            bool isLiveStream, long liveStreamMaxFileSizeInBytes )
         => new DownloadRow_Definer_2()
         {
-            Url             = url,
-            RequestHeaders  = requestHeaders,
-            OutputFileName  = outputFileName,
-            OutputDirectory = outputDirectory,
-            WebProxyInfo    = webProxyInfo,
-            Timeout         = default,
-            AttemptRequestCount = default,
+            Url                 = url,
+            RequestHeaders      = requestHeaders,
+            WebProxyInfo        = webProxyInfo,
+            Timeout             = timeout,
+            AttemptRequestCount = attemptRequestCount,
+            OutputFileName      = outputFileName,
+            OutputDirectory     = outputDirectory,
             IsLiveStream        = isLiveStream,
             LiveStreamMaxFileSizeInBytes = liveStreamMaxFileSizeInBytes
         };

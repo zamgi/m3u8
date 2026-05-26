@@ -44,7 +44,7 @@ namespace m3u8.download.manager.ui
             this.requestTimeoutByPartLabel = new System.Windows.Forms.Label();
             this.requestTimeoutByPartDTP = new System.Windows.Forms.BorderDateTimePicker();
             this.attemptRequestCountByPartLabel = new System.Windows.Forms.Label();
-            this.attemptRequestCountByPartNUD = new System.Windows.Forms.NumericUpDownEx();            
+            this.attemptRequestCountByPartNUD = new System.Windows.Forms.NumericUpDownEx();
             this.loadM3u8FileContentButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.buttomPanel = new System.Windows.Forms.Panel();
             this.okButton = new System.Windows.Forms.ButtonWithFocusCues();
@@ -300,6 +300,7 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.Size = new System.Drawing.Size(803, 80 + 20);
             this.mainLayoutPanel.TabIndex = 1;
             //---this.mainLayoutPanel.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Inset;
+
             // 
             // liveStreamMaxSizeInMbLabel
             // 
@@ -387,7 +388,7 @@ namespace m3u8.download.manager.ui
             this.attemptRequestCountByPartNUD.Value = 1;
             this.attemptRequestCountByPartNUD.Set_Increment_MouseWheel( 1 );
             this.attemptRequestCountByPartNUD.Round2NextTenGroup = false;
-            this.attemptRequestCountByPartNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;            
+            this.attemptRequestCountByPartNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
 
             // 
             // loadM3u8FileContentButton

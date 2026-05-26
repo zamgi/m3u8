@@ -84,14 +84,20 @@ namespace m3u8.download.manager.ui
             this.OutputDirectory              = row.OutputDirectory;
             this.IsLiveStream                 = row.IsLiveStream; 
             this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;
-            (var timeout, attemptRequestCountByPartNUD.ValueAsInt32) = sc.GetCreateM3u8ClientParams();
-            requestTimeoutByPartDTP.Value = requestTimeoutByPartDTP.MinDate.Date + timeout;
 
+            #region [.Timeout & AttemptRequestCount.]
             requestTimeoutByPartDTP     .ValueChanged += requestTimeoutByPartDTP_ValueChanged;
             attemptRequestCountByPartNUD.ValueChanged += attemptRequestCountByPartNUD_ValueChanged;
 
+            (var timeout, attemptRequestCountByPartNUD.ValueAsInt32) = sc.GetCreateM3u8ClientParams();
+            requestTimeoutByPartDTP.Value = requestTimeoutByPartDTP.MinDate.Date + timeout;
+
+            //requestTimeoutByPartDTP     .ValueChanged += requestTimeoutByPartDTP_ValueChanged;
+            //attemptRequestCountByPartNUD.ValueChanged += attemptRequestCountByPartNUD_ValueChanged;
+
             if ( row.Timeout            .HasValue ) requestTimeoutByPartDTP     .Value        = requestTimeoutByPartDTP.MinDate.Date + row.Timeout.Value;
             if ( row.AttemptRequestCount.HasValue ) attemptRequestCountByPartNUD.ValueAsInt32 = row.AttemptRequestCount.Value;
+            #endregion
 
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
 
