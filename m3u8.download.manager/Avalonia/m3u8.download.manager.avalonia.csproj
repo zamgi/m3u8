@@ -57,6 +57,7 @@
     <None Remove="Resources\MessageBoxIcons\info.png" />
     <None Remove="Resources\MessageBoxIcons\question.png" />
     <None Remove="Resources\MessageBoxIcons\warning.png" />
+    <None Remove="Resources\network_tools.png" />
     <None Remove="Resources\settings.ico" />
     <None Remove="Resources\workgroup_16x16.png" />
     <None Remove="Resources\workgroup_32x32.png" />
@@ -143,6 +144,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaResource Update="View\ChangeSettingsParams4DownloadRowForm.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaResource>
     <AvaloniaResource Update="View\UC\WebProxyUC.xaml">
       <Generator>MSBuild:Compile</Generator>
     </AvaloniaResource>

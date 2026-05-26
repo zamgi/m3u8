@@ -1,0 +1,183 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local-ui="clr-namespace:m3u8.download.manager.ui"
+        x:Class="m3u8.download.manager.ui.ChangeSettingsParams4DownloadRowForm"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        Width="800" Height="450"
+        WindowStartupLocation="CenterScreen"
+        Title="change settings for download row"
+        Icon="/Resources/m3u8_32x36.ico"
+        ShowInTaskbar="False"
+        >
+  <Window.Styles>
+    <Style Selector="TabItem">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Margin"   Value="5,0,-1,-5" />
+      <Setter Property="Padding"  Value="5,3" />
+    </Style>
+    <!--
+    <Style Selector="Button, CheckBox, TextBox, NumericUpDown">
+      <Setter Property="CornerRadius" Value="1.5" />
+    </Style>
+    -->
+  </Window.Styles>
+  
+  <Grid RowDefinitions="*,auto">
+    <TabControl x:Name="tabControl" Grid.Row="0">
+      <TabItem x:Name="mainTabItem">
+        <TabItem.Header>
+            <DockPanel>
+                <Image Source="/Resources/m3u8_32x36.ico" Width="16" />
+			    <TextBlock Margin="5 0 0 0">.m3u8 file url:</TextBlock>
+            </DockPanel>
+        </TabItem.Header>
+        <Grid Background="PowderBlue"
+              Margin="5,0,5,5">
+          <Grid Background="White"
+                Margin="2">
+            <Grid RowDefinitions="auto,*,auto">
+            <StackPanel Margin="5" Grid.Row="0">
+              <TextBox x:Name="m3u8FileUrlTextBox" AcceptsReturn="True" TextWrapping="Wrap" Height="75" PlaceholderText="m3u8 file url"></TextBox>
+    
+              <Grid RowDefinitions="auto,2,auto,2,auto" ColumnDefinitions="80,auto,auto,auto,*,auto,auto,auto,auto"
+                    Margin="0,5,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                    
+                    > <!-- ShowGridLines="True" -->
+                <!--=== output-file-name ===========================================-->
+                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="SteelBlue" Margin="0,0,5,0" TextAlignment="Right"
+                           TextWrapping="Wrap" TextTrimming="CharacterEllipsis">
+                  output file name :
+                </TextBlock>
+                <TextBox x:Name="outputFileNameTextBox"      Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="6" Margin="0,0,3,0" PlaceholderText="output file name"></TextBox>
+                <!--<Button  x:Name="outputFileNameClearButton"  Grid.Row="0" Grid.Column="4" Width="25" Cursor="Hand" Margin="0,0,3,0">&#x26CC;</Button>-->
+                <Button  x:Name="outputFileNameSelectButton" Grid.Row="0" Grid.Column="7" Width="25" Cursor="Hand" Margin="0,0,3,0">=</Button>
+                <!--=== pattern ===========================================-->
+                <!--
+                <TextBlock x:Name="patternOutputFileNameLabelCaption" Grid.Row="2" Grid.Column="0" Foreground="DarkBlue" Margin="0,5,5,5" TextAlignment="Right"
+                           IsVisible="False">
+                  pattern :
+                </TextBlock>
+                <TextBlock x:Name="patternOutputFileNameLabel" Grid.Row="2" Grid.Column="1" Foreground="DimGray" Margin="0,5,5,5"
+                           TextTrimming="CharacterEllipsis" MaxWidth="350"
+                           IsVisible="False">
+                  ...
+                </TextBlock>
+                <NumericUpDown x:Name="patternOutputFileNameNumUpDn" Grid.Row="2" Grid.Column="2" 
+                               Minimum="1" Maximum="10000000" Value="1" FormatString="0"
+                               AllowSpin="True" ClipValueToMinMax="True" Foreground="DimGray"
+                               HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0"
+                               ToolTip.Tip="current pattern output file name count-number"
+                               IsVisible="False"/>
+                -->
+                <!--=== live-stream ===========================================-->
+                <CheckBox x:Name="isLiveStreamCheckBox" Grid.Row="0" Grid.Column="8" Foreground="Silver" Cursor="Hand" Margin="5,0,0,0" 
+                          ToolTip.Tip="this is a live stream" IsEnabled="false">this is a live stream</CheckBox>
+                <TextBlock x:Name="liveStreamMaxSizeInMbTextBlock" Grid.Row="2" Grid.Column="4" Grid.ColumnSpan="4" 
+                           Foreground="DimGray" Margin="0,5,5,5" TextAlignment="Right"
+                           TextTrimming="CharacterEllipsis" MinWidth="100"
+                           ToolTip.Tip="max single output file size (in mb)"
+                           IsVisible="False">
+                  max single output file size (in mb) :
+                </TextBlock>
+                <NumericUpDown x:Name="liveStreamMaxSizeInMbNumUpDn" Grid.Row="2" Grid.Column="8" 
+                               Minimum="1" Maximum="10000000" Value="250" FormatString="0"
+                               AllowSpin="True" ClipValueToMinMax="True"
+                               HorizontalAlignment="Left" Margin="10,0,0,0" Padding="0"
+                               IsVisible="False"/>
+                <!--=== output-directory ===========================================-->
+                <TextBlock Grid.Row="4" Grid.Column="0" Foreground="SteelBlue" Margin="0,0,5,0" TextAlignment="Right"
+                           TextWrapping="Wrap" TextTrimming="CharacterEllipsis">
+                  output directory :
+                </TextBlock>
+                <TextBox x:Name="outputDirectoryTextBox"      Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="6" IsReadOnly="True" Margin="0,0,3,0" PlaceholderText="output directory" Classes="noClearButton"></TextBox>
+                <Button  x:Name="outputDirectorySelectButton" Grid.Row="4" Grid.Column="7" Width="25" Cursor="Hand" Margin="0,0,3,0">=</Button>
+                <Button  x:Name="loadM3u8FileContentButton"   Grid.Row="4" Grid.Column="8" Cursor="Hand" Margin="0">(load .m3u8 file-content)</Button>    
+              </Grid>
+             
+              <!--=== timeout-&-attemptRequestCount ===========================================-->
+              <Grid RowDefinitions="auto" ColumnDefinitions="80,auto,auto,auto,55,auto,auto"
+                    Margin="0,5,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"                    
+                    > <!-- ShowGridLines="True" -->
+                <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Foreground="DarkBlue" 
+                           Margin="0,0,5,0" TextAlignment="Right" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"
+                           ToolTip.Tip="request timeout by part">
+                  request timeout by part :
+                </TextBlock>
+                <local-ui:TimePickerUC Grid.Row="0" Grid.Column="3"
+                                       x:Name="requestTimeoutByPartDTP" 
+                                       HorizontalAlignment="Left" Margin="0" MinWidth="90"
+                                       ToolTip.Tip="request timeout by part"
+                                       />
+                <TextBlock Grid.Row="0" Grid.Column="5" Foreground="DarkBlue" 
+                           Margin="0,0,5,0" TextAlignment="Right" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" MinWidth="50"
+                           ToolTip.Tip="attempt request count by part">
+                  attempt request count by part :
+                </TextBlock>
+                <NumericUpDown Grid.Row="0" Grid.Column="6"
+                               x:Name="attemptRequestCountByPartNUD" 
+                               Minimum="1" Maximum="100" Value="1"
+                               AllowSpin="True" ClipValueToMinMax="True" FormatString="0"
+                               HorizontalAlignment="Left" Margin="0" Padding="0" 
+                               ToolTip.Tip="attempt request count by part"
+                               />
+              </Grid>
+            </StackPanel>
+
+            <local-ui:RequestLogUC x:Name="logUC" Grid.Row="1" 
+                                   Margin="5,0" MinHeight="120"
+                                   BorderBrush="LightGray" BorderThickness="1" />
+            </Grid>
+          </Grid>
+        </Grid>
+      </TabItem>
+      
+      <TabItem x:Name="requestHeadersTabItem">
+        <TabItem.Header>
+            <DockPanel>
+                <Image Source="/Resources/listcheck.png" Width="16" />
+			    <TextBlock x:Name="requestHeadersTabItem_TextBlock" 
+                           Margin="5 0 0 0">request header</TextBlock>
+            </DockPanel>
+        </TabItem.Header>
+        <Grid Background="PowderBlue"
+              Margin="5,0,5,5">
+          <Grid Background="White"
+                Margin="2">
+            <DockPanel LastChildFill="True" Margin="0">
+              <local-ui:RequestHeadersEditor x:Name="requestHeadersEditor" />
+            </DockPanel>
+          </Grid>
+        </Grid>
+      </TabItem>
+
+      <TabItem x:Name="webProxyTabItem">
+        <TabItem.Header>
+            <DockPanel>
+                <Image Source="/Resources/workgroup_16x16.png" Width="16" />
+			    <TextBlock x:Name="webProxyTabItem_TextBlock" 
+                           Margin="5 0 0 0">web proxy</TextBlock>
+            </DockPanel>
+        </TabItem.Header>
+        <Grid Background="PowderBlue"
+              Margin="5,0,5,5">
+          <Grid Background="White"
+                Margin="2">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <local-ui:WebProxyUC x:Name="webProxyUC" />
+            </ScrollViewer>              
+          </Grid>
+        </Grid>
+      </TabItem>
+
+    </TabControl>
+
+    <DockPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10">
+        <Button x:Name="okButton"     HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" FontWeight="Bold" Margin="0,0,10,0">Ok</Button>
+        <Button x:Name="cancelButton" HorizontalAlignment="Center" Width="135" Height="35" Cursor="Hand" Margin="10,0,0,0">Cancel</Button>
+    </DockPanel>
+  </Grid>
+  
+</Window>

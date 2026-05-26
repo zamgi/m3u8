@@ -21,10 +21,10 @@ namespace m3u8.download.manager
     {
         private MainVM _VM;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
-        public AddCommand( MainVM vm )
+        public AddCommand( MainVM vm, OutputFileNamePatternProcessor outputFileNamePatternProcessor )
         {
             _VM = vm;
-            _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
+            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
 
             PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArray += NamedPipeServer__Input_ReceivedInputParamsArray;
         }
@@ -95,7 +95,7 @@ namespace m3u8.download.manager
                 return;
             }
 
-            var f = AddNewDownloadForm.Show( _VM, p.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo );
+            var f = AddNewDownloadForm.Add( _VM, p.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo );
             {
                 await f.ShowDialogEx();
                 if ( f.Success )

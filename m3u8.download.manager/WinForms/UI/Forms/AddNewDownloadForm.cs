@@ -437,6 +437,18 @@ namespace m3u8.download.manager.ui
                     e.Cancel = true;
                     outputDirectoryTextBox.FocusAndBlinkBackColor();
                 }
+                else
+                if ( this.Timeout.HasValue && (this.Timeout <= TimeSpan.Zero) )
+                {
+                    e.Cancel = true;
+                    requestTimeoutByPartDTP.FocusAndBlinkBackColor();
+                }
+                else
+                if ( this.AttemptRequestCount.HasValue && (this.AttemptRequestCount <= 0) )
+                {
+                    e.Cancel = true;
+                    attemptRequestCountByPartNUD.FocusAndBlinkBackColor();
+                }
 
                 if ( !e.Cancel && (DialogResult == DialogResult.Yes) )
                 {
@@ -791,9 +803,9 @@ namespace m3u8.download.manager.ui
             {
                 var webProxyInfo = this.GetWebProxyInfo();
                 var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
+                var timeout      = this.Timeout.GetValueOrDefault( _Settings.RequestTimeoutByPart );
                 _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, webProxyInfo, clearLog: false );
-                var t = await _DC.GetFileTextContent( x.m3u8FileUrl, requestHeaders,
-                    webProxy, _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
+                var t = await _DC.GetFileTextContent( x.m3u8FileUrl, requestHeaders, webProxy, timeout, cts ); //all possible exceptions are thrown within inside
 
                 if ( cts.IsCancellationRequested )
                 {

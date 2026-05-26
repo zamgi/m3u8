@@ -47,6 +47,7 @@ namespace m3u8.download.manager.ui
         private MenuItem pauseDownloadToolButton;
         private MenuItem cancelDownloadToolButton;
         private MenuItem editDownloadToolButton;
+        private MenuItem changeSettingsParams4DownloadRow_ToolButton;
         private MenuItem deleteDownloadToolButton;
         private MenuItem deleteAllFinishedDownloadToolButton;
         private MenuItem undoToolButton;
@@ -62,6 +63,7 @@ namespace m3u8.download.manager.ui
         private MenuItem pauseDownloadMenuItem;
         private MenuItem cancelDownloadMenuItem;
         private MenuItem editDownloadMenuItem;
+        private MenuItem changeSettingsParams4DownloadRow_MenuItem;
         private MenuItem editDownloadMenuItem_Separator;
         private MenuItem deleteDownloadMenuItem;
         private MenuItem deleteWithOutputFileMenuItem;
@@ -118,6 +120,7 @@ namespace m3u8.download.manager.ui
             pauseDownloadToolButton  = this.Find_Ex< MenuItem >( nameof(pauseDownloadToolButton)  ); pauseDownloadToolButton .Click += pauseDownloadToolButton_Click;
             cancelDownloadToolButton = this.Find_Ex< MenuItem >( nameof(cancelDownloadToolButton) ); cancelDownloadToolButton.Click += cancelDownloadToolButton_Click;
             editDownloadToolButton   = this.Find_Ex< MenuItem >( nameof(editDownloadToolButton)   ); editDownloadToolButton  .Click += editDownloadMenuItem_Click;
+            changeSettingsParams4DownloadRow_ToolButton = this.Find_Ex< MenuItem >( nameof(changeSettingsParams4DownloadRow_ToolButton) ); changeSettingsParams4DownloadRow_ToolButton.Click += changeSettingsParams4DownloadRow_MenuItem_Click;
             deleteDownloadToolButton = this.Find_Ex< MenuItem >( nameof(deleteDownloadToolButton) ); deleteDownloadToolButton.Click += deleteDownloadToolButton_Click;
             deleteAllFinishedDownloadToolButton = this.Find_Ex< MenuItem >( nameof(deleteAllFinishedDownloadToolButton) ); deleteAllFinishedDownloadToolButton.Click += deleteAllFinishedDownloadToolButton_Click;
 
@@ -137,6 +140,8 @@ namespace m3u8.download.manager.ui
             pauseDownloadMenuItem             = mainContextMenu.Find_MenuItem( nameof(pauseDownloadMenuItem) ); pauseDownloadMenuItem.Click += pauseDownloadMenuItem_Click;
             cancelDownloadMenuItem            = mainContextMenu.Find_MenuItem( nameof(cancelDownloadMenuItem) ); cancelDownloadMenuItem.Click += cancelDownloadMenuItem_Click;
             editDownloadMenuItem              = mainContextMenu.Find_MenuItem( nameof(editDownloadMenuItem) ); editDownloadMenuItem.Click += editDownloadMenuItem_Click;
+            changeSettingsParams4DownloadRow_MenuItem 
+                                              = mainContextMenu.Find_MenuItem( nameof(changeSettingsParams4DownloadRow_MenuItem) ); changeSettingsParams4DownloadRow_MenuItem.Click += changeSettingsParams4DownloadRow_MenuItem_Click;
             editDownloadMenuItem_Separator    = mainContextMenu.Find_MenuItem( nameof(editDownloadMenuItem_Separator) );
             deleteDownloadMenuItem            = mainContextMenu.Find_MenuItem( nameof(deleteDownloadMenuItem) ); deleteDownloadMenuItem.Click += deleteDownloadMenuItem_Click;
             deleteWithOutputFileMenuItem      = mainContextMenu.Find_MenuItem( nameof(deleteWithOutputFileMenuItem) ); deleteWithOutputFileMenuItem.Click += deleteWithOutputFileMenuItem_Click;
@@ -667,7 +672,8 @@ namespace m3u8.download.manager.ui
                     cancelDownloadToolButton.IsEnabled =
                         pauseDownloadToolButton.IsEnabled =
                             deleteDownloadToolButton.IsEnabled =
-                                editDownloadToolButton.IsEnabled = false;
+                                editDownloadToolButton.IsEnabled = 
+                                    changeSettingsParams4DownloadRow_ToolButton.IsEnabled = false;
                 deleteAllFinishedDownloadToolButton.IsEnabled = _VM.DownloadListModel.HasAnyFinished();
             }
             else
@@ -677,6 +683,7 @@ namespace m3u8.download.manager.ui
                 cancelDownloadToolButton.IsEnabled = status.CancelDownload_IsAllowed();
                 pauseDownloadToolButton .IsEnabled = status.PauseDownload_IsAllowed();
                 editDownloadToolButton  .IsEnabled = !status.IsRunningOrPaused(); //status.EditDownload_IsAllowed();
+                changeSettingsParams4DownloadRow_ToolButton.IsEnabled = status.IsRunningOrPaused();
 
                 deleteDownloadToolButton.IsEnabled = true;
                 deleteAllFinishedDownloadToolButton.IsEnabled = (status.IsFinished() || _VM.DownloadListModel.HasAnyFinished());
@@ -1074,8 +1081,11 @@ namespace m3u8.download.manager.ui
                     #endregion
 
                     #region [.editDownloadMenuItem.]
-                    editDownloadMenuItem.IsVisible =
-                        editDownloadMenuItem_Separator.IsVisible = /*(rows.Count == 1) &&*/ !selectedRow.Status.IsRunningOrPaused();
+                    //var isOneRow = (rows.Count == 1);
+                    var isRunningOrPaused = selectedRow.Status.IsRunningOrPaused();
+                    editDownloadMenuItem.IsVisible = /*isOneRow &&*/ !isRunningOrPaused;
+                    changeSettingsParams4DownloadRow_MenuItem.IsVisible = isRunningOrPaused;
+                    editDownloadMenuItem_Separator.IsVisible = true;
                     #endregion
                 }
                 else
@@ -1083,7 +1093,8 @@ namespace m3u8.download.manager.ui
                     onlyDeleteOutputFileMenuItem.IsEnabled = false;
 
                     editDownloadMenuItem.IsVisible =
-                        editDownloadMenuItem_Separator.IsVisible = false;
+                        editDownloadMenuItem_Separator.IsVisible =
+                            changeSettingsParams4DownloadRow_MenuItem.IsVisible = false;
                 }
 
                 #region comm. [.calc menu-pos.] //comm.
@@ -1159,6 +1170,7 @@ namespace m3u8.download.manager.ui
         private void cancelDownloadMenuItem_Click( object sender, EventArgs e ) => ProcessDownloadCommand4SelectedRows( DownloadCommandEnum.Cancel );
 
         private void editDownloadMenuItem_Click( object sender, EventArgs e ) => _VM.EditCommand.EditDownload( downloadListUC.GetSelectedDownloadRow() );
+        private void changeSettingsParams4DownloadRow_MenuItem_Click( object sender, EventArgs e ) => _VM.ChangeSettingsParams4DownloadRowCommand.ChangeSettingsParams4DownloadRow( downloadListUC.GetSelectedDownloadRow() );
 
         private void deleteDownloadMenuItem_Click( object sender, EventArgs e ) => deleteDownloadToolButton_Click( sender, e );
         private void deleteWithOutputFileMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( downloadListUC.GetSelectedDownloadRows(), deleteOutputFiles: true );

@@ -101,10 +101,10 @@ namespace m3u8.download.manager.ui
 
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
 
-            #region [.if setted outputFileName.]
-            //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            Process_use_OutputFileNamePatternProcessor_on_Init();
-            #endregion
+            //#region [.if setted outputFileName.]
+            ////before 'this.M3u8FileUrl = m3u8FileUrl;'
+            //Process_use_OutputFileNamePatternProcessor_on_Init();
+            //#endregion
 
             m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
             this.M3u8FileUrl = row.Url;
@@ -278,6 +278,18 @@ namespace m3u8.download.manager.ui
                     e.Cancel = true;
                     outputDirectoryTextBox.FocusAndBlinkBackColor();
                 }
+                else
+                if ( this.Timeout.HasValue && (this.Timeout <= TimeSpan.Zero) )
+                {
+                    e.Cancel = true;
+                    requestTimeoutByPartDTP.FocusAndBlinkBackColor();
+                }
+                else
+                if ( this.AttemptRequestCount.HasValue && (this.AttemptRequestCount <= 0) )
+                {
+                    e.Cancel = true;
+                    attemptRequestCountByPartNUD.FocusAndBlinkBackColor();
+                }
             }
 
             if ( !e.Cancel && (_LastForegroundWnd != this.Handle) )
@@ -336,7 +348,11 @@ namespace m3u8.download.manager.ui
         private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _Settings.OutputFileExtension, _OutputFileNamePatternProcessor.PatternChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();
+        
         public web_proxy_info GetWebProxyInfo() => webProxyUC.GetWebProxyInfo();
+        public TimeSpan? Timeout             { get; set; }
+        public int?      AttemptRequestCount { get; set; }
+
         public  bool  IsLiveStream
         { 
             get => isLiveStreamCheckBox.Checked;
@@ -380,17 +396,15 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        public TimeSpan? Timeout             { get; set; }
-        public int?      AttemptRequestCount { get; set; }
 
-
-        public (IDictionary< string, string > RequestHeaders, web_proxy_info WebProxyInfo, 
-                string OutputFileName, string OutputDirectory, long LiveStreamMaxFileSizeInBytes,
-                TimeSpan? Timeout, int? AttemptRequestCount) 
-            GetParamsTuple() => (/*this.M3u8FileUrl,*/ this.GetRequestHeaders(), this.GetWebProxyInfo(),
+        public (IDictionary< string, string > RequestHeaders, 
+                web_proxy_info WebProxyInfo, TimeSpan? Timeout, int? AttemptRequestCount,
+                string OutputFileName, string OutputDirectory, 
+                long LiveStreamMaxFileSizeInBytes) 
+            GetParamsTuple() => (/*this.M3u8FileUrl,*/ this.GetRequestHeaders(), 
+                                 this.GetWebProxyInfo(), this.Timeout, this.AttemptRequestCount,
                                  this.GetOutputFileName(), this.GetOutputDirectory(),
-                                 /*this.IsLiveStream,*/ this.LiveStreamMaxFileSizeInBytes, 
-                                 this.Timeout, this.AttemptRequestCount);
+                                 /*this.IsLiveStream,*/ this.LiveStreamMaxFileSizeInBytes);
 
         public bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
         #endregion
@@ -501,26 +515,26 @@ namespace m3u8.download.manager.ui
             //this.ResumeDrawing();
         }
 
-        private void Process_use_OutputFileNamePatternProcessor_on_Init()
-        {
-            //TEMP
-#if DEBUG
-            //if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
-            //{
-            //    m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
-            //    var shown = default(EventHandler);
-            //    shown = (_, _) =>
-            //    {
-            //        const string txt = "Last_OutputFileName_Num - **.txt";
-            //        this.OutputFileName = txt;
-            //        setFocus2outputFileNameTextBox_Core( txt );
-            //        outputFileNameTextBox_TextChanged( this, EventArgs.Empty );
-            //        this.Shown -= shown;
-            //    };
-            //    this.Shown += shown;
-            //}
-#endif
-        }
+//        private void Process_use_OutputFileNamePatternProcessor_on_Init()
+//        {
+//            //TEMP
+//#if DEBUG
+//            //if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
+//            //{
+//            //    m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
+//            //    var shown = default(EventHandler);
+//            //    shown = (_, _) =>
+//            //    {
+//            //        const string txt = "Last_OutputFileName_Num - **.txt";
+//            //        this.OutputFileName = txt;
+//            //        setFocus2outputFileNameTextBox_Core( txt );
+//            //        outputFileNameTextBox_TextChanged( this, EventArgs.Empty );
+//            //        this.Shown -= shown;
+//            //    };
+//            //    this.Shown += shown;
+//            //}
+//#endif
+//        }
         //private void Process_use_OutputFileNamePatternProcessor()
         //{
         //    var outputFileName = this.OutputFileName;

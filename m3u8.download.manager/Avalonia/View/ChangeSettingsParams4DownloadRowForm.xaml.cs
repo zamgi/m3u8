@@ -25,7 +25,7 @@ namespace m3u8.download.manager.ui
     /// <summary>
     /// 
     /// </summary>
-    public sealed class AddNewDownloadForm : Window, IDisposable
+    public sealed class ChangeSettingsParams4DownloadRowForm : Window, IDisposable
     {
         /// <summary>
         /// 
@@ -45,9 +45,9 @@ namespace m3u8.download.manager.ui
         private TimePickerUC  requestTimeoutByPartDTP;
         private RequestLogUC  logUC;
 
-        private TextBlock     patternOutputFileNameLabelCaption;
-        private TextBlock     patternOutputFileNameLabel;
-        private NumericUpDown patternOutputFileNameNumUpDn;
+        //private TextBlock     patternOutputFileNameLabelCaption;
+        //private TextBlock     patternOutputFileNameLabel;
+        //private NumericUpDown patternOutputFileNameNumUpDn;
 
         private CheckBox      isLiveStreamCheckBox;
         private TextBlock     liveStreamMaxSizeInMbTextBlock;
@@ -56,8 +56,8 @@ namespace m3u8.download.manager.ui
         private IDisposable m3u8FileUrlTextBox_SubscribeDisposable;
         private IDisposable outputFileNameTextBox_SubscribeDisposable;
 
-        private Button startDownloadButton;
-        private Button laterDownloadButton;
+        private Button okButton;
+        private Button cancelButton;
 
         private TabItem              mainTabItem;
         private TabItem              requestHeadersTabItem;
@@ -70,19 +70,15 @@ namespace m3u8.download.manager.ui
 
         #region [.fields.]
         private LogListModel _Model;
-        private bool _DownloadLater;
         private _SC_ _SC;
         private _DC_ _DC;
-        private DownloadListModel _DownloadListModel;
         private FileNameCleaner4UI.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
-        private (int n, int total) _SeriesInfo;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
-        private bool _IsInEditMode;
         #endregion
 
         #region [.ctor().]
-        public AddNewDownloadForm()
+        public ChangeSettingsParams4DownloadRowForm()
         {
             AvaloniaXamlLoader.Load( this );
 
@@ -102,9 +98,9 @@ namespace m3u8.download.manager.ui
             webProxyTabItem_TextBlock = this.Find< TextBlock  >( nameof(webProxyTabItem_TextBlock) );
             webProxyUC                = this.Find< WebProxyUC >( nameof(webProxyUC) ); webProxyUC.OnWebProxyChanged += webProxyUC_OnWebProxyChanged;
 
-            patternOutputFileNameLabelCaption = this.Find< TextBlock     >( nameof(patternOutputFileNameLabelCaption) );
-            patternOutputFileNameLabel        = this.Find< TextBlock     >( nameof(patternOutputFileNameLabel) );
-            patternOutputFileNameNumUpDn      = this.Find< NumericUpDown >( nameof(patternOutputFileNameNumUpDn) ); patternOutputFileNameNumUpDn.ValueChanged += patternOutputFileNameNumUpDn_ValueChanged;
+            //patternOutputFileNameLabelCaption = this.Find< TextBlock     >( nameof(patternOutputFileNameLabelCaption) );
+            //patternOutputFileNameLabel        = this.Find< TextBlock     >( nameof(patternOutputFileNameLabel) );
+            //patternOutputFileNameNumUpDn      = this.Find< NumericUpDown >( nameof(patternOutputFileNameNumUpDn) ); patternOutputFileNameNumUpDn.ValueChanged += patternOutputFileNameNumUpDn_ValueChanged;
 
             isLiveStreamCheckBox           = this.Find< CheckBox      >( nameof(isLiveStreamCheckBox) );
             liveStreamMaxSizeInMbTextBlock = this.Find< TextBlock     >( nameof(liveStreamMaxSizeInMbTextBlock) );
@@ -114,8 +110,8 @@ namespace m3u8.download.manager.ui
             this.Find< Button >( "outputFileNameSelectButton"  ).Click += outputFileNameSelectButton_Click;
             this.Find< Button >( "outputDirectorySelectButton" ).Click += outputDirectorySelectButton_Click;
             this.Find< Button >( "loadM3u8FileContentButton"   ).Click += loadM3u8FileContentButton_Click;
-            startDownloadButton = this.Find< Button >( nameof(startDownloadButton) ); startDownloadButton.Click += startDownloadButton_Click;
-            laterDownloadButton = this.Find< Button >( nameof(laterDownloadButton) ); laterDownloadButton.Click += laterDownloadButton_Click;
+            okButton     = this.Find< Button >( nameof(okButton) );     okButton    .Click += okButton_Click;
+            cancelButton = this.Find< Button >( nameof(cancelButton) ); cancelButton.Click += cancelButton_Click;
             isLiveStreamCheckBox.Click += isLiveStreamCheckBox_Click;
 
             _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
@@ -129,16 +125,14 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// Edit
         /// </summary>
-        private AddNewDownloadForm( MainVM vm
+        private ChangeSettingsParams4DownloadRowForm( MainVM vm
             , DownloadRow row
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor ) : this()
         {
-            _IsInEditMode = true;
             this.DataContext = new CloseWindowVM( this );
 
-            _SC                = vm.SettingsController;
-            _DC                = vm.DownloadController;
-            _DownloadListModel = vm.DownloadController?.Model;
+            _SC = vm.SettingsController;
+            _DC = vm.DownloadController;
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
             requestHeadersEditor.SetSettingsController( _SC );
             requestHeadersEditor.SetRequestHeaders( row.RequestHeaders, _SC.IgnoreHostHttpHeader );
@@ -148,10 +142,10 @@ namespace m3u8.download.manager.ui
             this.IsLiveStream                 = row.IsLiveStream; if ( row.IsLiveStream ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, null/*RoutedEventArgs.Empty*/ );
             this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;            
 
-            #region [.if setted outputFileName.]
-            //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            Process_use_OutputFileNamePatternProcessor_on_Init();
-            #endregion
+            //#region [.if setted outputFileName.]
+            ////before 'this.M3u8FileUrl = m3u8FileUrl;'
+            //Process_use_OutputFileNamePatternProcessor_on_Init();
+            //#endregion
 
             _IsTurnOff__m3u8FileUrlTextBox_TextChanged = true;
             this.M3u8FileUrl = row.Url;
@@ -169,53 +163,6 @@ namespace m3u8.download.manager.ui
             this.AttemptRequestCount = row.AttemptRequestCount.GetValueOrDefault( cp.attemptRequestCountByPart );
             #endregion
         }
-        /// <summary>
-        /// Add
-        /// </summary>
-        private AddNewDownloadForm( MainVM vm
-            , string m3u8FileUrl
-            , IDictionary< string, string > requestHeaders
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , in (int n, int total)? seriesInfo = null ) : this()
-        {
-            this.DataContext = new CloseWindowVM( this );
-
-            _SC                = vm.SettingsController;
-            _DC                = vm.DownloadController;
-            _DownloadListModel = vm.DownloadController?.Model;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
-            requestHeadersEditor.SetSettingsController( _SC );
-            requestHeadersEditor.SetRequestHeaders( requestHeaders, _SC.IgnoreHostHttpHeader );            
-
-            #region [.if setted outputFileName.]
-            //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            Process_use_OutputFileNamePatternProcessor_on_Init();
-            #endregion
-
-            this.M3u8FileUrl = m3u8FileUrl;
-            this.OutputDirectory = _SC.Settings.OutputFileDirectory;
-            this.LiveStreamMaxFileSizeInMb = _SC.Settings.LiveStreamMaxSingleFileSizeInMb;
-            //this.IsLiveStream              = _SC.Settings.IsLiveStream;
-            _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
-
-            _Model = new LogListModel();
-            logUC.SetModel( _Model );
-
-            set_WebProxyInfo( _SC.GetDefaultWebProxyInfo() );
-
-            #region [.Timeout & AttemptRequestCount.]
-            (this.Timeout, this.AttemptRequestCount) = _SC.GetCreateM3u8ClientParams();
-            #endregion            
-
-            #region [.seriesInfo.]
-            if ( seriesInfo.HasValue )
-            {
-                var x = seriesInfo.Value;
-                this.Title += $" ({x.n} of {x.total})";
-            }
-            _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
-            #endregion
-        }
         public void Dispose()
         {
             _FNCP.Dispose_NoThrow();
@@ -225,25 +172,17 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.static show-form methods.]
-        internal static AddNewDownloadForm Add( MainVM vm
-            , string m3u8FileUrl
-            , IDictionary< string, string > requestHeaders
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , in (int n, int total)? seriesInfo = null ) => new AddNewDownloadForm( vm, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, seriesInfo );
-        internal static AddNewDownloadForm Edit( MainVM vm
+        internal static ChangeSettingsParams4DownloadRowForm Edit( MainVM vm
             , DownloadRow row
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
             , TabPageKind? activeTabPageKind = null )
         {
-            var f = new AddNewDownloadForm( vm, row, outputFileNamePatternProcessor )
+            var f = new ChangeSettingsParams4DownloadRowForm( vm, row, outputFileNamePatternProcessor )
             {
                 Icon  = new WindowIcon( ResourceLoader._GetResource_( "/Resources/edit.png" ) ),
-                Title = $"Edit, / '{row.OutputFileName}' /",
+                Title = $"Change settings, / '{row.OutputFileName}' /",
             };
-            f.SetActiveTabPageKind( activeTabPageKind );
-            f.startDownloadButton.Content = "Ok";
-            f.laterDownloadButton.Content = "Cancel"; f.laterDownloadButton.Click -= f.laterDownloadButton_Click;
-            f.laterDownloadButton.Click += (_, _) => f.Close();
+            f.SetActiveTabPageKind( activeTabPageKind );            
             f.Opened += (_, _) => f.setFocus2outputFileNameTextBox_Core();
             return (f);
         }
@@ -307,7 +246,7 @@ namespace m3u8.download.manager.ui
                 return;
             }
         }
-        protected async override void OnKeyDown( KeyEventArgs e )
+        protected /*async*/ override void OnKeyDown( KeyEventArgs e )
         {
             switch ( e.Key )
             {
@@ -320,14 +259,11 @@ namespace m3u8.download.manager.ui
                     //}
                     //break;
 
-                case Key.Enter: //StartDownload
+                case Key.Enter: //OkButton
                     var button = (this.GetTemplateFocusTarget() as Button);
                     if ( (button == null) || !button.IsFocused_SelfOrDescendants() )
                     {
-                        var downloadLater = ((e.KeyModifiers & KeyModifiers.Alt)     == KeyModifiers.Alt ||
-                                             (e.KeyModifiers & KeyModifiers.Control) == KeyModifiers.Control ||
-                                             (e.KeyModifiers & KeyModifiers.Shift)   == KeyModifiers.Shift);
-                        if ( await StartDownloadRoutine( downloadLater ) )
+                        if ( /*await*/ OkButtonRoutine() )
                         {
                             e.Handled = true;
                             return;
@@ -353,8 +289,8 @@ namespace m3u8.download.manager.ui
         private const int TEXTBOX_MILLISECONDS_DELAY = 150;
         private string _Last_m3u8FileUrlText;
         private string _LastManualInputed_outputFileNameText;
-        private bool _IsTurnOff__outputFileNameTextBox_TextChanged;
-        private bool _IsTurnOff__m3u8FileUrlTextBox_TextChanged;
+        private bool   _IsTurnOff__outputFileNameTextBox_TextChanged;
+        private bool   _IsTurnOff__m3u8FileUrlTextBox_TextChanged;
 
         private void setFocus2outputFileNameTextBox_Core( string outputFileName = null )
         {
@@ -477,14 +413,14 @@ namespace m3u8.download.manager.ui
             if ( _OutputFileNamePatternProcessor == null ) return; //then call from '.ctor()'
 
             _LastManualInputed_outputFileNameText = value;
-            Process_use_OutputFileNamePatternProcessor();
+            //Process_use_OutputFileNamePatternProcessor();
         }
         #endregion
 
         #region [.private method's.]
         private bool IsWaitBannerShown() => !this.IsEnabled;
 
-        private async Task< bool > IsValid()
+        private /*async Task< bool >*/bool IsValid()
         {
             if ( this.M3u8FileUrl.IsNullOrWhiteSpace() )
             {
@@ -492,13 +428,13 @@ namespace m3u8.download.manager.ui
                 return (false);
             }
             else
-            if ( !_IsInEditMode && _SC.Settings.UniqueUrlsOnly && (_DownloadListModel?.ContainsUrl( this.M3u8FileUrl )).GetValueOrDefault() )
-            {
-                await Extensions.MessageBox_ShowError( $"Url already exists in list:\n '{this.M3u8FileUrl}'\n", this.Title );
-                m3u8FileUrlTextBox.FocusAndBlinkBackColor();
-                return (false);
-            }
-            else
+            //if ( !_IsInEditMode && _SC.Settings.UniqueUrlsOnly && (_DownloadListModel?.ContainsUrl( this.M3u8FileUrl )).GetValueOrDefault() )
+            //{
+            //    await Extensions.MessageBox_ShowError( $"Url already exists in list:\n '{this.M3u8FileUrl}'\n", this.Title );
+            //    m3u8FileUrlTextBox.FocusAndBlinkBackColor();
+            //    return (false);
+            //}
+            //else
             if ( this.GetOutputFileName_Internal().IsNullOrWhiteSpace() )
             {
                 outputFileNameTextBox.FocusAndBlinkBackColor();
@@ -525,19 +461,18 @@ namespace m3u8.download.manager.ui
 
             return (true);
         }
-        private async Task< bool > StartDownloadRoutine( bool downloadLater )
+        private /*async Task< bool >*/bool OkButtonRoutine()
         {
-            if ( await IsValid() )
+            if ( /*await*/ IsValid() )
             {
-                _DownloadLater = downloadLater;
                 this.Success = true;
                 this.Close();
                 return (true);
             }
             return (false);
         }
-        private async void startDownloadButton_Click( object sender, RoutedEventArgs e ) => await StartDownloadRoutine( downloadLater: false );
-        private async void laterDownloadButton_Click( object sender, RoutedEventArgs e ) => await StartDownloadRoutine( downloadLater: true );
+        private /*async*/ void okButton_Click( object sender, RoutedEventArgs e ) => /*await*/ OkButtonRoutine();
+        private /*async*/ void cancelButton_Click( object sender, RoutedEventArgs e ) => this.Close();
         private async void loadM3u8FileContentButton_Click( object sender, RoutedEventArgs e )
         {
             //logPanel.Visible = true;
@@ -593,58 +528,58 @@ namespace m3u8.download.manager.ui
             //this.mainLayoutPanel.Height = isLiveStream ? 90 : 60;
         }
 
-        private void Process_use_OutputFileNamePatternProcessor_on_Init()
-        {
-            if ( _OutputFileNamePatternProcessor.TryGet_Patterned_Last_OutputFileName( out var t ) )
-            {
-                m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
-                this.OutputFileName = t.Patterned_Last_OutputFileName;
-                patternOutputFileNameLabel.Text = t.Last_OutputFileName_As_Pattern; patternOutputFileNameLabel.SetValue( ToolTip.TipProperty, t.Last_OutputFileName_As_Pattern );
-                patternOutputFileNameNumUpDn.Value = t.Last_OutputFileName_Num;
-                patternOutputFileNameLabelCaption.IsVisible = patternOutputFileNameLabel.IsVisible = patternOutputFileNameNumUpDn.IsVisible = true;
+//        private void Process_use_OutputFileNamePatternProcessor_on_Init()
+//        {
+//            if ( _OutputFileNamePatternProcessor.TryGet_Patterned_Last_OutputFileName( out var t ) )
+//            {
+//                m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
+//                this.OutputFileName = t.Patterned_Last_OutputFileName;
+//                patternOutputFileNameLabel.Text = t.Last_OutputFileName_As_Pattern; patternOutputFileNameLabel.SetValue( ToolTip.TipProperty, t.Last_OutputFileName_As_Pattern );
+//                patternOutputFileNameNumUpDn.Value = t.Last_OutputFileName_Num;
+//                patternOutputFileNameLabelCaption.IsVisible = patternOutputFileNameLabel.IsVisible = patternOutputFileNameNumUpDn.IsVisible = true;
 
-                if ( !this.M3u8FileUrl.IsNullOrWhiteSpace() )
-                {
-                    this.Opened += (_, _) => setFocus2outputFileNameTextBox_Core( t.Patterned_Last_OutputFileName );
-                }
-            }
+//                if ( !this.M3u8FileUrl.IsNullOrWhiteSpace() )
+//                {
+//                    this.Opened += (_, _) => setFocus2outputFileNameTextBox_Core( t.Patterned_Last_OutputFileName );
+//                }
+//            }
 
-            //TEMP
-#if DEBUG
-            //else //if ( !this.M3u8FileUrl.IsNullOrWhiteSpace() )
-            //{
-            //    m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
-            //    this.Opened += (_, _) =>
-            //    {
-            //        var txt = "Last_OutputFileName_Num - Last_OutputFileName_Num - Last_OutputFileName_Num - **.txt";
-            //        this.OutputFileName = txt;
-            //        setFocus2outputFileNameTextBox_Core( txt );
-            //        outputFileNameTextBox_TextChanged( txt );
-            //    };
-            //}
-#endif
-        }
-        private void Process_use_OutputFileNamePatternProcessor()
-        {
-            var outputFileName = this.OutputFileName;
-            var has = _OutputFileNamePatternProcessor.HasPatternChar( outputFileName );
-            if ( has )
-            {
-                patternOutputFileNameLabel.Text = outputFileName; patternOutputFileNameLabel.SetValue( ToolTip.TipProperty, outputFileName );
-                patternOutputFileNameNumUpDn.Value = _OutputFileNamePatternProcessor.IsEqualPattern( outputFileName ) ? _OutputFileNamePatternProcessor.Last_OutputFileName_Num : 1;
-                patternOutputFileNameNumUpDn_ValueChanged( null, null );
-            }
-            patternOutputFileNameLabelCaption.IsVisible = patternOutputFileNameLabel.IsVisible = patternOutputFileNameNumUpDn.IsVisible = has;
-        }
-        private void patternOutputFileNameNumUpDn_ValueChanged( object sender, RoutedEventArgs e )
-        {
-            _OutputFileNamePatternProcessor.Set_Last_OutputFileName_Num( (int) patternOutputFileNameNumUpDn.Value );
+//            //TEMP
+//#if DEBUG
+//            //else //if ( !this.M3u8FileUrl.IsNullOrWhiteSpace() )
+//            //{
+//            //    m3u8FileUrlTextBox_SubscribeDisposable.Dispose(); m3u8FileUrlTextBox_SubscribeDisposable = null;
+//            //    this.Opened += (_, _) =>
+//            //    {
+//            //        var txt = "Last_OutputFileName_Num - Last_OutputFileName_Num - Last_OutputFileName_Num - **.txt";
+//            //        this.OutputFileName = txt;
+//            //        setFocus2outputFileNameTextBox_Core( txt );
+//            //        outputFileNameTextBox_TextChanged( txt );
+//            //    };
+//            //}
+//#endif
+//        }
+//        private void Process_use_OutputFileNamePatternProcessor()
+//        {
+//            var outputFileName = this.OutputFileName;
+//            var has = _OutputFileNamePatternProcessor.HasPatternChar( outputFileName );
+//            if ( has )
+//            {
+//                patternOutputFileNameLabel.Text = outputFileName; patternOutputFileNameLabel.SetValue( ToolTip.TipProperty, outputFileName );
+//                patternOutputFileNameNumUpDn.Value = _OutputFileNamePatternProcessor.IsEqualPattern( outputFileName ) ? _OutputFileNamePatternProcessor.Last_OutputFileName_Num : 1;
+//                patternOutputFileNameNumUpDn_ValueChanged( null, null );
+//            }
+//            patternOutputFileNameLabelCaption.IsVisible = patternOutputFileNameLabel.IsVisible = patternOutputFileNameNumUpDn.IsVisible = has;
+//        }
+        //private void patternOutputFileNameNumUpDn_ValueChanged( object sender, RoutedEventArgs e )
+        //{
+        //    _OutputFileNamePatternProcessor.Set_Last_OutputFileName_Num( (int) patternOutputFileNameNumUpDn.Value );
 
-            if ( _OutputFileNamePatternProcessor.HasLast_OutputFileName_As_Pattern )
-            {
-                this.OutputFileName = _OutputFileNamePatternProcessor.Get_Patterned_Last_OutputFileName();
-            }
-        }
+        //    if ( _OutputFileNamePatternProcessor.HasLast_OutputFileName_As_Pattern )
+        //    {
+        //        this.OutputFileName = _OutputFileNamePatternProcessor.Get_Patterned_Last_OutputFileName();
+        //    }
+        //}
 
         private void requestHeadersEditor_OnRequestHeadersCountChanged( int requestHeadersCount, int enabledCount )
             => requestHeadersTabItem_TextBlock.Text = (requestHeadersCount == enabledCount) ? $"request headers ({requestHeadersCount})" : $"request headers ({enabledCount} of {requestHeadersCount})";
@@ -669,12 +604,15 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public methods.]
-        public DownloadRow_Definer_2 GetParamsTuple() => DownloadRow_Definer_2.Create( this.M3u8FileUrl, this.GetRequestHeaders(), 
-                                                                                       this.GetWebProxyInfo(), this.Timeout, this.AttemptRequestCount,
-                                                                                       this.GetOutputFileName(), this.GetOutputDirectory(), 
-                                                                                       this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
+        public (IDictionary< string, string > RequestHeaders, 
+                web_proxy_info WebProxyInfo, TimeSpan? Timeout, int? AttemptRequestCount,
+                string OutputFileName, string OutputDirectory, 
+                long LiveStreamMaxFileSizeInBytes) 
+            GetParamsTuple() => (/*this.M3u8FileUrl,*/ this.GetRequestHeaders(), 
+                                 this.GetWebProxyInfo(), this.Timeout, this.AttemptRequestCount,
+                                 this.GetOutputFileName(), this.GetOutputDirectory(),
+                                 /*this.IsLiveStream,*/ this.LiveStreamMaxFileSizeInBytes);
         public bool Success { get; private set; }
-        public bool AutoStartDownload => !_DownloadLater;
         public string M3u8FileUrl
         {
             get => m3u8FileUrlTextBox.Text?.Trim();

@@ -1420,15 +1420,15 @@ namespace m3u8.download.manager.ui
             if ( (selectedRow != null) || (0 < _DownloadListModel.RowsCount) )
             {
                 var selectedRow_AnyFileExists = false;
-                startDownloadMenuItem              .Enabled = startDownloadToolButton .Enabled;
-                cancelDownloadMenuItem             .Enabled = cancelDownloadToolButton.Enabled;
-                pauseDownloadMenuItem              .Enabled = pauseDownloadToolButton .Enabled;
-                deleteDownloadMenuItem             .Enabled = deleteDownloadToolButton.Enabled;
-                moreOpMenuItem                     .Enabled = deleteDownloadToolButton.Enabled;
-                deleteWithOutputFileMenuItem       .Enabled = deleteDownloadToolButton.Enabled && (selectedRow_AnyFileExists = FileHelper.AnyFileExists( selectedRow?.GetOutputFullFileNames() ));
-                browseOutputFileMenuItem           .Visible = deleteWithOutputFileMenuItem.Enabled;
-                openOutputFileMenuItem             .Visible = deleteWithOutputFileMenuItem.Enabled;     
-                deleteAllFinishedDownloadMenuItem  .Enabled = deleteAllFinishedDownloadToolButton.Enabled;
+                startDownloadMenuItem            .Enabled = startDownloadToolButton .Enabled;
+                cancelDownloadMenuItem           .Enabled = cancelDownloadToolButton.Enabled;
+                pauseDownloadMenuItem            .Enabled = pauseDownloadToolButton .Enabled;
+                deleteDownloadMenuItem           .Enabled = deleteDownloadToolButton.Enabled;
+                moreOpMenuItem                   .Enabled = deleteDownloadToolButton.Enabled;
+                deleteWithOutputFileMenuItem     .Enabled = deleteDownloadToolButton.Enabled && (selectedRow_AnyFileExists = FileHelper.AnyFileExists( selectedRow?.GetOutputFullFileNames() ));
+                browseOutputFileMenuItem         .Visible = deleteWithOutputFileMenuItem.Enabled;
+                openOutputFileMenuItem           .Visible = deleteWithOutputFileMenuItem.Enabled;     
+                deleteAllFinishedDownloadMenuItem.Enabled = deleteAllFinishedDownloadToolButton.Enabled;
 
                 if ( selectedRow != null )
                 {

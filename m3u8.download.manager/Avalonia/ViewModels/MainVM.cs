@@ -21,16 +21,18 @@ namespace m3u8.download.manager
             DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
             DownloadController = new DownloadController( DownloadListModel, SettingsController, m3u8_client_next_factory_type );
             UndoModel          = new UndoModel( DownloadListModel );
+            OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
 
-            AddCommand                         = new AddCommand( this );
-            EditCommand                        = new EditCommand( this, mainWindow );
-            ParallelismCommand                 = new ParallelismCommand( this );
-            SettingsCommand                    = new SettingsCommand( this );
-            WebProxyCommand                    = new WebProxyCommand( this );
-            AboutCommand                       = new AboutCommand();
-            FileNameExcludesWordsEditorCommand = new FileNameExcludesWordsEditorCommand( this );
-            ColumnsVisibilityEditorCommand     = new ColumnsVisibilityEditorCommand( mainWindow );
-            CollectGarbageCommand              = new CollectGarbageCommand();
+            AddCommand                              = new AddCommand( this, OutputFileNamePatternProcessor );
+            EditCommand                             = new EditCommand( this, mainWindow, OutputFileNamePatternProcessor );
+            ChangeSettingsParams4DownloadRowCommand = new ChangeSettingsParams4DownloadRowCommand( this, mainWindow, OutputFileNamePatternProcessor );
+            ParallelismCommand                      = new ParallelismCommand( this );
+            SettingsCommand                         = new SettingsCommand( this );
+            WebProxyCommand                         = new WebProxyCommand( this );
+            AboutCommand                            = new AboutCommand();
+            FileNameExcludesWordsEditorCommand      = new FileNameExcludesWordsEditorCommand( this );
+            ColumnsVisibilityEditorCommand          = new ColumnsVisibilityEditorCommand( mainWindow );
+            CollectGarbageCommand                   = new CollectGarbageCommand();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -47,16 +49,18 @@ namespace m3u8.download.manager
         public DownloadController               DownloadController { get; }
         public SettingsPropertyChangeController SettingsController { get; }
         public UndoModel                        UndoModel          { get; }
+        public OutputFileNamePatternProcessor   OutputFileNamePatternProcessor { get; }
 
-        public AddCommand                         AddCommand                         { get; }
-        public EditCommand                        EditCommand                        { get; }
-        public ParallelismCommand                 ParallelismCommand                 { get; }
-        public SettingsCommand                    SettingsCommand                    { get; }
-        public WebProxyCommand                    WebProxyCommand                    { get; }
-        public AboutCommand                       AboutCommand                       { get; }
-        public FileNameExcludesWordsEditorCommand FileNameExcludesWordsEditorCommand { get; }
-        public ColumnsVisibilityEditorCommand     ColumnsVisibilityEditorCommand     { get; }
-        public CollectGarbageCommand              CollectGarbageCommand              { get; }
+        public AddCommand                              AddCommand                              { get; }
+        public EditCommand                             EditCommand                             { get; }
+        public ChangeSettingsParams4DownloadRowCommand ChangeSettingsParams4DownloadRowCommand { get; }
+        public ParallelismCommand                      ParallelismCommand                      { get; }
+        public SettingsCommand                         SettingsCommand                         { get; }
+        public WebProxyCommand                         WebProxyCommand                         { get; }
+        public AboutCommand                            AboutCommand                            { get; }
+        public FileNameExcludesWordsEditorCommand      FileNameExcludesWordsEditorCommand      { get; }
+        public ColumnsVisibilityEditorCommand          ColumnsVisibilityEditorCommand          { get; }
+        public CollectGarbageCommand                   CollectGarbageCommand                   { get; }
 
         public string ItemsCount => $"{DownloadListModel.RowsCount} Items";
     }

@@ -62,6 +62,11 @@
             <Image Source="/Resources/edit.png" Width="32" />
           </MenuItem.Header>
         </MenuItem>
+        <MenuItem x:Name="changeSettingsParams4DownloadRow_ToolButton" ToolTip.Tip="Change settings  (Ctrl + M)" Padding="0" Margin="0,0,5,0">
+          <MenuItem.Header>
+            <Image Source="/Resources/network_tools.png" Width="32" />
+          </MenuItem.Header>
+        </MenuItem>
         <Separator/>
 
         <MenuItem x:Name="deleteDownloadToolButton" Padding="0">
@@ -195,6 +200,11 @@
         <MenuItem x:Name="editDownloadMenuItem" Header="Edit...     (Ctrl + E)" HotKey="Ctrl + E">
           <MenuItem.Icon>
             <Image Source="/Resources/edit.png"/>
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem x:Name="changeSettingsParams4DownloadRow_MenuItem" Header="Change settings... (Ctrl + M)" HotKey="Ctrl + M">
+          <MenuItem.Icon>
+            <Image Source="/Resources/network_tools.png"/>
           </MenuItem.Icon>
         </MenuItem>
         <MenuItem x:Name="editDownloadMenuItem_Separator" Header="-" />

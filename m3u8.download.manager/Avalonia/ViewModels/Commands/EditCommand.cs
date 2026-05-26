@@ -14,11 +14,11 @@ namespace m3u8.download.manager
         private MainVM _VM;
         private MainWindow _MainWindow;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
-        public EditCommand( MainVM vm, MainWindow mainWindow )
+        public EditCommand( MainVM vm, MainWindow mainWindow, OutputFileNamePatternProcessor outputFileNamePatternProcessor )
         {
             _VM = vm;
             _MainWindow = mainWindow;
-            _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
+            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
         }
 
         #region [.ICommand.]
