@@ -1294,7 +1294,7 @@ namespace m3u8.download.manager.ui
                 }
                 else if ( !row.Status.IsRunningOrPaused() )
                 {
-                    row.Update( (f.M3u8FileUrl, tp.RequestHeaders, tp.WebProxyInfo, tp.LiveStreamMaxFileSizeInBytes, tp.Timeout, tp.AttemptRequestCount /*, tp.OutputFileName, tp.OutputDirectory*/) );
+                    row.Update( (f.M3u8FileUrl, tp.RequestHeaders, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount, tp.LiveStreamMaxFileSizeInBytes) );
                     ChangeOutputDirectory( row, tp.OutputDirectory );
                     ChangeOutputFileName ( row, tp.OutputFileName  );
                     downloadListUC.Invalidate( true );

@@ -88,7 +88,8 @@ namespace m3u8.download.manager
                         outputFileName = cuttedFileName;
 
                     var webProxyInfo = _VM.SettingsController.GetDefaultWebProxyInfo();
-                    var row = _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( p.m3u8FileUrl, requestHeaders, webProxyInfo, outputFileName, outputFileDirectory ) );
+                    var cp           = _VM.SettingsController.GetCreateM3u8ClientParams();
+                    var row = _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( p.m3u8FileUrl, requestHeaders, webProxyInfo, cp, outputFileName, outputFileDirectory ) );
                     _VM.DownloadController.Start( row );
                 }
                 return;

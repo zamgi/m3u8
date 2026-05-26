@@ -38,10 +38,12 @@ namespace m3u8.download.manager.ui
         }
 
         #region [.markup fields.]
-        private TextBox      m3u8FileUrlTextBox;
-        private TextBox      outputFileNameTextBox;
-        private TextBox      outputDirectoryTextBox;
-        private RequestLogUC logUC;
+        private TextBox       m3u8FileUrlTextBox;
+        private TextBox       outputFileNameTextBox;
+        private TextBox       outputDirectoryTextBox;
+        private NumericUpDown attemptRequestCountByPartNUD;
+        private TimePickerUC  requestTimeoutByPartDTP;
+        private RequestLogUC  logUC;
 
         private TextBlock     patternOutputFileNameLabelCaption;
         private TextBlock     patternOutputFileNameLabel;
@@ -87,6 +89,8 @@ namespace m3u8.download.manager.ui
             m3u8FileUrlTextBox              = this.Find< TextBox >( nameof(m3u8FileUrlTextBox) );
             outputFileNameTextBox           = this.Find< TextBox >( nameof(outputFileNameTextBox) );
             outputDirectoryTextBox          = this.Find< TextBox >( nameof(outputDirectoryTextBox) );
+            attemptRequestCountByPartNUD    = this.Find< NumericUpDown >( nameof(attemptRequestCountByPartNUD) );
+            requestTimeoutByPartDTP         = this.Find< TimePickerUC  >( nameof(requestTimeoutByPartDTP) );
             logUC                           = this.Find< RequestLogUC >( nameof(logUC) );
             mainTabItem                     = this.Find< TabItem      >( nameof(mainTabItem) );
             requestHeadersTabItem           = this.Find< TabItem      >( nameof(requestHeadersTabItem) );
@@ -158,6 +162,12 @@ namespace m3u8.download.manager.ui
             logUC.SetModel( _Model );
 
             set_WebProxyInfo( row.WebProxyInfo );
+
+            #region [.Timeout & AttemptRequestCount.]
+            var cp = _SC.GetCreateM3u8ClientParams();
+            this.Timeout             = row.Timeout.GetValueOrDefault( cp.timeout );
+            this.AttemptRequestCount = row.AttemptRequestCount.GetValueOrDefault( cp.attemptRequestCountByPart );
+            #endregion
         }
         /// <summary>
         /// Add
@@ -192,6 +202,10 @@ namespace m3u8.download.manager.ui
             logUC.SetModel( _Model );
 
             set_WebProxyInfo( _SC.GetDefaultWebProxyInfo() );
+
+            #region [.Timeout & AttemptRequestCount.]
+            (this.Timeout, this.AttemptRequestCount) = _SC.GetCreateM3u8ClientParams();
+            #endregion            
 
             #region [.seriesInfo.]
             if ( seriesInfo.HasValue )
@@ -641,7 +655,8 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public methods.]
-        public DownloadRow_Definer_2 GetParamsTuple() => DownloadRow_Definer_2.Create( this.M3u8FileUrl, this.GetRequestHeaders(), this.GetWebProxyInfo(),
+        public DownloadRow_Definer_2 GetParamsTuple() => DownloadRow_Definer_2.Create( this.M3u8FileUrl, this.GetRequestHeaders(), 
+                                                                                       this.GetWebProxyInfo(), this.Timeout, this.AttemptRequestCount,
                                                                                        this.GetOutputFileName(), this.GetOutputDirectory(), 
                                                                                        this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
         public bool Success { get; private set; }
@@ -668,17 +683,27 @@ namespace m3u8.download.manager.ui
         public string GetOutputDirectory() => this.OutputDirectory;
         public IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();
         public web_proxy_info GetWebProxyInfo() => webProxyUC.GetWebProxyInfo();
-        public  bool   IsLiveStream
+        public TimeSpan? Timeout
+        {
+            get => requestTimeoutByPartDTP.Value; // requestTimeoutByPartDTP.DisplayDate.TimeOfDay;
+            set => requestTimeoutByPartDTP.Value = value.GetValueOrDefault( TimeSpan.Zero );// requestTimeoutByPartDTP.DisplayDate = requestTimeoutByPartDTP.DisplayDate.Date + value;
+        }
+        public int?      AttemptRequestCount
+        {
+            get => Convert.ToInt32( attemptRequestCountByPartNUD.Value );
+            set => attemptRequestCountByPartNUD.Value = value;
+        }
+        public  bool     IsLiveStream
         { 
             get => isLiveStreamCheckBox.IsChecked.GetValueOrDefault();
             set => isLiveStreamCheckBox.IsChecked = value;
         }
-        public int     LiveStreamMaxFileSizeInMb
+        public int       LiveStreamMaxFileSizeInMb
         {
             get => (int) liveStreamMaxSizeInMbNumUpDn.Value;
             set => liveStreamMaxSizeInMbNumUpDn.Value = Math.Max( liveStreamMaxSizeInMbNumUpDn.Minimum, Math.Min( liveStreamMaxSizeInMbNumUpDn.Maximum, value ) );
         }
-        public long    LiveStreamMaxFileSizeInBytes
+        public long      LiveStreamMaxFileSizeInBytes
         {
             get => this.LiveStreamMaxFileSizeInMb << 20;
             set => this.LiveStreamMaxFileSizeInMb = (int) (value >> 20);

@@ -204,15 +204,16 @@ namespace m3u8.download.manager.models
                 WebProxyInfo        = t.WebProxyInfo;
                 Timeout             = t.Timeout;
                 AttemptRequestCount = t.AttemptRequestCount;
-                //OutputFileName      = t.OutputFileName;
-                //OutputDirectory     = t.OutputDirectory;
+                //OutputFileName    = t.OutputFileName;
+                //OutputDirectory   = t.OutputDirectory;
                 IsLiveStream        = t.IsLiveStream;
                 LiveStreamMaxFileSizeInBytes = t.LiveStreamMaxFileSizeInBytes;
             }
             return (allowed);
         }
-        public bool Update( in (string Url, IDictionary< string, string > RequestHeaders, web_proxy_info WebProxyInfo, long LiveStreamMaxFileSizeInBytes,
-                                /*string OutputFileName, string OutputDirectory,*/ TimeSpan? Timeout, int? AttemptRequestCount) t )
+        public bool Update( in (string Url, IDictionary< string, string > RequestHeaders, 
+                                web_proxy_info WebProxyInfo, TimeSpan? Timeout, int? AttemptRequestCount,
+                                /*string OutputFileName, string OutputDirectory,*/ long LiveStreamMaxFileSizeInBytes) t )
         {
             var allowed = !Status.IsRunningOrPaused();
             if ( allowed )
@@ -222,9 +223,9 @@ namespace m3u8.download.manager.models
                 WebProxyInfo        = t.WebProxyInfo;
                 Timeout             = t.Timeout;
                 AttemptRequestCount = t.AttemptRequestCount;
-                //OutputFileName  = t.OutputFileName;
-                //OutputDirectory = t.OutputDirectory;
-                //IsLiveStream    = t.IsLiveStream;
+                //OutputFileName    = t.OutputFileName;
+                //OutputDirectory   = t.OutputDirectory;
+                //IsLiveStream      = t.IsLiveStream;
                 if ( this.IsLiveStream ) LiveStreamMaxFileSizeInBytes = t.LiveStreamMaxFileSizeInBytes;
             }
             return (allowed);
