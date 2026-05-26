@@ -616,7 +616,7 @@ namespace m3u8
             private static HttpClient CreateHttpClient( IWebProxy webProxy, in TimeSpan? timeout = null )
             {
 #if NETCOREAPP
-                SocketsHttpHandler CreateSocketsHttpHandler( in TimeSpan? _timeout )
+                /*SocketsHttpHandler CreateSocketsHttpHandler( in TimeSpan? _timeout )
                 {
                     static void set_Protocol( SslClientAuthenticationOptions sslOptions, SslProtocols protocol )
                     {
@@ -651,6 +651,7 @@ namespace m3u8
                     }
                     return (h);
                 }
+                //*/
 
                 var handler = new HttpClientHandler() 
                 { 
