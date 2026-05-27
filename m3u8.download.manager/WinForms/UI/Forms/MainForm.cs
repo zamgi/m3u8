@@ -326,7 +326,7 @@ namespace m3u8.download.manager.ui
                         //if ( downloadListUC.HasFocus )
                         {
                             e.SuppressKeyPress = true;
-                            openOutputFilesWithExternalMenuItem_Click( this, EventArgs.Empty );
+                            OpenOutputFilesWithExternalRoutine( runEachFileAsSeparate: e.Alt || e.Shift );
                         }
                         break;
 
@@ -1576,8 +1576,11 @@ namespace m3u8.download.manager.ui
 #endif
             }
         }
-        private void openOutputFilesWithExternalMenuItem_Click( object sender, EventArgs e )
-        {            
+        private void openOutputFilesWithExternalMenuItem_Click( object sender, EventArgs e ) 
+            => OpenOutputFilesWithExternalRoutine( runEachFileAsSeparate: ((Control.ModifierKeys & Keys.Control) != 0) );
+
+        private void OpenOutputFilesWithExternalRoutine( bool runEachFileAsSeparate )
+        {
             var externalProgFilePath = _SC.Settings.ExternalProgFilePath;
             if ( !File.Exists( externalProgFilePath ) )
             {
@@ -1595,14 +1598,27 @@ namespace m3u8.download.manager.ui
                                   .ToList( rows.Count );
             if ( outputFileNames.AnyEx() )
             {
-                var buf = new StringBuilder( 0x100 * outputFileNames.Count );
-                foreach ( var fn in outputFileNames )
+                if ( runEachFileAsSeparate ) //run file by file
                 {
-                    buf.Append( '"' ).Append( fn ).Append( '"' ).Append( ' ' );
-                }
-                var args = buf.ToString( 0, buf.Length - 1 );
+                    var buf = new StringBuilder( 0x100 );
+                    foreach ( var fn in outputFileNames )
+                    {
+                        var args = buf.Clear().Append( '"' ).Append( fn ).Append( '"' ).ToString();
 
-                ExternalProg_Run( externalProgFilePath, args );
+                        ExternalProg_Run( externalProgFilePath, args );
+                    }
+                }
+                else //run all files as single args
+                {
+                    var buf = new StringBuilder( 0x100 * outputFileNames.Count );
+                    foreach ( var fn in outputFileNames )
+                    {
+                        buf.Append( '"' ).Append( fn ).Append( '"' ).Append( ' ' );
+                    }
+                    var args = buf.ToString( 0, buf.Length - 1 );
+
+                    ExternalProg_Run( externalProgFilePath, args );
+                }
             }
             #region comm.
             //var outputFileNamesQueue = (from row in rows
@@ -1633,7 +1649,6 @@ namespace m3u8.download.manager.ui
                 downloadListUC.Invalidate( true );
             }
         }
-       
         private static void ExternalProg_Run( string externalProgFilePath, string args )
         {
             using ( Process.Start( externalProgFilePath, args ) ) {; }
