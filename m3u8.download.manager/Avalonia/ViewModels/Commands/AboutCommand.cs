@@ -28,6 +28,8 @@ namespace m3u8.download.manager
                        Environment.NewLine +
                        $"Version {(AssemblyInfoHelper.AssemblyVersion ?? "-")}, ({(AssemblyInfoHelper.AssemblyLastWriteTime ?? "-")})" +
                        Environment.NewLine +
+                       $"Version Avalonia {(AssemblyInfoHelper.AVALONIA_AssemblyVersion ?? "-")}, ({(AssemblyInfoHelper.AVALONIA_AssemblyLastWriteTime ?? "-")})" +
+                       Environment.NewLine +
                        Environment.NewLine +
                        "Shortcut's:" + Environment.NewLine +
                        "  Ctrl+C: Copy selected download url to clipboard" + Environment.NewLine +

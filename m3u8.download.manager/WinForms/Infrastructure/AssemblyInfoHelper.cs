@@ -109,5 +109,24 @@ namespace m3u8.download.manager
         }
         //*/
         #endregion
+#if AVALONIA
+        private static Assembly Get_AVALONIA_Assembly() => Assembly.GetAssembly( typeof(Avalonia.AvaloniaObject/*Application*/) );
+        public static string AVALONIA_AssemblyVersion => Get_AVALONIA_Assembly().GetName().Version.ToString();
+        public static string AVALONIA_AssemblyLastWriteTime
+        {
+            get
+            {
+                try
+                {
+                    return (File.GetLastWriteTime( Get_AVALONIA_Assembly().Location ).ToString( "dd.MM.yyyy HH:mm" ));
+                }
+                catch (Exception ex )
+                {
+                    Debug.WriteLine(ex );
+                    return (null);
+                }
+            }
+        }
+#endif
     }
 }
