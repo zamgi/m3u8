@@ -248,9 +248,9 @@ namespace m3u8.download.manager.ui
             if ( _VM.DownloadListModel.RowsCount == 0 )
             {
                 var dir = Settings.Default.OutputFileDirectory;
-                _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( "http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , null, "xz-1", dir ) );
-                _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( "http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", null, "xz-2", dir ) );
-                _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( "http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", null, "xz-3", dir ) );
+                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , "xz-1", dir) );
+                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", "xz-2", dir) );
+                _VM.DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", "xz-3", dir) );
             }
 #endif
             var suc = downloadListUC.DataGrid.Focus();

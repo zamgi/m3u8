@@ -465,10 +465,10 @@ namespace m3u8.download.manager.models
             Timeout             = z.timeout,
             AttemptRequestCount = z.attemptRequestCountByPart,
         };
-
 #if DEBUG
         public static DownloadRow_Definer_1 Create( 
             string url, //IDictionary< string, string > requestHeaders, 
+            //in web_proxy_info webProxyInfo, in (TimeSpan timeout, int attemptRequestCountByPart)? z,
             string outputFileName, string outputDirectory )
         => new DownloadRow_Definer_1()
         {
@@ -476,9 +476,9 @@ namespace m3u8.download.manager.models
             RequestHeaders      = null, //requestHeaders,
             OutputFileName      = outputFileName,
             OutputDirectory     = outputDirectory,
-            WebProxyInfo        = default,
-            Timeout             = default,
-            AttemptRequestCount = default,
+            WebProxyInfo        = web_proxy_info.Empty, //webProxyInfo, //
+            Timeout             = null, //z?.timeout,
+            AttemptRequestCount = null, //z?.attemptRequestCountByPart,
         };
 #endif
     }

@@ -14,22 +14,21 @@ namespace m3u8.download.manager.models
     {
         private HashSet< string > _Urls;
         public DownloadListModel() => _Urls = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
-
-        //---public DownloadRow AddRow( in (string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory) t )
+#if DEBUG
+        public DownloadRow AddRow( in (string Url, string OutputFileName, string OutputDirectory) t ) => AddRow( DownloadRow_Definer_1.Create( t.Url, t.OutputFileName, t.OutputDirectory ) );
+#endif
         public DownloadRow AddRow( DownloadRow_Definer_1 t )
         {
             var row = base.Add( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler ) );
             _Urls.Add( row.Url );
             return (row);
         }
-        //---public DownloadRow AddRow( in (string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t )
         public DownloadRow AddRow( DownloadRow_Definer_2 t )
         {
             var row = base.Add( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler ) );
             _Urls.Add( row.Url );
             return (row);
         }
-        //---public void AddRows( IEnumerable< (DateTime CreatedOrStartedDateTime, string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, DownloadStatus Status, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) > rows )
         public void AddRows( IEnumerable< DownloadRow_Definer_3 > rows )
         {
             foreach ( var t in rows )

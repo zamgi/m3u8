@@ -14,7 +14,9 @@ namespace m3u8.download.manager.models
     {
         private HashSet< string > _Urls;
         public DownloadListModel() => _Urls = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
-
+#if DEBUG
+        public DownloadRow AddRow( in (string Url, string OutputFileName, string OutputDirectory) t ) => AddRow( DownloadRow_Definer_1.Create( t.Url, t.OutputFileName, t.OutputDirectory ) );
+#endif
         public DownloadRow AddRow( DownloadRow_Definer_1 t )
         {
             var row = base.Add( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler ) );
