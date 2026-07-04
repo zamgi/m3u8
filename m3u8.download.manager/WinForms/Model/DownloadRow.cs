@@ -468,12 +468,12 @@ namespace m3u8.download.manager.models
 
 #if DEBUG
         public static DownloadRow_Definer_1 Create( 
-            string url, IDictionary< string, string > requestHeaders, 
+            string url, //IDictionary< string, string > requestHeaders, 
             string outputFileName, string outputDirectory )
         => new DownloadRow_Definer_1()
         {
             Url                 = url,
-            RequestHeaders      = requestHeaders,
+            RequestHeaders      = null, //requestHeaders,
             OutputFileName      = outputFileName,
             OutputDirectory     = outputDirectory,
             WebProxyInfo        = default,
