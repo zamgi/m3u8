@@ -48,9 +48,12 @@ namespace m3u8.download.manager
                     }
                     else if ( !row.Status.IsRunningOrPaused() )
                     {
-                        row.Update( (f.M3u8FileUrl, tp.RequestHeaders, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount, tp.LiveStreamMaxFileSizeInBytes) );
-                        await _MainWindow.ChangeOutputDirectory( row, tp.OutputDirectory );
-                        await _MainWindow.ChangeOutputFileName ( row, tp.OutputFileName  );
+                        suc = row.Update( (f.M3u8FileUrl, tp.RequestHeaders, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount, tp.LiveStreamMaxFileSizeInBytes) );
+                        if ( suc )
+                        {
+                            await _MainWindow.ChangeOutputDirectory( row, tp.OutputDirectory );
+                            await _MainWindow.ChangeOutputFileName ( row, tp.OutputFileName  );
+                        }
                     }
                     else
                     {

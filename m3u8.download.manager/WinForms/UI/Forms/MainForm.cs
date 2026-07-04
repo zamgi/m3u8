@@ -1263,10 +1263,13 @@ namespace m3u8.download.manager.ui
             if ( (f.DialogResult == DialogResult.OK) && !row.Status.IsRunningOrPaused() )
             {
                 var tp = f.GetParamsTuple();
-                row.Update( tp );
-                ChangeOutputDirectory( row, tp.OutputDirectory );
-                ChangeOutputFileName ( row, tp.OutputFileName  );
-                downloadListUC.Invalidate( true );
+                var suc = row.Update( tp );
+                if ( suc )
+                {
+                    ChangeOutputDirectory( row, tp.OutputDirectory );
+                    ChangeOutputFileName( row, tp.OutputFileName );
+                    downloadListUC.Invalidate( true );
+                }
             }
         }
 
@@ -1294,10 +1297,13 @@ namespace m3u8.download.manager.ui
                 }
                 else if ( !row.Status.IsRunningOrPaused() )
                 {
-                    row.Update( (f.M3u8FileUrl, tp.RequestHeaders, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount, tp.LiveStreamMaxFileSizeInBytes) );
-                    ChangeOutputDirectory( row, tp.OutputDirectory );
-                    ChangeOutputFileName ( row, tp.OutputFileName  );
-                    downloadListUC.Invalidate( true );
+                    suc = row.Update( (f.M3u8FileUrl, tp.RequestHeaders, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount, tp.LiveStreamMaxFileSizeInBytes) );
+                    if ( suc )
+                    {
+                        ChangeOutputDirectory( row, tp.OutputDirectory );
+                        ChangeOutputFileName ( row, tp.OutputFileName );
+                        downloadListUC.Invalidate( true );
+                    }
                 }
                 else
                 {

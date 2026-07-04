@@ -39,9 +39,12 @@ namespace m3u8.download.manager
                 if ( f.Success && !row.Status.IsRunningOrPaused() )
                 {
                     var tp = f.GetParamsTuple();
-                    row.Update( tp );
-                    await _MainWindow.ChangeOutputDirectory( row, tp.OutputDirectory );
-                    await _MainWindow.ChangeOutputFileName ( row, tp.OutputFileName  );
+                    var suc = row.Update( tp );
+                    if ( suc )
+                    {
+                        await _MainWindow.ChangeOutputDirectory( row, tp.OutputDirectory );
+                        await _MainWindow.ChangeOutputFileName ( row, tp.OutputFileName  );
+                    }
                 }
             }
         }

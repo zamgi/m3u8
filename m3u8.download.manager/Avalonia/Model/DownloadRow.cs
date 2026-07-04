@@ -411,24 +411,24 @@ namespace m3u8.download.manager.models
                             _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength = 0;
                             CreatedOrStartedDateTime           = DateTime.Now;
                             _InstantSpeedInMbps                = null;
-                        break;
+                            break;
 
                         case DownloadStatus.Running:
                             _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
                             CreatedOrStartedDateTime           = DateTime.Now;
                             _InstantSpeedInMbps                = null;
-                        break;
+                            break;
 
                         case DownloadStatus.Canceled:
                         case DownloadStatus.Error:
                         case DownloadStatus.Finished:
                             _FinitaElapsed = (DateTime.Now - CreatedOrStartedDateTime);
-                        break;
+                            break;
 
                         case DownloadStatus.Paused:
                         case DownloadStatus.Wait:
                             _PausedOrWaitElapsed = (DateTime.Now - CreatedOrStartedDateTime);
-                        break;
+                            break;
                     }
 
                     Status = newStatus;
