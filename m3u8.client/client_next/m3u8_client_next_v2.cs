@@ -6,9 +6,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using _ChangeSettingsParams_    = m3u8.i_m3u8_client_next.ChangeSettingsParams;
 using _DownloadPartInputParams_ = m3u8.i_m3u8_client_next.DownloadPartInputParams;
 using _init_params_             = m3u8.i_m3u8_client_next.init_params;
-using _ChangeSettingsParams_    = m3u8.i_m3u8_client_next.ChangeSettingsParams;
 
 namespace m3u8
 {
@@ -22,7 +22,7 @@ namespace m3u8
         private _init_params_      _InitParams;
         private IDisposable        _DisposableObj;
         private bool?              _ConnectionClose;
-        private int                __AttemptRequestCount__;
+        private int                __attemptRequestCount__;
         private TimeSpan           __Timeout__;
         //private HttpCompletionOption _HttpCompletionOption;
         
@@ -51,14 +51,14 @@ namespace m3u8
             get
             {
                 _RwLock.EnterReadLock();
-                var v = __AttemptRequestCount__;
+                var v = __attemptRequestCount__;
                 _RwLock.ExitReadLock();
                 return (v);
             }
             set
             {
                 _RwLock.EnterWriteLock();
-                __AttemptRequestCount__ = value;
+                __attemptRequestCount__ = value;
                 _RwLock.ExitWriteLock();
             }
         }
@@ -81,17 +81,17 @@ namespace m3u8
         #endregion
 
         #region [.ctor().]
-        public m3u8_client_next_v2( m3u8_client_v2 mc )
-        {
-            var ip = new _init_params_()
-            {
-                AttemptRequestCount  = mc.InitParams.AttemptRequestCount,
-                ConnectionClose      = mc.InitParams.ConnectionClose,
-                HttpCompletionOption = mc.InitParams.HttpCompletionOption,
-            };
-            _InitParams = ip;
-            Init( mc.HttpInvoker, ip );
-        }
+        //public m3u8_client_next_v2( m3u8_client_v2 mc )
+        //{
+        //    var ip = new _init_params_()
+        //    {
+        //        AttemptRequestCount  = mc.InitParams.AttemptRequestCount,
+        //        ConnectionClose      = mc.InitParams.ConnectionClose,
+        //        HttpCompletionOption = mc.InitParams.HttpCompletionOption,
+        //    };
+        //    _InitParams = ip;
+        //    Init( mc.HttpInvoker, ip );
+        //}
         public m3u8_client_next_v2( HttpMessageInvoker httpInvoker, in _init_params_ ip )
         {
             _InitParams = ip;
@@ -200,7 +200,7 @@ namespace m3u8
             return (req);
         }
 
-        public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null )
+        public async Task< m3u8_file_t > DownloadFile( Uri url, IDictionary< string, string > requestHeaders = null, CancellationToken ct = default )
         {
             if ( url == null ) throw (new m3u8_ArgumentException( nameof(url) ));
             //------------------------------------------------------------------//
@@ -240,8 +240,8 @@ namespace m3u8
         }
 
         //------------------------------------------------------------------------------------------//
-        public async Task< m3u8_part_ts__v2 > DownloadPart( m3u8_part_ts__v2 part, Uri baseAddress
-            , _DownloadPartInputParams_ ip, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null )
+        public async Task< m3u8_part_ts__v2 > DownloadPart( m3u8_part_ts__v2 part, Uri baseAddress, IDictionary< string, string > requestHeaders, 
+            _DownloadPartInputParams_ ip, CancellationToken ct = default )
         {
             if ( baseAddress == null ) throw (new m3u8_ArgumentException( nameof(baseAddress) ));
             if ( part.Stream == null ) throw (new m3u8_ArgumentException( nameof(part.Stream) ));
@@ -336,6 +336,160 @@ if ( (new Random()).Next( 10 ) == 0 )
                         return (part);
                     }
                 }
+            }
+
+            throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
+        }
+
+        public async Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress, IDictionary< string, string> requestHeaders, 
+            _DownloadPartInputParams_ ip, CancellationToken commonToken, CancellationTokenSourceWraper waitIfPausedEventTokenSourceWraper )
+        {
+            if ( baseAddress == null ) throw (new m3u8_ArgumentException( nameof(baseAddress) ));
+            if ( part.Stream == null ) throw (new m3u8_ArgumentException( nameof(part.Stream) ));
+            if ( part.RelativeUrlName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(part.RelativeUrlName) ));
+            if ( ip.ThrottlerBySpeed_User    == null ) throw (new m3u8_ArgumentException( nameof(ip.ThrottlerBySpeed_User) ));
+            if ( ip.RespBufPool              == null ) throw (new m3u8_ArgumentException( nameof(ip.RespBufPool) ));
+            if ( ip.DownloadThreadsSemaphore == null ) throw (new m3u8_ArgumentException( nameof(ip.DownloadThreadsSemaphore) ));
+            if ( ip.WaitIfPausedEvent        == null ) throw (new m3u8_ArgumentException( nameof(ip.WaitIfPausedEvent) ));
+            //----------------------------------------------------------------------------------------------------------------//
+
+            var url = part.GetPartUrl( baseAddress );
+            var dpsa = new i_m3u8_client_next.DownloadPartStepActionParams( part );
+
+            for ( var leftAttemptRequestCount = _AttemptRequestCount; 0 < leftAttemptRequestCount; leftAttemptRequestCount-- )
+            {
+                using var unionCts = CancellationTokenSource.CreateLinkedTokenSource( commonToken, waitIfPausedEventTokenSourceWraper.Token );
+                var ct = unionCts.Token;
+                try
+                {
+                    using ( var req  = CreateRequestGet( url, requestHeaders ) )
+                    using ( var resp = await _HttpInvoker.SendAsync_Ex( req, _Timeout/*_HttpCompletionOption*/, ct ).CAX() )
+                    {
+                        if ( resp.IsSuccessStatusCode )
+                        {
+#if NETCOREAPP
+                            using var downloadStream = await resp.Content.ReadAsStreamAsync( ct ).CAX();
+#else
+                            using var downloadStream = await resp.Content.ReadAsStreamAsync( /*ct*/ ).CAX();
+#endif
+                            dpsa.TotalContentLength = TryGetContentLength( resp.Content, out var x ) ? x.contentLength : null;
+
+                            using var holder = ip.RespBufPool.GetHolder();
+                            var buf = holder.Value;
+                            for ( var totalBytesReaded = 0L; ; )
+                            {
+                                #region comm, because fall off by timeout. [.check 'waitIfPausedEvent'.]
+                                //if ( !ip.WaitIfPausedEvent.IsSet )
+                                //{
+                                //    ip.WaitingIfPausedBefore?.Invoke( part );
+                                //    ip.WaitIfPausedEvent.Wait( ct );
+                                //    ip.WaitingIfPausedAfter?.Invoke( part );
+                                //    ip.ThrottlerBySpeed_User.Restart();
+                                //}
+                                #endregion
+
+                                #region [.throttler by speed.]
+                                var instantSpeedInMbps = ip.ThrottlerBySpeed_User.Throttle( ct /*joinedCts.Token*/ );
+                                #endregion
+
+                                await ip.DownloadThreadsSemaphore.WaitAsync( ct ).CAX();
+                                int bytesReaded;
+                                try
+                                {
+                                    bytesReaded = await downloadStream.ReadAsync( buf, 0, buf.Length, ct ).CAX();
+                                }
+                                finally
+                                {
+                                    //---ip.DownloadThreadsSemaphore.Release_NoThrow();
+                                    ip.DownloadThreadsSemaphore.Release();                                    
+
+                                }
+                                if ( bytesReaded == 0 )
+                                    break;
+
+                                #region comm.
+/*
+if ( (new Random()).Next( 10 ) == 0 )
+{
+    throw new Exception( "(new Random()).Next( 10 ) == 0" );
+}
+*/
+                                #endregion
+
+                                await part.Stream.WriteAsync( buf, 0, bytesReaded, ct ).CAX();
+                                totalBytesReaded += bytesReaded;
+
+                                ip.ThrottlerBySpeed_User.TakeIntoAccountDownloadedBytes( bytesReaded );
+
+                                dpsa.InstantSpeedInMbps   = instantSpeedInMbps;
+                                dpsa.TotalBytesReaded     = totalBytesReaded;
+                                dpsa.BytesReaded          = bytesReaded;
+                                dpsa.AttemptRequestNumber = _AttemptRequestCount - leftAttemptRequestCount + 1;
+                                ip.DownloadPartStepAction?.Invoke( dpsa );
+                            }
+
+                            return (part);
+                        }
+
+                        throw (await resp.create_m3u8_Exception( ct ).CAX());
+                    }
+                }
+                catch ( Exception ex ) when (!ip.WaitIfPausedEvent.IsSet || waitIfPausedEventTokenSourceWraper.IsCancellationRequested)
+                {
+                    for ( var i = 10; (0 < i) && !waitIfPausedEventTokenSourceWraper.IsCancellationRequested; i-- )
+                    {
+                        await Task.Delay( 15 ).CAX();
+                    }
+                        
+                    Debug.Assert( !ip.WaitIfPausedEvent.IsSet );
+                    if ( !ip.WaitIfPausedEvent.IsSet || (ct.IsCancellationRequested && !commonToken.IsCancellationRequested) )
+                    {
+                        ip.WaitingIfPausedBefore?.Invoke( part );
+                        ip.WaitIfPausedEvent.Wait( commonToken );
+                        ip.WaitingIfPausedAfter?.Invoke( part );
+                        ip.ThrottlerBySpeed_User.Restart();
+
+                        //wait for waitIfPausedEventTokenSourceWraper-obj was recreated in outside
+                        while ( waitIfPausedEventTokenSourceWraper.IsCancellationRequested )
+                        {
+                            Debug.WriteLine( $"waiting for [waitIfPausedEventTokenSourceWraper.IsCancellationRequested=FALSE]..." );
+                            await Task.Delay( 10 ).CAX();
+                        }
+                        leftAttemptRequestCount++;
+                    }
+                    else
+                    {
+                        dpsa.AttemptRequestNumber = _AttemptRequestCount - leftAttemptRequestCount + 1;
+                        ip.DownloadPartStepAction?.Invoke( dpsa );
+
+                        if ( (leftAttemptRequestCount == 1) || /*ct*/commonToken.IsCancellationRequested )
+                        {
+                            part.SetError( ex );
+                            return (part);
+                        }
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    if ( ip.WasSettedWaitIfPausedEvent.IsSet )
+                    {
+                        ip.WasSettedWaitIfPausedEvent.Reset();
+                        leftAttemptRequestCount++;
+                    }
+                    else
+                    {
+                        dpsa.AttemptRequestNumber = _AttemptRequestCount - leftAttemptRequestCount + 1;
+                        ip.DownloadPartStepAction?.Invoke( dpsa );
+
+                        if ( (leftAttemptRequestCount == 1) || /*ct*/commonToken.IsCancellationRequested )
+                        {
+                            part.SetError( ex );
+                            return (part);
+                        }
+                    }
+                }
+
+                await Task.Delay( 50 ).CAX();
             }
 
             throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));

@@ -1467,7 +1467,7 @@ namespace m3u8.download.manager.ui
                         #endregion
                     }
 
-                    Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );
+                    //Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );
                     #endregion
                 }
                 break;

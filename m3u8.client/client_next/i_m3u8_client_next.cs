@@ -20,17 +20,13 @@ namespace m3u8
         /// </summary>
         public struct init_params
         {
-            public const bool      DEFAULT_CONNECTIONCLOSE    = true;
-            public const int       DEFAULT_TIMEOUT_IN_SECONDS = 100;
-            public static TimeSpan DEFAULT_TIMEOUT            => TimeSpan.FromSeconds( DEFAULT_TIMEOUT_IN_SECONDS );
-
             public HttpCompletionOption? HttpCompletionOption { get; set; }
             public int?                  AttemptRequestCount  { get; set; }
             public bool?                 ConnectionClose      { get; set; }
             public IWebProxy             WebProxy             { get; set; }
 
             private TimeSpan? _Timeout;
-            public TimeSpan Timeout { get => _Timeout.GetValueOrDefault( DEFAULT_TIMEOUT ); set => _Timeout = value; }
+            public TimeSpan Timeout { get => _Timeout.GetValueOrDefault( m3u8_Consts.DEFAULT_TIMEOUT ); set => _Timeout = value; }
         }
 
         init_params InitParams { get; }
@@ -49,7 +45,7 @@ namespace m3u8
         }
         void ChangeSettings( in ChangeSettingsParams csp );
 
-        Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null );
+        Task< m3u8_file_t > DownloadFile( Uri url, IDictionary< string, string > requestHeaders = null, CancellationToken ct = default );
 
         //------------------------------------------------------------------------------------------//
         /// <summary>
@@ -84,9 +80,40 @@ namespace m3u8
             public ManualResetEventSlim                     WaitIfPausedEvent        { [M(O.AggressiveInlining)] get; set; }
             public Action< m3u8_part_ts__v2 >               WaitingIfPausedBefore    { [M(O.AggressiveInlining)] get; set; }
             public Action< m3u8_part_ts__v2 >               WaitingIfPausedAfter     { [M(O.AggressiveInlining)] get; set; }
+
+            public ManualResetEventSlim                     WasSettedWaitIfPausedEvent  { [M(O.AggressiveInlining)] get; set; }
+
+            public string OutputFileName { [M(O.AggressiveInlining)] get; set; }
+            public override string ToString() => OutputFileName;
         }
 
         Task< m3u8_part_ts__v2 > DownloadPart( m3u8_part_ts__v2 part, Uri baseAddress
-            , DownloadPartInputParams ip, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null );
+            , IDictionary< string, string > requestHeaders, DownloadPartInputParams ip, CancellationToken ct = default );
+
+        Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress
+            , IDictionary< string, string > requestHeaders, DownloadPartInputParams ip, CancellationToken commonToken, CancellationTokenSourceWraper waitIfPausedEventTokenSourceWraper );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal sealed class CancellationTokenSourceWraper : IDisposable
+    {
+        private CancellationTokenSource _Cts;
+        public CancellationTokenSourceWraper() => _Cts = new CancellationTokenSource();
+        public void Dispose() => _Cts.Dispose();
+
+        public void Cancel() => _Cts.Cancel();
+        public void Reset()
+        {
+            //var suc = _Cts.TryReset();
+            //if ( !suc ) { _Cts.Dispose(); _Cts = new CancellationTokenSource(); }
+            _Cts.Dispose(); 
+            _Cts = new CancellationTokenSource();
+        }
+        public CancellationToken Token => _Cts.Token;
+        public bool IsCancellationRequested => _Cts.IsCancellationRequested;
+
+        public override string ToString() => _Cts.ToString();
     }
 }

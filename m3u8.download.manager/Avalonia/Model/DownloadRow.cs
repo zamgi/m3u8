@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
-//using _m3u8_processor_ = m3u8.m3u8_processor_adv;
-using _m3u8_processor_       = m3u8.m3u8_processor_adv__v2;
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                      = System.Runtime.CompilerServices.MethodImplOptions;
@@ -31,9 +29,14 @@ namespace m3u8.download.manager.models
     /// </summary>
     public sealed class DownloadRow : RowBase< DownloadRow >, INotifyPropertyChanged
     {
-        private TimeSpan _FinitaElapsed;
-        private TimeSpan _PausedOrWaitElapsed;
-        private long     _DownloadBytesLength_BeforeRunning;
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void DownloadStatusChangedDelegate( DownloadRow row, DownloadStatus prevStatus, DownloadStatus newStatus );
+
+        private TimeSpan               _FinitaElapsed;
+        private TimeSpan               _PausedOrWaitElapsed;
+        private long                   _DownloadBytesLength_BeforeRunning;
         private _RowPropertiesChanged_ _RowPropertiesChanged;
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -104,6 +107,8 @@ namespace m3u8.download.manager.models
             Log = rows.AnyEx() ? new LogListModel( rows ) : new LogListModel();
         }
         internal void _Remove_RowPropertiesChangedEventHandler() => _RowPropertiesChanged = null;
+
+        public DownloadStatusChangedDelegate OnDownloadStatusChanged;
 
         public DateTime       CreatedOrStartedDateTime    { [M(O.AggressiveInlining)] get; private set; }
         public string         Url                         { [M(O.AggressiveInlining)] get; private set; }
@@ -283,37 +288,6 @@ namespace m3u8.download.manager.models
             return (allowed);
         }
 
-        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in _m3u8_processor_.ResponseStepActionParams p )
-        {
-            var call__Fire_PropertyChanged_Events = false;
-            lock ( this )
-            {
-                //if ( 0 < p.BytesLength )
-                //{
-                    var sdp = Math.Min( TotalParts, p.SuccessReceivedPartCount );
-                    var fdp = Math.Min( TotalParts, p.FailedReceivedPartCount  );
-                    if ( (SuccessDownloadParts != sdp) || (FailedDownloadParts != fdp) )
-                    {
-                        SuccessDownloadParts = sdp;
-                        FailedDownloadParts  = fdp;
-                        DownloadBytesLength += p.BytesLength;
-
-                        call__Fire_PropertyChanged_Events = true;
-                    }
-                //}
-
-                if ( _InstantSpeedInMbps != p.InstantSpeedInMbps )
-                {
-                    _InstantSpeedInMbps = p.InstantSpeedInMbps;
-                    call__Fire_PropertyChanged_Events = true;
-                }
-            }
-            if ( call__Fire_PropertyChanged_Events )
-            {
-                Fire_PropertyChanged_Events( nameof(MySelf) );
-                //---Fire_PropertyChanged_Events( "DownloadParts-&-DownloadBytesLength" );
-            }
-        }
         [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in m3u8_processor_next.ResponseStepActionParams p )
         {
             var call__RowPropertiesChanged = false;
@@ -398,12 +372,43 @@ namespace m3u8.download.manager.models
             }
             Fire_PropertyChanged_Events( nameof(MySelf) );
         }
+
         [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
         {
-            var call__Fire_PropertyChanged_Events = false;
+            bool call__Fire_PropertyChanged_Events;
+            DownloadStatus prevStatus;
             lock ( this )
             {
-                if ( Status != newStatus )
+                call__Fire_PropertyChanged_Events = SetStatus_Routine( newStatus, out prevStatus );
+            }
+            if ( call__Fire_PropertyChanged_Events )
+            {
+                OnDownloadStatusChanged?.Invoke( this, prevStatus, newStatus );
+                Fire_PropertyChanged_Events( nameof(Status) );
+                Fire_PropertyChanged_Events( nameof(MySelf) );                
+            }
+        }
+        [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus, Func< DownloadRow, bool > canSetStatus )
+        {
+            bool call__Fire_PropertyChanged_Events;
+            DownloadStatus prevStatus = default;
+            lock ( this )
+            {
+                call__Fire_PropertyChanged_Events = canSetStatus( this ) && SetStatus_Routine( newStatus, out prevStatus );
+            }
+            if ( call__Fire_PropertyChanged_Events )
+            {
+                OnDownloadStatusChanged?.Invoke( this, prevStatus, newStatus );
+                Fire_PropertyChanged_Events( nameof(Status) );
+                Fire_PropertyChanged_Events( nameof(MySelf) );                
+            }
+        }
+        [M(O.AggressiveInlining)] private bool SetStatus_Routine( DownloadStatus newStatus, out DownloadStatus prevStatus )
+        {
+            //var call__Fire_PropertyChanged_Events = false;
+            //lock ( this )
+            //{
+                if ( (prevStatus = Status) != newStatus )
                 {
                     switch ( newStatus )
                     {
@@ -432,15 +437,18 @@ namespace m3u8.download.manager.models
                     }
 
                     Status = newStatus;
-                    call__Fire_PropertyChanged_Events = true;
+                    //call__Fire_PropertyChanged_Events = true;
+                    return (true);
                 }
-            }
-            if ( call__Fire_PropertyChanged_Events )
-            {
-                Fire_PropertyChanged_Events( nameof(Status) );
-                Fire_PropertyChanged_Events( nameof(MySelf) );
-            }
+                return (false);
+            //}
+            //if ( call__Fire_PropertyChanged_Events )
+            //{
+            //    Fire_PropertyChanged_Events( nameof(Status) );
+            //    Fire_PropertyChanged_Events( nameof(MySelf) );
+            //}
         }
+
         [M(O.AggressiveInlining)] public TimeSpan GetElapsed()
         {
             switch ( Status )

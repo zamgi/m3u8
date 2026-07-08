@@ -503,7 +503,8 @@ namespace m3u8
                 public download_threads_semaphore_impl( int maxDegreeOfParallelism ) => _Semaphore = new SemaphoreSlim( maxDegreeOfParallelism, maxDegreeOfParallelism );
                 public void Dispose() => _Semaphore.Dispose();
                 public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance => false;
-                public void Release() => _Semaphore.Release();
+                public bool Release() { _Semaphore.Release(); return (true); }
+                public bool Release_NoThrow() { try { return (Release()); } catch ( SemaphoreFullException ex ) { Debug.WriteLine( ex ); return (false); } }
                 public void Wait( CancellationToken ct ) => _Semaphore.Wait( ct );
                 public Task WaitAsync( CancellationToken ct ) => _Semaphore.WaitAsync( ct );
             }
@@ -555,7 +556,7 @@ namespace m3u8
                 };
                 using var mc = m3u8_client_next_factory.Create( ip );
 
-                var m3u8File = await mc.DownloadFile( new Uri( m3u8FileUrl ), ct, requestHeaders ).CAX();
+                var m3u8File = await mc.DownloadFile( new Uri( m3u8FileUrl ), requestHeaders, ct ).CAX();
 
                 var maxDegreeOfParallelism = 8;
                 var streamInPoolCapacity   = 1_024 * 1_024 * 5;

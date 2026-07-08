@@ -405,6 +405,7 @@ namespace m3u8
         public delegate void ResponseStepActionDelegate( ResponseStepActionParams p );
         //-----------------------------------------------------------------------------//
 
+        #region comm. not-used.
         /// <summary>
         /// 
         /// </summary>
@@ -494,9 +495,9 @@ namespace m3u8
 #if NETCOREAPP
         public static async Task< DownloadPartsAndSaveResult > DownloadPartsAndSave_Async( DownloadPartsAndSaveInputParams ip )
         {            
-            if ( ip.mc == null )                           throw (new m3u8_ArgumentException( nameof(ip.mc) ));
-            if ( !ip.m3u8File.Parts.AnyEx() )              throw (new m3u8_ArgumentException( nameof(ip.m3u8File) ));
-            if ( ip.OutputFileName.IsNullOrWhiteSpace() )  throw (new m3u8_ArgumentException( nameof(ip.OutputFileName) ));
+            if ( ip.mc == null )                          throw (new m3u8_ArgumentException( nameof(ip.mc) ));
+            if ( !ip.m3u8File.Parts.AnyEx() )             throw (new m3u8_ArgumentException( nameof(ip.m3u8File) ));
+            if ( ip.OutputFileName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(ip.OutputFileName) ));
             if ( ip.DownloadThreadsSemaphore    == null ) throw (new m3u8_ArgumentException( nameof(ip.DownloadThreadsSemaphore) ));
             if ( ip.WaitIfPausedEvent           == null ) throw (new m3u8_ArgumentException( nameof(ip.WaitIfPausedEvent) ));
             if ( ip.StreamPool                  == null ) throw (new m3u8_ArgumentException( nameof(ip.StreamPool) ));
@@ -538,6 +539,7 @@ namespace m3u8
             return (res);
         }
 #endif
+        #endregion
         //-----------------------------------------------------------------------------//
     }
 }

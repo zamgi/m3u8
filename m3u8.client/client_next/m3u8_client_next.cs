@@ -178,7 +178,7 @@ namespace m3u8
             return (req);
         }
 
-        public async Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null )
+        public async Task< m3u8_file_t > DownloadFile( Uri url, IDictionary< string, string > requestHeaders = null, CancellationToken ct = default )
         {
             if ( url == null ) throw (new m3u8_ArgumentException( nameof(url) ));
             //------------------------------------------------------------------//
@@ -219,7 +219,7 @@ namespace m3u8
 
         //------------------------------------------------------------------------------------------//
         public async Task< m3u8_part_ts__v2 > DownloadPart( m3u8_part_ts__v2 part, Uri baseAddress
-            , _DownloadPartInputParams_ ip, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null )
+            , IDictionary< string, string > requestHeaders, _DownloadPartInputParams_ ip, CancellationToken ct = default )
         {
             if ( baseAddress == null ) throw (new m3u8_ArgumentException( nameof(baseAddress) ));
             if ( part.Stream == null ) throw (new m3u8_ArgumentException( nameof(part.Stream) ));
@@ -318,5 +318,9 @@ if ( (new Random()).Next( 10 ) == 0 )
 
             throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
         }
+
+        public Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress
+            , IDictionary< string, string > requestHeaders, _DownloadPartInputParams_ ip, CancellationToken commonToken, CancellationTokenSourceWraper waitIfPausedEventTokenSourceWraper ) 
+            => throw new NotImplementedException();
     }
 }

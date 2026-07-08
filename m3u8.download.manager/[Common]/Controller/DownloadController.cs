@@ -14,7 +14,7 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.infrastructure;
 
-using _m3u8_processor_ = m3u8.m3u8_processor_adv__v2;
+using _download_threads_semaphore_factory_ = m3u8.download.manager.controllers.download_threads_semaphore_factory;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -34,16 +34,7 @@ namespace m3u8.download.manager.controllers
         /// </summary>
         private struct Tuple
         {
-            [M(O.AggressiveInlining)]
-            public static Tuple Create( i_m3u8_client mc, CancellationTokenSource cts
-                                      , ManualResetEventSlim waitIfPausedEvent
-                                      , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
-                                      , int startOrderNumber ) 
-                => new Tuple() { mc = mc, cts = cts
-                               , waitIfPausedEvent        = waitIfPausedEvent
-                               , downloadThreadsSemaphore = downloadThreadsSemaphore
-                               , startOrderNumber         = startOrderNumber };
-            [M(O.AggressiveInlining)]
+            [M(O.AggressiveInlining)] //for live-stream
             public static Tuple Create( CancellationTokenSource cts
                                       , ManualResetEventSlim waitIfPausedEvent
                                       , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
@@ -55,21 +46,23 @@ namespace m3u8.download.manager.controllers
             [M(O.AggressiveInlining)]
             public static Tuple Create( i_m3u8_client_next mc_next, CancellationTokenSource cts
                                       , ManualResetEventSlim waitIfPausedEvent
-                                      , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
-                                      , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_2
+                                      , IDownloadThreadsSemaphoreEx   downloadThreadsSemaphore
+                                      , CancellationTokenSourceWraper downloadThreadsSemaphore_CancellationTokenSourceWraper
+                                      , IDownloadThreadsSemaphoreEx   downloadThreadsSemaphore_2
                                       , int startOrderNumber ) 
                 => new Tuple() { mc_next = mc_next, cts = cts
                                , waitIfPausedEvent          = waitIfPausedEvent
                                , downloadThreadsSemaphore   = downloadThreadsSemaphore
+                               , downloadThreadsSemaphore_CancellationTokenSourceWraper = downloadThreadsSemaphore_CancellationTokenSourceWraper
                                , downloadThreadsSemaphore_2 = downloadThreadsSemaphore_2
                                , startOrderNumber           = startOrderNumber };
 
-            public i_m3u8_client               mc                         { [M(O.AggressiveInlining)] get; private set; }
             public i_m3u8_client_next          mc_next                    { [M(O.AggressiveInlining)] get; private set; }
             public CancellationTokenSource     cts                        { [M(O.AggressiveInlining)] get; private set; }
             public ManualResetEventSlim        waitIfPausedEvent          { [M(O.AggressiveInlining)] get; private set; }
             public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore   { [M(O.AggressiveInlining)] get; private set; }
-            public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_2 { [M( O.AggressiveInlining )] get; private set; }
+            public CancellationTokenSourceWraper downloadThreadsSemaphore_CancellationTokenSourceWraper { [M(O.AggressiveInlining)] get; private set; }
+            public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_2 { [M(O.AggressiveInlining)] get; private set; }
             public int                         startOrderNumber           { [M(O.AggressiveInlining)] get; private set; }
         }
 
@@ -86,8 +79,8 @@ namespace m3u8.download.manager.controllers
         private cross_download_instance_restriction        _CrossDownloadInstanceRestriction;
         private interlocked_lock                           _ProcessCrossDownloadInstanceRestrictionLock;
         private int                                        _RealRunningCount;
-        private download_threads_semaphore_factory         _DownloadThreadsSemaphoreFactory;
-        private download_threads_semaphore_factory         _DownloadThreadsSemaphoreFactory_2;
+        private _download_threads_semaphore_factory_       _DownloadThreadsSemaphoreFactory;
+        private _download_threads_semaphore_factory_       _DownloadThreadsSemaphoreFactory_2;
         private DefaultConnectionLimitSaver                _DefaultConnectionLimitSaver;
         private I_throttler_by_speed__v2_t                 _ThrottlerBySpeed;
         private ObjectPoolDisposable< Stream >             _StreamPool;
@@ -112,26 +105,26 @@ namespace m3u8.download.manager.controllers
             _m3u8_client_next_factory_type = m3u8_client_next_factory_type;
             _m3u8_client_next_factory = m3u8_client_next_factory_maker.get( m3u8_client_next_factory_type );
 
-            _CrossDownloadInstanceRestriction = new cross_download_instance_restriction( _SettingsController.MaxCrossDownloadInstance );
-            _DownloadThreadsSemaphoreFactory  = new download_threads_semaphore_factory( _SettingsController.ShareMaxDownloadThreadsBetweenAllDownloadsInstance,
-                                                                                        _SettingsController.MaxDegreeOfParallelism );
-            _DownloadThreadsSemaphoreFactory_2 = new download_threads_semaphore_factory( _SettingsController.ShareMaxDownloadThreadsBetweenAllDownloadsInstance,
-                                                                                         _SettingsController.MaxDegreeOfParallelism );
+            _CrossDownloadInstanceRestriction = new cross_download_instance_restriction( sc.MaxCrossDownloadInstance );
+            _DownloadThreadsSemaphoreFactory  = new _download_threads_semaphore_factory_( sc.ShareMaxDownloadThreadsBetweenAllDownloadsInstance,
+                                                                                          sc.MaxDegreeOfParallelism );
+            _DownloadThreadsSemaphoreFactory_2 = new _download_threads_semaphore_factory_( sc.ShareMaxDownloadThreadsBetweenAllDownloadsInstance,
+                                                                                           sc.MaxDegreeOfParallelism );
 
-            _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( _SettingsController.MaxDegreeOfParallelism );
+            _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( sc.MaxDegreeOfParallelism );
 #if THROTTLER__V1
-            _ThrottlerBySpeed = new throttler_by_speed_impl__v1( _SettingsController.MaxSpeedThresholdInMbps );
+            _ThrottlerBySpeed = new throttler_by_speed_impl__v1( sc.MaxSpeedThresholdInMbps );
 #endif
 #if THROTTLER__V2
-            _ThrottlerBySpeed = new throttler_by_speed_impl__v2( _SettingsController.MaxSpeedThresholdInMbps );
+            _ThrottlerBySpeed = new throttler_by_speed_impl__v2( sc.MaxSpeedThresholdInMbps );
 #endif
-            _StreamPool  = CreateStreamPool ( _SettingsController.MaxDegreeOfParallelism );
-            _RespBufPool = CreateRespBufPool( _SettingsController.MaxDegreeOfParallelism );
+            _StreamPool  = CreateStreamPool ( sc.MaxDegreeOfParallelism );
+            _RespBufPool = CreateRespBufPool( sc.MaxDegreeOfParallelism );
         }
 
         public void Dispose()
         {
-            m3u8_client_factory_maker.ForceClearAndDisposeAll();
+            //m3u8_client_factory_maker.ForceClearAndDisposeAll();
             m3u8_client_next_factory_maker.ForceClearAndDisposeAll();
 
             _DefaultConnectionLimitSaver.Dispose();
@@ -160,7 +153,7 @@ namespace m3u8.download.manager.controllers
         public async Task< (m3u8_file_t m3u8File, Exception error) > GetFileTextContent( 
               Uri m3u8FileUrl
             , IDictionary< string, string > requestHeaders
-             ,IWebProxy webProxy
+            , IWebProxy webProxy
             , TimeSpan requestTimeoutByPart
             , CancellationTokenSource cts = null )
         {
@@ -168,7 +161,7 @@ namespace m3u8.download.manager.controllers
             {
                 try
                 {
-                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts?.Token ?? default, requestHeaders );
+                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, requestHeaders, cts?.Token ?? CancellationToken.None ).CAX();
 
                     return (m3u8File, null);
                 }
@@ -187,21 +180,23 @@ namespace m3u8.download.manager.controllers
             {
                 case nameof(Settings.MaxDegreeOfParallelism):
                 {
-                    await ProcessChangedMaxDegreeOfParallelism( _SettingsController.MaxDegreeOfParallelism );                    
+                    await ProcessChangedMaxDegreeOfParallelism( settings.MaxDegreeOfParallelism );                    
                 }
                 break;
 
                 case nameof(Settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance):
                 {
-                    _DownloadThreadsSemaphoreFactory.ShareMaxDownloadThreadsBetweenAllDownloadsInstance   = settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
-                    _DownloadThreadsSemaphoreFactory_2.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
+                    var v = settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
+                    _DownloadThreadsSemaphoreFactory  .ShareMaxDownloadThreadsBetweenAllDownloadsInstance = v;
+                    _DownloadThreadsSemaphoreFactory_2.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = v;
                 }
                 break;
 
                 case nameof(Settings.MaxCrossDownloadInstance):
                 {
-                    _CrossDownloadInstanceRestriction.SetMaxCrossDownloadInstance( settings.MaxCrossDownloadInstance );
-                    await ProcessCrossDownloadInstanceRestriction( settings.MaxCrossDownloadInstance );
+                    var v = settings.MaxCrossDownloadInstance;
+                    _CrossDownloadInstanceRestriction.SetMaxCrossDownloadInstance( v );
+                    await ProcessCrossDownloadInstanceRestriction( v );
                 }
                 break;
 
@@ -227,40 +222,49 @@ namespace m3u8.download.manager.controllers
 #endif
             t.cts.Cancel_NoThrow();
             t.cts.Dispose_NoThrow();
-            t.mc?.Dispose_NoThrow();
             t.mc_next?.Dispose_NoThrow();
             t.waitIfPausedEvent.Set_NoThrow();
             t.waitIfPausedEvent.Dispose_NoThrow();        
             t.downloadThreadsSemaphore.Dispose_NoThrow();
             t.downloadThreadsSemaphore_2?.Dispose_NoThrow();
         }
-        [M(O.AggressiveInlining)] private void Fire_IsDownloadingChanged() => IsDownloadingChanged?.Invoke( (_Dict.Count != 0) );
+        [M(O.AggressiveInlining)] private void Fire_IsDownloadingChanged()
+        {
+            var isDownloading = (_Dict.Count != 0);
+            if ( !isDownloading )
+            {
+                _DownloadThreadsSemaphoreFactory.ReleaseAll();
+                _DownloadThreadsSemaphoreFactory_2.ReleaseAll();
+            }
+            IsDownloadingChanged?.Invoke( isDownloading );
+        }
 
         #region [.Process of a Changed 'MaxDegreeOfParallelism' props.]
         private async Task ProcessChangedMaxDegreeOfParallelism( int maxDegreeOfParallelism )
         {
             _DefaultConnectionLimitSaver.Reset( maxDegreeOfParallelism );
 
-            var ph = new PausedHelper( _Dict, default );
+            var ph = new PausedHelper( _Dict, CancellationToken.None );
             var tuples = await ph.PausedAll_Started_Running_and_GetThem().CAX();
 
-            await _DownloadThreadsSemaphoreFactory.ResetMaxDegreeOfParallelism( maxDegreeOfParallelism ).CAX();
-            await _DownloadThreadsSemaphoreFactory_2.ResetMaxDegreeOfParallelism( maxDegreeOfParallelism ).CAX();
+            _DownloadThreadsSemaphoreFactory.ResetMaxDegreeOfParallelism( maxDegreeOfParallelism, ResetSemaphoreModeEnum.SetInitalCountAsCurrent );
+            _DownloadThreadsSemaphoreFactory_2.ResetMaxDegreeOfParallelism( maxDegreeOfParallelism, ResetSemaphoreModeEnum.SetInitalCount2Max );
             _StreamPool.ChangeCapacity( maxDegreeOfParallelism );
             _RespBufPool.ChangeCapacity( maxDegreeOfParallelism );
 
-            ph.ResetMaxDegreeOfParallelism_For_NotShareMaxDownloadThreadsBetweenAllDownloadsInstance_DownloadThreadsSemaphore( maxDegreeOfParallelism );
+            ph.ResetMaxDegreeOfParallelism_4_NotShareMaxDownloadThreadsBetweenAllDownloadsInstance_DownloadThreadsSemaphore( maxDegreeOfParallelism );
             ph.ContinueAll_Paused( tuples );
         }
         #endregion
 
         #region [.Process 'CrossDownloadInstanceRestriction'.]
-        [M(O.AggressiveInlining)] private bool CanStartOrSetWaitCrossDownloadInstanceRestriction( DownloadRow row )
+        [M(O.AggressiveInlining)] private bool CanStartOrSetWaitCrossDownloadInstanceRestriction( DownloadRow row, bool checkActualRunningCount )
         {
             var maxCrossDownloadInstance = _CrossDownloadInstanceRestriction.GetMaxCrossDownloadInstance();
             if ( maxCrossDownloadInstance.HasValue ) //if used cross download instance restriction
             {
-                var runningCount = Volatile.Read( ref _RealRunningCount ); //---_Model.GetRows().Count( _row => _row.IsRunning() );
+                //var runningCount = Volatile.Read( ref _RealRunningCount ); //---_Model.GetRows().Count( _row => _row.IsRunning() );
+                var runningCount = checkActualRunningCount ? _Model.GetRows_Enumerable().Count( row => row.IsRunning() ) : Volatile.Read( ref _RealRunningCount );
                 if ( maxCrossDownloadInstance.Value <= runningCount )
                 {
                     row.StatusWait();
@@ -303,16 +307,29 @@ namespace m3u8.download.manager.controllers
                         }
                     }
                 };
-                async Task PausedExtraDownloads( int d )
+                void PausedExtraDownloads( int d )
                 {
                     if ( d < 0 )
                     {
                         foreach ( var row in _Model.GetRows_ArrayCopy().ReverseEx() )
                         {
-                            if ( row.IsRunning() )
+                            if ( /*row.IsRunning()*/row.Status.IsRunningOrStarted() )
                             {
-                                await PauseWithWait( row, CancellationToken.None ).CAX();
-                                row.StatusWait();
+                                //PauseWithWait( row );
+                                //row.StatusWait();
+
+                                if ( _Dict.TryGetValue( row, out var t ) )
+                                {
+                                    t.waitIfPausedEvent.Reset_NoThrow();
+                                    if ( !row.IsPaused() )
+                                    {
+                                        //status must be set to 'Pause' after call 'downloadThreadsSemaphore_CancellationTokenSourceWraper.Cancel()' and then reset it to 'Wait'
+                                        row.OnDownloadStatusChanged -= SetRowStatus2WaitAfterPause; // _SetRowStatus2WaitAfterPauseDelegate;
+                                        row.OnDownloadStatusChanged += SetRowStatus2WaitAfterPause; // _SetRowStatus2WaitAfterPauseDelegate;
+                                        t.downloadThreadsSemaphore_CancellationTokenSourceWraper.Cancel();
+                                    }
+                                }
+
                                 d++;
                                 if ( 0 <= d )
                                 {
@@ -336,7 +353,7 @@ namespace m3u8.download.manager.controllers
                 if ( maxCrossDownloadInstance.HasValue ) //if used cross download instance restriction
                 {
                     var runningCount       = Volatile.Read( ref _RealRunningCount );
-                    var actualRunningCount = _Model.GetRows_Enumerable().Count( row => row.IsRunning() );
+                    var actualRunningCount = _Model.GetRows_Enumerable().Count( row => row.Status.IsRunningOrStarted() );
                     var d = maxCrossDownloadInstance.Value - runningCount;
 
                     if ( d == 0 ) //nothing todo => start downloads, whos was started and after be wait (because was changed 'MaxCrossDownloadInstance' value setting)
@@ -357,7 +374,7 @@ namespace m3u8.download.manager.controllers
                     }
                     else //need paused extra downloads
                     {
-                        await PausedExtraDownloads( d ).CAX();
+                        PausedExtraDownloads( d );
                     }
                 }
                 else //not-used cross download instance restriction
@@ -371,39 +388,13 @@ namespace m3u8.download.manager.controllers
             }
         }
 
-        private async Task PauseWithWait( DownloadRow row, CancellationToken ct, int millisecondsDelay = 10, int? totalMillisecondsTimeout = null )
+        //private static DownloadRow.DownloadStatusChangedDelegate _SetRowStatus2WaitAfterPauseDelegate = new DownloadRow.DownloadStatusChangedDelegate( SetRowStatus2WaitAfterPause );
+        private static void SetRowStatus2WaitAfterPause( DownloadRow row, DownloadStatus prevStatus, DownloadStatus newStatus )
         {
-            if ( (row != null) && _Dict.TryGetValue( row, out var t ) )
-            {
-                t.waitIfPausedEvent.Reset_NoThrow();
-                if ( row.IsPaused() )
-                {
-                    return;
-                }
+            Debug.Assert( newStatus == DownloadStatus.Paused );
 
-                await Task.Run( /*async*/ () =>
-                {
-                    var remainedDelayCount = (totalMillisecondsTimeout.HasValue ? (totalMillisecondsTimeout.Value / Math.Max( 1, millisecondsDelay )) : int.MaxValue);
-
-                    for ( ; _Dict.TryGetValue( row, out var x ) && (0 <= remainedDelayCount) && !ct.IsCancellationRequested; )
-                    {
-                        t.waitIfPausedEvent.Reset_NoThrow();
-                        if ( row.IsPaused() )
-                        {
-                            return;
-                        }
-
-                        remainedDelayCount--;
-                        Task.Delay( millisecondsDelay, ct ).Wait( ct );
-                        //await Task.Delay( millisecondsDelay, ct ).CAX();
-                    }
-                }, ct ).ContinueWith( task => {
-                    if ( !task.IsCanceled && task.IsFaulted ) // suppress cancel exception
-                    {
-                        throw (task.Exception);
-                    }
-                }, TaskContinuationOptions.ExecuteSynchronously ).CAX();
-            }
+            row.OnDownloadStatusChanged -= SetRowStatus2WaitAfterPause; // _SetRowStatus2WaitAfterPauseDelegate;
+            if ( newStatus == DownloadStatus.Paused ) row.StatusWait();
         }
         #endregion
         #endregion
@@ -427,6 +418,10 @@ namespace m3u8.download.manager.controllers
             {
                 if ( row.IsPaused() || row.IsWait() )
                 {
+                    if ( !CanStartOrSetWaitCrossDownloadInstanceRestriction( row, checkActualRunningCount: true ) )
+                    {
+                        return;
+                    }
                     x.waitIfPausedEvent.Set();
                 }
                 return;
@@ -446,7 +441,7 @@ namespace m3u8.download.manager.controllers
             #endregion
 
             #region [.cross download instance restriction.]
-            if ( !CanStartOrSetWaitCrossDownloadInstanceRestriction( row ) )
+            if ( !CanStartOrSetWaitCrossDownloadInstanceRestriction( row, checkActualRunningCount: false ) )
             {
                 return;
             }
@@ -479,8 +474,9 @@ namespace m3u8.download.manager.controllers
             using ( var waitIfPausedEvent          = new ManualResetEventSlim( true, 0 ) )
             using ( var downloadThreadsSemaphore   = _DownloadThreadsSemaphoreFactory.Get() )
             using ( var downloadThreadsSemaphore_2 = _DownloadThreadsSemaphoreFactory_2.Get() )
+            using ( var downloadThreadsSemaphore_CancellationTokenSourceWraper = new CancellationTokenSourceWraper() )
             {
-                var tup = Tuple.Create( mc, cts, waitIfPausedEvent, downloadThreadsSemaphore, downloadThreadsSemaphore_2, _Dict.Count );
+                var tup = Tuple.Create( mc, cts, waitIfPausedEvent, downloadThreadsSemaphore, downloadThreadsSemaphore_CancellationTokenSourceWraper, downloadThreadsSemaphore_2, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
                 try
@@ -489,7 +485,7 @@ namespace m3u8.download.manager.controllers
 
                     //-1-//
                     row.AddBeginRequest2Log();
-                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, cts.Token, row.RequestHeaders );
+                    var m3u8File = await mc.DownloadFile( m3u8FileUrl, row.RequestHeaders, cts.Token );
 
                     row.SetTotalParts( m3u8File.Parts.Count );
                     row.Log.Output( m3u8File );
@@ -511,7 +507,7 @@ namespace m3u8.download.manager.controllers
 
                         var requestStepAction  = new m3u8_processor_next.RequestStepActionDelegate( (in m3u8_processor_next.RequestStepActionParams p) =>
                         {
-                            row.SetStatus( DownloadStatus.Running );
+                            row.SetStatus( DownloadStatus.Running, row => !row.IsWait() );
 
                             var requestText = $"#{p.PartOrderNumber} of {p.TotalPartCount}). '{p.Part.RelativeUrlName}'...";
                             if ( p.Success )
@@ -588,10 +584,15 @@ namespace m3u8.download.manager.controllers
                             //*/
                             #endregion
                         });
-                        var waitingIfPausedAction   = new Action( () => row.SetStatus( DownloadStatus.Paused ) );
+                        var waitingIfPausedActionBefore   = new Action( () =>
+                        {
+                            //if ( !row.IsWait() ) row.SetStatus( DownloadStatus.Paused );
+                            row.SetStatus( DownloadStatus.Paused, row => !row.IsWait() );
+                        });
+                        var waitingIfPausedAfter = new Action( () => row.SetStatus( DownloadStatus.Running ) );
                         var waitingIfPausedBefore_2 = new Action< m3u8_part_ts__v2 >( part =>
                         {
-                            waitingIfPausedAction();
+                            //---waitingIfPausedAction();
                             if ( rows_Dict.TryGetValue( part.OrderNumber, out var logRow ) )
                             {
                                 logRow.SetResponse( logRow.ResponseText + ", /paused/" );
@@ -618,9 +619,12 @@ namespace m3u8.download.manager.controllers
                             ResponseStepAction         = responseStepAction,
                             MaxDegreeOfParallelism     = _SettingsController.MaxDegreeOfParallelism,                            
                             DownloadThreadsSemaphore   = downloadThreadsSemaphore,
+                            DownloadThreadsSemaphore_CancellationTokenSourceWraper 
+                                                       = downloadThreadsSemaphore_CancellationTokenSourceWraper,
                             DownloadThreadsSemaphore_2 = downloadThreadsSemaphore_2,
                             WaitIfPausedEvent          = waitIfPausedEvent,
-                            WaitingIfPaused            = waitingIfPausedAction,
+                            WaitingIfPausedBefore      = waitingIfPausedActionBefore,
+                            WaitingIfPausedAfter       = waitingIfPausedAfter,
                             WaitingIfPausedBefore_2    = waitingIfPausedBefore_2,
                             WaitingIfPausedAfter_2     = waitingIfPausedAfter_2,
                             ThrottlerBySpeed           = _ThrottlerBySpeed,
@@ -637,7 +641,7 @@ namespace m3u8.download.manager.controllers
                     });
 
                     //-4-//
-                    _Dict.Remove( row ); //Fire_IsDownloadingChanged();
+                    _Dict.Remove( row );
 
                     #region [.remane output file if changed.]
                     var renameOutputFileException = default(Exception);
@@ -674,7 +678,7 @@ namespace m3u8.download.manager.controllers
                 }
                 catch ( Exception ex )
                 {
-                    _Dict.Remove( row ); //Fire_IsDownloadingChanged();
+                    _Dict.Remove( row );
 
                     if ( cts.IsCancellationRequested )
                     {
@@ -879,7 +883,7 @@ namespace m3u8.download.manager.controllers
             {
                 if ( _Dict.TryGetValue( row, out var t ) )
                 {
-                    t.waitIfPausedEvent.Reset_NoThrow();
+                    PausedHelper.PauseWithWait_Row( row, t );
                 }
                 row.SetStatus( DownloadStatus.Paused );
             }
@@ -959,6 +963,9 @@ namespace m3u8.download.manager.controllers
                     row.StatusCanceled();
                 }
             }
+
+            _DownloadThreadsSemaphoreFactory.ReleaseAll();
+            _DownloadThreadsSemaphoreFactory_2.ReleaseAll();
         }
         #endregion
 
@@ -992,23 +999,53 @@ namespace m3u8.download.manager.controllers
             #endregion
 
             #region [.method's.]
-            private static Result PausedAll_ByStatus_GetThem( ConcurrentDictionary< DownloadRow, DownloadController.Tuple > dict, params DownloadStatus[] statuses )
+            public static void PauseWithWait_Row( DownloadRow row, in DownloadController.Tuple t )
+            {
+                t.waitIfPausedEvent.Reset_NoThrow();
+                if ( !row.IsPaused() )
+                {
+                    t.downloadThreadsSemaphore_CancellationTokenSourceWraper.Cancel();
+                }
+            }
+
+            private static async Task< Result > PausedAll_ByStatus_GetThem( ConcurrentDictionary< DownloadRow, DownloadController.Tuple > dict, params DownloadStatus[] statuses )
             {
                 var tuples = new List< Tuple >( dict.Count );
 
                 var hs = statuses.ToHashSet();
+                var coll = (IReadOnlyCollection< KeyValuePair< DownloadRow, DownloadController.Tuple > >) dict;
+                await coll.ForEachAsync( Math.Min( 10, dict.Count ), CancellationToken.None, (p, ct) =>
+                {
+                    var row = p.Key;
+                    if ( hs.Contains( row.Status ) )
+                    {
+                        var t = p.Value;
+
+                        PauseWithWait_Row( row, t );
+
+                        lock ( tuples )
+                        {
+                            tuples.Add( new Tuple() { row = row, order = t.startOrderNumber } );
+                        }
+                    }
+
+                    return (Task.CompletedTask);
+                })
+                .CAX();
+
+                /*
                 foreach ( var p in dict )
                 {
                     var row = p.Key;
                     if ( hs.Contains( row.Status ) )
                     {
                         var t = p.Value;
-                        if ( t.waitIfPausedEvent.Reset_NoThrow() )
-                        {
-                            tuples.Add( new Tuple() { row = row, order = t.startOrderNumber } );
-                        }
+
+                        PauseWithWait_Row( row, t );
+                        tuples.Add( new Tuple() { row = row, order = t.startOrderNumber } );
                     }
                 }
+                //*/
 
                 return (new Result() { tuples = tuples, statuses = hs });
             }
@@ -1037,16 +1074,16 @@ namespace m3u8.download.manager.controllers
                     {
                         throw (task.Exception);
                     }
-                }, TaskContinuationOptions.ExecuteSynchronously );
+                }, TaskContinuationOptions.ExecuteSynchronously ).CAX();
             }
 
             public async Task< IReadOnlyList< Tuple > > PausedAll_Started_Running_and_GetThem( int millisecondsDelay = 10, int? totalMillisecondsTimeout = null )
             {
                 //-1-//
-                var pr = PausedAll_ByStatus_GetThem( _Dict, DownloadStatus.Started, DownloadStatus.Running );
+                var pr = await PausedAll_ByStatus_GetThem( _Dict, DownloadStatus.Started, DownloadStatus.Running ).CAX();
 
                 //-2-//
-                await WaitAll_For_NotHas_Status( pr, _Ct, millisecondsDelay, totalMillisecondsTimeout );
+                await WaitAll_For_NotHas_Status( pr, _Ct, millisecondsDelay, totalMillisecondsTimeout ).CAX();
 
                 return (pr.tuples);
             }
@@ -1062,17 +1099,18 @@ namespace m3u8.download.manager.controllers
                 }
             }
 
-            public void ResetMaxDegreeOfParallelism_For_NotShareMaxDownloadThreadsBetweenAllDownloadsInstance_DownloadThreadsSemaphore( int maxDegreeOfParallelism )
+            public void ResetMaxDegreeOfParallelism_4_NotShareMaxDownloadThreadsBetweenAllDownloadsInstance_DownloadThreadsSemaphore( int maxDegreeOfParallelism )
             {
                 foreach ( var t in _Dict.Values )
                 {
                     if ( !t.downloadThreadsSemaphore.ShareMaxDownloadThreadsBetweenAllDownloadsInstance )
                     {
-                        t.downloadThreadsSemaphore.ResetSemaphore( maxDegreeOfParallelism );
+                        t.downloadThreadsSemaphore.ResetSemaphore( maxDegreeOfParallelism, ResetSemaphoreModeEnum.SetInitalCountAsCurrent );
                     }
+
                     if ( (t.downloadThreadsSemaphore_2 != null) && !t.downloadThreadsSemaphore_2.ShareMaxDownloadThreadsBetweenAllDownloadsInstance )
                     {
-                        t.downloadThreadsSemaphore_2.ResetSemaphore( maxDegreeOfParallelism );
+                        t.downloadThreadsSemaphore_2.ResetSemaphore( maxDegreeOfParallelism, ResetSemaphoreModeEnum.SetInitalCount2Max );
                     }
                 }
             }
@@ -1109,7 +1147,7 @@ namespace m3u8.download.manager.controllers
             {
                 using ( var statusTran = this.CancelIfInProgress_WithTransaction( row ) )
                 {
-                    await deleteFilesAction( row, ct );
+                    await deleteFilesAction( row, ct ).CAX();
                     statusTran.CommitStatus();
 
                     afterSuccesDeleteAction?.Invoke( row );
@@ -1233,17 +1271,6 @@ namespace m3u8.download.manager.controllers
             row.Log.Clear();
         }
         public static void StatusWait( this DownloadRow row ) => row.SetStatus( DownloadStatus.Wait );
-        public static void StatusFinished( this DownloadRow row, in _m3u8_processor_.DownloadPartsAndSaveResult dpsr, TimeSpan elapsed )
-        {
-            row.SetStatus( DownloadStatus.Finished );
-            var log = row.Log;
-            log.AddEmptyRow();
-            log.AddRequestRow( $" downloaded & writed parts {dpsr.PartsSuccessCount} of {dpsr.TotalParts}" );
-            log.AddEmptyRow();
-            log.AddRequestRow( $" elapsed: {elapsed}" );
-            log.AddRequestRow( $"         file: '{dpsr.OutputFileName}'" );
-            log.AddRequestRow( $"       size: {Extensions.GetSizeInMbFormatted( dpsr.TotalBytes )} mb" );
-        }
         public static void StatusFinished( this DownloadRow row, in m3u8_processor_next.DownloadPartsAndSaveResult dpsr, TimeSpan elapsed )
         {
             row.SetStatus( DownloadStatus.Finished );
@@ -1312,6 +1339,17 @@ namespace m3u8.download.manager.controllers
             if ( semaphore != null )
             {
                 semaphore.WaitAsync( millisecondsTimeout ).ContinueWith( t => semaphore.Dispose() );
+            }
+        }
+        [M(O.AggressiveInlining)] public static void Release_NoThrow( this SemaphoreSlim semaphore )
+        {
+            try
+            {
+                semaphore.Release();
+            }
+            catch ( SemaphoreFullException ex )
+            {
+                Debug.WriteLine( ex );
             }
         }
 

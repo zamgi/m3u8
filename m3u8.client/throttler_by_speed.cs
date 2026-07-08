@@ -42,7 +42,6 @@ namespace m3u8
     /// </summary>
     internal interface I_ThrottlerBySpeed_InDownloadProcessUser : IDisposable
     {
-        //void Start();
         double? Throttle( CancellationToken ct );
         void TakeIntoAccountDownloadedBytes( int downloadedBytes );
         void Restart();
@@ -57,7 +56,6 @@ namespace m3u8
         public static No_ThrottlerBySpeed_InDownloadProcessUser Inst { get; } = new No_ThrottlerBySpeed_InDownloadProcessUser();
         private No_ThrottlerBySpeed_InDownloadProcessUser() { }
         public void Dispose() { }
-        //public void Start() { }
         public void Restart() { }
         public void End() { }
         public void TakeIntoAccountDownloadedBytes( int downloadedBytes ) { }

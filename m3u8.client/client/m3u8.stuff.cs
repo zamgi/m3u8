@@ -153,6 +153,16 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
+    public static class m3u8_Consts
+    {
+        public const bool      DEFAULT_CONNECTIONCLOSE    = true;
+        public const int       DEFAULT_TIMEOUT_IN_SECONDS = 100;
+        public static TimeSpan DEFAULT_TIMEOUT            => TimeSpan.FromSeconds( DEFAULT_TIMEOUT_IN_SECONDS );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
     public static class m3u8_FileHelper
     {
         public static FileStream File_Open4Write( string fileName, FileShare fileShare = /*FileShare.Read*/FileShare.Read | FileShare.Delete )

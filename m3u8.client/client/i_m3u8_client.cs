@@ -17,17 +17,13 @@ namespace m3u8
         /// </summary>
         public struct init_params
         {
-            public const bool      DEFAULT_CONNECTIONCLOSE    = true;
-            public const int       DEFAULT_TIMEOUT_IN_SECONDS = 100;
-            public static TimeSpan DEFAULT_TIMEOUT            => TimeSpan.FromSeconds( DEFAULT_TIMEOUT_IN_SECONDS );
-
             public int?  AttemptRequestCount { get; set; }
             public bool? ConnectionClose     { get; set; }
             public HttpCompletionOption? HttpCompletionOption { get; set; }
             public IWebProxy WebProxy { get; set; }
 
             private TimeSpan? _Timeout;
-            public TimeSpan Timeout { get => _Timeout.GetValueOrDefault( DEFAULT_TIMEOUT ); set => _Timeout = value; }
+            public TimeSpan Timeout { get => _Timeout.GetValueOrDefault( m3u8_Consts.DEFAULT_TIMEOUT ); set => _Timeout = value; }
         }
 
         public init_params InitParams { get; }

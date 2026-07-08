@@ -61,8 +61,8 @@ namespace m3u8
         public i_m3u8_client_next Create( IWebProxy webProxy, in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( webProxy, timeout ), attemptRequestCountByPart );
         public i_m3u8_client_next Create( in _init_params_ ip ) => Create( HttpClientFactory_WithRefCount.Get( ip.WebProxy ), ip );
 
-        private static m3u8_client_next Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, in _init_params_ ip ) => new m3u8_client_next( t, ip );
-        private static m3u8_client_next Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
+        private static m3u8_client_next_v2 Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, in _init_params_ ip ) => new m3u8_client_next_v2( t, ip );
+        private static m3u8_client_next_v2 Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
             => Create( t, new _init_params_() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
     }
 

@@ -71,7 +71,7 @@ namespace m3u8.download.manager
             web_proxy_info webProxyInfo, CancellationToken ct, Action< string > changeWebProxyAddressAction )
         {
             //var timeout = TimeSpan.FromSeconds( 10 ); //var (timeout, _) = _SC.GetCreateM3u8ClientParams();
-            var timeout = i_m3u8_client.init_params.DEFAULT_TIMEOUT;
+            var timeout = m3u8_Consts.DEFAULT_TIMEOUT;
             try
             {
                 var webProxyAddressText = webProxyInfo.GetWebProxyAddressText();
