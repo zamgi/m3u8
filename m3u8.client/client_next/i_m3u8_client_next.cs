@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using m3u8.infrastructure;
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -74,46 +76,42 @@ namespace m3u8
             public I_ThrottlerBySpeed_InDownloadProcessUser ThrottlerBySpeed_User  { [M(O.AggressiveInlining)] get; set; }
             public ObjectPool< byte[] >                     RespBufPool            { [M(O.AggressiveInlining)] get; set; }
             public DownloadPartStepActionDelegate           DownloadPartStepAction { [M(O.AggressiveInlining)] get; set; }
-
+           
             public I_download_threads_semaphore             DownloadThreadsSemaphore { [M(O.AggressiveInlining)] get; set; }
-        
-            public ManualResetEventSlim                     WaitIfPausedEvent        { [M(O.AggressiveInlining)] get; set; }
-            public Action< m3u8_part_ts__v2 >               WaitingIfPausedBefore    { [M(O.AggressiveInlining)] get; set; }
-            public Action< m3u8_part_ts__v2 >               WaitingIfPausedAfter     { [M(O.AggressiveInlining)] get; set; }
+            public WaitIfPausedHolder                       WaitIfPausedHolder       { [M(O.AggressiveInlining)] get; set; }
 
-            public ManualResetEventSlim                     WasSettedWaitIfPausedEvent  { [M(O.AggressiveInlining)] get; set; }
+            //public ManualResetEventSlim                     WasSettedWaitIfPausedEvent  { [M(O.AggressiveInlining)] get; set; }
 
             public string OutputFileName { [M(O.AggressiveInlining)] get; set; }
             public override string ToString() => OutputFileName;
         }
 
-        Task< m3u8_part_ts__v2 > DownloadPart( m3u8_part_ts__v2 part, Uri baseAddress
-            , IDictionary< string, string > requestHeaders, DownloadPartInputParams ip, CancellationToken ct = default );
+        Task< m3u8_part_ts__v2 > DownloadPart( m3u8_part_ts__v2 part, Uri baseAddress, IDictionary< string, string > requestHeaders
+            , DownloadPartInputParams ip, CancellationToken ct = default );
 
-        Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress
-            , IDictionary< string, string > requestHeaders, DownloadPartInputParams ip, CancellationToken commonToken, CancellationTokenSourceWraper waitIfPausedEventTokenSourceWraper );
+        Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress, IDictionary< string, string> requestHeaders
+            , DownloadPartInputParams ip, CancellationToken commonToken );
     }
+}
 
-    /// <summary>
-    /// 
-    /// </summary>
-    internal sealed class CancellationTokenSourceWraper : IDisposable
+namespace m3u8.infrastructure
+{
+    using DownloadPartStepActionParams = i_m3u8_client_next.DownloadPartStepActionParams;
+
+    internal static partial class Extensions
     {
-        private CancellationTokenSource _Cts;
-        public CancellationTokenSourceWraper() => _Cts = new CancellationTokenSource();
-        public void Dispose() => _Cts.Dispose();
-
-        public void Cancel() => _Cts.Cancel();
-        public void Reset()
+        public static ref readonly DownloadPartStepActionParams SetAttemptRequestNumber( this ref DownloadPartStepActionParams x, int value )
         {
-            //var suc = _Cts.TryReset();
-            //if ( !suc ) { _Cts.Dispose(); _Cts = new CancellationTokenSource(); }
-            _Cts.Dispose(); 
-            _Cts = new CancellationTokenSource();
+            x.AttemptRequestNumber = value;
+            return ref x;
         }
-        public CancellationToken Token => _Cts.Token;
-        public bool IsCancellationRequested => _Cts.IsCancellationRequested;
-
-        public override string ToString() => _Cts.ToString();
+        public static ref readonly DownloadPartStepActionParams Set( this ref DownloadPartStepActionParams x, double? instantSpeedInMbps, long totalBytesReaded, int bytesReaded, int attemptRequestNumber )
+        {
+            x.InstantSpeedInMbps   = instantSpeedInMbps;
+            x.TotalBytesReaded     = totalBytesReaded;
+            x.BytesReaded          = bytesReaded;
+            x.AttemptRequestNumber = attemptRequestNumber;
+            return ref x;
+        }
     }
 }

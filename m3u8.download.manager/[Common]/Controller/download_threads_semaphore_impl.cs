@@ -505,7 +505,8 @@ namespace m3u8.download.manager.controllers
                             case ResetSemaphoreModeEnum.SetInitalCountAsCurrent:
                             default:
                                 newFreeCount = degreeOfParallelism - workingCount;
-                                newFreeCount = (0 < newFreeCount) ? newFreeCount : degreeOfParallelism;
+                                //---newFreeCount = (0 < newFreeCount) ? newFreeCount : degreeOfParallelism;
+                                newFreeCount = Math.Max( 0, newFreeCount );
                                 break;
                         }
 
@@ -559,6 +560,9 @@ namespace m3u8.download.manager.controllers
             }
         }
 
+        public int MaxCount => _DegreeOfParallelism;
+        public int CurrentCount => _Semaphore.CurrentCount;
+
         public override string ToString() => (_Semaphore != null) ? $"MAX = {_DegreeOfParallelism}, CurrentCount = {_Semaphore.CurrentCount}" : "Semaphore=NULL";
     }
 
@@ -574,7 +578,9 @@ namespace m3u8.download.manager.controllers
 
         public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { [M(O.AggressiveInlining)] get => false; }
 
-        //[M(O.AggressiveInlining)] public WaitHandle GetAvailableWaitHandle() => _SemaphoreHolder.GetAvailableWaitHandle();
+        public int MaxCount => _SemaphoreHolder.MaxCount;
+        public int CurrentCount => _SemaphoreHolder.CurrentCount;
+
         [M(O.AggressiveInlining)] public void ResetSemaphore( int degreeOfParallelism, ResetSemaphoreModeEnum resetSemaphoreMode ) => _SemaphoreHolder.ResetSemaphore( degreeOfParallelism, resetSemaphoreMode );
 
         [M(O.AggressiveInlining)] public void Wait( CancellationToken ct ) => _SemaphoreHolder.Wait( ct );
@@ -617,7 +623,6 @@ namespace m3u8.download.manager.controllers
 
         public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { [M(O.AggressiveInlining)] get => true; }
 
-        //[M(O.AggressiveInlining)] public WaitHandle GetAvailableWaitHandle() => _SemaphoreHolder.GetAvailableWaitHandle();
         public void ResetSemaphore( int degreeOfParallelism, ResetSemaphoreModeEnum resetSemaphoreMode ) => throw (new InvalidOperationException()); //changed over download_threads_semaphore_factory
 
         public void Wait( CancellationToken ct )
@@ -689,6 +694,9 @@ namespace m3u8.download.manager.controllers
             }
         }
 
+        public int MaxCount => _SemaphoreHolder.MaxCount;
+        public int CurrentCount => _SemaphoreHolder.CurrentCount;
+
         public override string ToString() => $"[CROSS]: {_SemaphoreHolder}";
     }
 
@@ -707,13 +715,15 @@ namespace m3u8.download.manager.controllers
 
             public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { [M(O.AggressiveInlining)] get => false; }
 
-            //[M( O.AggressiveInlining )] public WaitHandle GetAvailableWaitHandle() => null; //throw new NotImplementedException();
             [M(O.AggressiveInlining)] public void ResetSemaphore( int degreeOfParallelism, ResetSemaphoreModeEnum resetSemaphoreMode ) { }
 
             [M(O.AggressiveInlining)] public void Wait( CancellationToken ct ) { }
             [M(O.AggressiveInlining)] public Task WaitAsync( CancellationToken ct ) => Task.CompletedTask;
             [M(O.AggressiveInlining)] public bool Release() => true;
             [M(O.AggressiveInlining)] public bool Release_NoThrow() => true;
+
+            public int MaxCount => -1;
+            public int CurrentCount => -1;
         }
 
         #region [.fields.]
@@ -748,11 +758,11 @@ namespace m3u8.download.manager.controllers
         public bool UseMaxDegreeOfParallelism                          { get; set; }
         public int  MaxDegreeOfParallelism                             { get; private set; }
 
-        public void ResetMaxDegreeOfParallelism( int maxDegreeOfParallelism, ResetSemaphoreModeEnum _/*resetSemaphoreMode*/ )
+        public void ResetMaxDegreeOfParallelism( int maxDegreeOfParallelism, ResetSemaphoreModeEnum /*_*/resetSemaphoreMode )
         {
             if ( this.MaxDegreeOfParallelism != maxDegreeOfParallelism )
             {
-                _CrossSemaphoreHolder.ResetSemaphore( maxDegreeOfParallelism, ResetSemaphoreModeEnum.SetInitalCount2Max /*resetSemaphoreMode*/ );
+                _CrossSemaphoreHolder.ResetSemaphore( maxDegreeOfParallelism, /*ResetSemaphoreModeEnum.SetInitalCount2Max*/ resetSemaphoreMode );
                 this.MaxDegreeOfParallelism = maxDegreeOfParallelism;
             }
         }

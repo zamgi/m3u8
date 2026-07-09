@@ -319,8 +319,7 @@ if ( (new Random()).Next( 10 ) == 0 )
             throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
         }
 
-        public Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress
-            , IDictionary< string, string > requestHeaders, _DownloadPartInputParams_ ip, CancellationToken commonToken, CancellationTokenSourceWraper waitIfPausedEventTokenSourceWraper ) 
+        public Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress, IDictionary< string, string > requestHeaders, _DownloadPartInputParams_ ip, CancellationToken commonToken )
             => throw new NotImplementedException();
     }
 }

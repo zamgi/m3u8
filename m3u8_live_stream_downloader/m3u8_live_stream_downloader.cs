@@ -70,11 +70,10 @@ namespace m3u8
             private TimeSpan? _Timeout;
             public TimeSpan Timeout { get => _Timeout.GetValueOrDefault( DEFAULT_TIMEOUT ); set => _Timeout = value; }
             
-            public ManualResetEventSlim       WaitIfPausedEvent { [M(O.AggressiveInlining)] get; set; }
-            public Action                     WaitingIfPaused   { [M(O.AggressiveInlining)] get; set; }
-            public I_throttler_by_speed__v2_t ThrottlerBySpeed  { [M(O.AggressiveInlining)] get; set; }
+            public WaitIfPausedHolder         WaitIfPausedHolder { [M(O.AggressiveInlining)] get; set; }            
+            public I_throttler_by_speed__v2_t ThrottlerBySpeed   { [M(O.AggressiveInlining)] get; set; }
 
-            public DownloadContentDelegate DownloadContent          { get; set; }
+            public DownloadContentDelegate          DownloadContent          { get; set; }
             public DownloadContentErrorDelegate     DownloadContentError     { get; set; }
             public DownloadPartDelegate             DownloadPart             { get; set; }
             public DownloadPartErrorDelegate        DownloadPartError        { get; set; }
@@ -464,16 +463,14 @@ namespace m3u8
         private void WaitIfPaused( CancellationToken ct )
         {
             #region [.check 'waitIfPausedEvent'.]
-            if ( _IP.WaitIfPausedEvent == null )
+            if ( _IP.WaitIfPausedHolder == null )
             {
                 return;
             }
 
-            if ( !_IP.WaitIfPausedEvent.IsSet )
+            if ( _IP.WaitIfPausedHolder.IsNeedWait )
             {
-                _IP.WaitingIfPaused?.Invoke();
-                _IP.WaitIfPausedEvent.Wait( ct );
-
+                _IP.WaitIfPausedHolder.Wait_WithCallbacks( ct );
                 _ThrottlerBySpeed_User.Restart();
             }
             #endregion

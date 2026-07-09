@@ -29,6 +29,8 @@
 
   <ItemGroup>
     <Compile Include="..\m3u8.client\throttler_by_speed.cs" Link="throttler_by_speed.cs" />
+    <Compile Include="..\m3u8.client\client\m3u8.stuff.cs" Link="m3u8.stuff.cs" />
+    <Compile Include="..\m3u8.client\obj_pool.cs" Link="obj_pool.cs" />
   </ItemGroup>
 
   <ItemGroup>

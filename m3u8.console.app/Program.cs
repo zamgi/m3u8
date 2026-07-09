@@ -500,9 +500,15 @@ namespace m3u8
             private sealed class download_threads_semaphore_impl : I_download_threads_semaphore
             {
                 private SemaphoreSlim _Semaphore;
-                public download_threads_semaphore_impl( int maxDegreeOfParallelism ) => _Semaphore = new SemaphoreSlim( maxDegreeOfParallelism, maxDegreeOfParallelism );
+                private int _MaxDegreeOfParallelism;
+                public download_threads_semaphore_impl( int maxDegreeOfParallelism ) 
+                    => (_Semaphore, _MaxDegreeOfParallelism) = (new SemaphoreSlim( maxDegreeOfParallelism, maxDegreeOfParallelism ), maxDegreeOfParallelism);
                 public void Dispose() => _Semaphore.Dispose();
                 public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance => false;
+
+                public int MaxCount => _MaxDegreeOfParallelism;
+                public int CurrentCount => _Semaphore.CurrentCount;
+
                 public bool Release() { _Semaphore.Release(); return (true); }
                 public bool Release_NoThrow() { try { return (Release()); } catch ( SemaphoreFullException ex ) { Debug.WriteLine( ex ); return (false); } }
                 public void Wait( CancellationToken ct ) => _Semaphore.Wait( ct );
@@ -561,9 +567,9 @@ namespace m3u8
                 var maxDegreeOfParallelism = 8;
                 var streamInPoolCapacity   = 1_024 * 1_024 * 5;
                 var bufInPoolCapacity      = 1_024 * 100;
-                using var waitIfPausedEvent  = new ManualResetEventSlim( true, 0 );
+                using var waitIfPausedEventWrapper = new WaitIfPausedEventWrapper();
                 using var dts                = new download_threads_semaphore_impl( maxDegreeOfParallelism );
-                using var dts_2              = new download_threads_semaphore_impl( maxDegreeOfParallelism );
+                using var dts_4_Parts        = new download_threads_semaphore_impl( maxDegreeOfParallelism );
                 using var throttler_by_speed = new throttler_by_speed_impl__v2();
                 using var streamPool         = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
                 using var respBufPool        = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
@@ -584,8 +590,9 @@ namespace m3u8
                 //    }
                 //});
                 #endregion
-                var responseStepAction = new m3u8_processor_next.ResponseStepActionDelegate( (in m3u8_processor_next.ResponseStepActionParams p) => CONSOLE.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );                
+                var responseStepAction = new m3u8_processor_next.ResponseStepActionDelegate( (in m3u8_processor_next.ResponseStepActionParams p) => CONSOLE.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );
                 //var downloadPartStepAction = new m3u8_client_next.DownloadPartStepActionDelegate( (in m3u8_client_next.DownloadPartStepActionParams p) => );
+                var waitIfPausedHolder = new WaitIfPausedHolder( waitIfPausedEventWrapper );
 
                 var p = new m3u8_processor_next.DownloadPartsAndSaveInputParams()
                 {
@@ -598,11 +605,12 @@ namespace m3u8
                     //DownloadPartStepAction     = downloadPartStepAction,
                     MaxDegreeOfParallelism     = maxDegreeOfParallelism,
                     DownloadThreadsSemaphore   = dts,
-                    DownloadThreadsSemaphore_2 = dts_2,
-                    WaitIfPausedEvent          = waitIfPausedEvent,
+                    DownloadThreadsSemaphore_4_Parts = dts_4_Parts,
+                    WaitIfPausedHolder         = waitIfPausedHolder,
+                    WaitIfPausedHolder_4_Parts = waitIfPausedHolder,
                     //WaitingIfPaused            = , //public Action
                     //WaitingIfPausedBefore_2    = , //public Action< m3u8_part_ts__v2 >   
-                    //WaitingIfPausedAfter_2     = , //public Action< m3u8_part_ts__v2 >   
+                    //WaitingIfPausedAfter_2     = , //public Action< m3u8_part_ts__v2 >
                     ThrottlerBySpeed           = throttler_by_speed,
                     StreamPool                 = streamPool,
                     RespBufPool                = respBufPool,                    
@@ -728,14 +736,15 @@ namespace m3u8
                
                 var streamInPoolCapacity   = 1_024 * 1_024 * 5;
                 var bufInPoolCapacity      = 1_024 * 100;
-                using var waitIfPausedEvent  = new ManualResetEventSlim( true, 0 );
+                using var waitIfPausedEventWrapper = new WaitIfPausedEventWrapper();
                 using var dts                = new download_threads_semaphore_impl( maxDegreeOfParallelism );
-                using var dts_2              = new download_threads_semaphore_impl( maxDegreeOfParallelism );
+                using var dts_4_Parts        = new download_threads_semaphore_impl( maxDegreeOfParallelism );
                 using var throttler_by_speed = new throttler_by_speed_impl__v2();
                 using var streamPool         = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
                 using var respBufPool        = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
 
-                var responseStepAction = new m3u8_processor_next.ResponseStepActionDelegate( (in m3u8_processor_next.ResponseStepActionParams p) => CONSOLE.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );                
+                var responseStepAction = new m3u8_processor_next.ResponseStepActionDelegate( (in m3u8_processor_next.ResponseStepActionParams p) => CONSOLE.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );
+                var waitIfPausedHolder = new WaitIfPausedHolder( waitIfPausedEventWrapper );
 
                 var p = new m3u8_processor_next.DownloadPartsAndSaveInputParams()
                 {
@@ -746,8 +755,9 @@ namespace m3u8
                     ResponseStepAction         = responseStepAction,
                     MaxDegreeOfParallelism     = maxDegreeOfParallelism,
                     DownloadThreadsSemaphore   = dts,
-                    DownloadThreadsSemaphore_2 = dts_2,
-                    WaitIfPausedEvent          = waitIfPausedEvent,
+                    DownloadThreadsSemaphore_4_Parts = dts_4_Parts,
+                    WaitIfPausedHolder         = waitIfPausedHolder,
+                    WaitIfPausedHolder_4_Parts = waitIfPausedHolder,
                     ThrottlerBySpeed           = throttler_by_speed,
                     StreamPool                 = streamPool,
                     RespBufPool                = respBufPool,                    

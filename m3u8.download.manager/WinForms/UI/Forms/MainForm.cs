@@ -14,6 +14,7 @@ using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
+using m3u8.download.manager.UI.Forms;
 
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _DC_                                   = m3u8.download.manager.controllers.DownloadController;
@@ -53,6 +54,7 @@ namespace m3u8.download.manager.ui
         private HashSet< string >              _ExternalProgQueue;
         private NotifyIcon                     _NotifyIcon;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
+        private LoggerForm                     _LoggerForm;
 #if NETCOREAPP
         private static string _APP_TITLE_ => Resources.APP_TITLE__NET_CORE
         #if DEBUG
@@ -72,11 +74,14 @@ namespace m3u8.download.manager.ui
         private MainForm()
         {
             _SC = new _SC_( Settings.Default );
-
+#if DEBUG
+            _LoggerForm = new LoggerForm( this ) { Visible = true };
+#endif
             _DownloadListModel = new DownloadListModel();
             _DownloadListModel.CollectionChanged    += DownloadListModel_CollectionChanged;
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
-            _DC = new _DC_( _DownloadListModel, _SC, M3U8_CLIENT_NEXT_FACTORY_TYPE );
+            _DC = new _DC_( _DownloadListModel, _SC, M3U8_CLIENT_NEXT_FACTORY_TYPE, _LoggerForm );
+
             TestWebProxyConnectionHelper.m3u8_client_next_factory_type = M3U8_CLIENT_NEXT_FACTORY_TYPE;
 
             _UndoModel = new UndoModel( _DownloadListModel );

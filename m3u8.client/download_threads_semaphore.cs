@@ -11,11 +11,13 @@ namespace m3u8
     {
         bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { get; }
         
-        //WaitHandle GetAvailableWaitHandle();
-
         void Wait( CancellationToken ct );
         Task WaitAsync( CancellationToken ct );
         bool Release();
         bool Release_NoThrow();
+
+
+        int MaxCount     { get; }
+        int CurrentCount { get; }
     }
 }
