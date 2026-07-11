@@ -45,25 +45,22 @@ namespace m3u8.download.manager.controllers
                                , startOrderNumber         = startOrderNumber };
             [M(O.AggressiveInlining)]
             public static Tuple Create( i_m3u8_client_next mc_next, CancellationTokenSource cts
-                                      , WaitIfPausedEventWrapper       waitIfPausedEventWrapper
-                                      , IDownloadThreadsSemaphoreEx    downloadThreadsSemaphore
-                                      //, CancellationTokenSourceWrapper downloadThreadsSemaphore_CancellationTokenSourceWrapper
-                                      , IDownloadThreadsSemaphoreEx    downloadThreadsSemaphore_4_Parts
+                                      , WaitIfPausedEventWrapper    waitIfPausedEventWrapper
+                                      , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
+                                      , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_4_Parts
                                       , int startOrderNumber ) 
                 => new Tuple() { mc_next = mc_next, cts = cts
-                               , waitIfPausedEventWrapper   = waitIfPausedEventWrapper
-                               , downloadThreadsSemaphore   = downloadThreadsSemaphore
-                               //, downloadThreadsSemaphore_CancellationTokenSourceWrapper = downloadThreadsSemaphore_CancellationTokenSourceWrapper
+                               , waitIfPausedEventWrapper         = waitIfPausedEventWrapper
+                               , downloadThreadsSemaphore         = downloadThreadsSemaphore
                                , downloadThreadsSemaphore_4_Parts = downloadThreadsSemaphore_4_Parts
-                               , startOrderNumber           = startOrderNumber };
+                               , startOrderNumber                 = startOrderNumber };
 
-            public i_m3u8_client_next          mc_next                    { [M(O.AggressiveInlining)] get; private set; }
-            public CancellationTokenSource     cts                        { [M(O.AggressiveInlining)] get; private set; }
-            public WaitIfPausedEventWrapper    waitIfPausedEventWrapper   { [M(O.AggressiveInlining)] get; private set; }
-            public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore   { [M(O.AggressiveInlining)] get; private set; }
-            //public CancellationTokenSourceWrapper downloadThreadsSemaphore_CancellationTokenSourceWrapper { [M(O.AggressiveInlining)] get; private set; }
+            public i_m3u8_client_next          mc_next                          { [M(O.AggressiveInlining)] get; private set; }
+            public CancellationTokenSource     cts                              { [M(O.AggressiveInlining)] get; private set; }
+            public WaitIfPausedEventWrapper    waitIfPausedEventWrapper         { [M(O.AggressiveInlining)] get; private set; }
+            public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore         { [M(O.AggressiveInlining)] get; private set; }
             public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_4_Parts { [M(O.AggressiveInlining)] get; private set; }
-            public int                         startOrderNumber           { [M(O.AggressiveInlining)] get; private set; }
+            public int                         startOrderNumber                 { [M(O.AggressiveInlining)] get; private set; }
         }
 
         #region [.fields.]
@@ -311,20 +308,16 @@ namespace m3u8.download.manager.controllers
                     {
                         foreach ( var row in _Model.GetRows_ArrayCopy().ReverseEx() )
                         {
-                            if ( /*row.IsRunning()*/row.Status.IsRunningOrStarted() )
+                            if ( row.Status.IsRunningOrStarted() )
                             {
-                                //PauseWithWait( row );
-                                //row.StatusWait();
-
                                 if ( _Dict.TryGetValue( row, out var t ) )
                                 {
                                     t.waitIfPausedEventWrapper.SetNeedWait();
                                     if ( !row.IsPaused() )
                                     {
-                                        //status must be set to 'Pause' after call 'downloadThreadsSemaphore_CancellationTokenSourceWrapper.Cancel()' and then reset it to 'Wait'
+                                        //status must be set to 'Pause' after call 't.waitIfPausedEventWrapper.SetNeedWait()' and then reset it to 'Wait'
                                         row.OnDownloadStatusChanged -= SetRowStatus2WaitAfterPause; // _SetRowStatus2WaitAfterPauseDelegate;
                                         row.OnDownloadStatusChanged += SetRowStatus2WaitAfterPause; // _SetRowStatus2WaitAfterPauseDelegate;
-                                        //---t.downloadThreadsSemaphore_CancellationTokenSourceWrapper.Cancel();
                                     }
                                 }
 
@@ -472,10 +465,8 @@ namespace m3u8.download.manager.controllers
             using ( var waitIfPausedEventWrapper   = new WaitIfPausedEventWrapper() )
             using ( var downloadThreadsSemaphore   = _DownloadThreadsSemaphoreFactory.Get() )
             using ( var downloadThreadsSemaphore_4_Parts = _DownloadThreadsSemaphoreFactory_4_Parts.Get() )
-            //using ( var downloadThreadsSemaphore_CancellationTokenSourceWrapper = new CancellationTokenSourceWrapper() )
             {
-                var tup = Tuple.Create( mc, cts, waitIfPausedEventWrapper, downloadThreadsSemaphore, 
-                                        /*downloadThreadsSemaphore_CancellationTokenSourceWrapper,*/ downloadThreadsSemaphore_4_Parts, _Dict.Count );
+                var tup = Tuple.Create( mc, cts, waitIfPausedEventWrapper, downloadThreadsSemaphore, downloadThreadsSemaphore_4_Parts, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
                 try
@@ -618,7 +609,6 @@ namespace m3u8.download.manager.controllers
                             ResponseStepAction         = responseStepAction,
                             MaxDegreeOfParallelism     = _SettingsController.MaxDegreeOfParallelism,                            
                             DownloadThreadsSemaphore   = downloadThreadsSemaphore,
-                            //DownloadThreadsSemaphore_CancellationTokenSourceWrapper = downloadThreadsSemaphore_CancellationTokenSourceWrapper,
                             DownloadThreadsSemaphore_4_Parts = downloadThreadsSemaphore_4_Parts,
                             WaitIfPausedHolder         = new WaitIfPausedHolder( waitIfPausedEventWrapper, waitingIfPausedBefore        , waitingIfPausedAfter ),
                             WaitIfPausedHolder_4_Parts = new WaitIfPausedHolder( waitIfPausedEventWrapper, waitingIfPausedBefore_4_Parts, waitingIfPausedAfter_4_Parts ),
@@ -878,7 +868,7 @@ namespace m3u8.download.manager.controllers
             {
                 if ( _Dict.TryGetValue( row, out var t ) )
                 {
-                    PausedHelper.Pause_Row( row, t );
+                    t.waitIfPausedEventWrapper.SetNeedWait();
                 }
                 row.SetStatus( DownloadStatus.Paused );
             }
@@ -994,16 +984,7 @@ namespace m3u8.download.manager.controllers
             #endregion
 
             #region [.method's.]
-            internal static void Pause_Row( DownloadRow row, in DownloadController.Tuple t )
-            {
-                t.waitIfPausedEventWrapper.SetNeedWait();
-
-                //if ( !row.IsPaused() )
-                //{
-                //    t.downloadThreadsSemaphore_CancellationTokenSourceWrapper.Cancel();
-                //}
-            }
-
+            
             private static Result/*async Task< Result >*/ PausedAll_ByStatus_GetThem( ConcurrentDictionary< DownloadRow, DownloadController.Tuple > dict, params DownloadStatus[] statuses )
             {
                 var tuples = new List< Tuple >( dict.Count );
@@ -1040,7 +1021,7 @@ namespace m3u8.download.manager.controllers
                     {
                         var t = p.Value;
 
-                        Pause_Row( row, t );
+                        t.waitIfPausedEventWrapper.SetNeedWait();
                         tuples.Add( new Tuple() { row = row, order = t.startOrderNumber } );
                     }
                 }
@@ -1080,7 +1061,6 @@ namespace m3u8.download.manager.controllers
             {
                 //-1-//
                 var pr = PausedAll_ByStatus_GetThem( _Dict, DownloadStatus.Started, DownloadStatus.Running );
-                //var pr = await PausedAll_ByStatus_GetThem( _Dict, DownloadStatus.Started, DownloadStatus.Running ).CAX();
 
                 //-2-//
                 await WaitAll_For_NotHas_Status( pr, _Ct, millisecondsDelay, totalMillisecondsTimeout ).CAX();
@@ -1156,6 +1136,7 @@ namespace m3u8.download.manager.controllers
         }
         #endregion
 
+        #region [.TryChangeSettings.]        
         public bool TryChangeSettings( DownloadRow row, in web_proxy_info webProxyInfo, TimeSpan? timeout, int? attemptRequestCount )
         {
             if ( (row != null) && _Dict.TryGetValue( row, out var t ) )
@@ -1194,6 +1175,7 @@ namespace m3u8.download.manager.controllers
             }
             return (false);
         }
+        #endregion
     }
 
     /// <summary>
@@ -1256,8 +1238,6 @@ namespace m3u8.download.manager.controllers
             var max_n_len   = requestHeaders.Count.ToString().Length;
             foreach ( var p in requestHeaders/*.OrderBy( p => p.Key )*/ )
             {
-                //log.AddRequestHeaderRow( $"  ({++n}) {p.Key} = {p.Value}" );
-
                 var n_txt    = (++n).ToString();
                 var n_indent = new string( ' ', max_n_len   - n_txt.Length );
                 var indent   = new string( ' ', max_key_len - p.Key.Length );

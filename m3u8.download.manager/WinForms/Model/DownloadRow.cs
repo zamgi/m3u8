@@ -38,8 +38,7 @@ namespace m3u8.download.manager.models
         private long                   _DownloadBytesLength_BeforeRunning;
         private _RowPropertiesChanged_ _RowPropertiesChanged;
 
-        internal DownloadRow( DownloadRow_Definer_1 t //in (string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory) t
-            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )
+        internal DownloadRow( DownloadRow_Definer_1 t, DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : base( model )
         {
             _RowPropertiesChanged = rowPropertiesChanged ?? throw (new ArgumentNullException( nameof(rowPropertiesChanged) ));
 
@@ -55,14 +54,12 @@ namespace m3u8.download.manager.models
 
             Log = new LogListModel();
         }
-        internal DownloadRow( DownloadRow_Definer_2 t //in (string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t
-            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : this( (DownloadRow_Definer_1) t, model, rowPropertiesChanged )
+        internal DownloadRow( DownloadRow_Definer_2 t, DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : this( (DownloadRow_Definer_1) t, model, rowPropertiesChanged )
         {
             IsLiveStream                 = t.IsLiveStream;
             LiveStreamMaxFileSizeInBytes = t.LiveStreamMaxFileSizeInBytes;
         }
-        internal DownloadRow( DownloadRow_Definer_3 t //in (DateTime CreatedOrStartedDateTime, string Url, IDictionary< string, string > RequestHeaders, string OutputFileName, string OutputDirectory, DownloadStatus Status, bool IsLiveStream, long LiveStreamMaxFileSizeInBytes) t
-            , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : this( (DownloadRow_Definer_1) t, model, rowPropertiesChanged )
+        internal DownloadRow( DownloadRow_Definer_3 t , DownloadListModel model, _RowPropertiesChanged_ rowPropertiesChanged ) : this( (DownloadRow_Definer_1) t, model, rowPropertiesChanged )
         {
             //---Status                       = DownloadStatus.Created; //t.Status;
             CreatedOrStartedDateTime     = t.CreatedOrStartedDateTime;// DateTime.Now;
@@ -351,47 +348,38 @@ namespace m3u8.download.manager.models
         }
         [M(O.AggressiveInlining)] private bool SetStatus_Routine( DownloadStatus newStatus, out DownloadStatus prevStatus )
         {
-            //var call__Fire_PropertyChanged_Events = false;
-            //lock ( this )
-            //{
-                if ( (prevStatus = Status) != newStatus )
+            if ( (prevStatus = Status) != newStatus )
+            {
+                switch ( newStatus )
                 {
-                    switch ( newStatus )
-                    {
-                        case DownloadStatus.Started:
-                            _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength = 0;
-                            CreatedOrStartedDateTime           = DateTime.Now;
-                            _InstantSpeedInMbps                = null;
-                            break;
+                    case DownloadStatus.Started:
+                        _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength = 0;
+                        CreatedOrStartedDateTime           = DateTime.Now;
+                        _InstantSpeedInMbps                = null;
+                        break;
 
-                        case DownloadStatus.Running:
-                            _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
-                            CreatedOrStartedDateTime           = DateTime.Now;
-                            _InstantSpeedInMbps                = null;
-                            break;
+                    case DownloadStatus.Running:
+                        _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
+                        CreatedOrStartedDateTime           = DateTime.Now;
+                        _InstantSpeedInMbps                = null;
+                        break;
 
-                        case DownloadStatus.Canceled:
-                        case DownloadStatus.Error:
-                        case DownloadStatus.Finished:
-                            _FinitaElapsed = (DateTime.Now - CreatedOrStartedDateTime);
-                            break;
+                    case DownloadStatus.Canceled:
+                    case DownloadStatus.Error:
+                    case DownloadStatus.Finished:
+                        _FinitaElapsed = (DateTime.Now - CreatedOrStartedDateTime);
+                        break;
 
-                        case DownloadStatus.Paused:
-                        case DownloadStatus.Wait:
-                            _PausedOrWaitElapsed = (DateTime.Now - CreatedOrStartedDateTime);
-                            break;
-                    }
+                    case DownloadStatus.Paused:
+                    case DownloadStatus.Wait:
+                        _PausedOrWaitElapsed = (DateTime.Now - CreatedOrStartedDateTime);
+                        break;
+                }
 
-                    Status = newStatus;
-                    //call__Fire_PropertyChanged_Events = true;
-                    return (true);
-                }                
-                return (false);
-            //}
-            //if ( call__Fire_PropertyChanged_Events )
-            //{
-            //    _RowPropertiesChanged?.Invoke( this, nameof(Status) );
-            //}
+                Status = newStatus;
+                return (true);
+            }                
+            return (false);
         }
 
         [M(O.AggressiveInlining)] public TimeSpan GetElapsed()

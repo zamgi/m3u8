@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-
-using m3u8.infrastructure;
-
-using static m3u8.m3u8_processor_next;
 
 using _DownloadPartInputParams_ = m3u8.i_m3u8_client_next.DownloadPartInputParams;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -95,16 +89,6 @@ namespace m3u8
         {
             void Write( string msg );
             void Write_4_Parts( string msg );
-
-            ///// <summary>
-            ///// 
-            ///// </summary>
-            //public sealed class Dummy : ILogger
-            //{
-            //    public static Dummy Inst { get; } = new Dummy();
-            //    private Dummy() { }
-            //    public void Write( string msg ) { }
-            //}
         }
 
         /// <summary>
