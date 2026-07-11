@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -346,6 +347,7 @@ if ( (new Random()).Next( 10 ) == 0 )
             {
                 using var unionCts = CancellationTokenSource.CreateLinkedTokenSource( commonToken, ip.WaitIfPausedHolder.Token );
                 var ct = unionCts.Token;
+                var attemptRequestNumber = _AttemptRequestCount - leftAttemptRequestCount + 1;
                 try
                 {
                     using ( var req  = CreateRequestGet( url, requestHeaders ) )
@@ -395,7 +397,7 @@ if ( (new Random()).Next( 10 ) == 0 )
 
                                 ip.ThrottlerBySpeed_User.TakeIntoAccountDownloadedBytes( bytesReaded );
 
-                                ip.DownloadPartStepAction?.Invoke( dpsa.Set( instantSpeedInMbps, totalBytesReaded, bytesReaded, _AttemptRequestCount - leftAttemptRequestCount + 1 ) );
+                                ip.DownloadPartStepAction?.Invoke( dpsa.Set( instantSpeedInMbps, totalBytesReaded, bytesReaded, attemptRequestNumber ) );
                             }
 
                             return (part);
@@ -406,14 +408,17 @@ if ( (new Random()).Next( 10 ) == 0 )
                 }
                 catch ( Exception ex ) when (ip.WaitIfPausedHolder.IsNeedWait || ip.WaitIfPausedHolder.Token.IsCancellationRequested)
                 {
+                    Debug.WriteLine( ex );
+
                     ip.WaitIfPausedHolder.Wait_WithCallbacks( part, commonToken );
                     ip.ThrottlerBySpeed_User.Restart();
+                    part.Stream.SetLength( 0 );
 
                     leftAttemptRequestCount++;
                 }
                 catch ( Exception ex )
                 {
-                    ip.DownloadPartStepAction?.Invoke( dpsa.SetAttemptRequestNumber( _AttemptRequestCount - leftAttemptRequestCount + 1 ) );
+                    ip.DownloadPartStepAction?.Invoke( dpsa.SetAttemptRequestNumber( attemptRequestNumber ) );
 
                     if ( (leftAttemptRequestCount == 1) || /*ct*/commonToken.IsCancellationRequested )
                     {
