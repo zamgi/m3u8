@@ -120,7 +120,6 @@ namespace m3u8
             public ResponseStepActionDelegate     ResponseStepAction         { [M(O.AggressiveInlining)] get; set; }
             public int                            MaxDegreeOfParallelism     { [M(O.AggressiveInlining)] get; set; }
             public I_download_threads_semaphore   DownloadThreadsSemaphore   { [M(O.AggressiveInlining)] get; set; }
-            //public CancellationTokenSourceWrapper DownloadThreadsSemaphore_CancellationTokenSourceWrapper { [M(O.AggressiveInlining)] get; set; }
             public I_download_threads_semaphore   DownloadThreadsSemaphore_4_Parts { [M(O.AggressiveInlining)] get; set; }
             public WaitIfPausedHolder             WaitIfPausedHolder         { [M(O.AggressiveInlining)] get; set; }
             public WaitIfPausedHolder             WaitIfPausedHolder_4_Parts { [M(O.AggressiveInlining)] get; set; }
@@ -489,30 +488,17 @@ namespace m3u8
                     #endregion
 
                     try
-                    {                        
+                    {
                         for ( var n = 1; sourceQueue.Count != 0; n++ )
                         {
                             check_and_hanging_on_waitIfPausedEvent();
 
+                        ONE_MORE_TIME_AFTER_TEMP_BREAK:
                             try
                             {
                                 ip.DownloadThreadsSemaphore.Wait( joinedCts_4_DownloadThreadsSemaphore.Token );
                             }
-                            #region comm
-                            //catch ( Exception ex ) when (!joinedCts.IsCancellationRequested && ip.WaitIfPausedHolder.IsNeedWait)
-                            //{
-                            //    Debug.WriteLine( ex );
-                            //    Debug.Assert( ip.DownloadThreadsSemaphore_CancellationTokenSourceWrapper.IsCancellationRequested );
-
-                            //    ip.DownloadThreadsSemaphore_CancellationTokenSourceWrapper.Reset();
-                            //    joinedCts_4_DownloadThreadsSemaphore.Dispose();
-                            //    joinedCts_4_DownloadThreadsSemaphore = CancellationTokenSource.CreateLinkedTokenSource( joinedCts.Token, ip.DownloadThreadsSemaphore_CancellationTokenSourceWrapper.Token );
-
-                            //    //n--; continue;
-                            //    check_and_hanging_on_waitIfPausedEvent();
-                            //}
-                            #endregion
-                            catch ( Exception ex ) when ( !joinedCts.IsCancellationRequested && ip.WaitIfPausedHolder.IsNeedWait )
+                            catch ( Exception ex ) when (!joinedCts.IsCancellationRequested && ip.WaitIfPausedHolder.IsNeedWait)
                             {
                                 Debug.WriteLine( ex );
                                 Debug.Assert( ip.WaitIfPausedHolder.Token.IsCancellationRequested );
@@ -521,6 +507,8 @@ namespace m3u8
 
                                 joinedCts_4_DownloadThreadsSemaphore.Dispose();
                                 joinedCts_4_DownloadThreadsSemaphore = CancellationTokenSource.CreateLinkedTokenSource( joinedCts.Token, ip.WaitIfPausedHolder.Token );
+
+                                goto ONE_MORE_TIME_AFTER_TEMP_BREAK;
                             }
 
                             var part = sourceQueue.Dequeue();
