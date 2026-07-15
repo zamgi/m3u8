@@ -2,12 +2,15 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
+using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.Properties;
 
-using B = System.ComponentModel.BrowsableAttribute;
+using WinTimer = System.Windows.Forms.Timer;
 
 namespace m3u8.download.manager.ui
 {
@@ -19,7 +22,10 @@ namespace m3u8.download.manager.ui
         #region [.fields.]
         private DownloadController _DownloadController;
         private string _ExternalProgFilePath_InitValue;
-        private Timer _GetTotalMemoryTimer;
+        private string _FFmpegFileLocation_InitValue; 
+        private WinTimer _GetTotalMemoryTimer;
+        private CancellationTokenSource _CalcReceivedAndWritedPartsTask_Cts;
+        private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;
         #endregion
 
         #region [.ctor().]
@@ -29,13 +35,15 @@ namespace m3u8.download.manager.ui
 
             this.SetForeColor4ParentOnly< GroupBox >( Color.DodgerBlue );
             currentMemoryLabel.ForeColor = Color.DimGray;
+            receivedAndWritedPartsClearAllButton.ForeColor = Color.Maroon;
         }
-        public OtherSettingsUC( DownloadController dc ) : this() => Init( dc );
-        public void Init( DownloadController dc )
+        public OtherSettingsUC( DownloadController dc, IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor ) : this() => Init( dc, receivedAndWritedPartsProcessor );
+        public void Init( DownloadController dc, IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor )
         {
             _DownloadController = dc ?? throw (new ArgumentNullException( nameof(dc) ));
             _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
             _DownloadController.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
+            _ReceivedAndWritedPartsProcessor = receivedAndWritedPartsProcessor;            
 
             DownloadController_IsDownloadingChanged( _DownloadController.IsDownloading );
         }
@@ -49,14 +57,18 @@ namespace m3u8.download.manager.ui
                 {
                     _DownloadController.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
                 }
+
+                _CalcReceivedAndWritedPartsTask_Cts?.Dispose_NoThrow();
             }
             base.Dispose( disposing );
         }
         #endregion
 
-        public void OnShown() => _ExternalProgFilePath_InitValue = this.ExternalProgFilePath;
+        public void OnShown() { _ExternalProgFilePath_InitValue = this.ExternalProgFilePath; _FFmpegFileLocation_InitValue = this.FFmpegFileLocation; }
         public void OnClosing( DialogResult dialogResult, CancelEventArgs e )
         {
+            _CalcReceivedAndWritedPartsTask_Cts?.Cancel_NoThrow();
+
             if ( dialogResult == DialogResult.OK )
             {
                 if ( this.OutputFileExtension.IsNullOrEmpty() )
@@ -80,78 +92,97 @@ namespace m3u8.download.manager.ui
                 {
                     this.ExternalProgCaption = GetFileName_NoThrow( externalProgFilePath );
                 }
+
+                var ffmpegFilePath = this.FFmpegFileLocation;
+                if ( (_FFmpegFileLocation_InitValue != ffmpegFilePath) && !ffmpegFilePath.IsNullOrEmpty() && !File.Exists( ffmpegFilePath ) )
+                {
+                    if ( this.MessageBox_ShowQuestion( $"FFmpeg program file doesn't exists:\r\n\r\n'{ffmpegFilePath}'.\r\n\r\nContinue?", "FFmpeg converter" ) != DialogResult.Yes )
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                    //e.Cancel = true;
+                    //ffmpegFilePathTextBox.FocusAndBlinkBackColor();
+                }
+                if ( this.FFmpegConverterCaption.IsNullOrEmpty() )
+                {
+                    this.FFmpegConverterCaption = GetFileName_NoThrow( ffmpegFilePath );
+                }
             }
         }
 
 
         #region [.public props.]
-        [B(false)]
         public int      AttemptRequestCountByPart
         {
             get => Convert.ToInt32( attemptRequestCountByPartNUD.Value );
             set => attemptRequestCountByPartNUD.Value = value;
         }
-        [B(false)]
         public TimeSpan RequestTimeoutByPart
         {
             get => requestTimeoutByPartDTP.Value.TimeOfDay; // TimeSpan.FromTicks( (requestTimeoutByPartDTP.Value.TimeOfDay - requestTimeoutByPartDTP.MinDate.Date).Ticks );
             set => requestTimeoutByPartDTP.Value = requestTimeoutByPartDTP.MinDate.Date + value;
         }
-        [B(false)]
         public bool     ShowOnlyRequestRowsWithErrors
         {
             get => showOnlyRequestRowsWithErrorsCheckBox.Checked;
             set => showOnlyRequestRowsWithErrorsCheckBox.Checked = value;
         }
-        [B(false)]
         public bool     ShowDownloadStatisticsInMainFormTitle
         {
             get => showDownloadStatisticsInMainFormTitleCheckBox.Checked;
             set => showDownloadStatisticsInMainFormTitleCheckBox.Checked = value;
         }
-        [B(false)]
         public bool     ShowAllDownloadsCompleted_Notification
         {
             get => showAllDownloadsCompleted_NotificationCheckBox.Checked;
             set => showAllDownloadsCompleted_NotificationCheckBox.Checked = value;
         }        
-        [B(false)]
         public bool     UniqueUrlsOnly
         {
             get => uniqueUrlsOnlyCheckBox.Checked;
             set => uniqueUrlsOnlyCheckBox.Checked = value;
         }
-        [B(false)]
         public string   OutputFileExtension
         {
             get => CorrectOutputFileExtension( outputFileExtensionTextBox.Text );
             set => outputFileExtensionTextBox.Text = CorrectOutputFileExtension( value );
         }
-        [B(false)]
         public string   ExternalProgCaption
         {
             get => externalProgCaptionTextBox.Text?.Trim();
             set => externalProgCaptionTextBox.Text = value?.Trim();
         }
-        [B(false)]
         public string   ExternalProgFilePath
         {
             get => externalProgFilePathTextBox.Text?.Trim();
             set => externalProgFilePathTextBox.Text = value?.Trim();
         }
-        [B(false)]
         public bool     ExternalProgApplyByDefault
         {
             get => externalProgApplyByDefaultCheckBox.Checked;
             set => externalProgApplyByDefaultCheckBox.Checked = value;
         }
-        [B(false)]
+        public string   FFmpegConverterCaption
+        {
+            get => ffmpegCaptionTextBox.Text?.Trim();
+            set => ffmpegCaptionTextBox.Text = value?.Trim();
+        }
+        public string   FFmpegFileLocation
+        {
+            get => ffmpegFilePathTextBox.Text?.Trim();
+            set => ffmpegFilePathTextBox.Text = value?.Trim();
+        }
+        public bool     FFmpegApplyByDefault
+        {
+            get => ffmpegApplyByDefaultCheckBox.Checked;
+            set => ffmpegApplyByDefaultCheckBox.Checked = value;
+        }
         public bool     UseDirectorySelectDialogModern
         {
             get => useDirectorySelectDialogModernCheckBox.Checked;
             set => useDirectorySelectDialogModernCheckBox.Checked = value;
         }
-        [B(false)]
         public bool     IgnoreHostHttpHeader
         {
             get => ignoreHostHttpHeaderCheckBox.Checked;
@@ -219,6 +250,51 @@ namespace m3u8.download.manager.ui
                 this.ExternalProgFilePath = ofd.FileName;
             }
         }
+
+        private void ffmpegResetButton_Click( object sender, EventArgs e )
+        {
+            this.FFmpegFileLocation     = Resources.FFmpegFileLocation;
+            this.FFmpegConverterCaption = Resources.FFmpegConverterCaption;
+        }
+        private void ffmpegFilePathTextBox_TextChanged( object sender, EventArgs e )
+        {
+            var ffmpegFilePath = this.FFmpegFileLocation;
+            if ( ffmpegFilePath.IsNullOrEmpty() )
+            {
+                toolTip.SetToolTip( (Control) sender, null );
+            }
+            else
+            {
+                var allowed = File.Exists( ffmpegFilePath ) ? "allowed" : "file doesn't exists !";
+                toolTip.SetToolTip( (Control) sender, ffmpegFilePath + $"  =>  ({allowed})" );
+
+                if ( this.FFmpegConverterCaption.IsNullOrEmpty() )
+                {
+                    this.FFmpegConverterCaption = GetFileName_NoThrow( ffmpegFilePath );
+                }
+            }
+        }
+        private void ffmpegCaptionTextBox_TextChanged ( object sender, EventArgs e ) => toolTip.SetToolTip( (Control) sender, this.FFmpegConverterCaption );
+        private void ffmpegFilePathButton_Click( object sender, EventArgs e )
+        {
+            var ffmpegFilePath = this.FFmpegFileLocation;
+            using var ofd = new OpenFileDialog()
+            {
+                RestoreDirectory = true,
+                Multiselect      = false,
+                CheckFileExists  = true,                
+                InitialDirectory = GetDirectoryName_NoThrow( ffmpegFilePath )
+            };
+            if ( File.Exists( ffmpegFilePath ) )
+            {
+                ofd.FileName = ffmpegFilePath; //GetFileName_NoThrow( ffmpegFilePath ), 
+            }
+            if ( ofd.ShowDialog( this ) == DialogResult.OK )
+            {
+                this.FFmpegFileLocation = ofd.FileName;
+            }
+        }
+
         private void testDirectorySelectDialog_Click( object sender, EventArgs e )
         {
             if ( UseDirectorySelectDialogModern )
@@ -278,7 +354,7 @@ namespace m3u8.download.manager.ui
                     currentMemoryLabel.Text    = $"Current Memory: {GetTotalMemoryFormatText( totalMemoryBytes )}.";
                     currentMemoryLabel.Visible = true;
                 });
-                _GetTotalMemoryTimer = new Timer( components ) { Interval = 1_000, Enabled = true };
+                _GetTotalMemoryTimer = new WinTimer( components ) { Interval = 1_000, Enabled = true };
                 _GetTotalMemoryTimer.Tick += tick;
                 tick( _GetTotalMemoryTimer, EventArgs.Empty );
             }            
@@ -302,5 +378,52 @@ namespace m3u8.download.manager.ui
             btn.Enabled = true;
         }
         #endregion
+
+        #region [.ReceivedAndWritedPartsStorer.]
+        public void StartCalcReceivedAndWritedParts()
+        {
+            if ( _CalcReceivedAndWritedPartsTask_Cts == null )
+            {
+                _CalcReceivedAndWritedPartsTask_Cts = new CancellationTokenSource();
+                var task_calc = Task.Run( async () =>
+                {
+                    for ( var ct = _CalcReceivedAndWritedPartsTask_Cts.Token; !_CalcReceivedAndWritedPartsTask_Cts.IsCancellationRequested; )
+                    {
+                        var suc = _ReceivedAndWritedPartsProcessor.TryCalcStats( out var storeFilesCount, out var storeFilesSize );
+                        if ( suc )
+                        {
+                            await this.BeginInvoke_UseTask(() =>
+                            { 
+                                receivedAndWritedPartsLabel.Text    = $"Store files: {storeFilesCount}, Total size: {FileHelper.GetDisplaySizeText( storeFilesSize )}.";
+                                receivedAndWritedPartsLabel.Visible = true;
+                            });
+                        }
+#if NETCOREAPP
+                        await Task.Delay( 2_000 ).WaitAsync( ct );
+#else
+                        Task.Delay( 1_000 ).Wait( ct ); 
+#endif
+                    }
+                });
+            }
+        }
+
+        private void receivedAndWritedPartsClearAllButton_Click( object sender, EventArgs e )
+        {
+            const string CAPTION = "Stored files";
+            if ( this.MessageBox_ShowQuestion( "Want to clear all info about stored files ?", CAPTION, MessageBoxButtons.OKCancel ) == DialogResult.OK )
+            {
+                var suc = _ReceivedAndWritedPartsProcessor.TryDeleteAllStorerFiles();
+                if ( suc ) this.MessageBox_ShowInformation( "Success", CAPTION );
+                else this.MessageBox_ShowError( "Failed", CAPTION );
+            }
+        }
+        #endregion
+
+        public void ActiveteTab()
+        {
+            StartShowTotalMemory();
+            StartCalcReceivedAndWritedParts();
+        }
     }
 }

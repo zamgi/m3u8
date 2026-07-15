@@ -3,8 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+#if WINDOWS
+using System.Runtime.InteropServices;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
+
+using M = System.Runtime.CompilerServices.MethodImplAttribute;
+using O = System.Runtime.CompilerServices.MethodImplOptions;
+
 
 namespace m3u8.download.manager.infrastructure
 {
@@ -247,5 +254,65 @@ namespace m3u8.download.manager.infrastructure
             return (false);
         }
         public static bool AnyFileExists( ICollection< string > fileNames ) => TryGetFirstFileExists( fileNames, out var _ );
+
+        public static long GetFileSize( string fileName ) => new FileInfo( fileName ).Length;
+
+        public static void RemoveBadFileAttrs( bool checkExists, string fn )
+        {
+            if ( !checkExists || File.Exists( fn ) )
+            {
+                var attrs = File.GetAttributes( fn );
+                attrs = attrs & (~FileAttributes.System) & (~FileAttributes.ReadOnly) & (~FileAttributes.Hidden);
+                File.SetAttributes( fn, attrs );
+            }
+        }
+        public static bool IsCompressed( string fn ) => ((File.GetAttributes( fn ) & FileAttributes.Compressed) == FileAttributes.Compressed);
+
+#if WINDOWS
+        private const int   FSCTL_SET_COMPRESSION      = 0x9C040;
+        private const short COMPRESSION_FORMAT_DEFAULT = 1;
+
+        [DllImport("kernel32.dll", SetLastError=true)]
+        private static extern int DeviceIoControl( IntPtr hDevice, int dwIoControlCode, ref short lpInBuffer, int nInBufferSize, IntPtr lpOutBuffer, int nOutBufferSize, ref int lpBytesReturned, IntPtr lpOverlapped );
+
+        public static bool EnableCompression( IntPtr handle )
+        {
+            int   lpBytesReturned = 0;
+            short lpInBuffer      = COMPRESSION_FORMAT_DEFAULT;
+
+            return (DeviceIoControl( handle, FSCTL_SET_COMPRESSION,
+                ref lpInBuffer, sizeof(short), IntPtr.Zero, 0,
+                ref lpBytesReturned, IntPtr.Zero ) != 0);
+        }
+        public static bool EnableCompression( string fileName )
+        {
+            using ( var fs = File.Open( fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.None ) )
+            {
+                return (EnableCompression( fs.SafeFileHandle.DangerousGetHandle() ));
+            }
+        }
+#endif
+
+        [M(O.AggressiveInlining)] public static string GetDisplaySizeText( long size )
+        {
+            if ( size == 0 )
+            {
+                return ("-");
+            }
+
+            static string to_text( float f ) => f.ToString( (f == Math.Ceiling( f )) ? "N0" : "N2" );
+
+            const float KILOBYTE = 1024;
+            const float MEGABYTE = KILOBYTE * KILOBYTE;
+            const float GIGABYTE = MEGABYTE * KILOBYTE;
+
+            if ( GIGABYTE < size )
+                return (to_text( size / GIGABYTE ) + " GB");
+            if ( MEGABYTE < size )
+                return (to_text( size / MEGABYTE) + " MB");
+            if ( KILOBYTE < size )
+                return (to_text( size / KILOBYTE ) + " KB");
+            return ((size / KILOBYTE).ToString("N1") + " KB");
+        }
     }
 }

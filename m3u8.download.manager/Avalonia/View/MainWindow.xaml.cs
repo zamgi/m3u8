@@ -20,9 +20,8 @@ using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
-//using MsBox.Avalonia.Enums;
 
-using ButtonResult                = m3u8.download.manager.MessageBoxWindow.ButtonTypeEnum; // MsBox.Avalonia.Enums.ButtonResult;
+using ButtonResult                = m3u8.download.manager.MessageBoxWindow.ButtonTypeEnum;
 using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _Resources_                 = m3u8.download.manager.Properties.Resources;
 using X                           = (string m3u8FileUrl, string requestHeaders, bool autoStartDownload);
@@ -165,6 +164,7 @@ namespace m3u8.download.manager.ui
             TestWebProxyConnectionHelper.m3u8_client_next_factory_type = M3U8_CLIENT_NEXT_FACTORY_TYPE;
 
             _VM.DownloadListModel.RowPropertiesChanged     += DownloadListModel_RowPropertiesChanged;
+            _VM.DownloadListModel.CollectionChanged        += DownloadListModel_CollectionChanged;
             _VM.SettingsController.SettingsPropertyChanged += SettingsController_PropertyChanged;
             _VM.UndoModel.UndoChanged                      += () => { undoToolButton.IsEnabled = _VM.UndoModel.HasUndo; undoToolButton.SetValue( ToolTip.TipProperty, $"Undo step count: {_VM.UndoModel.UndoCount}  (Ctrl + Z)" ); };
 
@@ -515,11 +515,11 @@ namespace m3u8.download.manager.ui
                 case nameof(Settings.ShowDownloadStatisticsInMainFormTitle ):
                     _ShowDownloadStatistics = settings.ShowDownloadStatisticsInMainFormTitle;
 
-                    _VM.DownloadListModel.CollectionChanged -= DownloadListModel_CollectionChanged;
-                    if ( _ShowDownloadStatistics )
-                    {
-                        _VM.DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
-                    }
+                    //_VM.DownloadListModel.CollectionChanged -= DownloadListModel_CollectionChanged;
+                    //if ( _ShowDownloadStatistics )
+                    //{
+                    //    _VM.DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
+                    //}
                     ShowDownloadStatisticsInTitle();
                     break;
 
@@ -570,25 +570,26 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow _ )
+        private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
         {
             if ( changedType == _CollectionChangedTypeEnum_.Sort ) return;
 
-            ShowDownloadStatisticsInTitle();
+            if ( _ShowDownloadStatistics )
+            {
+                ShowDownloadStatisticsInTitle();
+            }
 
-            #region comm.
-            //switch ( collectionChangedType )
-            //{
-            //    case _CollectionChangedTypeEnum_.BulkUpdate:
-            //    case _CollectionChangedTypeEnum_.Remove:                    
-            //        _LogRowsHeightStorer.LeaveOnly( (from row in _VM.DownloadListModel.GetRows() select row.Log) );
-            //          break;
-
-            //    case _CollectionChangedTypeEnum_.Clear:
-            //        _LogRowsHeightStorer.Clear();
-            //          break;
-            //} 
-            #endregion
+            switch ( changedType )
+            {
+                case _CollectionChangedTypeEnum_.Add:
+                    if ( UrlHelper.TryGetM3u8FileUrl( row?.Url, out var t ) && 
+                         _VM.ReceivedAndWritedPartsProcessor.TryRestoreFromReceivedAndWritedPartsStorer( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) 
+                       )
+                    {
+                        row.RestoreDownloadParams_WithChangeStatus( exists.outputFileStreamPosition, exists.totalPartsCount, exists.lastReceivedAndWritedPartOrderNumber + 1 );
+                    }
+                    break;
+            }
 
             _VM.SettingsController.SetDownloadRows_WithSaveIfChanged( _VM.DownloadListModel.GetRows() );
         }

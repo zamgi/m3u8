@@ -15,7 +15,7 @@ namespace m3u8.download.manager.ui
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent( _DC_ dc, _SC_ sc )
+        private void InitializeComponent( _DC_ dc, _SC_ sc, IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor )
         {
             System.Windows.Forms.Label outputFileNameLabel;
             System.Windows.Forms.Label outputDirectoryLabel;
@@ -34,7 +34,6 @@ namespace m3u8.download.manager.ui
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.outputDirectorySelectButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.outputFileNameSelectButton = new System.Windows.Forms.ButtonWithFocusCues();
-            //this.outputFileNameClearButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.logPanel = new System.Windows.Forms.Panel();
             this.logUC = new m3u8.download.manager.ui.LogUC( sc );
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
@@ -51,10 +50,11 @@ namespace m3u8.download.manager.ui
             this.patternOutputFileNameNumUpDn = new System.Windows.Forms.NumericUpDownEx();
             this.loadM3u8FileContentButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox();
+            this.ffmpegApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox(); 
             this.buttomPanel = new System.Windows.Forms.Panel();
             this.downloadStartButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.downloadLaterButton = new System.Windows.Forms.ButtonWithFocusCues();
-            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC( dc, sc );
+            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC( dc, sc, receivedAndWritedPartsProcessor );
             this.topPanel.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.mainTabPage.SuspendLayout();
@@ -232,21 +232,6 @@ namespace m3u8.download.manager.ui
             this.outputFileNameSelectButton.UseVisualStyleBackColor = true;
             this.outputFileNameSelectButton.Click += new System.EventHandler(this.outputFileNameSelectButton_Click);
             this.toolTip.SetToolTip(this.outputFileNameSelectButton, "select \'output file name\'");
-            //// 
-            //// outputFileNameClearButton
-            //// 
-            //this.outputFileNameClearButton.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            //this.outputFileNameClearButton.Cursor = System.Windows.Forms.Cursors.Hand;            
-            //this.outputFileNameClearButton.Location = new System.Drawing.Point(612, 3);
-            //this.outputFileNameClearButton.Size = new System.Drawing.Size(23, 23);
-            //this.outputFileNameClearButton.TabIndex = 2;
-            //this.outputFileNameClearButton.Text = "X";
-            //this.outputFileNameClearButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            //this.outputFileNameClearButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
-            //this.outputFileNameClearButton.UseCompatibleTextRendering = true;
-            //this.outputFileNameClearButton.UseVisualStyleBackColor = true;
-            //this.outputFileNameClearButton.Click += new System.EventHandler(this.outputFileNameClearButton_Click);
-            //this.toolTip.SetToolTip(this.outputFileNameClearButton, "clear \'output file name\'");
             // 
             // logPanel
             // 
@@ -289,7 +274,6 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.Controls.Add(this.outputFileNameTextBox, 1, 0);
             this.mainLayoutPanel.SetColumnSpan(this.outputFileNameTextBox, 6/*3*/);
             this.mainLayoutPanel.Controls.Add(this.outputFileNameSelectButton, 7, 0);
-            //this.mainLayoutPanel.Controls.Add(this.outputFileNameClearButton, 4, 0);
 
             this.mainLayoutPanel.Controls.Add(this.liveStreamMaxSizeInMbLabel  , 3, 1);
             this.mainLayoutPanel.SetColumnSpan(this.liveStreamMaxSizeInMbLabel , 5);
@@ -313,7 +297,9 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.Controls.Add(this.attemptRequestCountByPartNUD   , 5, 3);
 
             this.mainLayoutPanel.Controls.Add(this.externalProgApplyByDefaultCheckBox, 1, 4);
-            this.mainLayoutPanel.SetColumnSpan(this.externalProgApplyByDefaultCheckBox, 6/*3*/);
+            this.mainLayoutPanel.SetColumnSpan(this.externalProgApplyByDefaultCheckBox, 4/*6*//*3*/);
+            this.mainLayoutPanel.Controls.Add( this.ffmpegApplyByDefaultCheckBox, 5, 4 );
+            this.mainLayoutPanel.SetColumnSpan( this.ffmpegApplyByDefaultCheckBox, 4/*6*//*3*/);
 
             this.mainLayoutPanel.Controls.Add(this.loadM3u8FileContentButton, 8, 2);
 
@@ -547,6 +533,27 @@ namespace m3u8.download.manager.ui
             this.externalProgApplyByDefaultCheckBox.UseVisualStyleBackColor = true;
             this.externalProgApplyByDefaultCheckBox.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.externalProgApplyByDefaultCheckBox.Click += new System.EventHandler(this.externalProgApplyByDefaultCheckBox_Click);
+            this.externalProgApplyByDefaultCheckBox.Image = m3u8.download.manager.Properties.Resources.freemake_16х16;
+            this.externalProgApplyByDefaultCheckBox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.externalProgApplyByDefaultCheckBox.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
+            // 
+            // ffmpegApplyByDefaultCheckBox
+            // 
+            this.ffmpegApplyByDefaultCheckBox.AutoSize = true;
+            this.ffmpegApplyByDefaultCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;            
+            this.ffmpegApplyByDefaultCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ffmpegApplyByDefaultCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.ffmpegApplyByDefaultCheckBox.ForeColor = System.Drawing.Color.Silver; //System.Drawing.Color.FromArgb(70, 70, 70); // 
+            //this.ffmpegApplyByDefaultCheckBox.Location = new System.Drawing.Point(670, 6);
+            //this.ffmpegApplyByDefaultCheckBox.Size = new System.Drawing.Size(112, 17);
+            this.ffmpegApplyByDefaultCheckBox.TabIndex = 20;
+            this.ffmpegApplyByDefaultCheckBox.Text = "FFmpeg - Apply to all new downloads by default";
+            this.ffmpegApplyByDefaultCheckBox.UseVisualStyleBackColor = true;
+            this.ffmpegApplyByDefaultCheckBox.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            this.ffmpegApplyByDefaultCheckBox.Click += new System.EventHandler(this.ffmpegApplyByDefaultCheckBox_Click);
+            this.ffmpegApplyByDefaultCheckBox.Image = m3u8.download.manager.Properties.Resources.ffmpeg_16х16;
+            this.ffmpegApplyByDefaultCheckBox.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.ffmpegApplyByDefaultCheckBox.TextImageRelation = System.Windows.Forms.TextImageRelation.TextBeforeImage;
             // 
             // statusBarUC
             // 
@@ -600,7 +607,6 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.TextBoxEx m3u8FileUrlTextBox;
         private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputFileNameTextBox;
         private System.Windows.Forms.ToolTip toolTip;
-        //private System.Windows.Forms.ButtonWithFocusCues outputFileNameClearButton;
         private System.Windows.Forms.ButtonWithFocusCues loadM3u8FileContentButton;
         private System.Windows.Forms.CheckBox isLiveStreamCheckBox;
         private System.Windows.Forms.Label liveStreamMaxSizeInMbLabel;
@@ -617,6 +623,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ButtonWithFocusCues outputDirectorySelectButton;
         private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputDirectoryTextBox;
         private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;
+        private System.Windows.Forms.CheckBox ffmpegApplyByDefaultCheckBox;
         private System.Windows.Forms.Label attemptRequestCountByPartLabel;
         private System.Windows.Forms.NumericUpDownEx attemptRequestCountByPartNUD;
         private System.Windows.Forms.Label requestTimeoutByPartLabel;

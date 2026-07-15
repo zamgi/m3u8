@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
@@ -671,7 +672,7 @@ namespace m3u8.download.manager.ui
                     if ( 0 < totalParts )
                     {
                         var suc  = (1.0 * successDownloadParts) / totalParts;
-                        var fail = (1.0 * failedDownloadParts) / totalParts; ;
+                        var fail = (1.0 * failedDownloadParts ) / totalParts;
                         parts = (suc, fail);
                         var percent = (totalParts <= (successDownloadParts + failedDownloadParts)) ? 100 : Extensions.Min( (byte) (100 * suc), 99 );
                         percentText = percent.ToString();
@@ -733,36 +734,15 @@ namespace m3u8.download.manager.ui
             }
             return (string.Empty);
         }
-        [M(O.AggressiveInlining)] private static string GetDisplaySizeText( long size )
-        {
-            if ( size == 0 )
-            {
-                return ("-");
-            }
-
-            static string to_text( float f ) => f.ToString( (f == Math.Ceiling( f )) ? "N0" : "N2" );
-
-            const float KILOBYTE = 1024;
-            const float MEGABYTE = KILOBYTE * KILOBYTE;
-            const float GIGABYTE = MEGABYTE * KILOBYTE;
-
-            if ( GIGABYTE < size )
-                return (to_text( size / GIGABYTE ) + " GB");
-            if ( MEGABYTE < size )
-                return (to_text( size / MEGABYTE) + " MB");
-            if ( KILOBYTE < size )
-                return (to_text( size / KILOBYTE ) + " KB");
-            return ((size / KILOBYTE).ToString("N1") + " KB");
-        }
         [M(O.AggressiveInlining)] private static string GetApproxRemainedBytesText( DownloadRow row )
         {
             var size = row.GetApproxRemainedBytes();
-            return (size.HasValue ? GetDisplaySizeText( size.Value ) : string.Empty);
+            return (size.HasValue ? FileHelper.GetDisplaySizeText( size.Value ) : string.Empty);
         }
         [M(O.AggressiveInlining)] private static string GetApproxTotalBytesText( DownloadRow row )
         {
             var size = row.GetApproxTotalBytes();
-            return (size.HasValue ? GetDisplaySizeText( size.Value ) : string.Empty);
+            return (size.HasValue ? FileHelper.GetDisplaySizeText( size.Value ) : string.Empty);
         }
 
         /// <summary>
@@ -1023,7 +1003,7 @@ namespace m3u8.download.manager.ui
                 case DOWNLOAD_TIME_COLUMN_INDEX            : e.Value = GetDownloadTimeText       ( row ) /*+ new string(' ', 1)*/; break;
                 case APPROX_REMAINED_TIME_COLUMN_INDEX     : e.Value = GetApproxRemainedTimeText ( row ) /*+ new string(' ', 1)*/; break;
                 case DOWNLOAD_SPEED_COLUMN_INDEX           : e.Value = GetDownloadSpeedText      ( row );                     break;
-                case DOWNLOAD_BYTES_COLUMN_INDEX           : e.Value = GetDisplaySizeText        ( row.DownloadBytesLength ); break;
+                case DOWNLOAD_BYTES_COLUMN_INDEX           : e.Value = FileHelper.GetDisplaySizeText( row.DownloadBytesLength ); break;
                 case APPROX_REMAINED_BYTES_COLUMN_INDEX    : e.Value = GetApproxRemainedBytesText( row );                     break;
                 case APPROX_TOTAL_BYTES_COLUMN_INDEX       : e.Value = GetApproxTotalBytesText   ( row );                     break;
                 case URL_COLUMN_INDEX                      : e.Value = row.Url;                                               break;

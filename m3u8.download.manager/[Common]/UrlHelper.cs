@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace m3u8.download.manager
 {
@@ -156,5 +157,14 @@ namespace m3u8.download.manager
         //    port = default;
         //    return (false);
         //}
+
+        public static bool IsLookLikeM3u8Url( string text )
+        {
+            var suc = (text != null) &&
+                      (text.StartsWith_Ex( "http://" ) || text.StartsWith_Ex( "https://" )) &&
+                      text.Split( '?' ).First().Split( '.' ).LastOrDefault().EqualIgnoreCase( "m3u8" );
+            return (suc);
+        }
+        public static bool IsEndWithM3u8Extension( string text ) => (text != null) && text.EndsWith_Ex( ".m3u8" );
     }
 }

@@ -37,8 +37,8 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static T? Try2Enum< T >( this string s ) where T : struct => (Enum.TryParse< T >( s, true, out var t ) ? t : null);
         [M(O.AggressiveInlining)] public static bool EqualIgnoreCase( this string s1, string s2 ) => (string.Compare( s1, s2, true ) == 0);
         [M(O.AggressiveInlining)] public static bool ContainsIgnoreCase( this string s1, string s2 ) => ((s1 != null) && (s1.IndexOf( s2, StringComparison.InvariantCultureIgnoreCase ) != -1));
-        [M(O.AggressiveInlining)] public static bool StartsWith_Ex( this string s1, string s2, StringComparison sc = StringComparison.OrdinalIgnoreCase ) => /*(s1 != null) &&*/ s1.StartsWith( s2, sc );
-        [M(O.AggressiveInlining)] public static bool EndsWith_Ex( this string s1, string s2, StringComparison sc = StringComparison.OrdinalIgnoreCase ) => /*(s1 != null) &&*/ s1.EndsWith( s2, sc );
+        [M(O.AggressiveInlining)] public static bool StartsWith_Ex( this string s1, string s2, StringComparison sc = StringComparison.OrdinalIgnoreCase ) => (s1 != null) && s1.StartsWith( s2, sc );
+        [M(O.AggressiveInlining)] public static bool EndsWith_Ex( this string s1, string s2, StringComparison sc = StringComparison.OrdinalIgnoreCase ) => (s1 != null) && s1.EndsWith( s2, sc );
         public static string Cut( this string s, int max_len ) => (s != null) ? ((max_len < s.Length) ? ((3 < max_len) ? $"{s.Substring( 0, max_len - 3 )}..." : s.Substring( 0, max_len )) : s) : s;
        
         public static void Remove< T >( this HashSet< T > hs, IEnumerable< T > seq )
@@ -274,7 +274,7 @@ namespace m3u8.download.manager
         public static void RemoveAllFinished( this DownloadListModel model ) => model.RemoveRows( model.GetAllFinished().ToList() );
 
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadRow row ) => (row.Status == DownloadStatus.Finished);
-        //[M(O.AggressiveInlining)] public static bool IsFinishedOrError( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, _ => false };
+        [M(O.AggressiveInlining)] public static bool IsFinishedOrError( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, _ => false };
         [M(O.AggressiveInlining)] public static bool IsFinishedOrErrorOrCreated( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, DownloadStatus.Created => true, _ => false };
         [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadStatus status ) => (status     == DownloadStatus.Finished);
         [M(O.AggressiveInlining)] public static bool IsError   ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Error);

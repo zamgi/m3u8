@@ -83,6 +83,7 @@ namespace m3u8.download.manager.controllers
         private ObjectPoolDisposable< Stream >             _StreamPool;
         private ObjectPool< byte[] >                       _RespBufPool;
         private m3u8_processor_next.ILogger                _Logger;
+        private IReceivedAndWritedPartsProcessor           _ReceivedAndWritedPartsProcessor;
         #endregion
 
         private static ObjectPoolDisposable< Stream > CreateStreamPool( int maxDegreeOfParallelism, int streamInPoolCapacity = STREAM_IN_POOL_CAPACITY ) 
@@ -92,8 +93,10 @@ namespace m3u8.download.manager.controllers
 
         #region [.ctor().]
         public DownloadController( DownloadListModel model, SettingsPropertyChangeController sc, m3u8_client_next_factory_enum_type m3u8_client_next_factory_type
+            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
             , m3u8_processor_next.ILogger logger = null )
         {
+            _ReceivedAndWritedPartsProcessor = receivedAndWritedPartsProcessor;
             _Logger = logger;
             _Model = model ?? throw (new ArgumentNullException( nameof(model) ));
 
@@ -447,7 +450,7 @@ namespace m3u8.download.manager.controllers
             }
             else
             {
-                await StartRoutine( row, t.m3u8FileUrl );
+                await StartRoutine( row, t.m3u8FileUrl, deleteOutputFilesWhenCancelOrError: false );
             }
             #endregion
 
@@ -457,7 +460,7 @@ namespace m3u8.download.manager.controllers
             ProcessCrossDownloadInstanceRestriction( _CrossDownloadInstanceRestriction.GetMaxCrossDownloadInstance() );
             #endregion
         }
-        private async Task StartRoutine( DownloadRow row, Uri m3u8FileUrl )
+        private async Task StartRoutine( DownloadRow row, Uri m3u8FileUrl, bool deleteOutputFilesWhenCancelOrError )
         {
             var webProxy = row.WebProxyInfo.CreateWebProxyIfUsed();
             using ( var mc                         = _m3u8_client_next_factory.Create( webProxy, _SettingsController.GetCreateM3u8ClientParams() ) )
@@ -596,27 +599,33 @@ namespace m3u8.download.manager.controllers
                                 logRow.SetResponse( "/continue/..." );
                             }
                         });
+                        var restoreAndContinueDownloadAction = new Action< m3u8_file_t__v2/*old*/, m3u8_file_t__v2 /*new*/, long /*outputFileStreamPosition*/ >( (m3u8File, new_m3u8File, downloadBytesLength) =>
+                        {
+                            row.RestoreDownloadParams_WhenStartDownloads( downloadBytesLength, successDownloadParts: (m3u8File.Parts.Count - new_m3u8File.Parts.Count) );
+                        });
 
                         var veryFirstOutputFullFileName = row.SaveVeryFirstOutputFullFileName();
 
                         var ip = new m3u8_processor_next.DownloadPartsAndSaveInputParams()
                         {
-                            mc                         = mc,
-                            m3u8File                   = m3u8_file_t__v2.Parse( m3u8File ),
-                            OutputFileName             = veryFirstOutputFullFileName,
-                            CancellationToken          = cts.Token,
-                            RequestStepAction          = requestStepAction,
-                            ResponseStepAction         = responseStepAction,
-                            MaxDegreeOfParallelism     = _SettingsController.MaxDegreeOfParallelism,                            
-                            DownloadThreadsSemaphore   = downloadThreadsSemaphore,
+                            mc                               = mc,
+                            m3u8File                         = m3u8_file_t__v2.Parse( m3u8File ),
+                            OutputFileName                   = veryFirstOutputFullFileName,
+                            CancellationToken                = cts.Token,
+                            RequestStepAction                = requestStepAction,
+                            ResponseStepAction               = responseStepAction,
+                            MaxDegreeOfParallelism           = _SettingsController.MaxDegreeOfParallelism,                            
+                            DownloadThreadsSemaphore         = downloadThreadsSemaphore,
                             DownloadThreadsSemaphore_4_Parts = downloadThreadsSemaphore_4_Parts,
-                            WaitIfPausedHolder         = new WaitIfPausedHolder( waitIfPausedEventWrapper, waitingIfPausedBefore        , waitingIfPausedAfter ),
-                            WaitIfPausedHolder_4_Parts = new WaitIfPausedHolder( waitIfPausedEventWrapper, waitingIfPausedBefore_4_Parts, waitingIfPausedAfter_4_Parts ),
-                            ThrottlerBySpeed           = _ThrottlerBySpeed,
-                            StreamPool                 = _StreamPool,
-                            RespBufPool                = _RespBufPool,
-                            DownloadPartStepAction     = downloadPartStepAction,
-                            Logger                     = _Logger,
+                            WaitIfPausedHolder               = new WaitIfPausedHolder( waitIfPausedEventWrapper, waitingIfPausedBefore        , waitingIfPausedAfter ),
+                            WaitIfPausedHolder_4_Parts       = new WaitIfPausedHolder( waitIfPausedEventWrapper, waitingIfPausedBefore_4_Parts, waitingIfPausedAfter_4_Parts ),
+                            ThrottlerBySpeed                 = _ThrottlerBySpeed,
+                            StreamPool                       = _StreamPool,
+                            RespBufPool                      = _RespBufPool,
+                            DownloadPartStepAction           = downloadPartStepAction,
+                            Logger                           = _Logger,
+                            ReceivedAndWritedPartsProcessor  = _ReceivedAndWritedPartsProcessor,
+                            RestoreAndContinueDownloadAction = restoreAndContinueDownloadAction,
                         };
 #if NETCOREAPP
                         var result = await m3u8_processor_next.DownloadPartsAndSave_Async( ip, row.RequestHeaders ).CAX();
@@ -668,12 +677,12 @@ namespace m3u8.download.manager.controllers
 
                     if ( cts.IsCancellationRequested )
                     {
-                        FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        if ( deleteOutputFilesWhenCancelOrError ) FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusCanceled();
                     }
                     else if ( ex is m3u8_Exception mex )
                     {
-                        FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        if ( deleteOutputFilesWhenCancelOrError ) FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusError( ex.Message );
                     }
                     else

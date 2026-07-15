@@ -63,6 +63,7 @@
     <Compile Include="..\..\m3u8.client\client_next\m3u8_client_next_factory.cs" Link="[-= m3u8.client =-]\client_next\m3u8_client_next_factory.cs" />
     <Compile Include="..\..\m3u8.client\client_next\m3u8_client_next_v2.cs" Link="[-= m3u8.client =-]\client_next\m3u8_client_next_v2.cs" />
     <Compile Include="..\..\m3u8.client\client_next\m3u8_processor_next.cs" Link="[-= m3u8.client =-]\client_next\m3u8_processor_next.cs" />
+    <Compile Include="..\..\m3u8.client\client_next\ReceivedAndWritedPartsStorer.cs" Link="[-= m3u8.client =-]\client_next\ReceivedAndWritedPartsStorer.cs" />
 
     <Compile Include="..\..\m3u8.client\m3u8_processor_adv__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor_adv__v2.cs" />
     <Compile Include="..\..\m3u8.client\download_threads_semaphore.cs" Link="[-= m3u8.client =-]\download_threads_semaphore.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="..\[Common]\DigitLetterSort.cs" Link="Infrastructure\DigitLetterSort.cs" />
     <Compile Include="..\[Common]\TestWebProxyConnectionHelper.cs" Link="Infrastructure\TestWebProxyConnectionHelper.cs" />
     <Compile Include="..\[Common]\ChangeFilenameOrDirectoryHelper.cs" Link="Infrastructure\ChangeFilenameOrDirectoryHelper.cs" />
+    <Compile Include="..\[Common]\ExternalProgRunner.cs" Link="Infrastructure\ExternalProgRunner.cs" />
   </ItemGroup>
 
   <ItemGroup>

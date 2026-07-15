@@ -8,6 +8,8 @@ using System.Net;
 using System.Net.Http;
 #if !(NET_CORE)
 using System.Net.Security;
+using System.Reflection;
+
 #endif
 using System.Security.Authentication;
 using System.Text;
@@ -608,12 +610,10 @@ namespace m3u8
                     DownloadThreadsSemaphore_4_Parts = dts_4_Parts,
                     WaitIfPausedHolder         = waitIfPausedHolder,
                     WaitIfPausedHolder_4_Parts = waitIfPausedHolder,
-                    //WaitingIfPaused            = , //public Action
-                    //WaitingIfPausedBefore_2    = , //public Action< m3u8_part_ts__v2 >   
-                    //WaitingIfPausedAfter_2     = , //public Action< m3u8_part_ts__v2 >
                     ThrottlerBySpeed           = throttler_by_speed,
                     StreamPool                 = streamPool,
-                    RespBufPool                = respBufPool,                    
+                    RespBufPool                = respBufPool, 
+                    //DirectoryLocation4File4FixReceivedAndWritedParts = Path.GetDirectoryName( Assembly.GetExecutingAssembly().Location )
                 };
 #if NETCOREAPP
                 await m3u8_processor_next.DownloadPartsAndSave_Async( p, requestHeaders ).CAX();
@@ -839,11 +839,12 @@ namespace m3u8
         private static async Task Run_2()
         {
             var M3U8_FILE_URL =
-"https://celestia.host.cinemap.cc/tvseries/85ebe1b31b246d489c4461250308f347f8f05af0/3b3670aa8d4d860281987f98c05d6bdd:2026041403/720.mp4:hls:manifest.m3u8"
+"https://river-m9-mts-393.rtbcdn.ru/hls-vod/JmgwaYl7ElRZi2t8OUcQHg/1784397839/3494/0x5000c500e970ee66/003741a69a0d4295977cb74538f5a1b8.mp4.m3u8?i=640x360_532"
 ;
             var OUTPUT_FILE_DIR = ConfigurationManager.AppSettings[ "OUTPUT_FILE_DIR" ]; if ( OUTPUT_FILE_DIR.IsNullOrWhiteSpace() ) OUTPUT_FILE_DIR = @"E:\\";
             var OUTPUT_FILE_EXT = ConfigurationManager.AppSettings[ "OUTPUT_FILE_EXT" ]; if ( OUTPUT_FILE_EXT.IsNullOrWhiteSpace() ) OUTPUT_FILE_EXT = ".avi";
 
+            //[{\"name\":\"Accept\",\"value\":\"*\\/*\"},{\"name\":\"Accept-Encoding\",\"value\":\"gzip, deflate, br, zstd\"},{\"name\":\"Accept-Language\",\"value\":\"ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7\"},{\"name\":\"Origin\",\"value\":\"https:\\/\\/rutube.ru\"},{\"name\":\"Referer\",\"value\":\"https:\\/\\/rutube.ru\\/\"},{\"name\":\"sec-ch-ua\",\"value\":\"\\\"Google Chrome\\\";v=\\\"147\\\", \\\"Not.A\\/Brand\\\";v=\\\"8\\\", \\\"Chromium\\\";v=\\\"147\\\"\"},{\"name\":\"sec-ch-ua-mobile\",\"value\":\"?0\"},{\"name\":\"sec-ch-ua-platform\",\"value\":\"\\\"Windows\\\"\"},{\"name\":\"Sec-Fetch-Dest\",\"value\":\"empty\"},{\"name\":\"Sec-Fetch-Mode\",\"value\":\"cors\"},{\"name\":\"Sec-Fetch-Site\",\"value\":\"cross-site\"},{\"name\":\"User-Agent\",\"value\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/147.0.0.0 Safari\\/537.36\"}]
             var requestHeaders = new Dictionary< string, string >
             {
                 //{"Accept","*/*"},
@@ -860,7 +861,7 @@ namespace m3u8
                 //{"User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36"}
             };
 
-            var torWebProxy = new WebProxy() { Address = new Uri( "socks5://127.0.0.1:9150" ) };
+            IWebProxy torWebProxy = null; //new WebProxy() { Address = new Uri( "socks5://127.0.0.1:9150" ) };
 
             using ( var cts = new CancellationTokenSource() )
             {

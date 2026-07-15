@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -182,5 +183,11 @@ namespace m3u8.download.manager
                             e.AdvancedBorderStyle,
                             e.PaintParts
                         );
+
+
+        private static Action< IAsyncResult > _BeginInvoke_UseTask_EndMethod = new Action< IAsyncResult >(_ => { });
+        [M(O.AggressiveInlining)]public static Task BeginInvoke_UseTask( this Control control, Delegate method ) => Task.Factory.FromAsync( control.BeginInvoke( method ), _BeginInvoke_UseTask_EndMethod );
+        [M(O.AggressiveInlining)]public static Task BeginInvoke_UseTask( this Control control, Action method ) => Task.Factory.FromAsync( control.BeginInvoke( method ), _BeginInvoke_UseTask_EndMethod );
+        [M(O.AggressiveInlining)]public static Task BeginInvoke_UseTask( this Control control, Delegate method, params object[] args ) => Task.Factory.FromAsync( control.BeginInvoke( method, args ), _BeginInvoke_UseTask_EndMethod );
     }
 }

@@ -17,6 +17,22 @@ namespace m3u8.download.manager
 #else
         public static string FrameWorkName => Resources.NET_FW;
 #endif
+        public static string VENDOR_NAME = "zamgi";
+        public static string APP_NAME    => AssemblyInfoHelper.AssemblyTitle;
+
+        static AssemblyInfoHelper()
+        {
+            var commonAppDataFolder   = Environment.GetFolderPath( Environment.SpecialFolder.CommonApplicationData );
+            var vendorFolderPath      = Path.Combine( commonAppDataFolder, AssemblyInfoHelper.VENDOR_NAME );
+            var appFolderPath         = Path.Combine( vendorFolderPath   , AssemblyInfoHelper.APP_NAME    );
+
+            AppDataFolder = appFolderPath;
+        }
+        /// <summary>
+        /// Application data folder
+        /// </summary>
+        public static string AppDataFolder { get; } //"C:\ProgramData\zamgi\m3u8.download.manager"
+
         public static string AssemblyTitle
         {
             get

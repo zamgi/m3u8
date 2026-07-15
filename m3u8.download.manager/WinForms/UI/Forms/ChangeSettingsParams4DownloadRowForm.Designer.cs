@@ -15,7 +15,7 @@ namespace m3u8.download.manager.ui
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent( _DC_ dc, _SC_ sc )
+        private void InitializeComponent( _DC_ dc, _SC_ sc, IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor )
         {
             System.Windows.Forms.Label outputFileNameLabel;
             System.Windows.Forms.Label outputDirectoryLabel;
@@ -49,7 +49,7 @@ namespace m3u8.download.manager.ui
             this.buttomPanel = new System.Windows.Forms.Panel();
             this.okButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.cancelButton = new System.Windows.Forms.ButtonWithFocusCues();
-            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC( dc, sc );
+            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC( dc, sc, receivedAndWritedPartsProcessor );
             this.topPanel.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.mainTabPage.SuspendLayout();

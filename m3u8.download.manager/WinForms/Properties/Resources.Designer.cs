@@ -288,9 +288,47 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ffmpeg_16х16 {
+            get {
+                object obj = ResourceManager.GetObject("ffmpeg_16х16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to FFmpeg.
+        /// </summary>
+        internal static string FFmpegConverterCaption {
+            get {
+                return ResourceManager.GetString("FFmpegConverterCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to D:\(Distributive)\{ScreenToGif}\ffmpeg\ffmpeg.exe.
+        /// </summary>
+        internal static string FFmpegFileLocation {
+            get {
+                return ResourceManager.GetString("FFmpegFileLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap finished {
             get {
                 object obj = ResourceManager.GetObject("finished", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap freemake_16х16 {
+            get {
+                object obj = ResourceManager.GetObject("freemake_16х16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

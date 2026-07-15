@@ -17,9 +17,12 @@ namespace m3u8.download.manager
         {
             SettingsController = new SettingsPropertyChangeController( settings );
 
+            ReceivedAndWritedPartsProcessor = new ReceivedAndWritedPartsProcessor( AssemblyInfoHelper.AppDataFolder );
+
             DownloadListModel  = new DownloadListModel();
             DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
-            DownloadController = new DownloadController( DownloadListModel, SettingsController, m3u8_client_next_factory_type );
+            DownloadController = new DownloadController( DownloadListModel, SettingsController, m3u8_client_next_factory_type, ReceivedAndWritedPartsProcessor );
+
             UndoModel          = new UndoModel( DownloadListModel );
             OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
 
@@ -45,11 +48,12 @@ namespace m3u8.download.manager
             DownloadController.Dispose_NoThrow();
         }
 
-        public DownloadListModel                DownloadListModel  { get; }
-        public DownloadController               DownloadController { get; }
-        public SettingsPropertyChangeController SettingsController { get; }
-        public UndoModel                        UndoModel          { get; }
-        public OutputFileNamePatternProcessor   OutputFileNamePatternProcessor { get; }
+        public IReceivedAndWritedPartsProcessor ReceivedAndWritedPartsProcessor { get; }
+        public DownloadListModel                DownloadListModel               { get; }
+        public DownloadController               DownloadController              { get; }
+        public SettingsPropertyChangeController SettingsController              { get; }
+        public UndoModel                        UndoModel                       { get; }
+        public OutputFileNamePatternProcessor   OutputFileNamePatternProcessor  { get; }
 
         public AddCommand                              AddCommand                              { get; }
         public EditCommand                             EditCommand                             { get; }

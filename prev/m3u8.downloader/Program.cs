@@ -125,7 +125,7 @@ namespace m3u8.downloader
         [STAThread] private static void Main( string[] args )
         {
             #region [.exception handling.]
-            Application.ThreadException                  += (s, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" ); ;
+            Application.ThreadException                  += (s, e) => e.Exception.MessageBox_ShowError( "Application.ThreadException" );
             AppDomain  .CurrentDomain.UnhandledException += (s, e) => Extensions.MessageBox_ShowError( e.ExceptionObject.ToString(), " AppDomain.CurrentDomain.UnhandledException" );
             Application.SetUnhandledExceptionMode( UnhandledExceptionMode.Automatic, true );
             #endregion

@@ -40,17 +40,19 @@ namespace m3u8.download.manager.ui
         private FileNameCleaner4UI.Processor _FNCP;
         private bool              _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
+        private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;
         private Func< AddNewDownloadForm, Task > _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url;
         #endregion
 
         #region [.ctor().]
-        private ChangeSettingsParams4DownloadRowForm( _DC_ dc, _SC_ sc )
+        private ChangeSettingsParams4DownloadRowForm( _DC_ dc, _SC_ sc, IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor )
         {
             _DC       = dc;
             _SC       = sc;
             _Settings = sc.Settings;
+            _ReceivedAndWritedPartsProcessor = receivedAndWritedPartsProcessor;
 
-            InitializeComponent( dc, sc );
+            InitializeComponent( dc, sc, receivedAndWritedPartsProcessor );
             //----------------------------------------//
 
             logPanel.Visible = false;
@@ -71,7 +73,8 @@ namespace m3u8.download.manager.ui
         /// </summary>
         private ChangeSettingsParams4DownloadRowForm( _DC_ dc, _SC_ sc
             , DownloadRow row
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor ) : this( dc, sc )
+            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
+            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor ) : this( dc, sc, receivedAndWritedPartsProcessor )
         {
             var close = new EventHandler( (_, _) => this.Close() );
             this.okButton    .Click += close;
@@ -135,9 +138,10 @@ namespace m3u8.download.manager.ui
             //, Action< FormClosingEventArgs > formClosingAction
             , Action< ChangeSettingsParams4DownloadRowForm, DownloadRow > formClosedAction
             , Func< AddNewDownloadForm, Task > formClosedAction_4_DownloadAdditionalM3u8Url
+            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
             , TabPageKind? activeTabPageKind = null )
         {
-            var f = new ChangeSettingsParams4DownloadRowForm( dc, sc, row, outputFileNamePatternProcessor ) 
+            var f = new ChangeSettingsParams4DownloadRowForm( dc, sc, row, outputFileNamePatternProcessor, receivedAndWritedPartsProcessor ) 
             { 
                 Icon = Resources.edit.CreateSafeIcon(),
                 Text = $"Change settings, / '{row.OutputFileName}' /",
@@ -695,7 +699,7 @@ namespace m3u8.download.manager.ui
             }
 
             AddNewDownloadForm.Add( this, _DC, _SC, m3u8FileUrlText, this.requestHeadersEditor.GetRequestHeaders(),
-            _OutputFileNamePatternProcessor, seriesInfo: null, _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url );
+            _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, seriesInfo: null, _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url );
         }
         #endregion
 

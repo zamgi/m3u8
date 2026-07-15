@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Net;
 using System.Windows.Forms;
 
 using m3u8.download.manager.infrastructure;
@@ -26,16 +25,18 @@ namespace m3u8.download.manager.ui
         private _DC_ _DC;
         private _SC_ _SC;
         private Color2ColorTransitionProcessor _C2CTProcessor;
+        private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;
         #endregion
 
         #region [.ctor().]
-        public StatusBarUC( _DC_ dc, _SC_ sc )
+        public StatusBarUC( _DC_ dc, _SC_ sc, IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor )
         {
             InitializeComponent();
             //----------------------------------------//
 
             _DC = dc ?? throw (new ArgumentNullException( nameof(dc) ));
             _SC = sc ?? throw (new ArgumentNullException( nameof(sc) ));
+            _ReceivedAndWritedPartsProcessor = receivedAndWritedPartsProcessor ?? throw (new ArgumentNullException( nameof(receivedAndWritedPartsProcessor) ));
             _SC.SettingsPropertyChanged += SettingsController_PropertyChanged;
 
             //LeftSideTextLabelText = null;
@@ -138,7 +139,7 @@ namespace m3u8.download.manager.ui
         public void ShowDialog_Settings( SettingsForm.TabPageKind? tabPageKind = default )
         {
             var st = GetSettings();
-            using ( var f = new SettingsForm( _DC/*, _SC*/, tabPageKind ) )
+            using ( var f = new SettingsForm( _DC/*, _SC*/, _ReceivedAndWritedPartsProcessor, tabPageKind ) )
             {
                 f.Parallelism.MaxDegreeOfParallelism = st.MaxDegreeOfParallelism;
                 f.Parallelism.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
@@ -154,6 +155,9 @@ namespace m3u8.download.manager.ui
                 f.Other.ExternalProgCaption                    = st.ExternalProgCaption;
                 f.Other.ExternalProgFilePath                   = st.ExternalProgFilePath;
                 f.Other.ExternalProgApplyByDefault             = st.ExternalProgApplyByDefault;
+                f.Other.FFmpegFileLocation                     = st.FFmpegFileLocation;
+                f.Other.FFmpegConverterCaption                 = st.FFmpegConverterCaption;
+                f.Other.FFmpegApplyByDefault                   = st.FFmpegApplyByDefault;
                 f.Other.UseDirectorySelectDialogModern         = st.UseDirectorySelectDialogModern;
                 f.Other.UniqueUrlsOnly                         = st.UniqueUrlsOnly;
                 f.Other.IgnoreHostHttpHeader                   = st.IgnoreHostHttpHeader;
@@ -179,6 +183,9 @@ namespace m3u8.download.manager.ui
                     st.ExternalProgCaption                    = f.Other.ExternalProgCaption;
                     st.ExternalProgFilePath                   = f.Other.ExternalProgFilePath;
                     st.ExternalProgApplyByDefault             = f.Other.ExternalProgApplyByDefault;
+                    st.FFmpegConverterCaption                 = f.Other.FFmpegConverterCaption;
+                    st.FFmpegFileLocation                     = f.Other.FFmpegFileLocation;
+                    st.FFmpegApplyByDefault                   = f.Other.FFmpegApplyByDefault;
                     st.UseDirectorySelectDialogModern         = f.Other.UseDirectorySelectDialogModern;
                     st.UniqueUrlsOnly                         = f.Other.UniqueUrlsOnly;
                     st.IgnoreHostHttpHeader                   = f.Other.IgnoreHostHttpHeader;

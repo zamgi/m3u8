@@ -25,10 +25,10 @@ namespace m3u8.download.manager.ui
 
         #region [.ctor().]
         private SettingsForm() => InitializeComponent();
-        public SettingsForm( DownloadController dc, TabPageKind? tabPageKind = default ) : this()
+        public SettingsForm( DownloadController dc, IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor, TabPageKind? tabPageKind = default ) : this()
         {
             parallelismSettingsUC.Init( dc );
-            otherSettingsUC      .Init( dc );
+            otherSettingsUC      .Init( dc, receivedAndWritedPartsProcessor );
 
             #region [.set active tab.]
             if ( tabPageKind.HasValue )
@@ -69,7 +69,7 @@ namespace m3u8.download.manager.ui
 
             if ( otherTabPage.IsSelected() )
             {
-                otherSettingsUC.StartShowTotalMemory();
+                otherSettingsUC.ActiveteTab();
             }
         }
         protected override void OnFormClosing( FormClosingEventArgs e )
@@ -90,7 +90,7 @@ namespace m3u8.download.manager.ui
         {
             if ( e.TabPage == otherTabPage )
             {
-                otherSettingsUC.StartShowTotalMemory();
+                otherSettingsUC.ActiveteTab();
             }
         }
 

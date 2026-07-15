@@ -15,7 +15,7 @@ namespace m3u8.download.manager.ui
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent( _DC_ dc, _SC_ sc )
+        private void InitializeComponent( _DC_ dc, _SC_ sc, IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor )
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
@@ -76,6 +76,7 @@ namespace m3u8.download.manager.ui
             this.browseOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openOutputFilesWithExternalMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ffmpegConverterRunMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeOutputDirectoryMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.changeOutputDirectoryMenuItem_Separator = new System.Windows.Forms.ToolStripSeparator();
             this.deleteAllFinishedDownloadMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -84,7 +85,7 @@ namespace m3u8.download.manager.ui
             this.cancelAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllDownloadsMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteAllWithOutputFilesMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC( dc, sc );
+            this.statusBarUC = new m3u8.download.manager.ui.StatusBarUC( dc, sc, receivedAndWritedPartsProcessor );
             this.mainToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
@@ -362,6 +363,7 @@ namespace m3u8.download.manager.ui
                 this.browseOutputFileMenuItem,
                 this.openOutputFileMenuItem,
                 this.openOutputFilesWithExternalMenuItem,
+                this.ffmpegConverterRunMenuItem,
                 this.changeOutputDirectoryMenuItem,
                 s21,
                 this.deleteAllFinishedDownloadMenuItem,
@@ -465,6 +467,14 @@ namespace m3u8.download.manager.ui
             this.openOutputFilesWithExternalMenuItem.ShortcutKeyDisplayString = "(Ctrl + T)";
             this.openOutputFilesWithExternalMenuItem.Text = "    Open with '%EXTERNAL-PROG%'";
             this.openOutputFilesWithExternalMenuItem.Click += new System.EventHandler(this.openOutputFilesWithExternalMenuItem_Click);
+            this.openOutputFilesWithExternalMenuItem.Image = m3u8.download.manager.Properties.Resources.freemake_16х16;
+            // 
+            // ffmpegConverterRunMenuItem
+            // 
+            this.ffmpegConverterRunMenuItem.ShortcutKeyDisplayString = "(Ctrl + Y)";
+            this.ffmpegConverterRunMenuItem.Text = "    Open with 'FFmpeg'";
+            this.ffmpegConverterRunMenuItem.Click += new System.EventHandler(this.ffmpegConverterRunMenuItem_Click);
+            this.ffmpegConverterRunMenuItem.Image = m3u8.download.manager.Properties.Resources.ffmpeg_16х16;
             // 
             // changeOutputDirectoryMenuItem
             // 
@@ -583,6 +593,7 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ToolStripMenuItem browseOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFileMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openOutputFilesWithExternalMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ffmpegConverterRunMenuItem;
         private System.Windows.Forms.ToolStripMenuItem changeOutputDirectoryMenuItem;
         private System.Windows.Forms.ToolStripSeparator changeOutputDirectoryMenuItem_Separator;
         private System.Windows.Forms.ToolStripMenuItem deleteAllFinishedDownloadMenuItem;       

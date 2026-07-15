@@ -60,10 +60,13 @@ namespace m3u8.download.manager.ui
         private bool              _ScrollToLastRow;
         private ToolStripMenuItem _AutoResizeRowsHeightMenuItem;
         private bool              _AutoResizeRowsHeight;
+        private ToolStripMenuItem _ShowOnlyMoreOneAttemptRequestCountMenuItem;
+        private bool              _ShowOnlyMoreOneAttemptRequestCount;
 
         private LogListModel             _Model;
         private List_WithIndex< LogRow > _DGVRows;
         private ThreadSafeList< LogRow > _Model_CollectionChanged_AddChangedType_Buf;
+        private Action< LogRow >  _AddRowAction;
         private Action< LogRow >  _RemoveRowAction;
         private HashSet< LogRow > _RemovedBeforeAddRows;
         private Action< LogRow >  _InvalidateRowAction;
@@ -83,6 +86,7 @@ namespace m3u8.download.manager.ui
             InitializeComponent();
             //----------------------------------------------//
 
+            _AddRowAction = new Action< LogRow >( AddRow_UI );
             _RemoveRowAction = new Action< LogRow >( RemoveRow_UI );
             _InvalidateRowAction = new Action< LogRow >( InvalidateRow_UI );
             _Model_CollectionChangedAction = new Action< _CollectionChangedTypeEnum_, LogRow >( Model_CollectionChanged );
@@ -132,7 +136,10 @@ namespace m3u8.download.manager.ui
             _ReqHeader_CellStyleSmallFont_2 = DefaultColors.DGV.Create_Suc( new CellStyle( dcs ) { WrapMode = wm, Font = smallFont_4, Alignment = alg } );
             //----------------------------------------------//
             _ShowOnlyRequestRowsWithErrors = true;
-            _ShowOnlyRequestRowsWithErrorsMenuItem = new ToolStripMenuItem( "Show only request rows with errors", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = _ShowOnlyRequestRowsWithErrors };
+            _ShowOnlyRequestRowsWithErrorsMenuItem = new ToolStripMenuItem( "Show request rows with errors only", null, _ShowOnlyRequestRowsWithErrors_Click ) { Checked = _ShowOnlyRequestRowsWithErrors };
+
+            _ShowOnlyMoreOneAttemptRequestCount = false;
+            _ShowOnlyMoreOneAttemptRequestCountMenuItem = new ToolStripMenuItem( "Show more one attempt requests only", null, _ShowOnlyMoreOneAttemptRequestCount_Click ) { Checked = _ShowOnlyMoreOneAttemptRequestCount };
 
             _ScrollToLastRow = true;
             _ScrollToLastRowMenuItem = new ToolStripMenuItem( "Scroll to last row", null, _ScrollToLastRow_Click ) { Checked = _ScrollToLastRow };
@@ -142,6 +149,7 @@ namespace m3u8.download.manager.ui
 
             _ContextMenu = new ContextMenuStrip();
             _ContextMenu.Items.Add( _ShowOnlyRequestRowsWithErrorsMenuItem );
+            _ContextMenu.Items.Add( _ShowOnlyMoreOneAttemptRequestCountMenuItem );
             _ContextMenu.Items.Add( _ScrollToLastRowMenuItem );
             _ContextMenu.Items.Add( _AutoResizeRowsHeightMenuItem );
         }
@@ -188,6 +196,19 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        public bool ShowOnlyMoreOneAttemptRequestCount
+        {
+            get => _ShowOnlyMoreOneAttemptRequestCount;
+            set
+            {
+                if ( _ShowOnlyMoreOneAttemptRequestCount != value )
+                {
+                    _ShowOnlyMoreOneAttemptRequestCountMenuItem.Checked = _ShowOnlyMoreOneAttemptRequestCount = value;
+                    SetDataGridItems();
+                    AdjustColumnsWidthSprain();
+                }
+            }
+        }        
         public bool ScrollToLastRow
         {
             get => _ScrollToLastRow;
@@ -435,18 +456,33 @@ namespace m3u8.download.manager.ui
         }
         private void Model_RowPropertiesChanged( LogRow row, string propertyName )
         {
-            if ( _ShowOnlyRequestRowsWithErrors && (row.RequestRowType == RequestRowTypeEnum.Success) && (propertyName == nameof(LogRow.RequestRowType)) )
+            if ( _ShowOnlyRequestRowsWithErrors && !IsRow_Showing_With_OnlyErrors( row ) && (propertyName == nameof(LogRow.RequestRowType)) )
             {
                 Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _RemoveRowAction, row ) );
+            }
+            else if ( _ShowOnlyMoreOneAttemptRequestCount && (propertyName == nameof(LogRow.AttemptRequestNumber)) )
+            {
+                var action = IsRow_Showing_With_MoreOneAttemptRequestCount( row ) ? _AddRowAction : _RemoveRowAction;
+                Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( action, row ) );
             }
             else
             {
                 InvalidateRow_UI( row );
-            }            
+            }
         }
         #endregion
 
         #region [.private.]
+        private static bool IsRow_Showing_With_OnlyErrors( LogRow row ) => (row.RequestRowType != RequestRowTypeEnum.Success);
+        private static bool IsRow_Showing_With_MoreOneAttemptRequestCount( LogRow row )
+        {
+            switch ( row.RequestRowType )
+            {
+                case RequestRowTypeEnum.Success: case RequestRowTypeEnum.Error:
+                    return (1 < row.AttemptRequestNumber.GetValueOrDefault( 2 ));
+                default: return (true);
+            }
+        }
         private async void SetDataGridItems()
         {
             if ( _Model == null )
@@ -455,12 +491,10 @@ namespace m3u8.download.manager.ui
             }
             else
             {
-                static IEnumerable< LogRow > GetRowsNotSuccess( IEnumerable< LogRow > rows ) => from row in rows 
-                                                                                                where (row.RequestRowType != RequestRowTypeEnum.Success)
-                                                                                                select row;
+                var rows = _Model.GetRows_Enumerable();
+                if ( _ShowOnlyRequestRowsWithErrors      ) rows = rows.Where( IsRow_Showing_With_OnlyErrors );
+                if ( _ShowOnlyMoreOneAttemptRequestCount ) rows = rows.Where( IsRow_Showing_With_MoreOneAttemptRequestCount );
 
-                var rows = _ShowOnlyRequestRowsWithErrors ? GetRowsNotSuccess( _Model.GetRows_Enumerable() )
-                                                          : _Model.GetRows_Enumerable();
                 SetDataGridItems_UI( rows );
             }
             
@@ -599,6 +633,7 @@ namespace m3u8.download.manager.ui
         }
 
         private void _ShowOnlyRequestRowsWithErrors_Click( object sender, EventArgs e ) => this.ShowOnlyRequestRowsWithErrors = !this.ShowOnlyRequestRowsWithErrors;
+        private void _ShowOnlyMoreOneAttemptRequestCount_Click( object sender, EventArgs e ) => this.ShowOnlyMoreOneAttemptRequestCount = !this.ShowOnlyMoreOneAttemptRequestCount;        
         private void _ScrollToLastRow_Click( object sender, EventArgs e ) => this.ScrollToLastRow = !this.ScrollToLastRow;
         private void _AutoResizeRowsHeight_Click( object sender, EventArgs e ) => this.AutoResizeRowsHeight = !this.AutoResizeRowsHeight;
 
@@ -607,7 +642,7 @@ namespace m3u8.download.manager.ui
             switch ( this.AdditionalM3u8UrlsDetectMethod )
             {
                 case AdditionalM3u8UrlsDetectMethodEnumType.EndingWithM3u8:
-                    if ( Is_EndWithM3u8( m3u8FileUrlText ) && Uri.TryCreate( m3u8FileUrlText, UriKind.RelativeOrAbsolute, out m3u8FileUrl ) )
+                    if ( UrlHelper.IsEndWithM3u8Extension( m3u8FileUrlText ) && Uri.TryCreate( m3u8FileUrlText, UriKind.RelativeOrAbsolute, out m3u8FileUrl ) )
                     {
                         return (true);
                     }
@@ -615,7 +650,7 @@ namespace m3u8.download.manager.ui
 
                 case AdditionalM3u8UrlsDetectMethodEnumType.FullStrictUrl:
                 default:
-                    if ( Is_M3u8_Url( m3u8FileUrlText ) && UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText, out var x ) )
+                    if ( UrlHelper.IsLookLikeM3u8Url( m3u8FileUrlText ) && UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText, out var x ) )
                     {
                         m3u8FileUrl = x.m3u8FileUrl;
                         return (true);
@@ -631,7 +666,7 @@ namespace m3u8.download.manager.ui
             switch ( this.AdditionalM3u8UrlsDetectMethod )
             {
                 case AdditionalM3u8UrlsDetectMethodEnumType.EndingWithM3u8:
-                    if ( Is_EndWithM3u8( m3u8FileUrlText ) /*&& Uri.TryCreate( m3u8FileUrlText, UriKind.RelativeOrAbsolute, out m3u8FileUrl )*/ )
+                    if ( UrlHelper.IsEndWithM3u8Extension( m3u8FileUrlText ) /*&& Uri.TryCreate( m3u8FileUrlText, UriKind.RelativeOrAbsolute, out m3u8FileUrl )*/ )
                     {
                         return (true);
                     }
@@ -639,7 +674,7 @@ namespace m3u8.download.manager.ui
 
                 case AdditionalM3u8UrlsDetectMethodEnumType.FullStrictUrl:
                 default:
-                    if ( Is_M3u8_Url( m3u8FileUrlText ) /*&& UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText, out var x )*/ )
+                    if ( UrlHelper.IsLookLikeM3u8Url( m3u8FileUrlText ) /*&& UrlHelper.TryGetM3u8FileUrl( m3u8FileUrlText, out var x )*/ )
                     {
                         //m3u8FileUrl = x.m3u8FileUrl;
                         return (true);
@@ -1034,7 +1069,7 @@ namespace m3u8.download.manager.ui
         private void DGV_DataError( object sender, DataGridViewDataErrorEventArgs e ) => Debug.WriteLine( $"{nameof(DGV_DataError)}::'{e.Context}'; [row={e.RowIndex}:col={e.ColumnIndex}] => '{e.Exception}'" );
         #endregion
 
-        #region [.helter methods.]
+        #region [.helper methods.]
         [M(O.AggressiveInlining)] private void MeasureCellText( Graphics gr, DataGridViewRow row, int columnIndex, int rowIndex, out SizeF sz )
         {
             var text = row.Cells[ columnIndex ].Value?.ToString();
@@ -1050,14 +1085,6 @@ namespace m3u8.download.manager.ui
             var h = rc.Height - 4;
             return (new Rectangle( rc.Right - h - 2, rc.Y + 2, h, h ));
         }
-        [M(O.AggressiveInlining)] private static bool Is_M3u8_Url( string text )
-        {
-            var suc = (text != null) &&
-                      (text.StartsWith_Ex( "http://" ) || text.StartsWith_Ex( "https://" )) &&
-                      text.Split( '?' ).First().Split( '.' ).LastOrDefault().EqualIgnoreCase( "m3u8" );
-            return (suc);
-        }
-        [M(O.AggressiveInlining)] private static bool Is_EndWithM3u8( string text ) => (text != null) && text.EndsWith_Ex( ".m3u8" );
         #endregion
     }
 }

@@ -91,15 +91,26 @@
     <Setting Name="ShowLog" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    
+    <Setting Name="ExternalProgApplyByDefault" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
     <Setting Name="ExternalProgFilePath" Type="System.String" Scope="User">
       <Value Profile="(Default)">C:\Program Files (x86)\Freemake\Freemake Video Converter\FreemakeVideoConverter.exe</Value>
     </Setting>
     <Setting Name="ExternalProgCaption" Type="System.String" Scope="User">
       <Value Profile="(Default)">Freemake Video Converter</Value>
     </Setting>
-    <Setting Name="ExternalProgApplyByDefault" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+    <Setting Name="FFmpegApplyByDefault" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>    
+    <Setting Name="FFmpegFileLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">D:\(Distributive)\{ScreenToGif}\ffmpeg\ffmpeg.exe</Value>
     </Setting>
+    <Setting Name="FFmpegConverterCaption" Type="System.String" Scope="User">
+      <Value Profile="(Default)">FFmpeg</Value>
+    </Setting>
+    
     <Setting Name="UseDirectorySelectDialogModern" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

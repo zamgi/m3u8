@@ -372,6 +372,46 @@ namespace m3u8.download.manager.models
             }
             Fire_PropertyChanged_Events( nameof(MySelf) );
         }
+        internal void RestoreDownloadParams_WhenStartDownloads( long downloadBytesLength, int successDownloadParts )
+        {
+            var call__RowPropertiesChanged = false;
+            lock ( this )
+            {
+                if ( SuccessDownloadParts != successDownloadParts )
+                {
+                    SuccessDownloadParts = successDownloadParts;
+                    call__RowPropertiesChanged = true;
+                }
+                if ( DownloadBytesLength != downloadBytesLength )
+                {
+                    DownloadBytesLength = downloadBytesLength;
+                    call__RowPropertiesChanged = true;
+                }
+            }
+            if ( call__RowPropertiesChanged )
+            {
+                Fire_PropertyChanged_Events( nameof(MySelf) );
+            }
+        }
+        internal void RestoreDownloadParams_WithChangeStatus( long downloadBytesLength, int totalParts, int successDownloadParts )
+        {
+            lock ( this )
+            {
+                TotalParts           = totalParts;
+                SuccessDownloadParts = successDownloadParts;
+                DownloadBytesLength  = downloadBytesLength;
+
+                if ( (SuccessDownloadParts + FailedDownloadParts) == TotalParts )
+                {
+                    SetStatus( (FailedDownloadParts == 0) ? DownloadStatus.Finished : DownloadStatus.Error );
+                }
+                else
+                {
+                    SetStatus( DownloadStatus.Canceled );
+                }
+            }
+            Fire_PropertyChanged_Events( nameof(MySelf) );
+        }
 
         [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
         {

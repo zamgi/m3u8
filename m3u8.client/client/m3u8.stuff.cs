@@ -144,6 +144,12 @@ namespace m3u8
             };
             return (o);
         }
+        public static m3u8_file_t__v2 From( in m3u8_file_t__v2 mf, IReadOnlyList< m3u8_part_ts__v2 > new_parts ) => new m3u8_file_t__v2()
+        {
+            Parts       = new_parts,
+            BaseAddress = mf.BaseAddress,
+            RawText     = mf.RawText,
+        };
 #if DEBUG
         public override string ToString() => $"Parts: {Parts?.Count.ToString() ?? "-"}";
 #endif
@@ -171,6 +177,10 @@ namespace m3u8
             fs.SetLength( 0 );
             return (fs);
         }
+        public static FileStream File_Open4Write_NoSetLength( string fileName, FileShare fileShare = /*FileShare.Read*/FileShare.Read | FileShare.Delete )
+            => new FileStream( fileName, FileMode.OpenOrCreate, FileAccess.Write, fileShare ); //---var fs = File.OpenWrite( fileName );
+        public static FileStream File_Open4Read( string fileName, FileShare fileShare = /*FileShare.Read*//*FileShare.Write |*/ FileShare.Read | FileShare.Delete )
+            => new FileStream( fileName, FileMode.Open, FileAccess.Read, fileShare ); //---var fs = File.OpenRead( fileName );
     }
 
     /// <summary>
@@ -344,8 +354,7 @@ namespace m3u8
             return (ex.ToString());
         }
 
-        [M(O.AggressiveInlining)]
-        public static string Unwrap4DialogMessage( this Exception ex, bool ignoreCanceledException = true )
+        [M(O.AggressiveInlining)] public static string Unwrap4DialogMessage( this Exception ex, bool ignoreCanceledException = true )
         {
             var message = ex.Unwrap4DialogMessage( out var isCanceledException );
             return ((isCanceledException && ignoreCanceledException) ? null : message);
@@ -367,6 +376,15 @@ namespace m3u8
                 }
             }
             return (url);
+        }
+
+        [M(O.AggressiveInlining)] public static Task WriteAsync( this FileStream fs, byte[] buffer, CancellationToken ct ) => fs.WriteAsync( buffer, 0, buffer.Length, ct );
+        [M(O.AggressiveInlining)] public static Task WriteAsync( this FileStream fs, byte[] buffer, int count, CancellationToken ct ) => fs.WriteAsync( buffer, 0, count, ct );
+        [M(O.AggressiveInlining)] public static Task WriteAsync( this FileStream fs, in (byte[] buffer, int count) t, CancellationToken ct ) => fs.WriteAsync( t.buffer, 0, t.count, ct );
+        [M(O.AggressiveInlining)] public static Task WriteAsync( this FileStream fs, string s, CancellationToken ct )
+        {
+            var bytes = Encoding.UTF8.GetBytes( s );
+            return (fs.WriteAsync( bytes, 0, bytes.Length, ct ));
         }
     }
 

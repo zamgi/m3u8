@@ -34,11 +34,11 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.9" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.10" />
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="System.IO.Pipelines" Version="10.0.9" />
+    <PackageReference Include="System.IO.Pipelines" Version="10.0.10" />
   </ItemGroup>
   
   <ItemGroup>
@@ -58,6 +58,7 @@
     <Compile Include="..\m3u8.client\client_next\m3u8_client_next_factory.cs" Link="[-= m3u8.client =-]\client_next\m3u8_client_next_factory.cs" />
     <Compile Include="..\m3u8.client\client_next\m3u8_client_next_v2.cs" Link="[-= m3u8.client =-]\client_next\m3u8_client_next_v2.cs" />
     <Compile Include="..\m3u8.client\client_next\m3u8_processor_next.cs" Link="[-= m3u8.client =-]\client_next\m3u8_processor_next.cs" />
+    <Compile Include="..\m3u8.client\client_next\ReceivedAndWritedPartsStorer.cs" Link="[-= m3u8.client =-]\client_next\ReceivedAndWritedPartsStorer.cs" />
     
     <Compile Include="..\m3u8.client\m3u8_processor.cs" Link="[-= m3u8.client =-]\m3u8_processor.cs" />
     <Compile Include="..\m3u8.client\m3u8_processor__v2.cs" Link="[-= m3u8.client =-]\m3u8_processor__v2.cs" />

@@ -145,33 +145,6 @@ namespace m3u8.download.manager.ipc
                 dict = default;
                 return (false);
             }
-            //public static bool Try2Dict2( string json, out IDictionary< string, List< string > > dict )
-            //{
-            //    if ( !json.IsNullOrEmpty() )
-            //    {
-            //        try
-            //        {
-            //            //HTTP header names are generally case-insensitive according to HTTP specifications (RFC 9110).
-            //            //This means that Content-Type, content-type, and CONTENT-TYPE are all treated as the same header by compliant systems.
-
-            //            var array = Extensions.FromJSON< List< ExtensionRequestHeader > >( json );
-            //            var group = array.GroupBy( a => a.Name, StringComparer.InvariantCultureIgnoreCase );
-            //            var sd = new SortedDictionary< string, List< string > >( StringComparer.InvariantCultureIgnoreCase );
-            //            foreach ( var g in group )
-            //            {
-            //                sd.Add( g.Key, g.Select( a => a.Value ).OrderBy( _ => _ ).ToList() );
-            //            }
-            //            dict = sd;
-            //            return (true);
-            //        }
-            //        catch ( Exception ex )
-            //        {
-            //            Debug.WriteLine( ex );
-            //        }
-            //    }
-            //    dict = default;
-            //    return (false);
-            //}
         }
 
         public static string ReadFromStandardInput( int millisecondsDelay = 2_500 )

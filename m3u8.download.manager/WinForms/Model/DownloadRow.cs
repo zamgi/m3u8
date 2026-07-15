@@ -28,6 +28,8 @@ namespace m3u8.download.manager.models
     /// </summary>
     internal sealed class DownloadRow : RowBase< DownloadRow >
     {
+        public const string DownloadParts_DownloadBytesLength_PROP_NAME = "DownloadParts-&-DownloadBytesLength";
+
         /// <summary>
         /// 
         /// </summary>
@@ -260,7 +262,7 @@ namespace m3u8.download.manager.models
             }
             if ( call__RowPropertiesChanged )
             {
-                _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
+                _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
             }
         }
         [M(O.AggressiveInlining)] internal void SetDownloadPartStepParams( in i_m3u8_client_next.DownloadPartStepActionParams p, bool raiseRowPropertiesChangedEvent )
@@ -284,7 +286,7 @@ namespace m3u8.download.manager.models
                 }
                 if ( call__RowPropertiesChanged )
                 {
-                    _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
+                    _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
                 }
             }
             else
@@ -303,7 +305,7 @@ namespace m3u8.download.manager.models
                 TotalParts++;
                 FailedDownloadParts++;
             }
-            _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
+            _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
         }
         [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( long part_size_in_bytes, long total_in_bytes, double? instantSpeedInMbps )
         {
@@ -315,7 +317,47 @@ namespace m3u8.download.manager.models
 
                 if ( _InstantSpeedInMbps != instantSpeedInMbps ) _InstantSpeedInMbps = instantSpeedInMbps;
             }
-            _RowPropertiesChanged?.Invoke( this, "DownloadParts-&-DownloadBytesLength" );
+            _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
+        }
+        internal void RestoreDownloadParams_WhenStartDownloads( long downloadBytesLength, int successDownloadParts )
+        {
+            var call__RowPropertiesChanged = false;
+            lock ( this )
+            {
+                if ( SuccessDownloadParts != successDownloadParts )
+                {
+                    SuccessDownloadParts = successDownloadParts;
+                    call__RowPropertiesChanged = true;
+                }
+                if ( DownloadBytesLength != downloadBytesLength )
+                {
+                    DownloadBytesLength = downloadBytesLength;
+                    call__RowPropertiesChanged = true;
+                }
+            }
+            if ( call__RowPropertiesChanged )
+            {
+                _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
+            }
+        }
+        internal void RestoreDownloadParams_WithChangeStatus( long downloadBytesLength, int totalParts, int successDownloadParts )
+        {
+            lock ( this )
+            {
+                TotalParts           = totalParts;
+                SuccessDownloadParts = successDownloadParts;
+                DownloadBytesLength  = downloadBytesLength;
+
+                if ( (SuccessDownloadParts + FailedDownloadParts) == TotalParts )
+                {
+                    SetStatus( (FailedDownloadParts == 0) ? DownloadStatus.Finished : DownloadStatus.Error );
+                }
+                else
+                {
+                    SetStatus( DownloadStatus.Canceled );
+                }
+            }
+            _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
         }
 
         [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )

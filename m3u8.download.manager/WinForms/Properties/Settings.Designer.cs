@@ -359,6 +359,18 @@ namespace m3u8.download.manager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ExternalProgApplyByDefault {
+            get {
+                return ((bool)(this["ExternalProgApplyByDefault"]));
+            }
+            set {
+                this["ExternalProgApplyByDefault"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("C:\\Program Files (x86)\\Freemake\\Freemake Video Converter\\FreemakeVideoConverter.e" +
             "xe")]
         public string ExternalProgFilePath {
@@ -384,13 +396,37 @@ namespace m3u8.download.manager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool ExternalProgApplyByDefault {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FFmpegApplyByDefault {
             get {
-                return ((bool)(this["ExternalProgApplyByDefault"]));
+                return ((bool)(this["FFmpegApplyByDefault"]));
             }
             set {
-                this["ExternalProgApplyByDefault"] = value;
+                this["FFmpegApplyByDefault"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("D:\\(Distributive)\\{ScreenToGif}\\ffmpeg\\ffmpeg.exe")]
+        public string FFmpegFileLocation {
+            get {
+                return ((string)(this["FFmpegFileLocation"]));
+            }
+            set {
+                this["FFmpegFileLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("FFmpeg")]
+        public string FFmpegConverterCaption {
+            get {
+                return ((string)(this["FFmpegConverterCaption"]));
+            }
+            set {
+                this["FFmpegConverterCaption"] = value;
             }
         }
         

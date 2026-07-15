@@ -1,14 +1,5 @@
 ﻿namespace m3u8.download.manager.ipc
 {
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //internal abstract class UrlInputParamsBase
-    //{
-    //    public abstract bool isGroupByAudioVideo { get; }
-    //    public bool autoStartDownload { get; init; }
-    //}
-
     /// <summary>
     /// 
     /// </summary>
@@ -41,7 +32,6 @@
             requestHeaders    = t.requestHeaders,
             autoStartDownload = t.autoStartDownload,
         };
-
 
 #if DEBUG
         public override string ToString() => isGroupByAudioVideo ? $"isGroupByAudioVideo=true" : $"{m3u8FileUrl}";

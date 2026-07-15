@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -39,22 +38,26 @@ namespace m3u8.download.manager.ui
 #endif
         #region [.fields.]
         private const int MAX_PASTE_URLS = 75; //100;
+
         private UrlInputParams[] _InputParamsArray;
         private _ReceivedInputParamsArrayEventHandler_ _ReceivedInputParamsArrayEventHandler;
         private _ReceivedSend2FirstCopyEventHandler_   _ReceivedSend2FirstCopyEventHandler;        
 
-        private DownloadListModel              _DownloadListModel;
-        private UndoModel                      _UndoModel;
-        private _DC_                           _DC;
-        private _SC_                           _SC;
-        private LogRowsHeightStorer            _LogRowsHeightStorer;
-        private Action< DownloadRow, string >  _DownloadListModel_RowPropertiesChangedAction;
+        private DownloadListModel                _DownloadListModel;
+        private UndoModel                        _UndoModel;
+        private _DC_                             _DC;
+        private _SC_                             _SC;
+        private LogRowsHeightStorer              _LogRowsHeightStorer;
+        private Action< DownloadRow, string >    _DownloadListModel_RowPropertiesChangedAction;
         private Action< _CollectionChangedTypeEnum_, DownloadRow > _DownloadListModel_CollectionChangedAction;
-        private bool                           _ShowDownloadStatistics;
-        private HashSet< string >              _ExternalProgQueue;
-        private NotifyIcon                     _NotifyIcon;
-        private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
-        private LoggerForm                     _LoggerForm;
+        private bool                             _ShowDownloadStatistics;
+        private HashSet< string >                _ExternalProgQueue;
+        private NotifyIcon                       _NotifyIcon;
+        private OutputFileNamePatternProcessor   _OutputFileNamePatternProcessor;
+        private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;
+        private LoggerForm                       _LoggerForm;
+        private IExternalProgRunner              _ExternalProgRunner;
+        private IExternalProgRunner              _FFmpegConverterRunner;
 #if NETCOREAPP
         private static string _APP_TITLE_ => Resources.APP_TITLE__NET_CORE
         #if DEBUG
@@ -75,12 +78,14 @@ namespace m3u8.download.manager.ui
         {
             _SC = new _SC_( Settings.Default );
 #if DEBUG
-            _LoggerForm = new LoggerForm( this ) { Visible = true };
+            //_LoggerForm = new LoggerForm( this ) { Visible = true };
 #endif
+            _ReceivedAndWritedPartsProcessor = new ReceivedAndWritedPartsProcessor( AssemblyInfoHelper.AppDataFolder );
+
             _DownloadListModel = new DownloadListModel();
             _DownloadListModel.CollectionChanged    += DownloadListModel_CollectionChanged;
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
-            _DC = new _DC_( _DownloadListModel, _SC, M3U8_CLIENT_NEXT_FACTORY_TYPE, _LoggerForm );
+            _DC = new _DC_( _DownloadListModel, _SC, M3U8_CLIENT_NEXT_FACTORY_TYPE, _ReceivedAndWritedPartsProcessor, _LoggerForm );
 
             TestWebProxyConnectionHelper.m3u8_client_next_factory_type = M3U8_CLIENT_NEXT_FACTORY_TYPE;
 
@@ -88,7 +93,7 @@ namespace m3u8.download.manager.ui
             _UndoModel.UndoChanged += () => { undoToolButton.Enabled = _UndoModel.HasUndo; undoToolButton.ToolTipText = $"Undo step count: {_UndoModel.UndoCount}  (Ctrl + Z)"; };
             //----------------------------------------//
 
-            InitializeComponent( _DC, _SC );
+            InitializeComponent( _DC, _SC, _ReceivedAndWritedPartsProcessor );
             this.Text = _APP_TITLE_;
             mainSplitContainer.SetCursor( Cursors.SizeNS );
             //----------------------------------------//
@@ -103,7 +108,6 @@ namespace m3u8.download.manager.ui
             SettingsController_PropertyChanged( _SC.Settings, nameof(Settings.ExternalProgCaption) );
             SettingsController_PropertyChanged( _SC.Settings, nameof(Settings.ShowAllDownloadsCompleted_Notification) );
 
-            //logUC.SetSettingsController( _SC );
             logUC.SetLogRowsHeightStorer( _LogRowsHeightStorer );
 
             downloadListUC.SetModel_And_SettingsController( _DownloadListModel, _SC );
@@ -112,8 +116,7 @@ namespace m3u8.download.manager.ui
             downloadListUC.UpdatedSingleRunningRow    += downloadListUC_UpdatedSingleRunningRow;
             downloadListUC.UpdatedSummaryDownloadInfo += downloadListUC_UpdatedSummaryDownloadInfo;
             downloadListUC.DoubleClickEx              += openOutputFileMenuItem_Click;
-            //statusBarUC.SetDownloadController( _DC );
-            //statusBarUC.SetSettingsController( _SC );
+            
             statusBarUC.TrackItemsCount( downloadListUC );
             statusBarUC.SettingsChanged += statusBarUC_SettingsChanged;
 
@@ -133,6 +136,9 @@ namespace m3u8.download.manager.ui
 
             _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
             _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
+
+            _ExternalProgRunner    = new ExternalProgRunner( _SC.Settings.ExternalProgFilePath.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.ExternalProgFilePath ) );
+            _FFmpegConverterRunner = new FFmpegConverterRunner( _SC.Settings.FFmpegFileLocation.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.FFmpegFileLocation ) );
         }
         public MainForm( in UrlInputParams[] array ) : this() => _InputParamsArray = array;
 
@@ -165,7 +171,7 @@ namespace m3u8.download.manager.ui
 #if DEBUG
             if ( _DownloadListModel.RowsCount == 0 )
             {
-                var dir = _SC.Settings.OutputFileDirectory;
+                var dir = _SC.OutputFileDirectory;
                 _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8"   , "xz-1", dir) );
                 _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-12", "xz-2", dir) );
                 _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", "xz-3", dir) );
@@ -331,7 +337,14 @@ namespace m3u8.download.manager.ui
                         //if ( downloadListUC.HasFocus )
                         {
                             e.SuppressKeyPress = true;
-                            OpenOutputFilesWithExternalRoutine( runEachFileAsSeparate: e.Alt || e.Shift );
+                            OpenOutputFilesWithExternalRoutine( _ExternalProgRunner, openOutputFilesWithExternalMenuItem, runEachFileAsSeparate: e.Alt || e.Shift );
+                        }
+                        break;
+                    case Keys.Y: //Open output file with FFmpeg
+                        //if ( downloadListUC.HasFocus )
+                        {
+                            e.SuppressKeyPress = true;
+                            OpenOutputFilesWithExternalRoutine( _FFmpegConverterRunner, ffmpegConverterRunMenuItem , runEachFileAsSeparate: e.Alt || e.Shift );
                         }
                         break;
 
@@ -380,10 +393,10 @@ namespace m3u8.download.manager.ui
                     {
                         e.SuppressKeyPress = true;
                         var m3u8FileUrls = ClipboardHelper.TryGetM3u8FileUrlsFromClipboardOrDefault( _SC.IgnoreHostHttpHeader );
+                        if ( m3u8FileUrls.AnyEx() ) AddNewDownloads( (m3u8FileUrls, false) );
 #if DEBUG
-                        if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ];
-#endif
-                        AddNewDownloads( (m3u8FileUrls, false) );
+                        else AddNewDownloads( ([($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null)], false) );
+#endif                        
                     }
                     return;
 
@@ -478,6 +491,18 @@ namespace m3u8.download.manager.ui
                     openOutputFilesWithExternalMenuItem.Text = $"    Open with '{settings.ExternalProgCaption}'";
                     break;
 
+                case nameof(Settings.ExternalProgFilePath):
+                    _ExternalProgRunner.SetExternalProgFilePath( settings.ExternalProgFilePath );
+                    break;
+
+                case nameof(Settings.FFmpegConverterCaption):
+                    ffmpegConverterRunMenuItem.Text = $"    Open with '{settings.FFmpegConverterCaption}'";
+                    break;
+
+                case nameof(Settings.FFmpegFileLocation):
+                    _FFmpegConverterRunner.SetExternalProgFilePath( settings.FFmpegFileLocation );
+                    break;
+
                 case nameof(Settings.ShowAllDownloadsCompleted_Notification):
                     //*
                     _DC.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
@@ -540,13 +565,14 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
+        private async void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
         {
             if ( changedType == _CollectionChangedTypeEnum_.Sort ) return;
 
             if ( this.InvokeRequired )
             {
-                this.BeginInvoke( _DownloadListModel_CollectionChangedAction, changedType, row );
+                //---this.BeginInvoke( _DownloadListModel_CollectionChangedAction, changedType, row );
+                await this.BeginInvoke_UseTask( _DownloadListModel_CollectionChangedAction, changedType, row );
                 return;
             }
 
@@ -558,15 +584,8 @@ namespace m3u8.download.manager.ui
                 case _CollectionChangedTypeEnum_.Remove:
                     if ( row != null )
                     {
+                        var suc = _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
                         goto case _CollectionChangedTypeEnum_.Remove_Bulk;
-                        //_LogRowsHeightStorer.Remove( row.Log );
-                        //foreach ( var offn in row.GetOutputFullFileNames() )
-                        //{
-                        //    if ( !_DownloadListModel.GetRows().Any( r => r.GetOutputFullFileNames().Contains( offn, StringComparer.InvariantCultureIgnoreCase ) ) )
-                        //    {
-                        //        _ExternalProgQueue.Remove( offn );
-                        //    }
-                        //}
                     }
                     break;
 
@@ -587,7 +606,15 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case _CollectionChangedTypeEnum_.Add:
-                    if ( _SC.Settings.ExternalProgApplyByDefault )
+                    var row_restored = false;
+                    if ( UrlHelper.TryGetM3u8FileUrl( row?.Url, out var t ) && 
+                         _ReceivedAndWritedPartsProcessor.TryRestoreFromReceivedAndWritedPartsStorer( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) )
+                    {
+                        row.RestoreDownloadParams_WithChangeStatus( exists.outputFileStreamPosition, exists.totalPartsCount, exists.lastReceivedAndWritedPartOrderNumber + 1 );
+                        row_restored = true;
+                    }
+
+                    if ( (_SC.ExternalProgApplyByDefault || _SC.FFmpegApplyByDefault) && (!row_restored || !row.IsFinishedOrError()) )
                     {
                         _ExternalProgQueue.AddIf( row?.GetOutputFullFileName() /*(from _row in _DownloadListModel.GetRows() select _row.GetOutputFullFileName())*/ );
                     }
@@ -596,7 +623,7 @@ namespace m3u8.download.manager.ui
 
             _SC.SetDownloadRows_WithSaveIfChanged( existsRows ?? _DownloadListModel.GetRows_ArrayCopy() );
         }
-        private void DownloadListModel_RowPropertiesChanged( DownloadRow row, string propertyName )
+        private async void DownloadListModel_RowPropertiesChanged( DownloadRow row, string propertyName )
         {
             switch ( propertyName )
             {
@@ -604,7 +631,8 @@ namespace m3u8.download.manager.ui
                 {
                     if ( this.InvokeRequired )
                     {
-                        this.BeginInvoke( _DownloadListModel_RowPropertiesChangedAction, row, propertyName );
+                        //this.BeginInvoke( _DownloadListModel_RowPropertiesChangedAction, row, propertyName );
+                        await this.BeginInvoke_UseTask( _DownloadListModel_RowPropertiesChangedAction, row, propertyName );
                         return;
                     }
 
@@ -623,19 +651,21 @@ namespace m3u8.download.manager.ui
                     }
                     ShowDownloadStatisticsInTitle();
 
-                    #region [.run External progs if need.]                    
-                    if ( row.IsFinished()/*.IsFinishedOrError()*/ && 
+                    #region [.run External progs if need.]
+                    if ( row.IsFinished() && 
                          !row.HasAnyFailedDownloadParts() &&
-                         FileHelper.TryGetFirstFileExists/*NonZeroLength*/( row.GetOutputFullFileNames(), out var outputFileName ) && 
+                         FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) && 
                          _ExternalProgQueue.Contains( outputFileName ) 
                        )
                     {
                         _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
 
+                        (var isExternalProgApplyByDefault, var isFFmpegApplyByDefault) = (_SC.ExternalProgApplyByDefault, _SC.FFmpegApplyByDefault);
                         const long MIN_NON_ZERO_FILE_LENGTH_IN_BYTES = 1_024 * 100; //100KB
-                        if ( MIN_NON_ZERO_FILE_LENGTH_IN_BYTES <= new FileInfo( outputFileName ).Length ) //NonZeroLength
+                        if ( (isExternalProgApplyByDefault || isFFmpegApplyByDefault) && (MIN_NON_ZERO_FILE_LENGTH_IN_BYTES <= FileHelper.GetFileSize( outputFileName )) ) //NonZeroLength
                         {
-                            ExternalProg_Run_IfExists( _SC.Settings.ExternalProgFilePath, $"\"{outputFileName}\"" );
+                            if ( isExternalProgApplyByDefault ) _ExternalProgRunner   .Run( outputFileName, checkIsExternalProgFileAreExists: true );
+                            if ( isFFmpegApplyByDefault       ) _FFmpegConverterRunner.Run( outputFileName, checkIsExternalProgFileAreExists: true );
                         }
                     }
                     #endregion
@@ -753,7 +783,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region [.private methods.]
+        #region [.Core-Private methods.]
         /// <summary>
         /// 
         /// </summary>
@@ -787,8 +817,8 @@ namespace m3u8.download.manager.ui
                         break;
 
                     case DownloadCommandEnum.Delete:
-                        _DC.Cancel   ( row );
-                        _DownloadListModel .RemoveRow( row );
+                        _DC.Cancel( row );
+                        _DownloadListModel.RemoveRow( row );
                         row = downloadListUC.GetSelectedDownloadRow();
                         break;
 
@@ -1065,6 +1095,7 @@ namespace m3u8.download.manager.ui
             return (false);
         }
 
+        #region [.AddNewDownloads & AddNewDownload_4_GroupedByAudioVideo.]
         private void AddNewDownloads( UrlInputParams[] array )
         {
 #pragma warning disable IDE0037 // Use inferred member name
@@ -1119,7 +1150,7 @@ namespace m3u8.download.manager.ui
             Debug.Assert( suc || x.requestHeaders.IsNullOrEmpty() );
 
             if ( x.autoStartDownload && !x.m3u8FileUrl.IsNullOrWhiteSpace() && 
-                 FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.m3u8FileUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) 
+                 FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.m3u8FileUrl, _SC.OutputFileExtension, out var outputFileName ) 
                )
             {
                 if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( x.m3u8FileUrl ) )
@@ -1136,10 +1167,65 @@ namespace m3u8.download.manager.ui
             }
 
             #region [.AddNewDownloadForm as top-always-owner-form.]
-            AddNewDownloadForm.Add( this, _DC, _SC, x.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
+            AddNewDownloadForm.Add( this, _DC, _SC, x.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
             #endregion
         }
-        
+
+        private void AddNewDownloads( in (IReadOnlyCollection< DownloadRow_Definer_3 > m3u8FileUrls, bool autoStartDownload) p ) //, bool forceShowEmptyDialog )
+        {
+            if ( p.m3u8FileUrls.AnyEx_() )
+            {
+                if ( p.m3u8FileUrls.Count == 1 )
+                {
+                    var frt = p.m3u8FileUrls.First();
+                    AddNewDownload( frt, p.autoStartDownload );
+                }
+                else
+                {
+                    var action = new Action< DownloadRow_Definer_3, bool, (int n, int total) >((DownloadRow_Definer_3 r, bool autoStartDownload, (int n, int total) seriesInfo)
+                        => AddNewDownload( r, autoStartDownload, seriesInfo ));
+
+                    var count = p.m3u8FileUrls.Count;
+                    var n     = count;
+                    foreach ( var t in p.m3u8FileUrls.Reverse() )
+                    {
+                        var seriesInfo = (n--, count);
+                        this.BeginInvoke( action, t, p.autoStartDownload, seriesInfo );
+                    }
+                }
+            }
+            else //if ( forceShowEmptyDialog )
+            {
+                AddNewDownload( default/*(null, null, false)*/ );
+            }
+        }
+        private async void AddNewDownload( DownloadRow_Definer_3 r, bool autoStartDownload, (int n, int total)? seriesInfo = null )
+        {
+            if ( autoStartDownload && !r.Url.IsNullOrWhiteSpace() )
+            {
+                var outputFileName = r.OutputFileName;
+                if ( !outputFileName.IsNullOrEmpty() || FileNameCleaner4UI.TryGetOutputFileNameByUrl( r.Url, _SC.OutputFileExtension, out outputFileName ) )
+                {
+                    if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( r.Url ) )
+                    {
+                        var outputFileDirectory = r.OutputDirectory.GetValueIfNotNullOrWhiteSpaceOrDefault( _SC.OutputFileDirectory );
+                        if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out var cuttedFileName ) )
+                            outputFileName = cuttedFileName;
+
+                        var p = _SC.GetCreateM3u8ClientParams();
+                        var row = _DownloadListModel.AddRow( r );
+                        await downloadListUC.SelectDownloadRowDelay( row );
+                        _DC.Start( row );
+                    }
+                    return;
+                }
+            }
+
+            #region [.AddNewDownloadForm as top-always-owner-form.]
+            AddNewDownloadForm.Add( this, _DC, _SC, r, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
+            #endregion
+        }        
+
         private void AddNewDownload_4_GroupedByAudioVideo( IReadOnlyList< UrlInputParams > xs )
         {
             if ( xs.AnyEx_() )
@@ -1178,7 +1264,7 @@ namespace m3u8.download.manager.ui
             string get_outputFileName_4_audio( string outputFileName ) => Path.GetFileNameWithoutExtension( outputFileName ) + audioOutputFileSuffix + Path.GetExtension( outputFileName );
 
             if ( x.autoStartDownload && !x.videoUrl.IsNullOrWhiteSpace() && 
-                 FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.videoUrl, _SC.Settings.OutputFileExtension, out var outputFileName ) 
+                 FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.videoUrl, _SC.OutputFileExtension, out var outputFileName ) 
                )
             {
                 if ( !_SC.UniqueUrlsOnly || (!_DownloadListModel.ContainsUrl( x.videoUrl ) && !_DownloadListModel.ContainsUrl( x.audioUrl )) )
@@ -1214,8 +1300,8 @@ namespace m3u8.download.manager.ui
             var requestHeaders = new[] {  new KeyValuePair<string, string>("/-------[audio]-------/", new string('-', 120))  }.Concat( videoRequestHeaders )
                                 .Concat( [new KeyValuePair<string, string>("/-------[video]-------/", new string('-', 120))] ).Concat( audioRequestHeaders )
                                 .ToList( videoRequestHeaders.Count + audioRequestHeaders.Count + 2 );
-            FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.videoUrl, _SC.Settings.OutputFileExtension, out outputFileName );
-            AddNewDownloadForm.AddGrouped( this, _DC, _SC, url, (x.audioUrl, x.videoUrl), outputFileName, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo, async f =>
+            FileNameCleaner4UI.TryGetOutputFileNameByUrl( x.videoUrl, _SC.OutputFileExtension, out outputFileName );
+            AddNewDownloadForm.AddGrouped( this, _DC, _SC, url, (x.audioUrl, x.videoUrl), outputFileName, requestHeaders, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, seriesInfo, async f =>
             {
                 if ( f.DialogResult == DialogResult.OK )
                 {
@@ -1236,12 +1322,13 @@ namespace m3u8.download.manager.ui
             });
             #endregion
         }
+        #endregion
 
         private void EditDownload( DownloadRow row, AddNewDownloadForm.TabPageKind? activeTabPageKind = null )
         {
             if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
 
-            AddNewDownloadForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor, null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/,
+            AddNewDownloadForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/,
                                      AddNewDownloadForm_when_Edit_formClosedAction, 
                                      AddNewDownloadForm_when_Add_formClosedAction, 
                                      activeTabPageKind );
@@ -1284,7 +1371,7 @@ namespace m3u8.download.manager.ui
             if ( suc )
             ChangeSettingsParams4DownloadRowForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor,
                                                        ChangeSettingsParams4DownloadRow_formClosedAction,
-                                                       AddNewDownloadForm_when_Add_formClosedAction, activeTabPageKind );
+                                                       AddNewDownloadForm_when_Add_formClosedAction, _ReceivedAndWritedPartsProcessor, activeTabPageKind );
             return (suc);
         }
         private void ChangeSettingsParams4DownloadRow_formClosedAction( ChangeSettingsParams4DownloadRowForm f, DownloadRow row )
@@ -1329,6 +1416,7 @@ namespace m3u8.download.manager.ui
         //    logUC.ResumeDrawing();
         //}
         #endregion
+
 
         #region [.menu.]
         private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => AddNewDownload( default/*(null, null, false)*/ );
@@ -1445,23 +1533,26 @@ namespace m3u8.download.manager.ui
                 {
                     var rows = downloadListUC.GetSelectedDownloadRows();
 
-                    #region [.changeOutputDirectoryMenuItem & openOutputFilesWithExternalMenuItem.]                    
-                    openOutputFilesWithExternalMenuItem.Visible = true;
+                    #region [.changeOutputDirectoryMenuItem & openOutputFilesWithExternalMenuItem.]
+                    openOutputFilesWithExternalMenuItem.Visible = ffmpegConverterRunMenuItem.Visible = true;
                     if ( _ExternalProgQueue.Any() )
                     {                        
                         var outputFileNames = (from r in rows select r.GetOutputFullFileName()).ToList();
-                        if ( outputFileNames.Any( _ExternalProgQueue.Contains ) )
+                        (var isExternalProgApplyByDefault, var isFFmpegApplyByDefault) = (_SC.ExternalProgApplyByDefault, _SC.FFmpegApplyByDefault);
+                        if ( (isExternalProgApplyByDefault || isFFmpegApplyByDefault) && outputFileNames.Any( _ExternalProgQueue.Contains ) )
                         {
-                            openOutputFilesWithExternalMenuItem.CheckState = outputFileNames.All( _ExternalProgQueue.Contains ) ? CheckState.Checked : CheckState.Indeterminate;
+                            var isContains = outputFileNames.All( _ExternalProgQueue.Contains );
+                            openOutputFilesWithExternalMenuItem.CheckState = isExternalProgApplyByDefault ? (isContains ? CheckState.Checked : CheckState.Indeterminate) : CheckState.Unchecked;
+                            ffmpegConverterRunMenuItem         .CheckState = isFFmpegApplyByDefault       ? (isContains ? CheckState.Checked : CheckState.Indeterminate) : CheckState.Unchecked;
                         }
                         else
                         {
-                            openOutputFilesWithExternalMenuItem.CheckState = CheckState.Unchecked;
+                            openOutputFilesWithExternalMenuItem.CheckState = ffmpegConverterRunMenuItem.CheckState = CheckState.Unchecked;
                         }
                     }
                     else
                     {
-                        openOutputFilesWithExternalMenuItem.CheckState = CheckState.Unchecked;
+                        openOutputFilesWithExternalMenuItem.CheckState = ffmpegConverterRunMenuItem.CheckState = CheckState.Unchecked;
                     }
 
                     changeOutputDirectoryMenuItem.Visible =
@@ -1492,7 +1583,7 @@ namespace m3u8.download.manager.ui
                 {
                     changeOutputDirectoryMenuItem.Visible =
                         changeOutputDirectoryMenuItem_Separator.Visible =
-                            openOutputFilesWithExternalMenuItem.Visible = false;
+                            openOutputFilesWithExternalMenuItem.Visible = ffmpegConverterRunMenuItem.Visible = false;
 
                     onlyDeleteOutputFileMenuItem.Enabled = false;
 
@@ -1588,14 +1679,15 @@ namespace m3u8.download.manager.ui
             }
         }
         private void openOutputFilesWithExternalMenuItem_Click( object sender, EventArgs e ) 
-            => OpenOutputFilesWithExternalRoutine( runEachFileAsSeparate: ((Control.ModifierKeys & Keys.Control) != 0) );
+            => OpenOutputFilesWithExternalRoutine( _ExternalProgRunner, openOutputFilesWithExternalMenuItem, runEachFileAsSeparate: ((Control.ModifierKeys & Keys.Control) != 0) );
+        private void ffmpegConverterRunMenuItem_Click( object sender, EventArgs e )
+            => OpenOutputFilesWithExternalRoutine( _FFmpegConverterRunner, ffmpegConverterRunMenuItem, runEachFileAsSeparate: ((Control.ModifierKeys & Keys.Control) != 0) );
 
-        private void OpenOutputFilesWithExternalRoutine( bool runEachFileAsSeparate )
+        private void OpenOutputFilesWithExternalRoutine( IExternalProgRunner externalProgRunner, ToolStripMenuItem menuItem, bool runEachFileAsSeparate )
         {
-            var externalProgFilePath = _SC.Settings.ExternalProgFilePath;
-            if ( !File.Exists( externalProgFilePath ) )
+            if ( !externalProgRunner.IsExternalProgFileAreExists() )
             {
-                this.MessageBox_ShowError( $"External program file doesn't exists: '{externalProgFilePath}'", _APP_TITLE_ );
+                this.MessageBox_ShowError( $"External program file doesn't exists: '{externalProgRunner.ExternalProgFilePath}'", _APP_TITLE_ );
                 return;
             }
 
@@ -1607,48 +1699,13 @@ namespace m3u8.download.manager.ui
                                    select t.outputFileName
                                   )
                                   .ToList( rows.Count );
-            if ( outputFileNames.AnyEx() )
-            {
-                if ( runEachFileAsSeparate ) //run file by file
-                {
-                    var buf = new StringBuilder( 0x100 );
-                    foreach ( var fn in outputFileNames )
-                    {
-                        var args = buf.Clear().Append( '"' ).Append( fn ).Append( '"' ).ToString();
 
-                        ExternalProg_Run( externalProgFilePath, args );
-                    }
-                }
-                else //run all files as single args
-                {
-                    var buf = new StringBuilder( 0x100 * outputFileNames.Count );
-                    foreach ( var fn in outputFileNames )
-                    {
-                        buf.Append( '"' ).Append( fn ).Append( '"' ).Append( ' ' );
-                    }
-                    var args = buf.ToString( 0, buf.Length - 1 );
+            externalProgRunner.Run( outputFileNames, runEachFileAsSeparate, checkIsExternalProgFileAreExists: false );
 
-                    ExternalProg_Run( externalProgFilePath, args );
-                }
-            }
-            #region comm.
-            //var outputFileNamesQueue = (from row in rows
-            //                            let suc = row.Status switch
-            //                            { 
-            //                                DownloadStatus.Finished => false,
-            //                                DownloadStatus.Error => false,
-            //                                DownloadStatus.Created => !FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames() ).success,
-            //                                _ => true
-            //                            }
-            //                            where (suc)
-            //                            //where !row.IsFinishedOrErrorOrCreated()
-            //                            select row.GetOutputFullFileName()
-            //                           ).ToList( rows.Count );
-            #endregion
             var outputFileNamesQueue = (from row in rows select row.GetOutputFullFileName()).Except( outputFileNames ).ToList( rows.Count - outputFileNames.Count );
             if ( outputFileNamesQueue.AnyEx() )
             {
-                var cst = openOutputFilesWithExternalMenuItem.CheckState;
+                var cst = menuItem.CheckState;
                 if ( cst == CheckState.Unchecked )
                 {
                     _ExternalProgQueue.Add( outputFileNamesQueue );
@@ -1658,18 +1715,7 @@ namespace m3u8.download.manager.ui
                     _ExternalProgQueue.Remove( outputFileNamesQueue );
                 }
                 downloadListUC.Invalidate( true );
-            }
-        }
-        private static void ExternalProg_Run( string externalProgFilePath, string args )
-        {
-            using ( Process.Start( externalProgFilePath, args ) ) {; }
-        }
-        private static void ExternalProg_Run_IfExists( string externalProgFilePath, string args )
-        {
-            if ( File.Exists( externalProgFilePath ) )
-            {
-                ExternalProg_Run( externalProgFilePath, args );
-            }
+            }                   
         }
 
         private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )

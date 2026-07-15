@@ -73,7 +73,10 @@ namespace m3u8.download.manager.controllers
         public decimal  MaxSpeedThresholdInMbpsSaved        { [M(O.AggressiveInlining)] get => Settings.MaxSpeedThresholdInMbpsSaved; [M(O.AggressiveInlining)] set => Settings.MaxSpeedThresholdInMbpsSaved = value; }
         public bool     ShowLog                             { [M(O.AggressiveInlining)] get => Settings.ShowLog; [M(O.AggressiveInlining)] set => Settings.ShowLog = value; }
         public bool     IgnoreHostHttpHeader                { [M(O.AggressiveInlining)] get => Settings.IgnoreHostHttpHeader; [M(O.AggressiveInlining)] set => Settings.IgnoreHostHttpHeader = value; }
-        
+#if !(AVALONIA)
+        public bool     ExternalProgApplyByDefault          { [M(O.AggressiveInlining)] get => Settings.ExternalProgApplyByDefault; }
+        public bool     FFmpegApplyByDefault                { [M(O.AggressiveInlining)] get => Settings.FFmpegApplyByDefault; }
+#endif
         public IEnumerable< DownloadRow_Definer_3 > GetDownloadRows() => DownloadRowsSerializer.FromJSON( Settings.DownloadRowsJson );
         public void SetDownloadRows_WithSaveIfChanged( IEnumerable< DownloadRow > rows )
         {
