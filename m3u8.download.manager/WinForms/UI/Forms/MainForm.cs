@@ -51,13 +51,13 @@ namespace m3u8.download.manager.ui
         private Action< DownloadRow, string >    _DownloadListModel_RowPropertiesChangedAction;
         private Action< _CollectionChangedTypeEnum_, DownloadRow > _DownloadListModel_CollectionChangedAction;
         private bool                             _ShowDownloadStatistics;
-        private HashSet< string >                _ExternalProgQueue;
         private NotifyIcon                       _NotifyIcon;
         private OutputFileNamePatternProcessor   _OutputFileNamePatternProcessor;
         private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;
         private LoggerForm                       _LoggerForm;
         private IExternalProgRunner              _ExternalProgRunner;
         private IExternalProgRunner              _FFmpegConverterRunner;
+        private ExternalProgRunner_Queues        _ExternalProgRunner_Queues;
 #if NETCOREAPP
         private static string _APP_TITLE_ => Resources.APP_TITLE__NET_CORE
         #if DEBUG
@@ -134,11 +134,11 @@ namespace m3u8.download.manager.ui
             degreeOfParallelismToolButton.ValueWithSaved = (_SC.MaxDegreeOfParallelism , _SC.MaxDegreeOfParallelismSaved);
             speedThresholdToolButton     .ValueWithSaved = (_SC.MaxSpeedThresholdInMbps, _SC.MaxSpeedThresholdInMbpsSaved);
 
-            _ExternalProgQueue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
             _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
 
             _ExternalProgRunner    = new ExternalProgRunner( _SC.Settings.ExternalProgFilePath.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.ExternalProgFilePath ) );
             _FFmpegConverterRunner = new FFmpegConverterRunner( _SC.Settings.FFmpegFileLocation.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.FFmpegFileLocation ) );
+            _ExternalProgRunner_Queues = new ExternalProgRunner_Queues( _ExternalProgRunner, _FFmpegConverterRunner );
         }
         public MainForm( in UrlInputParams[] array ) : this() => _InputParamsArray = array;
 
@@ -596,13 +596,13 @@ namespace m3u8.download.manager.ui
                     var existsLogs = existsRows.Select( r => r.Log );
                     _LogRowsHeightStorer.RemoveAllExcept( existsLogs );
 
-                    var existsOutputFullFileNames = existsRows.SelectMany( r => r.GetOutputFullFileNames() );
-                    _ExternalProgQueue.RemoveAllExcept( existsOutputFullFileNames );
+                    var existsOutputFullFileNames = existsRows.SelectMany( r => r.GetOutputFullFileNames() ).ToList( existsRows.Count );
+                    _ExternalProgRunner_Queues.RemoveAllExcept( existsOutputFullFileNames );
                     break;
 
                 case _CollectionChangedTypeEnum_.Clear:
                     _LogRowsHeightStorer.Clear();
-                    _ExternalProgQueue  .Clear();
+                    _ExternalProgRunner_Queues.Clear();
                     break;
 
                 case _CollectionChangedTypeEnum_.Add:
@@ -613,10 +613,16 @@ namespace m3u8.download.manager.ui
                         row.RestoreDownloadParams_WithChangeStatus( exists.outputFileStreamPosition, exists.totalPartsCount, exists.lastReceivedAndWritedPartOrderNumber + 1 );
                         row_restored = true;
                     }
-
-                    if ( (_SC.ExternalProgApplyByDefault || _SC.FFmpegApplyByDefault) && (!row_restored || !row.IsFinishedOrError()) )
+                    
+                    if ( (!row_restored || !row.IsFinishedOrError()) )
                     {
-                        _ExternalProgQueue.AddIf( row?.GetOutputFullFileName() /*(from _row in _DownloadListModel.GetRows() select _row.GetOutputFullFileName())*/ );
+                        (var externalProgApplyByDefault, var ffmpegApplyByDefault) = (_SC.ExternalProgApplyByDefault, _SC.FFmpegApplyByDefault);
+                        if ( externalProgApplyByDefault || ffmpegApplyByDefault )
+                        {
+                            var outputFullFileName = row.GetOutputFullFileName() /*(from _row in _DownloadListModel.GetRows() select _row.GetOutputFullFileName())*/;
+                            if ( externalProgApplyByDefault ) _ExternalProgRunner.Queue.AddIfNotNull( outputFullFileName );
+                            if ( ffmpegApplyByDefault       ) _FFmpegConverterRunner.Queue.AddIfNotNull( outputFullFileName );
+                        }
                     }
                     break;
             }
@@ -655,10 +661,10 @@ namespace m3u8.download.manager.ui
                     if ( row.IsFinished() && 
                          !row.HasAnyFailedDownloadParts() &&
                          FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) && 
-                         _ExternalProgQueue.Contains( outputFileName ) 
+                         _ExternalProgRunner_Queues.Contains( outputFileName )
                        )
                     {
-                        _ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
+                        _ExternalProgRunner_Queues.Remove( row.GetOutputFullFileNames() );
 
                         (var isExternalProgApplyByDefault, var isFFmpegApplyByDefault) = (_SC.ExternalProgApplyByDefault, _SC.FFmpegApplyByDefault);
                         const long MIN_NON_ZERO_FILE_LENGTH_IN_BYTES = 1_024 * 100; //100KB
@@ -773,7 +779,7 @@ namespace m3u8.download.manager.ui
 
             SetDownloadToolButtonsStatus( row );
         }
-        private bool downloadListUC_IsDrawCheckMark( DownloadRow row ) => _ExternalProgQueue.Contains( row.GetOutputFullFileName() );
+        private bool downloadListUC_IsDrawCheckMark( DownloadRow row ) => _ExternalProgRunner_Queues.Contains( row.GetOutputFullFileName() );
 
         private void statusBarUC_SettingsChanged( object sender, EventArgs e )
         {
@@ -1535,20 +1541,17 @@ namespace m3u8.download.manager.ui
 
                     #region [.changeOutputDirectoryMenuItem & openOutputFilesWithExternalMenuItem.]
                     openOutputFilesWithExternalMenuItem.Visible = ffmpegConverterRunMenuItem.Visible = true;
-                    if ( _ExternalProgQueue.Any() )
-                    {                        
-                        var outputFileNames = (from r in rows select r.GetOutputFullFileName()).ToList();
-                        (var isExternalProgApplyByDefault, var isFFmpegApplyByDefault) = (_SC.ExternalProgApplyByDefault, _SC.FFmpegApplyByDefault);
-                        if ( (isExternalProgApplyByDefault || isFFmpegApplyByDefault) && outputFileNames.Any( _ExternalProgQueue.Contains ) )
-                        {
-                            var isContains = outputFileNames.All( _ExternalProgQueue.Contains );
-                            openOutputFilesWithExternalMenuItem.CheckState = isExternalProgApplyByDefault ? (isContains ? CheckState.Checked : CheckState.Indeterminate) : CheckState.Unchecked;
-                            ffmpegConverterRunMenuItem         .CheckState = isFFmpegApplyByDefault       ? (isContains ? CheckState.Checked : CheckState.Indeterminate) : CheckState.Unchecked;
-                        }
-                        else
-                        {
-                            openOutputFilesWithExternalMenuItem.CheckState = ffmpegConverterRunMenuItem.CheckState = CheckState.Unchecked;
-                        }
+                    if ( _ExternalProgRunner_Queues.Any() )
+                    {
+                        var outputFileNames = rows.SelectToList( r => r.GetOutputFullFileName() );
+
+                        openOutputFilesWithExternalMenuItem.CheckState = outputFileNames.Any( _ExternalProgRunner.Queue.Contains )
+                                                                       ? outputFileNames.All( _ExternalProgRunner.Queue.Contains ) ? CheckState.Checked : CheckState.Indeterminate
+                                                                       : CheckState.Unchecked;
+
+                        ffmpegConverterRunMenuItem.CheckState = outputFileNames.Any( _FFmpegConverterRunner.Queue.Contains )
+                                                              ? outputFileNames.All( _FFmpegConverterRunner.Queue.Contains ) ? CheckState.Checked : CheckState.Indeterminate
+                                                              : CheckState.Unchecked;                        
                     }
                     else
                     {
@@ -1708,14 +1711,14 @@ namespace m3u8.download.manager.ui
                 var cst = menuItem.CheckState;
                 if ( cst == CheckState.Unchecked )
                 {
-                    _ExternalProgQueue.Add( outputFileNamesQueue );
+                    externalProgRunner.Queue.Add( outputFileNamesQueue );
                 }
                 else
                 {
-                    _ExternalProgQueue.Remove( outputFileNamesQueue );
+                    externalProgRunner.Queue.Remove( outputFileNamesQueue );
                 }
                 downloadListUC.Invalidate( true );
-            }                   
+            }
         }
 
         private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )
@@ -1766,9 +1769,13 @@ namespace m3u8.download.manager.ui
                 var new_fn = Path.GetFileNameWithoutExtension( fn ) + ext;
                 if ( fn != new_fn )
                 {
-                    var suc = _ExternalProgQueue.Remove( row.GetOutputFullFileName() );
+                    var ts = _ExternalProgRunner_Queues.Remove( row.GetOutputFullFileName() );
                     row.SetOutputFileName( new_fn );
-                    if ( suc ) _ExternalProgQueue.Add( row.GetOutputFullFileName() );
+                    if ( ts.Any( t => t.suc ) )
+                    {
+                        var outputFullFileName = row.GetOutputFullFileName();
+                        ts.ForEach( t => { if ( t.suc ) t.queue.Add( outputFullFileName ); } );
+                    }
                 }
             });
         }
@@ -1816,9 +1823,10 @@ namespace m3u8.download.manager.ui
         private Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );            
         private Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
         private Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
-            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, outputFileName_or_outputDirectory, change_outputDirectory, _ExternalProgQueue
+            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, outputFileName_or_outputDirectory, change_outputDirectory
                 , new_outputFullFileName => Task.FromResult( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) == DialogResult.Yes )
-                , error => { this.MessageBox_ShowError( error, "Move/Remane output file" ); return Task.CompletedTask; } );
+                , error => { this.MessageBox_ShowError( error, "Move/Remane output file" ); return Task.CompletedTask; }
+                , _ExternalProgRunner.Queue, _FFmpegConverterRunner.Queue );
 
         //private void ChangeOutputFileName_Or_OutputDirectory__( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
         //{

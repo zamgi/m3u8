@@ -80,14 +80,8 @@ namespace m3u8.download.manager
                 }
             }
         }
-        public static void RemoveIf< T >( this HashSet< T > hs, T t )
-        {
-            if ( t != null )
-            {
-                hs.Remove( t );
-            }
-        }
-        public static void AddIf< T >( this HashSet< T > hs, T t )
+        //public static void RemoveIfNotNull< T >( this HashSet< T > hs, T t ) { if ( t != null ) hs.Remove( t ); }
+        public static void AddIfNotNull< T >( this HashSet< T > hs, T t )
         {
             if ( t != null )
             {
@@ -95,6 +89,15 @@ namespace m3u8.download.manager
             }
         }
 
+        public static List< X > SelectToList< T, X >( this IReadOnlyList< T > seq, Func< T, X > func )
+        {
+            var lst = new List< X >( seq.Count );
+            foreach ( var t in seq )
+            {
+                lst.Add( func( t ) );
+            }
+            return (lst);
+        }
         public static T[] ToArrayEx< T >( this IReadOnlyList< T > seq )
         {
             var array = new T[ seq.Count ];

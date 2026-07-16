@@ -158,14 +158,9 @@ namespace m3u8.download.manager.ui
             this.OutputDirectory = _Settings.OutputFileDirectory;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
 
-            _Model = new LogListModel();
-            logUC.SetModel( _Model );
+            logUC.SetModel( _Model = new LogListModel() );
 
-            #region [.seriesInfo.]
-            this.Text += GetCaptionBySeriesInfo( seriesInfo );
-            _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
-            #endregion
-
+            Init_SeriesInfo( seriesInfo );
             this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
             TryRestoreOutputFileNameByAddress( m3u8FileUrl );
         }
@@ -203,16 +198,10 @@ namespace m3u8.download.manager.ui
             this.OutputDirectory = _Settings.OutputFileDirectory;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl_CombinedFake.IsNullOrWhiteSpace();
 
-            _Model = new LogListModel();
-            logUC.SetModel( _Model );
+            logUC.SetModel( _Model = new LogListModel() );
 
-            #region [.seriesInfo.]
-            this.Text += GetCaptionBySeriesInfo( seriesInfo );
-            _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
-            #endregion
-
+            Init_SeriesInfo( seriesInfo );
             this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
-
             suc = TryRestoreOutputFileNameByAddress( groupedUrls.video ) || TryRestoreOutputFileNameByAddress( groupedUrls.audio );
         }
 
@@ -252,16 +241,10 @@ namespace m3u8.download.manager.ui
             m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
 
-            _Model = new LogListModel();
-            logUC.SetModel( _Model );
+            logUC.SetModel( _Model = new LogListModel() );
 
             set_WebProxyInfo( row.WebProxyInfo );
-
-            #region [.seriesInfo.]
-            this.Text += GetCaptionBySeriesInfo( seriesInfo );
-            _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
-            #endregion
-
+            Init_SeriesInfo( seriesInfo );
             if ( row.OutputFileName.IsNullOrWhiteSpace() ) TryRestoreOutputFileNameByAddress( row.Url );
         }
 
@@ -271,6 +254,7 @@ namespace m3u8.download.manager.ui
             {
                 components?.Dispose();
                 _FNCP.Dispose();
+                _ImageDisabled4CheckBox?.Values.ForEach( t => t.disabled?.Dispose_NoThrow() );
             }
             base.Dispose( disposing );
         }
@@ -655,8 +639,11 @@ namespace m3u8.download.manager.ui
             get => externalProgApplyByDefaultCheckBox.Checked;
             set
             {
+                //if ( externalProgApplyByDefaultCheckBox.Checked != value )
+                //{
                 externalProgApplyByDefaultCheckBox.Checked = value;
-                set_externalProgApplyByDefaultCheckBox_Color( value );
+                Set_CheckBox_ForeColor( externalProgApplyByDefaultCheckBox, value );
+                //}
             }
         }
         public bool FFmpegApplyByDefault
@@ -664,8 +651,11 @@ namespace m3u8.download.manager.ui
             get => ffmpegApplyByDefaultCheckBox.Checked;
             set
             {
+                //if ( ffmpegApplyByDefaultCheckBox.Checked != value )
+                //{
                 ffmpegApplyByDefaultCheckBox.Checked = value;
-                set_ffmpegApplyByDefaultCheckBox_Color( value );
+                Set_CheckBox_ForeColor( ffmpegApplyByDefaultCheckBox, value );
+                //}
             }
         }
 
@@ -758,8 +748,8 @@ namespace m3u8.download.manager.ui
         {
             var isLiveStream = this.IsLiveStream;
 
-            isLiveStreamCheckBox        .ForeColor = isLiveStream ? Color.FromArgb(70, 70, 70) : Color.Silver;
-            liveStreamMaxSizeInMbNumUpDn.Visible   = liveStreamMaxSizeInMbLabel.Visible = isLiveStream;
+            Set_CheckBox_ForeColor( isLiveStreamCheckBox, isLiveStream );
+            liveStreamMaxSizeInMbNumUpDn.Visible = liveStreamMaxSizeInMbLabel.Visible = isLiveStream;
 
             set_mainLayoutPanel_Height();
         }
@@ -768,18 +758,16 @@ namespace m3u8.download.manager.ui
         {
             var externalProgApplyByDefault = this.ExternalProgApplyByDefault;
 
-            set_externalProgApplyByDefaultCheckBox_Color( externalProgApplyByDefault );
+            Set_CheckBox_ForeColor( externalProgApplyByDefaultCheckBox, externalProgApplyByDefault );
             _Settings.ExternalProgApplyByDefault = externalProgApplyByDefault;
         }
-        private void set_externalProgApplyByDefaultCheckBox_Color( bool externalProgApplyByDefault ) => externalProgApplyByDefaultCheckBox.ForeColor = externalProgApplyByDefault ? Color.FromArgb( 70, 70, 70 ) : Color.Silver;
         private void ffmpegApplyByDefaultCheckBox_Click( object sender, EventArgs e )
         {
             var ffmpegApplyByDefault = this.FFmpegApplyByDefault;
 
-            set_ffmpegApplyByDefaultCheckBox_Color( ffmpegApplyByDefault );
+            Set_CheckBox_ForeColor( ffmpegApplyByDefaultCheckBox, ffmpegApplyByDefault );
             _Settings.FFmpegApplyByDefault = ffmpegApplyByDefault;
-        }
-        private void set_ffmpegApplyByDefaultCheckBox_Color( bool ffmpegApplyByDefault ) => ffmpegApplyByDefaultCheckBox.ForeColor = ffmpegApplyByDefault ? Color.FromArgb( 70, 70, 70 ) : Color.Silver;
+        }        
 
         private void set_mainLayoutPanel_Height( bool? isLiveStream_or_patternOutputFileName_visible = null )
         {
@@ -794,6 +782,46 @@ namespace m3u8.download.manager.ui
             if ( is_extra_visible && (this.Height <= DEFAULT_HEIGHT_this) ) this.Height += extra_height;
         }
 
+
+        private Dictionary< CheckBox, (Image origin, Bitmap disabled) > _ImageDisabled4CheckBox;// = new Dictionary< CheckBox, (Image origin, Bitmap disabled) >();
+        private static (Image origin, Bitmap disabled) CreateDisabledImage( Image origin )
+        {
+            var disabled = new Bitmap( origin.Width, origin.Height );
+            using var gr = Graphics.FromImage( disabled );
+            ControlPaint.DrawImageDisabled( gr, origin, 0, 0, Color.Transparent );
+            return (origin, disabled);
+        }
+        private /*static*/ void Set_CheckBox_ForeColor( CheckBox checkBox, bool isChecked )
+        {
+            if ( checkBox.Image != null )
+            {
+                if ( _ImageDisabled4CheckBox == null ) _ImageDisabled4CheckBox = new Dictionary< CheckBox, (Image origin, Bitmap disabled) >();
+                if ( _ImageDisabled4CheckBox.TryGetValue( checkBox, out var t ) )
+                {
+                    if ( isChecked ) checkBox.Image = t.origin;
+                    else
+                    {
+                        if ( t.disabled == null )
+                        {                            
+                            t = CreateDisabledImage( checkBox.Image );
+                            _ImageDisabled4CheckBox[ checkBox ] = t;
+                        }
+                        checkBox.Image = t.disabled;
+                    }                    
+                }
+                else if ( !isChecked )
+                {
+                    t = CreateDisabledImage( checkBox.Image );
+                    _ImageDisabled4CheckBox.Add( checkBox, t );
+                    checkBox.Image = t.disabled;
+                }
+            }
+
+            checkBox.ForeColor = isChecked ? Color.FromArgb( 70, 70, 70 ) : Color.Silver;
+        }
+        #endregion
+
+        #region [.OutputFileNamePatternProcessor & patternOutputFile.]
         private bool Process_use_OutputFileNamePatternProcessor_on_Init()
         {
             var suc = _OutputFileNamePatternProcessor.TryGet_Patterned_Last_OutputFileName( out var t );
@@ -875,13 +903,20 @@ namespace m3u8.download.manager.ui
             patternOutputFileNameLabel.Text = outputFileName;
             toolTip.SetToolTip( patternOutputFileNameLabel, outputFileName );
         }
+        #endregion
 
+        #region [.Init_SeriesInfo & TryRestoreOutputFileNameByAddress.]
+        private void Init_SeriesInfo( in (int n, int total)? seriesInfo )
+        {
+            this.Text += GetCaptionBySeriesInfo( seriesInfo );
+            _SeriesInfo = seriesInfo.GetValueOrDefault( (1, 1) );
+        }
         private bool TryRestoreOutputFileNameByAddress( string url )
         {
             var suc = _ReceivedAndWritedPartsProcessor.TryRestoreOutputFileNameByAddress( url, out var outputFileName, out var outputDirectory );
             if ( suc )
             {
-                this.OutputFileName  = outputFileName;
+                this.OutputFileName = outputFileName;
                 this.OutputDirectory = outputDirectory;
             }
             return (suc);

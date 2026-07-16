@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 using m3u8.download.manager.infrastructure;
 
@@ -17,6 +19,7 @@ namespace m3u8.download.manager
         string ExternalProgFilePath { get; }
         bool IsExternalProgFileAreExists();
         void SetExternalProgFilePath( string externalProgFilePath );
+        HashSet< string > Queue { get; }
         bool Run( string outputFileName, bool checkIsExternalProgFileAreExists );
         bool Run( IReadOnlyCollection< string > outputFileNames, bool runEachFileAsSeparate, bool checkIsExternalProgFileAreExists );
     }
@@ -24,14 +27,30 @@ namespace m3u8.download.manager
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class ExternalProgRunner : IExternalProgRunner
+    internal abstract class ExternalProgRunnerBase : IExternalProgRunner
     {
-        public ExternalProgRunner( string externalProgFilePath ) => ExternalProgFilePath = externalProgFilePath;
-        public string ExternalProgFilePath { get; private set; }
+        protected ExternalProgRunnerBase() => Queue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
+        public HashSet< string > Queue { get; }
 
-        public void SetExternalProgFilePath( string externalProgFilePath ) => ExternalProgFilePath = externalProgFilePath;
-        public bool IsExternalProgFileAreExists() => File.Exists( ExternalProgFilePath );
-        public bool Run( string outputFileName, bool checkIsExternalProgFileAreExists )
+        public abstract string ExternalProgFilePath { get; }
+        public abstract bool IsExternalProgFileAreExists();
+        public abstract bool Run( string outputFileName, bool checkIsExternalProgFileAreExists );
+        public abstract bool Run( IReadOnlyCollection< string > outputFileNames, bool runEachFileAsSeparate, bool checkIsExternalProgFileAreExists );        
+        public abstract void SetExternalProgFilePath( string externalProgFilePath );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal sealed class ExternalProgRunner : ExternalProgRunnerBase
+    {
+        private string _ExternalProgFilePath;
+        public ExternalProgRunner( string externalProgFilePath ) => _ExternalProgFilePath = externalProgFilePath;
+        public override string ExternalProgFilePath => _ExternalProgFilePath;
+
+        public override void SetExternalProgFilePath( string externalProgFilePath ) => _ExternalProgFilePath = externalProgFilePath;
+        public override bool IsExternalProgFileAreExists() => File.Exists( ExternalProgFilePath );
+        public override bool Run( string outputFileName, bool checkIsExternalProgFileAreExists )
         {
             var suc = (!checkIsExternalProgFileAreExists || IsExternalProgFileAreExists()) && !outputFileName.IsNullOrEmpty();
             if ( suc )
@@ -40,7 +59,7 @@ namespace m3u8.download.manager
             }
             return (suc);
         }
-        public bool Run( IReadOnlyCollection< string > outputFileNames, bool runEachFileAsSeparate, bool checkIsExternalProgFileAreExists )
+        public override bool Run( IReadOnlyCollection< string > outputFileNames, bool runEachFileAsSeparate, bool checkIsExternalProgFileAreExists )
         {
             var suc = (!checkIsExternalProgFileAreExists || IsExternalProgFileAreExists()) && outputFileNames.AnyEx();
             if ( suc )
@@ -81,7 +100,7 @@ namespace m3u8.download.manager
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class FFmpegConverterRunner : IExternalProgRunner
+    internal sealed class FFmpegConverterRunner : ExternalProgRunnerBase
     {
         private string             _FFmpegFileLocation;
         private ProcessWindowStyle _ProcessWindowStyle;
@@ -90,12 +109,12 @@ namespace m3u8.download.manager
             _FFmpegFileLocation = ffmpegFileLocation;
             _ProcessWindowStyle = processWindowStyle;
         }
-        public string ExternalProgFilePath => _FFmpegFileLocation;
+        public override string ExternalProgFilePath => _FFmpegFileLocation;
 
-        public void SetExternalProgFilePath( string ffmpegFileLocation ) => _FFmpegFileLocation = ffmpegFileLocation;
-        public bool IsExternalProgFileAreExists() => File.Exists( _FFmpegFileLocation );
+        public override void SetExternalProgFilePath( string ffmpegFileLocation ) => _FFmpegFileLocation = ffmpegFileLocation;
+        public override bool IsExternalProgFileAreExists() => File.Exists( _FFmpegFileLocation );
 
-        public bool Run( string outputFileName, bool checkIsExternalProgFileAreExists )
+        public override bool Run( string outputFileName, bool checkIsExternalProgFileAreExists )
         {
             var suc = (!checkIsExternalProgFileAreExists || IsExternalProgFileAreExists()) && !outputFileName.IsNullOrEmpty();
             if ( suc )
@@ -104,7 +123,7 @@ namespace m3u8.download.manager
             }
             return (suc);
         }
-        public bool Run( IReadOnlyCollection< string > outputFileNames, bool _/*runEachFileAsSeparate*/, bool checkIsExternalProgFileAreExists )
+        public override bool Run( IReadOnlyCollection< string > outputFileNames, bool _/*runEachFileAsSeparate*/, bool checkIsExternalProgFileAreExists )
         {
             var suc = (!checkIsExternalProgFileAreExists || IsExternalProgFileAreExists()) && outputFileNames.AnyEx();
             if ( suc )
@@ -167,5 +186,23 @@ namespace m3u8.download.manager
         }
 
         public override string ToString() => ExternalProgFilePath;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal sealed class ExternalProgRunner_Queues
+    {
+        private IExternalProgRunner[] _ExternalProgRunners;
+        public ExternalProgRunner_Queues( params IExternalProgRunner[] externalProgRunners ) => _ExternalProgRunners = externalProgRunners;
+     
+        public bool Contains( string item ) => _ExternalProgRunners.Any( e => e.Queue.Contains( item ) );
+        public void Remove( IReadOnlyCollection< string > seq ) => _ExternalProgRunners.ForEach( e => e.Queue.Remove( seq ) );
+        public IList< (HashSet< string > queue, bool suc) > Remove( string item ) => _ExternalProgRunners.SelectToList( e => (e.Queue, suc: e.Queue.Remove( item )) );
+        public void RemoveAllExcept( IReadOnlyCollection< string > seq ) => _ExternalProgRunners.ForEach( e => e.Queue.RemoveAllExcept( seq ) );
+        public void Clear() => _ExternalProgRunners.ForEach( e => e.Queue.Clear() );
+        public bool Any() => _ExternalProgRunners.Any( e => e.Queue.Any() );
+
+        public override string ToString() => string.Join(", ", _ExternalProgRunners.Select( e => $"[{Path.GetFileName( e.ExternalProgFilePath )}].Queue = {e.Queue.Count}" ) );
     }
 }

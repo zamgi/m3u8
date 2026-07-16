@@ -1352,9 +1352,9 @@ namespace m3u8.download.manager.ui
         public Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
         public Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
         private Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
-            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, outputFileName_or_outputDirectory, change_outputDirectory, null/*_ExternalProgQueue*/
+            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, outputFileName_or_outputDirectory, change_outputDirectory
                 , async new_outputFullFileName => ((await this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" )) == ButtonResult.Yes)
-                , error => this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" ) );
+                , error => this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" ) /*, _ExternalProgQueue*/ );
 
         //private async Task ChangeOutputFileName_Or_OutputDirectory__( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
         //{
