@@ -1,6 +1,5 @@
 ﻿using System;
 
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
@@ -19,13 +18,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
-        public ChangeLiveStreamMaxFileSizeForm()
-        {
-            this.InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
+        public ChangeLiveStreamMaxFileSizeForm() => this.InitializeComponent();
         internal ChangeLiveStreamMaxFileSizeForm( DownloadRow row ) : this() => (Row, this.LiveStreamMaxFileSizeInBytes) = (row, row.LiveStreamMaxFileSizeInBytes);
         private void InitializeComponent()
         {

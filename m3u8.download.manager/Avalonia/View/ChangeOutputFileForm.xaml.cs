@@ -30,13 +30,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
-        public ChangeOutputFileForm()
-        {
-            this.InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
+        public ChangeOutputFileForm() => this.InitializeComponent();
         internal ChangeOutputFileForm( _SC_ sc, DownloadRow row ) : this()
         {
             _SC = sc;

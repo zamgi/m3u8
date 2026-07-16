@@ -61,13 +61,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
-        public FileNameExcludesWordsEditor()
-        {
-            this.InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
+        public FileNameExcludesWordsEditor() => this.InitializeComponent();
         internal FileNameExcludesWordsEditor( IReadOnlyCollection< string > excludesWords ) : this() 
         {
             var items = (from s in excludesWords select new WordItem( s )).ToList( excludesWords.Count );

@@ -122,9 +122,6 @@ namespace m3u8.download.manager.ui
 
             m3u8FileUrlTextBox_SubscribeDisposable    = m3u8FileUrlTextBox   .GetObservable( TextBox.TextProperty ).Subscribe( m3u8FileUrlTextBox_TextChanged );
             outputFileNameTextBox_SubscribeDisposable = outputFileNameTextBox.GetObservable( TextBox.TextProperty ).Subscribe( outputFileNameTextBox_TextChanged );
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
         /// <summary>
         /// Edit

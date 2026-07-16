@@ -20,9 +20,6 @@ namespace m3u8.download.manager.ui
             _Cts = new CancellationTokenSource();
 
             this.InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
         public GlobalExceptionHandlerWindow( Exception ex ) : this() => this.DataContext = new { Exception = ex };
 

@@ -98,9 +98,6 @@ namespace m3u8.download.manager.ui
         public MainWindow()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
             PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopy += NamedPipeServer__Input_ReceivedSend2FirstCopy;
         }
         public MainWindow( in X[] array ) : this() => _InputParamsArray = array;

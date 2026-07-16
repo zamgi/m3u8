@@ -13,7 +13,13 @@ namespace m3u8.download.manager.ui
     {
         public static X[] _InputParamsArray;
 
-        public override void Initialize() => AvaloniaXamlLoader.Load( this );
+        public override void Initialize()
+        {
+            AvaloniaXamlLoader.Load( this );
+#if DEBUG
+            this.AttachDeveloperTools();
+#endif
+        }
         public override void OnFrameworkInitializationCompleted()
         {
             if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )

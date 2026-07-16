@@ -289,9 +289,6 @@ namespace m3u8.download.manager.ui
             this.InitializeComponent_4_other();
             this.InitializeComponent_4_webProxy();
             this.InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
         internal SettingsForm( MainVM vm, SettingsTabEnum? settingsTab = default ) : this()
         {

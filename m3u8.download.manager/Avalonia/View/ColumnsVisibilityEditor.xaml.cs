@@ -74,13 +74,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.ctor().]
-        public ColumnsVisibilityEditor()
-        {
-            this.InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
+        public ColumnsVisibilityEditor() => this.InitializeComponent();
         internal ColumnsVisibilityEditor( DataGrid targetDGV ) : this() 
         {
             _SaveColumnIsVisibleDict = new Dictionary< DataGridColumn, bool >( targetDGV.Columns.Count );
