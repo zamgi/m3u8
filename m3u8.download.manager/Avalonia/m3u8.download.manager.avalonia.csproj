@@ -113,10 +113,14 @@
     <Compile Include="..\[Common]\TestWebProxyConnectionHelper.cs" Link="Infrastructure\TestWebProxyConnectionHelper.cs" />
     <Compile Include="..\[Common]\ChangeFilenameOrDirectoryHelper.cs" Link="Infrastructure\ChangeFilenameOrDirectoryHelper.cs" />
   </ItemGroup>
-     
+
+  <PropertyGroup>
+    <AvaloniaCheckDiagnosticsConflict>false</AvaloniaCheckDiagnosticsConflict>
+  </PropertyGroup>  
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="12.1.0" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.3.18" />    
+    <!--<PackageReference Include="Avalonia.Diagnostics" Version="11.3.18" />-->
+    <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" />
     <PackageReference Include="ReactiveUI.Avalonia" Version="12.0.3" />
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="12.1.0" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.0" />    
