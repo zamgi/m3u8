@@ -236,8 +236,8 @@ namespace m3u8.download.manager.infrastructure
 
             return (null);
         }
-        public static (bool success, string outputFileName) TryGetFirstFileExists( ICollection< string > fileNames ) => (TryGetFirstFileExists( fileNames, out var outputFileName ), outputFileName);
-        public static bool TryGetFirstFileExists( ICollection< string > fileNames, out string existsFileName )
+        public static (bool success, string outputFileName) TryGetFirstFileExists( IReadOnlyCollection< string > fileNames ) => (TryGetFirstFileExists( fileNames, out var outputFileName ), outputFileName);
+        public static bool TryGetFirstFileExists( IReadOnlyCollection< string > fileNames, out string existsFileName )
         {
             if ( fileNames.AnyEx() )
             {
@@ -253,7 +253,12 @@ namespace m3u8.download.manager.infrastructure
             existsFileName = null;
             return (false);
         }
-        public static bool AnyFileExists( ICollection< string > fileNames ) => TryGetFirstFileExists( fileNames, out var _ );
+        //public static bool TryGetFirstFileExists( IReadOnlyCollection< string > fileNames, out IReadOnlyCollection< string > inputFileNames, out string existsFileName )
+        //{
+        //    inputFileNames = fileNames;
+        //    return (TryGetFirstFileExists( fileNames, out existsFileName ));
+        //}
+        public static bool AnyFileExists( IReadOnlyCollection< string > fileNames ) => TryGetFirstFileExists( fileNames, out var _ );
 
         public static long GetFileSize( string fileName ) => new FileInfo( fileName ).Length;
 

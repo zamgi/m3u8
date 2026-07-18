@@ -38,7 +38,7 @@ namespace m3u8.download.manager.ui
             this.logUC = new m3u8.download.manager.ui.LogUC( sc );
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.outputDirectoryTextBox = new TextBoxWithCustomPathPaste();
-            this.isLiveStreamCheckBox = new System.Windows.Forms.CheckBox();
+            this.isLiveStreamCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
             this.liveStreamMaxSizeInMbLabel = new System.Windows.Forms.Label();
             this.liveStreamMaxSizeInMbNumUpDn = new System.Windows.Forms.NumericUpDownEx();
             this.requestTimeoutByPartLabel = new System.Windows.Forms.Label();
@@ -49,8 +49,8 @@ namespace m3u8.download.manager.ui
             this.patternOutputFileNameLabel = new System.Windows.Forms.Label();
             this.patternOutputFileNameNumUpDn = new System.Windows.Forms.NumericUpDownEx();
             this.loadM3u8FileContentButton = new System.Windows.Forms.ButtonWithFocusCues();
-            this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox();
-            this.ffmpegApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox(); 
+            this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
+            this.ffmpegApplyByDefaultCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled(); 
             this.buttomPanel = new System.Windows.Forms.Panel();
             this.downloadStartButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.downloadLaterButton = new System.Windows.Forms.ButtonWithFocusCues();
@@ -608,7 +608,7 @@ namespace m3u8.download.manager.ui
         private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputFileNameTextBox;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.ButtonWithFocusCues loadM3u8FileContentButton;
-        private System.Windows.Forms.CheckBox isLiveStreamCheckBox;
+        private System.Windows.Forms.CheckBoxImitationDisabled isLiveStreamCheckBox;
         private System.Windows.Forms.Label liveStreamMaxSizeInMbLabel;
         private System.Windows.Forms.NumericUpDownEx liveStreamMaxSizeInMbNumUpDn;
         private System.Windows.Forms.Label patternOutputFileNameLabelCaption;
@@ -622,8 +622,8 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ButtonWithFocusCues downloadLaterButton;
         private System.Windows.Forms.ButtonWithFocusCues outputDirectorySelectButton;
         private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputDirectoryTextBox;
-        private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;
-        private System.Windows.Forms.CheckBox ffmpegApplyByDefaultCheckBox;
+        private System.Windows.Forms.CheckBoxImitationDisabled externalProgApplyByDefaultCheckBox;
+        private System.Windows.Forms.CheckBoxImitationDisabled ffmpegApplyByDefaultCheckBox;
         private System.Windows.Forms.Label attemptRequestCountByPartLabel;
         private System.Windows.Forms.NumericUpDownEx attemptRequestCountByPartNUD;
         private System.Windows.Forms.Label requestTimeoutByPartLabel;

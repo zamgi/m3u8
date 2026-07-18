@@ -98,5 +98,7 @@ namespace m3u8.download.manager.models
 
             _RowPropertiesChanged.Invoke( this, nameof(RequestRowType) );
         }
+
+        public override string ToString() => $"type={RequestRowType}, req='{RequestText}', resp='{ResponseText}', atmp-req-num={AttemptRequestNumber?.ToString() ?? "NULL"}";
     }
 }

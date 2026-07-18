@@ -408,14 +408,23 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void receivedAndWritedPartsClearAllButton_Click( object sender, EventArgs e )
+        private async void receivedAndWritedPartsClearAllButton_Click( object sender, EventArgs e )
         {
             const string CAPTION = "Stored files";
             if ( this.MessageBox_ShowQuestion( "Want to clear all info about stored files ?", CAPTION, MessageBoxButtons.OKCancel ) == DialogResult.OK )
             {
-                var suc = _ReceivedAndWritedPartsProcessor.TryDeleteAllStorerFiles();
-                if ( suc ) this.MessageBox_ShowInformation( "Success", CAPTION );
-                else this.MessageBox_ShowError( "Failed", CAPTION );
+                receivedAndWritedPartsClearAllButton.Enabled = false;
+                try
+                {
+                    var suc = _ReceivedAndWritedPartsProcessor.TryDeleteAllStorerFiles();
+                    await Task.Delay( 250 );
+                    if ( suc ) this.MessageBox_ShowInformation( "Success clear all stored files.", CAPTION );
+                    else this.MessageBox_ShowError( "Failed", CAPTION );
+                }
+                finally
+                {
+                    receivedAndWritedPartsClearAllButton.Enabled = true;
+                }
             }
         }
         #endregion

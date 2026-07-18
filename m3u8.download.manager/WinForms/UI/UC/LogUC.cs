@@ -72,7 +72,6 @@ namespace m3u8.download.manager.ui
         private Action< LogRow >  _InvalidateRowAction;
         private Action            _Model_CollectionChanged_AddChangedType_Buf__UIRoutineAction;
         private Action< _CollectionChangedTypeEnum_, LogRow > _Model_CollectionChangedAction;        
-        //private bool _WasAdjustColumnsWidthSprain; //_VScrollBarVisible;
 
         private LogRowsHeightStorer _LogRowsHeightStorer;
         private Settings _Settings;
@@ -172,6 +171,13 @@ namespace m3u8.download.manager.ui
             }
             base.Dispose( disposing );
         }
+        protected override void OnLoad( EventArgs e )
+        {
+            base.OnLoad( e );
+
+            this.DGV.Resize += new EventHandler( this.DGV_Resize );
+            DGV_Resize( null, null );
+        }
 
         private void _Settings_PropertyChanged( object sender, PropertyChangedEventArgs e )
         {
@@ -182,7 +188,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region [.public.]
+        #region [.Core-Public methods.]
         public bool ShowOnlyRequestRowsWithErrors
         {
             get => _ShowOnlyRequestRowsWithErrors;
@@ -431,7 +437,6 @@ namespace m3u8.download.manager.ui
 
                     case _CollectionChangedTypeEnum_.Clear:
                         ClearDataGridItems_UI();
-                        //_WasAdjustColumnsWidthSprain = false;
                         _Prev_IsVerticalScrollBarVisible = false;
                         Set_DGV_RowCount();
                         break;
@@ -456,23 +461,31 @@ namespace m3u8.download.manager.ui
         }
         private void Model_RowPropertiesChanged( LogRow row, string propertyName )
         {
-            if ( _ShowOnlyRequestRowsWithErrors && !IsRow_Showing_With_OnlyErrors( row ) && (propertyName == nameof(LogRow.RequestRowType)) )
+            switch ( propertyName )
             {
-                Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _RemoveRowAction, row ) );
+                case nameof(LogRow.RequestRowType):
+                    if ( _ShowOnlyRequestRowsWithErrors && !IsRow_Showing_With_OnlyErrors( row ) )
+                    {
+                        Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( _RemoveRowAction, row ) );
+                        return;
+                    }
+                    break;
+
+                case nameof(LogRow.AttemptRequestNumber):
+                    if ( _ShowOnlyMoreOneAttemptRequestCount )
+                    {
+                        var action = IsRow_Showing_With_MoreOneAttemptRequestCount( row ) ? _AddRowAction : _RemoveRowAction;
+                        Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( action, row ) );
+                        return;
+                    }
+                    break;
             }
-            else if ( _ShowOnlyMoreOneAttemptRequestCount && (propertyName == nameof(LogRow.AttemptRequestNumber)) )
-            {
-                var action = IsRow_Showing_With_MoreOneAttemptRequestCount( row ) ? _AddRowAction : _RemoveRowAction;
-                Task.Delay( 250 ).ContinueWith( _ => this.BeginInvoke( action, row ) );
-            }
-            else
-            {
-                InvalidateRow_UI( row );
-            }
+
+            InvalidateRow_UI( row );
         }
         #endregion
 
-        #region [.private.]
+        #region [.Core-Private methods.]
         private static bool IsRow_Showing_With_OnlyErrors( LogRow row ) => (row.RequestRowType != RequestRowTypeEnum.Success);
         private static bool IsRow_Showing_With_MoreOneAttemptRequestCount( LogRow row )
         {
@@ -480,7 +493,10 @@ namespace m3u8.download.manager.ui
             {
                 case RequestRowTypeEnum.Success: case RequestRowTypeEnum.Error:
                     return (1 < row.AttemptRequestNumber.GetValueOrDefault( 2 ));
-                default: return (true);
+                default:
+                    if ( row.AttemptRequestNumber.HasValue )
+                        return (1 < row.AttemptRequestNumber.Value);
+                    return (true);
             }
         }
         private async void SetDataGridItems()
@@ -613,12 +629,6 @@ namespace m3u8.download.manager.ui
                 }
             }
 
-            //if ( !_WasAdjustColumnsWidthSprain && isVerticalScrollBarVisible )
-            //{
-            //    _WasAdjustColumnsWidthSprain = true;
-            //    AdjustColumnsWidthSprain();
-            //}
-
             if ( _ScrollToLastRow )
             {
                 ScrollToLastRow_UI();
@@ -726,14 +736,6 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.DGV events.]
-        protected override void OnLoad( EventArgs e )
-        {
-            base.OnLoad( e );
-
-            this.DGV.Resize += new EventHandler(this.DGV_Resize);
-            DGV_Resize( null, null );
-        }
-
         private int GetColumnsResizeDiff() => (DGV.RowHeadersVisible ? DGV.RowHeadersWidth : 0) + 
                                               (IsVerticalScrollBarVisible ? SystemInformation.VerticalScrollBarWidth : 0) + //3 + 
                                               ((DGV.BorderStyle != BorderStyle.None) ? SystemInformation.FixedFrameBorderSize.Width : SystemInformation.BorderSize.Width);

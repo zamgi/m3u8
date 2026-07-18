@@ -254,7 +254,7 @@ namespace m3u8.download.manager.ui
             {
                 components?.Dispose();
                 _FNCP.Dispose();
-                _ImageDisabled4CheckBox?.Values.ForEach( t => t.disabled?.Dispose_NoThrow() );
+                //_ImageDisabled4CheckBox?.Values.ForEach( t => t.disabled?.Dispose_NoThrow() );
             }
             base.Dispose( disposing );
         }
@@ -642,7 +642,7 @@ namespace m3u8.download.manager.ui
                 //if ( externalProgApplyByDefaultCheckBox.Checked != value )
                 //{
                 externalProgApplyByDefaultCheckBox.Checked = value;
-                Set_CheckBox_ForeColor( externalProgApplyByDefaultCheckBox, value );
+                //Set_CheckBox_ForeColor( externalProgApplyByDefaultCheckBox, value );
                 //}
             }
         }
@@ -654,7 +654,7 @@ namespace m3u8.download.manager.ui
                 //if ( ffmpegApplyByDefaultCheckBox.Checked != value )
                 //{
                 ffmpegApplyByDefaultCheckBox.Checked = value;
-                Set_CheckBox_ForeColor( ffmpegApplyByDefaultCheckBox, value );
+                //Set_CheckBox_ForeColor( ffmpegApplyByDefaultCheckBox, value );
                 //}
             }
         }
@@ -746,28 +746,13 @@ namespace m3u8.download.manager.ui
 
         private void isLiveStreamCheckBox_Click( object sender, EventArgs e )
         {
-            var isLiveStream = this.IsLiveStream;
-
-            Set_CheckBox_ForeColor( isLiveStreamCheckBox, isLiveStream );
-            liveStreamMaxSizeInMbNumUpDn.Visible = liveStreamMaxSizeInMbLabel.Visible = isLiveStream;
-
+            liveStreamMaxSizeInMbNumUpDn.Visible 
+                = liveStreamMaxSizeInMbLabel.Visible = this.IsLiveStream;
             set_mainLayoutPanel_Height();
         }
 
-        private void externalProgApplyByDefaultCheckBox_Click( object sender, EventArgs e )
-        {
-            var externalProgApplyByDefault = this.ExternalProgApplyByDefault;
-
-            Set_CheckBox_ForeColor( externalProgApplyByDefaultCheckBox, externalProgApplyByDefault );
-            _Settings.ExternalProgApplyByDefault = externalProgApplyByDefault;
-        }
-        private void ffmpegApplyByDefaultCheckBox_Click( object sender, EventArgs e )
-        {
-            var ffmpegApplyByDefault = this.FFmpegApplyByDefault;
-
-            Set_CheckBox_ForeColor( ffmpegApplyByDefaultCheckBox, ffmpegApplyByDefault );
-            _Settings.FFmpegApplyByDefault = ffmpegApplyByDefault;
-        }        
+        private void externalProgApplyByDefaultCheckBox_Click( object sender, EventArgs e ) => _Settings.ExternalProgApplyByDefault = this.ExternalProgApplyByDefault;
+        private void ffmpegApplyByDefaultCheckBox_Click( object sender, EventArgs e ) => _Settings.FFmpegApplyByDefault = this.FFmpegApplyByDefault;
 
         private void set_mainLayoutPanel_Height( bool? isLiveStream_or_patternOutputFileName_visible = null )
         {
@@ -780,44 +765,6 @@ namespace m3u8.download.manager.ui
 
             mainLayoutPanel.Height = DEFAULT_HEIGHT_mainLayoutPanel + extra_height;
             if ( is_extra_visible && (this.Height <= DEFAULT_HEIGHT_this) ) this.Height += extra_height;
-        }
-
-
-        private Dictionary< CheckBox, (Image origin, Bitmap disabled) > _ImageDisabled4CheckBox;// = new Dictionary< CheckBox, (Image origin, Bitmap disabled) >();
-        private static (Image origin, Bitmap disabled) CreateDisabledImage( Image origin )
-        {
-            var disabled = new Bitmap( origin.Width, origin.Height );
-            using var gr = Graphics.FromImage( disabled );
-            ControlPaint.DrawImageDisabled( gr, origin, 0, 0, Color.Transparent );
-            return (origin, disabled);
-        }
-        private /*static*/ void Set_CheckBox_ForeColor( CheckBox checkBox, bool isChecked )
-        {
-            if ( checkBox.Image != null )
-            {
-                if ( _ImageDisabled4CheckBox == null ) _ImageDisabled4CheckBox = new Dictionary< CheckBox, (Image origin, Bitmap disabled) >();
-                if ( _ImageDisabled4CheckBox.TryGetValue( checkBox, out var t ) )
-                {
-                    if ( isChecked ) checkBox.Image = t.origin;
-                    else
-                    {
-                        if ( t.disabled == null )
-                        {                            
-                            t = CreateDisabledImage( checkBox.Image );
-                            _ImageDisabled4CheckBox[ checkBox ] = t;
-                        }
-                        checkBox.Image = t.disabled;
-                    }                    
-                }
-                else if ( !isChecked )
-                {
-                    t = CreateDisabledImage( checkBox.Image );
-                    _ImageDisabled4CheckBox.Add( checkBox, t );
-                    checkBox.Image = t.disabled;
-                }
-            }
-
-            checkBox.ForeColor = isChecked ? Color.FromArgb( 70, 70, 70 ) : Color.Silver;
         }
         #endregion
 
