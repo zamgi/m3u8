@@ -15,7 +15,7 @@ namespace m3u8.download.manager.controllers
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class throttler_by_speed_impl__v1 : I_throttler_by_speed__v1_t, IDisposable
+    internal sealed class throttler_by_speed_impl__v1 : i_throttler_by_speed__v1_t, IDisposable
     {
         /// <summary>
         /// 
@@ -200,7 +200,7 @@ namespace m3u8.download.manager.controllers
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class throttler_by_speed_impl__v2 : I_throttler_by_speed__v2_t, IDisposable
+    internal sealed class throttler_by_speed_impl__v2 : i_throttler_by_speed__v2_t, IDisposable
     {
         /// <summary>
         /// 

@@ -8,7 +8,7 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal interface I_throttler_by_speed__v1_t : IDisposable
+    internal interface i_throttler_by_speed__v1_t : IDisposable
     {
         decimal? GetMaxSpeedThreshold();
         void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps );
@@ -24,7 +24,7 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal interface I_throttler_by_speed__v2_t : IDisposable
+    public interface i_throttler_by_speed__v2_t : IDisposable
     {
         decimal? GetMaxSpeedThreshold();
         void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps );
@@ -36,11 +36,11 @@ namespace m3u8
     }
     //-----------------------------------------------------------//
 #endif
-    
+
     /// <summary>
     /// 
     /// </summary>
-    internal interface I_ThrottlerBySpeed_InDownloadProcessUser : IDisposable
+    public interface I_ThrottlerBySpeed_InDownloadProcessUser : IDisposable
     {
         double? Throttle( CancellationToken ct );
         void TakeIntoAccountDownloadedBytes( int downloadedBytes );
@@ -67,9 +67,9 @@ namespace m3u8
     /// </summary>
     internal sealed class ThrottlerBySpeed_InDownloadProcessUser__v1 : I_ThrottlerBySpeed_InDownloadProcessUser
     {
-        private I_throttler_by_speed__v1_t _ThrottlerBySpeed;
+        private i_throttler_by_speed__v1_t _ThrottlerBySpeed;
         private Task _MarkerTask;
-        private ThrottlerBySpeed_InDownloadProcessUser__v1( I_throttler_by_speed__v1_t throttlerBySpeed )
+        private ThrottlerBySpeed_InDownloadProcessUser__v1( i_throttler_by_speed__v1_t throttlerBySpeed )
         {
             _ThrottlerBySpeed = throttlerBySpeed ?? throw (new ArgumentNullException( nameof(throttlerBySpeed) ));
 
@@ -91,7 +91,7 @@ namespace m3u8
         public void Restart() => _ThrottlerBySpeed.Restart( _MarkerTask );
         public void End() => Dispose();
 
-        public static I_ThrottlerBySpeed_InDownloadProcessUser Start( I_throttler_by_speed__v1_t throttlerBySpeed )
+        public static I_ThrottlerBySpeed_InDownloadProcessUser Start( i_throttler_by_speed__v1_t throttlerBySpeed )
             => (throttlerBySpeed != null) ? new ThrottlerBySpeed_InDownloadProcessUser__v1( throttlerBySpeed ) : No_ThrottlerBySpeed_InDownloadProcessUser.Inst;
     }
 #endif
@@ -101,8 +101,8 @@ namespace m3u8
     /// </summary>
     internal sealed class ThrottlerBySpeed_InDownloadProcessUser__v2 : I_ThrottlerBySpeed_InDownloadProcessUser
     {
-        private I_throttler_by_speed__v2_t _ThrottlerBySpeed;
-        private ThrottlerBySpeed_InDownloadProcessUser__v2( I_throttler_by_speed__v2_t throttlerBySpeed )
+        private i_throttler_by_speed__v2_t _ThrottlerBySpeed;
+        private ThrottlerBySpeed_InDownloadProcessUser__v2( i_throttler_by_speed__v2_t throttlerBySpeed )
         {
             _ThrottlerBySpeed = throttlerBySpeed ?? throw (new ArgumentNullException( nameof(throttlerBySpeed) ));
             _ThrottlerBySpeed.Start();
@@ -122,7 +122,7 @@ namespace m3u8
         public void Restart() => _ThrottlerBySpeed.Restart();
         public void End() => Dispose();
 
-        public static I_ThrottlerBySpeed_InDownloadProcessUser Start( I_throttler_by_speed__v2_t throttlerBySpeed )
+        public static I_ThrottlerBySpeed_InDownloadProcessUser Start( i_throttler_by_speed__v2_t throttlerBySpeed )
             => (throttlerBySpeed != null) ? new ThrottlerBySpeed_InDownloadProcessUser__v2( throttlerBySpeed ) : No_ThrottlerBySpeed_InDownloadProcessUser.Inst;
     }
 #endif

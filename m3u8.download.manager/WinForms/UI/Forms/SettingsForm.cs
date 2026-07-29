@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
+using m3u8.client__v2;
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.Properties;
 

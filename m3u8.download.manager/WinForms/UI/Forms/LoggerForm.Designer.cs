@@ -1,4 +1,4 @@
-﻿namespace m3u8.download.manager.UI.Forms
+﻿namespace m3u8.download.manager.ui
 {
     partial class LoggerForm
     {

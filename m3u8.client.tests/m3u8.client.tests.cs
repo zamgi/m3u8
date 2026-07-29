@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Xunit;
 
 using m3u8.infrastructure;
+using m3u8.client__v1;
 
 namespace m3u8.client.tests
 {
@@ -164,9 +165,9 @@ namespace m3u8.client.tests
             try
             {
 #endif
-            using ( var mc = new m3u8_client( _HttpClient, default ) )
+            using ( var mc = new m3u8_client__with_HttpClient( _HttpClient, default ) )
             {
-                var m3u8_file = await mc.DownloadFile( _M3u8Url, TestContext.Current.CancellationToken );
+                var m3u8_file = await mc.DownloadFile( _M3u8Url, requestHeaders: null, TestContext.Current.CancellationToken );
 
                 _Assert_( m3u8_file );
             }
@@ -185,7 +186,7 @@ namespace m3u8.client.tests
             try
             {
 #endif
-            using ( var mc = new m3u8_client( _HttpClient, default ) )
+            using ( var mc = new m3u8_client__with_HttpClient( _HttpClient, default ) )
             {
                 var m3u8_file = await mc.DownloadFile( _M3u8Url, TestContext.Current.CancellationToken );
 
@@ -213,22 +214,22 @@ namespace m3u8.client.tests
 
             var timeout_1 = TimeSpan.FromSeconds( 1 );
             var timeout_2 = TimeSpan.FromSeconds( 7 );
-            using ( var mc_1_1 = (m3u8_client) m3u8_client_factory.Create( timeout_1 ) )
+            using ( var mc_1_1 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_1 ) )
             {
                 Assert.True( HttpClientFactory_WithRefCount.Any() );
 
                 var t_1 = HttpClientFactory_WithRefCount.GetTop();
                 Assert.True( (t_1.hc == mc_1_1.HttpClient) && (t_1.timeout == timeout_1) && (t_1.refCount == 1) );
 
-                using ( var mc_1_2 = (m3u8_client) m3u8_client_factory.Create( timeout_1 ) )
+                using ( var mc_1_2 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_1 ) )
                 {
                     t_1 = HttpClientFactory_WithRefCount.GetTop();
                     Assert.True( (t_1.hc == mc_1_2.HttpClient) && (t_1.timeout == timeout_1) && (t_1.refCount == 2) );
 
                     Assert.True( mc_1_1.HttpClient == mc_1_2.HttpClient );
 
-                    using ( var mc_2_1 = (m3u8_client) m3u8_client_factory.Create( timeout_2 ) )
-                    using ( var mc_2_2 = (m3u8_client) m3u8_client_factory.Create( timeout_2 ) )
+                    using ( var mc_2_1 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_2 ) )
+                    using ( var mc_2_2 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_2 ) )
                     {
                         Assert.True( mc_2_1.HttpClient == mc_2_2.HttpClient );
                         Assert.True( mc_1_1.HttpClient != mc_2_2.HttpClient );
@@ -245,7 +246,7 @@ namespace m3u8.client.tests
             var t_4 = HttpClientFactory_WithRefCount.GetTop();
             Assert.True( (t_4.timeout == timeout_2) && (t_4.refCount == 0) );
 
-            using ( var mc_2_3 = (m3u8_client) m3u8_client_factory.Create( timeout_2 ) )
+            using ( var mc_2_3 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_2 ) )
             {
                 var t_5 = HttpClientFactory_WithRefCount.GetTop();
                 Assert.True( (t_5.hc == mc_2_3.HttpClient) && (t_5.timeout == timeout_2) && (t_5.refCount == 1) );

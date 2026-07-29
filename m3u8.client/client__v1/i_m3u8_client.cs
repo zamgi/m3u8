@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace m3u8
+namespace m3u8.client__v1
 {
     /// <summary>
     /// 
@@ -29,9 +29,8 @@ namespace m3u8
         public init_params InitParams { get; }
         public IWebProxy   WebProxy   { get; }
 
-        Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default, IDictionary< string, string > requestHeaders = null );
+        Task< m3u8_file_t > DownloadFile( Uri url, CancellationToken ct = default );
+        Task< m3u8_file_t > DownloadFile( Uri url, IDictionary< string, string > requestHeaders = null, CancellationToken ct = default );
         Task< m3u8_part_ts > DownloadPart( m3u8_part_ts part, Uri baseAddress, CancellationToken ct = default );
-
-        Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress, CancellationToken ct = default );
     }
 }

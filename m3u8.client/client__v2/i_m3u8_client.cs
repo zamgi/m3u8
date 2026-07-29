@@ -5,17 +5,17 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8.infrastructure;
+using m3u8.client__v2;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
-namespace m3u8
+namespace m3u8.client__v2
 {
     /// <summary>
     /// 
     /// </summary>
-    internal interface i_m3u8_client_next : IDisposable
+    public interface i_m3u8_client : IDisposable
     {
         /// <summary>
         /// 
@@ -47,16 +47,14 @@ namespace m3u8
         }
         void ChangeSettings( in ChangeSettingsParams csp );
 
-        Task< m3u8_file_t > DownloadFile( Uri url, IDictionary< string, string > requestHeaders = null, CancellationToken ct = default );
-
         //------------------------------------------------------------------------------------------//
         /// <summary>
         /// 
         /// </summary>
         public struct DownloadPartStepActionParams
         {
-            public DownloadPartStepActionParams( in m3u8_part_ts__v2 part ) => Part = part;
-            public m3u8_part_ts__v2 Part        { get; init; }
+            public DownloadPartStepActionParams( in m3u8_part_ts part ) => Part = part;
+            public m3u8_part_ts Part        { get; init; }
             public long?   TotalContentLength   { get; internal set; }
             public long    TotalBytesReaded     { get; internal set; }            
             public int     BytesReaded          { get; internal set; }
@@ -73,31 +71,33 @@ namespace m3u8
         /// </summary>
         public struct DownloadPartInputParams
         {
-            public I_ThrottlerBySpeed_InDownloadProcessUser ThrottlerBySpeed_User  { [M(O.AggressiveInlining)] get; set; }
-            public ObjectPool< byte[] >                     RespBufPool            { [M(O.AggressiveInlining)] get; set; }
-            public DownloadPartStepActionDelegate           DownloadPartStepAction { [M(O.AggressiveInlining)] get; set; }
-           
-            public I_download_threads_semaphore             DownloadThreadsSemaphore { [M(O.AggressiveInlining)] get; set; }
-            public WaitIfPausedHolder                       WaitIfPausedHolder       { [M(O.AggressiveInlining)] get; set; }
+            required public I_ThrottlerBySpeed_InDownloadProcessUser ThrottlerBySpeed_User    { [M(O.AggressiveInlining)] get; set; }
+            required public IObjectPool< byte[] >                    RespBufPool              { [M(O.AggressiveInlining)] get; set; }
+            required public DownloadPartStepActionDelegate           DownloadPartStepAction   { [M(O.AggressiveInlining)] get; set; }
 
-            //public ManualResetEventSlim                     WasSettedWaitIfPausedEvent  { [M(O.AggressiveInlining)] get; set; }
+            required public i_download_threads_semaphore             DownloadThreadsSemaphore { [M(O.AggressiveInlining)] get; set; }
+            required public WaitIfPausedHolder                       WaitIfPausedHolder       { [M(O.AggressiveInlining)] get; set; }
 
-            public string OutputFileName { [M(O.AggressiveInlining)] get; set; }
+            required public IObjectPool< CancellationTokenSource >   TimeoutCtsPool           { [M(O.AggressiveInlining)] get; set; }
+
+            required public string OutputFileName { [M(O.AggressiveInlining)] get; set; }
             public override string ToString() => OutputFileName;
         }
 
-        Task< m3u8_part_ts__v2 > DownloadPart( m3u8_part_ts__v2 part, Uri baseAddress, IDictionary< string, string > requestHeaders
-            , DownloadPartInputParams ip, CancellationToken ct = default );
+        Task< m3u8_file_t > DownloadFile( Uri url, IDictionary< string, string > requestHeaders = null, CancellationToken ct = default );
 
-        Task< m3u8_part_ts__v2 > DownloadPart__v2( m3u8_part_ts__v2 part, Uri baseAddress, IDictionary< string, string> requestHeaders
+        Task< m3u8_part_ts > DownloadPart( m3u8_part_ts part, Uri baseAddress, IDictionary< string, string> requestHeaders
             , DownloadPartInputParams ip, CancellationToken commonToken );
     }
 }
 
 namespace m3u8.infrastructure
 {
-    using DownloadPartStepActionParams = i_m3u8_client_next.DownloadPartStepActionParams;
+    using DownloadPartStepActionParams = i_m3u8_client.DownloadPartStepActionParams;
 
+    /// <summary>
+    /// 
+    /// </summary>
     internal static partial class Extensions
     {
         public static ref readonly DownloadPartStepActionParams SetAttemptRequestNumber( this ref DownloadPartStepActionParams x, int value )

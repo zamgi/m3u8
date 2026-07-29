@@ -64,6 +64,19 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
+        [Flags] public enum CheckMarkTypeEnum
+        {
+            None   = 0,
+            Green  = 0x1,
+            Orange = 0x2,
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate CheckMarkTypeEnum GetDrawCheckMarkTypeDelegate( DownloadRow row );
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly struct SummaryDownloadInfo
         {
             /// <summary>
@@ -121,7 +134,8 @@ namespace m3u8.download.manager.ui
         public event UpdatedSingleRunningRowEventHandler    UpdatedSingleRunningRow;
         public event UpdatedSummaryDownloadInfoEventHandler UpdatedSummaryDownloadInfo;
         public event EventHandler                           DoubleClickEx;
-        public event IsDrawCheckMarkDelegate                IsDrawCheckMark;
+        public       IsDrawCheckMarkDelegate                IsDrawCheckMark;
+        public       GetDrawCheckMarkTypeDelegate           GetDrawCheckMarkType;
 
         private DownloadListModel _Model;
         //private CellStyle _DefaultCellStyle;
@@ -1316,24 +1330,39 @@ namespace m3u8.download.manager.ui
                         rc = new Rectangle( rc.X + 2, rc.Y + (rc.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
                         gr.DrawImage( img, rc );
                     }
-                    #endregion
+                        #endregion
 
                     #region [.-6.1- draw-check-mark.]
-                    var isDrawCheckMark = (IsDrawCheckMark?.Invoke( row ) == true);
+                    var cmt = (GetDrawCheckMarkType?.Invoke( row )).GetValueOrDefault( CheckMarkTypeEnum.None );
                     #endregion
 
                     #region [.-5- status text.]
                     var defCellFont = DGV.DefaultCellStyle.Font ?? DGV.Font;
 
-                    rc = e.CellBounds; rc.X += STATUS_TEXT_OFFSET_X; rc.Width -= STATUS_TEXT_OFFSET_X + (isDrawCheckMark ? CHECK_MARK_WIDTH : 0); //rc.Inflate( -OFFSET, 0 );
+                    rc = e.CellBounds; rc.X += STATUS_TEXT_OFFSET_X; 
+                    rc.Width -= STATUS_TEXT_OFFSET_X + (cmt switch { CheckMarkTypeEnum.Green => CHECK_MARK_WIDTH, CheckMarkTypeEnum.Orange => CHECK_MARK_WIDTH,
+                                                                     CheckMarkTypeEnum.Orange | CheckMarkTypeEnum.Green => CHECK_MARK_WIDTH + SECOND_CHECK_MARK_OFFSET, _ => 0 });
                     gr.DrawString( row.Status.ToString(), defCellFont, Brushes.Black, rc, _SF_Left );
                     #endregion
 
                     #region [.-6.2- draw-check-mark.]
-                    if ( isDrawCheckMark )
+                    if ( cmt != CheckMarkTypeEnum.None )
                     {
-                        rc = e.CellBounds; //rc.Inflate( -2, 0 );
-                        gr.DrawString( "\u2713", defCellFont, Brushes.Green, rc, _SF_Right );
+                        //rc = e.CellBounds; //rc.Inflate( -2, 0 );
+                        //using var checkMarkBrush = new SolidBrush( checkMark.color );
+                        //gr.DrawString( "\u2713", defCellFont, Brushes.Green, rc, _SF_Right );
+
+                        rc = e.CellBounds;
+                        if ( cmt.HasFlag( CheckMarkTypeEnum.Orange ) )
+                        { 
+                            gr.DrawString( "\u2713", defCellFont, Brushes.Orange, rc, _SF_Right );
+                            if ( cmt.HasFlag( CheckMarkTypeEnum.Green ) ) rc.Width -= SECOND_CHECK_MARK_OFFSET;                            
+                        }
+
+                        if ( cmt.HasFlag( CheckMarkTypeEnum.Green ) )
+                        {
+                            gr.DrawString( "\u2713", defCellFont, Brushes.Green, rc, _SF_Right );
+                        }
                     }
                     #endregion
                 }
@@ -1454,7 +1483,7 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private const int STATUS_TEXT_OFFSET_X = 18, CHECK_MARK_WIDTH = 12;
+        private const int STATUS_TEXT_OFFSET_X = 18, CHECK_MARK_WIDTH = 12, SECOND_CHECK_MARK_OFFSET = 4/*CHECK_MARK_WIDTH/2*/;
         private const int IMAGE_HEIGHT = 16, IsLiveStream_IMAGE_PAD_RIGHT = 5, UseWebProxy_IMAGE_PAD_RIGHT = 3;
         [M(O.AggressiveInlining)] private static Rectangle GetIsLiveStreamImageRect( in Rectangle cellClipBounds )
             => new Rectangle( cellClipBounds.Right - (IMAGE_HEIGHT + IsLiveStream_IMAGE_PAD_RIGHT), cellClipBounds.Y + (cellClipBounds.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );

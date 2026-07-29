@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using m3u8.infrastructure;
+
 #if M3U8_LIVE_STREAM_DOWNLOADER__HttpMessageInvoker
-using m3u8_live_stream_downloader_impl = m3u8.m3u8_live_stream_downloader__with_HttpMessageInvoker;
+using m3u8_live_stream_downloader_impl = m3u8.m3u8_live_stream_downloader__with_HttpInvoker;
 #else
 using m3u8_live_stream_downloader_impl = m3u8.m3u8_live_stream_downloader__with_HttpClient;
 #endif
@@ -40,6 +42,11 @@ namespace m3u8
                 { 
                     M3u8Url        = M3U8_URL,
                     OutputFileName = OUTPUT_FILENAME,
+
+                    ThrottlerBySpeed   = default,
+                    TimeoutCtsPool     = default,
+                    WaitIfPausedHolder = default,
+
                     //Timeout        = null,
 
                     DownloadContent      = (p)                  => $"[ QUEUEED]: {p}".ToConsole( cts ),

@@ -1,4 +1,6 @@
-﻿using _DC_ = m3u8.download.manager.controllers.DownloadController;
+﻿using m3u8.client__v2;
+
+using _DC_ = m3u8.download.manager.controllers.DownloadController;
 using _SC_ = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 
 namespace m3u8.download.manager.ui

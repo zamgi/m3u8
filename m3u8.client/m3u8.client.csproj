@@ -60,14 +60,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="client\i_m3u8_client.cs" />
-    <Compile Include="client\m3u8_client_v2.cs" />
-    <Compile Include="client_next\m3u8_client_next_v2.cs" />
-    <Compile Include="client_next\m3u8_client_next_factory.cs" />
-    <Compile Include="client_next\m3u8_client_next.cs" />
-    <Compile Include="client_next\i_m3u8_client_next.cs" />
-    <Compile Include="client_next\ReceivedAndWritedPartsStorer.cs" />
-    <Compile Include="download_threads_semaphore.cs" />
+    <Compile Include="client__v1\m3u8_client_base.cs" />
+    <Compile Include="client__v1\m3u8_file_t.cs" />
+    <Compile Include="client__v1\i_m3u8_client.cs" />
+    <Compile Include="client__v1\m3u8_client__with_HttpInvoker.cs" />
+    <Compile Include="client__v2\m3u8_client_base.cs" />
+    <Compile Include="client__v2\m3u8_client__with_HttpInvoker.cs" />
+    <Compile Include="client__v2\m3u8_client_factory.cs" />
+    <Compile Include="client__v2\m3u8_client__with_HttpClient.cs" />
+    <Compile Include="client__v2\i_m3u8_client.cs" />
+    <Compile Include="client__v2\ReceivedAndWritedPartsStorer.cs" />
+    <Compile Include="client__v2\m3u8_file_t.cs" />
+    <Compile Include="client__v2\WaitIfPausedHolder.cs" />
+    <Compile Include="helpers\FileHelper.cs" />
+    <Compile Include="infrastructure\DefaultConnectionLimitSaver.cs" />
+    <Compile Include="i_download_threads_semaphore.cs" />
     <None Include="(HttpRequestsOverProxy)\Requesters\helpers\Extensions.cs" />
     <None Include="(HttpRequestsOverProxy)\Requesters\helpers\ObjectPool.cs" />
     <None Include="(HttpRequestsOverProxy)\SocksSharp\Helpers\ContentHelper.cs" />
@@ -92,15 +99,15 @@
     <Compile Include="infrastructure\HttpInvokerFactory_WithRefCount.cs" />
     <Compile Include="infrastructure\LRUCache.cs" />
     <Compile Include="infrastructure\HttpClientFactory_WithRefCount.cs" />
-    <Compile Include="client\m3u8.stuff.cs" />
-    <Compile Include="client\m3u8_client.cs" />
-    <Compile Include="client\m3u8_client_factory.cs" />
-    <Compile Include="m3u8_processor.cs" />
-    <Compile Include="m3u8_processor_adv.cs" />
-    <Compile Include="m3u8_processor_adv__v2.cs" />
-    <Compile Include="client_next\m3u8_processor_next.cs" />
-    <Compile Include="m3u8_processor__v2.cs" />
-    <Compile Include="obj_pool.cs" />
+    <Compile Include="m3u8.stuff.cs" />
+    <Compile Include="client__v1\m3u8_client__with_HttpClient.cs" />
+    <Compile Include="client__v1\m3u8_client_factory.cs" />
+    <Compile Include="client__v1\m3u8_processor.cs" />
+    <Compile Include="client__v1\m3u8_processor_adv.cs" />
+    <Compile Include="client__v2\m3u8_processor_adv.cs" />
+    <Compile Include="client__v2\m3u8_processor.cs" />
+    <Compile Include="client__v2\m3u8_processor__v0.cs" />
+    <Compile Include="helpers\obj_pool.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="infrastructure\System.Runtime.CompilerServices.cs" />
     <Compile Include="web_proxy_info.cs" />

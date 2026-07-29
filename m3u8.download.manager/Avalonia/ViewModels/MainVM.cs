@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
+using m3u8.client__v2;
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
@@ -13,7 +14,7 @@ namespace m3u8.download.manager
     /// </summary>
     internal sealed class MainVM : IDisposable, INotifyPropertyChanged
     {
-        public MainVM( MainWindow mainWindow, Settings settings, m3u8_client_next_factory_enum_type m3u8_client_next_factory_type )
+        public MainVM( MainWindow mainWindow, Settings settings, m3u8_client_factory_enum_type m3u8_client_factory_type )
         {
             SettingsController = new SettingsPropertyChangeController( settings );
 
@@ -21,7 +22,7 @@ namespace m3u8.download.manager
 
             DownloadListModel  = new DownloadListModel();
             DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
-            DownloadController = new DownloadController( DownloadListModel, SettingsController, m3u8_client_next_factory_type, ReceivedAndWritedPartsProcessor );
+            DownloadController = new DownloadController( DownloadListModel, SettingsController, m3u8_client_factory_type, ReceivedAndWritedPartsProcessor );
 
             UndoModel          = new UndoModel( DownloadListModel );
             OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();

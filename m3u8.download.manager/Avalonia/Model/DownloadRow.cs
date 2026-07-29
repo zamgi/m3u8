@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
+using m3u8.client__v2;
+
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                      = System.Runtime.CompilerServices.MethodImplOptions;
@@ -288,7 +290,7 @@ namespace m3u8.download.manager.models
             return (allowed);
         }
 
-        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in m3u8_processor_next.ResponseStepActionParams p )
+        [M(O.AggressiveInlining)] internal void SetDownloadResponseStepParams( in m3u8_processor.ResponseStepActionParams p )
         {
             var call__RowPropertiesChanged = false;
             lock ( this )
@@ -318,7 +320,7 @@ namespace m3u8.download.manager.models
                 Fire_PropertyChanged_Events( nameof(MySelf) );
             }
         }
-        [M(O.AggressiveInlining)] internal void SetDownloadPartStepParams( in i_m3u8_client_next.DownloadPartStepActionParams p, bool raiseRowPropertiesChangedEvent )
+        [M(O.AggressiveInlining)] internal void SetDownloadPartStepParams( in i_m3u8_client.DownloadPartStepActionParams p, bool raiseRowPropertiesChangedEvent )
         {
             if ( raiseRowPropertiesChangedEvent )
             {

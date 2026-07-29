@@ -13,7 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
-namespace m3u8
+namespace System.Collections.Generic
 {
     /// <summary>
     /// 
@@ -26,7 +26,16 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal class ObjectPool< T > : IDisposable
+    public interface IObjectPool< T >
+    {
+        IObjectHolder< T > GetHolder();
+        IObjectHolder< T > GetHolder( out T t );
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class ObjectPool< T > : IObjectPool< T >, IDisposable
         where T : class
     {
 #if USE_ConcurrentStack_With_Manual_Count
@@ -64,6 +73,8 @@ namespace m3u8
                 _Stack.Clear();
             }
             public X[] ToArray() => _Stack.ToArray();
+
+            public override string ToString() => $"Stack.Count = {_Stack.Count}, Manual_Count= {_Manual_Count}";
         }
 
         private ConcurrentStack_WithManualCount< T > _Stack;
@@ -95,7 +106,7 @@ namespace m3u8
             {
                 DisposeInternal();
                 _Stack.Clear();
-            }            
+            }
         }
 
         [M(O.AggressiveInlining)] private int Get_ObjectInstanceCount() => Volatile.Read( ref _ObjectInstanceCount )/*_ObjectInstanceCount*/;
@@ -148,6 +159,7 @@ namespace m3u8
         }
 
         public IObjectHolder< T > GetHolder() => new Releaser( this, Get() );
+        public IObjectHolder< T > GetHolder( out T t ) => new Releaser( this, t = Get() );
 
         public int CurrentCount_Stack       => _Stack.Count;
         public int CurrentManualCount_Stack => _Stack.Count;
@@ -161,12 +173,14 @@ namespace m3u8
                 Interlocked.Exchange( ref _ObjectInstanceCount, objInstCnt );
             }
         }
+
+        public override string ToString() => $"MAX = {_ObjectInstanceCount}, Count = {_Stack.Count}";
     }
 
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class ObjectPoolDisposable< T > : ObjectPool< T >, IDisposable
+    public sealed class ObjectPoolDisposable< T > : ObjectPool< T >, IDisposable
         where T : class, IDisposable
     {
         public ObjectPoolDisposable( int objectInstanceCount, Func< T > objectConstructorFunc ) : base( objectInstanceCount, objectConstructorFunc ) { }

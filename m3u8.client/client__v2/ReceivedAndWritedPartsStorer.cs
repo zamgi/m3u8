@@ -9,10 +9,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using m3u8.helpers;
+using m3u8.infrastructure;
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
-namespace m3u8
+namespace m3u8.client__v2
 {
     /// <summary>
     /// 
@@ -267,8 +270,8 @@ namespace m3u8
     internal interface IReceivedAndWritedPartsProcessor : IDisposable
     {
         IReceivedAndWritedPartsStorer CreateStorer(
-              in m3u8_file_t__v2 m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength /*FileStream outputFileStream*/
-            , out (bool has, m3u8_file_t__v2 new_m3u8File, long outputFileStreamPosition) exists );
+              in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength /*FileStream outputFileStream*/
+            , out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) exists );
         bool TryRestoreFromReceivedAndWritedPartsStorer( Uri address, string outputFileName
             , out (int totalPartsCount, int lastReceivedAndWritedPartOrderNumber, long outputFileStreamPosition) exists );
         bool TryRestoreOutputFileNameByAddress( string address, out string outputFileName, out string outputDirectory );
@@ -290,7 +293,7 @@ namespace m3u8
             public static _Dummy_ Inst { get; } = new _Dummy_();
             private _Dummy_() { }
             public void Dispose() { }
-            IReceivedAndWritedPartsStorer IReceivedAndWritedPartsProcessor.CreateStorer( in m3u8_file_t__v2 m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength, out (bool has, m3u8_file_t__v2 new_m3u8File, long outputFileStreamPosition) exists )
+            IReceivedAndWritedPartsStorer IReceivedAndWritedPartsProcessor.CreateStorer( in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength, out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) exists )
             {
                 exists = default;
                 return (ReceivedAndWritedPartsStorer._Dummy_.Inst);
@@ -324,8 +327,8 @@ namespace m3u8
         public void Dispose() => _Sha1.Dispose();
 
         public IReceivedAndWritedPartsStorer CreateStorer( 
-              in m3u8_file_t__v2 m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength /*FileStream outputFileStream*/
-            , out (bool has, m3u8_file_t__v2 new_m3u8File, long outputFileStreamPosition) exists )
+              in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength /*FileStream outputFileStream*/
+            , out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) exists )
         {
             exists = default;
             if ( !TryGetFileName4FixReceivedAndWritedParts( m3u8File.BaseAddress, out var ffn, out var normalizedAddress ) ) return (ReceivedAndWritedPartsStorer._Dummy_.Inst);
@@ -342,9 +345,9 @@ namespace m3u8
                 lastReceivedAndWritedPartOrderNumber = sfi.LastReceivedAndWritedPartOrderNumber;
                 outputFileStreamPosition             = sfi.OutputFileStreamPosition;
 
-                var new_parts = new List< m3u8_part_ts__v2 >( m3u8File.Parts.Count - (lastReceivedAndWritedPartOrderNumber + 1) );
+                var new_parts = new List< m3u8_part_ts >( m3u8File.Parts.Count - (lastReceivedAndWritedPartOrderNumber + 1) );
                     new_parts.AddRange( m3u8File.Parts.SkipWhile( p => p.OrderNumber <= lastReceivedAndWritedPartOrderNumber ) );
-                var new_m3u8File = m3u8_file_t__v2.From( m3u8File, new_parts.AsReadOnly() );
+                var new_m3u8File = m3u8_file_t.From( m3u8File, new_parts.AsReadOnly() );
 
                 exists = (has: true, new_m3u8File, outputFileStreamPosition);
             }
@@ -393,7 +396,7 @@ namespace m3u8
                 }
             }
 
-            var fs = m3u8_FileHelper.File_Open4Write_NoSetLength( ffn );
+            var fs = FileHelper.File_Open4Write_NoSetLength( ffn );
             var x = new ReceivedAndWritedPartsStorer( ffn, fs, normalizedAddress, outputFileName, m3u8File.Parts.Count, (lastReceivedAndWritedPartOrderNumber, outputFileStreamPosition) );
             return (x);
         }
@@ -404,7 +407,7 @@ namespace m3u8
                  File.Exists( ffn ) && File.Exists( outputFileName ) 
                )
             {
-                using ( var fs = m3u8_FileHelper.File_Open4Read( outputFileName ) )
+                using ( var fs = FileHelper.File_Open4Read( outputFileName ) )
                 {
                     if ( TryReadStoredFile( ffn, normalizedAddress, out var sfi, checkFileOnExists: false )
                          //&& (sfi.LastReceivedAndWritedPartOrderNumber < sfi.TotalPartsCount)

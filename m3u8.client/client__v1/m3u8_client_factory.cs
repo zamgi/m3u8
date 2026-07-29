@@ -4,7 +4,7 @@ using System.Net.Http;
 
 using m3u8.infrastructure;
 
-namespace m3u8
+namespace m3u8.client__v1
 {
     /// <summary>
     /// 
@@ -36,7 +36,7 @@ namespace m3u8
         => m3u8_client_factory_type switch
         {
             m3u8_client_factory_enum_type.HttpClient         => m3u8_client_factory__with_HttpClient.Inst,
-            m3u8_client_factory_enum_type.HttpMessageInvoker => m3u8_client_factory__with_HttpMessageInvoker.Inst,
+            m3u8_client_factory_enum_type.HttpMessageInvoker => m3u8_client_factory__with_HttpInvoker.Inst,
             _ => throw new ArgumentException( m3u8_client_factory_type.ToString() )
         };
 
@@ -61,18 +61,18 @@ namespace m3u8
         public i_m3u8_client Create( IWebProxy webProxy, in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpClientFactory_WithRefCount.Get( webProxy, timeout ), attemptRequestCountByPart );
         public i_m3u8_client Create( in i_m3u8_client.init_params ip ) => Create( HttpClientFactory_WithRefCount.Get( ip.WebProxy ), ip );
 
-        private static m3u8_client Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, in i_m3u8_client.init_params ip ) => new m3u8_client( t, ip );
-        private static m3u8_client Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
+        private static m3u8_client__with_HttpClient Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, in i_m3u8_client.init_params ip ) => new m3u8_client__with_HttpClient( t, ip );
+        private static m3u8_client__with_HttpClient Create( in (HttpClient httpClient, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
             => Create( t, new i_m3u8_client.init_params() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
     }
 
     /// <summary>
     /// 
     /// </summary>
-    public sealed class m3u8_client_factory__with_HttpMessageInvoker : i_m3u8_client_factory
+    public sealed class m3u8_client_factory__with_HttpInvoker : i_m3u8_client_factory
     {
-        public static i_m3u8_client_factory Inst { get; } = new m3u8_client_factory__with_HttpMessageInvoker();
-        private m3u8_client_factory__with_HttpMessageInvoker() { }
+        public static i_m3u8_client_factory Inst { get; } = new m3u8_client_factory__with_HttpInvoker();
+        private m3u8_client_factory__with_HttpInvoker() { }
 
         public i_m3u8_client Create( IWebProxy webProxy = null ) => Create( HttpInvokerFactory_WithRefCount.Get( webProxy ) );
         public i_m3u8_client Create( in (IWebProxy webProxy, TimeSpan timeout, int attemptRequestCountByPart) t ) => Create( t.webProxy, t.timeout, t.attemptRequestCountByPart );
@@ -80,8 +80,8 @@ namespace m3u8
         public i_m3u8_client Create( IWebProxy webProxy, in TimeSpan timeout, int attemptRequestCountByPart = 10 ) => Create( HttpInvokerFactory_WithRefCount.Get( webProxy/*, timeout*/ ), attemptRequestCountByPart );
         public i_m3u8_client Create( in i_m3u8_client.init_params ip ) => Create( HttpInvokerFactory_WithRefCount.Get( ip.WebProxy ), ip );
 
-        private static m3u8_client_v2 Create( in (HttpMessageInvoker httpInvoker, IWebProxy webProxy, IDisposable) t, in i_m3u8_client.init_params ip ) => new m3u8_client_v2( t, ip );
-        private static m3u8_client_v2 Create( in (HttpMessageInvoker httpInvoker, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
+        private static m3u8_client__with_HttpInvoker Create( in (HttpMessageInvoker httpInvoker, IWebProxy webProxy, IDisposable) t, in i_m3u8_client.init_params ip ) => new m3u8_client__with_HttpInvoker( t, ip );
+        private static m3u8_client__with_HttpInvoker Create( in (HttpMessageInvoker httpInvoker, IWebProxy webProxy, IDisposable) t, int attemptRequestCountByPart = 10 )
             => Create( t, new i_m3u8_client.init_params() { AttemptRequestCount = Math.Max( attemptRequestCountByPart, 1 ) } );
     }
 }

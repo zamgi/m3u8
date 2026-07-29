@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -8,19 +9,20 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Taskbar;
 
+using m3u8.client__v2;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
-using m3u8.download.manager.UI.Forms;
 
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _DC_                                   = m3u8.download.manager.controllers.DownloadController;
-using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
 using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
+using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
+using _CheckMarkTypeEnum_                    = m3u8.download.manager.ui.DownloadListUC.CheckMarkTypeEnum;
 using M                                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                                      = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -31,10 +33,10 @@ namespace m3u8.download.manager.ui
     /// </summary>
     internal sealed partial class MainForm : Form, IDisposable
     {
-#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
-        const m3u8_client_next_factory_enum_type M3U8_CLIENT_NEXT_FACTORY_TYPE = m3u8_client_next_factory_enum_type.HttpMessageInvoker;
+#if M3U8_CLIENT_FACTORY_TYPE__HttpMessageInvoker
+        const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpMessageInvoker;
 #else
-        const m3u8_client_next_factory_enum_type M3U8_CLIENT_NEXT_FACTORY_TYPE = m3u8_client_next_factory_enum_type.HttpClient;
+        const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpClient;
 #endif
         #region [.fields.]
         private const int MAX_PASTE_URLS = 75; //100;
@@ -87,13 +89,13 @@ namespace m3u8.download.manager.ui
             _DownloadListModel = new DownloadListModel();
             _DownloadListModel.CollectionChanged    += DownloadListModel_CollectionChanged;
             _DownloadListModel.RowPropertiesChanged += DownloadListModel_RowPropertiesChanged;
-            _DC = new _DC_( _DownloadListModel, _SC, M3U8_CLIENT_NEXT_FACTORY_TYPE, _ReceivedAndWritedPartsProcessor 
+            _DC = new _DC_( _DownloadListModel, _SC, M3U8_CLIENT_FACTORY_TYPE, _ReceivedAndWritedPartsProcessor 
 #if DEBUG
             , _LoggerForm
 #endif
             );
 
-            TestWebProxyConnectionHelper.m3u8_client_next_factory_type = M3U8_CLIENT_NEXT_FACTORY_TYPE;
+            TestWebProxyConnectionHelper.m3u8_client_factory_type = M3U8_CLIENT_FACTORY_TYPE;
 
             _UndoModel = new UndoModel( _DownloadListModel );
             _UndoModel.UndoChanged += () => { undoToolButton.Enabled = _UndoModel.HasUndo; undoToolButton.ToolTipText = $"Undo step count: {_UndoModel.UndoCount}  (Ctrl + Z)"; };
@@ -502,7 +504,7 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case nameof(Settings.FFmpegConverterCaption):
-                    ffmpegConverterRunMenuItem.Text = $"    Open with '{settings.FFmpegConverterCaption}'";
+                    ffmpegConverterRunMenuItem.Text = $"    Convert with '{settings.FFmpegConverterCaption}'";
                     break;
 
                 case nameof(Settings.FFmpegFileLocation):
@@ -510,13 +512,11 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case nameof(Settings.ShowAllDownloadsCompleted_Notification):
-                    //*
                     _DC.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
                     if ( settings.ShowAllDownloadsCompleted_Notification )
                     {
                         _DC.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
                     }
-                    //*/
                     break;
             }
 
@@ -773,6 +773,15 @@ namespace m3u8.download.manager.ui
             SetDownloadToolButtonsStatus( row );
         }
         private bool downloadListUC_IsDrawCheckMark( DownloadRow row ) => _ExternalProgRunner_Queues.Contains( row.GetOutputFullFileName() );
+        private _CheckMarkTypeEnum_ downloadListUC_GetDrawCheckMarkType( DownloadRow row )
+        {
+            var outputFullFileName = row.GetOutputFullFileName();
+
+            var cmt = _CheckMarkTypeEnum_.None;
+            if ( _ExternalProgRunner   .Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Orange;
+            if ( _FFmpegConverterRunner.Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Green;
+            return (cmt);
+        }
         private void downloadListUC_UpdatedSingleRunningRow( DownloadRow row )
         {
             if ( _ShowDownloadStatistics )

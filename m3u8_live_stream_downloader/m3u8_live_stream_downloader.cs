@@ -22,6 +22,9 @@ using ThrottlerBySpeed_InDownloadProcessUser = m3u8.ThrottlerBySpeed_InDownloadP
 using ThrottlerBySpeed_InDownloadProcessUser = m3u8.ThrottlerBySpeed_InDownloadProcessUser__v2;
 #endif
 
+using m3u8.infrastructure;
+using m3u8.client__v2;
+
 namespace m3u8
 {
     /// <summary>
@@ -64,14 +67,15 @@ namespace m3u8
             public const int       DEFAULT_TIMEOUT_IN_SECONDS = 100;
             public static TimeSpan DEFAULT_TIMEOUT            => TimeSpan.FromSeconds( DEFAULT_TIMEOUT_IN_SECONDS );
 
-            public string M3u8Url        { get; set; }
-            public string OutputFileName { get; set; }
+            required public string M3u8Url        { get; set; }
+            required public string OutputFileName { get; set; }
 
             private TimeSpan? _Timeout;
             public TimeSpan Timeout { get => _Timeout.GetValueOrDefault( DEFAULT_TIMEOUT ); set => _Timeout = value; }
-            
-            public WaitIfPausedHolder         WaitIfPausedHolder { [M(O.AggressiveInlining)] get; set; }            
-            public I_throttler_by_speed__v2_t ThrottlerBySpeed   { [M(O.AggressiveInlining)] get; set; }
+
+            required public WaitIfPausedHolder         WaitIfPausedHolder { [M(O.AggressiveInlining)] get; set; }
+            required public i_throttler_by_speed__v2_t ThrottlerBySpeed   { [M(O.AggressiveInlining)] get; set; }
+            required public IObjectPool< CancellationTokenSource > TimeoutCtsPool { [M(O.AggressiveInlining)] get; set; }
 
             public DownloadContentDelegate          DownloadContent          { get; set; }
             public DownloadContentErrorDelegate     DownloadContentError     { get; set; }
@@ -507,15 +511,17 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal sealed class m3u8_live_stream_downloader__with_HttpMessageInvoker : m3u8_live_stream_downloader_base< HttpMessageInvoker >
+    internal sealed class m3u8_live_stream_downloader__with_HttpInvoker : m3u8_live_stream_downloader_base< HttpMessageInvoker >
     {
         #region [.ctor().]
         private TimeSpan _Timeout;
-        public m3u8_live_stream_downloader__with_HttpMessageInvoker( HttpMessageInvoker httpInvoker, in i_m3u8_live_stream_downloader.InitParams ip ) : base( httpInvoker, ip )
+        private IObjectPool< CancellationTokenSource > _TimeoutCtsPool;
+        public m3u8_live_stream_downloader__with_HttpInvoker( HttpMessageInvoker httpInvoker, in i_m3u8_live_stream_downloader.InitParams ip ) : base( httpInvoker, ip )
         {
             _Timeout = ip.Timeout;
+            _TimeoutCtsPool = ip.TimeoutCtsPool;
         }
-        public m3u8_live_stream_downloader__with_HttpMessageInvoker( in i_m3u8_live_stream_downloader.InitParams ip ) : this( null, ip ) { }
+        public m3u8_live_stream_downloader__with_HttpInvoker( in i_m3u8_live_stream_downloader.InitParams ip ) : this( null, ip ) { }
         #endregion
 
         protected override HttpMessageInvoker CreateHttpInvoker( TimeSpan? timeout = null )
@@ -526,9 +532,9 @@ namespace m3u8
         }
 
         protected override Task< GetStreamAsync_Ex_Result > GetStreamAsync_Ex( string requestUri, IDictionary< string, string > requestHeaders, CancellationToken ct )
-            => _HttpInvoker.GetStreamAsync_Ex( requestUri, requestHeaders, _Timeout, ct );
+            => _HttpInvoker.GetStreamAsync_Ex( requestUri, requestHeaders, _TimeoutCtsPool, _Timeout, ct );
         protected override Task< string > GetStringContent( string requestUri, IDictionary< string, string > requestHeaders, CancellationToken ct )
-            => _HttpInvoker.GetStringAsync_Ex( requestUri, requestHeaders, _Timeout, ct );
+            => _HttpInvoker.GetStringAsync_Ex( requestUri, requestHeaders, _TimeoutCtsPool, _Timeout, ct );
     }
 
     /// <summary>
@@ -548,7 +554,8 @@ namespace m3u8
         public static async Task _Download_( enum_type type, 
             string m3u8_url, string output_file_name, CancellationToken ct, long? max_output_file_size, IDictionary< string, string > requestHeaders = null, int milliseconds_delay_between_request = 1_000 )
         {
-            var ip = new i_m3u8_live_stream_downloader.InitParams() { M3u8Url = m3u8_url, OutputFileName = output_file_name };
+            var ip = new i_m3u8_live_stream_downloader.InitParams() { M3u8Url = m3u8_url, OutputFileName = output_file_name, 
+                                                                      WaitIfPausedHolder = default, ThrottlerBySpeed = default, TimeoutCtsPool = default };
             using var m = Create( type, ip );
             await m.Download( ct, max_output_file_size, requestHeaders, milliseconds_delay_between_request ).CAX();
         }
@@ -570,7 +577,7 @@ namespace m3u8
             switch ( type )
             {
                 case enum_type.HttpClient        : return (new m3u8_live_stream_downloader__with_HttpClient( ip ));
-                case enum_type.HttpMessageInvoker: return (new m3u8_live_stream_downloader__with_HttpMessageInvoker( ip ));
+                case enum_type.HttpMessageInvoker: return (new m3u8_live_stream_downloader__with_HttpInvoker( ip ));
                 default: throw (new ArgumentException( type.ToString() ));
             }
         }
@@ -582,7 +589,7 @@ namespace m3u8
             i_m3u8_live_stream_downloader m;
             if ( net.httpInvoker != null )
             {
-                m = new m3u8_live_stream_downloader__with_HttpMessageInvoker( net.httpInvoker, ip );
+                m = new m3u8_live_stream_downloader__with_HttpInvoker( net.httpInvoker, ip );
             }
             else if ( net.httpClient != null )
             {
@@ -599,8 +606,10 @@ namespace m3u8
             }
         }
     }
+}
 
-
+namespace m3u8.infrastructure
+{
     /// <summary>
     /// 
     /// </summary>
@@ -656,6 +665,30 @@ namespace m3u8
                 }
 
                 throw (new HttpRequestException( text ));
+            }
+        }
+        [M(O.AggressiveInlining)] public static async Task< string > GetStringAsync_Ex( this HttpMessageInvoker hi, string requestUri, IDictionary< string, string > requestHeaders
+            , IObjectPool< CancellationTokenSource > timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
+        {
+            using ( var req = CreateRequestGet( new Uri( requestUri ), requestHeaders ) )
+            {
+                var task_resp = (timeoutCtsPool != null) ? hi.SendAsync_Ex( req, timeoutCtsPool, timeout, ct )
+                                                         : hi.SendAsync_Ex( req, timeout, ct );
+                using var resp = await task_resp.CAX();
+                using ( var content = resp.Content )
+                {
+#if NETCOREAPP
+                    var text = await content.ReadAsStringAsync( ct ).CAX();
+#else
+                var text = await content.ReadAsStringAsync( /*ct*/ ).CAX();
+#endif
+                    if ( resp.IsSuccessStatusCode )
+                    {
+                        return (text);
+                    }
+
+                    throw (new HttpRequestException( text ));
+                }
             }
         }
 
@@ -715,6 +748,37 @@ namespace m3u8
                 }
             }
         }
+        [M(O.AggressiveInlining)] public static async Task< GetStreamAsync_Ex_Result > GetStreamAsync_Ex( this HttpMessageInvoker hi, string requestUri, IDictionary< string, string > requestHeaders
+            , IObjectPool< CancellationTokenSource > timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
+        {
+            using ( var req = CreateRequestGet( new Uri( requestUri ), requestHeaders ) )
+            {
+                var task_resp = (timeoutCtsPool != null) ? hi.SendAsync_Ex( req, timeoutCtsPool, timeout, ct ) 
+                                                         : hi.SendAsync_Ex( req, timeout, ct );
+                var resp = await task_resp.CAX();
+                //using ( var content = resp.Content )
+                {
+                    if ( resp.IsSuccessStatusCode )
+                    {
+#if NETCOREAPP
+                        var stream = await resp.Content.ReadAsStreamAsync( ct ).CAX();
+#else
+                        var stream = await resp.Content.ReadAsStreamAsync( /*ct*/ ).CAX();
+#endif
+                        return (new GetStreamAsync_Ex_Result( resp, stream ));
+                    }
+#if NETCOREAPP
+                    var text = await resp.Content.ReadAsStringAsync( ct ).CAX();
+#else
+                    var text = await resp.Content.ReadAsStringAsync( /*ct*/ ).CAX();
+#endif
+                    using ( resp )
+                    {
+                        throw (new HttpRequestException( text ));
+                    }
+                }
+            }
+        }        
 
         [M(O.AggressiveInlining)] public static HashSet< T > ToFillHashSet< T >( this IEnumerable< T > seq, HashSet< T > hs )
         {

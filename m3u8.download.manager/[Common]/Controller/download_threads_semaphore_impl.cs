@@ -49,7 +49,7 @@ namespace m3u8.download.manager.controllers
     /// <summary>
     /// 
     /// </summary>
-    internal interface IDownloadThreadsSemaphoreEx : I_download_threads_semaphore
+    internal interface IDownloadThreadsSemaphoreEx : i_download_threads_semaphore
     {
         void ResetSemaphore( int degreeOfParallelism, ResetSemaphoreModeEnum resetSemaphoreMode );
     }

@@ -7,7 +7,7 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal interface I_download_threads_semaphore : IDisposable
+    public interface i_download_threads_semaphore : IDisposable
     {
         bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance { get; }
         

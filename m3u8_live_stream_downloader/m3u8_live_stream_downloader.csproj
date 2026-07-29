@@ -28,9 +28,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\m3u8.client\throttler_by_speed.cs" Link="throttler_by_speed.cs" />
-    <Compile Include="..\m3u8.client\client\m3u8.stuff.cs" Link="m3u8.stuff.cs" />
-    <Compile Include="..\m3u8.client\obj_pool.cs" Link="obj_pool.cs" />
+    <Compile Include="..\m3u8.client\m3u8.stuff.cs" Link="[-= m3u8.client =-]\m3u8.stuff.cs" />
+    <Compile Include="..\m3u8.client\throttler_by_speed.cs" Link="[-= m3u8.client =-]\throttler_by_speed.cs" />
+    <Compile Include="..\m3u8.client\client__v2\m3u8_file_t.cs" Link="[-= m3u8.client =-]\m3u8_file_t.cs" />
+    <Compile Include="..\m3u8.client\client__v2\WaitIfPausedHolder.cs" Link="[-= m3u8.client =-]\WaitIfPausedHolder.cs" />
+    <Compile Include="..\m3u8.client\helpers\obj_pool.cs" Link="[-= m3u8.client =-]\obj_pool.cs" />
   </ItemGroup>
 
   <ItemGroup>

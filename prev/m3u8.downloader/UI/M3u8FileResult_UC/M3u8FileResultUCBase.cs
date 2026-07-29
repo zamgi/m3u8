@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
+using m3u8.client__v1;
 using m3u8.Properties;
 
 namespace m3u8.downloader

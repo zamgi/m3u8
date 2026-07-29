@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
+using m3u8.client__v1;
+
 namespace m3u8.downloader
 {
     /// <summary>

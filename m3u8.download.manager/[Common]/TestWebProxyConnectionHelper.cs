@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
+using m3u8.client__v2;
 using m3u8.infrastructure;
 
 namespace m3u8.download.manager
@@ -123,20 +124,20 @@ namespace m3u8.download.manager
         }
 
 
-        public static m3u8_client_next_factory_enum_type m3u8_client_next_factory_type { get; set; }
+        public static m3u8_client_factory_enum_type m3u8_client_factory_type { get; set; }
         public static Task< (HttpResponseMessage resp, string webProxyAddressText) > TestConnection_Routine(
             web_proxy_info webProxyInfo, CancellationToken ct, Action<string  > changeWebProxyAddressAction )
         {
-            switch ( m3u8_client_next_factory_type )
+            switch ( m3u8_client_factory_type )
             {
-                case m3u8_client_next_factory_enum_type.HttpClient:
+                case m3u8_client_factory_enum_type.HttpClient:
                     return TestConnection_Routine__use_HttpClient( webProxyInfo, ct, changeWebProxyAddressAction );
 
-                case m3u8_client_next_factory_enum_type.HttpMessageInvoker:
+                case m3u8_client_factory_enum_type.HttpMessageInvoker:
                     return TestConnection_Routine__use_HttpInvoker( webProxyInfo, ct, changeWebProxyAddressAction );
 
                 default:
-                    throw (new ArgumentException( m3u8_client_next_factory_type.ToString() ));
+                    throw (new ArgumentException( m3u8_client_factory_type.ToString() ));
             }
         }
     }

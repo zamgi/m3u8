@@ -85,27 +85,47 @@
     <Compile Include="..\..\m3u8.client\infrastructure\System.Runtime.CompilerServices.cs">
       <Link>[-= m3u8.client =-]\infrastructure\System.Runtime.CompilerServices.cs</Link>
     </Compile>
-    <Compile Include="..\..\m3u8.client\client\i_m3u8_client.cs">
-      <Link>[-= m3u8.client =-]\client\i_m3u8_client.cs</Link>
+
+    <Compile Include="..\..\m3u8.client\infrastructure\DefaultConnectionLimitSaver.cs">
+      <Link>[-= m3u8.client =-]\infrastructure\DefaultConnectionLimitSaver.cs</Link>
     </Compile>
-    <Compile Include="..\..\m3u8.client\client\m3u8.stuff.cs">
-      <Link>[-= m3u8.client =-]\client\m3u8.stuff.cs</Link>
+
+
+    <Compile Include="..\..\m3u8.client\client__v1\i_m3u8_client.cs">
+      <Link>[-= m3u8.client =-]\client__v1\i_m3u8_client.cs</Link>
     </Compile>
-    <Compile Include="..\..\m3u8.client\client\m3u8_client.cs">
-      <Link>[-= m3u8.client =-]\client\m3u8_client.cs</Link>
+    <Compile Include="..\..\m3u8.client\client__v1\m3u8_file_t.cs">
+      <Link>[-= m3u8.client =-]\client__v1\m3u8_file_t.cs</Link>
     </Compile>
-    <Compile Include="..\..\m3u8.client\client\m3u8_client_factory.cs">
-      <Link>[-= m3u8.client =-]\client\m3u8_client_factory.cs</Link>
+
+    <Compile Include="..\..\m3u8.client\client__v1\m3u8_client_base.cs">
+      <Link>[-= m3u8.client =-]\client__v1\m3u8_client_base.cs</Link>
     </Compile>
-    <Compile Include="..\..\m3u8.client\client\m3u8_client_v2.cs">
-      <Link>[-= m3u8.client =-]\client\m3u8_client_v2.cs</Link>
+
+    <Compile Include="..\..\m3u8.client\m3u8.stuff.cs">
+      <Link>[-= m3u8.client =-]\m3u8.stuff.cs</Link>
     </Compile>
-    <Compile Include="..\..\m3u8.client\obj_pool.cs">
-      <Link>[-= m3u8.client =-]\obj_pool.cs</Link>
+    <Compile Include="..\..\m3u8.client\client__v1\m3u8_client__with_HttpClient.cs">
+      <Link>[-= m3u8.client =-]\client__v1\m3u8_client__with_HttpClient.cs</Link>
     </Compile>
-    <Compile Include="..\..\m3u8.client\m3u8_processor.cs">
-      <Link>[-= m3u8.client =-]\m3u8_processor.cs</Link>
+    <Compile Include="..\..\m3u8.client\client__v1\m3u8_client_factory.cs">
+      <Link>[-= m3u8.client =-]\client__v1\m3u8_client_factory.cs</Link>
     </Compile>
+    <Compile Include="..\..\m3u8.client\client__v1\m3u8_client__with_HttpInvoker.cs">
+      <Link>[-= m3u8.client =-]\client__v1\m3u8_client__with_HttpInvoker.cs</Link>
+    </Compile>
+    <Compile Include="..\..\m3u8.client\client__v1\m3u8_processor.cs">
+      <Link>[-= m3u8.client =-]\client__v1\m3u8_processor.cs</Link>
+    </Compile>
+
+    <Compile Include="..\..\m3u8.client\helpers\obj_pool.cs">
+      <Link>[-= m3u8.client =-]\helpers\obj_pool.cs</Link>
+    </Compile>
+
+    <Compile Include="..\..\m3u8.client\helpers\FileHelper.cs">
+      <Link>[-= m3u8.client =-]\helpers\FileHelper.cs</Link>
+    </Compile>
+
     <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Infrastructure\FormPositionStorer.cs" />
     <Compile Include="Infrastructure\NameCleaner.cs" />

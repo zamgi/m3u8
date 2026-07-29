@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace m3u8.download.manager.UI.Forms
+using m3u8.client__v2;
+
+namespace m3u8.download.manager.ui
 {
-    public partial class LoggerForm : Form, m3u8_processor_next.ILogger
+    public partial class LoggerForm : Form, m3u8_processor.ILogger
     {
         private int MAX_LINES = 1_000;
-        private List<string> _ExistsLines;
-        private List<string> _ExistsLines_4_Parts;
+        private List< string > _ExistsLines;
+        private List< string > _ExistsLines_4_Parts;
         private LoggerForm() => InitializeComponent();
         public LoggerForm( Form owner ) : this()
         {

@@ -16,6 +16,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 
+using m3u8.client__v2;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
@@ -33,10 +34,10 @@ namespace m3u8.download.manager.ui
     /// </summary>
     public sealed class MainWindow : StoreBoundsWindowBase/*Window*/, IDisposable
     {
-#if M3U8_CLIENT_NEXT_FACTORY_TYPE__HttpMessageInvoker
-        const m3u8_client_next_factory_enum_type M3U8_CLIENT_NEXT_FACTORY_TYPE = m3u8_client_next_factory_enum_type.HttpMessageInvoker;
+#if M3U8_CLIENT_FACTORY_TYPE__HttpMessageInvoker
+        const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpMessageInvoker;
 #else
-        const m3u8_client_next_factory_enum_type M3U8_CLIENT_NEXT_FACTORY_TYPE = m3u8_client_next_factory_enum_type.HttpClient;
+        const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpClient;
 #endif
         #region [.fields from markup.]
         private DownloadListUC downloadListUC;
@@ -157,8 +158,8 @@ namespace m3u8.download.manager.ui
 
             #region [.-1-.]
             this.Title = GET_APP_TITLE();
-            this.DataContext = _VM = new MainVM( this, Settings.Default, M3U8_CLIENT_NEXT_FACTORY_TYPE );
-            TestWebProxyConnectionHelper.m3u8_client_next_factory_type = M3U8_CLIENT_NEXT_FACTORY_TYPE;
+            this.DataContext = _VM = new MainVM( this, Settings.Default, M3U8_CLIENT_FACTORY_TYPE );
+            TestWebProxyConnectionHelper.m3u8_client_factory_type = M3U8_CLIENT_FACTORY_TYPE;
 
             _VM.DownloadListModel.RowPropertiesChanged     += DownloadListModel_RowPropertiesChanged;
             _VM.DownloadListModel.CollectionChanged        += DownloadListModel_CollectionChanged;
