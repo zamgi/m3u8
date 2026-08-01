@@ -581,7 +581,7 @@ namespace m3u8.download.manager.ui
             {
                 case _CollectionChangedTypeEnum_.Add:
                     if ( UrlHelper.TryGetM3u8FileUrl( row?.Url, out var t ) && 
-                         _VM.ReceivedAndWritedPartsProcessor.TryRestoreFromReceivedAndWritedPartsStorer( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) 
+                         _VM.ReceivedAndWritedPartsProcessor.TryRestore( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) 
                        )
                     {
                         row.RestoreDownloadParams_WithChangeStatus( exists.outputFileStreamPosition, exists.totalPartsCount, exists.lastReceivedAndWritedPartOrderNumber + 1 );
@@ -891,7 +891,19 @@ namespace m3u8.download.manager.ui
         {
             if ( !rows.AnyEx() ) return;
 
-            var exists_fns = rows.SelectMany( r => r.GetOutputFullFileNames() ).Where( File.Exists ).ToList( rows.Count );
+            var dict = new Dictionary< string, DownloadRow >( rows.Count );
+
+            var fns  = rows.SelectMany( r => 
+                            {
+                                var fns = r.GetOutputFullFileNames();
+                                foreach ( var fn in fns )
+                                {
+                                    dict[ fn ] = r;
+                                }
+                                return (fns);
+                            })
+                            .ToList( rows.Count );
+            var exists_fns = fns.Where( File.Exists ).ToList( fns.Count );
             if ( exists_fns.Count == 0 ) return;
 
             if ( ask ) 
@@ -911,6 +923,10 @@ namespace m3u8.download.manager.ui
                     await FileHelper.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
                     {
                         var suc = await FileHelper.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
+                        if ( suc )
+                        {
+                            var suc_2 = dict.TryGetValue( fn, out var row ) && _VM.ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
+                        }
                         syncCtx.Invoke(() => wb.IncreaseSteps( null ));
                         return (suc);
                     });

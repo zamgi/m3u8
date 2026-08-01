@@ -61,7 +61,7 @@ namespace m3u8.client__v2
         private byte[] _Utf8Buf;
         private long _StartPos4Write;
         public ReceivedAndWritedPartsStorer( string storedfileName, FileStream fs, string url, string outputFileName, int m3u8FilePartCount,
-            (int lastReceivedAndWritedPartOrderNumber, long outputFileStreamPosition) exists = default )
+            (int lastReceivedAndWritedPartOrderNumber, long outputFileStreamPosition) restored = default )
         {
             StoredFileName = storedfileName;
             OutputFileName = outputFileName;
@@ -71,8 +71,8 @@ namespace m3u8.client__v2
 
             _Utf8Buf = new byte[ 128 ];
 
-            LastReceivedAndWritedPartOrderNumber = exists.lastReceivedAndWritedPartOrderNumber;
-            OutputFileStreamPosition             = exists.outputFileStreamPosition;
+            LastReceivedAndWritedPartOrderNumber = restored.lastReceivedAndWritedPartOrderNumber;
+            OutputFileStreamPosition             = restored.outputFileStreamPosition;
         }
         public void Dispose() => _Fs.Dispose();
 
@@ -271,9 +271,9 @@ namespace m3u8.client__v2
     {
         IReceivedAndWritedPartsStorer CreateStorer(
               in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength /*FileStream outputFileStream*/
-            , out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) exists );
-        bool TryRestoreFromReceivedAndWritedPartsStorer( Uri address, string outputFileName
-            , out (int totalPartsCount, int lastReceivedAndWritedPartOrderNumber, long outputFileStreamPosition) exists );
+            , out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) restored );
+        bool TryRestore( Uri address, string outputFileName
+            , out (int totalPartsCount, int lastReceivedAndWritedPartOrderNumber, long outputFileStreamPosition) restored );
         bool TryRestoreOutputFileNameByAddress( string address, out string outputFileName, out string outputDirectory );
         bool TryDeleteStorerFile( string address );
         bool TryDeleteAllStorerFiles();
@@ -293,14 +293,14 @@ namespace m3u8.client__v2
             public static _Dummy_ Inst { get; } = new _Dummy_();
             private _Dummy_() { }
             public void Dispose() { }
-            IReceivedAndWritedPartsStorer IReceivedAndWritedPartsProcessor.CreateStorer( in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength, out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) exists )
+            IReceivedAndWritedPartsStorer IReceivedAndWritedPartsProcessor.CreateStorer( in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength, out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) restored )
             {
-                exists = default;
+                restored = default;
                 return (ReceivedAndWritedPartsStorer._Dummy_.Inst);
             }
-            public bool TryRestoreFromReceivedAndWritedPartsStorer( Uri address, string outputFileName, out (int totalPartsCount, int lastReceivedAndWritedPartOrderNumber, long outputFileStreamPosition) exists )
+            public bool TryRestore( Uri address, string outputFileName, out (int totalPartsCount, int lastReceivedAndWritedPartOrderNumber, long outputFileStreamPosition) restored )
             {
-                exists = default;
+                restored = default;
                 return (false);
             }
             public bool TryRestoreOutputFileNameByAddress( string address, out string outputFileName, out string outputDirectory )
@@ -318,25 +318,25 @@ namespace m3u8.client__v2
         }
 
         private SHA1 _Sha1;
-        private string _DirectoryLocation4File4FixReceivedAndWritedParts; // [directoryLocation4File4FixReceivedAndWritedParts] = C:\ProgramData\zamgi\m3u8.download.manager
-        public ReceivedAndWritedPartsProcessor( string directoryLocation4File4FixReceivedAndWritedParts )
+        private string _DirectoryLocation4StoreFiles; // [_DirectoryLocation4StoreFiles] = C:\ProgramData\zamgi\m3u8.download.manager
+        public ReceivedAndWritedPartsProcessor( string directoryLocation4StoreFiles )
         {
-            _DirectoryLocation4File4FixReceivedAndWritedParts = directoryLocation4File4FixReceivedAndWritedParts;
+            _DirectoryLocation4StoreFiles = directoryLocation4StoreFiles;
             _Sha1 = SHA1.Create();
         }
         public void Dispose() => _Sha1.Dispose();
 
         public IReceivedAndWritedPartsStorer CreateStorer( 
               in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength /*FileStream outputFileStream*/
-            , out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) exists )
+            , out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) restored )
         {
-            exists = default;
-            if ( !TryGetFileName4FixReceivedAndWritedParts( m3u8File.BaseAddress, out var ffn, out var normalizedAddress ) ) return (ReceivedAndWritedPartsStorer._Dummy_.Inst);
+            restored = default;
+            if ( !TryGetStoredFileName( m3u8File.BaseAddress, out var ffn, out var normalizedAddress ) ) return (ReceivedAndWritedPartsStorer._Dummy_.Inst);
 
             int  lastReceivedAndWritedPartOrderNumber;
             long outputFileStreamPosition;
 
-            if ( outputDirectoryExists && TryReadStoredFile( ffn, normalizedAddress, out var sfi )
+            if ( outputDirectoryExists && (0 < outputFileStreamLength) && TryReadStoredFile( ffn, normalizedAddress, out var sfi )
                  && (m3u8File.Parts.Count == sfi.TotalPartsCount)
                  && (sfi.LastReceivedAndWritedPartOrderNumber < m3u8File.Parts.Count)
                  && (sfi.OutputFileStreamPosition <= outputFileStreamLength)
@@ -349,7 +349,7 @@ namespace m3u8.client__v2
                     new_parts.AddRange( m3u8File.Parts.SkipWhile( p => p.OrderNumber <= lastReceivedAndWritedPartOrderNumber ) );
                 var new_m3u8File = m3u8_file_t.From( m3u8File, new_parts.AsReadOnly() );
 
-                exists = (has: true, new_m3u8File, outputFileStreamPosition);
+                restored = (has: true, new_m3u8File, outputFileStreamPosition);
             }
             #region comm.
             //if ( outputDirectoryExists && File.Exists( ffn ) )
@@ -377,7 +377,7 @@ namespace m3u8.client__v2
             //                        var new_m3u8File = m3u8_file_t__v2.From( m3u8File, new_parts.AsReadOnly() );
 
             //                        //(new_m3u8File, outputFileStreamPosition)
-            //                        exists = (has: true, new_m3u8File, outputFileStreamPosition);
+            //                        restored = (has: true, new_m3u8File, outputFileStreamPosition);
             //                    }
             //                }
             //            }
@@ -390,9 +390,9 @@ namespace m3u8.client__v2
                 lastReceivedAndWritedPartOrderNumber = 0;
                 outputFileStreamPosition             = 0;
 
-                if ( !Directory.Exists( _DirectoryLocation4File4FixReceivedAndWritedParts ) )
+                if ( !Directory.Exists( _DirectoryLocation4StoreFiles ) )
                 {
-                    Directory.CreateDirectory( _DirectoryLocation4File4FixReceivedAndWritedParts );
+                    Directory.CreateDirectory( _DirectoryLocation4StoreFiles );
                 }
             }
 
@@ -400,10 +400,10 @@ namespace m3u8.client__v2
             var x = new ReceivedAndWritedPartsStorer( ffn, fs, normalizedAddress, outputFileName, m3u8File.Parts.Count, (lastReceivedAndWritedPartOrderNumber, outputFileStreamPosition) );
             return (x);
         }
-        public bool TryRestoreFromReceivedAndWritedPartsStorer( Uri address, string outputFileName
-            , out (int totalPartsCount, int lastReceivedAndWritedPartOrderNumber, long outputFileStreamPosition) exists )
+        public bool TryRestore( Uri address, string outputFileName
+            , out (int totalPartsCount, int lastReceivedAndWritedPartOrderNumber, long outputFileStreamPosition) restored )
         {
-            if ( TryGetFileName4FixReceivedAndWritedParts( address, out var ffn, out var normalizedAddress ) &&
+            if ( TryGetStoredFileName( address, out var ffn, out var normalizedAddress ) &&
                  File.Exists( ffn ) && File.Exists( outputFileName ) 
                )
             {
@@ -413,18 +413,18 @@ namespace m3u8.client__v2
                          //&& (sfi.LastReceivedAndWritedPartOrderNumber < sfi.TotalPartsCount)
                          && (sfi.OutputFileStreamPosition == fs.Length) )
                     {
-                        exists = (sfi.TotalPartsCount, sfi.LastReceivedAndWritedPartOrderNumber, sfi.OutputFileStreamPosition);
+                        restored = (sfi.TotalPartsCount, sfi.LastReceivedAndWritedPartOrderNumber, sfi.OutputFileStreamPosition);
                         return (true);
                     }
                 }
             }
 
-            exists = default;
+            restored = default;
             return (false);
         }
         public bool TryRestoreOutputFileNameByAddress( string address, out string outputFileName, out string outputDirectory )
         {
-            if ( TryGetFileName4FixReceivedAndWritedParts( address, out var ffn, out var normalizedAddress ) && 
+            if ( TryGetStoredFileName( address, out var ffn, out var normalizedAddress ) && 
                  TryReadStoredFile( ffn, normalizedAddress, out var sfi )
                )
             {
@@ -480,7 +480,7 @@ namespace m3u8.client__v2
 
         public bool TryDeleteStorerFile( string address )
         {
-            if ( TryGetFileName4FixReceivedAndWritedParts( address, out var ffn, out _ ) && File.Exists( ffn ) )
+            if ( TryGetStoredFileName( address, out var ffn, out _ ) && File.Exists( ffn ) )
             {
                 try
                 {
@@ -496,10 +496,10 @@ namespace m3u8.client__v2
         }
         public bool TryDeleteAllStorerFiles()
         {
-            var suc = !_DirectoryLocation4File4FixReceivedAndWritedParts.IsNullOrEmpty() && Directory.Exists( _DirectoryLocation4File4FixReceivedAndWritedParts );
+            var suc = !_DirectoryLocation4StoreFiles.IsNullOrEmpty() && Directory.Exists( _DirectoryLocation4StoreFiles );
             if ( suc )
             {
-                foreach ( var fn in Directory.EnumerateFiles( _DirectoryLocation4File4FixReceivedAndWritedParts, '*' + DEF_STORE_FILE_EXTENSION, SearchOption.TopDirectoryOnly ) )
+                foreach ( var fn in Directory.EnumerateFiles( _DirectoryLocation4StoreFiles, '*' + DEF_STORE_FILE_EXTENSION, SearchOption.TopDirectoryOnly ) )
                 {
                     try
                     {
@@ -518,10 +518,10 @@ namespace m3u8.client__v2
             storeFilesCount = 0;
             storeFilesSize  = 0;
 
-            var suc = !_DirectoryLocation4File4FixReceivedAndWritedParts.IsNullOrEmpty() && Directory.Exists( _DirectoryLocation4File4FixReceivedAndWritedParts );
+            var suc = !_DirectoryLocation4StoreFiles.IsNullOrEmpty() && Directory.Exists( _DirectoryLocation4StoreFiles );
             if ( suc )
             {
-                foreach ( var fn in Directory.EnumerateFiles( _DirectoryLocation4File4FixReceivedAndWritedParts, '*' + DEF_STORE_FILE_EXTENSION, SearchOption.TopDirectoryOnly ) )
+                foreach ( var fn in Directory.EnumerateFiles( _DirectoryLocation4StoreFiles, '*' + DEF_STORE_FILE_EXTENSION, SearchOption.TopDirectoryOnly ) )
                 {
                     storeFilesCount++;
                     try
@@ -540,15 +540,18 @@ namespace m3u8.client__v2
 
 
         private const string DEF_STORE_FILE_EXTENSION = ".txt";
-        [M(O.AggressiveInlining)] private bool TryGetFileName4FixReceivedAndWritedParts( Uri address, out string ffn, out string normalizedAddress ) => TryGetFileName4FixReceivedAndWritedParts( address?.ToString(), out ffn, out normalizedAddress );
-        private bool TryGetFileName4FixReceivedAndWritedParts( string address, out string ffn, out string normalizedAddress )
+        [M(O.AggressiveInlining)] private bool TryGetStoredFileName( Uri address, out string storedFileName, out string normalizedAddress ) 
+            => TryGetStoredFileName( address?.AbsoluteUri/*ToString()*/, out storedFileName, out normalizedAddress );
+        private bool TryGetStoredFileName( string address, out string storedFileName, out string normalizedAddress )
         {
-            if ( _DirectoryLocation4File4FixReceivedAndWritedParts.IsNullOrEmpty() || address.IsNullOrEmpty() )
+            if ( _DirectoryLocation4StoreFiles.IsNullOrEmpty() || address.IsNullOrEmpty() )
             {
-                ffn = default;
+                storedFileName = default;
                 normalizedAddress = default;
                 return (false);
             }
+
+            Debug.Assert( address == new Uri( address ).AbsoluteUri );
 
             normalizedAddress = address.ToUpperInvariant();
             var addressBytes = Encoding.UTF8.GetBytes( normalizedAddress );
@@ -559,7 +562,7 @@ namespace m3u8.client__v2
                 hash = _Sha1.ComputeHash( addressBytes );
             }            
             var fn = ByteArrayToHex( hash );
-            ffn = Path.Combine( _DirectoryLocation4File4FixReceivedAndWritedParts, fn + DEF_STORE_FILE_EXTENSION );
+            storedFileName = Path.Combine( _DirectoryLocation4StoreFiles, fn + DEF_STORE_FILE_EXTENSION );
             return (true);
         }
         private unsafe static string ByteArrayToHex( byte[] bytes ) // => string.Concat( hash.Select( b => b.ToString( "X2" ) ) );

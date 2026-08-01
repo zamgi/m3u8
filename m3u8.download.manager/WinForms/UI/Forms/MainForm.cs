@@ -614,7 +614,7 @@ namespace m3u8.download.manager.ui
                 case _CollectionChangedTypeEnum_.Add:
                     var row_restored = false;
                     if ( UrlHelper.TryGetM3u8FileUrl( row?.Url, out var t ) && 
-                         _ReceivedAndWritedPartsProcessor.TryRestoreFromReceivedAndWritedPartsStorer( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) )
+                         _ReceivedAndWritedPartsProcessor.TryRestore( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) )
                     {
                         row.RestoreDownloadParams_WithChangeStatus( exists.outputFileStreamPosition, exists.totalPartsCount, exists.lastReceivedAndWritedPartOrderNumber + 1 );
                         row_restored = true;
@@ -1051,7 +1051,7 @@ namespace m3u8.download.manager.ui
                         var suc = await FileHelper.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );                        
                         if ( suc )
                         {
-                            suc = _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( fn );
+                            var suc_2 = dict.TryGetValue( fn, out var row ) && _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
 
                             var suc_action = (sucDelPostProcessingFunc != null)
                                            ? new Action(() => { wb.IncreaseSteps(); if ( dict.TryGetValue( fn, out var r ) ) sucDelPostProcessingFunc( r ); }) : fail_action;
