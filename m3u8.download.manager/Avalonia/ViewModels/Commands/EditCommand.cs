@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Input;
 
-using m3u8.client__v2;
 using m3u8.download.manager.models;
 using m3u8.download.manager.ui;
 
