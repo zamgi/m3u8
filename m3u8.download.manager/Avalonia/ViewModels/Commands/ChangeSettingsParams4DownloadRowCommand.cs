@@ -13,12 +13,10 @@ namespace m3u8.download.manager
     {
         private MainVM _VM;
         private MainWindow _MainWindow;
-        private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
-        public ChangeSettingsParams4DownloadRowCommand( MainVM vm, MainWindow mainWindow, OutputFileNamePatternProcessor outputFileNamePatternProcessor )
+        public ChangeSettingsParams4DownloadRowCommand( MainVM vm, MainWindow mainWindow )
         {
             _VM = vm;
             _MainWindow = mainWindow;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
         }
 
         #region [.ICommand.]
@@ -33,7 +31,7 @@ namespace m3u8.download.manager
         {
             if ( (row == null) || !row.Status.IsRunningOrPaused() ) return;
 
-            var f = ChangeSettingsParams4DownloadRowForm.Edit( _VM, row, _OutputFileNamePatternProcessor, activeTabPageKind );
+            var f = ChangeSettingsParams4DownloadRowForm.Edit( _VM, row, _VM.OutputFileNamePatternProcessor/*, _VM.ReceivedAndWritedPartsProcessor*/, activeTabPageKind );
             {
                 await f.ShowDialogEx();
                 if ( f.Success && row.Status.IsRunningOrPaused() )

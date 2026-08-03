@@ -234,7 +234,7 @@ namespace m3u8.download.manager.ui
             }
             else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() )
             {
-                var (success, m3u8FileUrls) = await this.TryGetM3u8FileUrlsFromClipboard( _VM.SettingsController.IgnoreHostHttpHeader );
+                var (success, m3u8FileUrls) = await this.TryGetHttpUrlsFromClipboard( _VM.SettingsController );
                 if ( success )
                 {
                     m3u8FileUrls = m3u8FileUrls.Take( MAX_PASTE_URLS ).ToArray();
@@ -320,7 +320,7 @@ namespace m3u8.download.manager.ui
                 {
                     //case Key.M: throw new Exception( "TEST-Exception" );
                     case Key.V: //Paste                        
-                        var (success, urls) = await this.TryGetHttpUrlsFromClipboard( _VM.SettingsController.IgnoreHostHttpHeader /*autoStartDownload*/ );
+                        var (success, urls) = await this.TryGetHttpUrlsFromClipboard( _VM.SettingsController );
                         if ( success )
                         {
                             e.Handled = true;
@@ -439,10 +439,10 @@ namespace m3u8.download.manager.ui
                         {
                             e.Handled = true;
                             var m3u8FileUrls = await this.TryGetM3u8FileUrlsFromClipboardOrDefault( _VM.SettingsController.IgnoreHostHttpHeader );
+                            if ( m3u8FileUrls.AnyEx() ) _VM.AddCommand.Run( (m3u8FileUrls, false) );
 #if DEBUG
-                            if ( !m3u8FileUrls.AnyEx() ) m3u8FileUrls = [ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ];
-#endif
-                            _VM.AddCommand.Run( (m3u8FileUrls, false) );
+                            else _VM.AddCommand.Run( ([ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ], false) );
+#endif   
                         }
                         return;
 
@@ -1044,7 +1044,7 @@ namespace m3u8.download.manager.ui
         }
         private async void pasteToolButton_Click( object sender, EventArgs e )
         {            
-            var (success, urls) = await this.TryGetHttpUrlsFromClipboard( _VM.SettingsController.IgnoreHostHttpHeader /*autoStartDownload*/ );
+            var (success, urls) = await this.TryGetHttpUrlsFromClipboard( _VM.SettingsController /*autoStartDownload*/ );
             if ( success )
             {
                 var autoStartDownload = KeyboardHelper.IsShiftButtonPushed().GetValueOrDefault( false );

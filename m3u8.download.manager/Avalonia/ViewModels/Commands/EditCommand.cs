@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
+using m3u8.client__v2;
 using m3u8.download.manager.models;
 using m3u8.download.manager.ui;
 
@@ -13,12 +14,10 @@ namespace m3u8.download.manager
     {
         private MainVM _VM;
         private MainWindow _MainWindow;
-        private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
-        public EditCommand( MainVM vm, MainWindow mainWindow, OutputFileNamePatternProcessor outputFileNamePatternProcessor )
+        public EditCommand( MainVM vm, MainWindow mainWindow )
         {
             _VM = vm;
             _MainWindow = mainWindow;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
         }
 
         #region [.ICommand.]
@@ -33,7 +32,7 @@ namespace m3u8.download.manager
         {
             if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
 
-            var f = AddNewDownloadForm.Edit( _VM, row, _OutputFileNamePatternProcessor, activeTabPageKind );
+            var f = AddNewDownloadForm.Edit( _VM, row, _VM.OutputFileNamePatternProcessor, _VM.ReceivedAndWritedPartsProcessor, activeTabPageKind );
             {
                 await f.ShowDialogEx();
                 if ( f.Success && !row.Status.IsRunningOrPaused() )

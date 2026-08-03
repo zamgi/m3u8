@@ -268,7 +268,7 @@ namespace m3u8.download.manager.ui
                 switch ( e.KeyCode )
                 {
                     case Keys.V: //Paste                        
-                        if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls, _SC.IgnoreHostHttpHeader ) )
+                        if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls, _SC ) )
                         {                            
                             e.SuppressKeyPress = true;
 
@@ -400,7 +400,7 @@ namespace m3u8.download.manager.ui
                     case Keys.Insert: //add download dialog
                     {
                         e.SuppressKeyPress = true;
-                        var m3u8FileUrls = ClipboardHelper.TryGetM3u8FileUrlsFromClipboardOrDefault( _SC.IgnoreHostHttpHeader );
+                        var m3u8FileUrls = ClipboardHelper.TryGetHttpUrlsFromClipboard( _SC );
                         if ( m3u8FileUrls.AnyEx() ) AddNewDownloads( (m3u8FileUrls, false) );
 #if DEBUG
                         else AddNewDownloads( ([($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null)], false) );
@@ -1234,28 +1234,17 @@ namespace m3u8.download.manager.ui
         {
             if ( autoStartDownload && !r.Url.IsNullOrWhiteSpace() )
             {
-                var outputFileName = r.OutputFileName;
-                if ( !outputFileName.IsNullOrEmpty() || FileNameCleaner4UI.TryGetOutputFileNameByUrl( r.Url, _SC.OutputFileExtension, out outputFileName ) )
+                if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( r.Url ) )
                 {
-                    if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( r.Url ) )
-                    {
-                        var outputFileDirectory = r.OutputDirectory.GetValueIfNotNullOrWhiteSpaceOrDefault( _SC.OutputFileDirectory );
-                        if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out var cuttedFileName ) )
-                            outputFileName = cuttedFileName;
-
-                        var p = _SC.GetCreateM3u8ClientParams();
-                        var row = _DownloadListModel.AddRow( r );
-                        await downloadListUC.SelectDownloadRowDelay( row );
-                        _DC.Start( row );
-                    }
-                    return;
+                    var row = _DownloadListModel.AddRow( r );
+                    await downloadListUC.SelectDownloadRowDelay( row );
+                    _DC.Start( row );
                 }
+                return;
             }
 
-            #region [.AddNewDownloadForm as top-always-owner-form.]
             AddNewDownloadForm.Add( this, _DC, _SC, r, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
-            #endregion
-        }        
+        }
 
         private void AddNewDownload_4_GroupedByAudioVideo( IReadOnlyList< UrlInputParams > xs )
         {
@@ -1477,7 +1466,7 @@ namespace m3u8.download.manager.ui
         }
         private void pasteToolButton_Click( object sender, EventArgs e )
         {            
-            if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls, _SC.IgnoreHostHttpHeader ) )
+            if ( ClipboardHelper.TryGetHttpUrlsFromClipboard( out var urls, _SC ) )
             {
                 var autoStartDownload = ((Control.ModifierKeys & Keys.Shift) == Keys.Shift);
                 if ( !autoStartDownload ) urls = urls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );

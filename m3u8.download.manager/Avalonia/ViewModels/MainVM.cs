@@ -27,9 +27,9 @@ namespace m3u8.download.manager
             UndoModel          = new UndoModel( DownloadListModel );
             OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
 
-            AddCommand                              = new AddCommand( this, OutputFileNamePatternProcessor );
-            EditCommand                             = new EditCommand( this, mainWindow, OutputFileNamePatternProcessor );
-            ChangeSettingsParams4DownloadRowCommand = new ChangeSettingsParams4DownloadRowCommand( this, mainWindow, OutputFileNamePatternProcessor );
+            AddCommand                              = new AddCommand( this );
+            EditCommand                             = new EditCommand( this, mainWindow );
+            ChangeSettingsParams4DownloadRowCommand = new ChangeSettingsParams4DownloadRowCommand( this, mainWindow );
             ParallelismCommand                      = new ParallelismCommand( this );
             SettingsCommand                         = new SettingsCommand( this );
             WebProxyCommand                         = new WebProxyCommand( this );

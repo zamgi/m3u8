@@ -262,6 +262,9 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.static show-form methods.]
+        /// <summary>
+        /// Add Grouped
+        /// </summary>
         public static void AddGrouped( IWin32Window owner, _DC_ dc, _SC_ sc
             , string m3u8FileUrl_CombinedFake, in (string audio, string video) groupedUrls
             , string outputFileName
@@ -282,6 +285,9 @@ namespace m3u8.download.manager.ui
             f.loadM3u8FileContentButton.ReadOnly = true;
             f.InitAndShowWhenAdd( owner, m3u8FileUrl_CombinedFake, formClosedAction );
         }
+        /// <summary>
+        /// Add
+        /// </summary>
         public static void Add( IWin32Window owner, _DC_ dc, _SC_ sc
             , string m3u8FileUrl
             , IDictionary< string, string > requestHeaders
@@ -296,6 +302,9 @@ namespace m3u8.download.manager.ui
             };
             f.InitAndShowWhenAdd( owner, m3u8FileUrl, formClosedAction );
         }
+        /// <summary>
+        /// Add (over Copy-Paste)
+        /// </summary>
         public static void Add( IWin32Window owner, _DC_ dc, _SC_ sc
             , DownloadRow_Definer_3 r
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
@@ -320,6 +329,9 @@ namespace m3u8.download.manager.ui
             if ( m3u8FileUrl.IsNullOrWhiteSpace() ) this.Shown += (_, _) => this.m3u8FileUrlTextBox.Focus();
             this.Show( owner );
         }
+        /// <summary>
+        /// Edit
+        /// </summary>
         public static void Edit( IWin32Window owner, _DC_ dc, _SC_ sc
             , DownloadRow row
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
@@ -864,7 +876,7 @@ namespace m3u8.download.manager.ui
             var suc = _ReceivedAndWritedPartsProcessor.TryRestoreOutputFileNameByAddress( url, out var outputFileName, out var outputDirectory );
             if ( suc )
             {
-                this.OutputFileName = outputFileName;
+                this.OutputFileName  = outputFileName;
                 this.OutputDirectory = outputDirectory;
             }
             return (suc);

@@ -6,6 +6,7 @@ using System.Windows.Input;
 
 using Avalonia.Threading;
 
+using m3u8.client__v2;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.ui;
@@ -20,11 +21,9 @@ namespace m3u8.download.manager
     internal sealed class AddCommand : ICommand
     {
         private MainVM _VM;
-        private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
-        public AddCommand( MainVM vm, OutputFileNamePatternProcessor outputFileNamePatternProcessor )
+        public AddCommand( MainVM vm  )
         {
             _VM = vm;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
 
             PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArray += NamedPipeServer__Input_ReceivedInputParamsArray;
         }
@@ -44,7 +43,7 @@ namespace m3u8.download.manager
                      autoStartDownload: array.FirstOrDefault().autoStartDownload);
             Run( p );
         }
-        public async void Run( (IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls, bool autoStartDownload) p ) //, bool forceShowEmptyDialog )
+        public async void Run( (IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls, bool autoStartDownload) p )
         {
             if ( p.m3u8FileUrls.AnyEx() )
             {
@@ -63,11 +62,10 @@ namespace m3u8.download.manager
                     {
                         var seriesInfo = (n--, count);
                         await Dispatcher.UIThread.InvokeAsync( () => action( (t.url, t.requestHeaders, p.autoStartDownload), seriesInfo ) );
-                        //---this.BeginInvoke( action, (t.url, t.requestHeaders, p.autoStartDownload), seriesInfo );
                     }
                 }
             }
-            else //if ( forceShowEmptyDialog )
+            else
             {
                 Run( (null, null, false) );
             }
@@ -95,7 +93,7 @@ namespace m3u8.download.manager
                 return;
             }
 
-            var f = AddNewDownloadForm.Add( _VM, p.m3u8FileUrl, requestHeaders, _OutputFileNamePatternProcessor, seriesInfo );
+            var f = AddNewDownloadForm.Add( _VM, p.m3u8FileUrl, requestHeaders, _VM.OutputFileNamePatternProcessor, _VM.ReceivedAndWritedPartsProcessor, seriesInfo );
             {
                 await f.ShowDialogEx();
                 if ( f.Success )
@@ -112,6 +110,61 @@ namespace m3u8.download.manager
             //{
             //    openedForm.ActivateAfterCloseOther();
             //}
+        }
+
+
+        public async void Run( (IReadOnlyCollection< DownloadRow_Definer_3 > m3u8FileUrls, bool autoStartDownload) p )
+        {
+            if ( p.m3u8FileUrls.AnyEx() )
+            {
+                if ( p.m3u8FileUrls.Count == 1 )
+                {
+                    var frt = p.m3u8FileUrls.First();
+                    Run( frt, p.autoStartDownload );
+                }
+                else
+                {
+                    var action = new Action< DownloadRow_Definer_3, bool, (int n, int total) >((DownloadRow_Definer_3 r, bool autoStartDownload, (int n, int total) seriesInfo)
+                        => Run( r, autoStartDownload, seriesInfo ));
+
+                    var n     = p.m3u8FileUrls.Count;
+                    var count = n;
+                    foreach ( var t in p.m3u8FileUrls.Reverse() )
+                    {
+                        var seriesInfo = (n--, count);
+                        await Dispatcher.UIThread.InvokeAsync(() => action( t, p.autoStartDownload, seriesInfo ));
+                    }
+                }
+            }
+            else
+            {
+                Run( (null, null, false) );
+            }
+        }
+        public async void Run( DownloadRow_Definer_3 r, bool autoStartDownload, (int n, int total)? seriesInfo = null )
+        {
+            if ( autoStartDownload && !r.Url.IsNullOrWhiteSpace() )
+            {
+                if ( !_VM.SettingsController.UniqueUrlsOnly || !_VM.DownloadListModel.ContainsUrl( r.Url ) )
+                {
+                    var row = _VM.DownloadListModel.AddRow( r );
+                    _VM.DownloadController.Start( row );
+                }
+                return;
+            }
+
+            var f = AddNewDownloadForm.Add( _VM, r, _VM.OutputFileNamePatternProcessor, _VM.ReceivedAndWritedPartsProcessor, seriesInfo );
+            {
+                await f.ShowDialogEx();
+                if ( f.Success )
+                {
+                    var row = _VM.DownloadListModel.AddRow( f.GetParamsTuple() );
+                    if ( f.AutoStartDownload )
+                    {
+                        _VM.DownloadController.Start( row );
+                    }
+                }
+            }
         }
     }
 }

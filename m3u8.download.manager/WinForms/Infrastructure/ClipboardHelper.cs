@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
@@ -139,6 +140,8 @@ namespace m3u8.download.manager
                         var r = DownloadRowsSerializer.FromJSON( row_json ).FirstOrDefault();
                         if ( r != null )
                         {
+                            if ( ignoreHostHeader && r.RequestHeaders.AnyEx() ) r.RequestHeaders.Remove( HttpHeaderHelper.HEADER_HOST );
+
                             if ( r.Url.EndsWith_Ex( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( r.Url ) )
                             {
                                 lst.Add( r );
@@ -165,8 +168,9 @@ namespace m3u8.download.manager
             m3u8FileUrls = default;
             return (false);
         }
-        public static IReadOnlyCollection< DownloadRow_Definer_3 > TryGetM3u8FileUrlsFromClipboardOrDefault( bool ignoreHostHeader ) => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls, ignoreHostHeader ) ? m3u8FileUrls : Array.Empty< DownloadRow_Definer_3 >());
-        public static bool TryGetHttpUrlsFromClipboard( out IReadOnlyCollection< DownloadRow_Definer_3 > urls, bool ignoreHostHeader )
+        //public static IReadOnlyCollection< DownloadRow_Definer_3 > TryGetM3u8FileUrlsFromClipboardOrDefault( bool ignoreHostHeader ) => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls, ignoreHostHeader ) ? m3u8FileUrls : Array.Empty< DownloadRow_Definer_3 >());
+        public static IReadOnlyCollection< DownloadRow_Definer_3 > TryGetHttpUrlsFromClipboard( SettingsPropertyChangeController sc ) => (TryGetHttpUrlsFromClipboard( out var m3u8FileUrls, sc ) ? m3u8FileUrls : Array.Empty< DownloadRow_Definer_3 >());
+        public static bool TryGetHttpUrlsFromClipboard( out IReadOnlyCollection< DownloadRow_Definer_3 > urls, SettingsPropertyChangeController sc )
         {
             const string HTTP  = "http://";
             const string HTTPS = "https://";
@@ -177,6 +181,12 @@ namespace m3u8.download.manager
 
                 if ( !text.IsNullOrEmpty() )
                 {
+                    var ignoreHostHeader    = sc.IgnoreHostHttpHeader;
+                    var (timeout, attemptRequestCountByPart) = sc.GetCreateM3u8ClientParams();
+                    var webProxyInfo        = sc.GetDefaultWebProxyInfo();
+                    var outputFileDirectory = sc.OutputFileDirectory;
+                    //---------------------------------------------------------------------//
+
                     var lines = text.Split( ['\r', '\n'], StringSplitOptions.RemoveEmptyEntries );
                     var hs    = new HashSet< string >( lines.Length, StringComparer.InvariantCultureIgnoreCase );
                     var lst   = new List< DownloadRow_Definer_3 >( lines.Length );
@@ -191,6 +201,33 @@ namespace m3u8.download.manager
                             {
                                 if ( hs.Add( r.Url ) )
                                 {
+                                    if ( ignoreHostHeader && r.RequestHeaders.AnyEx() ) r.RequestHeaders.Remove( HttpHeaderHelper.HEADER_HOST );
+                                    lst.Add( r );
+                                }
+                            }
+                        }
+                        else 
+                        {
+                            var url = row_json;
+                            if ( url.StartsWith_Ex( HTTP , StringComparison.InvariantCultureIgnoreCase ) ||
+                                 url.StartsWith_Ex( HTTPS, StringComparison.InvariantCultureIgnoreCase ) )
+                            {
+                                if ( hs.Add( url ) )
+                                {
+                                    r = new DownloadRow_Definer_3()
+                                    {
+                                        Url = url,
+                                        RequestHeaders           = null,
+                                        OutputDirectory          = outputFileDirectory,
+                                        OutputFileName           = null,
+                                        CreatedOrStartedDateTime = DateTime.Now,
+                                        Status                   = DownloadStatus.Created,
+                                        AttemptRequestCount      = attemptRequestCountByPart,
+                                        Timeout                  = timeout,
+                                        WebProxyInfo             = webProxyInfo,
+                                        IsLiveStream             = false,
+                                        LiveStreamMaxFileSizeInBytes = 0,
+                                    };
                                     lst.Add( r );
                                 }
                             }
