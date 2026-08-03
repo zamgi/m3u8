@@ -440,18 +440,20 @@ namespace m3u8.download.manager.ui
         private async void m3u8FileUrlTextBox_TextChanged( object sender, EventArgs e )
         {
             var m3u8FileUrlText = this.M3u8FileUrl;
-            if ( (_Last_m3u8FileUrlText == m3u8FileUrlText) && !this.OutputFileName.IsNullOrWhiteSpace() )
-            {
-                return;
-            }
-            if ( !_LastManualInputed_outputFileNameText.IsNullOrWhiteSpace() )
-            {
-                return;
-            }
-            _Last_m3u8FileUrlText = m3u8FileUrlText;
+            //if ( !TryRestoreOutputFileNameByAddress( m3u8FileUrlText ) )
+            //{
+                if ( (_Last_m3u8FileUrlText == m3u8FileUrlText) && !this.OutputFileName.IsNullOrWhiteSpace() )
+                {
+                    return;
+                }
+                if ( !_LastManualInputed_outputFileNameText.IsNullOrWhiteSpace() )
+                {
+                    return;
+                }
+                _Last_m3u8FileUrlText = m3u8FileUrlText;
 
-            await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, _Settings.OutputFileExtension, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
-
+                await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, _Settings.OutputFileExtension, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
+            //}
             setFocus2outputFileNameTextBox();
         }
 
@@ -581,6 +583,19 @@ namespace m3u8.download.manager.ui
 
         private void requestTimeoutByPartDTP_ValueChanged( object sender, EventArgs e ) => this.Timeout = requestTimeoutByPartDTP.Value.TimeOfDay;
         private void attemptRequestCountByPartNUD_ValueChanged( object sender, EventArgs e ) => this.AttemptRequestCount = attemptRequestCountByPartNUD.ValueAsInt32;
+        #endregion
+
+        #region [.TryRestoreOutputFileNameByAddress.]
+        private bool TryRestoreOutputFileNameByAddress( string url )
+        {
+            var suc = _ReceivedAndWritedPartsProcessor.TryRestoreOutputFileNameByAddress( url, out var outputFileName, out var outputDirectory );
+            if ( suc )
+            {
+                this.OutputFileName = outputFileName;
+                this.OutputDirectory = outputDirectory;
+            }
+            return (suc);
+        }
         #endregion
 
         #region [.loadM3u8FileContentButton.]

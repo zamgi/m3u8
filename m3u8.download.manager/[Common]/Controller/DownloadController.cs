@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using m3u8.client__v2;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
-using m3u8.helpers;
 using m3u8.infrastructure;
 
 using _download_threads_semaphore_factory_ = m3u8.download.manager.controllers.download_threads_semaphore_factory;

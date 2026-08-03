@@ -579,6 +579,14 @@ namespace m3u8.download.manager.ui
 
             switch ( changedType )
             {
+                case _CollectionChangedTypeEnum_.Remove:
+                    if ( row != null )
+                    {
+                        var suc = _VM.ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
+                        row.ClearRestoredDownloadParams_WithChangeStatus();
+                    }
+                    break;
+
                 case _CollectionChangedTypeEnum_.Add:
                     if ( UrlHelper.TryGetM3u8FileUrl( row?.Url, out var t ) && 
                          _VM.ReceivedAndWritedPartsProcessor.TryRestore( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) 
@@ -923,9 +931,10 @@ namespace m3u8.download.manager.ui
                     await FileHelper.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
                     {
                         var suc = await FileHelper.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );
-                        if ( suc )
+                        if ( suc && dict.TryGetValue( fn, out var row ) )
                         {
-                            var suc_2 = dict.TryGetValue( fn, out var row ) && _VM.ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
+                            var suc_2 = _VM.ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
+                            row.ClearRestoredDownloadParams_WithChangeStatus();
                         }
                         syncCtx.Invoke(() => wb.IncreaseSteps( null ));
                         return (suc);

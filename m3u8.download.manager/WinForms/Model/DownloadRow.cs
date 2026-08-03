@@ -361,6 +361,18 @@ namespace m3u8.download.manager.models
             }
             _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
         }
+        internal void ClearRestoredDownloadParams_WithChangeStatus()
+        {
+            lock ( this )
+            {
+                TotalParts           = 0;
+                SuccessDownloadParts = 0;
+                DownloadBytesLength  = 0;
+
+                SetStatus( DownloadStatus.Created );
+            }
+            _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
+        }
 
         [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
         {

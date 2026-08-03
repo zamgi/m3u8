@@ -212,7 +212,7 @@ namespace m3u8.download.manager.ui
                        ClipboardHelper.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls, _SC.IgnoreHostHttpHeader ) 
                     )
             {
-                m3u8FileUrls = m3u8FileUrls.Take( MAX_PASTE_URLS ).ToArray();
+                m3u8FileUrls = m3u8FileUrls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
                 AddNewDownloads( (m3u8FileUrls, false) );
             }
         }
@@ -591,6 +591,7 @@ namespace m3u8.download.manager.ui
                     if ( row != null )
                     {
                         var suc = _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
+                        row.ClearRestoredDownloadParams_WithChangeStatus();
                         goto case _CollectionChangedTypeEnum_.Remove_Bulk;
                     }
                     break;
@@ -886,7 +887,7 @@ namespace m3u8.download.manager.ui
                 deleteAllFinishedDownloadToolButton.Enabled = true;
             }
         }
-        private async void DeleteDownloads( DownloadRow[] rows, bool deleteOutputFiles )
+        private async void DeleteDownloads( IReadOnlyList< DownloadRow > rows, bool deleteOutputFiles )
         {
             if ( !rows.AnyEx() )
             {
@@ -991,11 +992,11 @@ namespace m3u8.download.manager.ui
                 #endregion
             }
         }
-        private async void OnlyDeleteOutputFiles( DownloadRow[] rows, bool ask = true, Action< DownloadRow > sucDelPostProcessingFunc = null )
+        private async void OnlyDeleteOutputFiles( IReadOnlyList< DownloadRow > rows, bool ask = true, Action< DownloadRow > sucDelPostProcessingFunc = null )
         {
             if ( !rows.AnyEx() ) return;
 
-            var dict = new Dictionary< string, DownloadRow >( rows.Length );
+            var dict = new Dictionary< string, DownloadRow >( rows.Count );
 
             void call_sucDelPostProcessingFunc( IEnumerable< string > fns )
             {
@@ -1014,7 +1015,7 @@ namespace m3u8.download.manager.ui
                                 }
                                 return (fns);
                             })
-                            .ToList( rows.Length );
+                            .ToList( rows.Count );
             var exists_fns = fns.Where( File.Exists ).ToList( fns.Count );
             if ( exists_fns.Count == 0 )
             {
@@ -1051,7 +1052,11 @@ namespace m3u8.download.manager.ui
                         var suc = await FileHelper.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );                        
                         if ( suc )
                         {
-                            var suc_2 = dict.TryGetValue( fn, out var row ) && _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
+                            if ( dict.TryGetValue( fn, out var row ) )
+                            {
+                                var suc_2 = _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
+                                row.ClearRestoredDownloadParams_WithChangeStatus();
+                            }
 
                             var suc_action = (sucDelPostProcessingFunc != null)
                                            ? new Action(() => { wb.IncreaseSteps(); if ( dict.TryGetValue( fn, out var r ) ) sucDelPostProcessingFunc( r ); }) : fail_action;
@@ -1119,6 +1124,7 @@ namespace m3u8.download.manager.ui
             }
             return (false);
         }
+
 
         #region [.AddNewDownloads & AddNewDownload_4_GroupedByAudioVideo.]
         private void AddNewDownloads( UrlInputParams[] array )
@@ -1347,17 +1353,7 @@ namespace m3u8.download.manager.ui
             });
             #endregion
         }
-        #endregion
 
-        private void EditDownload( DownloadRow row, AddNewDownloadForm.TabPageKind? activeTabPageKind = null )
-        {
-            if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
-
-            AddNewDownloadForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/,
-                                     AddNewDownloadForm_when_Edit_formClosedAction, 
-                                     AddNewDownloadForm_when_Add_formClosedAction, 
-                                     activeTabPageKind );
-        }
         private async Task AddNewDownloadForm_when_Add_formClosedAction( AddNewDownloadForm f )
         {
             if ( f.DialogResult == DialogResult.OK )
@@ -1375,6 +1371,18 @@ namespace m3u8.download.manager.ui
                 openedForm.ActivateAfterCloseOther();
             }
         }
+        #endregion
+
+        #region [.EditDownload.]
+        private void EditDownload( DownloadRow row, AddNewDownloadForm.TabPageKind? activeTabPageKind = null )
+        {
+            if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
+
+            AddNewDownloadForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/,
+                                     AddNewDownloadForm_when_Edit_formClosedAction, 
+                                     AddNewDownloadForm_when_Add_formClosedAction, 
+                                     activeTabPageKind );
+        }
         private void AddNewDownloadForm_when_Edit_formClosedAction( AddNewDownloadForm f, DownloadRow row )
         {
             if ( (f.DialogResult == DialogResult.OK) && !row.Status.IsRunningOrPaused() )
@@ -1389,7 +1397,9 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        #endregion
 
+        #region [.ChangeSettingsParams4DownloadRow.]
         private bool ChangeSettingsParams4DownloadRow( DownloadRow row, ChangeSettingsParams4DownloadRowForm.TabPageKind? activeTabPageKind = null )
         {
             var suc = (row != null) && row.Status.IsRunningOrPaused();
@@ -1428,6 +1438,7 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        #endregion
 
         private bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
         //private void SuspendDrawing_DownloadListUC_And_Log()

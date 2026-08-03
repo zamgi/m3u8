@@ -414,6 +414,18 @@ namespace m3u8.download.manager.models
             }
             Fire_PropertyChanged_Events( nameof(MySelf) );
         }
+        internal void ClearRestoredDownloadParams_WithChangeStatus()
+        {
+            lock ( this )
+            {
+                TotalParts           = 0;
+                SuccessDownloadParts = 0;
+                DownloadBytesLength  = 0;
+
+                SetStatus( DownloadStatus.Created );
+            }
+            Fire_PropertyChanged_Events( nameof(MySelf) );
+        }
 
         [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
         {

@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
-
 namespace m3u8.download.manager.infrastructure
 {
     /// <summary>

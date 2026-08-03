@@ -124,24 +124,26 @@ namespace m3u8.download.manager.ui
         public static bool TryGetOutputFileNameByUrl( string m3u8FileUrlText, string outputFileExtension, out string outputFileName
             , int maxOutputFileNameLength = MAX_FileName_LENGTH )
         {
-            try
+            if ( !m3u8FileUrlText.IsNullOrEmpty() )
             {
-                var m3u8FileUrl         = new Uri( m3u8FileUrlText );
-                var inputOutputFileName = Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath );
-
-                var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
-                if ( !fn.IsNullOrWhiteSpace() )
+                try
                 {
-                    outputFileName = NameCleaner.Clean( fn )
-                                                .AddOutputFileExtensionIfMissing( outputFileExtension, maxOutputFileNameLength );
-                    return (!outputFileName.IsNullOrWhiteSpace());
+                    var m3u8FileUrl = new Uri( m3u8FileUrlText );
+                    var inputOutputFileName = Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath );
+
+                    var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
+                    if ( !fn.IsNullOrWhiteSpace() )
+                    {
+                        outputFileName = NameCleaner.Clean( fn )
+                                                    .AddOutputFileExtensionIfMissing( outputFileExtension, maxOutputFileNameLength );
+                        return (!outputFileName.IsNullOrWhiteSpace());
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
                 }
             }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
-
             outputFileName = default;
             return (false);
         }
@@ -149,28 +151,31 @@ namespace m3u8.download.manager.ui
             , int maxOutputFileNameLength = MAX_FileName_LENGTH )
         {
             setOutputFileNameAction( null );
-            try
-            {                
-                var m3u8FileUrl = new Uri( m3u8FileUrlText );
-                var inputOutputFileName = Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath );
-
-                var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
-                if ( !fn.IsNullOrWhiteSpace() )
+            if ( !m3u8FileUrlText.IsNullOrEmpty() )
+            { 
+                try
                 {
-                    setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
+                    var m3u8FileUrl = new Uri( m3u8FileUrlText );
+                    var inputOutputFileName = Uri.UnescapeDataString( m3u8FileUrl.AbsolutePath );
 
-                    fn = NameCleaner.Clean( fn );
-                    setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
+                    var fn = PathnameCleaner.CleanPathnameAndFilename( inputOutputFileName );
+                    if ( !fn.IsNullOrWhiteSpace() )
+                    {
+                        setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
 
-                    fn = fn.AddOutputFileExtensionIfMissing( outputFileExtension, maxOutputFileNameLength );
-                    setOutputFileNameAction( fn );
+                        fn = NameCleaner.Clean( fn );
+                        setOutputFileNameAction( fn ); await Task.Delay( millisecondsDelay );
 
-                    return (fn);
+                        fn = fn.AddOutputFileExtensionIfMissing( outputFileExtension, maxOutputFileNameLength );
+                        setOutputFileNameAction( fn );
+
+                        return (fn);
+                    }
                 }
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
+                catch ( Exception ex )
+                {
+                    Debug.WriteLine( ex );
+                }
             }
             return (null);
         }
