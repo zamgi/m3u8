@@ -92,7 +92,7 @@ namespace m3u8.download.manager
                 return;
             }
 
-            var f = AddNewDownloadForm.Add( _VM, p.m3u8FileUrl, requestHeaders, _VM.OutputFileNamePatternProcessor, _VM.ReceivedAndWritedPartsProcessor, seriesInfo );
+            var f = AddNewDownloadForm.Add( _VM, p.m3u8FileUrl, requestHeaders, seriesInfo );
             {
                 await f.ShowDialogEx();
                 if ( f.Success )
@@ -152,7 +152,7 @@ namespace m3u8.download.manager
                 return;
             }
 
-            var f = AddNewDownloadForm.Add( _VM, r, _VM.OutputFileNamePatternProcessor, _VM.ReceivedAndWritedPartsProcessor, seriesInfo );
+            var f = AddNewDownloadForm.Add( _VM, r, seriesInfo );
             {
                 await f.ShowDialogEx();
                 if ( f.Success )

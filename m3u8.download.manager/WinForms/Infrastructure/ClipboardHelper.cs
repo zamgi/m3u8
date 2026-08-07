@@ -7,7 +7,6 @@ using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
-using m3u8.download.manager.Properties;
 
 namespace m3u8.download.manager
 {
@@ -16,8 +15,32 @@ namespace m3u8.download.manager
     /// </summary>
     internal static class ClipboardHelper
     {
-        //private const char CLIP_BRD__URL_REQ_HEAD_SEP_CHAR = '\t'; //'\u0001';
-        //public static bool TryGetM3u8FileUrlsFromClipboard( out IReadOnlyCollection< (string url, string requestHeaders) > m3u8FileUrls, bool ignoreHostHeader )
+        private const string HTTP  = "http://";
+        private const string HTTPS = "https://";
+
+        private static bool IsValidUrl( string url ) => (url != null) && (url.StartsWith( HTTP , StringComparison.InvariantCultureIgnoreCase ) ||
+                                                                          url.StartsWith( HTTPS, StringComparison.InvariantCultureIgnoreCase ));
+        private static DownloadRow_Definer_3 Create_DownloadRow_Definer_3( string url, SettingsPropertyChangeController sc )
+        {
+            var (timeout, attemptRequestCountByPart) = sc.GetCreateM3u8ClientParams();
+            var r = new DownloadRow_Definer_3()
+            {
+                Url = url,
+                RequestHeaders           = null,
+                OutputDirectory          = sc.OutputFileDirectory,
+                OutputFileName           = null,
+                CreatedOrStartedDateTime = DateTime.Now,
+                Status                   = DownloadStatus.Created,
+                AttemptRequestCount      = attemptRequestCountByPart,
+                Timeout                  = timeout,
+                WebProxyInfo             = sc.GetDefaultWebProxyInfo(),
+                IsLiveStream             = false,
+                LiveStreamMaxFileSizeInBytes = 0,
+            };
+            return (r);
+        }
+
+        //public static bool TryGetM3u8FileUrlsFromClipboard( out IReadOnlyCollection< DownloadRow_Definer_3 > m3u8FileUrls, SettingsPropertyChangeController sc )
         //{
         //    var M3U8_EXTENSION_Q = Resources.M3U8_EXTENSION + '?';
         //    try
@@ -27,40 +50,49 @@ namespace m3u8.download.manager
                 
         //        if ( !text.IsNullOrEmpty() )
         //        {
+        //            var ignoreHostHeader = sc.IgnoreHostHttpHeader;
+
         //            var lines = text.Split( ['\r', '\n'], StringSplitOptions.RemoveEmptyEntries );
         //            var hs    = new HashSet< string >( lines.Length, StringComparer.InvariantCultureIgnoreCase );
-        //            var lst   = new List< (string url, string requestHeaders) >( lines.Length );
+        //            var lst   = new List< DownloadRow_Definer_3 >( lines.Length );
         //            foreach ( var a in lines )
         //            {
-        //                var s_row          = a.Trim();
-        //                var i              = s_row.IndexOf( CLIP_BRD__URL_REQ_HEAD_SEP_CHAR );
-        //                var row_json_or_url= (i != -1) ? s_row.Substring( 0, i ) : s_row;
-        //                var requestHeaders = (i != -1) ? s_row.Substring( i + 1 ) : null;
-        //                if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict, ignoreHostHeader ) || !dict.AnyEx() )
-        //                {
-        //                    requestHeaders = null;
-        //                }
+        //                var row_json = a.Trim();
+        //                var r = DownloadRowsSerializer.FromJSON( row_json ).FirstOrDefault();
+        //                if ( r == null ) r = Create_DownloadRow_Definer_3( url: row_json, sc );
+        //                if ( ignoreHostHeader && r.RequestHeaders.AnyEx() ) r.RequestHeaders.Remove( HttpHeaderHelper.HEADER_HOST );
 
-        //                if ( TryParseJson2DownloadRow( row_json_or_url, out var r ) )
+        //                if ( r.Url.EndsWith_Ex( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( r.Url ) )
         //                {
-
+        //                    lst.Add( r );
         //                }
         //                else
         //                {
-        //                    var url = row_json_or_url;
-        //                    if ( url.EndsWith( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( url ) )
+        //                    var i = r.Url.IndexOf( M3U8_EXTENSION_Q, StringComparison.InvariantCultureIgnoreCase );
+        //                    if ( (10 < i) && hs.Add( r.Url ) )
         //                    {
-        //                        lst.Add( (url, requestHeaders) );
-        //                    }
-        //                    else
-        //                    {
-        //                        i = url.IndexOf( M3U8_EXTENSION_Q, StringComparison.InvariantCultureIgnoreCase );
-        //                        if ( (10 < i) && hs.Add( url ) )
-        //                        {
-        //                            lst.Add( (url, requestHeaders) );
-        //                        }
+        //                        lst.Add( r );
         //                    }
         //                }
+        //                #region comm
+        //                //if ( r != null )
+        //                //{
+        //                //    if ( ignoreHostHeader && r.RequestHeaders.AnyEx() ) r.RequestHeaders.Remove( HttpHeaderHelper.HEADER_HOST );
+
+        //                //    if ( r.Url.EndsWith_Ex( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( r.Url ) )
+        //                //    {
+        //                //        lst.Add( r );
+        //                //    }
+        //                //    else
+        //                //    {
+        //                //        var i = r.Url.IndexOf( M3U8_EXTENSION_Q, StringComparison.InvariantCultureIgnoreCase );
+        //                //        if ( (10 < i) && hs.Add( r.Url ) )
+        //                //        {
+        //                //            lst.Add( r );
+        //                //        }
+        //                //    }
+        //                //} 
+        //                #endregion
         //            }
         //            m3u8FileUrls = lst;
         //            return (m3u8FileUrls.Any());
@@ -74,106 +106,10 @@ namespace m3u8.download.manager
         //    m3u8FileUrls = default;
         //    return (false);
         //}
-        //public static IReadOnlyCollection< (string url, string requestHeaders) > TryGetM3u8FileUrlsFromClipboardOrDefault( bool ignoreHostHeader ) => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls, ignoreHostHeader ) ? m3u8FileUrls : Array.Empty< (string url, string requestHeaders) >());
-        //public static bool TryGetHttpUrlsFromClipboard( out IReadOnlyCollection< (string url, string requestHeaders) > urls, bool ignoreHostHeader )
-        //{
-        //    const string HTTP  = "http://";
-        //    const string HTTPS = "https://";
-        //    try
-        //    {
-        //        var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
-        //        if ( text.IsNullOrEmpty() ) text = Clipboard.GetText( TextDataFormat.UnicodeText )?.Trim();
 
-        //        if ( !text.IsNullOrEmpty() )
-        //        {
-        //            var array = text.Split( [ '\r', '\n' ], StringSplitOptions.RemoveEmptyEntries );
-        //            var hs  = new HashSet< string >( array.Length, StringComparer.InvariantCultureIgnoreCase );
-        //            var lst = new List< (string url, string requestHeaders) >( array.Length );
-        //            foreach ( var a in array )
-        //            {
-        //                var s_row = a.Trim();
-        //                if ( s_row.StartsWith( HTTP , StringComparison.InvariantCultureIgnoreCase ) ||
-        //                     s_row.StartsWith( HTTPS, StringComparison.InvariantCultureIgnoreCase ) )
-        //                {
-        //                    var i = s_row.IndexOf( CLIP_BRD__URL_REQ_HEAD_SEP_CHAR );
-        //                    var url = (i != -1) ? s_row.Substring( 0, i ) : s_row;
-        //                    if ( hs.Add( url ) )
-        //                    {
-        //                        var requestHeaders = (i != -1) ? s_row.Substring( i + 1 ) : null;
-        //                        if ( !BrowserIPC.ExtensionRequestHeader.Try2Dict( requestHeaders, out var dict, ignoreHostHeader ) || !dict.AnyEx() )
-        //                        {
-        //                            requestHeaders = null;
-        //                        }
-        //                        lst.Add( (url, requestHeaders) );
-        //                    }
-        //                }
-        //            }
-        //            urls = lst;
-        //            return (urls.Any());
-        //        }
-        //    }
-        //    catch ( Exception ex )
-        //    {
-        //        Debug.WriteLine( ex );
-        //    }
-
-        //    urls = default;
-        //    return (false);
-        //}        
-
-        public static bool TryGetM3u8FileUrlsFromClipboard( out IReadOnlyCollection< DownloadRow_Definer_3 > m3u8FileUrls, bool ignoreHostHeader )
-        {
-            var M3U8_EXTENSION_Q = Resources.M3U8_EXTENSION + '?';
-            try
-            {
-                var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
-                if ( text.IsNullOrEmpty() ) text = Clipboard.GetText( TextDataFormat.UnicodeText )?.Trim();
-                
-                if ( !text.IsNullOrEmpty() )
-                {
-                    var lines = text.Split( ['\r', '\n'], StringSplitOptions.RemoveEmptyEntries );
-                    var hs    = new HashSet< string >( lines.Length, StringComparer.InvariantCultureIgnoreCase );
-                    var lst   = new List< DownloadRow_Definer_3 >( lines.Length );
-                    foreach ( var a in lines )
-                    {
-                        var row_json = a.Trim();
-                        var r = DownloadRowsSerializer.FromJSON( row_json ).FirstOrDefault();
-                        if ( r != null )
-                        {
-                            if ( ignoreHostHeader && r.RequestHeaders.AnyEx() ) r.RequestHeaders.Remove( HttpHeaderHelper.HEADER_HOST );
-
-                            if ( r.Url.EndsWith_Ex( Resources.M3U8_EXTENSION, StringComparison.InvariantCultureIgnoreCase ) && hs.Add( r.Url ) )
-                            {
-                                lst.Add( r );
-                            }
-                            else
-                            {
-                                var i = r.Url.IndexOf( M3U8_EXTENSION_Q, StringComparison.InvariantCultureIgnoreCase );
-                                if ( (10 < i) && hs.Add( r.Url ) )
-                                {
-                                    lst.Add( r );
-                                }
-                            }
-                        }
-                    }
-                    m3u8FileUrls = lst;
-                    return (m3u8FileUrls.Any());
-                }
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
-
-            m3u8FileUrls = default;
-            return (false);
-        }
-        //public static IReadOnlyCollection< DownloadRow_Definer_3 > TryGetM3u8FileUrlsFromClipboardOrDefault( bool ignoreHostHeader ) => (TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls, ignoreHostHeader ) ? m3u8FileUrls : Array.Empty< DownloadRow_Definer_3 >());
-        public static IReadOnlyCollection< DownloadRow_Definer_3 > TryGetHttpUrlsFromClipboard( SettingsPropertyChangeController sc ) => (TryGetHttpUrlsFromClipboard( out var m3u8FileUrls, sc ) ? m3u8FileUrls : Array.Empty< DownloadRow_Definer_3 >());
+        public static IReadOnlyCollection< DownloadRow_Definer_3 > TryGetHttpUrlsFromClipboardOrDefault( SettingsPropertyChangeController sc ) => (TryGetHttpUrlsFromClipboard( out var m3u8FileUrls, sc ) ? m3u8FileUrls : Array.Empty< DownloadRow_Definer_3 >());
         public static bool TryGetHttpUrlsFromClipboard( out IReadOnlyCollection< DownloadRow_Definer_3 > urls, SettingsPropertyChangeController sc )
         {
-            const string HTTP  = "http://";
-            const string HTTPS = "https://";
             try
             {
                 var text = Clipboard.GetText( TextDataFormat.Text )?.Trim();
@@ -181,10 +117,10 @@ namespace m3u8.download.manager
 
                 if ( !text.IsNullOrEmpty() )
                 {
-                    var ignoreHostHeader    = sc.IgnoreHostHttpHeader;
-                    var (timeout, attemptRequestCountByPart) = sc.GetCreateM3u8ClientParams();
-                    var webProxyInfo        = sc.GetDefaultWebProxyInfo();
-                    var outputFileDirectory = sc.OutputFileDirectory;
+                    var ignoreHostHeader = sc.IgnoreHostHttpHeader;
+                    //var (timeout, attemptRequestCountByPart) = sc.GetCreateM3u8ClientParams();
+                    //var webProxyInfo        = sc.GetDefaultWebProxyInfo();
+                    //var outputFileDirectory = sc.OutputFileDirectory;
                     //---------------------------------------------------------------------//
 
                     var lines = text.Split( ['\r', '\n'], StringSplitOptions.RemoveEmptyEntries );
@@ -194,43 +130,11 @@ namespace m3u8.download.manager
                     {
                         var row_json = a.Trim();
                         var r = DownloadRowsSerializer.FromJSON( row_json ).FirstOrDefault();
-                        if ( r != null )
+                        if ( r == null ) r = Create_DownloadRow_Definer_3( url: row_json, sc );
+                        if ( IsValidUrl( r.Url ) && hs.Add( r.Url ) )
                         {
-                            if ( r.Url.StartsWith_Ex( HTTP , StringComparison.InvariantCultureIgnoreCase ) ||
-                                 r.Url.StartsWith_Ex( HTTPS, StringComparison.InvariantCultureIgnoreCase ) )
-                            {
-                                if ( hs.Add( r.Url ) )
-                                {
-                                    if ( ignoreHostHeader && r.RequestHeaders.AnyEx() ) r.RequestHeaders.Remove( HttpHeaderHelper.HEADER_HOST );
-                                    lst.Add( r );
-                                }
-                            }
-                        }
-                        else 
-                        {
-                            var url = row_json;
-                            if ( url.StartsWith_Ex( HTTP , StringComparison.InvariantCultureIgnoreCase ) ||
-                                 url.StartsWith_Ex( HTTPS, StringComparison.InvariantCultureIgnoreCase ) )
-                            {
-                                if ( hs.Add( url ) )
-                                {
-                                    r = new DownloadRow_Definer_3()
-                                    {
-                                        Url = url,
-                                        RequestHeaders           = null,
-                                        OutputDirectory          = outputFileDirectory,
-                                        OutputFileName           = null,
-                                        CreatedOrStartedDateTime = DateTime.Now,
-                                        Status                   = DownloadStatus.Created,
-                                        AttemptRequestCount      = attemptRequestCountByPart,
-                                        Timeout                  = timeout,
-                                        WebProxyInfo             = webProxyInfo,
-                                        IsLiveStream             = false,
-                                        LiveStreamMaxFileSizeInBytes = 0,
-                                    };
-                                    lst.Add( r );
-                                }
-                            }
+                            if ( ignoreHostHeader && r.RequestHeaders.AnyEx() ) r.RequestHeaders.Remove( HttpHeaderHelper.HEADER_HOST );
+                            lst.Add( r );
                         }
                     }
                     urls = lst;
@@ -244,13 +148,12 @@ namespace m3u8.download.manager
 
             urls = default;
             return (false);
-        }        
+        }
         public static void CopyUrlsToClipboard( IEnumerable< DownloadRow > rows )
         {
             var txt = string.Join( "\r\n", DownloadRowsSerializer.ToJSON( rows ) );
             Clipboard.SetText( txt, TextDataFormat.UnicodeText );
         }
-
 
         public static bool TryGetHeadersFromClipboard( out IDictionary< string, string > headers, bool ignoreHostHeader )
         {

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 using m3u8.infrastructure;
 
+using _init_params_             = m3u8.client__v2.i_m3u8_client.init_params;
 using _ChangeSettingsParams_    = m3u8.client__v2.i_m3u8_client.ChangeSettingsParams;
 using _DownloadPartInputParams_ = m3u8.client__v2.i_m3u8_client.DownloadPartInputParams;
-using _init_params_             = m3u8.client__v2.i_m3u8_client.init_params;
 
 namespace m3u8.client__v2
 {
@@ -165,7 +165,8 @@ namespace m3u8.client__v2
         }
         //------------------------------------------------------------------------------------------//
         protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, CancellationToken ct );
-        protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, IObjectPool< CancellationTokenSource > timeoutCtsPool, CancellationToken ct );
+        //protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, IObjectPool< CancellationTokenSource > timeoutCtsPool, CancellationToken ct );
+        protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, CtsTimerPool timeoutCtsPool, CancellationToken ct );
         //------------------------------------------------------------------------------------------//
 
         public async Task< m3u8_file_t > DownloadFile( Uri url, IDictionary< string, string > requestHeaders = null, CancellationToken ct = default )

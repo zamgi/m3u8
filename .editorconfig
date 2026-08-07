@@ -78,6 +78,12 @@ dotnet_naming_style.pascal_case.required_suffix =
 dotnet_naming_style.pascal_case.word_separator = 
 dotnet_naming_style.pascal_case.capitalization = pascal_case
 
+# IDE1006: Naming Styles
+dotnet_diagnostic.IDE1006.severity = none
+
+# Default severity for analyzer diagnostics with category 'Style'
+dotnet_analyzer_diagnostic.category-Style.severity = none
+
 [*.vb]
 #### Naming styles ####
 

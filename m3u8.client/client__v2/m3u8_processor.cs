@@ -106,7 +106,8 @@ namespace m3u8.client__v2
             required public i_throttler_by_speed__v2_t     ThrottlerBySpeed                 { [M(O.AggressiveInlining)] get; init; }
             required public IObjectPool< Stream >          StreamPool                       { [M(O.AggressiveInlining)] get; init; }
             required public IObjectPool< byte[] >          RespBufPool                      { [M(O.AggressiveInlining)] get; init; }
-            required public IObjectPool< CancellationTokenSource > TimeoutCtsPool           { [M(O.AggressiveInlining)] get; init; }
+            //required public IObjectPool< CancellationTokenSource > TimeoutCtsPool           { [M(O.AggressiveInlining)] get; init; }
+            required public CtsTimerPool                   TimeoutCtsPool                   { [M(O.AggressiveInlining)] get; init; }
 
             public RequestStepActionDelegate  RequestStepAction  { [M(O.AggressiveInlining)] get; init; }
             public ResponseStepActionDelegate ResponseStepAction { [M(O.AggressiveInlining)] get; init; }

@@ -69,31 +69,29 @@ namespace m3u8.download.manager.controllers
         private const int STREAM_IN_POOL_CAPACITY                 = 1_024 * 1_024 * 5;
         private const int RESP_BUF_IN_POOL_CAPACITY               = 1_024 * 100;
 
-        private i_m3u8_client_factory                           _m3u8_client_factory;
-        private m3u8_client_factory_enum_type                   _m3u8_client_factory_type;
-        private DownloadListModel                               _Model;
-        private SettingsPropertyChangeController                _SettingsController;
-        private ConcurrentDictionary< DownloadRow, Tuple >      _Dict;
-        private cross_download_instance_restriction             _CrossDownloadInstanceRestriction;
-        private interlocked_lock                                _ProcessCrossDownloadInstanceRestrictionLock;
-        private int                                             _RealRunningCount;
-        private _download_threads_semaphore_factory_            _DownloadThreadsSemaphoreFactory;
-        private _download_threads_semaphore_factory_            _DownloadThreadsSemaphoreFactory_4_Parts;
-        private DefaultConnectionLimitSaver                     _DefaultConnectionLimitSaver;
-        private i_throttler_by_speed__v2_t                      _ThrottlerBySpeed;
-        private ObjectPoolDisposable< Stream >                  _StreamPool;
-        private ObjectPool< byte[] >                            _RespBufPool;
-        private ObjectPoolDisposable< CancellationTokenSource > _TimeoutCtsPool;
-        private m3u8_processor.ILogger                          _Logger;
-        private IReceivedAndWritedPartsProcessor                _ReceivedAndWritedPartsProcessor;
+        private i_m3u8_client_factory                      _m3u8_client_factory;
+        private m3u8_client_factory_enum_type              _m3u8_client_factory_type;
+        private DownloadListModel                          _Model;
+        private SettingsPropertyChangeController           _SettingsController;
+        private ConcurrentDictionary< DownloadRow, Tuple > _Dict;
+        private cross_download_instance_restriction        _CrossDownloadInstanceRestriction;
+        private interlocked_lock                           _ProcessCrossDownloadInstanceRestrictionLock;
+        private int                                        _RealRunningCount;
+        private _download_threads_semaphore_factory_       _DownloadThreadsSemaphoreFactory;
+        private _download_threads_semaphore_factory_       _DownloadThreadsSemaphoreFactory_4_Parts;
+        private DefaultConnectionLimitSaver                _DefaultConnectionLimitSaver;
+        private i_throttler_by_speed__v2_t                 _ThrottlerBySpeed;
+        private ObjectPoolDisposable< Stream >             _StreamPool;
+        private ObjectPool< byte[] >                       _RespBufPool;
+        private CtsTimerPool                               _TimeoutCtsPool;
+        private m3u8_processor.ILogger                     _Logger;
+        private IReceivedAndWritedPartsProcessor           _ReceivedAndWritedPartsProcessor;
         #endregion
 
         private static ObjectPoolDisposable< Stream > CreateStreamPool( int maxDegreeOfParallelism, int streamInPoolCapacity = STREAM_IN_POOL_CAPACITY ) 
             => new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
         private static ObjectPool< byte[] > CreateRespBufPool( int maxDegreeOfParallelism, int bufInPoolCapacity = RESP_BUF_IN_POOL_CAPACITY ) 
             => new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
-        private static ObjectPoolDisposable< CancellationTokenSource > CreateTimeoutCtsPool( int maxDegreeOfParallelism ) 
-            => new ObjectPoolDisposable< CancellationTokenSource >( maxDegreeOfParallelism, () => new CancellationTokenSource() );        
 
         #region [.ctor().]
         public DownloadController( DownloadListModel model, SettingsPropertyChangeController sc, m3u8_client_factory_enum_type m3u8_client_factory_type
@@ -127,7 +125,7 @@ namespace m3u8.download.manager.controllers
 #endif
             _StreamPool     = CreateStreamPool ( sc.MaxDegreeOfParallelism );
             _RespBufPool    = CreateRespBufPool( sc.MaxDegreeOfParallelism );
-            _TimeoutCtsPool = CreateTimeoutCtsPool( sc.MaxDegreeOfParallelism );
+            _TimeoutCtsPool = new CtsTimerPool( sc.MaxDegreeOfParallelism );
         }
 
         public void Dispose()
@@ -195,7 +193,7 @@ namespace m3u8.download.manager.controllers
                 case nameof(Settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance):
                 {
                     var v = settings.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
-                    _DownloadThreadsSemaphoreFactory  .ShareMaxDownloadThreadsBetweenAllDownloadsInstance = v;
+                    _DownloadThreadsSemaphoreFactory        .ShareMaxDownloadThreadsBetweenAllDownloadsInstance = v;
                     _DownloadThreadsSemaphoreFactory_4_Parts.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = v;
                 }
                 break;

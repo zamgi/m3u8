@@ -75,7 +75,8 @@ namespace m3u8
 
             required public WaitIfPausedHolder         WaitIfPausedHolder { [M(O.AggressiveInlining)] get; set; }
             required public i_throttler_by_speed__v2_t ThrottlerBySpeed   { [M(O.AggressiveInlining)] get; set; }
-            required public IObjectPool< CancellationTokenSource > TimeoutCtsPool { [M(O.AggressiveInlining)] get; set; }
+            //required public IObjectPool< CancellationTokenSource > TimeoutCtsPool { [M(O.AggressiveInlining)] get; set; }
+            required public CtsTimerPool               TimeoutCtsPool     { [M(O.AggressiveInlining)] get; set; }
 
             public DownloadContentDelegate          DownloadContent          { get; set; }
             public DownloadContentErrorDelegate     DownloadContentError     { get; set; }
@@ -515,10 +516,10 @@ namespace m3u8
     {
         #region [.ctor().]
         private TimeSpan _Timeout;
-        private IObjectPool< CancellationTokenSource > _TimeoutCtsPool;
+        private CtsTimerPool _TimeoutCtsPool;
         public m3u8_live_stream_downloader__with_HttpInvoker( HttpMessageInvoker httpInvoker, in i_m3u8_live_stream_downloader.InitParams ip ) : base( httpInvoker, ip )
         {
-            _Timeout = ip.Timeout;
+            _Timeout        = ip.Timeout;
             _TimeoutCtsPool = ip.TimeoutCtsPool;
         }
         public m3u8_live_stream_downloader__with_HttpInvoker( in i_m3u8_live_stream_downloader.InitParams ip ) : this( null, ip ) { }
@@ -668,7 +669,7 @@ namespace m3u8.infrastructure
             }
         }
         [M(O.AggressiveInlining)] public static async Task< string > GetStringAsync_Ex( this HttpMessageInvoker hi, string requestUri, IDictionary< string, string > requestHeaders
-            , IObjectPool< CancellationTokenSource > timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
+            , CtsTimerPool timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
         {
             using ( var req = CreateRequestGet( new Uri( requestUri ), requestHeaders ) )
             {
@@ -749,7 +750,7 @@ namespace m3u8.infrastructure
             }
         }
         [M(O.AggressiveInlining)] public static async Task< GetStreamAsync_Ex_Result > GetStreamAsync_Ex( this HttpMessageInvoker hi, string requestUri, IDictionary< string, string > requestHeaders
-            , IObjectPool< CancellationTokenSource > timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
+            , CtsTimerPool timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
         {
             using ( var req = CreateRequestGet( new Uri( requestUri ), requestHeaders ) )
             {

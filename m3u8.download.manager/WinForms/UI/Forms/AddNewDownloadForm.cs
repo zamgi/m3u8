@@ -285,6 +285,7 @@ namespace m3u8.download.manager.ui
             f.loadM3u8FileContentButton.ReadOnly = true;
             f.InitAndShowWhenAdd( owner, m3u8FileUrl_CombinedFake, formClosedAction );
         }
+
         /// <summary>
         /// Add
         /// </summary>
@@ -302,6 +303,7 @@ namespace m3u8.download.manager.ui
             };
             f.InitAndShowWhenAdd( owner, m3u8FileUrl, formClosedAction );
         }
+
         /// <summary>
         /// Add (over Copy-Paste)
         /// </summary>
@@ -318,6 +320,7 @@ namespace m3u8.download.manager.ui
             };
             f.InitAndShowWhenAdd( owner, r.Url, formClosedAction );
         }
+
         private void InitAndShowWhenAdd( IWin32Window owner, string m3u8FileUrl, Func< AddNewDownloadForm, Task > formClosedAction )
         {
             set_WebProxyInfo( _SC.GetDefaultWebProxyInfo() );
@@ -329,6 +332,7 @@ namespace m3u8.download.manager.ui
             if ( m3u8FileUrl.IsNullOrWhiteSpace() ) this.Shown += (_, _) => this.m3u8FileUrlTextBox.Focus();
             this.Show( owner );
         }
+
         /// <summary>
         /// Edit
         /// </summary>
@@ -359,6 +363,7 @@ namespace m3u8.download.manager.ui
             f.Shown += (_, _) => f.setFocus2outputFileNameTextBox_Core();
             f.Show( owner );
         }
+
         private void SetActiveTabPageKind( TabPageKind? tabPageKind )
         {
             if ( tabPageKind.HasValue )

@@ -438,7 +438,7 @@ namespace m3u8.download.manager.ui
                     case Key.Insert: //add download dialog
                         {
                             e.Handled = true;
-                            var m3u8FileUrls = await this.TryGetM3u8FileUrlsFromClipboardOrDefault( _VM.SettingsController.IgnoreHostHttpHeader );
+                            var m3u8FileUrls = await this.TryGetHttpUrlsFromClipboardOrDefault( _VM.SettingsController );
                             if ( m3u8FileUrls.AnyEx() ) _VM.AddCommand.Run( (m3u8FileUrls, false) );
 #if DEBUG
                             else _VM.AddCommand.Run( ([ ($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null) ], false) );

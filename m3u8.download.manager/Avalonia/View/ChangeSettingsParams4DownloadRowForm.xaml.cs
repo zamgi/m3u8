@@ -122,15 +122,13 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// Edit
         /// </summary>
-        private ChangeSettingsParams4DownloadRowForm( MainVM vm
-            , DownloadRow row
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor ) : this()
+        private ChangeSettingsParams4DownloadRowForm( MainVM vm, DownloadRow row ) : this()
         {
             this.DataContext = new CloseWindowVM( this );
 
             _SC = vm.SettingsController;
             _DC = vm.DownloadController;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
+            _OutputFileNamePatternProcessor = vm.OutputFileNamePatternProcessor;
             requestHeadersEditor.SetSettingsController( _SC );
             requestHeadersEditor.SetRequestHeaders( row.RequestHeaders, _SC.IgnoreHostHttpHeader );
 
@@ -171,10 +169,9 @@ namespace m3u8.download.manager.ui
         #region [.static show-form methods.]
         internal static ChangeSettingsParams4DownloadRowForm Edit( MainVM vm
             , DownloadRow row
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
             , TabPageKind? activeTabPageKind = null )
         {
-            var f = new ChangeSettingsParams4DownloadRowForm( vm, row, outputFileNamePatternProcessor )
+            var f = new ChangeSettingsParams4DownloadRowForm( vm, row )
             {
                 Icon  = new WindowIcon( ResourceLoader._GetResource_( "/Resources/edit.png" ) ),
                 Title = $"Change settings, / '{row.OutputFileName}' /",

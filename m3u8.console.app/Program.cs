@@ -37,7 +37,7 @@ namespace m3u8
                     m3u8FileUrl        = m3u8FileUrl,
                     OutputFileName     = outputFileName,
                     NetParams          = new i_m3u8_client.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead },
-                    ResponseStepAction = new m3u8_processor__v0.ResponseStepActionDelegate( t => CONSOLE.WriteLine( $"{t.Part.OrderNumber + 1} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),
+                    ResponseStepAction = new m3u8_processor__v0.ResponseStepActionDelegate( t => ConsoleHelper.WriteLine( $"{t.Part.OrderNumber + 1} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),
                     //MaxDegreeOfParallelism = 8,
                 };
 
@@ -129,7 +129,7 @@ namespace m3u8
                 using var throttler_by_speed = new throttler_by_speed_impl__v2();
                 using var streamPool         = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
                 using var respBufPool        = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
-                using var timeoutCtsPool     = new ObjectPoolDisposable< CancellationTokenSource >( maxDegreeOfParallelism, () => new CancellationTokenSource() );
+                using var timeoutCtsPool     = new CtsTimerPool( maxDegreeOfParallelism );
 
                 #region comm.
                 //var requestStepAction      = new m3u8_processor.RequestStepActionDelegate( (in m3u8_processor.RequestStepActionParams p) =>
@@ -147,7 +147,7 @@ namespace m3u8
                 //    }
                 //});
                 #endregion
-                var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( (in m3u8_processor.ResponseStepActionParams p) => CONSOLE.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );
+                var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( (in m3u8_processor.ResponseStepActionParams p) => ConsoleHelper.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );
                 //var downloadPartStepAction = new m3u8_client.DownloadPartStepActionDelegate( (in m3u8_client.DownloadPartStepActionParams p) => );
                 var waitIfPausedHolder = new WaitIfPausedHolder( waitIfPausedEventWrapper );
 
@@ -375,9 +375,9 @@ namespace m3u8
                 using var throttler_by_speed       = new throttler_by_speed_impl__v2();
                 using var streamPool               = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
                 using var respBufPool              = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
-                using var timeoutCtsPool           = new ObjectPoolDisposable< CancellationTokenSource >( maxDegreeOfParallelism, () => new CancellationTokenSource() );
+                using var timeoutCtsPool           = new CtsTimerPool( maxDegreeOfParallelism );
 
-                var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( (in m3u8_processor.ResponseStepActionParams p) => CONSOLE.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );
+                var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( (in m3u8_processor.ResponseStepActionParams p) => ConsoleHelper.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );
                 var waitIfPausedHolder = new WaitIfPausedHolder( waitIfPausedEventWrapper );
 
                 var p = new m3u8_processor.DownloadPartsAndSaveInputParams()
@@ -424,10 +424,10 @@ namespace m3u8
             }
             catch ( Exception ex )
             {
-                CONSOLE.WriteLineError( $"ERROR: {ex}" );
+                ConsoleHelper.WriteLineError( $"ERROR: {ex}" );
             }
-            CONSOLE.WriteLine( "\r\n\r\n[.....finita fusking comedy.....]\r\n\r\n", ConsoleColor.DarkGray );
-            CONSOLE.ReadLine();
+            ConsoleHelper.WriteLine( "\r\n\r\n[.....finita fusking comedy.....]\r\n\r\n", ConsoleColor.DarkGray );
+            ConsoleHelper.ReadLine();
         }
 
         private static async Task Run_1()
@@ -507,21 +507,38 @@ namespace m3u8
 
         private static async Task Test__obj_pool()
         {
-            using var pool = new ObjectPoolDisposable< CancellationTokenSource >( 1, () => new CancellationTokenSource() );
+            using var pool = new CtsTimerPool( 1 );
 
-            var holder_1 = pool.GetHolder( out var t_1 );
-            var holder_2 = pool.GetHolder( out var t_2 );
-            pool.ChangeCapacity( 2 );
-            var holder_3 = pool.GetHolder( out var t_3 );
+            await SendAsync_Ex( pool, TimeSpan.FromSeconds( 10 ), CancellationToken.None ).CAX();
+            await SendAsync_Ex( pool, TimeSpan.FromSeconds( 10 ), CancellationToken.None ).CAX();
+            await SendAsync_Ex( pool, TimeSpan.FromSeconds( 10 ), CancellationToken.None ).CAX();
+        }
+        private static async Task SendAsync_Ex( CtsTimerPool timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
+        {
+#if NETCOREAPP
+            using var h = timeoutCtsPool.Acquire( timeout, out var timeout_cts );
+            Debug.Assert( !timeout_cts.IsCancellationRequested );
+#else
+            using var timeout_cts = new CancellationTokenSource( timeout ); 
+#endif
+            using var union_cts = CancellationTokenSource.CreateLinkedTokenSource( timeout_cts.Token, ct );
+            try
+            {
+                //var resp = await httpInvoker.SendAsync( req, union_cts.Token ).ConfigureAwait( false );
+                //return (resp);
 
-            holder_1.Dispose();
-            holder_2.Dispose();
-            holder_3.Dispose();
-
-            pool.ChangeCapacity( 1 );
-
-            var holder_4 = pool.GetHolder( out var t_4 );
-            holder_4.Dispose();
+                await Task.Delay( TimeSpan.FromSeconds(1)/*Timeout.Infinite*/, union_cts.Token ).CAX();
+            }
+            catch ( Exception /*ex*/ ) when (ct.IsCancellationRequested)
+            {
+                //---throw (new OperationCanceledException( $"Http request was canceled.", ex ));
+                Debug.WriteLine( $"Http request was canceled." );
+            }
+            catch ( Exception /*ex*/ ) when (timeout_cts.IsCancellationRequested)
+            {
+                //---throw (new TimeoutException( $"Http request timeout exceeded: {timeout}.", ex ));
+                Debug.WriteLine( $"Http request timeout exceeded: {timeout}." );
+            }
         }
     }
     
@@ -608,11 +625,11 @@ namespace m3u8
     /// <summary>
     /// 
     /// </summary>
-    internal static class CONSOLE
+    internal static class ConsoleHelper
     {
         public static void WriteLine( string text, ConsoleColor? foregroundColor = null )
         {
-            lock ( typeof(CONSOLE) )
+            lock ( typeof(ConsoleHelper) )
             {
                 if ( foregroundColor.HasValue )
                 {
@@ -629,7 +646,7 @@ namespace m3u8
         }
         public static void WriteLineError( string text )
         {
-            lock ( typeof(CONSOLE) )
+            lock ( typeof(ConsoleHelper) )
             {
                 var fc = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Red;

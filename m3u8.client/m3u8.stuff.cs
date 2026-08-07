@@ -83,18 +83,53 @@ namespace m3u8.infrastructure
                 throw (new TimeoutException( $"Http request timeout exceeded: {timeout}.", ex ));
             }
         }
-        [M(O.AggressiveInlining)] public static async Task< HttpResponseMessage > SendAsync_Ex( this HttpMessageInvoker httpInvoker, HttpRequestMessage req
-            , IObjectPool< CancellationTokenSource > timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
-        {
-#if NETCOREAPP
-            using var h = timeoutCtsPool.GetHolder( out var timeout_cts );
-            var suc = timeout_cts.TryReset(); Debug.Assert( suc );
-            timeout_cts.CancelAfter( timeout );
-#else
-            using var timeout_cts = new CancellationTokenSource( timeout ); 
-#endif            
-            using var union_cts = CancellationTokenSource.CreateLinkedTokenSource( timeout_cts.Token, ct );
+//        [M(O.AggressiveInlining)] public static async Task< HttpResponseMessage > SendAsync_Ex( this HttpMessageInvoker httpInvoker, HttpRequestMessage req
+//            , IObjectPool< CancellationTokenSource > timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
+//        {
+//#if NETCOREAPP
+//            using var h = timeoutCtsPool.GetHolder( out var timeout_cts );
+//            var suc = timeout_cts.TryReset(); Debug.Assert( suc );
 
+//            CancellationTokenSource timeout_cts_4_dispose;
+//            if ( suc )
+//            {
+//                timeout_cts.CancelAfter( timeout );
+//                timeout_cts_4_dispose = null;
+//            }
+//            else
+//            {
+//                timeout_cts_4_dispose = timeout_cts = new CancellationTokenSource( timeout );
+//            }
+//#else
+//            using var timeout_cts = new CancellationTokenSource( timeout ); 
+//#endif
+//            using var union_cts = CancellationTokenSource.CreateLinkedTokenSource( timeout_cts.Token, ct );
+
+//            try
+//            {
+//                var resp = await httpInvoker.SendAsync( req, union_cts.Token ).ConfigureAwait( false );
+//                return (resp);
+//            }
+//            catch ( Exception ex ) when (ct.IsCancellationRequested)
+//            {
+//                throw (new OperationCanceledException( $"Http request was canceled.", ex ));
+//            }
+//            catch ( Exception ex ) when (timeout_cts.IsCancellationRequested)
+//            {
+//                throw (new TimeoutException( $"Http request timeout exceeded: {timeout}.", ex ));
+//            }
+//#if NETCOREAPP
+//            finally
+//            {
+//                timeout_cts_4_dispose?.Dispose();
+//            }
+//#endif
+//        }
+        [M(O.AggressiveInlining)] public static async Task< HttpResponseMessage > SendAsync_Ex( this HttpMessageInvoker httpInvoker, HttpRequestMessage req
+            , CtsTimerPool timeoutCtsPool, TimeSpan timeout, CancellationToken ct )
+        {
+            using var h = timeoutCtsPool.Acquire( timeout, out var timeout_cts ); Debug.Assert( !timeout_cts.IsCancellationRequested );
+            using var union_cts = CancellationTokenSource.CreateLinkedTokenSource( timeout_cts.Token, ct );
             try
             {
                 var resp = await httpInvoker.SendAsync( req, union_cts.Token ).ConfigureAwait( false );
@@ -243,12 +278,6 @@ namespace m3u8.infrastructure
             return (ex.ToString());
         }
 
-        [M(O.AggressiveInlining)] public static string Unwrap4DialogMessage( this Exception ex, bool ignoreCanceledException = true )
-        {
-            var message = ex.Unwrap4DialogMessage( out var isCanceledException );
-            return ((isCanceledException && ignoreCanceledException) ? null : message);
-        }
-
         internal static string TrimFromBegin( this string s, int maxLength ) => ((maxLength < s.Length) ? s.Substring( s.Length - maxLength ) : s);
 
         [M(O.AggressiveInlining)] private static Uri GetPartUrl( this Uri baseAddress, string relativeUrlName )
@@ -266,7 +295,7 @@ namespace m3u8.infrastructure
         }
 
         [M(O.AggressiveInlining)] public static Task WriteAsync( this FileStream fs, byte[] buffer, CancellationToken ct ) => fs.WriteAsync( buffer, 0, buffer.Length, ct );
-        [M(O.AggressiveInlining)] public static Task WriteAsync( this FileStream fs, byte[] buffer, int count, CancellationToken ct ) => fs.WriteAsync( buffer, 0, count, ct );
+        //[M(O.AggressiveInlining)] public static Task WriteAsync( this FileStream fs, byte[] buffer, int count, CancellationToken ct ) => fs.WriteAsync( buffer, 0, count, ct );
         [M(O.AggressiveInlining)] public static Task WriteAsync( this FileStream fs, in (byte[] buffer, int count) t, CancellationToken ct ) => fs.WriteAsync( t.buffer, 0, t.count, ct );
         [M(O.AggressiveInlining)] public static Task WriteAsync( this FileStream fs, string s, CancellationToken ct )
         {

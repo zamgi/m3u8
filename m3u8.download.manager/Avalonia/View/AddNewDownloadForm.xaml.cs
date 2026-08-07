@@ -80,7 +80,7 @@ namespace m3u8.download.manager.ui
         private (int n, int total) _SeriesInfo;
         private bool _IsInEditMode;
         private OutputFileNamePatternProcessor   _OutputFileNamePatternProcessor;
-        private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;        
+        private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;
         #endregion
 
         #region [.ctor().]
@@ -125,22 +125,20 @@ namespace m3u8.download.manager.ui
             m3u8FileUrlTextBox_SubscribeDisposable    = m3u8FileUrlTextBox   .GetObservable( TextBox.TextProperty ).Subscribe( m3u8FileUrlTextBox_TextChanged );
             outputFileNameTextBox_SubscribeDisposable = outputFileNameTextBox.GetObservable( TextBox.TextProperty ).Subscribe( outputFileNameTextBox_TextChanged );
         }
+
         /// <summary>
         /// Edit
         /// </summary>
-        private AddNewDownloadForm( MainVM vm
-            , DownloadRow row
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor ) : this()
+        private AddNewDownloadForm( MainVM vm, DownloadRow row ) : this()
         {
             _IsInEditMode = true;
             this.DataContext = new CloseWindowVM( this );
 
             _SC                = vm.SettingsController;
-            _DC                = vm.DownloadController;
-            _ReceivedAndWritedPartsProcessor = receivedAndWritedPartsProcessor;
+            _DC                = vm.DownloadController;            
             _DownloadListModel = vm.DownloadController?.Model;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
+            _OutputFileNamePatternProcessor  = vm.OutputFileNamePatternProcessor;
+            _ReceivedAndWritedPartsProcessor = vm.ReceivedAndWritedPartsProcessor;
             requestHeadersEditor.SetSettingsController( _SC );
             requestHeadersEditor.SetRequestHeaders( row.RequestHeaders, _SC.IgnoreHostHttpHeader );
 
@@ -170,23 +168,19 @@ namespace m3u8.download.manager.ui
             this.AttemptRequestCount = row.AttemptRequestCount.GetValueOrDefault( cp.attemptRequestCountByPart );
             #endregion
         }
+
         /// <summary>
         /// Add
         /// </summary>
-        private AddNewDownloadForm( MainVM vm
-            , string m3u8FileUrl
-            , IDictionary< string, string > requestHeaders
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
-            , in (int n, int total)? seriesInfo = null ) : this()
+        private AddNewDownloadForm( MainVM vm, string m3u8FileUrl, IDictionary< string, string > requestHeaders, in (int n, int total)? seriesInfo = null ) : this()
         {
             this.DataContext = new CloseWindowVM( this );
 
             _SC                = vm.SettingsController;
             _DC                = vm.DownloadController;
-            _ReceivedAndWritedPartsProcessor = receivedAndWritedPartsProcessor;
             _DownloadListModel = vm.DownloadController?.Model;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
+            _OutputFileNamePatternProcessor  = vm.OutputFileNamePatternProcessor;
+            _ReceivedAndWritedPartsProcessor = vm.ReceivedAndWritedPartsProcessor;
             requestHeadersEditor.SetSettingsController( _SC );
             requestHeadersEditor.SetRequestHeaders( requestHeaders, _SC.IgnoreHostHttpHeader );            
 
@@ -195,10 +189,9 @@ namespace m3u8.download.manager.ui
             Process_use_OutputFileNamePatternProcessor_on_Init();
             #endregion
 
-            this.M3u8FileUrl = m3u8FileUrl;
-            this.OutputDirectory = _SC.Settings.OutputFileDirectory;
+            this.M3u8FileUrl               = m3u8FileUrl;
+            this.OutputDirectory           = _SC.Settings.OutputFileDirectory;
             this.LiveStreamMaxFileSizeInMb = _SC.Settings.LiveStreamMaxSingleFileSizeInMb;
-            //this.IsLiveStream              = _SC.Settings.IsLiveStream;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
@@ -213,22 +206,19 @@ namespace m3u8.download.manager.ui
             Init_SeriesInfo( seriesInfo );
             TryRestoreOutputFileNameByAddress( m3u8FileUrl );
         }
+
         /// <summary>
         /// Add (over Copy-Paste)
         /// </summary>
-        private AddNewDownloadForm( MainVM vm
-            , DownloadRow_Definer_3 r
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
-            , in (int n, int total)? seriesInfo = null ) : this()
+        private AddNewDownloadForm( MainVM vm, DownloadRow_Definer_3 r, in (int n, int total)? seriesInfo = null ) : this()
         {
             this.DataContext = new CloseWindowVM( this );
 
             _SC                = vm.SettingsController;
             _DC                = vm.DownloadController;
-            _ReceivedAndWritedPartsProcessor = receivedAndWritedPartsProcessor;
             _DownloadListModel = vm.DownloadController?.Model;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
+            _OutputFileNamePatternProcessor  = vm.OutputFileNamePatternProcessor;
+            _ReceivedAndWritedPartsProcessor = vm.ReceivedAndWritedPartsProcessor;
             requestHeadersEditor.SetSettingsController( _SC );
             requestHeadersEditor.SetRequestHeaders( r.RequestHeaders, _SC.IgnoreHostHttpHeader );            
 
@@ -237,9 +227,9 @@ namespace m3u8.download.manager.ui
             Process_use_OutputFileNamePatternProcessor_on_Init();
             #endregion
 
-            this.M3u8FileUrl     = r.Url;
-            this.OutputDirectory = r.OutputDirectory;
-            this.OutputFileName  = r.OutputFileName;
+            this.M3u8FileUrl                  = r.Url;
+            this.OutputDirectory              = r.OutputDirectory;
+            this.OutputFileName               = r.OutputFileName;
             this.LiveStreamMaxFileSizeInBytes = r.LiveStreamMaxFileSizeInBytes;
             this.IsLiveStream                 = r.IsLiveStream;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = r.Url.IsNullOrWhiteSpace();
@@ -258,6 +248,7 @@ namespace m3u8.download.manager.ui
             Init_SeriesInfo( seriesInfo );
             if ( r.OutputFileName.IsNullOrWhiteSpace() ) TryRestoreOutputFileNameByAddress( r.Url );
         }
+
         public void Dispose()
         {
             _FNCP.Dispose_NoThrow();
@@ -270,30 +261,20 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// Add
         /// </summary>
-        internal static AddNewDownloadForm Add( MainVM vm
-            , string m3u8FileUrl
-            , IDictionary< string, string > requestHeaders
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
-            , in (int n, int total)? seriesInfo = null ) => new AddNewDownloadForm( vm, m3u8FileUrl, requestHeaders, outputFileNamePatternProcessor, receivedAndWritedPartsProcessor, seriesInfo );
+        internal static AddNewDownloadForm Add( MainVM vm, string m3u8FileUrl, IDictionary< string, string > requestHeaders, in (int n, int total)? seriesInfo = null ) 
+            => new AddNewDownloadForm( vm, m3u8FileUrl, requestHeaders, seriesInfo );
+
         /// <summary>
         /// Add (over Copy-Paste)
         /// </summary>
-        internal static AddNewDownloadForm Add( MainVM vm
-            , DownloadRow_Definer_3 r
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
-            , in (int n, int total)? seriesInfo = null ) => new AddNewDownloadForm( vm, r, outputFileNamePatternProcessor, receivedAndWritedPartsProcessor, seriesInfo );
+        internal static AddNewDownloadForm Add( MainVM vm, DownloadRow_Definer_3 r, in (int n, int total)? seriesInfo = null ) => new AddNewDownloadForm( vm, r, seriesInfo );
+
         /// <summary>
         /// Edit
         /// </summary>
-        internal static AddNewDownloadForm Edit( MainVM vm
-            , DownloadRow row
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
-            , TabPageKind? activeTabPageKind = null )
+        internal static AddNewDownloadForm Edit( MainVM vm, DownloadRow row, TabPageKind? activeTabPageKind = null )
         {
-            var f = new AddNewDownloadForm( vm, row, outputFileNamePatternProcessor, receivedAndWritedPartsProcessor )
+            var f = new AddNewDownloadForm( vm, row )
             {
                 Icon  = new WindowIcon( ResourceLoader._GetResource_( "/Resources/edit.png" ) ),
                 Title = $"Edit, / '{row.OutputFileName}' /",
@@ -305,6 +286,7 @@ namespace m3u8.download.manager.ui
             f.Opened += (_, _) => f.setFocus2outputFileNameTextBox_Core();
             return (f);
         }
+
         private void SetActiveTabPageKind( TabPageKind? tabPageKind )
         {
             if ( tabPageKind.HasValue )
@@ -407,7 +389,7 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        #region [.Init_SeriesInfo.]
+        #region [.Init_SeriesInfo & TryRestoreOutputFileNameByAddress.]
         private void Init_SeriesInfo( in (int n, int total)? seriesInfo )
         {
             if ( seriesInfo.HasValue )
@@ -434,8 +416,8 @@ namespace m3u8.download.manager.ui
         private const int TEXTBOX_MILLISECONDS_DELAY = 150;
         private string _Last_m3u8FileUrlText;
         private string _LastManualInputed_outputFileNameText;
-        private bool _IsTurnOff__outputFileNameTextBox_TextChanged;
-        private bool _IsTurnOff__m3u8FileUrlTextBox_TextChanged;
+        private bool   _IsTurnOff__outputFileNameTextBox_TextChanged;
+        private bool   _IsTurnOff__m3u8FileUrlTextBox_TextChanged;
 
         private void setFocus2outputFileNameTextBox_Core( string outputFileName = null )
         {
@@ -458,11 +440,7 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        //private void outputFileNameClearButton_Click( object sender, RoutedEventArgs e )
-        //{
-        //    this.OutputFileName = null;
-        //    outputFileNameTextBox.Focus();
-        //}
+        //private void outputFileNameClearButton_Click( object sender, RoutedEventArgs e ) { this.OutputFileName = null; outputFileNameTextBox.Focus(); }
         private async void outputFileNameSelectButton_Click( object sender, RoutedEventArgs e )
         {
             var sf = await this.StorageProvider.SaveFilePickerAsync( new FilePickerSaveOptions()

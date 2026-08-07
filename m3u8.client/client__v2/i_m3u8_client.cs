@@ -78,7 +78,8 @@ namespace m3u8.client__v2
             required public i_download_threads_semaphore             DownloadThreadsSemaphore { [M(O.AggressiveInlining)] get; set; }
             required public WaitIfPausedHolder                       WaitIfPausedHolder       { [M(O.AggressiveInlining)] get; set; }
 
-            required public IObjectPool< CancellationTokenSource >   TimeoutCtsPool           { [M(O.AggressiveInlining)] get; set; }
+            //required public IObjectPool< CancellationTokenSource >   TimeoutCtsPool           { [M(O.AggressiveInlining)] get; set; }
+            required public CtsTimerPool                             TimeoutCtsPool           { [M(O.AggressiveInlining)] get; set; }            
 
             required public string OutputFileName { [M(O.AggressiveInlining)] get; set; }
             public override string ToString() => OutputFileName;

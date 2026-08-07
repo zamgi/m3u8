@@ -1,15 +1,14 @@
 ﻿#define USE_ConcurrentStack_With_Manual_Count
 
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
 #if (USE_ConcurrentStack_With_Manual_Count && NETCOREAPP)
-using System.Diagnostics.CodeAnalysis; 
+using System.Diagnostics.CodeAnalysis;
 #endif
 
+using ThreadingTimer = System.Threading.Timer;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -193,4 +192,148 @@ namespace System.Collections.Generic
         }
         protected override void DisposeInternalT( T t ) => t.Dispose();
     }
+
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class CtsTimerPool : IDisposable
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        private readonly struct Tuple : IDisposable
+        {
+            required public CancellationTokenSource Cts { get; init; }
+            required public ThreadingTimer Timer { get; init; }
+
+            public void Dispose()
+            {
+                Cts.Dispose();
+                Timer.Dispose();
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private /*readonly*/ struct Releaser : IObjectHolder< CancellationTokenSource >, IDisposable
+        {
+            private readonly CtsTimerPool _Pool;
+            private /*readonly*/ Tuple _Tuple;
+            [M(O.AggressiveInlining)] public Releaser( CtsTimerPool pool, in Tuple t ) => (_Pool, _Tuple) = (pool, t);
+            public void Dispose()
+            {
+                if ( _Tuple.Cts != null )
+                {
+                    _Pool.Release( _Tuple );
+                    _Tuple = default;
+                }
+            }
+            public CancellationTokenSource Value { [M(O.AggressiveInlining)] get => _Tuple.Cts; }
+        }
+
+        private readonly ConcurrentQueue< Tuple > _Queue;
+        private int _MaxSize;
+        private bool _IsDisposed;
+
+        public CtsTimerPool( int initialSize ) //, int maxSize = /*256*/int.MaxValue )
+        {
+            _Queue = new ConcurrentQueue< Tuple >();
+
+            _MaxSize = initialSize;
+            for ( var i = 0; i < initialSize; i++ )
+            {
+                var cts = new CancellationTokenSource();
+                // Создаём таймер с пустым callback — его мы подменим при выдаче
+                var timer = new ThreadingTimer( TimerCallback, cts, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan );
+                _Queue.Enqueue( new Tuple() { Cts = cts, Timer = timer } );
+            }
+        }
+        public void Dispose()
+        {
+            _IsDisposed = true;
+            while ( _Queue.TryDequeue( out var t ) )
+            {
+                t.Cts.Dispose();
+                t.Timer.Dispose();
+            }
+        }
+
+        public void ChangeCapacity( int maxSize )
+        {
+            maxSize = Math.Max( 1, maxSize );
+            if ( GetMaxSize() != maxSize )
+            {
+                Interlocked.Exchange( ref _MaxSize, maxSize );
+            }
+        }
+        public int MaxSize => GetMaxSize();
+        [M(O.AggressiveInlining)] private int GetMaxSize() => Volatile.Read( ref _MaxSize )/*_MaxSize*/;
+
+        public IObjectHolder< CancellationTokenSource > Acquire( TimeSpan timeout, out CancellationTokenSource cts )
+        {
+            if ( _IsDisposed ) throw (new ObjectDisposedException( nameof(CtsTimerPool) ));
+
+            Releaser r;
+            while ( _Queue.TryDequeue( out var t ) )
+            {
+                if ( !t.Cts.IsCancellationRequested )
+                {
+                    cts = t.Cts;
+                    r   = new Releaser( this, t );
+                    t.Timer.Change( timeout, Timeout.InfiniteTimeSpan );
+                    // Нашли живой экземпляр — возвращаем
+                    return (r);
+                }
+
+                // Мёртвый экземпляр — утилизируем и пробуем дальше
+                t.Dispose();
+            }
+
+            // Пул пуст или все экземпляры мёртвые — создаём свежие            
+            var freshCts   = new CancellationTokenSource();
+            var freshTimer = new ThreadingTimer( TimerCallback, freshCts, Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan );
+            cts = freshCts;
+            r   = new Releaser( this, new Tuple() { Cts = freshCts, Timer = freshTimer } );
+            freshTimer.Change( timeout, Timeout.InfiniteTimeSpan );
+            return (r);
+        }
+
+        /// <summary>
+        /// Возвращает пару в пул. Если CTS отменён (таймаут сработал) — утилизирует.
+        /// </summary>
+        private void Release( in Tuple t )
+        {
+            if ( _IsDisposed || t.Cts == null ) return;
+
+            // Если таймаут уже сработал — CTS испорчен, не возвращаем в пул
+            if ( t.Cts.IsCancellationRequested )
+            {
+                t.Dispose();
+                return;
+            }
+
+            // Иначе возвращаем, если есть место
+            if ( _Queue.Count < GetMaxSize() )
+            {
+                t.Timer.Change( Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan );
+                _Queue.Enqueue( t );
+            }
+            else
+            {
+                // Пул полон — лишний экземпляр утилизируем
+                t.Dispose();
+            }
+        }
+
+        private static void TimerCallback( object state )
+        {
+            Debug.Assert( (state is CancellationTokenSource _cts) && !_cts.IsCancellationRequested );
+
+            var cts = (CancellationTokenSource) state;
+            cts.Cancel();
+        }
+    }
+
 }

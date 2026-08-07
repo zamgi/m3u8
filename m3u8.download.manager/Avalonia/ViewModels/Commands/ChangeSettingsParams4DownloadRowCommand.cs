@@ -31,7 +31,7 @@ namespace m3u8.download.manager
         {
             if ( (row == null) || !row.Status.IsRunningOrPaused() ) return;
 
-            var f = ChangeSettingsParams4DownloadRowForm.Edit( _VM, row, _VM.OutputFileNamePatternProcessor/*, _VM.ReceivedAndWritedPartsProcessor*/, activeTabPageKind );
+            var f = ChangeSettingsParams4DownloadRowForm.Edit( _VM, row, activeTabPageKind );
             {
                 await f.ShowDialogEx();
                 if ( f.Success && row.Status.IsRunningOrPaused() )

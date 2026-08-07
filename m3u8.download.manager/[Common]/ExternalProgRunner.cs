@@ -140,8 +140,8 @@ namespace m3u8.download.manager
             const string DEFAULT_EXTENSION = ".mp4";
 
             var exists_ext = Path.GetExtension( outputFileName );
-            var new_fn = Path.GetFileNameWithoutExtension( outputFileName ) + (exists_ext.EqualIgnoreCase( DEFAULT_EXTENSION ) ? "+" : null) + DEFAULT_EXTENSION;
-            var new_ffn = Path.Combine( Path.GetDirectoryName( outputFileName ), new_fn );
+            var new_fn     = Path.GetFileNameWithoutExtension( outputFileName ) + (exists_ext.EqualIgnoreCase( DEFAULT_EXTENSION ) ? "+" : null) + DEFAULT_EXTENSION;
+            var new_ffn    = Path.Combine( Path.GetDirectoryName( outputFileName ), new_fn );
             FileHelper.RemoveBadFileAttrs( checkExists: true, new_ffn );
 
             // "D:\(Distributive)\{ScreenToGif}\ffmpeg.exe" -i %1.avi -c:v libx264 -sn -dn %1.mp4
@@ -163,6 +163,7 @@ namespace m3u8.download.manager
             {
                 try
                 {
+                    ffmpeg.Refresh();
                     ffmpeg.WaitForExit();
 
                     if ( ffmpeg.ExitCode != 0 )

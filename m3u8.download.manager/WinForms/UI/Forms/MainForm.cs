@@ -209,7 +209,7 @@ namespace m3u8.download.manager.ui
                 _InputParamsArray = null;
             }
             else if ( !BrowserIPC.CommandLine.Is_CommandLineArgs_Has__CreateAsBreakawayFromJob() &&
-                       ClipboardHelper.TryGetM3u8FileUrlsFromClipboard( out var m3u8FileUrls, _SC.IgnoreHostHttpHeader ) 
+                       ClipboardHelper.TryGetHttpUrlsFromClipboard( out var m3u8FileUrls, _SC ) 
                     )
             {
                 m3u8FileUrls = m3u8FileUrls.Take( MAX_PASTE_URLS ).ToList( MAX_PASTE_URLS );
@@ -400,7 +400,7 @@ namespace m3u8.download.manager.ui
                     case Keys.Insert: //add download dialog
                     {
                         e.SuppressKeyPress = true;
-                        var m3u8FileUrls = ClipboardHelper.TryGetHttpUrlsFromClipboard( _SC );
+                        var m3u8FileUrls = ClipboardHelper.TryGetHttpUrlsFromClipboardOrDefault( _SC );
                         if ( m3u8FileUrls.AnyEx() ) AddNewDownloads( (m3u8FileUrls, false) );
 #if DEBUG
                         else AddNewDownloads( ([($"http://xzxzzxzxxz.ru/{(new Random().Next())}/abc.def", null)], false) );
@@ -590,8 +590,7 @@ namespace m3u8.download.manager.ui
                 case _CollectionChangedTypeEnum_.Remove:
                     if ( row != null )
                     {
-                        var suc = _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
-                        row.ClearRestoredDownloadParams_WithChangeStatus();
+                        ClearDownloadParams( row );
                         goto case _CollectionChangedTypeEnum_.Remove_Bulk;
                     }
                     break;
@@ -613,14 +612,7 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case _CollectionChangedTypeEnum_.Add:
-                    var row_restored = false;
-                    if ( UrlHelper.TryGetM3u8FileUrl( row?.Url, out var t ) && 
-                         _ReceivedAndWritedPartsProcessor.TryRestore( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) )
-                    {
-                        row.RestoreDownloadParams_WithChangeStatus( exists.outputFileStreamPosition, exists.totalPartsCount, exists.lastReceivedAndWritedPartOrderNumber + 1 );
-                        row_restored = true;
-                    }
-                    
+                    var row_restored = TryRestoreOrClearDownloadParams( row );
                     if ( (!row_restored || !row.IsFinishedOrError()) )
                     {
                         (var externalProgApplyByDefault, var ffmpegApplyByDefault) = (_SC.ExternalProgApplyByDefault, _SC.FFmpegApplyByDefault);
@@ -818,7 +810,7 @@ namespace m3u8.download.manager.ui
         }
         private void ProcessDownloadCommand( DownloadCommandEnum downloadCommand, DownloadRow row = null )
         {
-            if ( row == null ) row = downloadListUC.GetSelectedDownloadRow();
+            row ??= downloadListUC.GetSelectedDownloadRow();
 
             if ( row != null )
             {
@@ -1052,11 +1044,7 @@ namespace m3u8.download.manager.ui
                         var suc = await FileHelper.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );                        
                         if ( suc )
                         {
-                            if ( dict.TryGetValue( fn, out var row ) )
-                            {
-                                var suc_2 = _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
-                                row.ClearRestoredDownloadParams_WithChangeStatus();
-                            }
+                            if ( dict.TryGetValue( fn, out var row ) ) ClearDownloadParams( row );
 
                             var suc_action = (sucDelPostProcessingFunc != null)
                                            ? new Action(() => { wb.IncreaseSteps(); if ( dict.TryGetValue( fn, out var r ) ) sucDelPostProcessingFunc( r ); }) : fail_action;
@@ -1129,21 +1117,19 @@ namespace m3u8.download.manager.ui
         #region [.AddNewDownloads & AddNewDownload_4_GroupedByAudioVideo.]
         private void AddNewDownloads( UrlInputParams[] array )
         {
-#pragma warning disable IDE0037 // Use inferred member name
             var p = (m3u8FileUrls     : (from t in array where (!t.isGroupByAudioVideo) select (t.m3u8FileUrl, t.requestHeaders)).ToList( array.Length ), 
                      autoStartDownload: array.Where( t => !t.isGroupByAudioVideo ).FirstOrDefault().autoStartDownload);
-#pragma warning restore IDE0037 // Use inferred member name
-            if ( p.m3u8FileUrls.Any() )
+            if ( p.m3u8FileUrls.AnyEx_() )
             {
                 AddNewDownloads( p );
             }
 
             var isGroupByAudioVideoArray = array.Where( t => t.isGroupByAudioVideo ).ToList();
-            if ( isGroupByAudioVideoArray.Any() )
+            if ( isGroupByAudioVideoArray.AnyEx_() )
             {
                 AddNewDownload_4_GroupedByAudioVideo( isGroupByAudioVideoArray );
             } 
-            else if ( !p.m3u8FileUrls.Any() )
+            else if ( !p.m3u8FileUrls.AnyEx_() )
             {
                 AddNewDownload( default );
             }
@@ -1252,7 +1238,7 @@ namespace m3u8.download.manager.ui
             {
                 if ( xs.Count == 1 )
                 {
-                    var x = xs.First();
+                    var x = xs[ 0 ];
                     AddNewDownload_4_GroupedByAudioVideo( x );
                 }
                 else
@@ -1376,12 +1362,13 @@ namespace m3u8.download.manager.ui
         {
             if ( (f.DialogResult == DialogResult.OK) && !row.Status.IsRunningOrPaused() )
             {
-                var tp = f.GetParamsTuple();
+                var tp  = f.GetParamsTuple();
                 var suc = row.Update( tp );
                 if ( suc )
                 {
                     ChangeOutputDirectory( row, tp.OutputDirectory );
-                    ChangeOutputFileName( row, tp.OutputFileName );
+                    ChangeOutputFileName ( row, tp.OutputFileName  );
+                    TryRestoreOrClearDownloadParams( row );
                     downloadListUC.Invalidate( true );
                 }
             }
@@ -1409,6 +1396,7 @@ namespace m3u8.download.manager.ui
                 {
                     ChangeOutputDirectory( row, tp.OutputDirectory );
                     ChangeOutputFileName ( row, tp.OutputFileName  );
+                    TryRestoreOrClearDownloadParams( row );
                     downloadListUC.Invalidate( true );
                 }
                 else if ( !row.Status.IsRunningOrPaused() )
@@ -1417,7 +1405,8 @@ namespace m3u8.download.manager.ui
                     if ( suc )
                     {
                         ChangeOutputDirectory( row, tp.OutputDirectory );
-                        ChangeOutputFileName ( row, tp.OutputFileName );
+                        ChangeOutputFileName ( row, tp.OutputFileName  );
+                        TryRestoreOrClearDownloadParams( row );
                         downloadListUC.Invalidate( true );
                     }
                 }
@@ -1803,12 +1792,41 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
+        #region [.TryRestoreOrClearDownloadParams & ClearDownloadParams.]
+        private bool TryRestoreOrClearDownloadParams( DownloadRow row )
+        {
+            if ( (row != null) && !row.Status.IsRunningOrPaused() )
+            {
+                if ( UrlHelper.TryGetM3u8FileUrl( row.Url, out var t ) &&
+                     _ReceivedAndWritedPartsProcessor.TryRestore( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) )
+                {
+                    row.RestoreDownloadParams_WithChangeStatus( exists.outputFileStreamPosition, exists.totalPartsCount, exists.lastReceivedAndWritedPartOrderNumber + 1 );
+                    return (true);
+                }
+                else
+                {
+                    row.ClearRestoredDownloadParams_WithChangeStatus();
+                }
+            }
+            return (false);
+        }
+        private void ClearDownloadParams( DownloadRow row )
+        {
+            if ( (row != null) && !row.Status.IsRunningOrPaused() )
+            {
+                var suc = _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
+                row.ClearRestoredDownloadParams_WithChangeStatus();
+            }
+        }
+        #endregion
+
         #region [.change OutputFileName & OutputDirectory.]
         private void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
             if ( ChangeOutputFileForm.TryChangeOutputFile( this, row, _SC, out var outputFileName ) )
             {
                 ChangeOutputFileName( row, outputFileName );
+                TryRestoreOrClearDownloadParams( row );
                 downloadListUC.Invalidate( true );
             }
         }
@@ -1818,6 +1836,7 @@ namespace m3u8.download.manager.ui
             {
                 _SC.Settings.LastChangeOutputDirectory = outputDirectory;
                 ChangeOutputDirectory( row, outputDirectory );
+                TryRestoreOrClearDownloadParams( row );
                 downloadListUC.Invalidate( true );
             }
         }
@@ -1825,9 +1844,9 @@ namespace m3u8.download.manager.ui
         private void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
         {
             var rows = downloadListUC.GetSelectedDownloadRows();
-            if ( rows.Any() )
+            if ( rows.AnyEx_() )
             {
-                var first_row = rows.First();
+                var first_row = rows[ 0 ];
                 var descr = (rows.Count == 1) ? $"Select output directory for file: '{first_row.OutputFileName}'" : $"Select output directory for {rows.Count} files";
                 if ( DirectorySelectDialog.Show( this, _SC.Settings.UseDirectorySelectDialogModern, GetSelectedDirectory( first_row ), descr, out var outputDirectory ) )
                 {
@@ -1835,6 +1854,7 @@ namespace m3u8.download.manager.ui
                     foreach ( var row in rows )
                     {
                         ChangeOutputDirectory( row, outputDirectory );
+                        TryRestoreOrClearDownloadParams( row );
                     }
                     downloadListUC.Invalidate( true );
                 }
