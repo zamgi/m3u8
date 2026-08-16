@@ -632,133 +632,6 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.private methods.]
-        private const string CREATED_DT = "HH:mm:ss  (yyyy.MM.dd)";
-        private const string HH_MM_SS   = "hh\\:mm\\:ss";
-        private const string MM_SS      = "mm\\:ss";
-
-        [M(O.AggressiveInlining)] public  static string GetDownloadInfoText( DownloadRow row )
-        {
-            var st = row.Status;
-            switch ( st )
-            {
-                case DownloadStatus.Created: return ($"[created]: {row.CreatedOrStartedDateTime.ToString( CREATED_DT )}");
-                case DownloadStatus.Started: return ($"{row.GetElapsed().ToString( HH_MM_SS )}");
-                case DownloadStatus.Wait   : return ($"(wait), ({row.GetElapsed().ToString( HH_MM_SS )})");
-            }
-
-            var ts           = row.GetElapsed();
-            var elapsed      = ((1 < ts.TotalHours) ? ts.ToString( HH_MM_SS ) : (':' + ts.ToString( MM_SS )));
-            var percent      = ((0 < row.TotalParts) ? Convert.ToByte( (100.0 * row.SuccessDownloadParts) / row.TotalParts ).ToString() : "-");
-            //var failedParts  = ((row.FailedDownloadParts != 0) ? $", [failed: {row.FailedDownloadParts}]" : null);
-            var downloadInfo = $"{percent}%, ({elapsed})";
-            
-            #region [.speed.]
-            if ( !st.IsPaused() )
-            {                
-                var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
-                var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
-                if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
-                {
-                    var speedText = Extensions.GetSpeedText( downloadBytes, elapsedSeconds, row.GetInstantSpeedInMbps() );
-                    downloadInfo += $", [{speedText}]";
-                }
-            }
-            #endregion
-
-            return (downloadInfo);
-        }
-
-        [M(O.AggressiveInlining)] private static bool TryGetDownloadProgress( DownloadRow row, out (double suc, double fail) parts, out string progressText )
-        {
-            var st = row.Status;
-            switch ( st )
-            {
-                case DownloadStatus.Created:
-                case DownloadStatus.Started:
-                case DownloadStatus.Wait   :
-                    parts        = default;
-                    progressText = null;
-                    return (false);
-
-                default:
-                    (var totalParts, var successDownloadParts, var failedDownloadParts) = (row.TotalParts, row.SuccessDownloadParts, row.FailedDownloadParts);
-                    string percentText;
-                    if ( 0 < totalParts )
-                    {
-                        var suc  = (1.0 * successDownloadParts) / totalParts;
-                        var fail = (1.0 * failedDownloadParts ) / totalParts;
-                        parts = (suc, fail);
-                        var percent = (totalParts <= (successDownloadParts + failedDownloadParts)) ? 100 : Extensions.Min( (byte) (100 * suc), 99 );
-                        percentText = percent.ToString();
-                    }
-                    else if ( st == DownloadStatus.Canceled ) //not-started
-                    {
-                        parts        = default;
-                        progressText = null;
-                        return (false);
-                    }
-                    else
-                    {
-                        parts       = (0, 0);
-                        percentText = "-";
-                    }
-
-                    var failedParts = ((failedDownloadParts != 0) ? $", [failed: {failedDownloadParts}]" : null);
-                    progressText = $"{percentText}%  ({successDownloadParts} of {totalParts}{failedParts})";
-                    return (true);
-            }
-        }
-        [M(O.AggressiveInlining)] private static string GetDownloadTimeText( DownloadRow row )
-        {
-            if ( row.Status == DownloadStatus.Created )
-            {
-                return (row.CreatedOrStartedDateTime.ToString( CREATED_DT ));
-            }
-            return (row.GetElapsed().ToString( HH_MM_SS ));
-        }
-        [M(O.AggressiveInlining)] private static string GetApproxRemainedTimeText( DownloadRow row )
-        {
-            if ( row.Status == DownloadStatus.Running)
-            {
-                var totalBytes = row.GetApproxTotalBytes();
-                if ( totalBytes.HasValue )
-                {
-                    var elapsedSeconds = row.GetElapsed().TotalSeconds;
-                    var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();                    
-                    if ( (1_000 < downloadBytes) && (2.5 <= elapsedSeconds) )
-                    {
-                        var remainedBytes = totalBytes.Value - (row.DownloadBytesLength - downloadBytes);
-                        var remainedTime  = TimeSpan.FromSeconds( (remainedBytes - downloadBytes) * (elapsedSeconds / downloadBytes) );
-                        return (remainedTime.ToString( HH_MM_SS ));
-                    }
-                }
-            }
-            return (string.Empty);
-        }
-        [M(O.AggressiveInlining)] private static string GetDownloadSpeedText( DownloadRow row )
-        {
-            if ( !row.Status.IsPaused() )
-            {                
-                var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
-                var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
-                if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
-                {
-                    return (Extensions.GetSpeedText( downloadBytes, elapsedSeconds, row.GetInstantSpeedInMbps() ));
-                }
-            }
-            return (string.Empty);
-        }
-        [M(O.AggressiveInlining)] private static string GetApproxRemainedBytesText( DownloadRow row )
-        {
-            var size = row.GetApproxRemainedBytes();
-            return (size.HasValue ? FileHelper.GetDisplaySizeText( size.Value ) : string.Empty);
-        }
-        [M(O.AggressiveInlining)] private static string GetApproxTotalBytesText( DownloadRow row )
-        {
-            var size = row.GetApproxTotalBytes();
-            return (size.HasValue ? FileHelper.GetDisplaySizeText( size.Value ) : string.Empty);
-        }
-
         /// <summary>
         /// 
         /// </summary>
@@ -886,11 +759,19 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case DOWNLOAD_TIME_COLUMN_INDEX:
+                    comparison = (x, y) => x.CreatedOrStartedDateTime.CompareTo( y.CreatedOrStartedDateTime );
+                    break;
+
                 case APPROX_REMAINED_TIME_COLUMN_INDEX:
+                    comparison = (x, y) => ( x.TryGetApproxRemainedTime( out var x_remainedTime ) ? x_remainedTime : TimeSpan.Zero )
+                                 .CompareTo( y.TryGetApproxRemainedTime( out var y_remainedTime ) ? y_remainedTime : TimeSpan.Zero );
+                    break;
+
                 case DOWNLOAD_SPEED_COLUMN_INDEX:
-                    //---comparison = (x, y) => x..CompareTo( y. );
-                    return;
-               
+                    comparison = (x, y) => ( x.TryGetDownloadSpeedInBps( out var x_speedInBps ) ? x_speedInBps : 0.0 )
+                                 .CompareTo( y.TryGetDownloadSpeedInBps( out var y_speedInBps ) ? y_speedInBps : 0.0 );
+                    break;
+
                 default:
                     DGV.ClearHeaderSortGlyphDirection();
                     throw (new NotImplementedException( $"columnIndex: {columnIndex}" ));
@@ -1012,15 +893,15 @@ namespace m3u8.download.manager.ui
                 case STATUS_COLUMN_INDEX               : e.Value = row.Status.ToString() + new string(' ', 17); break;
                 case DOWNLOAD_PROGRESS_COLUMN_INDEX    : 
                     //e.Value = new string( ' ', 30 );
-                    e.Value = (TryGetDownloadProgress( row, out _, out var progressText ) ? progressText : string.Empty) + new string(' ', 10);
+                    e.Value = (row.TryGetDownloadProgress( out _, out var progressText ) ? progressText : string.Empty) + new string(' ', 10);
                     break;
-                case DOWNLOAD_TIME_COLUMN_INDEX            : e.Value = GetDownloadTimeText       ( row ) /*+ new string(' ', 1)*/; break;
-                case APPROX_REMAINED_TIME_COLUMN_INDEX     : e.Value = GetApproxRemainedTimeText ( row ) /*+ new string(' ', 1)*/; break;
-                case DOWNLOAD_SPEED_COLUMN_INDEX           : e.Value = GetDownloadSpeedText      ( row );                     break;
+                case DOWNLOAD_TIME_COLUMN_INDEX            : e.Value = row.GetDownloadTimeText       () /*+ new string(' ', 1)*/; break;
+                case APPROX_REMAINED_TIME_COLUMN_INDEX     : e.Value = row.GetApproxRemainedTimeText () /*+ new string(' ', 1)*/; break;
+                case DOWNLOAD_SPEED_COLUMN_INDEX           : e.Value = row.GetDownloadSpeedText(); break;
                 case DOWNLOAD_BYTES_COLUMN_INDEX           : e.Value = FileHelper.GetDisplaySizeText( row.DownloadBytesLength ); break;
-                case APPROX_REMAINED_BYTES_COLUMN_INDEX    : e.Value = GetApproxRemainedBytesText( row );                     break;
-                case APPROX_TOTAL_BYTES_COLUMN_INDEX       : e.Value = GetApproxTotalBytesText   ( row );                     break;
-                case URL_COLUMN_INDEX                      : e.Value = row.Url;                                               break;
+                case APPROX_REMAINED_BYTES_COLUMN_INDEX    : e.Value = row.GetApproxRemainedBytesText(); break;
+                case APPROX_TOTAL_BYTES_COLUMN_INDEX       : e.Value = row.GetApproxTotalBytesText   (); break;
+                case URL_COLUMN_INDEX                      : e.Value = row.Url; break;
                 case REQUEST_HEADERS_COLUMN_INDEX          : e.Value = row.RequestHeaders.ToText(); break;
                 case WEB_PROXY_COLUMN_INDEX                : e.Value = row.WebProxyInfo.GetWebProxyAddressTextIfUsed(); break;
                 case IS_LIVE_STREAM_COLUMN_INDEX           : e.Value = row.IsLiveStream ? "YES" : "-"; break;
@@ -1374,7 +1255,7 @@ namespace m3u8.download.manager.ui
 
                     #region [.progress-bar-text.]
                     var row  = _Model[ e.RowIndex ];
-                    var has  = TryGetDownloadProgress( row, out var parts, out var progressText );
+                    var has  = row.TryGetDownloadProgress( out var parts, out var progressText );
 
                     var gr = e.Graphics;
                     var rc = e.CellBounds;
@@ -1509,8 +1390,8 @@ namespace m3u8.download.manager.ui
                 case OUTPUTFILENAME_COLUMN_INDEX:
                     e.Handled = true;
                     using ( var sf = StringFormat.GenericTypographic )
-                    AutoSizeColumnWidth( e.ColumnIndex, sf, r => r.OutputFileName, 
-                        r => {
+                    AutoSizeColumnWidth( e.ColumnIndex, sf, r => r.OutputFileName, r => 
+                        {
                             var w = 0;
                             if ( r.IsLiveStream )
                             {

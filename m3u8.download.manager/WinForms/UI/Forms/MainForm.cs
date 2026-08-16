@@ -779,7 +779,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _ShowDownloadStatistics )
             {
-                this.Text = $"{DownloadListUC.GetDownloadInfoText( row )},  [{_APP_TITLE_}]";
+                this.Text = $"{row.GetDownloadInfoText()},  [{_APP_TITLE_}]";
             }
             //else if ( this.Text != _APP_TITLE_ )
             //{

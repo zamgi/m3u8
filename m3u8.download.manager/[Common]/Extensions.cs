@@ -10,8 +10,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8.download.manager.controllers;
-using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
@@ -265,125 +263,6 @@ namespace m3u8.download.manager
             {
                 Debug.WriteLine( ex );
             }
-        }
-
-        public static void CancelAll( this DownloadController controller, IEnumerable< DownloadRow > rows )
-        {
-            foreach ( var row in rows )
-            {
-                controller.Cancel( row );
-            }
-        }
-        public static void RemoveAllFinished( this DownloadListModel model ) => model.RemoveRows( model.GetAllFinished().ToList() );
-
-        [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadRow row ) => (row.Status == DownloadStatus.Finished);
-        [M(O.AggressiveInlining)] public static bool IsFinishedOrError( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, _ => false };
-        [M(O.AggressiveInlining)] public static bool IsFinishedOrErrorOrCreated( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, DownloadStatus.Created => true, _ => false };
-        [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadStatus status ) => (status     == DownloadStatus.Finished);
-        [M(O.AggressiveInlining)] public static bool IsError   ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Error);
-        [M(O.AggressiveInlining)] public static bool IsRunning ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Running);
-        [M(O.AggressiveInlining)] public static bool IsWait    ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Wait);
-        [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Paused);
-        [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadStatus status ) => (status     == DownloadStatus.Paused);
-        [M(O.AggressiveInlining)] public static bool IsRunningOrPaused( this DownloadStatus status ) => status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Paused => true, _ => false };
-        [M(O.AggressiveInlining)] public static bool IsRunningOrStarted( this DownloadStatus status ) => status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, _ => false };
-        [M(O.AggressiveInlining)] public static bool HasAnyFailedDownloadParts( this DownloadRow row ) => (row.FailedDownloadParts != 0);
-
-        [M(O.AggressiveInlining)] public static long? GetApproxRemainedBytes( this DownloadRow row )
-        {
-            var processedParts = (row.SuccessDownloadParts + row.FailedDownloadParts);
-            if ( processedParts != 0 )
-            {
-                var d                    = row.DownloadBytesLength;
-                var singlePartApproxSize = (1.0 * d / processedParts);
-                var approxTotalBytes     = singlePartApproxSize * row.TotalParts;
-                var approxRemainedBytes  = Convert.ToInt64( approxTotalBytes - d );
-                return (approxRemainedBytes);
-            }
-            return (null);
-        }
-        [M(O.AggressiveInlining)] public static long? GetApproxTotalBytes( this DownloadRow row )
-        {
-            var processedParts = (row.SuccessDownloadParts + row.FailedDownloadParts);
-            if ( processedParts != 0 )
-            {
-                var singlePartApproxSize = (1.0 * row.DownloadBytesLength / processedParts);
-                var approxTotalBytes     = Convert.ToInt64( singlePartApproxSize * row.TotalParts );
-                return (approxTotalBytes);
-            }
-            return (null);
-        }
-        [M(O.AggressiveInlining)] public static long GetLiveStreamMaxFileSizeInMb( this DownloadRow row ) => (row.LiveStreamMaxFileSizeInBytes >> 20);
-
-        [M(O.AggressiveInlining)] public static int CompareTo< T >( in this T? x, in T? y ) where T : struct, IComparable< T >
-        {
-            if ( x.HasValue )
-            {
-                if ( y.HasValue )
-                {
-                    return (x.Value.CompareTo( y.Value ));
-                }
-                return (1);
-            }
-            else if ( y.HasValue )
-            {
-                return (-1);
-            }
-            return (0);            
-        }
-        [M(O.AggressiveInlining)] public static byte Min( byte b1, byte b2 ) => ((b1 < b2) ? b1 : b2);
-
-        public static string GetSpeedText( long downloadBytes, double elapsedSeconds, double? instantSpeedInMbps )
-        {
-            string speedText;
-            //if ( downloadBytes < 1_024 ) speedText = GetSpeedInBps( downloadBytes, elapsedSeconds ).ToString("N2") + " bps"; //" bit/s";
-            if ( downloadBytes < 100_024 ) speedText = GetSpeedInKbps( downloadBytes, elapsedSeconds ).ToString("N2") + " Kbps"; //" Kbit/s";
-            else                           speedText = GetSpeedInMbps( downloadBytes, elapsedSeconds ).ToString("N1") + " Mbps"; //" Mbit/s";
-            if ( instantSpeedInMbps.HasValue )
-            {
-                speedText += $" (↑{instantSpeedInMbps:N1} Mbps)";
-            }
-            return (speedText);
-        }
-        public static double GetMbps( long downloadBytes ) => (downloadBytes * 1.0 / (1_048_576 / 8));
-        public static double GetSpeedInMbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_048_576); //" Mbps"; //" Mbit/s";
-        public static double GetSpeedInKbps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds) / 1_024); //" Kbps"; //" Kbit/s";
-        public static double GetSpeedInBps( long downloadBytes, double elapsedSeconds ) => (8 * (downloadBytes / elapsedSeconds)); //" bps"; //" bit/s";
-        public static string GetSizeFormatted( long sizeInBytes )
-        {
-            static string to_text( float f ) => f.ToString( (f == Math.Ceiling( f )) ? "N0" : "N2" );
-
-            const float KILOBYTE = 1024;
-            const float MEGABYTE = KILOBYTE * KILOBYTE;
-            const float GIGABYTE = MEGABYTE * KILOBYTE;
-
-            if ( GIGABYTE < sizeInBytes )
-                return (to_text( sizeInBytes / GIGABYTE ) + " GB");
-            if ( MEGABYTE < sizeInBytes )
-                return (to_text( sizeInBytes / MEGABYTE) + " MB");
-            if ( KILOBYTE < sizeInBytes )
-                return (to_text( sizeInBytes / KILOBYTE) + " KB");
-            return ((sizeInBytes != 0) ? sizeInBytes.ToString("#,#"/*"N0"*/) + " bytes" : "0 bytes");
-        }
-
-        public static string GetSizeInMbFormatted( long sizeInBytes )
-        {
-            var sizeInMb = sizeInBytes >> 20;
-            return ((0 < sizeInMb) ? sizeInMb.ToString("0,0") : "0");
-        }
-        public static string GetSizeInMbFormatted( ulong sizeInBytes )
-        {
-            var sizeInMb = sizeInBytes >> 20;
-            return ((0 < sizeInMb) ? sizeInMb.ToString("0,0") : "0");
-        }
-        public static string GetElapsedFormatted( this in TimeSpan ts )
-        {
-            const string HH_MM_SS = "hh\\:mm\\:ss";
-            const string MM_SS    = "mm\\:ss";
-
-            if ( 1 < ts.TotalHours   ) return (ts.ToString( HH_MM_SS ));
-            if ( 1 < ts.TotalSeconds ) return (':' + ts.ToString( MM_SS ));
-            return (ts.ToString());
         }
 
         [M(O.AggressiveInlining)] public static ConfiguredTaskAwaitable< T > CAX< T >( this Task< T > task ) => task.ConfigureAwait( false );

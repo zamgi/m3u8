@@ -89,14 +89,15 @@
     <Compile Include="..\..\m3u8.client\helpers\FileHelper.cs" Link="[-= m3u8.client =-]\helpers\FileHelper.cs" />
     
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
-    
+
+    <Compile Include="..\[Common]\Extensions.cs" Link="Infrastructure\Extensions.cs" />
+    <Compile Include="..\[Common]\Extensions_4_DownloadRow.cs" Link="Infrastructure\Extensions_4_DownloadRow.cs" />
     <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs" Link="Controller\throttler_by_speed_impl.cs" />
     <Compile Include="..\[Common]\Controller\download_threads_semaphore_impl.cs" Link="Controller\download_threads_semaphore_impl.cs" />
     <Compile Include="..\[Common]\Controller\interlocked_lock.cs" Link="Controller\interlocked_lock.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController.cs" Link="Controller\DownloadController.cs" />
     <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
     <Compile Include="..\[Common]\Controller\Sync_primitives.cs" Link="Controller\Sync_primitives.cs" />
-    <Compile Include="..\[Common]\Extensions.cs" Link="Infrastructure\Extensions.cs" />
     <Compile Include="..\[Common]\UndoModel.cs" Link="Model\UndoModel.cs" />
     <Compile Include="..\[Common]\UrlHelper.cs" Link="Infrastructure\UrlHelper.cs" />
     <Compile Include="..\[Common]\HttpHeaderHelper.cs" Link="Infrastructure\HttpHeaderHelper.cs" />

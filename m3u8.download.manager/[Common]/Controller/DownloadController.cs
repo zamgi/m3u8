@@ -529,7 +529,7 @@ namespace m3u8.download.manager.controllers
                                 }
                                 else
                                 {
-                                    logRow.SetResponseSuccess( $"received, ({Extensions.GetSizeFormatted( p.Part.Stream.Length )})" );
+                                    logRow.SetResponseSuccess( $"received, ({Extensions_4_DownloadRow.GetSizeFormatted( p.Part.Stream.Length )})" );
                                 }
                             }
                         });
@@ -549,8 +549,8 @@ namespace m3u8.download.manager.controllers
                                 }
                                 else if ( raiseRowPropertiesChangedEvent )
                                 {
-                                    var msg = p.TotalContentLength.HasValue ? $"{Extensions.GetSizeFormatted( p.TotalBytesReaded )} of {Extensions.GetSizeFormatted( p.TotalContentLength.Value )}"
-                                                                               : Extensions.GetSizeFormatted( p.TotalBytesReaded );
+                                    var msg = p.TotalContentLength.HasValue ? $"{Extensions_4_DownloadRow.GetSizeFormatted( p.TotalBytesReaded )} of {Extensions_4_DownloadRow.GetSizeFormatted( p.TotalContentLength.Value )}"
+                                                                               : Extensions_4_DownloadRow.GetSizeFormatted( p.TotalBytesReaded );
                                     logRow.SetResponse( msg, p.AttemptRequestNumber );
                                 }
                                 else
@@ -798,7 +798,7 @@ namespace m3u8.download.manager.controllers
                                 {
                                     var part_row = row.Add2ModelFinishedCopy( st.CreateDateTime, st.LastPartLogRows, st.RowSaveState );
 
-                                    st.CreatedOutpuFileLogRow.Append2RequestText( $"size: {Extensions.GetSizeInMbFormatted( part_row.DownloadBytesLength )} mb, elapsed: {part_row.GetElapsed().GetElapsedFormatted()}" );
+                                    st.CreatedOutpuFileLogRow.Append2RequestText( $"size: {Extensions_4_DownloadRow.GetSizeInMbFormatted( part_row.DownloadBytesLength )} mb, elapsed: {part_row.GetElapsed().GetElapsedFormatted()}" );
                                     part_row.Log.AddRow( st.CreatedOutpuFileLogRow );
                                 }
                                 #endregion
@@ -1268,7 +1268,7 @@ namespace m3u8.download.manager.controllers
             log.AddEmptyRow();
             log.AddRequestRow( $" elapsed: {elapsed}" );
             log.AddRequestRow( $"         file: '{dpsr.OutputFileName}'" );
-            log.AddRequestRow( $"       size: {Extensions.GetSizeInMbFormatted( dpsr.TotalBytes )} mb" );
+            log.AddRequestRow( $"       size: {Extensions_4_DownloadRow.GetSizeInMbFormatted( dpsr.TotalBytes )} mb" );
         }
         public static void StatusFinished( this DownloadRow row, TimeSpan elapsed )
         {
@@ -1279,7 +1279,7 @@ namespace m3u8.download.manager.controllers
             log.AddEmptyRow();
             log.AddRequestRow( $" elapsed: {elapsed}" );
             log.AddRequestRow( $"         file: '{row.OutputFileName}'" );
-            log.AddRequestRow( $"       size: {Extensions.GetSizeInMbFormatted( row.DownloadBytesLength )} mb" );
+            log.AddRequestRow( $"       size: {Extensions_4_DownloadRow.GetSizeInMbFormatted( row.DownloadBytesLength )} mb" );
         }
         public static void StatusError( this DownloadRow row, Exception ex ) => row.StatusError( ex.ToString() );
         public static void StatusError( this DownloadRow row, string errorText, bool addEmptyRow = false )

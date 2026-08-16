@@ -24,7 +24,7 @@ namespace m3u8.download.manager.ui
     public sealed class ProgressText_Converter : _DownloadRow_ConverterBase
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
-            => ((value is DownloadRow row) ? DownloadListUC.GetProgressText( row ) : value);
+            => ((value is DownloadRow row) ? row.GetProgressText() : value);
     }
     /// <summary>
     /// 
@@ -32,7 +32,7 @@ namespace m3u8.download.manager.ui
     public sealed class ProgressPartValue_Converter : _DownloadRow_ConverterBase
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
-            => ((value is DownloadRow row) ? DownloadListUC.GetProgressPartValue( row ) : 0d);
+            => ((value is DownloadRow row) ? row.GetProgressPartValue() : 0d);
     }    
 
     /// <summary>
@@ -41,7 +41,7 @@ namespace m3u8.download.manager.ui
     public sealed class DownloadTimeText_Converter : _DownloadRow_ConverterBase
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
-            => ((value is DownloadRow row) ? DownloadListUC.GetDownloadTimeText( row ) : value);
+            => ((value is DownloadRow row) ? row.GetDownloadTimeText() : value);
     }
     /// <summary>
     /// 
@@ -49,7 +49,7 @@ namespace m3u8.download.manager.ui
     public sealed class ApproxRemainedTimeText_Converter : _DownloadRow_ConverterBase
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
-            => ((value is DownloadRow row) ? DownloadListUC.GetApproxRemainedTimeText( row ) : value);
+            => ((value is DownloadRow row) ? row.GetApproxRemainedTimeText() : value);
     }
     /// <summary>
     /// 
@@ -57,7 +57,7 @@ namespace m3u8.download.manager.ui
     public sealed class DownloadSpeedText_Converter : _DownloadRow_ConverterBase
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
-            => ((value is DownloadRow row) ? DownloadListUC.GetDownloadSpeedText( row ) : value);
+            => ((value is DownloadRow row) ? row.GetDownloadSpeedText() : value);
     }
     /// <summary>
     /// 
@@ -65,7 +65,7 @@ namespace m3u8.download.manager.ui
     public sealed class DisplaySizeText_Converter : _DownloadRow_ConverterBase
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
-            => ((value is DownloadRow row) ? DownloadListUC.GetDisplaySizeText( row.DownloadBytesLength ) : value);
+            => ((value is DownloadRow row) ? Extensions_4_DownloadRow.GetDisplaySizeText( row.DownloadBytesLength ) : value);
     }
     /// <summary>
     /// 
@@ -73,7 +73,7 @@ namespace m3u8.download.manager.ui
     public sealed class ApproxRemainedBytesText_Converter : _DownloadRow_ConverterBase
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
-            => ((value is DownloadRow row) ? DownloadListUC.GetApproxRemainedBytesText( row ) : value);
+            => ((value is DownloadRow row) ? row.GetApproxRemainedBytesText() : value);
     }
     /// <summary>
     /// 
@@ -81,7 +81,7 @@ namespace m3u8.download.manager.ui
     public sealed class ApproxTotalBytesText_Converter : _DownloadRow_ConverterBase
     {
         public override object Convert( object value, Type targetType, object parameter, CultureInfo culture )
-            => ((value is DownloadRow row) ? DownloadListUC.GetApproxTotalBytesText( row ) : value);
+            => ((value is DownloadRow row) ? row.GetApproxTotalBytesText() : value);
     }
     /// <summary>
     /// 

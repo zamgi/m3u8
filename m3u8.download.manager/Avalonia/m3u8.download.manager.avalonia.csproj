@@ -106,6 +106,7 @@
     <Compile Include="..\WinForms\Infrastructure\Ellipsis.cs" Link="Infrastructure\Ellipsis.cs" />
 
     <Compile Include="..\[Common]\Extensions.cs" Link="Infrastructure\Extensions.cs" />
+    <Compile Include="..\[Common]\Extensions_4_DownloadRow.cs" Link="Infrastructure\Extensions_4_DownloadRow.cs" />
     <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs" Link="Controller\throttler_by_speed_impl.cs" />
     <Compile Include="..\[Common]\Controller\download_threads_semaphore_impl.cs" Link="Controller\download_threads_semaphore_impl.cs" />
     <Compile Include="..\[Common]\Controller\interlocked_lock.cs" Link="Controller\interlocked_lock.cs" />

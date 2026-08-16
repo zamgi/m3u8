@@ -672,7 +672,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _ShowDownloadStatistics )
             {
-                this.Title = $"{DownloadListUC.GetDownloadInfoText( row )},  [{GET_APP_TITLE()}]";
+                this.Title = $"{row.GetDownloadInfoText()},  [{GET_APP_TITLE()}]";
             }
         }
         #endregion

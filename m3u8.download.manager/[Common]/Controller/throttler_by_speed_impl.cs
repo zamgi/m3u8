@@ -348,11 +348,11 @@ namespace m3u8.download.manager.controllers
 
                 var nowTicks = Stopwatch.GetTimestamp();
                 var elapsedSeconds = new TimeSpan( nowTicks - _DownloadMeasure.StartMeasureDateTimeTicks ).TotalSeconds;
-                var secondsDelay   = (Extensions.GetMbps( totalDownloadBytes ) / (double) GetMaxSpeedThreshold_Internal()) - elapsedSeconds;
+                var secondsDelay   = (Extensions_4_DownloadRow.GetMbps( totalDownloadBytes ) / (double) GetMaxSpeedThreshold_Internal()) - elapsedSeconds;
 
                 var last = _DownloadMeasure.GetLastDownloadBytes();
                 var last_elapsedSeconds = TimeSpan.FromTicks( last.intervalDateTimeTicks ).TotalSeconds;
-                var instantSpeedInMbps  = (0 < last_elapsedSeconds) ? Extensions.GetSpeedInMbps( last.downloadBytes, last_elapsedSeconds ) : (double?) null;
+                var instantSpeedInMbps  = (0 < last_elapsedSeconds) ? Extensions_4_DownloadRow.GetSpeedInMbps( last.downloadBytes, last_elapsedSeconds ) : (double?) null;
 
                 if ( 0 < secondsDelay )
                 {
