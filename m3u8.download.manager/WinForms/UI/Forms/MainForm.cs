@@ -25,7 +25,6 @@ using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.Download
 using _CheckMarkTypeEnum_                    = m3u8.download.manager.ui.DownloadListUC.CheckMarkTypeEnum;
 using M                                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                                      = System.Runtime.CompilerServices.MethodImplOptions;
-using System.Security.Cryptography;
 
 namespace m3u8.download.manager.ui
 {
