@@ -1371,97 +1371,17 @@ namespace m3u8.download.manager.ui
             }
         }
         private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _VM.SettingsController.Settings.LastChangeOutputDirectory ) ?? row.OutputDirectory;
-        
-        public Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
-        public Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
+
+        private Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );
+        private Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
         private Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
             => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, outputFileName_or_outputDirectory, change_outputDirectory
-                , async new_outputFullFileName => ((await this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" )) == ButtonResult.Yes)
-                , error => this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" ) /*, _ExternalProgQueue*/ );
-
-        //private async Task ChangeOutputFileName_Or_OutputDirectory__( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
-        //{
-        //    var prev_outputFullFileName = row.GetOutputFullFileName();
-
-        //    string prev_outputFileName_or_outputDirectory;
-        //    if ( change_outputDirectory )
-        //    {
-        //        prev_outputFileName_or_outputDirectory = row.OutputDirectory;
-        //        row.SetOutputDirectory( outputFileName_or_outputDirectory );
-        //    }
-        //    else
-        //    {
-        //        prev_outputFileName_or_outputDirectory = row.OutputFileName;
-        //        row.SetOutputFileName( outputFileName_or_outputDirectory );
-        //    }
-        //    var new_outputFullFileName = row.GetOutputFullFileName();
-
-        //    var res = await MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName );
-        //    switch ( res )
-        //    {
-        //        //case MoveFileByRenameResultEnum.Postponed: break;
-        //        case MoveFileByRenameResultEnum.Suc:
-        //            row.SaveVeryFirstOutputFullFileName( null );
-        //            break;
-        //        case MoveFileByRenameResultEnum.Canceled:
-        //        case MoveFileByRenameResultEnum.Fail:
-        //            //rollback
-        //            if ( change_outputDirectory )
-        //            {
-        //                row.SetOutputDirectory( prev_outputFileName_or_outputDirectory );
-        //            }
-        //            else
-        //            {
-        //                row.SetOutputFileName( prev_outputFileName_or_outputDirectory );
-        //            }
-        //            break;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //private enum MoveFileByRenameModeEnum { OverwriteAsk, OverwriteSilent, SkipIfAlreadyExists }
-        //private enum MoveFileByRenameResultEnum { Postponed, Canceled, Suc, Fail }
-        //private async Task< MoveFileByRenameResultEnum > MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
-        //    , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
-        //{
-        //    if ( (!row.Status.IsRunningOrPaused() || FileHelper.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
-        //    {
-        //        switch ( mode )
-        //        {
-        //            case MoveFileByRenameModeEnum.OverwriteSilent:
-        //                break;
-        //            case MoveFileByRenameModeEnum.OverwriteAsk:
-        //                if ( File.Exists( new_outputFullFileName ) )
-        //                {
-        //                    var yes = ((await this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" )) == ButtonResult.Yes);
-        //                    if ( !yes )
-        //                    {
-        //                        return (MoveFileByRenameResultEnum.Canceled);
-        //                    }
-        //                }
-        //                break;
-        //            case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
-        //                if ( File.Exists( new_outputFullFileName ) )
-        //                {
-        //                    return (MoveFileByRenameResultEnum.Canceled);
-        //                }
-        //                break;
-        //        }
-
-        //        if ( FileHelper.TryMoveFile_NoThrow( prev_outputFullFileName, new_outputFullFileName, out var error ) )
-        //        {
-        //            return (MoveFileByRenameResultEnum.Suc);
-        //        }
-        //        else
-        //        {
-        //            await this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" );
-        //            return (MoveFileByRenameResultEnum.Fail);
-        //        }
-        //    }
-        //    return (MoveFileByRenameResultEnum.Postponed);
-        //}
+                , get_AskForOverwriteFunc(), get_showErrorAction()/*, _ExternalProgRunner.Queue, _FFmpegConverterRunner.Queue*/ );
+        public Task ChangeOutputFileName_And_OutputDirectory( DownloadRow row, string outputFileName, string outputDirectory )
+            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_And_OutputDirectory( row, outputFileName, outputDirectory
+                , get_AskForOverwriteFunc(), get_showErrorAction()/*, _ExternalProgRunner.Queue, _FFmpegConverterRunner.Queue*/ );
+        private Func<string, Task<bool>> get_AskForOverwriteFunc() => new Func<string, Task<bool>>( async new_outputFullFileName => ((await this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" )) == ButtonResult.Yes) );
+        private Func<string, Task> get_showErrorAction() => new Func<string, Task>( error => this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" ) );
         #endregion
 
         #region [.LiveStream change max-file-size.]

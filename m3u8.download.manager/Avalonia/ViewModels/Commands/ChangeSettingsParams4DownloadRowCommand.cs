@@ -41,16 +41,14 @@ namespace m3u8.download.manager
                     var suc = _VM.DownloadController.TryChangeSettings( row, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount );
                     if ( suc ) //must be RunningOrPaused if suc
                     {
-                        await _MainWindow.ChangeOutputDirectory( row, tp.OutputDirectory );
-                        await _MainWindow.ChangeOutputFileName ( row, tp.OutputFileName  );
+                        await _MainWindow.ChangeOutputFileName_And_OutputDirectory( row, tp.OutputFileName, tp.OutputDirectory );
                     }
                     else if ( !row.Status.IsRunningOrPaused() )
                     {
                         suc = row.Update( (f.M3u8FileUrl, tp.RequestHeaders, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount, tp.LiveStreamMaxFileSizeInBytes) );
                         if ( suc )
                         {
-                            await _MainWindow.ChangeOutputDirectory( row, tp.OutputDirectory );
-                            await _MainWindow.ChangeOutputFileName ( row, tp.OutputFileName  );
+                            await _MainWindow.ChangeOutputFileName_And_OutputDirectory( row, tp.OutputFileName, tp.OutputDirectory );
                         }
                     }
                     else

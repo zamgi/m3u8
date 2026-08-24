@@ -25,6 +25,7 @@ using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.Download
 using _CheckMarkTypeEnum_                    = m3u8.download.manager.ui.DownloadListUC.CheckMarkTypeEnum;
 using M                                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                                      = System.Runtime.CompilerServices.MethodImplOptions;
+using System.Security.Cryptography;
 
 namespace m3u8.download.manager.ui
 {
@@ -1358,7 +1359,7 @@ namespace m3u8.download.manager.ui
                                      AddNewDownloadForm_when_Add_formClosedAction, 
                                      activeTabPageKind );
         }
-        private void AddNewDownloadForm_when_Edit_formClosedAction( AddNewDownloadForm f, DownloadRow row )
+        private async void AddNewDownloadForm_when_Edit_formClosedAction( AddNewDownloadForm f, DownloadRow row )
         {
             if ( (f.DialogResult == DialogResult.OK) && !row.Status.IsRunningOrPaused() )
             {
@@ -1366,8 +1367,7 @@ namespace m3u8.download.manager.ui
                 var suc = row.Update( tp );
                 if ( suc )
                 {
-                    ChangeOutputDirectory( row, tp.OutputDirectory );
-                    ChangeOutputFileName ( row, tp.OutputFileName  );
+                    await ChangeOutputFileName_And_OutputDirectory( row, tp.OutputFileName, tp.OutputDirectory );
                     TryRestoreOrClearDownloadParams( row );
                     downloadListUC.Invalidate( true );
                 }
@@ -1385,7 +1385,7 @@ namespace m3u8.download.manager.ui
                                                        AddNewDownloadForm_when_Add_formClosedAction, _ReceivedAndWritedPartsProcessor, activeTabPageKind );
             return (suc);
         }
-        private void ChangeSettingsParams4DownloadRow_formClosedAction( ChangeSettingsParams4DownloadRowForm f, DownloadRow row )
+        private async void ChangeSettingsParams4DownloadRow_formClosedAction( ChangeSettingsParams4DownloadRowForm f, DownloadRow row )
         {
             if ( f.DialogResult == DialogResult.OK )
             {
@@ -1394,8 +1394,7 @@ namespace m3u8.download.manager.ui
                 var suc = _DC.TryChangeSettings( row, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount );
                 if ( suc ) //must be RunningOrPaused if suc
                 {
-                    ChangeOutputDirectory( row, tp.OutputDirectory );
-                    ChangeOutputFileName ( row, tp.OutputFileName  );
+                    await ChangeOutputFileName_And_OutputDirectory( row, tp.OutputFileName, tp.OutputDirectory );
                     TryRestoreOrClearDownloadParams( row );
                     downloadListUC.Invalidate( true );
                 }
@@ -1404,8 +1403,7 @@ namespace m3u8.download.manager.ui
                     suc = row.Update( (f.M3u8FileUrl, tp.RequestHeaders, tp.WebProxyInfo, tp.Timeout, tp.AttemptRequestCount, tp.LiveStreamMaxFileSizeInBytes) );
                     if ( suc )
                     {
-                        ChangeOutputDirectory( row, tp.OutputDirectory );
-                        ChangeOutputFileName ( row, tp.OutputFileName  );
+                        await ChangeOutputFileName_And_OutputDirectory( row, tp.OutputFileName, tp.OutputDirectory );
                         TryRestoreOrClearDownloadParams( row );
                         downloadListUC.Invalidate( true );
                     }
@@ -1821,27 +1819,27 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.change OutputFileName & OutputDirectory.]
-        private void downloadListUC_OutputFileNameClick( DownloadRow row )
+        private async void downloadListUC_OutputFileNameClick( DownloadRow row )
         {
             if ( ChangeOutputFileForm.TryChangeOutputFile( this, row, _SC, out var outputFileName ) )
             {
-                ChangeOutputFileName( row, outputFileName );
+                await ChangeOutputFileName( row, outputFileName );
                 TryRestoreOrClearDownloadParams( row );
                 downloadListUC.Invalidate( true );
             }
         }
-        private void downloadListUC_OutputDirectoryClick( DownloadRow row )
+        private async void downloadListUC_OutputDirectoryClick( DownloadRow row )
         {
             if ( DirectorySelectDialog.Show( this, _SC.Settings.UseDirectorySelectDialogModern, GetSelectedDirectory( row ), $"Select output directory for file: '{row.OutputFileName}'", out var outputDirectory ) )
             {
                 _SC.Settings.LastChangeOutputDirectory = outputDirectory;
-                ChangeOutputDirectory( row, outputDirectory );
+                await ChangeOutputDirectory( row, outputDirectory );
                 TryRestoreOrClearDownloadParams( row );
                 downloadListUC.Invalidate( true );
             }
         }
 
-        private void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
+        private async void changeOutputDirectoryMenuItem_Click( object sender, EventArgs e )
         {
             var rows = downloadListUC.GetSelectedDownloadRows();
             if ( rows.AnyEx_() )
@@ -1853,7 +1851,7 @@ namespace m3u8.download.manager.ui
                     _SC.Settings.LastChangeOutputDirectory = outputDirectory;
                     foreach ( var row in rows )
                     {
-                        ChangeOutputDirectory( row, outputDirectory );
+                        await ChangeOutputDirectory( row, outputDirectory );
                         TryRestoreOrClearDownloadParams( row );
                     }
                     downloadListUC.Invalidate( true );
@@ -1866,9 +1864,12 @@ namespace m3u8.download.manager.ui
         private Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
         private Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
             => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, outputFileName_or_outputDirectory, change_outputDirectory
-                , new_outputFullFileName => Task.FromResult( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) == DialogResult.Yes )
-                , error => { this.MessageBox_ShowError( error, "Move/Remane output file" ); return Task.CompletedTask; }
-                , _ExternalProgRunner.Queue, _FFmpegConverterRunner.Queue );
+                , get_AskForOverwriteFunc(), get_showErrorAction(), _ExternalProgRunner.Queue, _FFmpegConverterRunner.Queue );
+        private Task ChangeOutputFileName_And_OutputDirectory( DownloadRow row, string outputFileName, string outputDirectory )
+            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_And_OutputDirectory( row, outputFileName, outputDirectory
+                , get_AskForOverwriteFunc(), get_showErrorAction(), _ExternalProgRunner.Queue, _FFmpegConverterRunner.Queue );
+        private Func<string, Task<bool>> get_AskForOverwriteFunc() => new Func<string, Task<bool>>( new_outputFullFileName => Task.FromResult( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) == DialogResult.Yes ) );
+        private Func<string, Task> get_showErrorAction() => new Func<string, Task>( error => { this.MessageBox_ShowError( error, "Move/Remane output file" ); return Task.CompletedTask; } );
         #endregion
 
         #region [.LiveStream change max-file-size.]

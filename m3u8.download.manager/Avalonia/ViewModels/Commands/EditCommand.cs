@@ -36,12 +36,11 @@ namespace m3u8.download.manager
                 await f.ShowDialogEx();
                 if ( f.Success && !row.Status.IsRunningOrPaused() )
                 {
-                    var tp = f.GetParamsTuple();
+                    var tp  = f.GetParamsTuple();
                     var suc = row.Update( tp );
                     if ( suc )
                     {
-                        await _MainWindow.ChangeOutputDirectory( row, tp.OutputDirectory );
-                        await _MainWindow.ChangeOutputFileName ( row, tp.OutputFileName  );
+                        await _MainWindow.ChangeOutputFileName_And_OutputDirectory( row, tp.OutputFileName, tp.OutputDirectory );
                     }
                 }
             }

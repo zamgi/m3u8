@@ -206,12 +206,21 @@ namespace m3u8.download.manager.infrastructure
         }
         public static bool TryMoveFile_NoThrow( string sourceFileName, string destFileName, out Exception error )
         {
+            if ( sourceFileName == destFileName )
+            {
+                error = default;
+                return (true);
+            }
+
             try
             {
 #if NETCOREAPP
                 File.Move( sourceFileName, destFileName, overwrite: true );
 #else
-                FileHelper.DeleteFile_NoThrow( destFileName );
+                if ( !sourceFileName.EqualIgnoreCase( destFileName ) )
+                {
+                    FileHelper.DeleteFile_NoThrow( destFileName );
+                }
                 File.Move( sourceFileName, destFileName );
 #endif
                 error = default;

@@ -30,21 +30,12 @@ namespace m3u8.download.manager.infrastructure
         }       
 
         #region [.change OutputFileName & OutputDirectory.]
-        public static async Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory            
+        public static async Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory
             , Func< string, Task< bool > > askForOverwriteFunc
             , Func< string, Task > showErrorAction
             , params ISet< string >[] externalProgQueues )
         {
-            if ( outputFileName_or_outputDirectory.EqualIgnoreCase( change_outputDirectory ? row.OutputDirectory : row.OutputFileName ) )
-            {
-                return;
-            }
-
-            //---externalProgQueue ??= Set.Empty< string >();
-            //----------------------------------------------------------//
             var prev_outputFullFileName = row.GetOutputFullFileName();
-            //---var need_add = externalProgQueue.Remove( prev_outputFullFileName );
-            var need_adds = externalProgQueues.Select( q => (queue: q, need_add: q.Remove( prev_outputFullFileName )) ).ToList();
 
             string prev_outputFileName_or_outputDirectory;
             if ( change_outputDirectory )
@@ -59,10 +50,15 @@ namespace m3u8.download.manager.infrastructure
             }
             var new_outputFullFileName = row.GetOutputFullFileName();
 
-            //---if ( need_add ) externalProgQueue.Add( new_outputFullFileName );
+            //is full equals - do nothing
+            if ( prev_outputFullFileName == new_outputFullFileName ) return;
+
+            var need_adds = externalProgQueues.Select( q => (queue: q, need_add: q.Remove( prev_outputFullFileName )) ).ToList();
             need_adds.ForEach( t => { if ( t.need_add ) t.queue.Add( new_outputFullFileName ); } );
 
-            var res = await MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName, askForOverwriteFunc, showErrorAction );
+            var mode = prev_outputFullFileName.EqualIgnoreCase( new_outputFullFileName ) ? MoveFileByRenameModeEnum.OverwriteSilent
+                                                                                         : MoveFileByRenameModeEnum.OverwriteAsk;
+            var res = await MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName, askForOverwriteFunc, showErrorAction, mode );
             switch ( res )
             {
                 //case MoveFileByRenameResultEnum.Postponed: break;
@@ -98,6 +94,53 @@ namespace m3u8.download.manager.infrastructure
                     break;
             }
         }
+        public static async Task ChangeOutputFileName_And_OutputDirectory( DownloadRow row, string outputFileName, string outputDirectory
+            , Func< string, Task< bool > > askForOverwriteFunc
+            , Func< string, Task > showErrorAction
+            , params ISet< string >[] externalProgQueues )
+        {
+            var prev_outputFullFileName = row.GetOutputFullFileName();
+
+            var prev_outputFileName  = row.OutputFileName;
+            var prev_outputDirectory = row.OutputDirectory;
+            row.SetOutputFileName ( outputFileName );
+            row.SetOutputDirectory( outputDirectory );
+            
+            var new_outputFullFileName = row.GetOutputFullFileName();
+
+            //is full equals - do nothing
+            if ( prev_outputFullFileName == new_outputFullFileName ) return;
+
+            var need_adds = externalProgQueues.Select( q => (queue: q, need_add: q.Remove( prev_outputFullFileName )) ).ToList();
+            need_adds.ForEach( t => { if ( t.need_add ) t.queue.Add( new_outputFullFileName ); } );
+
+            var mode = prev_outputFullFileName.EqualIgnoreCase( new_outputFullFileName ) ? MoveFileByRenameModeEnum.OverwriteSilent
+                                                                                         : MoveFileByRenameModeEnum.OverwriteAsk;
+            var res = await MoveFileByRename( row, prev_outputFullFileName, new_outputFullFileName, askForOverwriteFunc, showErrorAction, mode );
+            switch ( res )
+            {
+                //case MoveFileByRenameResultEnum.Postponed: break;
+                case MoveFileByRenameResultEnum.Suc:
+                    row.SaveVeryFirstOutputFullFileName( null );
+                    break;
+
+                case MoveFileByRenameResultEnum.Canceled:
+                case MoveFileByRenameResultEnum.Fail:
+                    //rollback
+                    row.SetOutputFileName ( prev_outputFileName );
+                    row.SetOutputDirectory( prev_outputDirectory );
+
+                    need_adds.ForEach( t => 
+                    {
+                        if ( t.need_add )
+                        {
+                            t.queue.Remove( new_outputFullFileName );
+                            t.queue.Add( prev_outputFullFileName );
+                        }
+                    });
+                    break;
+            }
+        }
 
         /// <summary>
         /// 
@@ -107,7 +150,7 @@ namespace m3u8.download.manager.infrastructure
         private static async Task< MoveFileByRenameResultEnum > MoveFileByRename( DownloadRow row, string prev_outputFullFileName, string new_outputFullFileName
             , Func< string, Task< bool > > askForOverwriteFunc
             , Func< string, Task > showErrorAction
-            , MoveFileByRenameModeEnum mode = MoveFileByRenameModeEnum.OverwriteAsk )
+            , MoveFileByRenameModeEnum mode/* = MoveFileByRenameModeEnum.OverwriteAsk*/ )
         {
             if ( (!row.Status.IsRunningOrPaused() || FileHelper.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
             {
