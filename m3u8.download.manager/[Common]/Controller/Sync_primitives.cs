@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -269,11 +268,13 @@ namespace System.Threading.Tasks
                         }
                         finally
                         {
-                            semaphore.Release();
-
-                            if ( Interlocked.Increment( ref processedSeqCount ) == totalSeqCount )
+                            if ( !ct.IsCancellationRequested )
                             {
-                                finitaEvent.Set();
+                                semaphore.Release();
+                                if ( Interlocked.Increment( ref processedSeqCount ) == totalSeqCount )
+                                {
+                                    finitaEvent.Set();
+                                }
                             }
                         }
                     });
@@ -319,11 +320,13 @@ namespace System.Threading.Tasks
                         }
                         finally
                         {
-                            semaphore.Release();
-
-                            if ( Interlocked.Increment( ref processedSeqCount ) == totalSeqCount )
+                            if ( !ct.IsCancellationRequested )
                             {
-                                finitaEvent.Set();
+                                semaphore.Release();
+                                if ( Interlocked.Increment( ref processedSeqCount ) == totalSeqCount )
+                                {
+                                    finitaEvent.Set();
+                                }
                             }
                         }
                     });
@@ -369,20 +372,13 @@ namespace System.Threading.Tasks
                         }
                         finally
                         {
-                            semaphore.Release();
-                            //try
-                            //{
-                            //    semaphore.Release();
-                            //}
-                            //catch ( Exception ex )
-                            //{
-                            //    if ( Debugger.IsAttached ) Debugger.Break();
-                            //    Debug.WriteLine( ex );
-                            //}
-
-                            if ( Interlocked.Increment( ref processedSeqCount ) == totalSeqCount )
+                            if ( !ct.IsCancellationRequested )
                             {
-                                finitaEvent.Set();
+                                semaphore.Release();
+                                if ( Interlocked.Increment( ref processedSeqCount ) == totalSeqCount )
+                                {
+                                    finitaEvent.Set();
+                                }
                             }
                         }
                     });
@@ -428,11 +424,13 @@ namespace System.Threading.Tasks
                         }
                         finally
                         {
-                            semaphore.Release();
-
-                            if ( Interlocked.Increment( ref processedSeqCount ) == totalSeqCount )
+                            if ( !ct.IsCancellationRequested )
                             {
-                                finitaEvent.Set();
+                                semaphore.Release();
+                                if ( Interlocked.Increment( ref processedSeqCount ) == totalSeqCount )
+                                {
+                                    finitaEvent.Set();
+                                }
                             }
                         }
                     });
@@ -490,11 +488,13 @@ namespace System.Threading.Tasks
                             }
                             finally
                             {
-                                semaphore.Release();
-
-                                if ( (Interlocked.Decrement( ref enqueueSeqCount ) == 0) && seqIsFinished )
+                                if ( !ct.IsCancellationRequested )
                                 {
-                                    finitaEvent.Set();
+                                    semaphore.Release();
+                                    if ( (Interlocked.Decrement( ref enqueueSeqCount ) == 0) && seqIsFinished )
+                                    {
+                                        finitaEvent.Set();
+                                    }
                                 }
                             }
                         });
