@@ -310,8 +310,8 @@ namespace m3u8.client__v2
 
             ip.responseStepAction?.Invoke( new ResponseStepActionParams( totalPatrs ) );
 
-            var expectedPartNumber = ip.m3u8File.Parts.FirstOrDefault().OrderNumber;
-            var maxPartNumber      = ip.m3u8File.Parts.LastOrDefault ().OrderNumber;
+            var expectedPartNumber = ip.m3u8File.Parts.FirstOrDefault()?.OrderNumber ?? 0;
+            var maxPartNumber      = ip.m3u8File.Parts.LastOrDefault ()?.OrderNumber ?? 0;
             var sourceQueue        = new Queue< m3u8_part_ts >( ip.m3u8File.Parts );
             var downloadPartsSet   = new SortedSet< m3u8_part_ts >( m3u8_part_ts.Comparer.Inst );
             var poolStreamCapacity = ip.poolStreamCapacity.GetValueOrDefault( 1024 * 1024 * 5 );

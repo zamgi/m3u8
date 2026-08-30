@@ -515,11 +515,11 @@ namespace m3u8.download.manager.controllers
                                 row.Log.AddResponseErrorRow( requestText, p.Error.ToString() );
                             }
                         });
-                        var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( (in m3u8_processor.ResponseStepActionParams p ) =>
+                        var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( (in m3u8_processor.ResponseStepActionParams p) =>
                         {
                             row.SetDownloadResponseStepParams( p );
 
-                            if ( rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
+                            if ( (p.Part != null) && rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
                             {
                                 rows_Dict.Remove( p.Part.OrderNumber );
                                 if ( p.Part.Error != null )
@@ -611,8 +611,8 @@ namespace m3u8.download.manager.controllers
                         {
                             mc                               = mc,
                             m3u8File                         = m3u8File,
+                            requestHeaders                   = row.RequestHeaders,
                             OutputFileName                   = veryFirstOutputFullFileName,
-                            CancellationToken                = cts.Token,
                             RequestStepAction                = requestStepAction,
                             ResponseStepAction               = responseStepAction,
                             DownloadPartStepAction           = downloadPartStepAction,
@@ -630,7 +630,7 @@ namespace m3u8.download.manager.controllers
                             RestoreAndContinueDownloadAction = restoreAndContinueDownloadAction,
                         };
 
-                        var result = await m3u8_processor.DownloadPartsAndSave( ip, row.RequestHeaders ).CAX();
+                        var result = await m3u8_processor.DownloadPartsAndSave/*_NEXT*/( ip, cts.Token ).CAX();
                         return (result);
                     });
 

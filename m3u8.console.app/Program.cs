@@ -155,8 +155,8 @@ namespace m3u8
                 {
                     mc                               = mc,
                     m3u8File                         = m3u8File,
+                    requestHeaders                   = requestHeaders,
                     OutputFileName                   = outputFileName,
-                    CancellationToken                = ct,
                     //RequestStepAction                = requestStepAction,
                     ResponseStepAction               = responseStepAction,
                     //DownloadPartStepAction           = downloadPartStepAction,
@@ -171,7 +171,7 @@ namespace m3u8
                     TimeoutCtsPool                   = timeoutCtsPool,
                 };
 
-                await m3u8_processor.DownloadPartsAndSave( p, requestHeaders ).CAX();
+                await m3u8_processor.DownloadPartsAndSave_NEXT( p, ct ).CAX();
             }
 
             private static HttpClient CreateHttpClient( IWebProxy webProxy, in TimeSpan? timeout = null )
@@ -385,7 +385,7 @@ namespace m3u8
                     mc                               = mc,
                     m3u8File                         = m3u8File,
                     OutputFileName                   = outputFileName,
-                    CancellationToken                = ct,
+                    requestHeaders                   = requestHeaders,
                     ResponseStepAction               = responseStepAction,
                     MaxDegreeOfParallelism           = maxDegreeOfParallelism,
                     DownloadThreadsSemaphore         = dts,
@@ -398,7 +398,7 @@ namespace m3u8
                     TimeoutCtsPool                   = timeoutCtsPool,
                 };
 
-                await m3u8_processor.DownloadPartsAndSave( p, requestHeaders ).CAX();
+                await m3u8_processor.DownloadPartsAndSave_NEXT( p, ct ).CAX();
             }
         }
 

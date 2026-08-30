@@ -407,7 +407,7 @@ namespace m3u8.client__v2
                  File.Exists( ffn ) && File.Exists( outputFileName ) 
                )
             {
-                using ( var fs = FileHelper.File_Open4Read( outputFileName ) )
+                using ( var fs = FileHelper.File_Open4Read( outputFileName, fileShare: FileShare.Read | FileShare.Delete ) )
                 {
                     if ( TryReadStoredFile( ffn, normalizedAddress, out var sfi, checkFileOnExists: false )
                          //&& (sfi.LastReceivedAndWritedPartOrderNumber < sfi.TotalPartsCount)

@@ -242,6 +242,7 @@ namespace m3u8.client__v2
                             using var downloadStream = await resp.Content.ReadAsStreamAsync( /*ct*/ ).CAX();
 #endif
                             dpsa.TotalContentLength = TryGetContentLength( resp.Content, out var x ) ? x.contentLength : null;
+                            part.SetTotalContentLength( dpsa.TotalContentLength );                            
 
                             using var holder = ip.RespBufPool.GetHolder( out var buf );
                             for ( var totalBytesReaded = 0L; ; )
