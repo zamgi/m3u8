@@ -80,7 +80,7 @@ namespace m3u8.download.manager.controllers
         private _download_threads_semaphore_factory_       _DownloadThreadsSemaphoreFactory;
         private _download_threads_semaphore_factory_       _DownloadThreadsSemaphoreFactory_4_Parts;
         private DefaultConnectionLimitSaver                _DefaultConnectionLimitSaver;
-        private i_throttler_by_speed__v2_t                 _ThrottlerBySpeed;
+        private i_throttler_by_speed_t                 _ThrottlerBySpeed;
         private ObjectPoolDisposable< Stream >             _StreamPool;
         private ObjectPool< byte[] >                       _RespBufPool;
         private CtsTimerPool                               _TimeoutCtsPool;
@@ -117,12 +117,8 @@ namespace m3u8.download.manager.controllers
                                                                                            sc.MaxDegreeOfParallelism );
 
             _DefaultConnectionLimitSaver = DefaultConnectionLimitSaver.Create( sc.MaxDegreeOfParallelism );
-#if THROTTLER__V1
-            _ThrottlerBySpeed = new throttler_by_speed_impl__v1( sc.MaxSpeedThresholdInMbps );
-#endif
-#if THROTTLER__V2
-            _ThrottlerBySpeed = new throttler_by_speed_impl__v2( sc.MaxSpeedThresholdInMbps );
-#endif
+            _ThrottlerBySpeed = new throttler_by_speed_impl( sc.MaxSpeedThresholdInMbps );
+      
             _StreamPool     = CreateStreamPool ( sc.MaxDegreeOfParallelism );
             _RespBufPool    = CreateRespBufPool( sc.MaxDegreeOfParallelism );
             _TimeoutCtsPool = new CtsTimerPool( sc.MaxDegreeOfParallelism );
@@ -177,6 +173,116 @@ namespace m3u8.download.manager.controllers
                 }
             }
         }
+
+        public async Task< (ulong? totalContentLength, Exception error) > CalcTotalContentLengthParts( 
+              m3u8_file_t m3u8File
+            , IDictionary< string, string > requestHeaders
+            , IWebProxy webProxy
+            , TimeSpan requestTimeoutByPart
+            , LogListModel logListModel
+            , Action< long? /*TotalContentLength*/ > stepAction = null
+            , CancellationTokenSource cts = null )
+        {
+            using ( var mc = _m3u8_client_factory.Create( webProxy, requestTimeoutByPart, attemptRequestCountByPart: 1 ) )
+            using ( var downloadThreadsSemaphore = _DownloadThreadsSemaphoreFactory.Get() )
+            {
+                try
+                {
+                    var start_ts  = Stopwatch.GetTimestamp();
+                    var rows_Dict = new ConcurrentDictionary< int, LogRow >();
+
+                    var requestStepAction  = new m3u8_processor.RequestStepActionDelegate( (in m3u8_processor.RequestStepActionParams p) =>
+                    {
+                        var requestText = $"#{p.PartOrderNumber} of {p.TotalPartCount}). '{p.Part.RelativeUrlName}'...";
+                        if ( p.Success )
+                        {
+                            var logRow = logListModel.AddRequestRow( requestText, responseText: "/get size/..." );
+                            rows_Dict.TryAdd( p.Part.OrderNumber, logRow );
+                        }
+                        else
+                        {
+                            logListModel.AddResponseErrorRow( requestText, p.Error.ToString() );
+                        }
+                    });
+                    var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( (in m3u8_processor.ResponseStepActionParams p) =>
+                    {
+                        if ( (p.Part != null) && rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
+                        {
+                            rows_Dict.Remove( p.Part.OrderNumber );
+                            if ( p.Part.Error != null )
+                            {
+                                logRow.SetResponseError( p.Part.Error.ToString() );
+                                stepAction?.Invoke( null );
+                            }
+                            else if ( !p.Part.TotalContentLength.HasValue )
+                            {
+                                logRow.SetResponseError( "size: -/?" );
+                                stepAction?.Invoke( null );
+                            }
+                            else
+                            {
+                                logRow.SetResponseSuccess( $"size: {Extensions_4_DownloadRow.GetSizeFormatted( p.Part.TotalContentLength.Value )}" );
+                                stepAction?.Invoke( p.Part.TotalContentLength.Value );
+                            }
+                        }
+                    });
+                    var downloadPartStepAction = new i_m3u8_client.DownloadPartStepActionDelegate( (in i_m3u8_client.DownloadPartStepActionParams p) =>
+                    {
+                        var ts = Stopwatch.GetTimestamp();
+                        var raiseRowPropertiesChangedEvent = InterlockedExtension.ExchangeIfNewValueBigger( ref start_ts, ts, ts - (100 * InterlockedExtension.TicksPerMillisecond) );
+
+                        if ( rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
+                        {
+                            if ( p.Part.Error != null )
+                            {
+                                rows_Dict.Remove( p.Part.OrderNumber );
+                                logRow.SetResponseError( p.Part.Error.ToString(), p.AttemptRequestNumber );
+                            }
+                            else if ( raiseRowPropertiesChangedEvent )
+                            {
+                                var msg = p.TotalContentLength.HasValue ? $"{Extensions_4_DownloadRow.GetSizeFormatted( p.TotalBytesReaded )} of {Extensions_4_DownloadRow.GetSizeFormatted( p.TotalContentLength.Value )}"
+                                                                        : Extensions_4_DownloadRow.GetSizeFormatted( p.TotalBytesReaded );
+                                logRow.SetResponse( msg, p.AttemptRequestNumber );
+                            }
+                            else
+                            {
+                                logRow.SetAttemptRequestNumber( p.AttemptRequestNumber );
+                            }
+                        }
+                    });
+
+                    var ip = new m3u8_processor.DownloadPartsAndSaveInputParams()
+                    {
+                        mc                               = mc,
+                        m3u8File                         = m3u8File,
+                        requestHeaders                   = requestHeaders,
+                        OutputFileName                   = null, //veryFirstOutputFullFileName,
+                        RequestStepAction                = requestStepAction,
+                        ResponseStepAction               = responseStepAction,
+                        DownloadPartStepAction           = downloadPartStepAction,
+                        MaxDegreeOfParallelism           = _SettingsController.MaxDegreeOfParallelism,
+                        DownloadThreadsSemaphore         = downloadThreadsSemaphore,
+                        DownloadThreadsSemaphore_4_Parts = null, //downloadThreadsSemaphore_4_Parts,
+                        WaitIfPausedHolder               = null, //new WaitIfPausedHolder( waitIfPausedEventWrapper, waitingIfPausedBefore        , waitingIfPausedAfter ),
+                        WaitIfPausedHolder_4_Parts       = null, //new WaitIfPausedHolder( waitIfPausedEventWrapper, waitingIfPausedBefore_4_Parts, waitingIfPausedAfter_4_Parts ),
+                        ThrottlerBySpeed                 = null, //_ThrottlerBySpeed,
+                        StreamPool                       = null, //_StreamPool,
+                        RespBufPool                      = null, //_RespBufPool,
+                        TimeoutCtsPool                   = _TimeoutCtsPool,
+                        Logger                           = _Logger,
+                        ReceivedAndWritedPartsProcessor  = null, //_ReceivedAndWritedPartsProcessor,
+                        RestoreAndContinueDownloadAction = null, //restoreAndContinueDownloadAction,
+                    };
+
+                    var res = await m3u8_processor.GetTotalContentLengthParts( ip, cts?.Token ?? CancellationToken.None ).CAX();
+                    return (res.TotalBytes, default);
+                }
+                catch ( Exception ex )
+                {
+                    return (default, ex);
+                }
+            }
+        }
         #endregion
 
         #region [.private methods.]
@@ -208,6 +314,11 @@ namespace m3u8.download.manager.controllers
 
                 case nameof(Settings.MaxSpeedThresholdInMbps):
                 {
+                    var now = DateTime.Now;
+                    foreach ( var row in _Dict.Keys )
+                    {
+                        row.ChangeStartedDateTime_IfRunningOrStarted( now );   
+                    }
                     _ThrottlerBySpeed.ChangeMaxSpeedThreshold( settings.MaxSpeedThresholdInMbps );
                 }
                 break;
@@ -497,7 +608,7 @@ namespace m3u8.download.manager.controllers
                     var dpsr = await Task.Run( async () =>
                     {
                         var start_ts  = Stopwatch.GetTimestamp();
-                        var rows_Dict = new Dictionary< int, LogRow >( m3u8File.Parts.Count );
+                        var rows_Dict = new ConcurrentDictionary< int, LogRow >( /*m3u8File.Parts.Count*/ );
 
                         var requestStepAction  = new m3u8_processor.RequestStepActionDelegate( (in m3u8_processor.RequestStepActionParams p) =>
                         {
@@ -507,7 +618,7 @@ namespace m3u8.download.manager.controllers
                             if ( p.Success )
                             {
                                 var logRow = row.Log.AddRequestRow( requestText, responseText: "/starting/..." );
-                                rows_Dict.Add( p.Part.OrderNumber, logRow );
+                                rows_Dict.TryAdd( p.Part.OrderNumber, logRow );
                             }
                             else
                             {
@@ -600,9 +711,9 @@ namespace m3u8.download.manager.controllers
                                 logRow.SetResponse( "/continue/..." );
                             }
                         });
-                        var restoreAndContinueDownloadAction = new Action< m3u8_file_t/*old*/, m3u8_file_t /*new*/, long /*outputFileStreamPosition*/ >( (m3u8File, new_m3u8File, downloadBytesLength) =>
+                        var restoreAndContinueDownloadAction = new i_m3u8_client.RestoreAndContinueDownloadDelegate( (in m3u8_file_t oldFile, in m3u8_file_t newFile, long downloadBytesLength) =>
                         {
-                            row.RestoreDownloadParams_WhenStartDownloads( downloadBytesLength, successDownloadParts: (m3u8File.Parts.Count - new_m3u8File.Parts.Count) );
+                            row.RestoreDownloadParams_WhenStartDownloads( downloadBytesLength, successDownloadParts: (oldFile.Parts.Count - newFile.Parts.Count) );
                         });
 
                         var veryFirstOutputFullFileName = row.SaveVeryFirstOutputFullFileName();
@@ -630,7 +741,7 @@ namespace m3u8.download.manager.controllers
                             RestoreAndContinueDownloadAction = restoreAndContinueDownloadAction,
                         };
 
-                        var result = await m3u8_processor.DownloadPartsAndSave/*_NEXT*/( ip, cts.Token ).CAX();
+                        var result = await m3u8_processor.DownloadPartsAndSave( ip, cts.Token ).CAX();
                         return (result);
                     });
 

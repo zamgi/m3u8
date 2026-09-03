@@ -65,7 +65,7 @@ namespace m3u8.client__v2
         public bool TryCalcTotalContentLengthBefore( int beforePrevPartOrderNumber, out long totalContentLengthBefore )
         {
             totalContentLengthBefore = 0;
-            for ( var part = this; (part != null) && (part.OrderNumber != beforePrevPartOrderNumber) && (part != part.Prev); part = part.Prev )
+            for ( var part = this.Prev; (part != null) && (part != m3u8_part_ts.Zero/*part.Prev*/); part = part.Prev )
             {
                 var totalContentLength = part.TotalContentLength;
                 if ( !totalContentLength.HasValue )
@@ -73,6 +73,10 @@ namespace m3u8.client__v2
                     return (false);
                 }
                 totalContentLengthBefore += totalContentLength.Value;
+                if ( part.OrderNumber == beforePrevPartOrderNumber )
+                {
+                    break;
+                }
             }
             return (totalContentLengthBefore != 0/*true*/);
         }
@@ -87,25 +91,12 @@ namespace m3u8.client__v2
     /// <summary>
     /// 
     /// </summary>
-    public struct m3u8_file_t
+    public readonly struct m3u8_file_t
     {
-        public IReadOnlyList< m3u8_part_ts > Parts { get; private set; }
-        public Uri    BaseAddress { get; private set; }
-        public string RawText     { get; private set; }
+        public IReadOnlyList< m3u8_part_ts > Parts { get; init; }
+        public Uri    BaseAddress { get; init; }
+        public string RawText     { get; init; }
 
-        //public static m3u8_file_t__v2 Parse( string content, Uri baseAddress ) => Parse( m3u8_file_t.Parse( content, baseAddress ) );
-        //public static m3u8_file_t__v2 Parse( in m3u8_file_t mf )
-        //{
-        //    var parts = new List< m3u8_part_ts__v2 >( mf.Parts.Count );
-        //        parts.AddRange( mf.Parts.Select( p => new m3u8_part_ts__v2( p.RelativeUrlName, p.OrderNumber ) ) );
-        //    var o = new m3u8_file_t__v2()
-        //    {
-        //        Parts       = parts.AsReadOnly(),
-        //        BaseAddress = mf.BaseAddress,
-        //        RawText     = mf.RawText,
-        //    };
-        //    return (o);
-        //}
         public static m3u8_file_t Parse( string content, Uri baseAddress )
         {
             var rawRows = content.Split( [ '\r', '\n' ], StringSplitOptions.RemoveEmptyEntries );
@@ -153,11 +144,11 @@ namespace m3u8.infrastructure
     internal static partial class Extensions
     {
         [M(O.AggressiveInlining)] internal static Uri GetPartUrl( this /*in*/ m3u8_part_ts part, Uri baseAddress ) => baseAddress.GetPartUrl( part.RelativeUrlName );
-        internal static List< T > ToList< T >( this IEnumerable< T > source, int capacity )
-        {
-            var lst = new List< T >( capacity );
-            lst.AddRange( source );
-            return (lst);
-        }
+        //internal static List< T > ToList< T >( this IEnumerable< T > source, int capacity )
+        //{
+        //    var lst = new List< T >( capacity );
+        //    lst.AddRange( source );
+        //    return (lst);
+        //}
     }
 }

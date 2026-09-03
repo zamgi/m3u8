@@ -123,12 +123,13 @@ namespace m3u8.download.manager.models
         public int            FailedDownloadParts         { [M(O.AggressiveInlining)] get; private set; }
         public long           DownloadBytesLength         { [M(O.AggressiveInlining)] get; private set; }
         public DownloadStatus Status                      { [M(O.AggressiveInlining)] get; private set; }
+
         private double?       _InstantSpeedInMbps;
 
         public bool           IsLiveStream                 { [M(O.AggressiveInlining)] get; private set; }
         public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; private set; }
         //public int            LiveStreamMaxFileSizeInMb    { [M(O.AggressiveInlining)] get => (int) (LiveStreamMaxFileSizeInBytes >> 20); }
-        private DateTime? _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
+        private DateTime?     _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
 
         public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; private set; }
         public web_proxy_info WebProxyInfo { [M( O.AggressiveInlining )] get; private set; }
@@ -501,6 +502,24 @@ namespace m3u8.download.manager.models
             //    Fire_PropertyChanged_Events( nameof(Status) );
             //    Fire_PropertyChanged_Events( nameof(MySelf) );
             //}
+        }
+
+        [M(O.AggressiveInlining)] public void ChangeStartedDateTime_IfRunningOrStarted( DateTime dt )
+        {
+            lock ( this )
+            {
+                switch ( Status )
+                {
+                    case DownloadStatus.Started: case DownloadStatus.Running:
+                        CreatedOrStartedDateTime = dt;
+                        _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
+                        break;
+
+                    default: return;
+                }
+            }
+            Fire_PropertyChanged_Events( nameof(CreatedOrStartedDateTime) );
+            Fire_PropertyChanged_Events( nameof(MySelf) );
         }
 
         [M(O.AggressiveInlining)] public TimeSpan GetElapsed()

@@ -195,7 +195,7 @@ namespace m3u8.download.manager
             {
                 var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
-                if ( (1_024 < downloadBytes) && (2.5 <= elapsedSeconds) )
+                if ( (1_024 < downloadBytes) ||/*&&*/ (2.5 <= elapsedSeconds) )
                 {
                     speedInBps = GetSpeedInBps( downloadBytes, elapsedSeconds );
                     return (true);
@@ -216,9 +216,9 @@ namespace m3u8.download.manager
             return (false);
         }
 
-        private const string CREATED_DT = "HH:mm:ss  (yyyy.MM.dd)";
-        private const string HH_MM_SS   = "hh\\:mm\\:ss";
-        private const string MM_SS      = "mm\\:ss";
+        private const string CREATED_DT_FORMAT = "HH:mm:ss  (yyyy.MM.dd)";
+        private const string HH_MM_SS          = "hh\\:mm\\:ss";
+        private const string MM_SS             = "mm\\:ss";
 
         [M(O.AggressiveInlining)] private static bool TryGetDownloadProgressText( this DownloadRow row, out string progressText )
         {
@@ -328,7 +328,7 @@ namespace m3u8.download.manager
         {
             if ( row.Status == DownloadStatus.Created )
             {
-                return (row.CreatedOrStartedDateTime.ToString( CREATED_DT ));
+                return (row.CreatedOrStartedDateTime.ToString( CREATED_DT_FORMAT ));
             }
             return (row.GetElapsed().ToString( HH_MM_SS ));
         }
@@ -350,7 +350,7 @@ namespace m3u8.download.manager
             var st = row.Status;
             switch ( st )
             {
-                case DownloadStatus.Created: return ($"[created]: {row.CreatedOrStartedDateTime.ToString( CREATED_DT )}");
+                case DownloadStatus.Created: return ($"[created]: {row.CreatedOrStartedDateTime.ToString( CREATED_DT_FORMAT )}");
                 case DownloadStatus.Started: return ($"{row.GetElapsed().ToString( HH_MM_SS )}");
                 case DownloadStatus.Wait   : return ($"(wait), ({row.GetElapsed().ToString( HH_MM_SS )})");
             }
@@ -366,6 +366,33 @@ namespace m3u8.download.manager
             #endregion
 
             return (downloadInfo);
+        }
+
+
+        private static string SPACE_17 = new string(' ', 17);
+        private static string DownloadStatus_Created  = $"Created{SPACE_17}";
+        private static string DownloadStatus_Started  = $"Started{SPACE_17}";
+        private static string DownloadStatus_Running  = $"Running{SPACE_17}";
+        private static string DownloadStatus_Wait     = $"Wait{SPACE_17}";
+        private static string DownloadStatus_Paused   = $"Paused{SPACE_17}";
+        private static string DownloadStatus_Canceled = $"Canceled{SPACE_17}";
+        private static string DownloadStatus_Finished = $"Finished{SPACE_17}";
+        private static string DownloadStatus_Error    = $"Error{SPACE_17}";
+        [M(O.AggressiveInlining)] public static string ToText4View( this DownloadStatus status )
+        {
+            switch ( status )
+            {
+                case DownloadStatus.Created : return (DownloadStatus_Created);
+                case DownloadStatus.Started : return (DownloadStatus_Started);
+                case DownloadStatus.Running : return (DownloadStatus_Running);
+                case DownloadStatus.Wait    : return (DownloadStatus_Wait);
+                case DownloadStatus.Paused  : return (DownloadStatus_Paused);
+                case DownloadStatus.Canceled: return (DownloadStatus_Canceled);
+                case DownloadStatus.Finished: return (DownloadStatus_Finished);
+                case DownloadStatus.Error   : return (DownloadStatus_Error);
+                default: 
+                    return (status.ToString() + SPACE_17);
+            }
         }
     }
 }

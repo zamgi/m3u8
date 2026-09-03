@@ -20,7 +20,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <DefineConstants>THROTTLER__V2;M3U8_LIVE_STREAM_DOWNLOADER__HttpMessageInvoker;</DefineConstants>
+    <DefineConstants>M3U8_LIVE_STREAM_DOWNLOADER__HttpMessageInvoker;</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup>

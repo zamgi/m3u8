@@ -28,7 +28,7 @@
   </PropertyGroup>  
   
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);AVALONIA;THROTTLER__V2;M3U8_CLIENT_FACTORY_TYPE__HttpMessageInvoker;</DefineConstants>
+    <DefineConstants>$(DefineConstants);AVALONIA;M3U8_CLIENT_FACTORY_TYPE__HttpMessageInvoker;</DefineConstants>
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   

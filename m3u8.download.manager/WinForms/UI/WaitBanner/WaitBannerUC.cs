@@ -30,8 +30,6 @@ namespace m3u8.download.manager.ui
             InitializeComponent();
 
             _StartDateTime = DateTime.Now;
-            //_FirstAppForm     = Application.OpenForms.Cast< Form >().First();
-            //_FirstAppFormText = _FirstAppForm.Text;
         }
         
         protected override void Dispose( bool disposing )
@@ -41,8 +39,6 @@ namespace m3u8.download.manager.ui
                 components?.Dispose();
             }
             base.Dispose( disposing );
-
-            //_FirstAppForm.Text = _FirstAppFormText;
         }
         #endregion
 
@@ -69,9 +65,9 @@ namespace m3u8.download.manager.ui
                     _VisibleDelayInMilliseconds = null;
                 }
             }
-            var showPercentSteps = _ShowPercentSteps.GetValueOrDefault( true );
-            captionLabel .Text    = (_IsInWaitingForOtherAppInstanceFinished ? "...waiting for other app-instance finished..." 
-                                                                             : (showPercentSteps ? $"{_CaptionText}{_PercentSteps}%" : _CaptionText));
+            //captionLabel .Text    = (_IsInWaitingForOtherAppInstanceFinished ? "...waiting for other app-instance finished..."
+            //                                                                 : (ShowPercentSteps ? $"{_CaptionText}{_PercentSteps}%" : _CaptionText));
+            captionLabel .Text    = ShowPercentSteps         ? $"{_CaptionText}{_PercentSteps}%"   : _CaptionText;
             progressLabel.Text    = ShowCurrentAndTotalSteps ? $"{_CurrentSteps} of {_TotalSteps}" : null;
             elapsedLabel .Text    = '(' + ts.ToString( HH_MM_SS ) + ')';
             speedLabel   .Text    = (_SpeedText.IsNullOrEmpty() ? null : ('[' + _SpeedText + ']'));
@@ -83,22 +79,27 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public.]
-        public bool ShowCurrentAndTotalSteps { get; set; } = true;
-        public void SetTotalSteps( int totalSteps ) => _TotalSteps = totalSteps;
+        public bool ShowCurrentAndTotalSteps { get; set; } = false/*true*/;
+        public bool ShowPercentSteps         { get => _ShowPercentSteps.GetValueOrDefault( false ); set => _ShowPercentSteps = value; }
+        public void SetTotalSteps( int totalSteps, bool showPercentSteps = true ) 
+        { 
+            _TotalSteps              = totalSteps; 
+            ShowCurrentAndTotalSteps = true; 
+            ShowPercentSteps         = showPercentSteps; 
+        }
         public void IncreaseSteps( string speedText = null )
         {            
             _CurrentSteps++;
             _PercentSteps = Convert.ToByte( (100.0 * _CurrentSteps) / _TotalSteps );
             _SpeedText    = speedText;
 
-            _IsInWaitingForOtherAppInstanceFinished = false;
+            //_IsInWaitingForOtherAppInstanceFinished = false;
         }
-
-        private bool _IsInWaitingForOtherAppInstanceFinished;
-        public void WaitingForOtherAppInstanceFinished() => _IsInWaitingForOtherAppInstanceFinished = true;
-
         public void SetCaptionText( string captionText ) => _CaptionText = captionText;
         public void SetCaptionText( string captionText, bool showPercentSteps ) => (_CaptionText, _ShowPercentSteps) = (captionText, showPercentSteps);
+
+        //private bool _IsInWaitingForOtherAppInstanceFinished;
+        //public void WaitingForOtherAppInstanceFinished() => _IsInWaitingForOtherAppInstanceFinished = true;
 
         public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, int visibleDelayInMilliseconds ) => Create( parent, cts, CAPTION_TEXT, visibleDelayInMilliseconds );
         public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, string captionText = CAPTION_TEXT, int? visibleDelayInMilliseconds = null )
@@ -126,7 +127,11 @@ namespace m3u8.download.manager.ui
                 parent.Controls.Add( uc );
                 uc.BringToFront();
                 uc.Anchor = AnchorStyles.None;
-                uc.Location = new Point( (parent.ClientSize.Width - uc.Size.Width) >> 1, (parent.ClientSize.Height - uc.Size.Height) >> 1 );
+
+                var p_sz = parent.ClientSize;
+                var c_sz = uc.Size;
+                uc.Location = new Point( (p_sz.Width - c_sz.Width) >> 1, (p_sz.Height - c_sz.Height) >> 1 );
+
                 Application.DoEvents();
                 return (uc);                
             }

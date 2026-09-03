@@ -24,6 +24,38 @@ namespace m3u8
     /// </summary>
     internal static class Program
     {
+        [STAThread] private static async Task Main( string[] args )
+        {
+            try
+            {
+#if NETCOREAPP
+                Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
+#endif
+#if !(NETCOREAPP)
+                #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
+                ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13 | SecurityProtocolType.Ssl3);
+                #endregion
+#endif
+                //await Create_ts_files_with_number_series().CAX();
+                //await Test_ts_files_with_number_series().CAX();
+#if NETCOREAPP
+                AuditCheck_ts_files_with_number_series();
+#endif
+                //await Merge_ts_files_2_one_avi().CAX();
+                //await Test__obj_pool().CAX();
+
+                //await Run_1().CAX();
+                //---await Run_2().CAX();
+            }
+            catch ( Exception ex )
+            {
+                ConsoleHelper.WriteLineError( $"ERROR: {ex}" );
+            }
+            ConsoleHelper.WriteLine( "\r\n\r\n[.....finita fusking comedy.....]\r\n\r\n", ConsoleColor.DarkGray );
+            ConsoleHelper.ReadLine();
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -70,27 +102,11 @@ namespace m3u8
                 public void Wait( CancellationToken ct ) => _Semaphore.Wait( ct );
                 public Task WaitAsync( CancellationToken ct ) => _Semaphore.WaitAsync( ct );
             }
-#if THROTTLER__V1
+    
             /// <summary>
             /// 
             /// </summary>
-            private sealed class throttler_by_speed_impl__v1 : i_throttler_by_speed__v1_t
-            {
-                public void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps ) { }
-                public void Dispose() { }
-                public void End( Task task ) { }
-                public decimal? GetMaxSpeedThreshold() => null;
-                public void Restart( Task task ) { }
-                public void Start( Task task ) { }
-                public void TakeIntoAccountDownloadedBytes( Task task, int downloadedBytes ) { }
-                public double? Throttle( Task task, CancellationToken ct ) => null;
-            }
-#endif
-#if THROTTLER__V2
-            /// <summary>
-            /// 
-            /// </summary>
-            private sealed class throttler_by_speed_impl__v2 : i_throttler_by_speed__v2_t
+            private sealed class throttler_by_speed_impl : i_throttler_by_speed_t
             {
                 public void ChangeMaxSpeedThreshold( decimal? max_speed_threshold_in_Mbps ) { }
                 public void Dispose() { }
@@ -101,7 +117,7 @@ namespace m3u8
                 public void TakeIntoAccountDownloadedBytes( int downloadedBytes ) { }
                 public double? Throttle( CancellationToken ct ) => null;
             }
-#endif
+      
             public static async Task run( 
                   string m3u8FileUrl
                 , string outputFileName
@@ -126,7 +142,7 @@ namespace m3u8
                 using var waitIfPausedEventWrapper = new WaitIfPausedEventWrapper();
                 using var dts                = new download_threads_semaphore_impl( maxDegreeOfParallelism );
                 using var dts_4_Parts        = new download_threads_semaphore_impl( maxDegreeOfParallelism );
-                using var throttler_by_speed = new throttler_by_speed_impl__v2();
+                using var throttler_by_speed = new throttler_by_speed_impl();
                 using var streamPool         = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
                 using var respBufPool        = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
                 using var timeoutCtsPool     = new CtsTimerPool( maxDegreeOfParallelism );
@@ -171,7 +187,7 @@ namespace m3u8
                     TimeoutCtsPool                   = timeoutCtsPool,
                 };
 
-                await m3u8_processor.DownloadPartsAndSave_NEXT( p, ct ).CAX();
+                await m3u8_processor.DownloadPartsAndSave( p, ct ).CAX();
             }
 
             private static HttpClient CreateHttpClient( IWebProxy webProxy, in TimeSpan? timeout = null )
@@ -372,7 +388,7 @@ namespace m3u8
                 using var waitIfPausedEventWrapper = new WaitIfPausedEventWrapper();
                 using var dts                      = new download_threads_semaphore_impl( maxDegreeOfParallelism );
                 using var dts_4_Parts              = new download_threads_semaphore_impl( maxDegreeOfParallelism );
-                using var throttler_by_speed       = new throttler_by_speed_impl__v2();
+                using var throttler_by_speed       = new throttler_by_speed_impl();
                 using var streamPool               = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
                 using var respBufPool              = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
                 using var timeoutCtsPool           = new CtsTimerPool( maxDegreeOfParallelism );
@@ -398,37 +414,187 @@ namespace m3u8
                     TimeoutCtsPool                   = timeoutCtsPool,
                 };
 
-                await m3u8_processor.DownloadPartsAndSave_NEXT( p, ct ).CAX();
+                await m3u8_processor.DownloadPartsAndSave( p, ct ).CAX();
             }
         }
 
         private static string to_text_format( int size ) => to_text_format( (ulong) size );
         private static string to_text_format( ulong size ) => (0 < size) ? size.ToString("0,0") : "0";
 
-        [STAThread] private static async Task Main( string[] args )
+        private static async Task Merge_ts_files_2_one_avi( string path = @"E:\Даун Хаус (2001)" )
         {
-            try
+            var avi_fn = Path.Combine( path, @"Даун Хаус (2001).avi" );
+            using ( var avi_fs = new FileStream( avi_fn, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read ) )
             {
-#if NETCOREAPP
-                Encoding.RegisterProvider( CodePagesEncodingProvider.Instance );
-#endif
-#if !(NETCOREAPP)
-                #region [.set SecurityProtocol to 'Tls + Tls11 + Tls12 + Ssl3'.]
-                ServicePointManager.SecurityProtocol = (SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls13 | SecurityProtocolType.Ssl3);
-                #endregion
-#endif
-                await Test__obj_pool();
+                avi_fs.SetLength( 0 );
 
-                //await Run_1().CAX();
-                //---await Run_2().CAX();                
+                foreach ( var fn in Directory.EnumerateFiles( path, "*.ts" ) )
+                {
+                    using ( var fs = File.OpenRead( fn ) )
+                    {
+                        await fs.CopyToAsync( avi_fs ).CAX();
+                    }
+                }
             }
-            catch ( Exception ex )
-            {
-                ConsoleHelper.WriteLineError( $"ERROR: {ex}" );
-            }
-            ConsoleHelper.WriteLine( "\r\n\r\n[.....finita fusking comedy.....]\r\n\r\n", ConsoleColor.DarkGray );
-            ConsoleHelper.ReadLine();
         }
+
+        private static async Task Create_ts_files_with_number_series( string path = @"E:\ts_files_with_number_series", int part_count = 500, int total_size = 1_024 * 1_024 * 300 )
+        {
+            if ( !Directory.Exists( path ) ) Directory.CreateDirectory( path );
+
+            //var total_bytes_count = Enumerable.Range( 0, total_size ).Sum( i => (long) 2 * (i.ToString().Length + 1) );
+
+            var m3u8_fn = Path.Combine( path, $"file.m3u8" );
+            using var m3u8_fs = File.OpenWrite( m3u8_fn );
+            m3u8_fs.SetLength( 0 );
+
+            var part_size = total_size / part_count;
+            var n = 0;
+            for ( var i = 0; i < part_count; i++ )
+            {
+                var fn = $"{i + 1}.txt"; //$"{i + 1}.ts";
+                var ffn = Path.Combine( path, fn );
+                Console.Write( $"{i + 1} of {part_count} => {ffn}..." );
+                using ( var fs = File.OpenWrite( ffn ) )
+                {
+                    fs.SetLength( 0 );
+                    for ( ; ; n++ )
+                    {
+                        var bytes = Encoding.UTF8.GetBytes( $"{n},");
+                        await fs.WriteAsync( bytes, default ).CAX();
+                        await fs.FlushAsync().CAX();
+
+                        if ( part_size <= fs.Position )
+                        {
+                            n++;
+                            break;
+                        }
+                    }
+                }
+
+                var bytes_2 = Encoding.UTF8.GetBytes( $"{fn}{Environment.NewLine}" );
+                await m3u8_fs.WriteAsync( bytes_2, default ).CAX();
+
+                Console.WriteLine( "ok." );
+            }
+        }
+        private static async Task Test_ts_files_with_number_series( string path = @"E:\ts_files_with_number_series" )
+        {
+            var ss = new SortedSet< int >( Directory.EnumerateFiles( path, "*.txt" ).Select( fn => int.Parse( Path.GetFileNameWithoutExtension( fn ) ) ) );
+            var n = 0;
+            foreach ( var i in ss )
+            {
+                var ffn = Path.Combine( path, $"{i}.txt" );
+                Console.Write( $"{i + 1} of {ss.Count} => {ffn}..." );
+                using ( var sr = new StreamReader( ffn ) )
+                {
+                    var line = await sr.ReadToEndAsync().CAX();
+                    var array = line.Split( [','], StringSplitOptions.RemoveEmptyEntries );
+                    foreach ( var s in array )
+                    {
+                        var j = int.Parse( s );
+                        if ( j != n )
+                        {
+                            Debugger.Break();
+                        }
+                        n++;
+                    }
+                }
+                Console.WriteLine( "ok." );
+            }
+        }
+#if NETCOREAPP
+        private static void AuditCheck_ts_files_with_number_series( string filename = @"E:\For Test Ts Files With Number Series File.txt" )
+        {
+            var n = 0;
+            foreach ( var mem in GetEnumOf_AuditCheck_ts_files_with_number_series( filename ) )
+            {
+                //if ( n == 10042689 - 1 )
+                //{
+                //    Debugger.Break();
+                //}
+
+                if ( !int.TryParse( mem.Span, out var i ) )
+                {
+                    ConsoleHelper.WriteLineError( $"{n:#,#}" );
+                    Debugger.Break();
+                }
+                else if ( i != n )
+                {
+                    ConsoleHelper.WriteLineError( $"{n:#,#}" );
+                    Debugger.Break();
+                }
+                n++;
+                if ( (n % 1_000_000) == 0 )
+                {
+                    Console.Write( $"{n:#,#}\r" );
+                }
+            }
+            Console.Write( $"{n:#,#}\r" );
+        }
+        unsafe private static IEnumerable< Memory<char> > GetEnumOf_AuditCheck_ts_files_with_number_series( string filename )
+        {
+            var readBuf = new char[ 1_024 ];
+
+            var buf = new StringBuilder( 2_048 );
+
+            var memBuf = new char[ 2*sizeof(ulong)/*1_024*/ ];
+            var mem    = new Memory<char>( memBuf );
+
+            using ( var sr = new StreamReader( filename ) )
+            {
+                for (; ; )
+                {
+                    var readCnt = sr.ReadBlock( readBuf, 0, readBuf.Length );
+                    if ( readCnt == 0 ) yield break;
+
+                    var lastCommaEndIdx = readBuf.LastIndexOf( readCnt, ',' );
+                    lastCommaEndIdx = (lastCommaEndIdx == -1) ? readCnt : lastCommaEndIdx + 1;
+                    for ( var i = 0; i < lastCommaEndIdx; i++ )
+                    {
+                        buf.Append( readBuf[ i ] );
+                    }
+
+                    var startIdx = 0;
+                    for ( int i = 0, len = buf.Length; i < len; /*i++*/ )
+                    {
+                        var ch = buf[ i ];
+                        if ( ch == ',' )
+                        {
+                            var ret_len = i - startIdx;
+                            Debug.Assert( 0 < ret_len );
+                            buf.CopyTo( startIdx, memBuf, ret_len );
+                            var ret = mem.Slice( 0, ret_len );
+                            yield return (ret);
+                            startIdx = ++i;
+                        }
+                        else
+                        {
+                            i++;
+                        }
+                    }
+                    Debug.Assert( buf.Length - startIdx  == 0 );
+
+                    buf.Clear();
+                    for ( /*endIdx++*/; lastCommaEndIdx < readCnt; lastCommaEndIdx++ )
+                    {
+                        buf.Append( readBuf[ lastCommaEndIdx ] );
+                    }
+                }
+            }
+        }
+        private static int LastIndexOf( this char[] buf, int cnt, char ch )
+        {
+            for ( var i = cnt - 1; 0 <= i; i-- )
+            {
+                if ( buf[ i ] == ',' )
+                {
+                    return (i);
+                }
+            }
+            return (-1);
+        }
+#endif
 
         private static async Task Run_1()
         {

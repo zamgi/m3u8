@@ -201,6 +201,18 @@ namespace m3u8.download.manager.ui
             }
             return (ext);
         }
+        private static void paintButtonWithDotsText_Paint( object sender, PaintEventArgs e )
+        {
+            var c  = (Control) sender;
+            var rc = e.ClipRectangle;
+            using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center };
+            e.Graphics.DrawString( "...", c.Font, Brushes.Black, rc, sf );
+            if ( c.Focused )
+            {
+                rc.Inflate( -1, -1 );
+                ControlPaint.DrawFocusRectangle( e.Graphics, rc );
+            }
+        }
 
         private void DownloadController_IsDownloadingChanged( bool isDownloading )
         {
@@ -307,18 +319,6 @@ namespace m3u8.download.manager.ui
                 DirectorySelectDialog.Show_Classic( this, Environment.CurrentDirectory, this.toolTip.GetToolTip( testDirectorySelectDialog ), out var _ );
             }
         }
-        private void testDirectorySelectDialog_Paint( object sender, PaintEventArgs e )
-        {
-            var c  = (Control) sender;
-            var rc = e.ClipRectangle;
-            using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center };
-            e.Graphics.DrawString( "...", c.Font, Brushes.Black, rc, sf );
-            if ( c.Focused )
-            {
-                rc.Inflate( -1, -1 );
-                ControlPaint.DrawFocusRectangle( e.Graphics, rc );
-            }
-        }
 
         private static string GetDirectoryName_NoThrow( string path )
         {
@@ -400,32 +400,56 @@ namespace m3u8.download.manager.ui
                             });
                         }
 #if NETCOREAPP
-                        await Task.Delay( 2_000 ).WaitAsync( ct );
+                        await Task.Delay( 2_000 ).WaitAsync( ct ).CAX();
 #else
-                        Task.Delay( 1_000 ).Wait( ct ); 
+                        Task.Delay( 2_000 ).Wait( ct ); 
 #endif
                     }
                 });
             }
         }
 
+        private const string STORED_FILES_CAPTION = "Stored files";
         private async void receivedAndWritedPartsClearAllButton_Click( object sender, EventArgs e )
-        {
-            const string CAPTION = "Stored files";
-            if ( this.MessageBox_ShowQuestion( "Want to clear all info about stored files ?", CAPTION, MessageBoxButtons.OKCancel ) == DialogResult.OK )
+        {            
+            if ( this.MessageBox_ShowQuestion( "Want to clear all info about stored files ?", STORED_FILES_CAPTION, MessageBoxButtons.OKCancel ) == DialogResult.OK )
             {
                 receivedAndWritedPartsClearAllButton.Enabled = false;
                 try
                 {
                     var suc = _ReceivedAndWritedPartsProcessor.TryDeleteAllStorerFiles();
                     await Task.Delay( 250 );
-                    if ( suc ) this.MessageBox_ShowInformation( "Success clear all stored files.", CAPTION );
-                    else this.MessageBox_ShowError( "Failed", CAPTION );
+                    if ( suc ) this.MessageBox_ShowInformation( "Success clear all stored files.", STORED_FILES_CAPTION );
+                    else this.MessageBox_ShowError( "Failed", STORED_FILES_CAPTION );
                 }
                 finally
                 {
                     receivedAndWritedPartsClearAllButton.Enabled = true;
                 }
+            }
+        }
+
+        private void browseReceivedAndWritedPartsDirectoryButton_Click( object sender, EventArgs e )
+        {
+            string errorMsg;
+            var directoryLocation4StoreFiles = _ReceivedAndWritedPartsProcessor?.DirectoryLocation4StoreFiles;
+            if ( directoryLocation4StoreFiles.IsNullOrEmpty() )
+            {
+                errorMsg = "Directory location for store files is null or empty.";
+            }
+            else if ( !Directory.Exists( directoryLocation4StoreFiles ) )
+            {
+                errorMsg = $"Directory location for store files not exists.\r\n(path: '{directoryLocation4StoreFiles}')";
+            }
+            else
+            {
+                var suc = WinApi.ShellExploreBrowseDirectory( this.FindForm()?.Handle ?? IntPtr.Zero, directoryLocation4StoreFiles, out var error );
+                errorMsg = suc ? default : error.ToString();
+            }
+
+            if ( errorMsg != null )
+            {
+                this.MessageBox_ShowError( errorMsg, STORED_FILES_CAPTION );
             }
         }
         #endregion

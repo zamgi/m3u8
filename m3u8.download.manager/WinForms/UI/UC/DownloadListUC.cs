@@ -883,6 +883,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.DGV.]
+        private static string SPACE_10 = new string(' ', 10);
         private void DGV_CellValueNeeded( object sender, DataGridViewCellValueEventArgs e )
         {
             var row = _Model[ e.RowIndex ];
@@ -890,10 +891,10 @@ namespace m3u8.download.manager.ui
             {
                 case OUTPUTFILENAME_COLUMN_INDEX       : e.Value = row.OutputFileName;  break;
                 case OUTPUTDIRECTORY_COLUMN_INDEX      : e.Value = row.OutputDirectory; break;
-                case STATUS_COLUMN_INDEX               : e.Value = row.Status.ToString() + new string(' ', 17); break;
+                case STATUS_COLUMN_INDEX               : e.Value = row.Status.ToText4View(); break;
                 case DOWNLOAD_PROGRESS_COLUMN_INDEX    : 
-                    //e.Value = new string( ' ', 30 );
-                    e.Value = (row.TryGetDownloadProgress( out _, out var progressText ) ? progressText : string.Empty) + new string(' ', 10);
+                    //e.Value = new string(' ', 30);
+                    e.Value = (row.TryGetDownloadProgress( out _, out var progressText ) ? progressText : null/*string.Empty*/) + SPACE_10;
                     break;
                 case DOWNLOAD_TIME_COLUMN_INDEX            : e.Value = row.GetDownloadTimeText       () /*+ new string(' ', 1)*/; break;
                 case APPROX_REMAINED_TIME_COLUMN_INDEX     : e.Value = row.GetApproxRemainedTimeText () /*+ new string(' ', 1)*/; break;

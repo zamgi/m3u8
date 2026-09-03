@@ -146,8 +146,20 @@ namespace m3u8.download.manager.ui
         private const string SHELL32_DLL = "shell32.dll";
         [DllImport(SHELL32_DLL)] private static extern int SHParseDisplayName( [MarshalAs(UnmanagedType.LPWStr)] string pszName, IntPtr pbc, out IntPtr ppidl, /*SFGAO*/uint sfgaoIn, /*out SFGAO*/IntPtr psfgaoOut );
         [DllImport(SHELL32_DLL)] private static extern int SHOpenFolderAndSelectItems( IntPtr pidlFolder, uint cidl, IntPtr apidl, uint dwFlags );
+        [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, EntryPoint="ShellExecuteW")]
+        private static extern int ShellExecute( IntPtr hwnd, string lpOperation, string lpFile, string lpParameters, string lpDirectory, int nShowCmd );
+
         private static int SHParseDisplayName_( string pszName, out IntPtr pidl ) => SHParseDisplayName( pszName, IntPtr.Zero, out pidl, 0, IntPtr.Zero );
         private static int SHOpenFolderAndSelectItems_( IntPtr pidlFolder ) => SHOpenFolderAndSelectItems( pidlFolder, 0, IntPtr.Zero, 0 ); 
+        private static bool ShellExploreDirectory( IntPtr hWnd, string directoryPath )
+        {
+            const int SW_SHOWDEFAULT = 10;
+
+            var hr = ShellExecute( hWnd, "explore", directoryPath, null, null, SW_SHOWDEFAULT );
+
+            //If the return value is greater than 32(0x20), the ShellExecute call was successfully executed. 
+            return (0x20 < hr);
+        }
 
         private const string OLE32_DLL = "ole32.dll";
         [DllImport(OLE32_DLL)] private static extern void CoTaskMemFree( IntPtr pv );
@@ -173,6 +185,18 @@ namespace m3u8.download.manager.ui
             }
             error = Marshal.GetExceptionForHR( hr );
             return (false);
+        }
+        public static bool ShellExploreBrowseDirectory( IntPtr hWnd, string directoryPath, out string error )
+        {
+            if ( string.IsNullOrEmpty( directoryPath ) )
+            {
+                error = "Directory is null or empty.";
+                return (false);
+            }
+
+            var suc = ShellExploreDirectory( hWnd, directoryPath );
+            error = suc ? default : $"Cannot browse directory: '{directoryPath}'.";
+            return (suc);
         }
         #endregion
 

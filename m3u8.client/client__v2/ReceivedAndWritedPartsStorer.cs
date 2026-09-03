@@ -269,6 +269,7 @@ namespace m3u8.client__v2
     /// </summary>
     internal interface IReceivedAndWritedPartsProcessor : IDisposable
     {
+        string DirectoryLocation4StoreFiles { get; }
         IReceivedAndWritedPartsStorer CreateStorer(
               in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength /*FileStream outputFileStream*/
             , out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) restored );
@@ -293,6 +294,7 @@ namespace m3u8.client__v2
             public static _Dummy_ Inst { get; } = new _Dummy_();
             private _Dummy_() { }
             public void Dispose() { }
+            public string DirectoryLocation4StoreFiles => null;
             IReceivedAndWritedPartsStorer IReceivedAndWritedPartsProcessor.CreateStorer( in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength, out (bool has, m3u8_file_t new_m3u8File, long outputFileStreamPosition) restored )
             {
                 restored = default;
@@ -325,6 +327,8 @@ namespace m3u8.client__v2
             _Sha1 = SHA1.Create();
         }
         public void Dispose() => _Sha1.Dispose();
+
+        public string DirectoryLocation4StoreFiles => _DirectoryLocation4StoreFiles;
 
         public IReceivedAndWritedPartsStorer CreateStorer( 
               in m3u8_file_t m3u8File, string outputFileName, bool outputDirectoryExists, long outputFileStreamLength /*FileStream outputFileStream*/

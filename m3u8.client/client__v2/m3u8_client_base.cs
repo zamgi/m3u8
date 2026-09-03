@@ -149,9 +149,9 @@ namespace m3u8.client__v2
                 //}
             }
         }
-        protected HttpRequestMessage CreateRequestGet( Uri url, IDictionary< string, string > requestHeaders = null )
+        protected HttpRequestMessage CreateRequestGet( Uri url, IDictionary< string, string > requestHeaders = null/*, HttpMethod httpMethod = null*/ )
         {
-            var req = new HttpRequestMessage( HttpMethod.Get, url );
+            var req = new HttpRequestMessage( /*httpMethod ??*/ HttpMethod.Get, url );
             req.Headers.ConnectionClose = _ConnectionClose;
             if ( requestHeaders != null )
             {
@@ -165,7 +165,6 @@ namespace m3u8.client__v2
         }
         //------------------------------------------------------------------------------------------//
         protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, CancellationToken ct );
-        //protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, IObjectPool< CancellationTokenSource > timeoutCtsPool, CancellationToken ct );
         protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, CtsTimerPool timeoutCtsPool, CancellationToken ct );
         //------------------------------------------------------------------------------------------//
 
@@ -221,7 +220,7 @@ namespace m3u8.client__v2
             if ( ip.TimeoutCtsPool           == null ) throw (new m3u8_ArgumentException( nameof(ip.TimeoutCtsPool) ));
             //----------------------------------------------------------------------------------------------------------------//
 
-            var url = part.GetPartUrl( baseAddress );
+            var url  = part.GetPartUrl( baseAddress );
             var dpsa = new i_m3u8_client.DownloadPartStepActionParams( part );
 
             for ( var leftAttemptRequestCount = _AttemptRequestCount; 0 < leftAttemptRequestCount; leftAttemptRequestCount-- )
@@ -266,11 +265,19 @@ namespace m3u8.client__v2
 
                                 #region comm.
 /*
+var rnd = new Random();
+if ( rnd.Next( 10 ) == 0 )
+{
+    await Task.Delay( rnd.Next( 1, 11 ) ).CAX();
+}
+//*/
+
+/*
 if ( (new Random()).Next( 10 ) == 0 )
 {
     throw new Exception( "(new Random()).Next( 10 ) == 0" );
 }
-*/
+//*/
                                 #endregion
 
                                 await part.Stream.WriteAsync( buf, 0, bytesReaded, ct ).CAX();
@@ -309,6 +316,52 @@ if ( (new Random()).Next( 10 ) == 0 )
                 }
 
                 await Task.Delay( 50 ).CAX();
+            }
+
+            throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
+        }
+
+        public async Task< m3u8_part_ts > GetTotalContentLengthPart( m3u8_part_ts part, Uri baseAddress, IDictionary< string, string > requestHeaders, 
+            _DownloadPartInputParams_ ip, CancellationToken ct )
+        {
+            if ( baseAddress == null ) throw (new m3u8_ArgumentException( nameof(baseAddress) ));
+            if ( part.RelativeUrlName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(part.RelativeUrlName) ));
+            if ( ip.TimeoutCtsPool == null ) throw (new m3u8_ArgumentException( nameof(ip.TimeoutCtsPool) ));
+            //----------------------------------------------------------------------------------------------------------------//
+
+            var url = part.GetPartUrl( baseAddress );
+                //url = new Uri( url, $"?{new Random().Next()}" ); - не понятно, меняет это что-то или не очень.
+            var dpsa = new i_m3u8_client.DownloadPartStepActionParams( part );
+
+            for ( var leftAttemptRequestCount = _AttemptRequestCount; 0 < leftAttemptRequestCount; leftAttemptRequestCount-- )
+            {
+                var attemptRequestNumber = _AttemptRequestCount - leftAttemptRequestCount + 1;
+                ip.DownloadPartStepAction?.Invoke( dpsa.SetAttemptRequestNumber( attemptRequestNumber ) );
+                try
+                {
+                    using ( var req  = CreateRequestGet( url, requestHeaders/*, HttpMethod.Options*/ ) )
+                    using ( var resp = await SendRequest_Impl( req, ip.TimeoutCtsPool, ct ).CAX() )
+                    {
+                        if ( resp.IsSuccessStatusCode )
+                        {
+                            var totalContentLength = TryGetContentLength( resp.Content, out var x ) ? x.contentLength : (long?) null;
+                            part.SetTotalContentLength( totalContentLength );
+                            return (part);
+                        }
+
+                        throw (await resp.create_m3u8_Exception( ct ).CAX());
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    //ip.DownloadPartStepAction?.Invoke( dpsa.SetAttemptRequestNumber( attemptRequestNumber ) );
+
+                    if ( (leftAttemptRequestCount == 1) || ct.IsCancellationRequested )
+                    {
+                        part.SetError( ex );
+                        return (part);
+                    }
+                }
             }
 
             throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));

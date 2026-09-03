@@ -891,56 +891,10 @@ namespace m3u8.download.manager.ui
         #region [.loadM3u8FileContentButton.]
         private async void loadM3u8FileContentButton_Click( object sender, EventArgs e )
         {
-            if ( !logPanel.Visible )
-            {
-                logPanel.Visible = true;
-                SetLayout_4_logPanel();
-            }
-
-            _Model.Clear();
-
-            #region [.url.]
-            if ( !UrlHelper.TryGetM3u8FileUrl( this.M3u8FileUrl, out var x ) )
-            {
-                _Model.AddRequestErrorRow( x.error.ToString() );
-                logUC.ClearSelection();
-                logUC.AdjustRowsHeightAndColumnsWidthSprain();
-                return;
-            }
-            #endregion
-
-            this.SetEnabledAllChildControls( false );
-            await Task.Delay( millisecondsDelay: 250 );
-
-            var requestHeaders = this.GetRequestHeaders();
-
-            using ( var cts = new CancellationTokenSource() )
-            using ( WaitBannerUC.Create( this, cts, visibleDelayInMilliseconds: 1_500 ) )
-            {
-                var webProxyInfo = this.GetWebProxyInfo();
-                var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
-                var timeout      = this.Timeout.GetValueOrDefault( _Settings.RequestTimeoutByPart );
-                _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, webProxyInfo, clearLog: false );
-                var t = await _DC.GetFileTextContent( x.m3u8FileUrl, requestHeaders, webProxy, timeout, cts ); //all possible exceptions are thrown within inside
-
-                if ( cts.IsCancellationRequested )
-                {
-                    ;
-                }
-                else if ( t.error != null )
-                {
-                    _Model.AddRequestErrorRow( t.error.ToString() );
-                }
-                else
-                {
-                    _Model.Output( t.m3u8File );
-                }
-                logUC.ClearSelection();
-                logUC.AdjustRowsHeightAndColumnsWidthSprain();
-            }
-
-            this.SetEnabledAllChildControls( true );
+            _Last_m3u8File = await LoadM3u8FileContent();
+            calcTotalContentLengthPartsButton.ReadOnly = !_Last_m3u8File.HasValue;
         }
+        private async void calcTotalContentLengthPartsButton_Click( object sender, EventArgs e ) => await CalcTotalContentLengthParts( _Last_m3u8File );        
         private void SetLayout_4_logPanel()
         {
             var json = _Settings.AddNewDownloadFormPositionLogVisibleJson;
@@ -958,6 +912,228 @@ namespace m3u8.download.manager.ui
             {
                 this.Height += 250;
             }
+        }
+
+
+        private m3u8_file_t? _Last_m3u8File;
+        //private async Task LoadM3u8FileContent( bool calcTotalContentLengthParts )
+        //{
+        //    #region [.logPanel.]
+        //    if ( !logPanel.Visible )
+        //    {
+        //        logPanel.Visible = true;
+        //        SetLayout_4_logPanel();
+        //    }
+        //    #endregion
+
+        //    _Model.Clear();
+
+        //    #region [.url.]
+        //    if ( !UrlHelper.TryGetM3u8FileUrl( this.M3u8FileUrl, out var x ) )
+        //    {
+        //        _Model.AddRequestErrorRow( x.error.ToString() );
+        //        logUC.ClearSelection();
+        //        logUC.AdjustRowsHeightAndColumnsWidthSprain();
+        //        return;
+        //    }
+        //    #endregion
+
+        //    this.SetEnabledAllChildControls( false );
+        //    await Task.Delay( millisecondsDelay: 250 );
+
+        //    var requestHeaders = this.GetRequestHeaders();
+
+        //    var syncCtx = SynchronizationContext.Current;
+        //    using ( var cts = new CancellationTokenSource() )
+        //    using ( var wb  = WaitBannerUC.Create( this, cts, captionText: "...loading...", visibleDelayInMilliseconds: 1_500 ) )
+        //    {
+        //        var webProxyInfo = this.GetWebProxyInfo();
+        //        var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
+        //        var timeout      = this.Timeout.GetValueOrDefault( _Settings.RequestTimeoutByPart );
+        //        _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, webProxyInfo, clearLog: false );
+        //        var t = await _DC.GetFileTextContent( x.m3u8FileUrl, requestHeaders, webProxy, timeout, cts ); //all possible exceptions are thrown within inside
+
+        //        if ( !cts.IsCancellationRequested )
+        //        {
+        //            if ( t.error != null )
+        //            {
+        //                _Model.AddRequestErrorRow( t.error.ToString() );
+        //            }
+        //            else
+        //            {
+        //                _Model.Output( t.m3u8File );
+        //            }
+        //        }
+        //        logUC.ClearSelection();
+        //        logUC.AdjustRowsHeightAndColumnsWidthSprain();
+
+        //        if ( /*true*/calcTotalContentLengthParts )
+        //        {
+        //            logUC.ShowResponseColumn = true;
+        //            wb.SetTotalSteps( t.m3u8File.Parts.Count );
+
+        //            long allPartsTotalContentLength = 0L;
+        //            var stepAction = new Action< long? /*TotalContentLength*/ >( partTotalContentLength =>
+        //            {
+        //                var totalContentLength_1 = Interlocked.Add( ref allPartsTotalContentLength, partTotalContentLength.GetValueOrDefault( 0 ) );
+        //                syncCtx.Post(_ => 
+        //                { 
+        //                    wb.IncreaseSteps();
+        //                    var totalContentLength_2 = Interlocked.Read( ref allPartsTotalContentLength );
+        //                    if ( totalContentLength_1 != totalContentLength_2 /*partTotalContentLength.HasValue*/ )
+        //                    {                                
+        //                        wb.SetCaptionText( $"total size: {Extensions_4_DownloadRow.GetSizeFormatted( totalContentLength_2 )}, " );
+        //                    }
+        //                }, null);
+        //            });
+
+        //            var z = await _DC.CalcTotalContentLengthParts( t.m3u8File, requestHeaders, webProxy, timeout, _Model, stepAction, cts );
+
+        //            if ( !cts.IsCancellationRequested )
+        //            {
+        //                if ( z.error != null )
+        //                {
+        //                    _Model.AddRequestErrorRow( z.error.ToString() );
+        //                }
+        //                else
+        //                {
+        //                    _Model.AddEmptyRow();
+        //                    _Model.AddRequestRow( $" total content length: {Extensions_4_DownloadRow.GetSizeFormatted( (long) z.totalContentLength.GetValueOrDefault(0) )}" );
+        //                }
+        //            }
+        //            logUC.ClearSelection();
+        //            logUC.AdjustRowsHeightAndColumnsWidthSprain();
+        //        }
+        //    }
+
+        //    this.SetEnabledAllChildControls( true );
+        //}
+        private async Task< m3u8_file_t? > LoadM3u8FileContent()
+        {
+            #region [.logPanel.]
+            if ( !logPanel.Visible )
+            {
+                logPanel.Visible = true;
+                SetLayout_4_logPanel();
+            }
+            #endregion
+
+            _Model.Clear();
+
+            #region [.url.]
+            if ( !UrlHelper.TryGetM3u8FileUrl( this.M3u8FileUrl, out var x ) )
+            {
+                _Model.AddRequestErrorRow( x.error.ToString() );
+                logUC.ClearSelection();
+                logUC.AdjustRowsHeightAndColumnsWidthSprain();
+                return (null);
+            }
+            #endregion
+
+            this.SetEnabledAllChildControls( false );
+            await Task.Delay( millisecondsDelay: 250 );
+
+            var requestHeaders = this.GetRequestHeaders();
+
+            m3u8_file_t? m3u8_file;
+            using ( var cts = new CancellationTokenSource() )
+            using ( var wb  = WaitBannerUC.Create( this, cts, captionText: "...loading...", visibleDelayInMilliseconds: 1_500 ) )
+            {
+                var webProxyInfo = this.GetWebProxyInfo();
+                var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
+                var timeout      = this.Timeout.GetValueOrDefault( _Settings.RequestTimeoutByPart );
+                _Model.AddBeginRequest2Log( this.M3u8FileUrl, requestHeaders, webProxyInfo, clearLog: false );
+                var t = await _DC.GetFileTextContent( x.m3u8FileUrl, requestHeaders, webProxy, timeout, cts ); //all possible exceptions are thrown within inside
+
+                if ( !cts.IsCancellationRequested )
+                {
+                    if ( t.error != null )
+                    {
+                        m3u8_file = null;
+                        _Model.AddRequestErrorRow( t.error.ToString() );
+                    }
+                    else
+                    {
+                        m3u8_file = t.m3u8File;
+                        _Model.Output( t.m3u8File );
+                    }
+                }
+                else
+                {
+                    m3u8_file = _Last_m3u8File;
+                }
+                logUC.ClearSelection();
+                logUC.AdjustRowsHeightAndColumnsWidthSprain();
+            }
+
+            this.SetEnabledAllChildControls( true );
+
+            return (m3u8_file);
+        }
+        private async Task CalcTotalContentLengthParts( m3u8_file_t? m3u8_file )
+        {
+            if ( !m3u8_file.HasValue )
+            {
+                m3u8_file = await LoadM3u8FileContent();
+                if ( !m3u8_file.HasValue )
+                {
+                    return;
+                }
+            }
+            var m3u8File = m3u8_file.Value;
+
+            logUC.ShowResponseColumn = true;
+            logUC.AdjustColumnsWidthSprain();
+            this.SetEnabledAllChildControls( false );
+            await Task.Delay( millisecondsDelay: 250 );
+
+            var requestHeaders = this.GetRequestHeaders();
+
+            var syncCtx = SynchronizationContext.Current;
+            using ( var cts = new CancellationTokenSource() )
+            using ( var wb  = WaitBannerUC.Create( this, cts, captionText: "...loading...", visibleDelayInMilliseconds: 1_500 ) )
+            {
+                var webProxyInfo = this.GetWebProxyInfo();
+                var webProxy     = webProxyInfo.CreateWebProxyIfUsed();
+                var timeout      = this.Timeout.GetValueOrDefault( _Settings.RequestTimeoutByPart );
+
+                //logUC.ShowResponseColumn = true;
+                wb.SetTotalSteps( m3u8File.Parts.Count );
+
+                long allPartsTotalContentLength = 0L;
+                var stepAction = new Action< long? /*TotalContentLength*/ >( partTotalContentLength =>
+                {
+                    var totalContentLength_1 = Interlocked.Add( ref allPartsTotalContentLength, partTotalContentLength.GetValueOrDefault( 0 ) );
+                    syncCtx.Post(_ => 
+                    { 
+                        wb.IncreaseSteps();
+                        var totalContentLength_2 = Interlocked.Read( ref allPartsTotalContentLength );
+                        if ( totalContentLength_1 != totalContentLength_2 /*partTotalContentLength.HasValue*/ )
+                        {                                
+                            wb.SetCaptionText( $"total size: {Extensions_4_DownloadRow.GetSizeFormatted( totalContentLength_2 )}, " );
+                        }
+                    }, null);
+                });
+
+                var t = await _DC.CalcTotalContentLengthParts( m3u8File, requestHeaders, webProxy, timeout, _Model, stepAction, cts );
+
+                if ( !cts.IsCancellationRequested )
+                {
+                    if ( t.error != null )
+                    {
+                        _Model.AddRequestErrorRow( t.error.ToString() );
+                    }
+                    else
+                    {
+                        _Model.AddEmptyRow();
+                        _Model.AddRequestRow( $" total content length: {Extensions_4_DownloadRow.GetSizeFormatted( (long) t.totalContentLength.GetValueOrDefault(0) )}" );
+                    }
+                }
+                logUC.ClearSelection();
+                logUC.AdjustRowsHeightAndColumnsWidthSprain();
+            }
+
+            this.SetEnabledAllChildControls( true );
         }
         #endregion
 

@@ -56,6 +56,7 @@
             this.collectGarbageButton = new System.Windows.Forms.Button();
             this.currentMemoryLabel = new System.Windows.Forms.Label();
             this.receivedAndWritedPartsClearAllButton = new System.Windows.Forms.Button();
+            this.browseReceivedAndWritedPartsDirectoryButton = new System.Windows.Forms.Button();
             this.receivedAndWritedPartsLabel = new System.Windows.Forms.Label();
             downloadParamsGroupBox = new System.Windows.Forms.GroupBox();
             ui_downloadLogUIGroupBox = new System.Windows.Forms.GroupBox();
@@ -262,7 +263,7 @@
             this.toolTip.SetToolTip(this.testDirectorySelectDialog, "test directory select dialog" );
             this.testDirectorySelectDialog.UseVisualStyleBackColor = true;
             this.testDirectorySelectDialog.Click += new System.EventHandler(this.testDirectorySelectDialog_Click);
-            this.testDirectorySelectDialog.Paint += new System.Windows.Forms.PaintEventHandler(this.testDirectorySelectDialog_Paint);
+            this.testDirectorySelectDialog.Paint += new System.Windows.Forms.PaintEventHandler(paintButtonWithDotsText_Paint);
             // 
             // externalProgGroupBox
             // 
@@ -508,11 +509,12 @@
             receivedAndWritedPartsGroupBox.Text = "Stored files info";
             receivedAndWritedPartsGroupBox.Controls.Add(this.receivedAndWritedPartsLabel);
             receivedAndWritedPartsGroupBox.Controls.Add(this.receivedAndWritedPartsClearAllButton);
+            receivedAndWritedPartsGroupBox.Controls.Add(this.browseReceivedAndWritedPartsDirectoryButton);
             // 
             // receivedAndWritedPartsClearAllButton
             // 
             this.receivedAndWritedPartsClearAllButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.receivedAndWritedPartsClearAllButton.Location = new System.Drawing.Point(50, 22);
+            this.receivedAndWritedPartsClearAllButton.Location = new System.Drawing.Point(50-11, 22);
             this.receivedAndWritedPartsClearAllButton.Size = new System.Drawing.Size(160, 23);
             this.receivedAndWritedPartsClearAllButton.TabIndex = 0;
             this.receivedAndWritedPartsClearAllButton.ForeColor = System.Drawing.Color.Maroon;
@@ -520,6 +522,17 @@
             //---this.receivedAndWritedPartsClearAllButton.UseVisualStyleBackColor = true;
             this.receivedAndWritedPartsClearAllButton.Click += new System.EventHandler(this.receivedAndWritedPartsClearAllButton_Click);
             this.toolTip.SetToolTip(this.receivedAndWritedPartsClearAllButton, this.receivedAndWritedPartsClearAllButton.Text);
+            // 
+            // browseReceivedAndWritedPartsDirectoryButton
+            // 
+            this.browseReceivedAndWritedPartsDirectoryButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.browseReceivedAndWritedPartsDirectoryButton.Location = new System.Drawing.Point(this.receivedAndWritedPartsClearAllButton.Right + 3, 22);
+            this.browseReceivedAndWritedPartsDirectoryButton.Size = new System.Drawing.Size(16, 23);
+            this.browseReceivedAndWritedPartsDirectoryButton.TabIndex = 0;            
+            this.browseReceivedAndWritedPartsDirectoryButton.UseVisualStyleBackColor = true;
+            this.browseReceivedAndWritedPartsDirectoryButton.Click += new System.EventHandler(this.browseReceivedAndWritedPartsDirectoryButton_Click);
+            this.browseReceivedAndWritedPartsDirectoryButton.Paint += new System.Windows.Forms.PaintEventHandler(paintButtonWithDotsText_Paint);
+            this.toolTip.SetToolTip(this.browseReceivedAndWritedPartsDirectoryButton, "browsing a directory...");
             // 
             // receivedAndWritedPartsLabel
             // 
@@ -593,6 +606,7 @@
         private System.Windows.Forms.Button collectGarbageButton;
         private System.Windows.Forms.Label currentMemoryLabel;
         private System.Windows.Forms.Button receivedAndWritedPartsClearAllButton;
+        private System.Windows.Forms.Button browseReceivedAndWritedPartsDirectoryButton;
         private System.Windows.Forms.Label receivedAndWritedPartsLabel;
         private System.Windows.Forms.ToolTip toolTip;
     }

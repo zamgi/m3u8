@@ -4,6 +4,8 @@ using System.IO;
 
 using m3u8.client__v2;
 
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                      = System.Runtime.CompilerServices.MethodImplOptions;
@@ -113,11 +115,12 @@ namespace m3u8.download.manager.models
         public int            FailedDownloadParts         { [M(O.AggressiveInlining)] get; private set; }
         public long           DownloadBytesLength         { [M(O.AggressiveInlining)] get; private set; }
         public DownloadStatus Status                      { [M(O.AggressiveInlining)] get; private set; }
+        
         private double?       _InstantSpeedInMbps;
 
         public bool           IsLiveStream                 { [M(O.AggressiveInlining)] get; private set; }
         public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; private set; }
-        private DateTime? _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
+        private DateTime?     _CreatedOrStartedDateTime_4_LastPartOfLiveStream;
 
         public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; private set; }
         public web_proxy_info WebProxyInfo { [M(O.AggressiveInlining)] get; private set; }
@@ -438,6 +441,23 @@ namespace m3u8.download.manager.models
             return (false);
         }
 
+        [M(O.AggressiveInlining)] public void ChangeStartedDateTime_IfRunningOrStarted( DateTime dt )
+        {
+            lock ( this )
+            {
+                switch ( Status )
+                {
+                    case DownloadStatus.Started: case DownloadStatus.Running:
+                        CreatedOrStartedDateTime = dt;
+                        _DownloadBytesLength_BeforeRunning = this.DownloadBytesLength;
+                        break;
+
+                    default: return;
+                }
+            }
+            _RowPropertiesChanged?.Invoke( this, nameof(CreatedOrStartedDateTime) );
+        }
+
         [M(O.AggressiveInlining)] public TimeSpan GetElapsed()
         {
             switch ( Status )
@@ -482,9 +502,8 @@ namespace m3u8.download.manager.models
                 return (_InstantSpeedInMbps);
             }
         }
-//#if DEBUG
+
         public override string ToString() => $"{Status}, {(IsLiveStream ? "(LiveStream), " : null)}'{GetOutputFullFileName()}'";
-//#endif
     }
 
     /// <summary>

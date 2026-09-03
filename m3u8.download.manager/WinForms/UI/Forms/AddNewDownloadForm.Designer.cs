@@ -51,6 +51,7 @@ namespace m3u8.download.manager.ui
             this.patternOutputFileNameLabel = new System.Windows.Forms.Label();
             this.patternOutputFileNameNumUpDn = new System.Windows.Forms.NumericUpDownEx();
             this.loadM3u8FileContentButton = new System.Windows.Forms.ButtonWithFocusCues();
+            this.calcTotalContentLengthPartsButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
             this.ffmpegApplyByDefaultCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled(); 
             this.buttomPanel = new System.Windows.Forms.Panel();
@@ -304,6 +305,7 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.SetColumnSpan( this.ffmpegApplyByDefaultCheckBox, 4/*6*//*3*/);
 
             this.mainLayoutPanel.Controls.Add(this.loadM3u8FileContentButton, 8, 2);
+            this.mainLayoutPanel.Controls.Add(this.calcTotalContentLengthPartsButton, 8, 3);
 
             this.mainLayoutPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.mainLayoutPanel.Location = new System.Drawing.Point(0, 81);
@@ -475,6 +477,23 @@ namespace m3u8.download.manager.ui
             this.loadM3u8FileContentButton.UseVisualStyleBackColor = true;
             this.loadM3u8FileContentButton.Click += new System.EventHandler(this.loadM3u8FileContentButton_Click);
             // 
+            // calcTotalContentLengthPartsButton
+            // 
+            this.calcTotalContentLengthPartsButton.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.calcTotalContentLengthPartsButton.AutoSize = false/*true*/;
+            this.calcTotalContentLengthPartsButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.calcTotalContentLengthPartsButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            //this.calcTotalContentLengthPartsButton.Enabled = false;
+            //this.calcTotalContentLengthPartsButton.ForeColor = System.Drawing.Color.Silver; //System.Drawing.Color.FromArgb(70, 70, 70);            
+            this.calcTotalContentLengthPartsButton.ReadOnly = true;
+            this.calcTotalContentLengthPartsButton.Location = new System.Drawing.Point(670, 63);
+            this.calcTotalContentLengthPartsButton.Size = new System.Drawing.Size(130, 23);
+            this.calcTotalContentLengthPartsButton.TabIndex = 7;
+            this.calcTotalContentLengthPartsButton.Text = "(calc total-size)";
+            this.calcTotalContentLengthPartsButton.UseVisualStyleBackColor = true;
+            this.calcTotalContentLengthPartsButton.Click += new System.EventHandler(this.calcTotalContentLengthPartsButton_Click);            
+
+            // 
             // buttomPanel
             // 
             this.buttomPanel.BackColor = System.Drawing.Color.White;
@@ -610,6 +629,7 @@ namespace m3u8.download.manager.ui
         private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputFileNameTextBox;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.ButtonWithFocusCues loadM3u8FileContentButton;
+        private System.Windows.Forms.ButtonWithFocusCues calcTotalContentLengthPartsButton;
         private System.Windows.Forms.CheckBoxImitationDisabled isLiveStreamCheckBox;
         private System.Windows.Forms.Label liveStreamMaxSizeInMbLabel;
         private System.Windows.Forms.NumericUpDownEx liveStreamMaxSizeInMbNumUpDn;

@@ -54,17 +54,22 @@ namespace m3u8.client__v2
         public struct DownloadPartStepActionParams
         {
             public DownloadPartStepActionParams( in m3u8_part_ts part ) => Part = part;
-            public m3u8_part_ts Part        { get; init; }
-            public long?   TotalContentLength   { get; internal set; }
-            public long    TotalBytesReaded     { get; internal set; }            
-            public int     BytesReaded          { get; internal set; }
-            public double? InstantSpeedInMbps   { get; internal set; }
-            public int     AttemptRequestNumber { get; internal set; }
+            public m3u8_part_ts Part                 { get; init; }
+            public long?        TotalContentLength   { get; internal set; }
+            public long         TotalBytesReaded     { get; internal set; }            
+            public int          BytesReaded          { get; internal set; }
+            public double?      InstantSpeedInMbps   { get; internal set; }
+            public int          AttemptRequestNumber { get; internal set; }
         }
         /// <summary>
         /// 
         /// </summary>
         public delegate void DownloadPartStepActionDelegate( in DownloadPartStepActionParams ip );
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public delegate void RestoreAndContinueDownloadDelegate( in m3u8_file_t oldFile, in m3u8_file_t newFile, long outputFileStreamPosition );
 
         /// <summary>
         /// 
@@ -89,6 +94,9 @@ namespace m3u8.client__v2
 
         Task< m3u8_part_ts > DownloadPart( m3u8_part_ts part, Uri baseAddress, IDictionary< string, string> requestHeaders
             , DownloadPartInputParams ip, CancellationToken commonToken );
+
+        Task< m3u8_part_ts > GetTotalContentLengthPart( m3u8_part_ts part, Uri baseAddress, IDictionary< string, string > requestHeaders,
+            DownloadPartInputParams ip, CancellationToken commonToken );
     }
 }
 
