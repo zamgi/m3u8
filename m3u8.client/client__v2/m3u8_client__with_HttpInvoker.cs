@@ -70,5 +70,7 @@ namespace m3u8.client__v2
         //    HttpRequestMessage req, IObjectPool< CancellationTokenSource > timeoutCtsPool, CancellationToken ct ) => _HttpInvoker.SendAsync_Ex( req, timeoutCtsPool, _Timeout, ct );
         protected override Task< HttpResponseMessage > SendRequest_Impl( 
             HttpRequestMessage req, CtsTimerPool timeoutCtsPool, CancellationToken ct ) => _HttpInvoker.SendAsync_Ex( req, timeoutCtsPool, _Timeout, ct );
+        protected override Task< HttpResponseMessage > SendRequest_Impl( 
+            HttpRequestMessage req, HttpCompletionOption _/*httpCompletionOption*/, CtsTimerPool timeoutCtsPool, CancellationToken ct ) => _HttpInvoker.SendAsync_Ex( req, timeoutCtsPool, _Timeout, ct );
     }
 }

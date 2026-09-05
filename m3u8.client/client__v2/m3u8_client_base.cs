@@ -149,9 +149,9 @@ namespace m3u8.client__v2
                 //}
             }
         }
-        protected HttpRequestMessage CreateRequestGet( Uri url, IDictionary< string, string > requestHeaders = null/*, HttpMethod httpMethod = null*/ )
+        protected HttpRequestMessage CreateRequestGet( Uri url, IDictionary< string, string > requestHeaders = null, HttpMethod httpMethod = null )
         {
-            var req = new HttpRequestMessage( /*httpMethod ??*/ HttpMethod.Get, url );
+            var req = new HttpRequestMessage( httpMethod ?? HttpMethod.Get, url );
             req.Headers.ConnectionClose = _ConnectionClose;
             if ( requestHeaders != null )
             {
@@ -166,6 +166,7 @@ namespace m3u8.client__v2
         //------------------------------------------------------------------------------------------//
         protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, CancellationToken ct );
         protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, CtsTimerPool timeoutCtsPool, CancellationToken ct );
+        protected abstract Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, HttpCompletionOption httpCompletionOption, CtsTimerPool timeoutCtsPool, CancellationToken ct );
         //------------------------------------------------------------------------------------------//
 
         public async Task< m3u8_file_t > DownloadFile( Uri url, IDictionary< string, string > requestHeaders = null, CancellationToken ct = default )
@@ -339,17 +340,22 @@ if ( (new Random()).Next( 10 ) == 0 )
                 ip.DownloadPartStepAction?.Invoke( dpsa.SetAttemptRequestNumber( attemptRequestNumber ) );
                 try
                 {
-                    using ( var req  = CreateRequestGet( url, requestHeaders/*, HttpMethod.Options*/ ) )
-                    using ( var resp = await SendRequest_Impl( req, ip.TimeoutCtsPool, ct ).CAX() )
+                    using ( var req = CreateRequestGet( url, requestHeaders, HttpMethod.Head ) )
                     {
-                        if ( resp.IsSuccessStatusCode )
-                        {
-                            var totalContentLength = TryGetContentLength( resp.Content, out var x ) ? x.contentLength : (long?) null;
-                            part.SetTotalContentLength( totalContentLength );
-                            return (part);
-                        }
+                        // Некоторые сервера не любят HEAD без User-Agent
+                        req.Headers.UserAgent.ParseAdd( "TotalSizeChecker/1.0" );
 
-                        throw (await resp.create_m3u8_Exception( ct ).CAX());
+                        using ( var resp = await SendRequest_Impl( req, HttpCompletionOption.ResponseHeadersRead, ip.TimeoutCtsPool, ct ).CAX() )
+                        {
+                            if ( resp.IsSuccessStatusCode )
+                            {
+                                var totalContentLength = TryGetContentLength( resp.Content, out var x ) ? x.contentLength : (long?) null;
+                                part.SetTotalContentLength( totalContentLength );
+                                return (part);
+                            }
+
+                            throw (await resp.create_m3u8_Exception( ct ).CAX());
+                        }
                     }
                 }
                 catch ( Exception ex )

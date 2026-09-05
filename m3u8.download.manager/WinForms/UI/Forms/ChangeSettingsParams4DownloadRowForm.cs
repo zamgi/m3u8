@@ -613,8 +613,7 @@ namespace m3u8.download.manager.ui
             if ( !UrlHelper.TryGetM3u8FileUrl( this.M3u8FileUrl, out var x ) )
             {
                 _Model.AddRequestErrorRow( x.error.ToString() );
-                logUC.ClearSelection();
-                logUC.AdjustRowsHeightAndColumnsWidthSprain();
+                logUC.FinitaAppendRows();
                 return;
             }
             #endregion
@@ -633,20 +632,18 @@ namespace m3u8.download.manager.ui
                 var t = await _DC.GetFileTextContent( x.m3u8FileUrl, requestHeaders,
                     webProxy, _Settings.RequestTimeoutByPart, cts ); //all possible exceptions are thrown within inside
 
-                if ( cts.IsCancellationRequested )
+                if ( !cts.IsCancellationRequested )
                 {
-                    ;
+                    if ( t.error != null )
+                    {
+                        _Model.AddRequestErrorRow( t.error.ToString() );
+                    }
+                    else
+                    {
+                        _Model.Output( t.m3u8File );
+                    }
                 }
-                else if ( t.error != null )
-                {
-                    _Model.AddRequestErrorRow( t.error.ToString() );
-                }
-                else
-                {
-                    _Model.Output( t.m3u8File );
-                }
-                logUC.ClearSelection();
-                logUC.AdjustRowsHeightAndColumnsWidthSprain();
+                logUC.FinitaAppendRows();
             }
 
             this.SetEnabledAllChildControls( true );

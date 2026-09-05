@@ -401,7 +401,7 @@ namespace m3u8.download.manager.controllers
 
             return (_dummy_download_threads_semaphore);
         }
-
+        public IDownloadThreadsSemaphoreEx Create( int degreeOfParallelism ) => new self_download_threads_semaphore( degreeOfParallelism );
 
         public override string ToString() => $"ShareMaxDownloadThreadsBetweenAllDownloadsInstance = {ShareMaxDownloadThreadsBetweenAllDownloadsInstance}, [CrossSemaphore]: {_CrossSemaphoreHolder}";
     }

@@ -180,11 +180,12 @@ namespace m3u8.download.manager.controllers
             , IWebProxy webProxy
             , TimeSpan requestTimeoutByPart
             , LogListModel logListModel
+            , int? degreeOfParallelism
             , Action< long? /*TotalContentLength*/ > stepAction = null
             , CancellationTokenSource cts = null )
         {
             using ( var mc = _m3u8_client_factory.Create( webProxy, requestTimeoutByPart, attemptRequestCountByPart: 1 ) )
-            using ( var downloadThreadsSemaphore = _DownloadThreadsSemaphoreFactory.Get() )
+            using ( var downloadThreadsSemaphore = degreeOfParallelism.HasValue ? _DownloadThreadsSemaphoreFactory.Create( degreeOfParallelism.Value ) : _DownloadThreadsSemaphoreFactory.Get() )
             {
                 try
                 {

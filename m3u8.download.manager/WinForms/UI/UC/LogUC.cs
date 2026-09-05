@@ -189,6 +189,22 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.Core-Public methods.]
+        //public int  DGVRowsCount => _DGVRows.Count;
+        //public void RebindDGVRows() => SetDataGridItems();
+        public void RebindDGVRows_IfDivergenceWithModel()
+        {
+            if ( _DGVRows.Count != (_Model?.RowsCount ?? 0) )
+            {
+                SetDataGridItems();
+            }
+        }
+        public void FinitaAppendRows()
+        {
+            RebindDGVRows_IfDivergenceWithModel();
+            ClearSelection();
+            AdjustRowsHeightAndColumnsWidthSprain();
+        }
+
         public bool ShowOnlyRequestRowsWithErrors
         {
             get => _ShowOnlyRequestRowsWithErrors;
@@ -432,7 +448,7 @@ namespace m3u8.download.manager.ui
                 switch ( changedType )
                 {
                     case _CollectionChangedTypeEnum_.Add:
-                        AddRow_UI( row );                        
+                        AddRow_UI( row );
                         break;
 
                     case _CollectionChangedTypeEnum_.Clear:
@@ -779,31 +795,6 @@ namespace m3u8.download.manager.ui
                     var cw = 1.0 * (col_2.Width + col_3.Width);
                     col_2.Width = (int) (rw / (cw / Math.Max( 1, col_2.Width )));
                     col_3.Width = (int) (rw / (cw / Math.Max( 1, col_3.Width )));
-
-                    /*
-                    DataGridViewColumn col_1, col_2;
-                    if ( e.Column == DGV_responseColumn )
-                    {
-                        col_1 = DGV_responseColumn;
-                        col_2 = DGV_requestColumn;
-                    }
-                    else //if ( e.Column == DGV_requestColumn )
-                    {
-                        col_1 = DGV_requestColumn;
-                        col_2 = DGV_responseColumn;
-                    }
-                    
-                    var cw = w - col_1.Width;
-                    if ( col_2.MinimumWidth <= cw )
-                    {
-                        col_2.Width = cw;
-                    }
-                    else
-                    {
-                        col_2.Width = col_2.MinimumWidth;
-                        col_1.Width = w - col_2.Width;
-                    }
-                    //*/
                 }
                 else
                 {
@@ -825,31 +816,21 @@ namespace m3u8.download.manager.ui
             }
 
             DGV.ColumnWidthChanged -= DGV_ColumnWidthChanged;
-            //try
-            //{
-            var w  = (DGV.Width - GetColumnsResizeDiff());
-            if ( this.ShowResponseColumn )
-            {
-                var cw = 1.0 * (DGV_requestColumn.Width + DGV_responseColumn.Width + DGV_attemptRequestCountColumn.Width);
-                DGV_requestColumn            .Width = (int) (w / (cw / Math.Max( 1, DGV_requestColumn .Width )));
-                DGV_responseColumn           .Width = (int) (w / (cw / Math.Max( 1, DGV_responseColumn.Width )));
-                DGV_attemptRequestCountColumn.Width = (int) (w / (cw / Math.Max( 1, DGV_attemptRequestCountColumn.Width )));
+            { 
+                var w  = (DGV.Width - GetColumnsResizeDiff());
+                if ( this.ShowResponseColumn )
+                {
+                    var cw = 1.0 * (DGV_requestColumn.Width + DGV_responseColumn.Width + DGV_attemptRequestCountColumn.Width);
+                    DGV_requestColumn            .Width = (int) (w / (cw / Math.Max( 1, DGV_requestColumn .Width )));
+                    DGV_responseColumn           .Width = (int) (w / (cw / Math.Max( 1, DGV_responseColumn.Width )));
+                    DGV_attemptRequestCountColumn.Width = (int) (w / (cw / Math.Max( 1, DGV_attemptRequestCountColumn.Width )));
+                }
+                else
+                {
+                    DGV_requestColumn.Width = w;
+                }
             }
-            else
-            {
-                DGV_requestColumn.Width = w;
-            }
-
-            ////if ( sender != null )
-            ////{
-            ////    AdjustRowsHeight();
-            ////}
-            
-            //}
-            //finally
-            //{ 
-                DGV.ColumnWidthChanged += DGV_ColumnWidthChanged;
-            //}
+            DGV.ColumnWidthChanged += DGV_ColumnWidthChanged;
         }
         private void DGV_MouseClick( object sender, MouseEventArgs e )
         {
