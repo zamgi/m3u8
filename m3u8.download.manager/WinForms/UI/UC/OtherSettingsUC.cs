@@ -68,8 +68,6 @@ namespace m3u8.download.manager.ui
         public void OnShown() { _ExternalProgFilePath_InitValue = this.ExternalProgFilePath; _FFmpegFileLocation_InitValue = this.FFmpegFileLocation; }
         public void OnClosing( DialogResult dialogResult, CancelEventArgs e )
         {
-            _CalcReceivedAndWritedPartsTask_Cts?.Cancel_NoThrow();
-
             if ( dialogResult == DialogResult.OK )
             {
                 if ( this.OutputFileExtension.IsNullOrEmpty() )
@@ -109,6 +107,11 @@ namespace m3u8.download.manager.ui
                 {
                     this.FFmpegConverterCaption = GetFileName_NoThrow( ffmpegFilePath );
                 }
+            }
+
+            if ( !e.Cancel )
+            {
+                _CalcReceivedAndWritedPartsTask_Cts?.Cancel_NoThrow();
             }
         }
 

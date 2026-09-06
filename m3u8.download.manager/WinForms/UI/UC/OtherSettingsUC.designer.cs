@@ -259,11 +259,11 @@
             this.testDirectorySelectDialog.Cursor = System.Windows.Forms.Cursors.Hand;
             this.testDirectorySelectDialog.Location = new System.Drawing.Point(240, 105);
             this.testDirectorySelectDialog.Size = new System.Drawing.Size(16, 18);
-            this.testDirectorySelectDialog.TabIndex = 3;
-            this.toolTip.SetToolTip(this.testDirectorySelectDialog, "test directory select dialog" );
+            this.testDirectorySelectDialog.TabIndex = 3;            
             this.testDirectorySelectDialog.UseVisualStyleBackColor = true;
             this.testDirectorySelectDialog.Click += new System.EventHandler(this.testDirectorySelectDialog_Click);
             this.testDirectorySelectDialog.Paint += new System.Windows.Forms.PaintEventHandler(paintButtonWithDotsText_Paint);
+            this.toolTip.SetToolTip(this.testDirectorySelectDialog, "test directory select dialog");
             // 
             // externalProgGroupBox
             // 

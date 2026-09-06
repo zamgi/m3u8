@@ -149,9 +149,9 @@ namespace m3u8.download.manager.ui
         [DllImport(SHELL32_DLL, CharSet=CharSet.Unicode, EntryPoint="ShellExecuteW")]
         private static extern int ShellExecute( IntPtr hwnd, string lpOperation, string lpFile, string lpParameters, string lpDirectory, int nShowCmd );
 
-        private static int SHParseDisplayName_( string pszName, out IntPtr pidl ) => SHParseDisplayName( pszName, IntPtr.Zero, out pidl, 0, IntPtr.Zero );
-        private static int SHOpenFolderAndSelectItems_( IntPtr pidlFolder ) => SHOpenFolderAndSelectItems( pidlFolder, 0, IntPtr.Zero, 0 ); 
-        private static bool ShellExploreDirectory( IntPtr hWnd, string directoryPath )
+        private static int SHParseDisplayName_Routine( string pszName, out IntPtr pidl ) => SHParseDisplayName( pszName, IntPtr.Zero, out pidl, 0, IntPtr.Zero );
+        private static int SHOpenFolderAndSelectItems_Routine( IntPtr pidlFolder ) => SHOpenFolderAndSelectItems( pidlFolder, 0, IntPtr.Zero, 0 ); 
+        private static bool ShellExploreDirectory_Routine( IntPtr hWnd, string directoryPath )
         {
             const int SW_SHOWDEFAULT = 10;
 
@@ -167,13 +167,13 @@ namespace m3u8.download.manager.ui
         public static bool ShellExploreAndSelectFile( string filePath, out Exception error )
         {
             // Parse the full filename into a pidl
-            var hr = SHParseDisplayName_( filePath, out var pidl );
+            var hr = SHParseDisplayName_Routine( filePath, out var pidl );
             if ( hr == S_OK )
             {
                 try
                 {
                     // Open Explorer and select the thing
-                    hr = SHOpenFolderAndSelectItems_( pidl );
+                    hr = SHOpenFolderAndSelectItems_Routine( pidl );
                     error = Marshal.GetExceptionForHR( hr );
                     return (hr == S_OK);
                 }
@@ -194,7 +194,7 @@ namespace m3u8.download.manager.ui
                 return (false);
             }
 
-            var suc = ShellExploreDirectory( hWnd, directoryPath );
+            var suc = ShellExploreDirectory_Routine( hWnd, directoryPath );
             error = suc ? default : $"Cannot browse directory: '{directoryPath}'.";
             return (suc);
         }
@@ -206,8 +206,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.Icon.]
-        [DllImport(USER32_DLL, SetLastError=true)][return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool DestroyIcon( IntPtr hIcon );
+        [DllImport(USER32_DLL, SetLastError=true)][return: MarshalAs(UnmanagedType.Bool)] private static extern bool DestroyIcon( IntPtr hIcon );
 
         public static Icon CreateSafeIcon( this Bitmap bitmap )
         {
