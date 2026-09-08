@@ -9,13 +9,14 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8.client__v2;
+using m3u8.client;
+using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
+using m3u8.helpers;
 using m3u8.infrastructure;
 
 using _download_threads_semaphore_factory_ = m3u8.download.manager.controllers.download_threads_semaphore_factory;
-using FileHelper = m3u8.download.manager.infrastructure.FileHelper;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -49,11 +50,13 @@ namespace m3u8.download.manager.controllers
                                       , WaitIfPausedEventWrapper    waitIfPausedEventWrapper
                                       , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore
                                       , IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_4_Parts
+                                      , IFileWriterHolder           fileWriterHolder
                                       , int startOrderNumber ) 
                 => new Tuple() { mc = mc, cts = cts
                                , waitIfPausedEventWrapper         = waitIfPausedEventWrapper
                                , downloadThreadsSemaphore         = downloadThreadsSemaphore
                                , downloadThreadsSemaphore_4_Parts = downloadThreadsSemaphore_4_Parts
+                               , fileWriterHolder                 = fileWriterHolder
                                , startOrderNumber                 = startOrderNumber };
 
             public i_m3u8_client               mc                               { [M(O.AggressiveInlining)] get; private set; }
@@ -61,6 +64,7 @@ namespace m3u8.download.manager.controllers
             public WaitIfPausedEventWrapper    waitIfPausedEventWrapper         { [M(O.AggressiveInlining)] get; private set; }
             public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore         { [M(O.AggressiveInlining)] get; private set; }
             public IDownloadThreadsSemaphoreEx downloadThreadsSemaphore_4_Parts { [M(O.AggressiveInlining)] get; private set; }
+            public IFileWriterHolder           fileWriterHolder                 { [M(O.AggressiveInlining)] get; private set; }
             public int                         startOrderNumber                 { [M(O.AggressiveInlining)] get; private set; }
         }
 
@@ -80,7 +84,7 @@ namespace m3u8.download.manager.controllers
         private _download_threads_semaphore_factory_       _DownloadThreadsSemaphoreFactory;
         private _download_threads_semaphore_factory_       _DownloadThreadsSemaphoreFactory_4_Parts;
         private DefaultConnectionLimitSaver                _DefaultConnectionLimitSaver;
-        private i_throttler_by_speed_t                 _ThrottlerBySpeed;
+        private i_throttler_by_speed_t                     _ThrottlerBySpeed;
         private ObjectPoolDisposable< Stream >             _StreamPool;
         private ObjectPool< byte[] >                       _RespBufPool;
         private CtsTimerPool                               _TimeoutCtsPool;
@@ -257,7 +261,8 @@ namespace m3u8.download.manager.controllers
                         mc                               = mc,
                         m3u8File                         = m3u8File,
                         requestHeaders                   = requestHeaders,
-                        OutputFileName                   = null, //veryFirstOutputFullFileName,
+                        //OutputFileName                   = null, //veryFirstOutputFullFileName,
+                        FileWriterHolder                 = null,
                         RequestStepAction                = requestStepAction,
                         ResponseStepAction               = responseStepAction,
                         DownloadPartStepAction           = downloadPartStepAction,
@@ -343,10 +348,9 @@ namespace m3u8.download.manager.controllers
             t.mc?.Dispose_NoThrow();
             t.waitIfPausedEventWrapper.ResetNeedWait();
             t.waitIfPausedEventWrapper.Dispose_NoThrow();
-            //t.waitIfPausedEvent.Set_NoThrow();
-            //t.waitIfPausedEvent.Dispose_NoThrow();        
             t.downloadThreadsSemaphore.Dispose_NoThrow();
             t.downloadThreadsSemaphore_4_Parts?.Dispose_NoThrow();
+            t.fileWriterHolder.Dispose_NoThrow();
         }
         [M(O.AggressiveInlining)] private void Fire_IsDownloadingChanged()
         {
@@ -579,14 +583,16 @@ namespace m3u8.download.manager.controllers
         }
         private async Task StartRoutine( DownloadRow row, Uri m3u8FileUrl, bool deleteOutputFilesWhenCancelOrError )
         {
+            var veryFirstOutputFullFileName = row.SaveVeryFirstOutputFullFileName();
             var webProxy = row.WebProxyInfo.CreateWebProxyIfUsed();
-            using ( var mc                         = _m3u8_client_factory.Create( webProxy, _SettingsController.GetCreateM3u8ClientParams() ) )
-            using ( var cts                        = new CancellationTokenSource() )
-            using ( var waitIfPausedEventWrapper   = new WaitIfPausedEventWrapper() )
-            using ( var downloadThreadsSemaphore   = _DownloadThreadsSemaphoreFactory.Get() )
+            using ( var mc                               = _m3u8_client_factory.Create( webProxy, _SettingsController.GetCreateM3u8ClientParams() ) )
+            using ( var cts                              = new CancellationTokenSource() )
+            using ( var waitIfPausedEventWrapper         = new WaitIfPausedEventWrapper() )
+            using ( var downloadThreadsSemaphore         = _DownloadThreadsSemaphoreFactory.Get() )
             using ( var downloadThreadsSemaphore_4_Parts = _DownloadThreadsSemaphoreFactory_4_Parts.Get() )
+            using ( var fileWriterHolder                 = FileHelper.CreateFileWriterHolder( veryFirstOutputFullFileName ) )
             {
-                var tup = Tuple.Create( mc, cts, waitIfPausedEventWrapper, downloadThreadsSemaphore, downloadThreadsSemaphore_4_Parts, _Dict.Count );
+                var tup = Tuple.Create( mc, cts, waitIfPausedEventWrapper, downloadThreadsSemaphore, downloadThreadsSemaphore_4_Parts, fileWriterHolder, _Dict.Count );
                 _Dict.Add( row, tup, DisposeExistsTupleWhenAdd2Dict ); Fire_IsDownloadingChanged();
 
                 try
@@ -717,18 +723,19 @@ namespace m3u8.download.manager.controllers
                             row.RestoreDownloadParams_WhenStartDownloads( downloadBytesLength, successDownloadParts: (oldFile.Parts.Count - newFile.Parts.Count) );
                         });
 
-                        var veryFirstOutputFullFileName = row.SaveVeryFirstOutputFullFileName();
+                        //var veryFirstOutputFullFileName = row.SaveVeryFirstOutputFullFileName();
 
                         var ip = new m3u8_processor.DownloadPartsAndSaveInputParams()
                         {
                             mc                               = mc,
                             m3u8File                         = m3u8File,
                             requestHeaders                   = row.RequestHeaders,
-                            OutputFileName                   = veryFirstOutputFullFileName,
+                            //OutputFileName                   = veryFirstOutputFullFileName,
+                            FileWriterHolder                 = fileWriterHolder,
                             RequestStepAction                = requestStepAction,
                             ResponseStepAction               = responseStepAction,
                             DownloadPartStepAction           = downloadPartStepAction,
-                            MaxDegreeOfParallelism           = _SettingsController.MaxDegreeOfParallelism,                            
+                            MaxDegreeOfParallelism           = _SettingsController.MaxDegreeOfParallelism,
                             DownloadThreadsSemaphore         = downloadThreadsSemaphore,
                             DownloadThreadsSemaphore_4_Parts = downloadThreadsSemaphore_4_Parts,
                             WaitIfPausedHolder               = new WaitIfPausedHolder( waitIfPausedEventWrapper, waitingIfPausedBefore        , waitingIfPausedAfter ),
@@ -756,7 +763,7 @@ namespace m3u8.download.manager.controllers
                     if ( dpsr.OutputFileName != desiredOutputFullFileName )
                     {
                         if ( row.VeryFirstOutputFullFileName.IsNullOrEmpty() /*dpsr.OutputFileName.EqualIgnoreCase( row.VeryFirstOutputFullFileName )*/ 
-                              || 
+                              ||
                              FileHelper.TryMoveFile_NoThrow( dpsr.OutputFileName, desiredOutputFullFileName, out renameOutputFileException ) )
                         {
                             dpsr.ResetOutputFileName( desiredOutputFullFileName );
@@ -788,12 +795,12 @@ namespace m3u8.download.manager.controllers
 
                     if ( cts.IsCancellationRequested )
                     {
-                        if ( deleteOutputFilesWhenCancelOrError ) FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        if ( deleteOutputFilesWhenCancelOrError ) FileHelperEx.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusCanceled();
                     }
                     else if ( ex is m3u8_Exception mex )
                     {
-                        if ( deleteOutputFilesWhenCancelOrError ) FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        if ( deleteOutputFilesWhenCancelOrError ) FileHelperEx.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusError( ex.Message );
                     }
                     else
@@ -965,12 +972,12 @@ namespace m3u8.download.manager.controllers
 
                     if ( cts.IsCancellationRequested )
                     {
-                        FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        FileHelperEx.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusCanceled();
                     }
                     else if ( ex is m3u8_Exception mex )
                     {
-                        FileHelper.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
+                        FileHelperEx.DeleteFiles_NoThrow( row.GetOutputFullFileNames() );
                         row.StatusError( ex.Message );
                     }
                     else
@@ -1296,6 +1303,8 @@ namespace m3u8.download.manager.controllers
             return (false);
         }
         #endregion
+
+        public IFileWriterHolder TryGetFileWriterHolder( DownloadRow row ) => _Dict.TryGetValue( row, out var t ) ? t.fileWriterHolder : null;
     }
 
     /// <summary>

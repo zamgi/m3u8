@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-using m3u8.client__v2;
+using m3u8.client;
 using m3u8.download.manager.controllers;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using m3u8.download.manager.models;
+using m3u8.helpers;
 
 namespace m3u8.download.manager.infrastructure
 {
@@ -14,20 +15,20 @@ namespace m3u8.download.manager.infrastructure
     /// </summary>
     internal static partial class ChangeFilenameOrDirectoryHelper
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        private static class Set
-        {
-            /// <summary>
-            /// 
-            /// </summary>
-            private static class EmptySet< T >
-            {
-                public static readonly ISet< T > Value = new HashSet< T >();
-            }
-            public static ISet< T > Empty< T >() => EmptySet< T >.Value;
-        }       
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        //private static class Set
+        //{
+        //    /// <summary>
+        //    /// 
+        //    /// </summary>
+        //    private static class EmptySet< T >
+        //    {
+        //        public static readonly ISet< T > Value = new HashSet< T >();
+        //    }
+        //    public static ISet< T > Empty< T >() => EmptySet< T >.Value;
+        //}       
 
         #region [.change OutputFileName & OutputDirectory.]
         public static async Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory
@@ -142,6 +143,118 @@ namespace m3u8.download.manager.infrastructure
             }
         }
 
+        public static async Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, IFileWriterHolder fwh, string outputFileName_or_outputDirectory, bool change_outputDirectory
+            , Func< string, Task< bool > > askForOverwriteFunc
+            , Func< string, Task > showErrorAction
+            , params ISet< string >[] externalProgQueues )
+        {
+            var prev_outputFullFileName = row.GetOutputFullFileName();
+
+            string prev_outputFileName_or_outputDirectory;
+            if ( change_outputDirectory )
+            {
+                prev_outputFileName_or_outputDirectory = row.OutputDirectory;
+                row.SetOutputDirectory( outputFileName_or_outputDirectory );
+            }
+            else
+            {
+                prev_outputFileName_or_outputDirectory = row.OutputFileName;
+                row.SetOutputFileName( outputFileName_or_outputDirectory );
+            }
+            var new_outputFullFileName = row.GetOutputFullFileName();
+
+            //is full equals - do nothing
+            if ( prev_outputFullFileName == new_outputFullFileName ) return;
+
+            var need_adds = externalProgQueues.Select( q => (queue: q, need_add: q.Remove( prev_outputFullFileName )) ).ToList();
+            need_adds.ForEach( t => { if ( t.need_add ) t.queue.Add( new_outputFullFileName ); } );
+
+            var mode = prev_outputFullFileName.EqualIgnoreCase( new_outputFullFileName ) ? MoveFileByRenameModeEnum.OverwriteSilent
+                                                                                         : MoveFileByRenameModeEnum.OverwriteAsk;
+            var res = await MoveFileByRename( row, fwh, prev_outputFullFileName, new_outputFullFileName, askForOverwriteFunc, showErrorAction, mode );
+            switch ( res )
+            {
+                //case MoveFileByRenameResultEnum.Postponed: break;
+                case MoveFileByRenameResultEnum.Suc:
+                    row.SaveVeryFirstOutputFullFileName( null );
+                    break;
+
+                case MoveFileByRenameResultEnum.Canceled:
+                case MoveFileByRenameResultEnum.Fail:
+                    //rollback
+                    if ( change_outputDirectory )
+                    {
+                        row.SetOutputDirectory( prev_outputFileName_or_outputDirectory );
+                    }
+                    else
+                    {
+                        row.SetOutputFileName( prev_outputFileName_or_outputDirectory );
+                    }
+
+                    need_adds.ForEach( t => 
+                    {
+                        if ( t.need_add )
+                        {
+                            t.queue.Remove( new_outputFullFileName );
+                            t.queue.Add( prev_outputFullFileName );
+                        }
+                    });
+                    //if ( need_add )
+                    //{
+                    //    externalProgQueue.Remove( new_outputFullFileName );
+                    //    externalProgQueue.Add( prev_outputFullFileName );
+                    //}
+                    break;
+            }
+        }
+        public static async Task ChangeOutputFileName_And_OutputDirectory( DownloadRow row, IFileWriterHolder fwh, string outputFileName, string outputDirectory
+            , Func< string, Task< bool > > askForOverwriteFunc
+            , Func< string, Task > showErrorAction
+            , params ISet< string >[] externalProgQueues )
+        {
+            var prev_outputFullFileName = row.GetOutputFullFileName();
+
+            var prev_outputFileName  = row.OutputFileName;
+            var prev_outputDirectory = row.OutputDirectory;
+            row.SetOutputFileName ( outputFileName );
+            row.SetOutputDirectory( outputDirectory );
+            
+            var new_outputFullFileName = row.GetOutputFullFileName();
+
+            //is full equals - do nothing
+            if ( prev_outputFullFileName == new_outputFullFileName ) return;
+
+            var need_adds = externalProgQueues.Select( q => (queue: q, need_add: q.Remove( prev_outputFullFileName )) ).ToList();
+            need_adds.ForEach( t => { if ( t.need_add ) t.queue.Add( new_outputFullFileName ); } );
+
+            var mode = prev_outputFullFileName.EqualIgnoreCase( new_outputFullFileName ) ? MoveFileByRenameModeEnum.OverwriteSilent
+                                                                                         : MoveFileByRenameModeEnum.OverwriteAsk;
+            var res = await MoveFileByRename( row, fwh, prev_outputFullFileName, new_outputFullFileName, askForOverwriteFunc, showErrorAction, mode );
+            switch ( res )
+            {
+                //case MoveFileByRenameResultEnum.Postponed: break;
+                case MoveFileByRenameResultEnum.Suc:
+                    row.SaveVeryFirstOutputFullFileName( null );
+                    break;
+
+                case MoveFileByRenameResultEnum.Canceled:
+                case MoveFileByRenameResultEnum.Fail:
+                    //rollback
+                    row.SetOutputFileName ( prev_outputFileName );
+                    row.SetOutputDirectory( prev_outputDirectory );
+
+                    need_adds.ForEach( t => 
+                    {
+                        if ( t.need_add )
+                        {
+                            t.queue.Remove( new_outputFullFileName );
+                            t.queue.Add( prev_outputFullFileName );
+                        }
+                    });
+                    break;
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -152,7 +265,7 @@ namespace m3u8.download.manager.infrastructure
             , Func< string, Task > showErrorAction
             , MoveFileByRenameModeEnum mode/* = MoveFileByRenameModeEnum.OverwriteAsk*/ )
         {
-            if ( (!row.Status.IsRunningOrPaused() || FileHelper.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
+            if ( (!row.Status.IsRunningOrPaused() || FileHelperEx.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
             {
                 switch ( mode )
                 {
@@ -177,6 +290,49 @@ namespace m3u8.download.manager.infrastructure
                 }
 
                 if ( FileHelper.TryMoveFile_NoThrow( prev_outputFullFileName, new_outputFullFileName, out var error ) )
+                {
+                    return (MoveFileByRenameResultEnum.Suc);
+                }
+                else
+                {
+                    await showErrorAction( error.ToString() ); //this.MessageBox_ShowError( error.ToString(), "Move/Remane output file" );
+                    return (MoveFileByRenameResultEnum.Fail);
+                }
+            }
+            return (MoveFileByRenameResultEnum.Postponed);
+        }
+
+        private static async Task< MoveFileByRenameResultEnum > MoveFileByRename( DownloadRow row, IFileWriterHolder fwh, string prev_outputFullFileName, string new_outputFullFileName
+            , Func< string, Task< bool > > askForOverwriteFunc
+            , Func< string, Task > showErrorAction
+            , MoveFileByRenameModeEnum mode/* = MoveFileByRenameModeEnum.OverwriteAsk*/ )
+        {
+            if ( (!row.Status.IsRunningOrPaused() || FileHelperEx.IsSameDiskDrive( prev_outputFullFileName, new_outputFullFileName )) && File.Exists( prev_outputFullFileName ) )
+            {
+                switch ( mode )
+                {
+                    case MoveFileByRenameModeEnum.OverwriteSilent:
+                        break;
+                    case MoveFileByRenameModeEnum.OverwriteAsk:
+                        if ( File.Exists( new_outputFullFileName ) )
+                        {
+                            if ( !await askForOverwriteFunc( new_outputFullFileName )
+                                /*this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) != DialogResult.Yes*/ )
+                            {
+                                return (MoveFileByRenameResultEnum.Canceled);
+                            }
+                        }
+                        break;
+                    case MoveFileByRenameModeEnum.SkipIfAlreadyExists:
+                        if ( File.Exists( new_outputFullFileName ) )
+                        {
+                            return (MoveFileByRenameResultEnum.Canceled);
+                        }
+                        break;
+                }
+
+                var suc = FileHelper.TryMoveFile_NoThrow( fwh, prev_outputFullFileName, new_outputFullFileName, out var error );
+                if ( suc )
                 {
                     return (MoveFileByRenameResultEnum.Suc);
                 }

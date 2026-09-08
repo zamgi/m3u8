@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 using m3u8.infrastructure;
 
-using _init_params_             = m3u8.client__v2.i_m3u8_client.init_params;
-using _ChangeSettingsParams_    = m3u8.client__v2.i_m3u8_client.ChangeSettingsParams;
-using _DownloadPartInputParams_ = m3u8.client__v2.i_m3u8_client.DownloadPartInputParams;
+using _init_params_             = m3u8.client.i_m3u8_client.init_params;
+using _ChangeSettingsParams_    = m3u8.client.i_m3u8_client.ChangeSettingsParams;
+using _DownloadPartInputParams_ = m3u8.client.i_m3u8_client.DownloadPartInputParams;
 
-namespace m3u8.client__v2
+namespace m3u8.client
 {
     /// <summary>
     /// 
@@ -310,6 +310,66 @@ if ( (new Random()).Next( 10 ) == 0 )
                     ip.DownloadPartStepAction?.Invoke( dpsa.SetAttemptRequestNumber( attemptRequestNumber ) );
 
                     if ( (leftAttemptRequestCount == 1) || /*ct*/commonToken.IsCancellationRequested )
+                    {
+                        part.SetError( ex );
+                        return (part);
+                    }
+                }
+
+                await Task.Delay( 50 ).CAX();
+            }
+
+            throw (new m3u8_Exception( $"No content found while {_AttemptRequestCount} attempt requests." ));
+        }
+        public async Task< m3u8_part_ts > DownloadPart( m3u8_part_ts part, Uri baseAddress, IDictionary< string, string > requestHeaders = null, CancellationToken ct = default
+            , int readBufSize = 0x1000 )
+        {
+            if ( baseAddress == null ) throw (new m3u8_ArgumentException( nameof(baseAddress) ));
+            if ( part.Stream == null ) throw (new m3u8_ArgumentException( nameof(part.Stream) ));
+            if ( part.RelativeUrlName.IsNullOrWhiteSpace() ) throw (new m3u8_ArgumentException( nameof(part.RelativeUrlName) ));
+            //----------------------------------------------------------------------------------------------------------------//
+
+            var url  = part.GetPartUrl( baseAddress );
+            var dpsa = new i_m3u8_client.DownloadPartStepActionParams( part );
+
+            for ( var leftAttemptRequestCount = _AttemptRequestCount; 0 < leftAttemptRequestCount; leftAttemptRequestCount-- )
+            {
+                var attemptRequestNumber = _AttemptRequestCount - leftAttemptRequestCount + 1;
+                try
+                {
+                    using ( var req  = CreateRequestGet( url, requestHeaders ) )
+                    using ( var resp = await SendRequest_Impl( req, ct ).CAX() )
+                    {
+                        if ( resp.IsSuccessStatusCode )
+                        {
+#if NETCOREAPP
+                            using var downloadStream = await resp.Content.ReadAsStreamAsync( ct ).CAX();
+#else
+                            using var downloadStream = await resp.Content.ReadAsStreamAsync( /*ct*/ ).CAX();
+#endif
+                            dpsa.TotalContentLength = TryGetContentLength( resp.Content, out var x ) ? x.contentLength : null;
+                            part.SetTotalContentLength( dpsa.TotalContentLength );
+
+                            var buf = new byte[ readBufSize ];
+                            for ( var totalBytesReaded = 0L; ; )
+                            {
+                                var bytesReaded = await downloadStream.ReadAsync( buf, 0, buf.Length, ct ).CAX();
+                                if ( bytesReaded == 0 )
+                                    break;
+
+                                await part.Stream.WriteAsync( buf, 0, bytesReaded, ct ).CAX();
+                                totalBytesReaded += bytesReaded;
+                            }
+
+                            return (part);
+                        }
+
+                        throw (await resp.create_m3u8_Exception( ct ).CAX());
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    if ( (leftAttemptRequestCount == 1) || ct.IsCancellationRequested )
                     {
                         part.SetError( ex );
                         return (part);

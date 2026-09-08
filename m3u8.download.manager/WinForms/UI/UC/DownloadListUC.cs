@@ -899,7 +899,7 @@ namespace m3u8.download.manager.ui
                 case DOWNLOAD_TIME_COLUMN_INDEX            : e.Value = row.GetDownloadTimeText       () /*+ new string(' ', 1)*/; break;
                 case APPROX_REMAINED_TIME_COLUMN_INDEX     : e.Value = row.GetApproxRemainedTimeText () /*+ new string(' ', 1)*/; break;
                 case DOWNLOAD_SPEED_COLUMN_INDEX           : e.Value = row.GetDownloadSpeedText(); break;
-                case DOWNLOAD_BYTES_COLUMN_INDEX           : e.Value = FileHelper.GetDisplaySizeText( row.DownloadBytesLength ); break;
+                case DOWNLOAD_BYTES_COLUMN_INDEX           : e.Value = FileHelperEx.GetDisplaySizeText( row.DownloadBytesLength ); break;
                 case APPROX_REMAINED_BYTES_COLUMN_INDEX    : e.Value = row.GetApproxRemainedBytesText(); break;
                 case APPROX_TOTAL_BYTES_COLUMN_INDEX       : e.Value = row.GetApproxTotalBytesText   (); break;
                 case URL_COLUMN_INDEX                      : e.Value = row.Url; break;

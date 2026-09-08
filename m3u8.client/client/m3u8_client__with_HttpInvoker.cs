@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 using m3u8.infrastructure;
 
-using _init_params_          = m3u8.client__v2.i_m3u8_client.init_params;
-using _ChangeSettingsParams_ = m3u8.client__v2.i_m3u8_client.ChangeSettingsParams;
+using _init_params_          = m3u8.client.i_m3u8_client.init_params;
+using _ChangeSettingsParams_ = m3u8.client.i_m3u8_client.ChangeSettingsParams;
 
-namespace m3u8.client__v2
+namespace m3u8.client
 {
     /// <summary>
     /// 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Forms;
 
-using m3u8.client__v2;
+using m3u8.client;
 
 namespace m3u8.download.manager.ui
 {

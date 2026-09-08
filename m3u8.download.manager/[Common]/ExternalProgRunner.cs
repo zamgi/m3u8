@@ -142,7 +142,7 @@ namespace m3u8.download.manager
             var exists_ext = Path.GetExtension( outputFileName );
             var new_fn     = Path.GetFileNameWithoutExtension( outputFileName ) + (exists_ext.EqualIgnoreCase( DEFAULT_EXTENSION ) ? "+" : null) + DEFAULT_EXTENSION;
             var new_ffn    = Path.Combine( Path.GetDirectoryName( outputFileName ), new_fn );
-            FileHelper.RemoveBadFileAttrs( checkExists: true, new_ffn );
+            FileHelperEx.RemoveBadFileAttrs( checkExists: true, new_ffn );
 
             // "D:\(Distributive)\{ScreenToGif}\ffmpeg.exe" -i %1.avi -c:v libx264 -sn -dn %1.mp4
             var psi = new ProcessStartInfo( /*ExternalProgFilePath*/ )
@@ -171,7 +171,7 @@ namespace m3u8.download.manager
                         var isCtrlC = (ffmpeg.ExitCode == 255) /*Ctrl+C(?)*/;
 
                         await Task.Delay( 250 );
-                        FileHelper.DeleteFile_NoThrow( new_fn );
+                        m3u8.helpers.FileHelper.DeleteFile_NoThrow( new_fn );
                     }
                 }
                 catch ( Exception ex ) 

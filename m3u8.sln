@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.client", "m3u8.client\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.console.app", "m3u8.console.app\m3u8.console.app.csproj", "{B17C29AF-E052-413B-9149-4F49E5DA2571}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.downloader", "prev\m3u8.downloader\m3u8.downloader.csproj", "{B4726081-D6C9-4183-99CF-D52913E25C85}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-browser-extensions", "m3u8-browser-extensions", "{18F2AF0D-B182-4885-9B27-68F67E1E14A0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_m3u8-downloader-host", "_m3u8-downloader-host", "{1894D434-5969-44B7-B51A-87F123427C6D}"
@@ -85,8 +83,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution_Items", "_Solutio
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prev", "prev", "{D571F14E-ED1C-40A3-AEEC-C7B902D82BBA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v3", "v3", "{1945AF49-9C85-4DC5-8EF5-35D159440475}"
 	ProjectSection(SolutionItems) = preProject
@@ -213,10 +209,6 @@ Global
 		{B17C29AF-E052-413B-9149-4F49E5DA2571}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B17C29AF-E052-413B-9149-4F49E5DA2571}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B17C29AF-E052-413B-9149-4F49E5DA2571}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B4726081-D6C9-4183-99CF-D52913E25C85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B4726081-D6C9-4183-99CF-D52913E25C85}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B4726081-D6C9-4183-99CF-D52913E25C85}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B4726081-D6C9-4183-99CF-D52913E25C85}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -238,7 +230,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{B4726081-D6C9-4183-99CF-D52913E25C85} = {D571F14E-ED1C-40A3-AEEC-C7B902D82BBA}
 		{1894D434-5969-44B7-B51A-87F123427C6D} = {18F2AF0D-B182-4885-9B27-68F67E1E14A0}
 		{96151C69-A1DB-49F5-BE3A-C61B5835D5E3} = {18F2AF0D-B182-4885-9B27-68F67E1E14A0}
 		{5F7272EB-A4D3-4D05-80AF-67D4348E03E7} = {18F2AF0D-B182-4885-9B27-68F67E1E14A0}

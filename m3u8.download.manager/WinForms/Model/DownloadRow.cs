@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-using m3u8.client__v2;
+using m3u8.client;
 
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 

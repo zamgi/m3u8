@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
-using m3u8.client__v2;
+using m3u8.client;
 
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M                      = System.Runtime.CompilerServices.MethodImplAttribute;

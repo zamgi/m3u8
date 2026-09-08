@@ -12,7 +12,6 @@ using Microsoft.Extensions.Configuration;
 using Xunit;
 
 using m3u8.infrastructure;
-using m3u8.client__v1;
 
 namespace m3u8.client.tests
 {
@@ -50,7 +49,7 @@ namespace m3u8.client.tests
             }
             if ( !Uri.TryCreate( m3u8_url, UriKind.RelativeOrAbsolute, out _M3u8Url ) )
             {
-                Debug.WriteLine( $"Wrong value of '{nameof( m3u8_url )}' in '{SETTINGS_JSON_FILE_NAME}'." );
+                Debug.WriteLine( $"Wrong value of '{nameof(m3u8_url)}' in '{SETTINGS_JSON_FILE_NAME}'." );
                 return;
             }
 
@@ -75,10 +74,7 @@ namespace m3u8.client.tests
                     }
                 }
 
-                var h = new SocketsHttpHandler() 
-                { 
-                    AutomaticDecompression = DecompressionMethods.All 
-                };
+                var h = new SocketsHttpHandler() { AutomaticDecompression = DecompressionMethods.All };
                 h.SslOptions.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
                 //set_Protocol( h.SslOptions, SslProtocols.Tls   );
                 //set_Protocol( h.SslOptions, SslProtocols.Tls11 );
@@ -155,8 +151,8 @@ namespace m3u8.client.tests
         private static void _Assert_( in m3u8_part_ts m3u8_part )
         {
             Assert.Null   ( m3u8_part.Error );            
-            Assert.NotNull( m3u8_part.Bytes );
-            Assert.True   ( 0 < m3u8_part.Bytes.Length );
+            Assert.NotNull( m3u8_part.Stream );
+            Assert.True   ( 0 < m3u8_part.Stream.Length );
         }
 
         [Fact] public async Task DownloadFile()
@@ -188,12 +184,12 @@ namespace m3u8.client.tests
 #endif
             using ( var mc = new m3u8_client__with_HttpClient( _HttpClient, default ) )
             {
-                var m3u8_file = await mc.DownloadFile( _M3u8Url, TestContext.Current.CancellationToken );
+                var m3u8_file = await mc.DownloadFile( _M3u8Url, ct: TestContext.Current.CancellationToken );
 
                 _Assert_( m3u8_file );
 
                 var m3u8_part = m3u8_file.Parts.First();
-                var downloaded_m3u8_part = await mc.DownloadPart( m3u8_part, m3u8_file.BaseAddress, TestContext.Current.CancellationToken );
+                var downloaded_m3u8_part = await mc.DownloadPart( m3u8_part, m3u8_file.BaseAddress, ct: TestContext.Current.CancellationToken );
 
                 _Assert_( downloaded_m3u8_part );
             }
@@ -214,22 +210,22 @@ namespace m3u8.client.tests
 
             var timeout_1 = TimeSpan.FromSeconds( 1 );
             var timeout_2 = TimeSpan.FromSeconds( 7 );
-            using ( var mc_1_1 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_1 ) )
+            using ( var mc_1_1 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( new i_m3u8_client.init_params() { Timeout = timeout_1 } ) )
             {
                 Assert.True( HttpClientFactory_WithRefCount.Any() );
 
                 var t_1 = HttpClientFactory_WithRefCount.GetTop();
                 Assert.True( (t_1.hc == mc_1_1.HttpClient) && (t_1.timeout == timeout_1) && (t_1.refCount == 1) );
 
-                using ( var mc_1_2 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_1 ) )
+                using ( var mc_1_2 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( new i_m3u8_client.init_params() { Timeout = timeout_1 } ) )
                 {
                     t_1 = HttpClientFactory_WithRefCount.GetTop();
                     Assert.True( (t_1.hc == mc_1_2.HttpClient) && (t_1.timeout == timeout_1) && (t_1.refCount == 2) );
 
                     Assert.True( mc_1_1.HttpClient == mc_1_2.HttpClient );
 
-                    using ( var mc_2_1 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_2 ) )
-                    using ( var mc_2_2 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_2 ) )
+                    using ( var mc_2_1 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( new i_m3u8_client.init_params() { Timeout = timeout_2 } ) )
+                    using ( var mc_2_2 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( new i_m3u8_client.init_params() { Timeout = timeout_2 } ) )
                     {
                         Assert.True( mc_2_1.HttpClient == mc_2_2.HttpClient );
                         Assert.True( mc_1_1.HttpClient != mc_2_2.HttpClient );
@@ -246,7 +242,7 @@ namespace m3u8.client.tests
             var t_4 = HttpClientFactory_WithRefCount.GetTop();
             Assert.True( (t_4.timeout == timeout_2) && (t_4.refCount == 0) );
 
-            using ( var mc_2_3 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( timeout_2 ) )
+            using ( var mc_2_3 = (m3u8_client__with_HttpClient) m3u8_client_factory.Create( new i_m3u8_client.init_params() { Timeout = timeout_2 } ) )
             {
                 var t_5 = HttpClientFactory_WithRefCount.GetTop();
                 Assert.True( (t_5.hc == mc_2_3.HttpClient) && (t_5.timeout == timeout_2) && (t_5.refCount == 1) );

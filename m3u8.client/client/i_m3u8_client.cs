@@ -5,12 +5,12 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8.client__v2;
+using m3u8.client;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
-namespace m3u8.client__v2
+namespace m3u8.client
 {
     /// <summary>
     /// 

@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.InteropServices;
+using System.Security.AccessControl;
 #if !(NETCOREAPP)
 using System.Security.Authentication;
 #endif
+using System.Security.Principal;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8.client__v2;
+using Microsoft.Win32.SafeHandles;
+
+using m3u8.client;
 using m3u8.helpers;
 using m3u8.infrastructure;
 
@@ -39,7 +45,11 @@ namespace m3u8
                 //await Create_ts_files_with_number_series().CAX();
                 //await Test_ts_files_with_number_series().CAX();
 #if NETCOREAPP
-                AuditCheck_ts_files_with_number_series();
+                //Test_openFile_2();
+                //Test_openFile_4();
+                Test_openFile_5();
+
+                //AuditCheck_ts_files_with_number_series();
 #endif
                 //await Merge_ts_files_2_one_avi().CAX();
                 //await Test__obj_pool().CAX();
@@ -53,28 +63,6 @@ namespace m3u8
             }
             ConsoleHelper.WriteLine( "\r\n\r\n[.....finita fusking comedy.....]\r\n\r\n", ConsoleColor.DarkGray );
             ConsoleHelper.ReadLine();
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private static class v1
-        {
-            public static async Task run( string m3u8FileUrl, string outputFileName, CancellationToken ct )
-            {
-                var p = new m3u8_processor__v0.DownloadFileAndSaveInputParams()
-                {
-                    CancellationToken  = ct,
-                    m3u8FileUrl        = m3u8FileUrl,
-                    OutputFileName     = outputFileName,
-                    NetParams          = new i_m3u8_client.init_params() { AttemptRequestCount = 1, HttpCompletionOption = HttpCompletionOption.ResponseHeadersRead },
-                    ResponseStepAction = new m3u8_processor__v0.ResponseStepActionDelegate( t => ConsoleHelper.WriteLine( $"{t.Part.OrderNumber + 1} of {t.TotalPartCount}, '{t.Part.RelativeUrlName}'" ) ),
-                    //MaxDegreeOfParallelism = 8,
-                };
-
-                await m3u8_processor__v0.DownloadFileAndSave( p ).CAX();
-            }
         }
 
         /// <summary>
@@ -146,6 +134,7 @@ namespace m3u8
                 using var streamPool         = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
                 using var respBufPool        = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
                 using var timeoutCtsPool     = new CtsTimerPool( maxDegreeOfParallelism );
+                using var fileWriterHolder   = FileHelper.CreateFileWriterHolder( outputFileName );
 
                 #region comm.
                 //var requestStepAction      = new m3u8_processor.RequestStepActionDelegate( (in m3u8_processor.RequestStepActionParams p) =>
@@ -172,7 +161,8 @@ namespace m3u8
                     mc                               = mc,
                     m3u8File                         = m3u8File,
                     requestHeaders                   = requestHeaders,
-                    OutputFileName                   = outputFileName,
+                    //OutputFileName                   = outputFileName,
+                    FileWriterHolder                 = fileWriterHolder,
                     //RequestStepAction                = requestStepAction,
                     ResponseStepAction               = responseStepAction,
                     //DownloadPartStepAction           = downloadPartStepAction,
@@ -392,6 +382,7 @@ namespace m3u8
                 using var streamPool               = new ObjectPoolDisposable< Stream >( maxDegreeOfParallelism, () => new MemoryStream( streamInPoolCapacity ) );
                 using var respBufPool              = new ObjectPool< byte[] >( maxDegreeOfParallelism, () => new byte[ bufInPoolCapacity ] );
                 using var timeoutCtsPool           = new CtsTimerPool( maxDegreeOfParallelism );
+                using var fileWriterHolder         = FileHelper.CreateFileWriterHolder( outputFileName );
 
                 var responseStepAction = new m3u8_processor.ResponseStepActionDelegate( (in m3u8_processor.ResponseStepActionParams p) => ConsoleHelper.WriteLine( $"{p.Part.OrderNumber + 1} of {p.TotalPartCount}, '{p.Part.RelativeUrlName}'" ) );
                 var waitIfPausedHolder = new WaitIfPausedHolder( waitIfPausedEventWrapper );
@@ -400,7 +391,8 @@ namespace m3u8
                 {
                     mc                               = mc,
                     m3u8File                         = m3u8File,
-                    OutputFileName                   = outputFileName,
+                    //OutputFileName                   = outputFileName,
+                    FileWriterHolder                 = fileWriterHolder,
                     requestHeaders                   = requestHeaders,
                     ResponseStepAction               = responseStepAction,
                     MaxDegreeOfParallelism           = maxDegreeOfParallelism,
@@ -421,9 +413,191 @@ namespace m3u8
         private static string to_text_format( int size ) => to_text_format( (ulong) size );
         private static string to_text_format( ulong size ) => (0 < size) ? size.ToString("0,0") : "0";
 
-        private static async Task Merge_ts_files_2_one_avi( string path = @"E:\���� ���� (2001)" )
+#if NETCOREAPP
+        private static void Test_openFile_1()
         {
-            var avi_fn = Path.Combine( path, @"���� ���� (2001).avi" );
+            var fn = @"E:\test-1.txt";
+
+            // Шаг 1: Гарантируем, что файл существует и физически не пустой (> 0 байт)
+            /*
+            var fileInfo = new FileInfo( fn );
+            if ( !fileInfo.Exists || (fileInfo.Length == 0) )
+            {
+                File.WriteAllBytes( fn, new byte[] { 0 } ); // 1 байт заглушки
+            }
+            //*/
+
+            // Шаг 2: Открываем поток файла с флагами Read и DELETE (через FileShare.Delete)
+            // Это КРИТИЧЕСКИ важно, чтобы File.Move вообще мог изменить имя файла.
+            using ( var fs = new FileStream( fn, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read | FileShare.Delete ) )
+            using ( var sw = new StreamWriter( fs ) )
+            {
+                var (suc, errorCode) = WinApi.MakeFileSparse( fs.SafeFileHandle );
+                Debug.Assert( suc );
+
+                //if ( fs.Length == 0 )
+                //{
+                //    fs.SetLength( 1 );
+                //    fs.Flush( true );
+                //}
+                
+                // Резервируем максимальный размер, до которого ваш лог может вырасти (например, 1 ГБ)
+                // На диске файл останется весить ровно столько, сколько в него реально записано!
+                const long MAX_GROWTH_SIZE = 1024 * 1024 * 1024; // 1 ГБ (можно поставить больше)
+
+
+                // Шаг 3: Создаем проекцию файла в память ядра (как это делает Windows для запущенных .exe)
+                // Мы проецируем файл на его текущую длину.
+                using ( var mmf = MemoryMappedFile.CreateFromFile(
+                    fs,
+                    mapName: null,
+                    capacity: MAX_GROWTH_SIZE, // 0 означает спроецировать весь текущий размер файла
+                    MemoryMappedFileAccess.ReadWrite,
+                    HandleInheritability.None,
+                    leaveOpen: true ) )
+                {
+                    sw.WriteLine( "1234567890" );
+                    sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                    sw.Flush();
+
+                    var new_fn = Path.Combine( Path.GetDirectoryName( fn ), "test-2.txt" );
+
+                    // Шаг 4: Переименовываем файл стандартным методом .NET
+                    // Так как FileStream держит FileShare.Delete, а mmf защищает от физического стирания,
+                    // операционная система атомарно переносит запись файла в MFT, не закрывая дескриптор.
+                    File.Move( fn, new_fn, overwrite: true );
+
+                    sw.WriteLine( "------------------------------------------------------------------" );
+                    sw.WriteLine( "1234567890" );
+                    sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                    sw.Flush();
+                }
+            }
+        }
+        private static void Test_openFile_2()
+        {
+            var fn = @"E:\test-1.txt";
+
+            using var fileHandle = WinApi.File_OpenOrCreate( fn, out var errorCode );
+            Debug.Assert( !fileHandle.IsInvalid );
+
+            // Шаг 2: Открываем поток файла с флагами Read и DELETE (через FileShare.Delete)
+            // Это КРИТИЧЕСКИ важно, чтобы File.Move вообще мог изменить имя файла.
+            using ( var fs = new FileStream( fileHandle, FileAccess.Write/*ReadWrite*/ ) )
+            using ( var sw = new StreamWriter( fs, leaveOpen: true ) )
+            {
+                sw.WriteLine( "1234567890" );
+                sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                sw.Flush();
+
+                var new_fn = Path.Combine( Path.GetDirectoryName( fn ), "test-2.txt" );
+
+                // Шаг 4: Переименовываем файл стандартным методом .NET
+                // Так как FileStream держит FileShare.Delete, а mmf защищает от физического стирания,
+                // операционная система атомарно переносит запись файла в MFT, не закрывая дескриптор.
+                (var suc, errorCode) = WinApi.RenameViaNtDll( fs.SafeFileHandle, new_fn );
+                Debug.Assert( suc );
+                //---File.Move( fn, new_fn, overwrite: true );
+
+                sw.WriteLine( "------------------------------------------------------------------" );
+                sw.WriteLine( "1234567890" );
+                sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                sw.Flush();
+            }
+        }
+        private static void Test_openFile_3()
+        {
+            var fn = @"E:\test-1.txt";
+
+            using ( var fs = FileHelper.File_Open4Write( fn, FileShare.ReadWrite | FileShare.Delete ) )
+            using ( var sw = new StreamWriter( fs, leaveOpen: true ) )
+            {
+                var lockStreamPath = fn + ":super_lock";
+                var lockHandle = WinApi.File_OpenOrCreate_2( lockStreamPath, out var errorCode );
+                Debug.Assert( !lockHandle.IsInvalid );
+                try
+                {
+                    sw.WriteLine( "1234567890" );
+                    sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                    sw.Flush();
+
+                    var new_fn = Path.Combine( Path.GetDirectoryName( fn ), "test-2.txt" );
+                    lockHandle.Dispose();
+                    File.Move( fn, new_fn, overwrite: true );
+                    fn = new_fn;
+                    lockStreamPath = fn + ":super_lock";
+                    lockHandle = WinApi.File_OpenOrCreate_2( lockStreamPath, out errorCode );
+                    Debug.Assert( !lockHandle.IsInvalid );
+
+                    sw.WriteLine( "------------------------------------------------------------------" );
+                    sw.WriteLine( "1234567890" );
+                    sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                    sw.Flush();
+                }
+                finally
+                {
+                    lockHandle.Dispose();
+                }
+            }
+        }
+        private static void Test_openFile_4()
+        {
+            var fn = @"E:\test-1.txt";
+
+            using ( var fs = FileHelper.File_Open4Write( fn, FileShare.ReadWrite | FileShare.Delete ) )
+            using ( var sw = new StreamWriter( fs, leaveOpen: true ) )
+            {
+                var fsShadowLock = new FileStream( fn, FileMode.Open, FileAccess.Read, FileShare.ReadWrite );
+                try
+                {
+                    sw.WriteLine( "1234567890" );
+                    sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                    sw.Flush();
+
+                    var new_fn = Path.Combine( Path.GetDirectoryName( fn ), "test-2.txt" );
+                    fsShadowLock.Dispose();
+                    var (suc, errorCode) = WinApi.MoveFileEx( fn, new_fn );//---File.Move( fn, new_fn, overwrite: true );
+                    fn = new_fn;
+                    fsShadowLock = new FileStream( fn, FileMode.Open, FileAccess.Read, FileShare.ReadWrite );
+
+                    sw.WriteLine( "------------------------------------------------------------------" );
+                    sw.WriteLine( "1234567890" );
+                    sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                    sw.Flush();
+                }
+                finally
+                {
+                    fsShadowLock.Dispose();
+                }
+            }
+        }
+        private static void Test_openFile_5()
+        {
+            var fn = @"E:\test-1.txt";
+
+            using ( var fwh = FileHelper.CreateFileWriterHolder( fn ) )
+            using ( var fs = fwh.Open( setLength2Zero: true ) )
+            using ( var sw = new StreamWriter( fs, leaveOpen: true ) )
+            {
+                sw.WriteLine( "1234567890" );
+                sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                sw.Flush();
+
+                var new_fn = Path.Combine( Path.GetDirectoryName( fn ), "test-2.txt" );
+                var suc = fwh.TryMoveFile( new_fn, out var error );
+                Debug.Assert( suc );
+
+                sw.WriteLine( "------------------------------------------------------------------" );
+                sw.WriteLine( "1234567890" );
+                sw.WriteLine( string.Join( string.Empty, "1234567890".Reverse() ) );
+                sw.Flush();
+            }
+        }
+#endif
+
+        private static async Task Merge_ts_files_2_one_avi( string path = @"E:\Даун Хаус (2001)" )
+        {
+            var avi_fn = Path.Combine( path, @"Даун Хаус (2001).avi" );
             using ( var avi_fs = new FileStream( avi_fn, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read ) )
             {
                 avi_fs.SetLength( 0 );
@@ -532,7 +706,7 @@ namespace m3u8
             }
             Console.Write( $"{n:#,#}\r" );
         }
-        unsafe private static IEnumerable< Memory<char> > GetEnumOf_AuditCheck_ts_files_with_number_series( string filename )
+        unsafe private static IEnumerable< Memory< char > > GetEnumOf_AuditCheck_ts_files_with_number_series( string filename )
         {
             var readBuf = new char[ 1_024 ];
 
@@ -824,29 +998,139 @@ namespace m3u8
         public static string ReadLine() => Console.ReadLine();
     }
 
+
     /// <summary>
     /// 
     /// </summary>
-    internal static class _Extensions
+    internal static class WinApi
     {
-        public static void WaitForTaskEndsOrKeyboardBreak( this Task task, CancellationTokenSource cts )
-        {
-            const int TASK_WAIT_MILLISECONDS_TIMEOUT = 100;
+        // Константа Windows для перевода файла в режим Sparse (разреженный)
+        private const uint FSCTL_SET_SPARSE = 0x000900C4;
 
-            for ( ; !task.Wait( TASK_WAIT_MILLISECONDS_TIMEOUT ); )
+        // Подключаем системную функцию для управления разреженными файлами NTFS
+        [DllImport( "kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true )]
+        private static extern bool DeviceIoControl( SafeFileHandle hDevice, uint dwIoControlCode, IntPtr lpInBuffer, uint nInBufferSize, IntPtr lpOutBuffer, uint nOutBufferSize, out uint lpBytesReturned, IntPtr lpOverlapped );
+
+        public static (bool suc, int errorCode) MakeFileSparse( SafeFileHandle fileHandle )
+        {
+            uint bytesReturned;
+            var suc = DeviceIoControl(
+                fileHandle,
+                FSCTL_SET_SPARSE,
+                IntPtr.Zero, 0, IntPtr.Zero, 0,
+                out bytesReturned, IntPtr.Zero
+            );
+            return (suc, suc ? Marshal.GetLastWin32Error() : 0);
+        }
+        //--------------------------------------------------------------------------//
+
+        // Открываем файл через Win32 API, чтобы настроить права "как в БитТорренте"
+        [DllImport( "kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true )]
+        private static extern SafeFileHandle CreateFileW( string lpFileName, uint dwDesiredAccess, uint dwShareMode, IntPtr lpSecurityAttributes, uint dwCreationDisposition, uint dwFlagsAndAttributes, IntPtr hTemplateFile );
+
+        // Используем низкоуровневую функцию ядра для изменения путей, она идеально дружит с FileStream .NET
+        [DllImport( "ntdll.dll", SetLastError = true )]
+        private static extern int NtSetInformationFile( SafeFileHandle fileHandle, IntPtr ioStatusBlock, IntPtr fileInformation, uint length, int fileInformationClass );
+
+        private const uint GENERIC_READ = 0x80000000;
+        private const uint GENERIC_WRITE = 0x40000000;
+        private const uint DELETE = 0x00010000; // Право на переименование для себя
+
+        private const uint FILE_SHARE_READ = 0x00000001; // Проводнику даем только READ. Никакого SHARE_DELETE!
+        private const uint FILE_SHARE_WRITE = 0x00000002;
+        private const uint OPEN_ALWAYS = 4;
+        private const uint FILE_ATTRIBUTE_NORMAL = 0x80;
+        private const int FileRenameInformation = 10; // Класс переименования в ntdll                                                       
+
+        public static SafeFileHandle File_OpenOrCreate( string fileName, out int errorCode )
+        {
+            var handle = CreateFileW(
+                fileName,
+                /*GENERIC_READ |*/ GENERIC_WRITE | DELETE, // Сказали Windows, что мы и пишем, и читаем
+                FILE_SHARE_READ | FILE_SHARE_WRITE,    // Внешнему миру дали читать
+                IntPtr.Zero,
+                OPEN_ALWAYS,
+                FILE_ATTRIBUTE_NORMAL,
+                IntPtr.Zero
+            );
+            errorCode = handle.IsInvalid ? Marshal.GetLastWin32Error() : 0;
+            return (handle);
+        }
+
+        /// <summary>
+        /// Низкоуровневый побайтовый маршалинг структуры FileRenameInformation для ntdll.dll
+        /// </summary>
+        public static (bool suc, int errorCode) RenameViaNtDll( SafeFileHandle handle, string targetFullPath )
+        {
+            // ntdll требует префикс \??\ для абсолютных путей тома
+            if ( !targetFullPath.StartsWith( @"\??\" ) )
             {
-                if ( Console.KeyAvailable )
-                {
-                    var keyInfo = Console.ReadKey( true );
-                    switch ( keyInfo.Key )
-                    {
-                        //case ConsoleKey.Enter:
-                        case ConsoleKey.Escape:
-                            cts.Cancel();
-                            break;
-                    }
-                }
+                targetFullPath = @"\??\" + targetFullPath;
             }
+
+            var pathBytes = Encoding.Unicode.GetBytes( targetFullPath );
+
+            // Размер заголовка FILE_RENAME_INFORMATION для NtSetInformationFile:
+            // BOOLEAN ReplaceIfExists (1 байт) + Внутренний паддинг (7 байт на x64) + HANDLE RootDirectory (8 байт) + ULONG FileNameLength (4 байта) = 20 байт.
+            int headerSize = 20;
+            int totalBufferSize = headerSize + pathBytes.Length;
+
+            var pBuffer = Marshal.AllocHGlobal( totalBufferSize );
+            var pIoStatus = Marshal.AllocHGlobal( 16 ); // Буфер статуса ввода-вывода
+            try
+            {
+                // Зануляем буфер
+                var zeroBuffer = new byte[ totalBufferSize ];
+                Marshal.Copy( zeroBuffer, 0, pBuffer, totalBufferSize );
+
+                // Заполняем структуру:
+                Marshal.WriteByte( pBuffer, 0, 1 ); // ReplaceIfExists = TRUE
+                Marshal.WriteInt32( pBuffer, 16, pathBytes.Length ); // Длина пути в байтах по смещению 16
+
+                // Копируем сам путь в память сразу после заголовка (смещение 20)
+                var pStringOffset = IntPtr.Add( pBuffer, headerSize );
+                Marshal.Copy( pathBytes, 0, pStringOffset, pathBytes.Length );
+
+                // Вызываем функцию ядра. Она возвращает NTSTATUS (0 означает успех / STATUS_SUCCESS)
+                var ntStatus = NtSetInformationFile( handle, pIoStatus, pBuffer, (uint) totalBufferSize, FileRenameInformation );
+                return (ntStatus == 0, ntStatus);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal( pBuffer );
+                Marshal.FreeHGlobal( pIoStatus );
+            }
+        }
+
+        //------------------------------------------------------------------//
+
+        public static SafeFileHandle File_OpenOrCreate_2( string fileName, out int errorCode )
+        {
+            var handle = CreateFileW(
+                fileName,
+                GENERIC_WRITE,
+                FILE_SHARE_READ | FILE_SHARE_WRITE, // БЕЗ SHARE_DELETE!
+                IntPtr.Zero,
+                OPEN_ALWAYS,
+                FILE_ATTRIBUTE_NORMAL,
+                IntPtr.Zero
+            );
+            errorCode = handle.IsInvalid ? Marshal.GetLastWin32Error() : 0;
+            return (handle);
+        }
+        //------------------------------------------------------------------//
+
+        // Используем нативный MoveFileExW для максимальной скорости операции ядра
+        [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
+        private static extern bool MoveFileExW( string lpExistingFileName, string lpNewFileName, uint dwFlags );
+
+        // Флаг заставляет ядро заменить существующий файл, если он уже есть
+        private const uint MOVEFILE_REPLACE_EXISTING = 0x00000001;
+
+        public static (bool suc, int errorCode) MoveFileEx( string fileName, string newFileName )
+        {
+            var suc = MoveFileExW( fileName, newFileName, MOVEFILE_REPLACE_EXISTING );
+            return (suc, suc ? 0 : Marshal.GetLastWin32Error());
         }
     }
 }

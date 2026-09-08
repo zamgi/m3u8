@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-using m3u8.client__v2;
+using m3u8.client;
 using m3u8.infrastructure;
 
 namespace m3u8.download.manager

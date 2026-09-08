@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Taskbar;
 
-using m3u8.client__v2;
+using m3u8.client;
 using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
@@ -659,12 +659,12 @@ namespace m3u8.download.manager.ui
                     #region [.run External progs if need.]
                     if ( row.IsFinished() && 
                          !row.HasAnyFailedDownloadParts() &&
-                         FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) && 
+                         FileHelperEx.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) && 
                          _ExternalProgRunner_Queues.Contains( outputFileName )
                        )
                     {
                         const long MIN_NON_ZERO_FILE_LENGTH_IN_BYTES = 1_024 * 100; //100KB
-                        if ( MIN_NON_ZERO_FILE_LENGTH_IN_BYTES <= FileHelper.GetFileSize( outputFileName ) ) //NonZeroLength
+                        if ( MIN_NON_ZERO_FILE_LENGTH_IN_BYTES <= FileHelperEx.GetFileSize( outputFileName ) ) //NonZeroLength
                         {
                             if ( _ExternalProgRunner   .Queue.Remove( outputFileName ) ) _ExternalProgRunner   .Run( outputFileName, checkIsExternalProgFileAreExists: true );
                             if ( _FFmpegConverterRunner.Queue.Remove( outputFileName ) ) _FFmpegConverterRunner.Run( outputFileName, checkIsExternalProgFileAreExists: true );
@@ -896,7 +896,7 @@ namespace m3u8.download.manager.ui
                     using ( WaitBannerUC.Create( this, cts, "delete files...", visibleDelayInMilliseconds: 2_000 ) )
                     {
                         await _DC.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token,
-                            (row, ct) => FileHelper.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
+                            (row, ct) => FileHelperEx.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
                             (row) =>
                             {
                                 _DownloadListModel.RemoveRow( row );
@@ -1039,9 +1039,9 @@ namespace m3u8.download.manager.ui
                     var fail_action = new Action(() => wb.IncreaseSteps());
 
                     wb.SetTotalSteps( exists_fns.Count );
-                    await FileHelper.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
+                    await FileHelperEx.DeleteFiles_UseSynchronizationContext( exists_fns, cts.Token, async (fn, ct, syncCtx) => 
                     {
-                        var suc = await FileHelper.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );                        
+                        var suc = await FileHelperEx.TryDeleteFile( fn, ct, fullFileName => syncCtx.Invoke(() => wb.SetCaptionText( Ellipsis.MinimizePath( fullFileName, 30 ) + ", " ) ) );                        
                         if ( suc )
                         {
                             if ( dict.TryGetValue( fn, out var row ) ) ClearDownloadParams( row );
@@ -1535,7 +1535,7 @@ namespace m3u8.download.manager.ui
                 pauseDownloadMenuItem            .Enabled = pauseDownloadToolButton .Enabled;
                 deleteDownloadMenuItem           .Enabled = deleteDownloadToolButton.Enabled;
                 moreOpMenuItem                   .Enabled = deleteDownloadToolButton.Enabled;
-                deleteWithOutputFileMenuItem     .Enabled = deleteDownloadToolButton.Enabled && (selectedRow_AnyFileExists = FileHelper.AnyFileExists( selectedRow?.GetOutputFullFileNames() ));
+                deleteWithOutputFileMenuItem     .Enabled = deleteDownloadToolButton.Enabled && (selectedRow_AnyFileExists = FileHelperEx.AnyFileExists( selectedRow?.GetOutputFullFileNames() ));
                 browseOutputFileMenuItem         .Visible = deleteWithOutputFileMenuItem.Enabled;
                 openOutputFileMenuItem           .Visible = deleteWithOutputFileMenuItem.Enabled;     
                 deleteAllFinishedDownloadMenuItem.Enabled = deleteAllFinishedDownloadToolButton.Enabled;
@@ -1574,7 +1574,7 @@ namespace m3u8.download.manager.ui
                     }
                     else
                     {
-                        var x = rows.Where( r => !r.Status.IsRunningOrPaused() ).FirstOrDefault( r => FileHelper.AnyFileExists( r.GetOutputFullFileNames() ) );
+                        var x = rows.Where( r => !r.Status.IsRunningOrPaused() ).FirstOrDefault( r => FileHelperEx.AnyFileExists( r.GetOutputFullFileNames() ) );
                         onlyDeleteOutputFileMenuItem.Enabled = (x != null);
                     }
                     #endregion
@@ -1617,7 +1617,7 @@ namespace m3u8.download.manager.ui
                     cancel += CancelDownload_IsAllowed( status ) ? 1 : 0;
                     pause  += PauseDownload_IsAllowed ( status ) ? 1 : 0;
                     delete++;
-                    if ( FileHelper.AnyFileExists( row.GetOutputFullFileNames() ) )
+                    if ( FileHelperEx.AnyFileExists( row.GetOutputFullFileNames() ) )
                     {
                         deleteWithFiles++;
                     }
@@ -1668,7 +1668,7 @@ namespace m3u8.download.manager.ui
         private void browseOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( FileHelper.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( FileHelperEx.TryGetFirstFileExists( row?.GetOutputFullFileNames(), out var outputFileName ) )
             {                
                 var suc = WinApi.ShellExploreAndSelectFile( outputFileName, out var error );
                 //using ( Process.Start( "explorer", $"/e,/select,\"{outputFileName}\"" ) ) {; }
@@ -1677,7 +1677,7 @@ namespace m3u8.download.manager.ui
         private void openOutputFileMenuItem_Click( object sender, EventArgs e )
         {
             var row = downloadListUC.GetSelectedDownloadRow();
-            if ( (row != null) && row.IsFinishedOrErrorOrCreated() && FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
+            if ( (row != null) && row.IsFinishedOrErrorOrCreated() && FileHelperEx.TryGetFirstFileExists( row.GetOutputFullFileNames(), out var outputFileName ) )
             {
 #if NETCOREAPP
                 using ( Process.Start( new ProcessStartInfo( outputFileName ) { UseShellExecute = true } ) ) {; }
@@ -1739,7 +1739,7 @@ namespace m3u8.download.manager.ui
             var rows = downloadListUC.GetSelectedDownloadRows();
             var outputFileNames = (from row in rows
                                    where row.IsFinishedOrErrorOrCreated()
-                                   let t = FileHelper.TryGetFirstFileExists( row.GetOutputFullFileNames() )
+                                   let t = FileHelperEx.TryGetFirstFileExists( row.GetOutputFullFileNames() )
                                    where t.success
                                    select t.outputFileName
                                   )
@@ -1857,15 +1857,15 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        private string GetSelectedDirectory( DownloadRow row ) => FileHelper.GetFirstExistsDirectory( _SC.Settings.LastChangeOutputDirectory ) ?? row.OutputDirectory;
+        private string GetSelectedDirectory( DownloadRow row ) => FileHelperEx.GetFirstExistsDirectory( _SC.Settings.LastChangeOutputDirectory ) ?? row.OutputDirectory;
 
         private Task ChangeOutputFileName( DownloadRow row, string outputFileName ) => ChangeOutputFileName_Or_OutputDirectory( row, outputFileName, change_outputDirectory: false );            
         private Task ChangeOutputDirectory( DownloadRow row, string outputDirectory ) => ChangeOutputFileName_Or_OutputDirectory( row, outputDirectory, change_outputDirectory: true );
         private Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory )
-            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, outputFileName_or_outputDirectory, change_outputDirectory
+            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_Or_OutputDirectory( row, _DC.TryGetFileWriterHolder( row ), outputFileName_or_outputDirectory, change_outputDirectory
                 , get_AskForOverwriteFunc(), get_showErrorAction(), _ExternalProgRunner.Queue, _FFmpegConverterRunner.Queue );
         private Task ChangeOutputFileName_And_OutputDirectory( DownloadRow row, string outputFileName, string outputDirectory )
-            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_And_OutputDirectory( row, outputFileName, outputDirectory
+            => ChangeFilenameOrDirectoryHelper.ChangeOutputFileName_And_OutputDirectory( row, _DC.TryGetFileWriterHolder( row ), outputFileName, outputDirectory
                 , get_AskForOverwriteFunc(), get_showErrorAction(), _ExternalProgRunner.Queue, _FFmpegConverterRunner.Queue );
         private Func<string, Task<bool>> get_AskForOverwriteFunc() => new Func<string, Task<bool>>( new_outputFullFileName => Task.FromResult( this.MessageBox_ShowQuestion( $"File '{new_outputFullFileName}' already exists. Overwrite ?", "Overwrite exists file" ) == DialogResult.Yes ) );
         private Func<string, Task> get_showErrorAction() => new Func<string, Task>( error => { this.MessageBox_ShowError( error, "Move/Remane output file" ); return Task.CompletedTask; } );

@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
+using m3u8.helpers;
+
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -17,7 +19,7 @@ namespace m3u8.download.manager.infrastructure
     /// <summary>
     /// 
     /// </summary>
-    internal static class FileHelper
+    internal static class FileHelperEx
     {
         public static bool TryDeleteFiles( string[] fullFileNames, CancellationToken ct, int millisecondsDelay = 100 )
         {
@@ -31,6 +33,11 @@ namespace m3u8.download.manager.infrastructure
             {
                 for ( ; !ct.IsCancellationRequested; )
                 {
+#if WINDOWS
+                    var suc = FileHelper.DeleteFile_NoThrow( fullFileName );
+                    if ( suc ) return;
+                    Task.Delay( millisecondsDelay ).Wait( ct );
+#else
                     try
                     {
                         if ( File.Exists( fullFileName ) )
@@ -44,83 +51,98 @@ namespace m3u8.download.manager.infrastructure
                         Debug.WriteLine( ex );
                         Task.Delay( millisecondsDelay ).Wait( ct );
                     }
+#endif
                 }
             });
             return (true);
         }
-        public static bool TryDeleteFiles( string[] fullFileNames, CancellationToken ct, Action< string > tryDeleteFileAction, int millisecondsDelay = 100 )
-        {
-            if ( !fullFileNames.AnyEx() )
-            {
-                return (true);
-            }
+        //public static bool TryDeleteFiles( string[] fullFileNames, CancellationToken ct, Action< string > tryDeleteFileAction, int millisecondsDelay = 100 )
+        //{
+        //    if ( !fullFileNames.AnyEx() )
+        //    {
+        //        return (true);
+        //    }
 
-            var hs = fullFileNames.ToHashSet( StringComparer.InvariantCultureIgnoreCase );
-            Parallel.ForEach( hs, new ParallelOptions() { CancellationToken = ct }, fullFileName =>
-            {
-                for ( ; !ct.IsCancellationRequested; )
-                {                    
-                    try
-                    {
-                        if ( File.Exists( fullFileName ) )
-                        {
-                            tryDeleteFileAction?.Invoke( fullFileName );
+        //    var hs = fullFileNames.ToHashSet( StringComparer.InvariantCultureIgnoreCase );
+        //    Parallel.ForEach( hs, new ParallelOptions() { CancellationToken = ct }, fullFileName =>
+        //    {
+        //        for ( ; !ct.IsCancellationRequested; )
+        //        {                    
+        //            try
+        //            {
+        //                if ( File.Exists( fullFileName ) )
+        //                {
+        //                    tryDeleteFileAction?.Invoke( fullFileName );
 
-                            File.Delete( fullFileName );
-                        }
-                        return;
-                    }
-                    catch ( Exception ex )
-                    {
-                        Debug.WriteLine( ex );
-                        Task.Delay( millisecondsDelay ).Wait( ct );
-                    }
-                }
-            });
-            return (true);
-        }
-        public static Task< bool > TryDeleteFiles_Async( string[] fullFileNames, CancellationToken ct, int millisecondsDelay = 100 )
-        {
-            if ( !fullFileNames.AnyEx() )
-            {
-                return (Task.FromResult( true ));
-            }
+        //                    File.Delete( fullFileName );
+        //                }
+        //                return;
+        //            }
+        //            catch ( Exception ex )
+        //            {
+        //                Debug.WriteLine( ex );
+        //                Task.Delay( millisecondsDelay ).Wait( ct );
+        //            }
+        //        }
+        //    });
+        //    return (true);
+        //}
+        //public static Task< bool > TryDeleteFiles_Async( string[] fullFileNames, CancellationToken ct, int millisecondsDelay = 100 )
+        //{
+        //    if ( !fullFileNames.AnyEx() )
+        //    {
+        //        return (Task.FromResult( true ));
+        //    }
 
-            var task = Task.Run( () =>
-            {
-                var hs = fullFileNames.ToHashSet( StringComparer.InvariantCultureIgnoreCase );
+        //    var task = Task.Run( () =>
+        //    {
+        //        var hs = fullFileNames.ToHashSet( StringComparer.InvariantCultureIgnoreCase );
 
-                Parallel.ForEach( hs, new ParallelOptions() { CancellationToken = ct }, fullFileName =>
-                {
-                    for ( ; !ct.IsCancellationRequested; )
-                    {
-                        try
-                        {
-                            if ( File.Exists( fullFileName ) )
-                            {
-                                File.Delete( fullFileName );
-                            }
-                            return;
-                        }
-                        catch ( Exception ex )
-                        {
-                            Debug.WriteLine( ex );
-                            Task.Delay( millisecondsDelay ).Wait( ct );
-                        }
-                    }
-                });
+        //        Parallel.ForEach( hs, new ParallelOptions() { CancellationToken = ct }, fullFileName =>
+        //        {
+        //            for ( ; !ct.IsCancellationRequested; )
+        //            {
+        //                try
+        //                {
+        //                    if ( File.Exists( fullFileName ) )
+        //                    {
+        //                        File.Delete( fullFileName );
+        //                    }
+        //                    return;
+        //                }
+        //                catch ( Exception ex )
+        //                {
+        //                    Debug.WriteLine( ex );
+        //                    Task.Delay( millisecondsDelay ).Wait( ct );
+        //                }
+        //            }
+        //        });
 
-                //var success = !Extensions.AnyFileExists( hs );
-                //return (success);
-                return (true);
-            }, ct );
-            return (task);
-        }
+        //        //var success = !Extensions.AnyFileExists( hs );
+        //        //return (success);
+        //        return (true);
+        //    }, ct );
+        //    return (task);
+        //}
 
         public static async Task< bool > TryDeleteFile( string fullFileName, CancellationToken ct, Action< string > tryDeleteFileAction, int millisecondsDelay = 100 )
         {
             for ( ; !ct.IsCancellationRequested; )
             {
+#if WINDOWS
+                if ( File.Exists( fullFileName ) )
+                {
+                    tryDeleteFileAction?.Invoke( fullFileName );
+
+                    var suc = FileHelper.DeleteFile_NoThrow( fullFileName );
+                    if ( !suc )
+                    {
+                        await Task.Delay( millisecondsDelay, ct )/*.CAX()*/;
+                        continue;
+                    }
+                }
+                return (true);
+#else
                 try
                 {
                     if ( File.Exists( fullFileName ) )
@@ -134,31 +156,32 @@ namespace m3u8.download.manager.infrastructure
                 catch ( Exception ex )
                 {
                     Debug.WriteLine( ex );
-                    await Task.Delay( millisecondsDelay, ct );
+                    await Task.Delay( millisecondsDelay, ct )/*.CAX()*/;
                 }
+#endif
             }
             return (false);
         }
-        public static async Task< bool > TryDeleteFile( string fullFileName, CancellationToken ct, int millisecondsDelay = 100 )
-        {
-            for ( ; !ct.IsCancellationRequested; )
-            {
-                try
-                {
-                    if ( File.Exists( fullFileName ) )
-                    {
-                        File.Delete( fullFileName );
-                    }
-                    return (true);
-                }
-                catch ( Exception ex )
-                {
-                    Debug.WriteLine( ex );
-                    await Task.Delay( millisecondsDelay, ct );
-                }
-            }
-            return (false);
-        }
+        //public static async Task< bool > TryDeleteFile( string fullFileName, CancellationToken ct, int millisecondsDelay = 100 )
+        //{
+        //    for ( ; !ct.IsCancellationRequested; )
+        //    {
+        //        try
+        //        {
+        //            if ( File.Exists( fullFileName ) )
+        //            {
+        //                File.Delete( fullFileName );
+        //            }
+        //            return (true);
+        //        }
+        //        catch ( Exception ex )
+        //        {
+        //            Debug.WriteLine( ex );
+        //            await Task.Delay( millisecondsDelay, ct );
+        //        }
+        //    }
+        //    return (false);
+        //}
 
         public static Task DeleteFiles_UseSynchronizationContext( IList< string > fullFileNames, CancellationToken ct, 
             Func< string, CancellationToken, SynchronizationContext, Task< bool > > deleteFilesAction, 
@@ -189,49 +212,49 @@ namespace m3u8.download.manager.infrastructure
             {
                 foreach ( var fileName in fileNames )
                 {
-                    DeleteFile_NoThrow( fileName );
+                    FileHelper.DeleteFile_NoThrow( fileName );
                 }
             }
         }
-        public static void DeleteFile_NoThrow( string fileName )
-        {
-            try
-            {
-                File.Delete( fileName );
-            }
-            catch ( Exception ex )
-            {
-                Debug.WriteLine( ex );
-            }
-        }
-        public static bool TryMoveFile_NoThrow( string sourceFileName, string destFileName, out Exception error )
-        {
-            if ( sourceFileName == destFileName )
-            {
-                error = default;
-                return (true);
-            }
+//        public static void DeleteFile_NoThrow( string fileName )
+//        {
+//            try
+//            {
+//                File.Delete( fileName );
+//            }
+//            catch ( Exception ex )
+//            {
+//                Debug.WriteLine( ex );
+//            }
+//        }
+//        public static bool TryMoveFile_NoThrow( string sourceFileName, string destFileName, out Exception error )
+//        {
+//            if ( sourceFileName == destFileName )
+//            {
+//                error = default;
+//                return (true);
+//            }
 
-            try
-            {
-#if NETCOREAPP
-                File.Move( sourceFileName, destFileName, overwrite: true );
-#else
-                if ( !sourceFileName.EqualIgnoreCase( destFileName ) )
-                {
-                    FileHelper.DeleteFile_NoThrow( destFileName );
-                }
-                File.Move( sourceFileName, destFileName );
-#endif
-                error = default;
-                return (true);
-            }
-            catch ( Exception ex )
-            {
-                error = ex;
-                return (false);
-            }
-        }
+//            try
+//            {
+//#if NETCOREAPP
+//                File.Move( sourceFileName, destFileName, overwrite: true );
+//#else
+//                if ( !sourceFileName.EqualIgnoreCase( destFileName ) )
+//                {
+//                    FileHelper.DeleteFile_NoThrow( destFileName );
+//                }
+//                File.Move( sourceFileName, destFileName );
+//#endif
+//                error = default;
+//                return (true);
+//            }
+//            catch ( Exception ex )
+//            {
+//                error = ex;
+//                return (false);
+//            }
+//        }
         public static string GetFirstExistsDirectory( string path )
         {
             for ( var dir = path; !dir.IsNullOrEmpty(); dir = Path.GetDirectoryName( dir ) )

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using m3u8.client__v2;
+using m3u8.client;
 using m3u8.infrastructure;
 
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
-namespace m3u8.client__v2
+namespace m3u8.client
 {
     /// <summary>
     /// 

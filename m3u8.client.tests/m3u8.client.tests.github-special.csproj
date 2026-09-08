@@ -10,6 +10,7 @@
     <DefineConstants>TRACE;M3U8_CLIENT_TESTS;GITHUB_SPECIAL;THROTTLER__V2;</DefineConstants>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,14 +23,15 @@
     <Compile Include="..\m3u8.client\infrastructure\LRUCache.cs" Link="[-= m3u8.client =-]\infrastructure\LRUCache.cs" />
     <Compile Include="..\m3u8.client\infrastructure\DefaultConnectionLimitSaver.cs" Link="[-= m3u8.client =-]\infrastructure\DefaultConnectionLimitSaver.cs" />
 
-    <Compile Include="..\m3u8.client\client__v1\i_m3u8_client.cs" Link="[-= m3u8.client =-]\client__v1\i_m3u8_client.cs" />
-    <Compile Include="..\m3u8.client\client__v1\m3u8_file_t.cs" Link="[-= m3u8.client =-]\client__v1\m3u8_file_t.cs" />
-    <Compile Include="..\m3u8.client\client__v1\m3u8_client_base.cs" Link="[-= m3u8.client =-]\client__v1\m3u8_client_base.cs" />
-    <Compile Include="..\m3u8.client\client__v1\m3u8_client__with_HttpClient.cs" Link="[-= m3u8.client =-]\client__v1\m3u8_client__with_HttpClient.cs" />
-    <Compile Include="..\m3u8.client\client__v1\m3u8_client__with_HttpInvoker.cs" Link="[-= m3u8.client =-]\client__v1\m3u8_client__with_HttpInvoker.cs" />
-    <Compile Include="..\m3u8.client\client__v1\m3u8_client_factory.cs" Link="[-= m3u8.client =-]\client__v1\m3u8_client_factory.cs" />
-    <Compile Include="..\m3u8.client\client__v1\m3u8_processor.cs" Link="[-= m3u8.client =-]\client__v1\m3u8_processor.cs" />
-    <Compile Include="..\m3u8.client\client__v1\m3u8_processor_adv.cs" Link="[-= m3u8.client =-]\client__v1\m3u8_processor_adv.cs" />
+    <Compile Include="..\m3u8.client\client\i_m3u8_client.cs" Link="[-= m3u8.client =-]\client\i_m3u8_client.cs" />
+    <Compile Include="..\m3u8.client\client\m3u8_file_t.cs" Link="[-= m3u8.client =-]\client\m3u8_file_t.cs" />
+    <Compile Include="..\m3u8.client\client\m3u8_client_base.cs" Link="[-= m3u8.client =-]\client\m3u8_client_base.cs" />
+    <Compile Include="..\m3u8.client\client\m3u8_client__with_HttpClient.cs" Link="[-= m3u8.client =-]\client\m3u8_client__with_HttpClient.cs" />
+    <Compile Include="..\m3u8.client\client\m3u8_client__with_HttpInvoker.cs" Link="[-= m3u8.client =-]\client\m3u8_client__with_HttpInvoker.cs" />
+    <Compile Include="..\m3u8.client\client\m3u8_client_factory.cs" Link="[-= m3u8.client =-]\client\m3u8_client_factory.cs" />
+    <Compile Include="..\m3u8.client\client\m3u8_processor.cs" Link="[-= m3u8.client =-]\client\m3u8_processor.cs" />
+    <Compile Include="..\m3u8.client\client\WaitIfPausedHolder.cs" Link="[-= m3u8.client =-]\client\WaitIfPausedHolder.cs" />
+    <Compile Include="..\m3u8.client\client\ReceivedAndWritedPartsStorer.cs" Link="[-= m3u8.client =-]\client\ReceivedAndWritedPartsStorer.cs" />
 
     <Compile Include="..\m3u8.client\m3u8.stuff.cs" Link="[-= m3u8.client =-]\m3u8.stuff.cs" />
     <Compile Include="..\m3u8.client\i_download_threads_semaphore.cs" Link="[-= m3u8.client =-]\i_download_threads_semaphore.cs" />

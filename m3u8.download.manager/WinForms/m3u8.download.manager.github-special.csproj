@@ -53,15 +53,15 @@
     <Compile Include="..\..\m3u8.client\infrastructure\System.Runtime.CompilerServices.cs" Link="[-= m3u8.client =-]\infrastructure\System.Runtime.CompilerServices.cs" />
     <Compile Include="..\..\m3u8.client\infrastructure\DefaultConnectionLimitSaver.cs" Link="[-= m3u8.client =-]\infrastructure\DefaultConnectionLimitSaver.cs" />
 
-    <Compile Include="..\..\m3u8.client\client__v2\i_m3u8_client.cs" Link="[-= m3u8.client =-]\client__v2\i_m3u8_client.cs" />
-    <Compile Include="..\..\m3u8.client\client__v2\m3u8_file_t.cs" Link="[-= m3u8.client =-]\client__v2\m3u8_file_t.cs" />
-    <Compile Include="..\..\m3u8.client\client__v2\m3u8_client_base.cs" Link="[-= m3u8.client =-]\client__v2\m3u8_client_base.cs" />
-    <Compile Include="..\..\m3u8.client\client__v2\m3u8_client__with_HttpClient.cs" Link="[-= m3u8.client =-]\client__v2\m3u8_client__with_HttpClient.cs" />
-    <Compile Include="..\..\m3u8.client\client__v2\m3u8_client__with_HttpInvoker.cs" Link="[-= m3u8.client =-]\client__v2\m3u8_client__with_HttpInvoker.cs" />
-    <Compile Include="..\..\m3u8.client\client__v2\m3u8_client_factory.cs" Link="[-= m3u8.client =-]\client__v2\m3u8_client_factory.cs" />
-    <Compile Include="..\..\m3u8.client\client__v2\m3u8_processor.cs" Link="[-= m3u8.client =-]\client__v2\m3u8_processor.cs" />
-    <Compile Include="..\..\m3u8.client\client__v2\WaitIfPausedHolder.cs" Link="[-= m3u8.client =-]\client__v2\WaitIfPausedHolder.cs" />
-    <Compile Include="..\..\m3u8.client\client__v2\ReceivedAndWritedPartsStorer.cs" Link="[-= m3u8.client =-]\client__v2\ReceivedAndWritedPartsStorer.cs" />
+    <Compile Include="..\..\m3u8.client\client\i_m3u8_client.cs" Link="[-= m3u8.client =-]\client\i_m3u8_client.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8_file_t.cs" Link="[-= m3u8.client =-]\client\m3u8_file_t.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8_client_base.cs" Link="[-= m3u8.client =-]\client\m3u8_client_base.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8_client__with_HttpClient.cs" Link="[-= m3u8.client =-]\client\m3u8_client__with_HttpClient.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8_client__with_HttpInvoker.cs" Link="[-= m3u8.client =-]\client\m3u8_client__with_HttpInvoker.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8_client_factory.cs" Link="[-= m3u8.client =-]\client\m3u8_client_factory.cs" />
+    <Compile Include="..\..\m3u8.client\client\m3u8_processor.cs" Link="[-= m3u8.client =-]\client\m3u8_processor.cs" />
+    <Compile Include="..\..\m3u8.client\client\WaitIfPausedHolder.cs" Link="[-= m3u8.client =-]\client\WaitIfPausedHolder.cs" />
+    <Compile Include="..\..\m3u8.client\client\ReceivedAndWritedPartsStorer.cs" Link="[-= m3u8.client =-]\client\ReceivedAndWritedPartsStorer.cs" />
 
     <Compile Include="..\..\m3u8.client\m3u8.stuff.cs" Link="[-= m3u8.client =-]\m3u8.stuff.cs" />
     <Compile Include="..\..\m3u8.client\i_download_threads_semaphore.cs" Link="[-= m3u8.client =-]\i_download_threads_semaphore.cs" />
@@ -72,21 +72,31 @@
 
     <Compile Include="..\..\m3u8_live_stream_downloader\m3u8_live_stream_downloader.cs" Link="[-= m3u8.client =-]\m3u8_live_stream_downloader.cs" />
 
+    <Compile Include="..\[Common]\FileNameCleaner4UI.cs" Link="Infrastructure\FileNameCleaner4UI.cs" />
+    <Compile Include="..\[Common]\ObjAsDict_JsonSerializer.cs" Link="Infrastructure\ObjAsDict_JsonSerializer.cs" />
+    <Compile Include="..\[Common]\AssemblyInfoHelper.cs" Link="Infrastructure\AssemblyInfoHelper.cs" />
+    <Compile Include="..\[Common]\DownloadRowsSerializer.cs" Link="Infrastructure\DownloadRowsSerializer.cs" />
+    <Compile Include="..\[Common]\NameAndPathCleaner.cs" Link="Infrastructure\NameAndPathCleaner.cs" />
+    <Compile Include="..\[Common]\OutputFileNamePatternProcessor.cs" Link="Infrastructure\OutputFileNamePatternProcessor.cs" />
+    <Compile Include="..\[Common]\Ellipsis.cs" Link="Infrastructure\Ellipsis.cs" />
     <Compile Include="..\[Common]\Extensions.cs" Link="Infrastructure\Extensions.cs" />
     <Compile Include="..\[Common]\Extensions_4_DownloadRow.cs" Link="Infrastructure\Extensions_4_DownloadRow.cs" />
+    <Compile Include="..\[Common]\UrlHelper.cs" Link="Infrastructure\UrlHelper.cs" />
+    <Compile Include="..\[Common]\FileHelperEx.cs" Link="Infrastructure\FileHelperEx.cs" />
+    <Compile Include="..\[Common]\HttpHeaderHelper.cs" Link="Infrastructure\HttpHeaderHelper.cs" />
+    <Compile Include="..\[Common]\DigitLetterSort.cs" Link="Infrastructure\DigitLetterSort.cs" />
+    <Compile Include="..\[Common]\TestWebProxyConnectionHelper.cs" Link="Infrastructure\TestWebProxyConnectionHelper.cs" />
+    <Compile Include="..\[Common]\ChangeFilenameOrDirectoryHelper.cs" Link="Infrastructure\ChangeFilenameOrDirectoryHelper.cs" />
+    <Compile Include="..\[Common]\ExternalProgRunner.cs" Link="Infrastructure\ExternalProgRunner.cs" />
+
     <Compile Include="..\[Common]\Controller\throttler_by_speed_impl.cs" Link="Controller\throttler_by_speed_impl.cs" />
     <Compile Include="..\[Common]\Controller\download_threads_semaphore_impl.cs" Link="Controller\download_threads_semaphore_impl.cs" />
     <Compile Include="..\[Common]\Controller\interlocked_lock.cs" Link="Controller\interlocked_lock.cs" />
     <Compile Include="..\[Common]\Controller\DownloadController.cs" Link="Controller\DownloadController.cs" />
     <Compile Include="..\[Common]\Controller\SettingsPropertyChangeController.cs" Link="Controller\SettingsPropertyChangeController.cs" />
     <Compile Include="..\[Common]\Controller\Sync_primitives.cs" Link="Controller\Sync_primitives.cs" />
+
     <Compile Include="..\[Common]\UndoModel.cs" Link="Model\UndoModel.cs" />
-    <Compile Include="..\[Common]\UrlHelper.cs" Link="Infrastructure\UrlHelper.cs" />
-    <Compile Include="..\[Common]\HttpHeaderHelper.cs" Link="Infrastructure\HttpHeaderHelper.cs" />
-    <Compile Include="..\[Common]\DigitLetterSort.cs" Link="Infrastructure\DigitLetterSort.cs" />
-    <Compile Include="..\[Common]\TestWebProxyConnectionHelper.cs" Link="Infrastructure\TestWebProxyConnectionHelper.cs" />
-    <Compile Include="..\[Common]\ChangeFilenameOrDirectoryHelper.cs" Link="Infrastructure\ChangeFilenameOrDirectoryHelper.cs" />
-    <Compile Include="..\[Common]\ExternalProgRunner.cs" Link="Infrastructure\ExternalProgRunner.cs" />
   </ItemGroup>
 
   <ItemGroup>
