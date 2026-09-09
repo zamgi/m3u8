@@ -135,7 +135,7 @@
     <PackageReference Include="Avalonia.Themes.Simple" Version="12.1.2" />
     <!--<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.0" />-->
     <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="12.1.2" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.11" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.12" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Reactive" Version="7.0.0" />
   </ItemGroup>
