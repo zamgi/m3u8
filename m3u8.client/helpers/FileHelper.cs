@@ -39,7 +39,9 @@ namespace m3u8.helpers
             return (suc, suc ? 0 : Marshal.GetLastWin32Error());
         }
 #endif
+#if !(NETCOREAPP)
         private static bool EqualIgnoreCase( this string s1, string s2 ) => (string.Compare( s1, s2, true ) == 0);
+#endif
         public static bool DeleteFile_NoThrow( string fileName )
         {
 #if WINDOWS

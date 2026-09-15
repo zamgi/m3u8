@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+#if !(WINDOWS)
 using System.Diagnostics;
+#endif
 using System.IO;
 using System.Linq;
 #if WINDOWS
@@ -35,7 +37,7 @@ namespace m3u8.download.manager.infrastructure
                 {
 #if WINDOWS
                     var suc = FileHelper.DeleteFile_NoThrow( fullFileName );
-                    if ( suc ) return;
+                    if ( suc || !File.Exists( fullFileName ) ) return;
                     Task.Delay( millisecondsDelay ).Wait( ct );
 #else
                     try
@@ -56,75 +58,6 @@ namespace m3u8.download.manager.infrastructure
             });
             return (true);
         }
-        //public static bool TryDeleteFiles( string[] fullFileNames, CancellationToken ct, Action< string > tryDeleteFileAction, int millisecondsDelay = 100 )
-        //{
-        //    if ( !fullFileNames.AnyEx() )
-        //    {
-        //        return (true);
-        //    }
-
-        //    var hs = fullFileNames.ToHashSet( StringComparer.InvariantCultureIgnoreCase );
-        //    Parallel.ForEach( hs, new ParallelOptions() { CancellationToken = ct }, fullFileName =>
-        //    {
-        //        for ( ; !ct.IsCancellationRequested; )
-        //        {                    
-        //            try
-        //            {
-        //                if ( File.Exists( fullFileName ) )
-        //                {
-        //                    tryDeleteFileAction?.Invoke( fullFileName );
-
-        //                    File.Delete( fullFileName );
-        //                }
-        //                return;
-        //            }
-        //            catch ( Exception ex )
-        //            {
-        //                Debug.WriteLine( ex );
-        //                Task.Delay( millisecondsDelay ).Wait( ct );
-        //            }
-        //        }
-        //    });
-        //    return (true);
-        //}
-        //public static Task< bool > TryDeleteFiles_Async( string[] fullFileNames, CancellationToken ct, int millisecondsDelay = 100 )
-        //{
-        //    if ( !fullFileNames.AnyEx() )
-        //    {
-        //        return (Task.FromResult( true ));
-        //    }
-
-        //    var task = Task.Run( () =>
-        //    {
-        //        var hs = fullFileNames.ToHashSet( StringComparer.InvariantCultureIgnoreCase );
-
-        //        Parallel.ForEach( hs, new ParallelOptions() { CancellationToken = ct }, fullFileName =>
-        //        {
-        //            for ( ; !ct.IsCancellationRequested; )
-        //            {
-        //                try
-        //                {
-        //                    if ( File.Exists( fullFileName ) )
-        //                    {
-        //                        File.Delete( fullFileName );
-        //                    }
-        //                    return;
-        //                }
-        //                catch ( Exception ex )
-        //                {
-        //                    Debug.WriteLine( ex );
-        //                    Task.Delay( millisecondsDelay ).Wait( ct );
-        //                }
-        //            }
-        //        });
-
-        //        //var success = !Extensions.AnyFileExists( hs );
-        //        //return (success);
-        //        return (true);
-        //    }, ct );
-        //    return (task);
-        //}
-
         public static async Task< bool > TryDeleteFile( string fullFileName, CancellationToken ct, Action< string > tryDeleteFileAction, int millisecondsDelay = 100 )
         {
             for ( ; !ct.IsCancellationRequested; )
@@ -162,26 +95,16 @@ namespace m3u8.download.manager.infrastructure
             }
             return (false);
         }
-        //public static async Task< bool > TryDeleteFile( string fullFileName, CancellationToken ct, int millisecondsDelay = 100 )
-        //{
-        //    for ( ; !ct.IsCancellationRequested; )
-        //    {
-        //        try
-        //        {
-        //            if ( File.Exists( fullFileName ) )
-        //            {
-        //                File.Delete( fullFileName );
-        //            }
-        //            return (true);
-        //        }
-        //        catch ( Exception ex )
-        //        {
-        //            Debug.WriteLine( ex );
-        //            await Task.Delay( millisecondsDelay, ct );
-        //        }
-        //    }
-        //    return (false);
-        //}
+        public static void DeleteFiles_NoThrow( string[] fileNames )
+        {
+            if ( fileNames.AnyEx() )
+            {
+                foreach ( var fileName in fileNames )
+                {
+                    FileHelper.DeleteFile_NoThrow( fileName );
+                }
+            }
+        }
 
         public static Task DeleteFiles_UseSynchronizationContext( IList< string > fullFileNames, CancellationToken ct, 
             Func< string, CancellationToken, SynchronizationContext, Task< bool > > deleteFilesAction, 
@@ -206,55 +129,6 @@ namespace m3u8.download.manager.infrastructure
             return (false);
         }
 
-        public static void DeleteFiles_NoThrow( string[] fileNames )
-        {
-            if ( fileNames.AnyEx() )
-            {
-                foreach ( var fileName in fileNames )
-                {
-                    FileHelper.DeleteFile_NoThrow( fileName );
-                }
-            }
-        }
-//        public static void DeleteFile_NoThrow( string fileName )
-//        {
-//            try
-//            {
-//                File.Delete( fileName );
-//            }
-//            catch ( Exception ex )
-//            {
-//                Debug.WriteLine( ex );
-//            }
-//        }
-//        public static bool TryMoveFile_NoThrow( string sourceFileName, string destFileName, out Exception error )
-//        {
-//            if ( sourceFileName == destFileName )
-//            {
-//                error = default;
-//                return (true);
-//            }
-
-//            try
-//            {
-//#if NETCOREAPP
-//                File.Move( sourceFileName, destFileName, overwrite: true );
-//#else
-//                if ( !sourceFileName.EqualIgnoreCase( destFileName ) )
-//                {
-//                    FileHelper.DeleteFile_NoThrow( destFileName );
-//                }
-//                File.Move( sourceFileName, destFileName );
-//#endif
-//                error = default;
-//                return (true);
-//            }
-//            catch ( Exception ex )
-//            {
-//                error = ex;
-//                return (false);
-//            }
-//        }
         public static string GetFirstExistsDirectory( string path )
         {
             for ( var dir = path; !dir.IsNullOrEmpty(); dir = Path.GetDirectoryName( dir ) )
@@ -284,11 +158,6 @@ namespace m3u8.download.manager.infrastructure
             existsFileName = null;
             return (false);
         }
-        //public static bool TryGetFirstFileExists( IReadOnlyCollection< string > fileNames, out IReadOnlyCollection< string > inputFileNames, out string existsFileName )
-        //{
-        //    inputFileNames = fileNames;
-        //    return (TryGetFirstFileExists( fileNames, out existsFileName ));
-        //}
         public static bool AnyFileExists( IReadOnlyCollection< string > fileNames ) => TryGetFirstFileExists( fileNames, out var _ );
 
         public static long GetFileSize( string fileName ) => new FileInfo( fileName ).Length;
@@ -303,7 +172,6 @@ namespace m3u8.download.manager.infrastructure
             }
         }
         public static bool IsCompressed( string fn ) => ((File.GetAttributes( fn ) & FileAttributes.Compressed) == FileAttributes.Compressed);
-
 #if WINDOWS
         private const int   FSCTL_SET_COMPRESSION      = 0x9C040;
         private const short COMPRESSION_FORMAT_DEFAULT = 1;
@@ -328,7 +196,6 @@ namespace m3u8.download.manager.infrastructure
             }
         }
 #endif
-
         [M(O.AggressiveInlining)] public static string GetDisplaySizeText( long size )
         {
             if ( size == 0 )

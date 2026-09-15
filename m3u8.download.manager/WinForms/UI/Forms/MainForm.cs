@@ -18,9 +18,9 @@ using m3u8.download.manager.ui.infrastructure;
 
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _DC_                                   = m3u8.download.manager.controllers.DownloadController;
+using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
 using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
-using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 using _CheckMarkTypeEnum_                    = m3u8.download.manager.ui.DownloadListUC.CheckMarkTypeEnum;
 using M                                      = System.Runtime.CompilerServices.MethodImplAttribute;

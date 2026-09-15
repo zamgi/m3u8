@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using m3u8.download.manager.infrastructure;
+using m3u8.helpers;
 
 namespace m3u8.download.manager
 {
@@ -171,7 +172,7 @@ namespace m3u8.download.manager
                         var isCtrlC = (ffmpeg.ExitCode == 255) /*Ctrl+C(?)*/;
 
                         await Task.Delay( 250 );
-                        m3u8.helpers.FileHelper.DeleteFile_NoThrow( new_fn );
+                        FileHelper.DeleteFile_NoThrow( new_fn );
                     }
                 }
                 catch ( Exception ex ) 
