@@ -100,6 +100,54 @@ namespace m3u8.download.manager.models
             }
             return (row);
         }
+        [M(O.AggressiveInlining)] protected T AddInsert( T row, int? index = null )
+        {
+#if DEBUG
+            Debug.Assert( row != null );
+#endif
+            if ( row == null ) throw (new ArgumentNullException( nameof(row) ));
+
+            //lock ( _Lock )
+            //{
+                if ( _RowsVisibleIndexes.ContainsKey( row.Id ) )
+                {
+                    throw (new InvalidOperationException( "Row already in list" ));
+                }
+
+                int visibleIndex;
+                if ( index.HasValue )
+                {
+                    var idx = index.Value;
+                    if ( idx < 0 )
+                    {
+                        visibleIndex = 0;
+                        _Rows.Insert( 0, row );
+                    }
+                    else if ( _Rows.Count <= idx )
+                    {
+                        visibleIndex = _Rows.Count;
+                        _Rows.Add( row );
+                    }
+                    else
+                    {
+                        visibleIndex = idx;
+                        _Rows.Insert( idx, row );
+                    }
+                }
+                else
+                {
+                    visibleIndex = _Rows.Count;
+                    _Rows.Add( row );
+                }
+                _RowsVisibleIndexes.Add( row.Id, visibleIndex );
+            //}
+
+            if ( !_UpdtTup.InUpdate )
+            {
+                CollectionChanged?.Invoke( CollectionChangedTypeEnum.Add, row );
+            }
+            return (row);
+        }
         [M(O.AggressiveInlining)] protected bool Contains( T row )
         {
 #if DEBUG

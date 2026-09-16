@@ -17,15 +17,15 @@ namespace m3u8.download.manager.models
 #if DEBUG
         public DownloadRow AddRow( in (string Url, string OutputFileName, string OutputDirectory) t ) => AddRow( DownloadRow_Definer_1.Create( t.Url, t.OutputFileName, t.OutputDirectory ) );
 #endif
-        public DownloadRow AddRow( DownloadRow_Definer_1 t )
+        public DownloadRow AddRow( DownloadRow_Definer_1 t, int? index = null )
         {
-            var row = base.Add( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler ) );
+            var row = base.AddInsert( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler ), index );
             _Urls.Add( row.Url );
             return (row);
         }
-        public DownloadRow AddRow( DownloadRow_Definer_2 t )
+        public DownloadRow AddRow( DownloadRow_Definer_2 t, int? index = null )
         {
-            var row = base.Add( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler ) );
+            var row = base.AddInsert( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler ), index );
             _Urls.Add( row.Url );
             return (row);
         }

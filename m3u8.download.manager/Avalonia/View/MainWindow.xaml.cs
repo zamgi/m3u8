@@ -241,7 +241,7 @@ namespace m3u8.download.manager.ui
                     _VM.AddCommand.Run( (m3u8FileUrls, false) );
                 }
             }
-            _VM.DownloadListModel.AddRows( _VM.SettingsController.GetDownloadRows() /*DownloadRowsSerializer.FromJSON( _VM.SettingsController.DownloadRowsJson )*/ );
+            _VM.DownloadListModel.AddRows( _VM.SettingsController.GetDownloadRows() );
 #if DEBUG
             if ( _VM.DownloadListModel.RowsCount == 0 )
             {

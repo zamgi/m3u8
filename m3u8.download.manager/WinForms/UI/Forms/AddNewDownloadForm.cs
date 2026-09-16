@@ -211,26 +211,26 @@ namespace m3u8.download.manager.ui
         /// Add (over Copy-Paste)
         /// </summary>
         private AddNewDownloadForm( _DC_ dc, _SC_ sc
-            , DownloadRow_Definer_3 row
+            , DownloadRow_Definer_3 dd3
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
             , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
             , in (int n, int total)? seriesInfo = null ) : this( dc, sc, receivedAndWritedPartsProcessor )
         {
             _IsInEditMode      = true;
             _DownloadListModel = dc?.Model;
-            requestHeadersEditor.SetRequestHeaders( row.RequestHeaders, sc.IgnoreHostHttpHeader );
+            requestHeadersEditor.SetRequestHeaders( dd3.RequestHeaders, sc.IgnoreHostHttpHeader );
 
-            this.OutputFileName               = row.OutputFileName;
-            this.OutputDirectory              = row.OutputDirectory;
-            this.IsLiveStream                 = row.IsLiveStream; if ( row.IsLiveStream ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
-            this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;
+            this.OutputFileName               = dd3.OutputFileName;
+            this.OutputDirectory              = dd3.OutputDirectory;
+            this.IsLiveStream                 = dd3.IsLiveStream; if ( dd3.IsLiveStream ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
+            this.LiveStreamMaxFileSizeInBytes = dd3.LiveStreamMaxFileSizeInBytes;
 
             #region [.Timeout & AttemptRequestCount.]
-            if ( row.Timeout            .HasValue ) requestTimeoutByPartDTP     .Value        = requestTimeoutByPartDTP.MinDate.Date + row.Timeout.Value;
-            if ( row.AttemptRequestCount.HasValue ) attemptRequestCountByPartNUD.ValueAsInt32 = row.AttemptRequestCount.Value;
+            if ( dd3.Timeout            .HasValue ) requestTimeoutByPartDTP     .Value        = requestTimeoutByPartDTP.MinDate.Date + dd3.Timeout.Value;
+            if ( dd3.AttemptRequestCount.HasValue ) attemptRequestCountByPartNUD.ValueAsInt32 = dd3.AttemptRequestCount.Value;
             #endregion
 
-            _Initial_M3u8FileUrl = row.Url;
+            _Initial_M3u8FileUrl = dd3.Url;
             _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
 
             #region [.if setted outputFileName.]
@@ -239,15 +239,15 @@ namespace m3u8.download.manager.ui
             #endregion
 
             m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
-            this.M3u8FileUrl = row.Url;
+            this.M3u8FileUrl = dd3.Url;
             m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
-            _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
+            _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = dd3.Url.IsNullOrWhiteSpace();
 
             logUC.SetModel( _Model = new LogListModel() );
 
-            set_WebProxyInfo( row.WebProxyInfo );
+            set_WebProxyInfo( dd3.WebProxyInfo );
             Init_SeriesInfo( seriesInfo );
-            if ( row.OutputFileName.IsNullOrWhiteSpace() ) TryRestoreOutputFileNameByAddress( row.Url );
+            if ( dd3.OutputFileName.IsNullOrWhiteSpace() ) TryRestoreOutputFileNameByAddress( dd3.Url );
         }
 
         protected override void Dispose( bool disposing )
@@ -309,17 +309,17 @@ namespace m3u8.download.manager.ui
         /// Add (over Copy-Paste)
         /// </summary>
         public static void Add( IWin32Window owner, _DC_ dc, _SC_ sc
-            , DownloadRow_Definer_3 r
+            , DownloadRow_Definer_3 dd3
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
             , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
             , in (int n, int total)? seriesInfo
             , Func< AddNewDownloadForm, Task > formClosedAction )
         {
-            var f = new AddNewDownloadForm( dc, sc, r, outputFileNamePatternProcessor, receivedAndWritedPartsProcessor, seriesInfo ) 
+            var f = new AddNewDownloadForm( dc, sc, dd3, outputFileNamePatternProcessor, receivedAndWritedPartsProcessor, seriesInfo ) 
             { 
                 _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url = formClosedAction 
             };
-            f.InitAndShowWhenAdd( owner, r.Url, formClosedAction );
+            f.InitAndShowWhenAdd( owner, dd3.Url, formClosedAction );
         }
 
         private void InitAndShowWhenAdd( IWin32Window owner, string m3u8FileUrl, Func< AddNewDownloadForm, Task > formClosedAction )

@@ -86,7 +86,8 @@ namespace m3u8.download.manager
 
                     var webProxyInfo = _VM.SettingsController.GetDefaultWebProxyInfo();
                     var cp           = _VM.SettingsController.GetCreateM3u8ClientParams();
-                    var row = _VM.DownloadListModel.AddRow( DownloadRow_Definer_1.Create( p.m3u8FileUrl, requestHeaders, webProxyInfo, cp, outputFileName, outputFileDirectory ) );
+                    var dd1 = DownloadRow_Definer_1.Create( p.m3u8FileUrl, requestHeaders, webProxyInfo, cp, outputFileName, outputFileDirectory );
+                    var row = _VM.DownloadListModel.AddInsertRowByExistsRowStatus( dd1 );
                     _VM.DownloadController.Start( row );
                 }
                 return;
@@ -97,7 +98,8 @@ namespace m3u8.download.manager
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
-                    var row = _VM.DownloadListModel.AddRow( f.GetParamsTuple() );
+                    var tp = f.GetParamsTuple(); _VM.SettingsController.SetDefaultWebProxyInfo( tp.WebProxyInfo );
+                    var row = _VM.DownloadListModel.AddInsertRowByExistsRowStatus( tp );
                     if ( f.AutoStartDownload )
                     {
                         _VM.DownloadController.Start( row );
@@ -140,24 +142,25 @@ namespace m3u8.download.manager
                 Run( (null, null, false) );
             }
         }
-        public async void Run( DownloadRow_Definer_3 r, bool autoStartDownload, (int n, int total)? seriesInfo = null )
+        public async void Run( DownloadRow_Definer_3 dd3, bool autoStartDownload, (int n, int total)? seriesInfo = null )
         {
-            if ( autoStartDownload && !r.Url.IsNullOrWhiteSpace() )
+            if ( autoStartDownload && !dd3.Url.IsNullOrWhiteSpace() )
             {
-                if ( !_VM.SettingsController.UniqueUrlsOnly || !_VM.DownloadListModel.ContainsUrl( r.Url ) )
+                if ( !_VM.SettingsController.UniqueUrlsOnly || !_VM.DownloadListModel.ContainsUrl( dd3.Url ) )
                 {
-                    var row = _VM.DownloadListModel.AddRow( r );
+                    var row = _VM.DownloadListModel.AddInsertRowByExistsRowStatus( dd3 );
                     _VM.DownloadController.Start( row );
                 }
                 return;
             }
 
-            var f = AddNewDownloadForm.Add( _VM, r, seriesInfo );
+            var f = AddNewDownloadForm.Add( _VM, dd3, seriesInfo );
             {
                 await f.ShowDialogEx();
                 if ( f.Success )
                 {
-                    var row = _VM.DownloadListModel.AddRow( f.GetParamsTuple() );
+                    var tp = f.GetParamsTuple(); _VM.SettingsController.SetDefaultWebProxyInfo( tp.WebProxyInfo );
+                    var row = _VM.DownloadListModel.AddInsertRowByExistsRowStatus( tp );
                     if ( f.AutoStartDownload )
                     {
                         _VM.DownloadController.Start( row );

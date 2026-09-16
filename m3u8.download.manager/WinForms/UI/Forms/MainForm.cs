@@ -1175,8 +1175,9 @@ namespace m3u8.download.manager.ui
                     var outputFileDirectory = _SC.OutputFileDirectory;
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out var cuttedFileName ) )
                         outputFileName = cuttedFileName;
-                    
-                    var row = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.m3u8FileUrl, requestHeaders, _SC.GetDefaultWebProxyInfo(), _SC.GetCreateM3u8ClientParams(), outputFileName, outputFileDirectory ) );
+
+                    var dd1 = DownloadRow_Definer_1.Create( x.m3u8FileUrl, requestHeaders, _SC.GetDefaultWebProxyInfo(), _SC.GetCreateM3u8ClientParams(), outputFileName, outputFileDirectory );
+                    var row = _DownloadListModel.AddInsertRowByExistsRowStatus( dd1 );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     _DC.Start( row );
                 }
@@ -1216,20 +1217,20 @@ namespace m3u8.download.manager.ui
                 AddNewDownload( default/*(null, null, false)*/ );
             }
         }
-        private async void AddNewDownload( DownloadRow_Definer_3 r, bool autoStartDownload, (int n, int total)? seriesInfo = null )
+        private async void AddNewDownload( DownloadRow_Definer_3 dd3, bool autoStartDownload, (int n, int total)? seriesInfo = null )
         {
-            if ( autoStartDownload && !r.Url.IsNullOrWhiteSpace() )
+            if ( autoStartDownload && !dd3.Url.IsNullOrWhiteSpace() )
             {
-                if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( r.Url ) )
+                if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( dd3.Url ) )
                 {
-                    var row = _DownloadListModel.AddRow( r );
+                    var row = _DownloadListModel.AddInsertRowByExistsRowStatus( dd3 );
                     await downloadListUC.SelectDownloadRowDelay( row );
                     _DC.Start( row );
                 }
                 return;
             }
 
-            AddNewDownloadForm.Add( this, _DC, _SC, r, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
+            AddNewDownloadForm.Add( this, _DC, _SC, dd3, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, seriesInfo, AddNewDownloadForm_when_Add_formClosedAction );
         }
 
         private void AddNewDownload_4_GroupedByAudioVideo( IReadOnlyList< UrlInputParams > xs )
@@ -1283,14 +1284,16 @@ namespace m3u8.download.manager.ui
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName_a, out var cuttedFileName ) )
                         outputFileName_a = cuttedFileName;
 
-                    var row_1 = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, cp, outputFileName_a, outputFileDirectory ) );
+                    var dd1_1 = DownloadRow_Definer_1.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, cp, outputFileName_a, outputFileDirectory );
+                    var row_1 = _DownloadListModel.AddInsertRowByExistsRowStatus( dd1_1 );
                     await downloadListUC.SelectDownloadRowDelay( row_1 );
                     _DC.Start( row_1 );
 
                     if ( FileNameCleaner4UI.TryCutFileNameIfFullPathTooLong( outputFileDirectory, outputFileName, out cuttedFileName ) )
                         outputFileName = cuttedFileName;
 
-                    var row_2 = _DownloadListModel.AddRow( DownloadRow_Definer_1.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, cp, outputFileName, outputFileDirectory ) );
+                    var dd1_2 = DownloadRow_Definer_1.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, cp, outputFileName, outputFileDirectory );
+                    var row_2 = _DownloadListModel.AddInsertRowByExistsRowStatus( dd1_2 );
                     await downloadListUC.SelectDownloadRowDelay( row_2 );
                     _DC.Start( row_2 );
                 }
@@ -1315,11 +1318,13 @@ namespace m3u8.download.manager.ui
                         = (f.GetWebProxyInfo(), f.Timeout, f.AttemptRequestCount, f.GetOutputFileName(), f.GetOutputDirectory(), f.IsLiveStream, f.LiveStreamMaxFileSizeInBytes, f.AutoStartDownload);
                     var outFn_a = get_outputFileName_4_audio( outFn );
 
-                    var row_1 = _DownloadListModel.AddRow( DownloadRow_Definer_2.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, timeout, attemptRequestCount, outFn_a, outDir, isLiveStream, liveStreamMaxFileSize ) );
+                    var dd2_1 = DownloadRow_Definer_2.Create( x.audioUrl, audioRequestHeaders, webProxyInfo, timeout, attemptRequestCount, outFn_a, outDir, isLiveStream, liveStreamMaxFileSize );
+                    var row_1 = _DownloadListModel.AddInsertRowByExistsRowStatus( dd2_1 );
                     await downloadListUC.SelectDownloadRowDelay( row_1 );
                     if ( autoStart ) _DC.Start( row_1 );
 
-                    var row_2 = _DownloadListModel.AddRow( DownloadRow_Definer_2.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, timeout, attemptRequestCount, outFn, outDir, isLiveStream, liveStreamMaxFileSize ) );
+                    var dd2_2 = DownloadRow_Definer_2.Create( x.videoUrl, videoRequestHeaders, webProxyInfo, timeout, attemptRequestCount, outFn, outDir, isLiveStream, liveStreamMaxFileSize );
+                    var row_2 = _DownloadListModel.AddInsertRowByExistsRowStatus( dd2_2 );
                     await downloadListUC.SelectDownloadRowDelay( row_2 );
                     if ( autoStart ) _DC.Start( row_2 );
                 }
@@ -1333,7 +1338,8 @@ namespace m3u8.download.manager.ui
         {
             if ( f.DialogResult == DialogResult.OK )
             {
-                var row = _DownloadListModel.AddRow( f.GetParamsTuple() );
+                var tp = f.GetParamsTuple(); _SC.SetDefaultWebProxyInfo( tp.WebProxyInfo );
+                var row = _DownloadListModel.AddInsertRowByExistsRowStatus( tp );
                 await downloadListUC.SelectDownloadRowDelay( row );
                 if ( f.AutoStartDownload )
                 {
