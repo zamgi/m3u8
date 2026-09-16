@@ -3,6 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32929.385
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.download.manager", "m3u8.download.manager\WinForms\m3u8.download.manager.csproj", "{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WinForms", "WinForms", "{FB9BF7F1-2D48-429E-81CE-369C7D48E076}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{46B5F521-C239-4F29-9C6A-F674B7385F51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8.download.manager", "m3u8.download.manager", "{63AC3FAC-138F-4E04-ACF9-D0C877D7C341}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.download.manager.avalonia", "m3u8.download.manager\Avalonia\m3u8.download.manager.avalonia.csproj", "{A2B632E6-8000-4B07-91D2-24B017C31232}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "m3u8.client", "m3u8.client\m3u8.client.csproj", "{46961224-7B51-4115-BA59-53F8537CF7C4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.console.app", "m3u8.console.app\m3u8.console.app.csproj", "{B17C29AF-E052-413B-9149-4F49E5DA2571}"
@@ -43,17 +53,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8.download.manager.host"
 		m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.uninstall.bat = m3u8-browser-extensions\_m3u8-downloader-host\m3u8.download.manager.host\m3u8.download.manager.host.uninstall.bat
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.download.manager", "m3u8.download.manager\WinForms\m3u8.download.manager.csproj", "{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.client.tests", "m3u8.client.tests\m3u8.client.tests.csproj", "{A5B22706-A9D2-4545-959B-957718B4BA84}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8.download.manager", "m3u8.download.manager", "{63AC3FAC-138F-4E04-ACF9-D0C877D7C341}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WinForms", "WinForms", "{FB9BF7F1-2D48-429E-81CE-369C7D48E076}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{46B5F521-C239-4F29-9C6A-F674B7385F51}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "m3u8.download.manager.avalonia", "m3u8.download.manager\Avalonia\m3u8.download.manager.avalonia.csproj", "{A2B632E6-8000-4B07-91D2-24B017C31232}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8.download.manager.avalonia.host", "m3u8.download.manager.avalonia.host", "{272F6ACB-DD20-476A-821D-8F30B88F728F}"
 EndProject
