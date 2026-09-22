@@ -53,8 +53,8 @@ namespace m3u8.download.manager.ui
         private TextBlock     liveStreamMaxSizeInMbTextBlock;
         private NumericUpDown liveStreamMaxSizeInMbNumUpDn;
 
-        private IDisposable m3u8FileUrlTextBox_SubscribeDisposable;
-        private IDisposable outputFileNameTextBox_SubscribeDisposable;
+        //---private IDisposable m3u8FileUrlTextBox_SubscribeDisposable;
+        //---private IDisposable outputFileNameTextBox_SubscribeDisposable;
 
         private Button okButton;
         private Button cancelButton;
@@ -72,7 +72,7 @@ namespace m3u8.download.manager.ui
         private LogListModel _Model;
         private _SC_ _SC;
         private _DC_ _DC;
-        private FileNameCleaner4UI.Processor _FNCP;
+        //---private FileNameCleaner4UI.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
         #endregion
@@ -114,10 +114,10 @@ namespace m3u8.download.manager.ui
             cancelButton = this.Find< Button >( nameof(cancelButton) ); cancelButton.Click += cancelButton_Click;
             isLiveStreamCheckBox.Click += isLiveStreamCheckBox_Click;
 
-            _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
+            //---_FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
 
-            m3u8FileUrlTextBox_SubscribeDisposable    = m3u8FileUrlTextBox   .GetObservable( TextBox.TextProperty ).Subscribe( m3u8FileUrlTextBox_TextChanged );
-            outputFileNameTextBox_SubscribeDisposable = outputFileNameTextBox.GetObservable( TextBox.TextProperty ).Subscribe( outputFileNameTextBox_TextChanged );
+            //---m3u8FileUrlTextBox_SubscribeDisposable = m3u8FileUrlTextBox   .GetObservable( TextBox.TextProperty ).Subscribe( m3u8FileUrlTextBox_TextChanged );
+            //---outputFileNameTextBox_SubscribeDisposable = outputFileNameTextBox.GetObservable( TextBox.TextProperty ).Subscribe( outputFileNameTextBox_TextChanged );
         }
         /// <summary>
         /// Edit
@@ -135,16 +135,16 @@ namespace m3u8.download.manager.ui
             this.OutputFileName               = row.OutputFileName;
             this.OutputDirectory              = row.OutputDirectory;
             this.IsLiveStream                 = row.IsLiveStream; if ( row.IsLiveStream ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, null/*RoutedEventArgs.Empty*/ );
-            this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;            
+            this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;
 
             //#region [.if setted outputFileName.]
             ////before 'this.M3u8FileUrl = m3u8FileUrl;'
-            //Process_use_OutputFileNamePatternProcessor_on_Init();
+            //---Process_use_OutputFileNamePatternProcessor_on_Init();
             //#endregion
 
-            _IsTurnOff__m3u8FileUrlTextBox_TextChanged = true;
+            //---_IsTurnOff__m3u8FileUrlTextBox_TextChanged = true;
             this.M3u8FileUrl = row.Url;
-            _IsTurnOff__m3u8FileUrlTextBox_TextChanged = false;
+            //---_IsTurnOff__m3u8FileUrlTextBox_TextChanged = false;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
@@ -160,9 +160,9 @@ namespace m3u8.download.manager.ui
         }
         public void Dispose()
         {
-            _FNCP.Dispose_NoThrow();
-            m3u8FileUrlTextBox_SubscribeDisposable.Dispose_NoThrow();
-            outputFileNameTextBox_SubscribeDisposable.Dispose_NoThrow();
+            //---_FNCP.Dispose_NoThrow();
+            //---m3u8FileUrlTextBox_SubscribeDisposable?.Dispose_NoThrow();
+            //---outputFileNameTextBox_SubscribeDisposable.Dispose_NoThrow();
         }
         #endregion
 
@@ -280,11 +280,11 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.text-boxes.]
-        private const int TEXTBOX_MILLISECONDS_DELAY = 150;
-        private string _Last_m3u8FileUrlText;
-        private string _LastManualInputed_outputFileNameText;
-        private bool   _IsTurnOff__outputFileNameTextBox_TextChanged;
-        private bool   _IsTurnOff__m3u8FileUrlTextBox_TextChanged;
+        //---private const int TEXTBOX_MILLISECONDS_DELAY = 150;
+        //---private string _Last_m3u8FileUrlText;
+        //---private string _LastManualInputed_outputFileNameText;
+        //---private bool   _IsTurnOff__outputFileNameTextBox_TextChanged;
+        //---private bool   _IsTurnOff__m3u8FileUrlTextBox_TextChanged;
 
         private void setFocus2outputFileNameTextBox_Core( string outputFileName = null )
         {
@@ -379,7 +379,7 @@ namespace m3u8.download.manager.ui
             //*/
             #endregion
         }
-        private async void m3u8FileUrlTextBox_TextChanged( string value )
+        /*private async void m3u8FileUrlTextBox_TextChanged( string value )
         {
             if ( _IsTurnOff__m3u8FileUrlTextBox_TextChanged ) return;
 
@@ -398,17 +398,17 @@ namespace m3u8.download.manager.ui
             await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, _SC.OutputFileExtension, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
 
             setFocus2outputFileNameTextBox();
-        }
+        }*/
 
         private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;
-        private void outputFileNameTextBox_TextChanged( string value )
+        /*private void outputFileNameTextBox_TextChanged( string value )
         {
             if ( _IsTurnOff__outputFileNameTextBox_TextChanged ) return;
             if ( _OutputFileNamePatternProcessor == null ) return; //then call from '.ctor()'
 
             _LastManualInputed_outputFileNameText = value;
-            //Process_use_OutputFileNamePatternProcessor();
-        }
+            //---Process_use_OutputFileNamePatternProcessor();
+        }*/
         #endregion
 
         #region [.private method's.]
@@ -665,9 +665,9 @@ namespace m3u8.download.manager.ui
                 if ( (outputFileNameTextBox != null) && (outputFileNameTextBox.Text?.Trim() != value) )
                 {
                     //---outputFileNameTextBox.TextChanged -= outputFileNameTextBox_TextChanged;
-                    _IsTurnOff__outputFileNameTextBox_TextChanged = true;
+                    //---_IsTurnOff__outputFileNameTextBox_TextChanged = true;
                     outputFileNameTextBox.Text = value;
-                    _IsTurnOff__outputFileNameTextBox_TextChanged = false;
+                    //---_IsTurnOff__outputFileNameTextBox_TextChanged = false;
                     //---outputFileNameTextBox.TextChanged += outputFileNameTextBox_TextChanged;
                 }
             }

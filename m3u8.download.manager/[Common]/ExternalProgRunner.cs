@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using m3u8.download.manager.infrastructure;
 using m3u8.helpers;
+
+using static m3u8.download.manager.IExternalProgRunner;
 
 namespace m3u8.download.manager
 {
@@ -16,10 +20,23 @@ namespace m3u8.download.manager
     /// </summary>
     internal interface IExternalProgRunner
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        public enum StatusTypeEnum
+        {
+            None,
+            InQueue,
+            InProcessInnerQueue,
+            InProcessNow
+        }
+        StatusTypeEnum GetStatus( string outputFileName );
+        void RemoveFromInnerQueue( string outputFileName );
+
         string ExternalProgFilePath { get; }
         bool IsExternalProgFileAreExists();
         void SetExternalProgFilePath( string externalProgFilePath );
-        HashSet< string > Queue { get; }
+        HashSet< string > Queue { get; }        
         bool Run( string outputFileName, bool checkIsExternalProgFileAreExists );
         bool Run( IReadOnlyCollection< string > outputFileNames, bool runEachFileAsSeparate, bool checkIsExternalProgFileAreExists );
     }
@@ -31,6 +48,8 @@ namespace m3u8.download.manager
     {
         protected ExternalProgRunnerBase() => Queue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
         public HashSet< string > Queue { get; }
+        public virtual StatusTypeEnum GetStatus( string outputFileName ) => Queue.Contains( outputFileName ) ? StatusTypeEnum.InQueue : StatusTypeEnum.None;
+        public virtual void RemoveFromInnerQueue( string outputFileName ) { }
 
         public abstract string ExternalProgFilePath { get; }
         public abstract bool IsExternalProgFileAreExists();
@@ -104,12 +123,36 @@ namespace m3u8.download.manager
     {
         private string             _FFmpegFileLocation;
         private ProcessWindowStyle _ProcessWindowStyle;
+        private readonly object __outputFileNames__lock;
+        private BlockingCollection< string > __outputFileNames__;
+        private HashSet< string > _OutputFileNamesSet;
+        private Task _Run_FFmpegTask;
         public FFmpegConverterRunner( string ffmpegFileLocation, ProcessWindowStyle processWindowStyle = ProcessWindowStyle.Normal ) //.Minimized )
         {
             _FFmpegFileLocation = ffmpegFileLocation;
             _ProcessWindowStyle = processWindowStyle;
+            __outputFileNames__lock = new object();
+            __outputFileNames__ = new BlockingCollection< string >();
+            _OutputFileNamesSet = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
+            _Run_FFmpegTask     = Task.Run( Run_FFmpegTask_Routine );
         }
         public override string ExternalProgFilePath => _FFmpegFileLocation;
+
+        private static bool IsEquals( string s_1, string s_2 ) => (string.Compare( s_1, s_2, true ) == 0);
+        private BlockingCollection< string > _OutputFileNames
+        {
+            get
+            {
+                lock ( __outputFileNames__lock ) return (__outputFileNames__);
+            }
+            set
+            {
+                lock ( __outputFileNames__lock )
+                {
+                    __outputFileNames__ = value;
+                }
+            }
+        }
 
         public override void SetExternalProgFilePath( string ffmpegFileLocation ) => _FFmpegFileLocation = ffmpegFileLocation;
         public override bool IsExternalProgFileAreExists() => File.Exists( _FFmpegFileLocation );
@@ -119,7 +162,7 @@ namespace m3u8.download.manager
             var suc = (!checkIsExternalProgFileAreExists || IsExternalProgFileAreExists()) && !outputFileName.IsNullOrEmpty();
             if ( suc )
             {
-                Run_FFmpeg( outputFileName );
+                Add2OutputFileNames/*Run_FFmpeg*/( outputFileName );
             }
             return (suc);
         }
@@ -130,13 +173,78 @@ namespace m3u8.download.manager
             {
                 foreach ( var fn in outputFileNames )
                 {
-                    Run_FFmpeg( fn );
+                    Add2OutputFileNames/*Run_FFmpeg*/( fn );
                 }
             }
             return (suc);
         }
 
-        private void Run_FFmpeg( string outputFileName )
+        public override StatusTypeEnum GetStatus( string outputFileName )
+        {
+            if ( Queue.Contains( outputFileName ) )
+            {
+                return (StatusTypeEnum.InQueue);
+            }
+            lock ( _OutputFileNamesSet )
+            {
+                if ( _OutputFileNamesSet.Contains( outputFileName ) )
+                {
+                    return (IsInProcessNow( outputFileName ) ? StatusTypeEnum.InProcessNow : StatusTypeEnum.InProcessInnerQueue);
+                }
+            }
+            return (StatusTypeEnum.None);
+            //return (base.GetStatus( outputFileName ));
+        }
+        public override void RemoveFromInnerQueue( string outputFileName )
+        {
+            lock ( _OutputFileNamesSet )
+            {
+                var suc = _OutputFileNamesSet.Remove( outputFileName );
+                if ( suc )
+                {
+                    var new_OutputFileNames = new BlockingCollection< string >();
+                    var filtered = _OutputFileNames.Where( fn => !IsEquals( fn, outputFileName ) );
+                    foreach ( var fn in filtered )
+                    {
+                        new_OutputFileNames.Add( fn );
+                    }
+                    _OutputFileNames = new_OutputFileNames;
+                }
+            }
+        }
+
+        private void Add2OutputFileNames( string outputFileName )
+        {
+            lock ( _OutputFileNamesSet )
+            {
+                if ( _OutputFileNamesSet.Add( outputFileName ) )
+                {
+                    _OutputFileNames.Add( outputFileName );
+                }
+            }
+        }
+
+        private bool IsInProcessNow( string outputFileName ) => IsEquals( _InProcessNow_outputFileName, outputFileName );
+        private string _InProcessNow_outputFileName;
+        private void Run_FFmpegTask_Routine()
+        {
+            while ( true )
+            {
+                var outputFileName = _OutputFileNames.Take();
+                _InProcessNow_outputFileName = outputFileName;
+                var (suc, error) = Run_FFmpeg( outputFileName );
+                _InProcessNow_outputFileName = null;
+                if ( error != null )
+                {
+                    Debug.WriteLine( error );
+                }
+                lock ( _OutputFileNamesSet )
+                {
+                    _OutputFileNamesSet.Remove( outputFileName );
+                }
+            }
+        }
+        private (bool suc, Exception error) Run_FFmpeg( string outputFileName )
         {
             const string DEFAULT_EXTENSION = ".mp4";
 
@@ -149,42 +257,100 @@ namespace m3u8.download.manager
             var psi = new ProcessStartInfo( /*ExternalProgFilePath*/ )
             {
                 //Arguments = "/k echo Hello from new console", /* /k в аргументах для cmd.exe — оставляет консоль открытой после выполнения команды. Если нужно сразу закрыть — используйте /c */
-                Arguments       = $"/c \"\"{ExternalProgFilePath}\" -y -i \"{outputFileName}\" -c:v libx264 -sn -dn \"{new_ffn}\"\"",                    
-                FileName        = "cmd.exe", // программа для запуска                    
-                UseShellExecute = true,      // обязательно для показа окна на Windows
-                CreateNoWindow  = false,     // явно разрешаем окно
-                WindowStyle     = _ProcessWindowStyle
+                Arguments       = $"-y -i \"{outputFileName}\" -c:v libx264 -sn -dn \"{new_ffn}\"",
+                FileName        = ExternalProgFilePath, // программа для запуска
+                UseShellExecute = false, // Отключаем оболочку для прямой работы с процессом
+                CreateNoWindow  = false, // явно разрешаем окно
+                WindowStyle     = _ProcessWindowStyle,
+                //RedirectStandardError  = true,
+                //RedirectStandardOutput = true
             };
 
-            using var ffmpeg = new Process() { StartInfo = psi };
-            var suc = ffmpeg.Start();
-            Debug.Assert( suc );
-
-            var task_watch = Task.Run( async () =>
+            try
             {
-                try
+                using ( var ffmpeg = Process.Start( psi ) )
                 {
                     ffmpeg.Refresh();
+                    // Ожидаем завершения работы FFmpeg
                     ffmpeg.WaitForExit();
 
+                    // Проверяем код возврата (0 — успех, все остальное — ошибка)
                     if ( ffmpeg.ExitCode != 0 )
                     {
                         var isCtrlC = (ffmpeg.ExitCode == 255) /*Ctrl+C(?)*/;
 
-                        await Task.Delay( 250 );
-                        FileHelper.DeleteFile_NoThrow( new_fn );
-                    }
-                }
-                catch ( Exception ex ) 
-                {
-                    Debug.WriteLine( ex );
-                    //---ffmpeg.Kill( entireProcessTree: true );
+                        /*await*/
+                        Task.Delay( 250 ).Wait();
+                        FileHelper.DeleteFile_NoThrow( new_ffn );
 
-                    //await Task.Delay( 250 );
-                    //FileHelper.DeleteFile_NoThrow( new_fn );
+                        //var errorLog = ffmpeg.StandardError.ReadToEnd();
+                        var error = new Exception( $"FFmpeg exited with an error (Code: {ffmpeg.ExitCode})." );//$"FFmpeg завершился с ошибкой (Код: {ffmpeg.ExitCode}). Лог: {errorLog}" );
+                        return (false, error);
+                    }
+
+                    return (true, default);
                 }
-            });
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );
+                //---ffmpeg.Kill( entireProcessTree: true );
+
+                ///*await*/ Task.Delay( 250 ).Wait();
+                //FileHelper.DeleteFile_NoThrow( new_fn );
+                return (false, ex);
+            }
         }
+
+        //private void Run_FFmpeg__PREV( string outputFileName )
+        //{
+        //    const string DEFAULT_EXTENSION = ".mp4";
+
+        //    var exists_ext = Path.GetExtension( outputFileName );
+        //    var new_fn     = Path.GetFileNameWithoutExtension( outputFileName ) + (exists_ext.EqualIgnoreCase( DEFAULT_EXTENSION ) ? "+" : null) + DEFAULT_EXTENSION;
+        //    var new_ffn    = Path.Combine( Path.GetDirectoryName( outputFileName ), new_fn );
+        //    FileHelperEx.RemoveBadFileAttrs( checkExists: true, new_ffn );
+
+        //    // "D:\(Distributive)\{ScreenToGif}\ffmpeg.exe" -i %1.avi -c:v libx264 -sn -dn %1.mp4
+        //    var psi = new ProcessStartInfo( /*ExternalProgFilePath*/ )
+        //    {
+        //        //Arguments = "/k echo Hello from new console", /* /k в аргументах для cmd.exe — оставляет консоль открытой после выполнения команды. Если нужно сразу закрыть — используйте /c */
+        //        Arguments       = $"/c \"\"{ExternalProgFilePath}\" -y -i \"{outputFileName}\" -c:v libx264 -sn -dn \"{new_ffn}\"\"",                    
+        //        FileName        = "cmd.exe", // программа для запуска                    
+        //        UseShellExecute = true,      // обязательно для показа окна на Windows
+        //        CreateNoWindow  = false,     // явно разрешаем окно
+        //        WindowStyle     = _ProcessWindowStyle
+        //    };
+
+        //    using var ffmpeg = new Process() { StartInfo = psi };
+        //    var suc = ffmpeg.Start();
+        //    Debug.Assert( suc );
+
+        //    var task_watch = Task.Run( async () =>
+        //    {
+        //        try
+        //        {
+        //            ffmpeg.Refresh();
+        //            ffmpeg.WaitForExit();
+
+        //            if ( ffmpeg.ExitCode != 0 )
+        //            {
+        //                var isCtrlC = (ffmpeg.ExitCode == 255) /*Ctrl+C(?)*/;
+
+        //                await Task.Delay( 250 );
+        //                FileHelper.DeleteFile_NoThrow( new_fn );
+        //            }
+        //        }
+        //        catch ( Exception ex ) 
+        //        {
+        //            Debug.WriteLine( ex );
+        //            //---ffmpeg.Kill( entireProcessTree: true );
+
+        //            //await Task.Delay( 250 );
+        //            //FileHelper.DeleteFile_NoThrow( new_fn );
+        //        }
+        //    });
+        //}
 
         public override string ToString() => ExternalProgFilePath;
     }

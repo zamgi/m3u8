@@ -69,6 +69,9 @@ namespace m3u8.download.manager.ui
             None   = 0,
             Green  = 0x1,
             Orange = 0x2,
+
+            InProcessInnerQueue = 0x4,
+            InProcessNow        = 0x8,
         }
         /// <summary>
         /// 
@@ -408,27 +411,29 @@ namespace m3u8.download.manager.ui
             {
                 DGV.ClearSelection();
                 DGV.Rows[ rowIndex ].Selected = true;
-                return;
             }
-
-            var srs = DGV.SelectedRows;
-            switch ( srs.Count )
+            else
             {
-                case 0: DGV.Rows[ rowIndex ].Selected = true; break;
-                case 1:
-                    var row = DGV.Rows[ rowIndex ];
-                    if ( srs[ 0 ] != row /*srs[ 0 ].Index != rowIndex*/ )
-                    {
-                        DGV.ClearSelection();
-                        row.Selected = true;
-                    }
-                    break;
+                var srs = DGV.SelectedRows;
+                switch ( srs.Count )
+                {
+                    case 0: DGV.Rows[ rowIndex ].Selected = true; break;
+                    case 1:
+                        var row = DGV.Rows[ rowIndex ];
+                        if ( srs[ 0 ] != row /*srs[ 0 ].Index != rowIndex*/ )
+                        {
+                            DGV.ClearSelection();
+                            row.Selected = true;
+                        }
+                        break;
 
-                default:
-                    DGV.ClearSelection();
-                    DGV.Rows[ rowIndex ].Selected = true;
-                    break;
+                    default:
+                        DGV.ClearSelection();
+                        DGV.Rows[ rowIndex ].Selected = true;
+                        break;
+                }
             }
+            DGV.SetFirstDisplayedScrollingRowIndex( rowIndex );
         }
         [M(O.AggressiveInlining)] private void SelectLonelyRowIfCurrentlySelectedOnlyOneOrZeroRow( int rowIndex )
         {
@@ -620,10 +625,14 @@ namespace m3u8.download.manager.ui
             {                
                 DGV.InvalidateRow( visibleIndex );
 
+                #region comm. RestoreSortIfNeed.
+                /*
                 if ( propertyName == nameof(DownloadRow.Status) )
                 {
                     RestoreSortIfNeed();
                 }
+                //*/
+                #endregion
             }
         }
 
@@ -688,7 +697,7 @@ namespace m3u8.download.manager.ui
         {
             if ( this.InvokeRequired )
             {
-                this.BeginInvoke( _RestoreSortIfNeed_Action );
+                await this.BeginInvoke_UseTask( _RestoreSortIfNeed_Action );
                 return;
             }
 
@@ -711,8 +720,10 @@ namespace m3u8.download.manager.ui
                 case OUTPUTFILENAME_COLUMN_INDEX:
                     //---comparison = (x, y) => string.Compare( x.OutputFileName, y.OutputFileName, true );
 
+                    var dict     = new Dictionary< string, PartOfString >( DGV.RowCount );
                     var comparer = new PartOfString.Comparer();
-                    comparison = (x, y) => comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) );
+                    comparison = (x, y) => comparer.Compare( dict.GetExistsOrAddNewValue( x.OutputFileName ), dict.GetExistsOrAddNewValue( y.OutputFileName ) );
+                    //---comparison = (x, y) => comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) );
                     break;
 
                 case OUTPUTDIRECTORY_COLUMN_INDEX:
@@ -799,6 +810,7 @@ namespace m3u8.download.manager.ui
 
             var comparison = default(Comparison< DownloadRow >);
             var comparer   = new PartOfString.Comparer();
+            var dict       = new Dictionary< string, PartOfString >( DGV.RowCount );
                 comparison = (x, y) =>
                 {
                     var x_fn = Path.GetFileNameWithoutExtension( x.OutputFileName );
@@ -816,7 +828,8 @@ namespace m3u8.download.manager.ui
                     //var d = y.OutputFileName.Length.CompareTo( x.OutputFileName.Length );
                     //if ( d == 0 ) d = comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) );
                     //return (d);
-                    return (comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) ));
+                    return (comparer.Compare( dict.GetExistsOrAddNewValue( x.OutputFileName ), dict.GetExistsOrAddNewValue( y.OutputFileName ) ));
+                    //---return (comparer.Compare( new PartOfString( x.OutputFileName ), new PartOfString( y.OutputFileName ) ));
                 };
             //-------------------------------------------------//
 
@@ -1223,6 +1236,7 @@ namespace m3u8.download.manager.ui
 
                     rc = e.CellBounds; rc.X += STATUS_TEXT_OFFSET_X; 
                     rc.Width -= STATUS_TEXT_OFFSET_X + (cmt switch { CheckMarkTypeEnum.Green => CHECK_MARK_WIDTH, CheckMarkTypeEnum.Orange => CHECK_MARK_WIDTH,
+                                                                     CheckMarkTypeEnum.InProcessInnerQueue => CHECK_MARK_WIDTH, CheckMarkTypeEnum.InProcessNow => CHECK_MARK_WIDTH,
                                                                      CheckMarkTypeEnum.Orange | CheckMarkTypeEnum.Green => CHECK_MARK_WIDTH + SECOND_CHECK_MARK_OFFSET, _ => 0 });
                     gr.DrawString( row.Status.ToString(), defCellFont, Brushes.Black, rc, _SF_Left );
                     #endregion
@@ -1244,6 +1258,17 @@ namespace m3u8.download.manager.ui
                         if ( cmt.HasFlag( CheckMarkTypeEnum.Green ) )
                         {
                             gr.DrawString( "\u2713", defCellFont, Brushes.Green, rc, _SF_Right );
+                        }
+
+                        else if ( cmt.HasFlag( CheckMarkTypeEnum.InProcessInnerQueue ) )
+                        {
+                            gr.DrawString( "\u231B", defCellFont, Brushes.Green, rc, _SF_Right );
+                        }
+                        else if ( cmt.HasFlag( CheckMarkTypeEnum.InProcessNow ) )
+                        {
+                            //gr.DrawRectangle( Pens.Green, rc );
+                            //gr.DrawString( "\u2713", defCellFont, Brushes.LightGreen, rc, _SF_Right );
+                            gr.DrawString( "\u231A", defCellFont, Brushes.Green, rc, _SF_Right );
                         }
                     }
                     #endregion

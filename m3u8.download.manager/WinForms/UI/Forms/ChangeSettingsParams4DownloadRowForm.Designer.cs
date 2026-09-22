@@ -169,7 +169,7 @@ namespace m3u8.download.manager.ui
             this.m3u8FileUrlTextBox.BorderColor = null;
             //this.m3u8FileUrlTextBox.ClearButtonColor = System.Drawing.Color.LightBlue;
             //this.m3u8FileUrlTextBox.ClearButtonColorHover = System.Drawing.Color.Blue;
-            this.m3u8FileUrlTextBox.TextChanged += new System.EventHandler(this.m3u8FileUrlTextBox_TextChanged);
+            //---this.m3u8FileUrlTextBox.TextChanged += new System.EventHandler(this.m3u8FileUrlTextBox_TextChanged);
             // 
             // outputFileNameTextBox
             // 
@@ -185,7 +185,7 @@ namespace m3u8.download.manager.ui
             this.outputFileNameTextBox.ClearButtonBackcolor = System.Drawing.Color.White;// Smoke;
             this.outputFileNameTextBox.ClearButtonBackcolorHover = System.Drawing.Color.White;// Smoke;
             this.outputFileNameTextBox.ClearButtonClick += new System.EventHandler(this.outputFileNameTextBox_ClearButtonClick);
-            this.outputFileNameTextBox.TextChanged += new System.EventHandler(this.outputFileNameTextBox_TextChanged);
+            //---this.outputFileNameTextBox.TextChanged += new System.EventHandler(this.outputFileNameTextBox_TextChanged);
             // 
             // outputDirectoryTextBox
             // 

@@ -149,12 +149,12 @@ namespace m3u8.download.manager.ui
 
             #region [.if setted outputFileName.]
             //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            Process_use_OutputFileNamePatternProcessor_on_Init();
+            //---Process_use_OutputFileNamePatternProcessor_on_Init();
             #endregion
 
             _IsTurnOff__m3u8FileUrlTextBox_TextChanged = true;
             this.M3u8FileUrl = row.Url;
-            _IsTurnOff__m3u8FileUrlTextBox_TextChanged = false;
+            //---_IsTurnOff__m3u8FileUrlTextBox_TextChanged = false;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
@@ -220,13 +220,14 @@ namespace m3u8.download.manager.ui
             _OutputFileNamePatternProcessor  = vm.OutputFileNamePatternProcessor;
             _ReceivedAndWritedPartsProcessor = vm.ReceivedAndWritedPartsProcessor;
             requestHeadersEditor.SetSettingsController( _SC );
-            requestHeadersEditor.SetRequestHeaders( r.RequestHeaders, _SC.IgnoreHostHttpHeader );            
+            requestHeadersEditor.SetRequestHeaders( r.RequestHeaders, _SC.IgnoreHostHttpHeader );
 
             #region [.if setted outputFileName.]
             //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            Process_use_OutputFileNamePatternProcessor_on_Init();
+            //---Process_use_OutputFileNamePatternProcessor_on_Init();
             #endregion
 
+            _IsTurnOff__m3u8FileUrlTextBox_TextChanged = true;
             this.M3u8FileUrl                  = r.Url;
             this.OutputDirectory              = r.OutputDirectory;
             this.OutputFileName               = r.OutputFileName;
@@ -252,7 +253,7 @@ namespace m3u8.download.manager.ui
         public void Dispose()
         {
             _FNCP.Dispose_NoThrow();
-            m3u8FileUrlTextBox_SubscribeDisposable.Dispose_NoThrow();
+            m3u8FileUrlTextBox_SubscribeDisposable?.Dispose_NoThrow();
             outputFileNameTextBox_SubscribeDisposable.Dispose_NoThrow();
         }
         #endregion
@@ -402,6 +403,8 @@ namespace m3u8.download.manager.ui
 
         private bool TryRestoreOutputFileNameByAddress( string url )
         {
+            if ( _ReceivedAndWritedPartsProcessor == null ) return (false);
+
             var suc = _ReceivedAndWritedPartsProcessor.TryRestoreOutputFileNameByAddress( url, out var outputFileName, out var outputDirectory );
             if ( suc )
             {

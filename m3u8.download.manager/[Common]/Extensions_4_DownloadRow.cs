@@ -37,29 +37,31 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool IsRunningOrPaused( this DownloadStatus status ) => status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Paused => true, _ => false };
         [M(O.AggressiveInlining)] public static bool IsRunningOrStarted( this DownloadStatus status ) => status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, _ => false };
         [M(O.AggressiveInlining)] public static bool HasAnyFailedDownloadParts( this DownloadRow row ) => (row.FailedDownloadParts != 0);
-        [M(O.AggressiveInlining)] public static int? GetIndex4InsertByExistsRowStatus( this DownloadListModel model )
-        {
-            var i = 0;
-            var rows = model.GetRows();
-            foreach ( var row in rows )
-            {
-                switch ( row.Status )
-                {
-                    case DownloadStatus.Started:
-                    case DownloadStatus.Running:
-                    case DownloadStatus.Wait:
-                    case DownloadStatus.Paused:
-                        i++;
-                        break;
+        //[M(O.AggressiveInlining)] public static int? GetIndex4InsertByExistsRowStatus( this DownloadListModel model )
+        //{
+        //    var i = 0;
+        //    var rows = model.GetRows();
+        //    foreach ( var row in rows )
+        //    {
+        //        switch ( row.Status )
+        //        {
+        //            case DownloadStatus.Started:
+        //            case DownloadStatus.Running:
+        //            case DownloadStatus.Wait:
+        //            case DownloadStatus.Paused:
+        //                i++;
+        //                break;
 
-                    default:
-                        return (i);
-                }
-            }
-            return (null/*-1*/);
-        }
-        [M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_1 t ) => model.AddRow( t, index: model.GetIndex4InsertByExistsRowStatus() );
-        [M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_2 t ) => model.AddRow( t, index: model.GetIndex4InsertByExistsRowStatus() );
+        //            default:
+        //                return (i);
+        //        }
+        //    }
+        //    return (null/*-1*/);
+        //}
+        //[M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_1 t ) => model.AddRow( t, index: model.GetIndex4InsertByExistsRowStatus() );
+        //[M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_2 t ) => model.AddRow( t, index: model.GetIndex4InsertByExistsRowStatus() );
+        [M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_1 t ) => model.AddRow( t );
+        [M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_2 t ) => model.AddRow( t );
 
         [M(O.AggressiveInlining)] public static long? GetApproxRemainedBytes( this DownloadRow row )
         {
@@ -181,7 +183,7 @@ namespace m3u8.download.manager
 
         [M(O.AggressiveInlining)] public static bool TryGetApproxRemainedTime( this DownloadRow row, out TimeSpan approxRemainedTime )
         {
-            if ( row.Status == DownloadStatus.Running)
+            if ( row.Status == DownloadStatus.Running )
             {
                 var totalBytes = row.GetApproxTotalBytes();
                 if ( totalBytes.HasValue )

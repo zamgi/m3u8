@@ -34,12 +34,12 @@ namespace m3u8.download.manager.ui
         }
 
         #region [.fields.]
-        private LogListModel      _Model;
-        private _DC_              _DC;
-        private _SC_              _SC;
-        private Settings          _Settings;
-        private FileNameCleaner4UI.Processor _FNCP;
-        private bool              _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
+        private LogListModel _Model;
+        private _DC_         _DC;
+        private _SC_         _SC;
+        private Settings     _Settings;
+        //---private FileNameCleaner4UI.Processor _FNCP;
+        //---private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
         private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;
         private Func< AddNewDownloadForm, Task > _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url;
@@ -59,7 +59,7 @@ namespace m3u8.download.manager.ui
             logPanel.Visible = false;
             logUC.ShowResponseColumn = false;
 
-            _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
+            //---_FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
 
             #region [.ImageList 4 tabControl.]
             var imgLst = tabControl.ImageList = new ImageList() { ImageSize = new Size(16, 16) };
@@ -107,13 +107,13 @@ namespace m3u8.download.manager.ui
 
             //#region [.if setted outputFileName.]
             ////before 'this.M3u8FileUrl = m3u8FileUrl;'
-            //Process_use_OutputFileNamePatternProcessor_on_Init();
+            //---Process_use_OutputFileNamePatternProcessor_on_Init();
             //#endregion
 
-            m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
+            //---m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
             this.M3u8FileUrl = row.Url;
-            m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
-            _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
+            //---m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
+            //---_WasFocusSet2outputFileNameTextBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
@@ -126,7 +126,7 @@ namespace m3u8.download.manager.ui
             if ( disposing )
             {
                 components?.Dispose();
-                _FNCP.Dispose();
+                //---_FNCP.Dispose();
             }
             base.Dispose( disposing );
         }
@@ -170,21 +170,21 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.TryGetOtherOpenedForm.]
-        public static bool TryGetOpenedForm( out ChangeSettingsParams4DownloadRowForm openedForm )
-        {
-            openedForm = Application.OpenForms.OfType< ChangeSettingsParams4DownloadRowForm >().LastOrDefault();
-            return (openedForm != null);
-        }
         private bool TryGetOtherOpenedForm( out ChangeSettingsParams4DownloadRowForm otherForm )
         {
             otherForm = Application.OpenForms.OfType< ChangeSettingsParams4DownloadRowForm >().Where( f => f != this ).LastOrDefault();
             return (otherForm != null);
         }
-        public void ActivateAfterCloseOther()
-        {
-            this.Activate();
-            setFocus2outputFileNameTextBox();
-        }
+        //public static bool TryGetOpenedForm( out ChangeSettingsParams4DownloadRowForm openedForm )
+        //{
+        //    openedForm = Application.OpenForms.OfType< ChangeSettingsParams4DownloadRowForm >().LastOrDefault();
+        //    return (openedForm != null);
+        //}
+        //public void ActivateAfterCloseOther()
+        //{
+        //    this.Activate();
+        //    setFocus2outputFileNameTextBox();
+        //}
         #endregion
 
         #region [.override & private methods.]
@@ -382,9 +382,9 @@ namespace m3u8.download.manager.ui
                 value = value?.Trim();
                 if ( outputFileNameTextBox.Text.Trim() != value )
                 {
-                    outputFileNameTextBox.TextChanged -= outputFileNameTextBox_TextChanged;
+                    //---outputFileNameTextBox.TextChanged -= outputFileNameTextBox_TextChanged;
                     outputFileNameTextBox.Text = value;
-                    outputFileNameTextBox.TextChanged += outputFileNameTextBox_TextChanged;
+                    //---outputFileNameTextBox.TextChanged += outputFileNameTextBox_TextChanged;
                 }
             }
         }
@@ -415,9 +415,9 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.text-boxes & etc.]
-        private const int TEXTBOX_MILLISECONDS_DELAY = 150;
-        private string _Last_m3u8FileUrlText;
-        private string _LastManualInputed_outputFileNameText;
+        //---private const int TEXTBOX_MILLISECONDS_DELAY = 150;
+        //---private string _Last_m3u8FileUrlText;
+        //---private string _LastManualInputed_outputFileNameText;
 
         private bool setFocus2outputFileNameTextBox_Core( string outputFileName = null )
         {
@@ -430,14 +430,14 @@ namespace m3u8.download.manager.ui
             }
             return (suc);
         }
-        private void setFocus2outputFileNameTextBox()
-        {
-            if ( !_WasFocusSet2outputFileNameTextBoxAfterFirstChanges )
-            {
-                _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = setFocus2outputFileNameTextBox_Core();
-            }
-        }
-        private async void m3u8FileUrlTextBox_TextChanged( object sender, EventArgs e )
+        //private void setFocus2outputFileNameTextBox()
+        //{
+        //    if ( !_WasFocusSet2outputFileNameTextBoxAfterFirstChanges )
+        //    {
+        //        _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = setFocus2outputFileNameTextBox_Core();
+        //    }
+        //}
+        /*private async void m3u8FileUrlTextBox_TextChanged( object sender, EventArgs e )
         {
             var m3u8FileUrlText = this.M3u8FileUrl;
             //if ( !TryRestoreOutputFileNameByAddress( m3u8FileUrlText ) )
@@ -455,15 +455,15 @@ namespace m3u8.download.manager.ui
                 await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, _Settings.OutputFileExtension, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
             //}
             setFocus2outputFileNameTextBox();
-        }
+        }*/
 
-        private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;
-        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
+        //private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;
+        /*private void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
         {
             _FNCP.FileNameTextBox_TextChanged( outputFileName => _LastManualInputed_outputFileNameText = outputFileName );
 
-            //Process_use_OutputFileNamePatternProcessor();
-        }
+            //---Process_use_OutputFileNamePatternProcessor();
+        }*/
         private void outputFileNameTextBox_ClearButtonClick( object sender, EventArgs e ) => outputFileNameTextBox.Focus();
         private void outputFileNameSelectButton_Click( object sender, EventArgs e )
         {
@@ -585,8 +585,8 @@ namespace m3u8.download.manager.ui
         private void attemptRequestCountByPartNUD_ValueChanged( object sender, EventArgs e ) => this.AttemptRequestCount = attemptRequestCountByPartNUD.ValueAsInt32;
         #endregion
 
-        #region [.TryRestoreOutputFileNameByAddress.]
-        private bool TryRestoreOutputFileNameByAddress( string url )
+        #region comm. [.TryRestoreOutputFileNameByAddress.]
+        /*private bool TryRestoreOutputFileNameByAddress( string url )
         {
             var suc = _ReceivedAndWritedPartsProcessor.TryRestoreOutputFileNameByAddress( url, out var outputFileName, out var outputDirectory );
             if ( suc )
@@ -595,7 +595,7 @@ namespace m3u8.download.manager.ui
                 this.OutputDirectory = outputDirectory;
             }
             return (suc);
-        }
+        }*/
         #endregion
 
         #region [.loadM3u8FileContentButton.]

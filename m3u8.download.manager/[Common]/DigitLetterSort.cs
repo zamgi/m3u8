@@ -163,7 +163,6 @@ namespace System.Collections.DigitLetterSort
 
         public static IEnumerable< FileViewItem > DigitLetterSortByNameDesc( this IEnumerable< FileViewItem > fvis )
             => fvis.OrderByDescending< FileViewItem, PartOfString >( fvi => new PartOfString( fvi.Name ), new PartOfString.Comparer() );
-
         */
 
         /*/// <summary>
@@ -193,12 +192,9 @@ namespace System.Collections.DigitLetterSort
         /// <returns>Sorted IEnumerable&lt; FileSystemInfo &gt;</returns>
         public static IEnumerable< FileSystemInfo > DigitLetterSortByShortNameAtDictionary( this IEnumerable< FileSystemInfo > fileSystemInfos )
         {
-            var helpDictionary = new Dictionary< string, PartOfString >();// FileSystemInfos.Count() );
-            var result = fileSystemInfos.OrderBy< FileSystemInfo, PartOfString >
-            ( 
-                fsInfo => helpDictionary.GetExistsOrAddNewValue( fsInfo.Name ),
-                new PartOfString.Comparer()
-            );
+            var dict     = new Dictionary< string, PartOfString >();// FileSystemInfos.Count() );
+            var comparer = new PartOfString.Comparer();
+            var result   = fileSystemInfos.OrderBy< FileSystemInfo, PartOfString >( fsi => dict.GetExistsOrAddNewValue( fsi.Name ), comparer );
             return (result);
         }
         /// <summary>
@@ -207,12 +203,9 @@ namespace System.Collections.DigitLetterSort
         /// <returns>Sorted IEnumerable&lt; FileSystemInfo &gt;</returns>
         public static IEnumerable< FileSystemInfo > DigitLetterSortByFullNameAtDictionary( this IEnumerable< FileSystemInfo > fileSystemInfos )
         {
-            var helpDictionary = new Dictionary< string, PartOfString >();// FileSystemInfos.Count() );
-            var result = fileSystemInfos.OrderBy< FileSystemInfo, PartOfString >
-            ( 
-                fsInfo => helpDictionary.GetExistsOrAddNewValue( fsInfo.FullName ),
-                new PartOfString.Comparer()
-            );
+            var dict     = new Dictionary< string, PartOfString >();// FileSystemInfos.Count() );
+            var comparer = new PartOfString.Comparer();
+            var result   = fileSystemInfos.OrderBy< FileSystemInfo, PartOfString >( fsi => dict.GetExistsOrAddNewValue( fsi.FullName ), comparer );
             return (result);
         }
         */

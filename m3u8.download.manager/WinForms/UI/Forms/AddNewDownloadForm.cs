@@ -121,12 +121,12 @@ namespace m3u8.download.manager.ui
 
             #region [.if setted outputFileName.]
             //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            Process_use_OutputFileNamePatternProcessor_on_Init();
+            //---Process_use_OutputFileNamePatternProcessor_on_Init();
             #endregion
 
             m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
             this.M3u8FileUrl = row.Url;
-            m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
+            //---m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
@@ -235,12 +235,12 @@ namespace m3u8.download.manager.ui
 
             #region [.if setted outputFileName.]
             //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            Process_use_OutputFileNamePatternProcessor_on_Init();
+            //---Process_use_OutputFileNamePatternProcessor_on_Init();
             #endregion
 
             m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
             this.M3u8FileUrl = dd3.Url;
-            m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
+            //---m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
             _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = dd3.Url.IsNullOrWhiteSpace();
 
             logUC.SetModel( _Model = new LogListModel() );

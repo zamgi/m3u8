@@ -345,14 +345,14 @@ namespace m3u8.download.manager.ui
                         //if ( downloadListUC.HasFocus )
                         {
                             e.SuppressKeyPress = true;
-                            ExternalProgRunner_Run_Routine( _ExternalProgRunner, openOutputFilesWithExternalMenuItem, runEachFileAsSeparate: e.Alt || e.Shift );
+                            ExternalProgRunner_Run_Routine( _ExternalProgRunner, openOutputFilesWithExternalMenuItem, runEachFileAsSeparate: !(e.Alt || e.Shift) );
                         }
                         break;
                     case Keys.Y: //Open output file with FFmpeg
                         //if ( downloadListUC.HasFocus )
                         {
                             e.SuppressKeyPress = true;
-                            ExternalProgRunner_Run_Routine( _FFmpegConverterRunner, ffmpegConverterRunMenuItem, runEachFileAsSeparate: false/*always separate*//*e.Alt || e.Shift*/ );
+                            FFmpegConverterRunner_Run_Routine(); //ExternalProgRunner_Run_Routine( _FFmpegConverterRunner, ffmpegConverterRunMenuItem, runEachFileAsSeparate: true/*always separate*//*!(e.Alt || e.Shift)*/ );
                         }
                         break;
 
@@ -772,7 +772,13 @@ namespace m3u8.download.manager.ui
 
             var cmt = _CheckMarkTypeEnum_.None;
             if ( _ExternalProgRunner   .Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Orange;
-            if ( _FFmpegConverterRunner.Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Green;
+            //---if ( _FFmpegConverterRunner.Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Green;
+            switch ( _FFmpegConverterRunner.GetStatus( outputFullFileName ) )
+            {
+                case IExternalProgRunner.StatusTypeEnum.InQueue            : cmt |= _CheckMarkTypeEnum_.Green; break;
+                case IExternalProgRunner.StatusTypeEnum.InProcessInnerQueue: cmt |= _CheckMarkTypeEnum_.InProcessInnerQueue; break;
+                case IExternalProgRunner.StatusTypeEnum.InProcessNow       : cmt |= _CheckMarkTypeEnum_.InProcessNow; break;
+            }
             return (cmt);
         }
         private void downloadListUC_UpdatedSingleRunningRow( DownloadRow row )
@@ -1386,8 +1392,9 @@ namespace m3u8.download.manager.ui
             var suc = (row != null) && row.Status.IsRunningOrPaused();
             if ( suc )
             ChangeSettingsParams4DownloadRowForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor,
-                                                       ChangeSettingsParams4DownloadRow_formClosedAction,
-                                                       AddNewDownloadForm_when_Add_formClosedAction, _ReceivedAndWritedPartsProcessor, activeTabPageKind );
+                                                       ChangeSettingsParams4DownloadRow_formClosedAction, 
+                                                       AddNewDownloadForm_when_Add_formClosedAction, 
+                                                       _ReceivedAndWritedPartsProcessor, activeTabPageKind );
             return (suc);
         }
         private async void ChangeSettingsParams4DownloadRow_formClosedAction( ChangeSettingsParams4DownloadRowForm f, DownloadRow row )
@@ -1693,9 +1700,9 @@ namespace m3u8.download.manager.ui
             }
         }
         private void openOutputFilesWithExternalMenuItem_Click( object sender, EventArgs e ) 
-            => ExternalProgRunner_Run_Routine( _ExternalProgRunner, openOutputFilesWithExternalMenuItem, runEachFileAsSeparate: ((Control.ModifierKeys & Keys.Control) != 0) );
+            => ExternalProgRunner_Run_Routine( _ExternalProgRunner, openOutputFilesWithExternalMenuItem, runEachFileAsSeparate: ((Control.ModifierKeys & Keys.Control) == 0) );
         private void ffmpegConverterRunMenuItem_Click( object sender, EventArgs e )
-            => ExternalProgRunner_Run_Routine( _FFmpegConverterRunner, ffmpegConverterRunMenuItem, runEachFileAsSeparate: false/*always separate*//*((Control.ModifierKeys & Keys.Control) != 0)*/ );
+            => FFmpegConverterRunner_Run_Routine(); //ExternalProgRunner_Run_Routine( _FFmpegConverterRunner, ffmpegConverterRunMenuItem, runEachFileAsSeparate: true/*always separate*//*((Control.ModifierKeys & Keys.Control) == 0)*/ );
 
         private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {
@@ -1765,6 +1772,57 @@ namespace m3u8.download.manager.ui
                 {
                     externalProgRunner.Queue.Remove( outputFileNamesQueue );
                 }
+                downloadListUC.Invalidate( true );
+            }
+        }
+        private void FFmpegConverterRunner_Run_Routine()
+        {
+            var externalProgRunner = _FFmpegConverterRunner;
+
+
+            if ( !externalProgRunner.IsExternalProgFileAreExists() )
+            {
+                this.MessageBox_ShowError( $"External program file doesn't exists: '{externalProgRunner.ExternalProgFilePath}'", _APP_TITLE_ );
+                return;
+            }
+
+            var rows = downloadListUC.GetSelectedDownloadRows();
+            var outputFileNames = (from row in rows
+                                   where row.IsFinishedOrErrorOrCreated()
+                                   let t = FileHelperEx.TryGetFirstFileExists( row.GetOutputFullFileNames() )
+                                   where t.success
+                                   select t.outputFileName
+                                  )
+                                  .ToList( rows.Count );
+            foreach ( var outputFileName in outputFileNames )
+            {
+                var status = externalProgRunner.GetStatus( outputFileName );
+                switch ( status )
+                {
+                    case IExternalProgRunner.StatusTypeEnum.None: externalProgRunner.Run( outputFileName, checkIsExternalProgFileAreExists: false ); break;
+                    case IExternalProgRunner.StatusTypeEnum.InQueue: externalProgRunner.Queue.Remove( outputFileName ); break;
+                    case IExternalProgRunner.StatusTypeEnum.InProcessInnerQueue: externalProgRunner.RemoveFromInnerQueue( outputFileName ); break;
+                    case IExternalProgRunner.StatusTypeEnum.InProcessNow: /*do nothing*/ break;
+                }
+            }
+
+            var outputFileNamesQueue = (from row in rows select row.GetOutputFullFileName()).Except( outputFileNames ).ToList( rows.Count - outputFileNames.Count );
+            if ( outputFileNamesQueue.AnyEx() )
+            {
+                var cst = ffmpegConverterRunMenuItem.CheckState;
+                if ( cst == CheckState.Unchecked )
+                {
+                    externalProgRunner.Queue.Add( outputFileNamesQueue );
+                }
+                else
+                {
+                    externalProgRunner.Queue.Remove( outputFileNamesQueue );
+                }
+                //downloadListUC.Invalidate( true );
+            }
+
+            if ( outputFileNamesQueue.AnyEx() || outputFileNames.AnyEx() )
+            {
                 downloadListUC.Invalidate( true );
             }
         }
