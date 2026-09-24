@@ -204,8 +204,8 @@ namespace m3u8.download.manager
         }
         [M(O.AggressiveInlining)] public static bool TryGetDownloadSpeedInBps( this DownloadRow row, out double speedInBps )
         {
-            if ( !row.Status.IsPaused() )
-            {
+            //if ( !row.Status.IsPaused() )
+            //{
                 var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) ||/*&&*/ (2.5 <= elapsedSeconds) )
@@ -213,7 +213,7 @@ namespace m3u8.download.manager
                     speedInBps = GetSpeedInBps( downloadBytes, elapsedSeconds );
                     return (true);
                 }
-            }
+            //}
             speedInBps = default;
             return (false);
         }

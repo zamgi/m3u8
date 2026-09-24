@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -80,6 +81,10 @@ namespace m3u8.download.manager.ui
         /// <summary>
         /// 
         /// </summary>
+        public delegate string GetDrawCheckMarkToolTipDelegate( CheckMarkTypeEnum checkMarkType /*DownloadRow row*/ );
+        /// <summary>
+        /// 
+        /// </summary>
         public readonly struct SummaryDownloadInfo
         {
             /// <summary>
@@ -139,6 +144,7 @@ namespace m3u8.download.manager.ui
         public event EventHandler                           DoubleClickEx;
         public       IsDrawCheckMarkDelegate                IsDrawCheckMark;
         public       GetDrawCheckMarkTypeDelegate           GetDrawCheckMarkType;
+        public       GetDrawCheckMarkToolTipDelegate        GetDrawCheckMarkToolTip;
 
         private DownloadListModel _Model;
         //private CellStyle _DefaultCellStyle;
@@ -902,11 +908,10 @@ namespace m3u8.download.manager.ui
             var row = _Model[ e.RowIndex ];
             switch ( e.ColumnIndex )
             {
-                case OUTPUTFILENAME_COLUMN_INDEX       : e.Value = row.OutputFileName;  break;
-                case OUTPUTDIRECTORY_COLUMN_INDEX      : e.Value = row.OutputDirectory; break;
-                case STATUS_COLUMN_INDEX               : e.Value = row.Status.ToText4View(); break;
-                case DOWNLOAD_PROGRESS_COLUMN_INDEX    : 
-                    //e.Value = new string(' ', 30);
+                case OUTPUTFILENAME_COLUMN_INDEX           : e.Value = row.OutputFileName;  break;
+                case OUTPUTDIRECTORY_COLUMN_INDEX          : e.Value = row.OutputDirectory; break;
+                case STATUS_COLUMN_INDEX                   : e.Value = row.Status.ToText4View(); break;
+                case DOWNLOAD_PROGRESS_COLUMN_INDEX        : 
                     e.Value = (row.TryGetDownloadProgress( out _, out var progressText ) ? progressText : null/*string.Empty*/) + SPACE_10;
                     break;
                 case DOWNLOAD_TIME_COLUMN_INDEX            : e.Value = row.GetDownloadTimeText       () /*+ new string(' ', 1)*/; break;
@@ -943,7 +948,20 @@ namespace m3u8.download.manager.ui
                     break;
             }
         }
-        
+        //private void DGV_CellToolTipTextNeeded( object sender, DataGridViewCellToolTipTextNeededEventArgs e )
+        //{
+        //    if ( (0 <= e.RowIndex) && (0 <= e.ColumnIndex) && DGV.ShowCellToolTips )
+        //    {
+        //        var arg = new DataGridViewCellValueEventArgs( e.ColumnIndex, e.RowIndex );
+        //        DGV_CellValueNeeded( sender, arg );
+        //        e.ToolTipText = arg.Value?.ToString();
+        //    }
+        //    else
+        //    {
+        //        e.ToolTipText = null;
+        //    }
+        //}
+
         private void DGV_SelectionChanged( object sender, EventArgs e ) //---private void DGV_CurrentCellChanged( object sender, EventArgs e )
         {
             _UserMade_DGV_SelectionChanged = true;
@@ -1018,15 +1036,43 @@ namespace m3u8.download.manager.ui
             }
         }
         private void DGV_CellMouseLeave( object sender, DataGridViewCellEventArgs e ) => DGV.SetDefaultCursorIfHand();
+
         private void DGV_CellMouseMove( object sender, DataGridViewCellMouseEventArgs e )
         {
             if ( (e.Button == MouseButtons.None) && (0 <= e.RowIndex) )
             {
+                DownloadRow row;
                 switch ( e.ColumnIndex )
                 {
+                    case STATUS_COLUMN_INDEX:
+                        row = _Model[ e.RowIndex ];
+                        var cmt = (GetDrawCheckMarkType?.Invoke( row )).GetValueOrDefault( CheckMarkTypeEnum.None );
+                        if ( cmt != CheckMarkTypeEnum.None )
+                        {
+                            var rc = DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true );
+                            var pt = DGV.PointToClient( Control.MousePosition );
+                            
+                            var width = cmt switch { CheckMarkTypeEnum.Green => CHECK_MARK_WIDTH, 
+                                                     CheckMarkTypeEnum.Orange => CHECK_MARK_WIDTH,
+                                                     CheckMarkTypeEnum.InProcessInnerQueue => CHECK_MARK_WIDTH, 
+                                                     CheckMarkTypeEnum.InProcessNow => CHECK_MARK_WIDTH,
+                                                     CheckMarkTypeEnum.Orange | CheckMarkTypeEnum.Green => CHECK_MARK_WIDTH + SECOND_CHECK_MARK_OFFSET, _ => 0 };
+                            rc.X += rc.Width - width;
+                            rc.Width = width;
+                            if ( rc.Contains( pt ) )
+                            {
+                                var toolTipText = GetDrawCheckMarkToolTip?.Invoke( cmt );
+                                if ( toolTipText != null )
+                                {
+                                    ShowCustomToolTip_4_PartOfDGVCellMouseMove( toolTipText, pt );
+                                    return;
+                                }
+                            }
+                        }
+                        break;
+
                     case OUTPUTFILENAME_COLUMN_INDEX:
-                    {
-                        var row = _Model[ e.RowIndex ];
+                        row = _Model[ e.RowIndex ];
                         var useWebProxy = row.WebProxyInfo.UseWebProxy;
                         if ( row.IsLiveStream || useWebProxy )
                         {
@@ -1037,29 +1083,22 @@ namespace m3u8.download.manager.ui
                             {                        
                                 if ( isLiveStreamRect.Contains( pt /*e.Location*/ ) )
                                 {
-                                    //toolTip.ShowAlways = true;
-                                    var f = this.FindForm();
-                                    toolTip.Show( f, $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)", f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
+                                    ShowCustomToolTip_4_PartOfDGVCellMouseMove( $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)", pt );                                    
                                     return;
                                 }
                                 MakeUseWebProxyImageRect( ref isLiveStreamRect );
                             }
                             if ( useWebProxy && isLiveStreamRect.Contains( pt /*e.Location*/ ) )
                             {
-                                var f = this.FindForm();
-                                toolTip.Show( f, $"web proxy -> {row.WebProxyInfo.GetWebProxyAddressText()}", f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
+                                ShowCustomToolTip_4_PartOfDGVCellMouseMove( $"web proxy -> {row.WebProxyInfo.GetWebProxyAddressText()}", pt );
                                 return;
                             }
                         }
-                    }
-                    break;
+                        break;
                 }
             }
 
-            if ( toolTip.IsShown )
-            {
-                toolTip.Hide();
-            }
+            HideCustomToolTip_4_PartOfDGVCellMouseMove();
         }
         private void DGV_CellClick( object sender, DataGridViewCellEventArgs e )
         {
@@ -1133,6 +1172,21 @@ namespace m3u8.download.manager.ui
                 }
             }
             _UserMade_DGV_SelectionChanged = false;
+        }
+
+        private void ShowCustomToolTip_4_PartOfDGVCellMouseMove( string toolTipText, in Point pt )
+        {
+            DGV.ShowCellToolTipsEx( false );
+            var f = this.FindForm();
+            toolTip.Show( f, toolTipText, f.PointToClient( DGV.PointToScreen( pt ) ), duration: 1_500 );
+        }
+        [M(O.AggressiveInlining)] private void HideCustomToolTip_4_PartOfDGVCellMouseMove()
+        {
+            if ( toolTip.IsShown )
+            {
+                toolTip.Hide();
+                DGV.ShowCellToolTipsEx( true );
+            }
         }
 
         [M(O.AggressiveInlining)] private static void CellPaintRoutine( DataGridViewCellPaintingEventArgs e )
@@ -1235,8 +1289,10 @@ namespace m3u8.download.manager.ui
                     var defCellFont = DGV.DefaultCellStyle.Font ?? DGV.Font;
 
                     rc = e.CellBounds; rc.X += STATUS_TEXT_OFFSET_X; 
-                    rc.Width -= STATUS_TEXT_OFFSET_X + (cmt switch { CheckMarkTypeEnum.Green => CHECK_MARK_WIDTH, CheckMarkTypeEnum.Orange => CHECK_MARK_WIDTH,
-                                                                     CheckMarkTypeEnum.InProcessInnerQueue => CHECK_MARK_WIDTH, CheckMarkTypeEnum.InProcessNow => CHECK_MARK_WIDTH,
+                    rc.Width -= STATUS_TEXT_OFFSET_X + (cmt switch { CheckMarkTypeEnum.Green => CHECK_MARK_WIDTH, 
+                                                                     CheckMarkTypeEnum.Orange => CHECK_MARK_WIDTH,
+                                                                     CheckMarkTypeEnum.InProcessInnerQueue => CHECK_MARK_WIDTH, 
+                                                                     CheckMarkTypeEnum.InProcessNow => CHECK_MARK_WIDTH,
                                                                      CheckMarkTypeEnum.Orange | CheckMarkTypeEnum.Green => CHECK_MARK_WIDTH + SECOND_CHECK_MARK_OFFSET, _ => 0 });
                     gr.DrawString( row.Status.ToString(), defCellFont, Brushes.Black, rc, _SF_Left );
                     #endregion
@@ -1244,31 +1300,28 @@ namespace m3u8.download.manager.ui
                     #region [.-6.2- draw-check-mark.]
                     if ( cmt != CheckMarkTypeEnum.None )
                     {
-                        //rc = e.CellBounds; //rc.Inflate( -2, 0 );
-                        //using var checkMarkBrush = new SolidBrush( checkMark.color );
-                        //gr.DrawString( "\u2713", defCellFont, Brushes.Green, rc, _SF_Right );
+                        const string CHECK_MARK = "\u2713";
+                        const string HOURGLASS  = "\u231B";
+                        const string WATCH      = "\u231A";
 
                         rc = e.CellBounds;
                         if ( cmt.HasFlag( CheckMarkTypeEnum.Orange ) )
                         { 
-                            gr.DrawString( "\u2713", defCellFont, Brushes.Orange, rc, _SF_Right );
-                            if ( cmt.HasFlag( CheckMarkTypeEnum.Green ) ) rc.Width -= SECOND_CHECK_MARK_OFFSET;                            
+                            gr.DrawString( CHECK_MARK, defCellFont, Brushes.Orange, rc, _SF_Right );
+                            if ( cmt.HasFlag( CheckMarkTypeEnum.Green ) ) rc.Width -= SECOND_CHECK_MARK_OFFSET;
                         }
 
                         if ( cmt.HasFlag( CheckMarkTypeEnum.Green ) )
                         {
-                            gr.DrawString( "\u2713", defCellFont, Brushes.Green, rc, _SF_Right );
+                            gr.DrawString( CHECK_MARK, defCellFont, Brushes.Green, rc, _SF_Right );
                         }
-
                         else if ( cmt.HasFlag( CheckMarkTypeEnum.InProcessInnerQueue ) )
                         {
-                            gr.DrawString( "\u231B", defCellFont, Brushes.Green, rc, _SF_Right );
+                            gr.DrawString( HOURGLASS, defCellFont, Brushes.Green, rc, _SF_Right );
                         }
                         else if ( cmt.HasFlag( CheckMarkTypeEnum.InProcessNow ) )
                         {
-                            //gr.DrawRectangle( Pens.Green, rc );
-                            //gr.DrawString( "\u2713", defCellFont, Brushes.LightGreen, rc, _SF_Right );
-                            gr.DrawString( "\u231A", defCellFont, Brushes.Green, rc, _SF_Right );
+                            gr.DrawString( WATCH, defCellFont, Brushes.Green, rc, _SF_Right );
                         }
                     }
                     #endregion
@@ -1363,24 +1416,6 @@ namespace m3u8.download.manager.ui
                             e.Graphics.FillRectangle( Brushes.White, rc_useWebProxy );
                             e.Graphics.DrawImage( Resources.workgroup_16x16, rc_useWebProxy );
                         }
-
-                        #region comm.
-                        //e.Handled = true;
-                        //e.PaintEx( DataGridViewPaintParts.All );
-                        //
-                        //var rc = GetIsLiveStreamImageRect( e.CellBounds );
-                        //if ( row.IsLiveStream )
-                        //{
-                        //    e.Graphics.FillRectangle( Brushes.White, rc );
-                        //    e.Graphics.DrawImage( Resources.live_stream, rc );
-                        //    MakeUseWebProxyImageRect( ref rc );
-                        //}
-                        //if ( useWebProxy )
-                        //{
-                        //    e.Graphics.FillRectangle( Brushes.White, rc );
-                        //    e.Graphics.DrawImage( Resources.workgroup_16x16, rc );
-                        //}
-                        #endregion
                     }
 
                     //Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );

@@ -115,6 +115,7 @@
     <Compile Include="..\[Common]\Controller\Sync_primitives.cs" Link="Controller\Sync_primitives.cs" />
 
     <Compile Include="..\[Common]\UndoModel.cs" Link="Model\UndoModel.cs" />
+    <Compile Include="..\[Common]\UrlsUniquer.cs" Link="Model\UrlsUniquer.cs" />
   </ItemGroup>
 
   <ItemGroup>

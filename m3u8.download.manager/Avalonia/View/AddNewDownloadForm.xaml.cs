@@ -78,7 +78,7 @@ namespace m3u8.download.manager.ui
         private FileNameCleaner4UI.Processor _FNCP;
         private bool _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private (int n, int total) _SeriesInfo;
-        private bool _IsInEditMode;
+        private DownloadRow _EditedRow;
         private OutputFileNamePatternProcessor   _OutputFileNamePatternProcessor;
         private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;
         #endregion
@@ -131,7 +131,7 @@ namespace m3u8.download.manager.ui
         /// </summary>
         private AddNewDownloadForm( MainVM vm, DownloadRow row ) : this()
         {
-            _IsInEditMode = true;
+            _EditedRow = row;
             this.DataContext = new CloseWindowVM( this );
 
             _SC                = vm.SettingsController;
@@ -551,6 +551,19 @@ namespace m3u8.download.manager.ui
         #region [.private method's.]
         private bool IsWaitBannerShown() => !this.IsEnabled;
 
+        private bool IsUrlAreUnique()
+        {
+            if ( _SC.UniqueUrlsOnly )
+            {
+                var isUrlAreUnique = !(_DownloadListModel?.ContainsUrl( this.M3u8FileUrl )).GetValueOrDefault();
+                if ( !isUrlAreUnique && (_EditedRow != null) && _EditedRow.Url.EqualIgnoreCase( this.M3u8FileUrl ) )
+                {
+                    isUrlAreUnique = true;
+                }
+                return (isUrlAreUnique);
+            }
+            return (true);
+        }
         private async Task< bool > IsValid()
         {
             if ( this.M3u8FileUrl.IsNullOrWhiteSpace() )
@@ -559,7 +572,7 @@ namespace m3u8.download.manager.ui
                 return (false);
             }
             else
-            if ( !_IsInEditMode && _SC.Settings.UniqueUrlsOnly && (_DownloadListModel?.ContainsUrl( this.M3u8FileUrl )).GetValueOrDefault() )
+            if ( !IsUrlAreUnique() )
             {
                 await Extensions.MessageBox_ShowError( $"Url already exists in list:\n '{this.M3u8FileUrl}'\n", this.Title );
                 m3u8FileUrlTextBox.FocusAndBlinkBackColor();
@@ -741,6 +754,7 @@ namespace m3u8.download.manager.ui
                                                                                        this.GetOutputFileName(), this.GetOutputDirectory(), 
                                                                                        this.IsLiveStream, this.LiveStreamMaxFileSizeInBytes);
         public bool Success { get; private set; }
+        public bool IsInEditMode => (_EditedRow != null);
         public bool AutoStartDownload => !_DownloadLater;
         public string M3u8FileUrl
         {

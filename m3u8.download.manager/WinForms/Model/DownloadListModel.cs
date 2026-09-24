@@ -12,8 +12,8 @@ namespace m3u8.download.manager.models
     /// </summary>
     internal sealed class DownloadListModel : ListModel< DownloadRow >
     {
-        private HashSet< string > _Urls;
-        public DownloadListModel() => _Urls = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
+        private UrlsUniquer _Urls;
+        public DownloadListModel() => _Urls = new UrlsUniquer();
 #if DEBUG
         public DownloadRow AddRow( in (string Url, string OutputFileName, string OutputDirectory) t ) => AddRow( DownloadRow_Definer_1.Create( t.Url, t.OutputFileName, t.OutputDirectory ) );
 #endif

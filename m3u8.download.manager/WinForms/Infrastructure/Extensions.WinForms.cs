@@ -123,6 +123,7 @@ namespace m3u8.download.manager
                 DGV.Cursor = Cursors.Default;
             }
         }
+        [M(O.AggressiveInlining)] public static void ShowCellToolTipsEx( this DataGridView DGV, bool showCellToolTips ) => DGV.ShowCellErrors = DGV.ShowRowErrors = DGV.ShowCellToolTips = showCellToolTips;
         [M(O.AggressiveInlining)] public static bool IsSelected( this DataGridViewElementStates state ) => ((state & DataGridViewElementStates.Selected) == DataGridViewElementStates.Selected);
         public static void SetForeColor4ParentOnly< T >( this Control parent, Color foreColor ) where T : Control
         {

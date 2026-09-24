@@ -338,6 +338,7 @@ namespace m3u8.download.manager.ui
             this.downloadListUC.UsedWebProxyClick += new m3u8.download.manager.ui.DownloadListUC.UsedWebProxyClickEventHandler(this.downloadListUC_UsedWebProxyClick);
             this.downloadListUC.IsDrawCheckMark += new DownloadListUC.IsDrawCheckMarkDelegate(this.downloadListUC_IsDrawCheckMark);
             this.downloadListUC.GetDrawCheckMarkType += new DownloadListUC.GetDrawCheckMarkTypeDelegate(this.downloadListUC_GetDrawCheckMarkType);
+            this.downloadListUC.GetDrawCheckMarkToolTip += new DownloadListUC.GetDrawCheckMarkToolTipDelegate(this.downloadListUC_GetDrawCheckMarkToolTip);
             // 
             // logUC
             // 

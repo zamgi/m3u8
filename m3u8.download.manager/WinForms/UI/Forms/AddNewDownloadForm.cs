@@ -49,7 +49,7 @@ namespace m3u8.download.manager.ui
         private bool               _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
         private (int n, int total) _SeriesInfo;
         private string             _Initial_M3u8FileUrl;
-        private bool               _IsInEditMode;
+        private DownloadRow        _EditedRow;
         private OutputFileNamePatternProcessor _OutputFileNamePatternProcessor;
         private IReceivedAndWritedPartsProcessor _ReceivedAndWritedPartsProcessor;
         private Func< AddNewDownloadForm, Task > _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url;
@@ -102,7 +102,7 @@ namespace m3u8.download.manager.ui
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
             , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor ) : this( dc, sc, receivedAndWritedPartsProcessor )
         {
-            _IsInEditMode      = true;
+            _EditedRow = row;
             _DownloadListModel = dc?.Model;
             requestHeadersEditor.SetRequestHeaders( row.RequestHeaders, sc.IgnoreHostHttpHeader );
 
@@ -216,7 +216,6 @@ namespace m3u8.download.manager.ui
             , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
             , in (int n, int total)? seriesInfo = null ) : this( dc, sc, receivedAndWritedPartsProcessor )
         {
-            _IsInEditMode      = true;
             _DownloadListModel = dc?.Model;
             requestHeadersEditor.SetRequestHeaders( dd3.RequestHeaders, sc.IgnoreHostHttpHeader );
 
@@ -488,6 +487,19 @@ namespace m3u8.download.manager.ui
             }
             
         }
+        private bool IsUrlAreUnique()
+        {
+            if ( _Settings.UniqueUrlsOnly )
+            {
+                var isUrlAreUnique = !(_DownloadListModel?.ContainsAnyUrls( this.M3u8FileUrl, _GroupedUrls.audio, _GroupedUrls.video )).GetValueOrDefault();
+                if ( !isUrlAreUnique && (_EditedRow != null) && _EditedRow.Url.EqualIgnoreCase( this.M3u8FileUrl ) )
+                {
+                    isUrlAreUnique = true;
+                }
+                return (isUrlAreUnique);
+            }
+            return (true);            
+        }
         protected override void OnFormClosing( FormClosingEventArgs e )
         {
             base.OnFormClosing( e );
@@ -506,7 +518,7 @@ namespace m3u8.download.manager.ui
                     m3u8FileUrlTextBox.FocusAndBlinkBackColor();
                 }
                 else
-                if ( !_IsInEditMode && _Settings.UniqueUrlsOnly && (_DownloadListModel?.ContainsAnyUrls( this.M3u8FileUrl, _GroupedUrls.audio, _GroupedUrls.video )).GetValueOrDefault() )
+                if ( !IsUrlAreUnique() )
                 {
                     e.Cancel = true;
                     this.MessageBox_ShowError( $"Url already exists in list:\n '{this.M3u8FileUrl}'", this.Text );
@@ -583,6 +595,7 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.public methods.]
+        public bool IsInEditMode => (_EditedRow != null);
         public  bool   AutoStartDownload => !_DownloadLater;
         public  string M3u8FileUrl
         {

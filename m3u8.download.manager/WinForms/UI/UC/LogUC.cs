@@ -876,8 +876,7 @@ namespace m3u8.download.manager.ui
                     if ( TryGetAdditionalM3u8Url( m3u8FileUrl, out var url ) )
                     {
                         DGV.Cursor = Cursors.Hand;
-                        DGV.ShowCellErrors = DGV.ShowRowErrors = false;
-                        DGV.ShowCellToolTips = false;
+                        DGV.ShowCellToolTipsEx( false );
                         var f = this.FindForm();
                         toolTip.Show( $"Download Additional '.m3u8' url:  '{Ellipsis.MinimizePath( url.ToString(), 50 )}'", f, f.PointToClient( DGV.PointToScreen( e.Location ) ), duration: 1_500 );
                         return;
@@ -885,8 +884,7 @@ namespace m3u8.download.manager.ui
                 }
             }
 
-            DGV.ShowCellErrors = DGV.ShowRowErrors = true;
-            DGV.ShowCellToolTips = true;
+            DGV.ShowCellToolTipsEx( true );
             if ( DGV.Cursor != Cursors.Default )
             {
                 DGV.Cursor = Cursors.Default;

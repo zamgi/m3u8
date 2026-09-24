@@ -16,13 +16,15 @@ using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
 
+using static m3u8.download.manager.ui.DownloadListUC;
+
+using _CheckMarkTypeEnum_                    = m3u8.download.manager.ui.DownloadListUC.CheckMarkTypeEnum;
 using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using _DC_                                   = m3u8.download.manager.controllers.DownloadController;
-using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
 using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
+using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
-using _CheckMarkTypeEnum_                    = m3u8.download.manager.ui.DownloadListUC.CheckMarkTypeEnum;
 using M                                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                                      = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -771,7 +773,7 @@ namespace m3u8.download.manager.ui
             var outputFullFileName = row.GetOutputFullFileName();
 
             var cmt = _CheckMarkTypeEnum_.None;
-            if ( _ExternalProgRunner   .Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Orange;
+            if ( _ExternalProgRunner.Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Orange;
             //---if ( _FFmpegConverterRunner.Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Green;
             switch ( _FFmpegConverterRunner.GetStatus( outputFullFileName ) )
             {
@@ -781,6 +783,15 @@ namespace m3u8.download.manager.ui
             }
             return (cmt);
         }
+        private string downloadListUC_GetDrawCheckMarkToolTip( CheckMarkTypeEnum checkMarkType /*DownloadRow row*/ ) => checkMarkType switch
+        {
+            CheckMarkTypeEnum.Green => $"convert with '{_SC.Settings.FFmpegConverterCaption}' (after download)",
+            CheckMarkTypeEnum.Orange => $"open with '{_SC.Settings.ExternalProgCaption}' (after download)",
+            CheckMarkTypeEnum.InProcessInnerQueue => $"in queue for convert with '{_SC.Settings.FFmpegConverterCaption}'",
+            CheckMarkTypeEnum.InProcessNow => $"converted now with '{_SC.Settings.FFmpegConverterCaption}'",
+            CheckMarkTypeEnum.Orange | CheckMarkTypeEnum.Green => $"convert and open with '{_SC.Settings.FFmpegConverterCaption}', '{_SC.Settings.ExternalProgCaption}' (after download)",
+            _ => null
+        };
         private void downloadListUC_UpdatedSingleRunningRow( DownloadRow row )
         {
             if ( _ShowDownloadStatistics )
@@ -1344,7 +1355,9 @@ namespace m3u8.download.manager.ui
         {
             if ( f.DialogResult == DialogResult.OK )
             {
-                var tp = f.GetParamsTuple(); _SC.SetDefaultWebProxyInfo( tp.WebProxyInfo );
+                var tp = f.GetParamsTuple(); 
+                //if ( !_SC.UniqueUrlsOnly || !_DownloadListModel.ContainsUrl( tp.Url ) )
+                _SC.SetDefaultWebProxyInfo( tp.WebProxyInfo );
                 var row = _DownloadListModel.AddInsertRowByExistsRowStatus( tp );
                 await downloadListUC.SelectDownloadRowDelay( row );
                 if ( f.AutoStartDownload )

@@ -123,18 +123,18 @@ namespace m3u8.download.manager
     {
         private string             _FFmpegFileLocation;
         private ProcessWindowStyle _ProcessWindowStyle;
-        private readonly object __outputFileNames__lock;
+        private readonly object    __outputFileNames__lock;
         private BlockingCollection< string > __outputFileNames__;
         private HashSet< string > _OutputFileNamesSet;
         private Task _Run_FFmpegTask;
-        public FFmpegConverterRunner( string ffmpegFileLocation, ProcessWindowStyle processWindowStyle = ProcessWindowStyle.Normal ) //.Minimized )
+        public FFmpegConverterRunner( string ffmpegFileLocation, ProcessWindowStyle processWindowStyle = ProcessWindowStyle.Minimized ) //.Minimized )
         {
-            _FFmpegFileLocation = ffmpegFileLocation;
-            _ProcessWindowStyle = processWindowStyle;
+            _FFmpegFileLocation     = ffmpegFileLocation;
+            _ProcessWindowStyle     = processWindowStyle;
             __outputFileNames__lock = new object();
-            __outputFileNames__ = new BlockingCollection< string >();
-            _OutputFileNamesSet = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
-            _Run_FFmpegTask     = Task.Run( Run_FFmpegTask_Routine );
+            __outputFileNames__     = new BlockingCollection< string >();
+            _OutputFileNamesSet     = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
+            _Run_FFmpegTask         = Task.Run( Run_FFmpegTask_Routine );
         }
         public override string ExternalProgFilePath => _FFmpegFileLocation;
 

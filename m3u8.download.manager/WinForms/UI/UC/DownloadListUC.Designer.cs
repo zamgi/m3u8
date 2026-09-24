@@ -90,6 +90,8 @@
             this.DGV.Size = new System.Drawing.Size(948, 201);
             this.DGV.TabIndex = 1;
             this.DGV.VirtualMode = true;
+            this.DGV.ShowCellToolTipsEx( true );
+            //this.DGV.CellToolTipTextNeeded += new System.Windows.Forms.DataGridViewCellToolTipTextNeededEventHandler(this.DGV_CellToolTipTextNeeded);
             this.DGV.CellValueNeeded += new System.Windows.Forms.DataGridViewCellValueEventHandler(this.DGV_CellValueNeeded);
             this.DGV.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.DGV_CellFormatting);
             this.DGV.SelectionChanged += new System.EventHandler(this.DGV_SelectionChanged);
@@ -103,7 +105,7 @@
             this.DGV.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.DGV_ColumnDividerDoubleClick);
             this.DGV.MouseDown +=new System.Windows.Forms.MouseEventHandler(this.DGV_MouseDown);
             this.DGV.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseClick);
-            this.DGV.DoubleClick += new System.EventHandler(this.DGV_DoubleClick);
+            this.DGV.DoubleClick += new System.EventHandler(this.DGV_DoubleClick);            
             this.DGV.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DGV_DataError);
             this.DGV.StartDrawSelectRect += new System.EventHandler(this.DGV_StartDrawSelectRect);
             this.DGV.EndDrawSelectRect += new System.EventHandler(this.DGV_EndDrawSelectRect);
