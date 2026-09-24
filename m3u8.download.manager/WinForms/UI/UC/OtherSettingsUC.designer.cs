@@ -38,10 +38,11 @@
             this.externalProgFilePathButton = new System.Windows.Forms.Button();
             this.externalProgFilePathTextBox = new System.Windows.Forms.TextBoxEx();
             this.externalProgCaptionTextBox = new System.Windows.Forms.TextBoxEx();
-            this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox();
+            this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
             this.ffmpegFilePathTextBox = new System.Windows.Forms.TextBoxEx();
             this.ffmpegCaptionTextBox = new System.Windows.Forms.TextBoxEx();
-            this.ffmpegApplyByDefaultCheckBox = new System.Windows.Forms.CheckBox();
+            this.ffmpegApplyByDefaultCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
+            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
             this.ffmpegFilePathButton = new System.Windows.Forms.Button();
             this.ffmpegResetButton = new System.Windows.Forms.Button();            
             this.requestTimeoutByPartDTP = new System.Windows.Forms.BorderDateTimePicker();
@@ -369,7 +370,7 @@
             // ffmpegGroupBox
             // 
             ffmpegGroupBox.Location = new System.Drawing.Point(285, 138);
-            ffmpegGroupBox.Size = new System.Drawing.Size(261, 125);
+            ffmpegGroupBox.Size = new System.Drawing.Size(261, 155);
             ffmpegGroupBox.TabIndex = 2;
             ffmpegGroupBox.TabStop = false;
             ffmpegGroupBox.Text = "      FFmpeg converter";
@@ -379,6 +380,7 @@
             ffmpegGroupBox.Controls.Add(this.ffmpegFilePathTextBox);
             ffmpegGroupBox.Controls.Add(this.ffmpegCaptionTextBox);
             ffmpegGroupBox.Controls.Add(this.ffmpegApplyByDefaultCheckBox);
+            ffmpegGroupBox.Controls.Add(this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox);
             ffmpegGroupBox.Controls.Add(ffmpegCaptionlabel);
             ffmpegGroupBox.Controls.Add(ffmpegFilePathLabel);
             //
@@ -465,9 +467,17 @@
             this.ffmpegApplyByDefaultCheckBox.Location = new System.Drawing.Point(6, 101);
             this.ffmpegApplyByDefaultCheckBox.Text = "Apply to all new downloads by default";
             // 
+            // renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox
+            // 
+            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.AutoSize = true;
+            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Location = new System.Drawing.Point(6, 120/*this.ffmpegApplyByDefaultCheckBox.Bottom*/);
+            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Text = "Rename output file after FFmpeg convert and\r\n" + "open with external program";
+            // 
             // gcGroupBox
             // 
-            gcGroupBox.Location = new System.Drawing.Point(285, 269);
+            gcGroupBox.Location = new System.Drawing.Point(285, 299);
             gcGroupBox.Size = new System.Drawing.Size(261, 85);
             gcGroupBox.TabIndex = 4;
             gcGroupBox.TabStop = false;
@@ -595,12 +605,13 @@
         private System.Windows.Forms.TextBoxEx outputFileExtensionTextBox;
         private System.Windows.Forms.TextBoxEx externalProgFilePathTextBox;
         private System.Windows.Forms.TextBoxEx externalProgCaptionTextBox;
-        private System.Windows.Forms.CheckBox externalProgApplyByDefaultCheckBox;
+        private System.Windows.Forms.CheckBoxImitationDisabled externalProgApplyByDefaultCheckBox;
         private System.Windows.Forms.Button externalProgFilePathButton;
         private System.Windows.Forms.Button externalProgResetButton;
         private System.Windows.Forms.TextBoxEx ffmpegFilePathTextBox;
         private System.Windows.Forms.TextBoxEx ffmpegCaptionTextBox;
-        private System.Windows.Forms.CheckBox ffmpegApplyByDefaultCheckBox;
+        private System.Windows.Forms.CheckBoxImitationDisabled ffmpegApplyByDefaultCheckBox;
+        private System.Windows.Forms.CheckBoxImitationDisabled renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox;
         private System.Windows.Forms.Button ffmpegFilePathButton;
         private System.Windows.Forms.Button ffmpegResetButton;
         private System.Windows.Forms.Button collectGarbageButton;

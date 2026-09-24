@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -65,7 +66,12 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
-        public void OnShown() { _ExternalProgFilePath_InitValue = this.ExternalProgFilePath; _FFmpegFileLocation_InitValue = this.FFmpegFileLocation; }
+        public void OnShown() 
+        { 
+            _ExternalProgFilePath_InitValue = this.ExternalProgFilePath; _FFmpegFileLocation_InitValue = this.FFmpegFileLocation;
+
+            CheckBoxImitationDisabled.Set_AllCheckBox_ForeColorAndImage( this.Controls );
+        }
         public void OnClosing( DialogResult dialogResult, CancelEventArgs e )
         {
             if ( dialogResult == DialogResult.OK )
@@ -182,6 +188,11 @@ namespace m3u8.download.manager.ui
             get => ffmpegApplyByDefaultCheckBox.Checked;
             set => ffmpegApplyByDefaultCheckBox.Checked = value;
         }
+        public bool     RenameAfterFFmpegConverterAndOpenWithExternalProgRunner
+        {
+            get => renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Checked;
+            set => renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Checked = value;
+        }        
         public bool     UseDirectorySelectDialogModern
         {
             get => useDirectorySelectDialogModernCheckBox.Checked;

@@ -36,6 +36,17 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool IsPaused  ( this DownloadStatus status ) => (status     == DownloadStatus.Paused);
         [M(O.AggressiveInlining)] public static bool IsRunningOrPaused( this DownloadStatus status ) => status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Paused => true, _ => false };
         [M(O.AggressiveInlining)] public static bool IsRunningOrStarted( this DownloadStatus status ) => status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, _ => false };
+        [M(O.AggressiveInlining)] public static bool IsAllowed_StartDownload( this DownloadStatus status ) => (status == DownloadStatus.Created) ||
+                                                                                                              (status == DownloadStatus.Paused) ||
+                                                                                                              (status == DownloadStatus.Canceled) ||
+                                                                                                              (status == DownloadStatus.Finished) ||
+                                                                                                              (status == DownloadStatus.Error);
+        [M(O.AggressiveInlining)] public static bool IsAllowed_CancelDownload( this DownloadStatus status ) => (status == DownloadStatus.Started) ||
+                                                                                                               (status == DownloadStatus.Running) ||
+                                                                                                               (status == DownloadStatus.Wait) ||
+                                                                                                               (status == DownloadStatus.Paused);
+        [M(O.AggressiveInlining)] public static bool IsAllowed_PauseDownload( this DownloadStatus status ) => (status == DownloadStatus.Started) ||
+                                                                                                              (status == DownloadStatus.Running);
         [M(O.AggressiveInlining)] public static bool HasAnyFailedDownloadParts( this DownloadRow row ) => (row.FailedDownloadParts != 0);
         //[M(O.AggressiveInlining)] public static int? GetIndex4InsertByExistsRowStatus( this DownloadListModel model )
         //{
@@ -205,7 +216,8 @@ namespace m3u8.download.manager
         [M(O.AggressiveInlining)] public static bool TryGetDownloadSpeedInBps( this DownloadRow row, out double speedInBps )
         {
             //if ( !row.Status.IsPaused() )
-            //{
+            if ( row.Status != DownloadStatus.Created )
+            {
                 var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
                 var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
                 if ( (1_024 < downloadBytes) ||/*&&*/ (2.5 <= elapsedSeconds) )
@@ -213,7 +225,7 @@ namespace m3u8.download.manager
                     speedInBps = GetSpeedInBps( downloadBytes, elapsedSeconds );
                     return (true);
                 }
-            //}
+            }
             speedInBps = default;
             return (false);
         }

@@ -110,7 +110,10 @@
     <Setting Name="FFmpegConverterCaption" Type="System.String" Scope="User">
       <Value Profile="(Default)">FFmpeg</Value>
     </Setting>
-    
+    <Setting Name="RenameAfterFFmpegConverterAndOpenWithExternalProgRunner" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+
     <Setting Name="UseDirectorySelectDialogModern" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>

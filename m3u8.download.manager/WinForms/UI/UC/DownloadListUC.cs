@@ -14,12 +14,12 @@ using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
-using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
-using _SC_                        = m3u8.download.manager.controllers.SettingsPropertyChangeController;
-using CellStyle                   = System.Windows.Forms.DataGridViewCellStyle;
-using HitTestInfo                 = System.Windows.Forms.DataGridView.HitTestInfo;
-using M                           = System.Runtime.CompilerServices.MethodImplAttribute;
-using O                           = System.Runtime.CompilerServices.MethodImplOptions;
+using CollectionChangedTypeEnum = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using _SC_                      = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using CellStyle                 = System.Windows.Forms.DataGridViewCellStyle;
+using HitTestInfo               = System.Windows.Forms.DataGridView.HitTestInfo;
+using M                         = System.Runtime.CompilerServices.MethodImplAttribute;
+using O                         = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.download.manager.ui
 {
@@ -511,7 +511,7 @@ namespace m3u8.download.manager.ui
             _Model.CollectionChanged    += Model_CollectionChanged;
             _Model.RowPropertiesChanged -= Model_RowPropertiesChanged;
             _Model.RowPropertiesChanged += Model_RowPropertiesChanged;
-            Model_CollectionChanged( _CollectionChangedTypeEnum_.Add_Bulk, null );
+            Model_CollectionChanged( CollectionChangedTypeEnum.Add_Bulk, null );
         }
         private void DetachModel()
         {
@@ -537,7 +537,7 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private void Model_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
+        private void Model_CollectionChanged( CollectionChangedTypeEnum changedType, DownloadRow row )
         {
             if ( this.InvokeRequired )
             {
@@ -547,12 +547,12 @@ namespace m3u8.download.manager.ui
 
             switch ( changedType )
             {
-                case _CollectionChangedTypeEnum_.Sort:
+                case CollectionChangedTypeEnum.Sort:
                     DGV.Refresh();
                     break;
 
-                case _CollectionChangedTypeEnum_.Add:
-                case _CollectionChangedTypeEnum_.Add_Bulk:
+                case CollectionChangedTypeEnum.Add:
+                case CollectionChangedTypeEnum.Add_Bulk:
                 {
                     var b = _UserMade_DGV_SelectionChanged;
                     DGV.RowCount = _Model.RowsCount;
@@ -565,10 +565,10 @@ namespace m3u8.download.manager.ui
                 }
                 break;
 
-                case _CollectionChangedTypeEnum_.Remove:
-                case _CollectionChangedTypeEnum_.Remove_Bulk:
-                case _CollectionChangedTypeEnum_.Clear:
-                //case _CollectionChangedTypeEnum_.BulkUpdate:
+                case CollectionChangedTypeEnum.Remove:
+                case CollectionChangedTypeEnum.Remove_Bulk:
+                case CollectionChangedTypeEnum.Clear:
+                //case CollectionChangedTypeEnum.BulkUpdate:
                 {
                     #region [.save selected row.]
                     var srs = DGV.SelectedRows;
@@ -604,7 +604,7 @@ namespace m3u8.download.manager.ui
                         if ( hasRows )
                         {
                             var visibleIndex = Math.Min( Math.Max( 0, selectedVisibleIndex ), rowCount - 1 );
-                            var forceSelect  = (changedType == _CollectionChangedTypeEnum_.Remove) || (changedType == _CollectionChangedTypeEnum_.Remove_Bulk)/*true*/;
+                            var forceSelect  = (changedType == CollectionChangedTypeEnum.Remove) || (changedType == CollectionChangedTypeEnum.Remove_Bulk)/*true*/;
                             SelectLonelyRow( visibleIndex, forceSelect );
                         }
                         else

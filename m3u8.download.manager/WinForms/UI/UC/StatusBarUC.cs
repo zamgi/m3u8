@@ -159,6 +159,8 @@ namespace m3u8.download.manager.ui
                 f.Other.FFmpegFileLocation                     = st.FFmpegFileLocation;
                 f.Other.FFmpegConverterCaption                 = st.FFmpegConverterCaption;
                 f.Other.FFmpegApplyByDefault                   = st.FFmpegApplyByDefault;
+                f.Other.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner
+                                                               = st.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner;
                 f.Other.UseDirectorySelectDialogModern         = st.UseDirectorySelectDialogModern;
                 f.Other.UniqueUrlsOnly                         = st.UniqueUrlsOnly;
                 f.Other.IgnoreHostHttpHeader                   = st.IgnoreHostHttpHeader;
@@ -187,6 +189,8 @@ namespace m3u8.download.manager.ui
                     st.FFmpegConverterCaption                 = f.Other.FFmpegConverterCaption;
                     st.FFmpegFileLocation                     = f.Other.FFmpegFileLocation;
                     st.FFmpegApplyByDefault                   = f.Other.FFmpegApplyByDefault;
+                    st.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner
+                                                              = f.Other.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner;
                     st.UseDirectorySelectDialogModern         = f.Other.UseDirectorySelectDialogModern;
                     st.UniqueUrlsOnly                         = f.Other.UniqueUrlsOnly;
                     st.IgnoreHostHttpHeader                   = f.Other.IgnoreHostHttpHeader;

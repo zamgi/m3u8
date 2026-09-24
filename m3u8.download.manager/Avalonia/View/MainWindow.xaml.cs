@@ -693,9 +693,9 @@ namespace m3u8.download.manager.ui
             else
             {
                 var status = row.Status;
-                startDownloadToolButton .IsEnabled = status.StartDownload_IsAllowed();
-                cancelDownloadToolButton.IsEnabled = status.CancelDownload_IsAllowed();
-                pauseDownloadToolButton .IsEnabled = status.PauseDownload_IsAllowed();
+                startDownloadToolButton .IsEnabled = status.IsAllowed_StartDownload();
+                cancelDownloadToolButton.IsEnabled = status.IsAllowed_CancelDownload();
+                pauseDownloadToolButton .IsEnabled = status.IsAllowed_PauseDownload();
                 editDownloadToolButton  .IsEnabled = !status.IsRunningOrPaused(); //status.EditDownload_IsAllowed();
                 changeSettingsParams4DownloadRow_ToolButton.IsEnabled = status.IsRunningOrPaused();
 
@@ -1157,9 +1157,9 @@ namespace m3u8.download.manager.ui
                 foreach ( var row in _VM.DownloadListModel.GetRows() )
                 {
                     var status = row.Status;
-                    start  += status.StartDownload_IsAllowed() && !status.IsFinished() ? 1 : 0;
-                    cancel += status.CancelDownload_IsAllowed() ? 1 : 0;
-                    pause  += status.PauseDownload_IsAllowed()  ? 1 : 0;
+                    start  += status.IsAllowed_StartDownload() && !status.IsFinished() ? 1 : 0;
+                    cancel += status.IsAllowed_CancelDownload() ? 1 : 0;
+                    pause  += status.IsAllowed_PauseDownload()  ? 1 : 0;
                     delete++;
                     if ( FileHelperEx.AnyFileExists( row.GetOutputFullFileNames() ) )
                     {
@@ -1255,7 +1255,7 @@ namespace m3u8.download.manager.ui
             foreach ( var row in _VM.DownloadListModel.GetRows() )
             {
                 var status = row.Status;
-                if (  status.StartDownload_IsAllowed() && !status.IsFinished() )
+                if (  status.IsAllowed_StartDownload() && !status.IsFinished() )
                 {
                     _VM.DownloadController.Start( row );
                 }
@@ -1265,7 +1265,7 @@ namespace m3u8.download.manager.ui
         {
             foreach ( var row in _VM.DownloadListModel.GetRows() )
             {
-                if ( row.Status.PauseDownload_IsAllowed() )
+                if ( row.Status.IsAllowed_PauseDownload() )
                 {
                     _VM.DownloadController.Pause( row );
                 }
@@ -1275,7 +1275,7 @@ namespace m3u8.download.manager.ui
         {
             foreach ( var row in _VM.DownloadListModel.GetRows() )
             {
-                if ( row.Status.CancelDownload_IsAllowed() )
+                if ( row.Status.IsAllowed_CancelDownload() )
                 {
                     _VM.DownloadController.Cancel( row );
                 }

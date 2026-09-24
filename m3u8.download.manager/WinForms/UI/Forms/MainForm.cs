@@ -15,18 +15,17 @@ using m3u8.download.manager.ipc;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 using m3u8.download.manager.ui.infrastructure;
+using m3u8.helpers;
 
-using static m3u8.download.manager.ui.DownloadListUC;
-
-using _CheckMarkTypeEnum_                    = m3u8.download.manager.ui.DownloadListUC.CheckMarkTypeEnum;
-using _CollectionChangedTypeEnum_            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
-using _DC_                                   = m3u8.download.manager.controllers.DownloadController;
-using _ReceivedInputParamsArrayEventHandler_ = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
-using _ReceivedSend2FirstCopyEventHandler_   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
-using _SC_                                   = m3u8.download.manager.controllers.SettingsPropertyChangeController;
-using _SummaryDownloadInfo_                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
-using M                                      = System.Runtime.CompilerServices.MethodImplAttribute;
-using O                                      = System.Runtime.CompilerServices.MethodImplOptions;
+using _DC_                                 = m3u8.download.manager.controllers.DownloadController;
+using _SC_                                 = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using CheckMarkTypeEnum                    = m3u8.download.manager.ui.DownloadListUC.CheckMarkTypeEnum;
+using CollectionChangedTypeEnum            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using M                                    = System.Runtime.CompilerServices.MethodImplAttribute;
+using O                                    = System.Runtime.CompilerServices.MethodImplOptions;
+using ReceivedInputParamsArrayEventHandler = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
+using ReceivedSend2FirstCopyEventHandler   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
+using SummaryDownloadInfo                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
 
 namespace m3u8.download.manager.ui
 {
@@ -36,16 +35,16 @@ namespace m3u8.download.manager.ui
     internal sealed partial class MainForm : Form, IDisposable
     {
 #if M3U8_CLIENT_FACTORY_TYPE__HttpMessageInvoker
-        const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpMessageInvoker;
+        private const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpMessageInvoker;
 #else
-        const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpClient;
+        private const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpClient;
 #endif
         #region [.fields.]
         private const int MAX_PASTE_URLS = 75; //100;
 
         private UrlInputParams[] _InputParamsArray;
-        private _ReceivedInputParamsArrayEventHandler_ _ReceivedInputParamsArrayEventHandler;
-        private _ReceivedSend2FirstCopyEventHandler_   _ReceivedSend2FirstCopyEventHandler;        
+        private ReceivedInputParamsArrayEventHandler _ReceivedInputParamsArrayEventHandler;
+        private ReceivedSend2FirstCopyEventHandler   _ReceivedSend2FirstCopyEventHandler;        
 
         private DownloadListModel                _DownloadListModel;
         private UndoModel                        _UndoModel;
@@ -53,7 +52,7 @@ namespace m3u8.download.manager.ui
         private _SC_                             _SC;
         private LogRowsHeightStorer              _LogRowsHeightStorer;
         private Action< DownloadRow, string >    _DownloadListModel_RowPropertiesChangedAction;
-        private Action< _CollectionChangedTypeEnum_, DownloadRow > _DownloadListModel_CollectionChangedAction;
+        private Action< CollectionChangedTypeEnum, DownloadRow > _DownloadListModel_CollectionChangedAction;
         private bool                             _ShowDownloadStatistics;
         private NotifyIcon                       _NotifyIcon;
         private OutputFileNamePatternProcessor   _OutputFileNamePatternProcessor;
@@ -109,7 +108,7 @@ namespace m3u8.download.manager.ui
             //----------------------------------------//
 
             _DownloadListModel_RowPropertiesChangedAction = new Action< DownloadRow, string >( DownloadListModel_RowPropertiesChanged );
-            _DownloadListModel_CollectionChangedAction    = new Action< _CollectionChangedTypeEnum_, DownloadRow >( DownloadListModel_CollectionChanged );
+            _DownloadListModel_CollectionChangedAction    = new Action< CollectionChangedTypeEnum, DownloadRow >( DownloadListModel_CollectionChanged );
             
             _LogRowsHeightStorer = new LogRowsHeightStorer();
 
@@ -147,8 +146,9 @@ namespace m3u8.download.manager.ui
             _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
 
             _ExternalProgRunner        = new ExternalProgRunner( _SC.Settings.ExternalProgFilePath.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.ExternalProgFilePath ) );
-            _FFmpegConverterRunner     = new FFmpegConverterRunner( _SC.Settings.FFmpegFileLocation.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.FFmpegFileLocation ) );
+            _FFmpegConverterRunner     = new FFmpegConverterRunner( _SC.Settings.FFmpegFileLocation.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.FFmpegFileLocation ) );            
             _ExternalProgRunner_Queues = new ExternalProgRunner_Queues( _ExternalProgRunner, _FFmpegConverterRunner );
+            if ( _SC.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner ) _FFmpegConverterRunner.FinishSuccessProcessFile += FFmpegConverterRunner_FinishSuccessProcessFile;
         }
         public MainForm( in UrlInputParams[] array ) : this() => _InputParamsArray = array;
 
@@ -347,7 +347,7 @@ namespace m3u8.download.manager.ui
                         //if ( downloadListUC.HasFocus )
                         {
                             e.SuppressKeyPress = true;
-                            ExternalProgRunner_Run_Routine( _ExternalProgRunner, openOutputFilesWithExternalMenuItem, runEachFileAsSeparate: !(e.Alt || e.Shift) );
+                            ExternalProgRunner_Run( runEachFileAsSeparate: !(e.Alt || e.Shift) );
                         }
                         break;
                     case Keys.Y: //Open output file with FFmpeg
@@ -520,6 +520,14 @@ namespace m3u8.download.manager.ui
                         _DC.IsDownloadingChanged += DownloadController_IsDownloadingChanged;
                     }
                     break;
+
+                case nameof(Settings.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner):
+                    _FFmpegConverterRunner.FinishSuccessProcessFile -= FFmpegConverterRunner_FinishSuccessProcessFile;
+                    if ( settings.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner )
+                    {
+                        _FFmpegConverterRunner.FinishSuccessProcessFile += FFmpegConverterRunner_FinishSuccessProcessFile;
+                    }
+                    break;
             }
 
             if ( is_need_save )
@@ -573,9 +581,9 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        private async void DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
+        private async void DownloadListModel_CollectionChanged( CollectionChangedTypeEnum changedType, DownloadRow row )
         {
-            if ( changedType == _CollectionChangedTypeEnum_.Sort ) return;
+            if ( changedType == CollectionChangedTypeEnum.Sort ) return;
 
             if ( this.InvokeRequired )
             {
@@ -589,16 +597,16 @@ namespace m3u8.download.manager.ui
             var existsRows = default(IReadOnlyList< DownloadRow >);
             switch ( changedType )
             {                
-                case _CollectionChangedTypeEnum_.Remove:
+                case CollectionChangedTypeEnum.Remove:
                     if ( row != null )
                     {
                         ClearDownloadParams( row );
-                        goto case _CollectionChangedTypeEnum_.Remove_Bulk;
+                        goto case CollectionChangedTypeEnum.Remove_Bulk;
                     }
                     break;
 
-                //case _CollectionChangedTypeEnum_.BulkUpdate:
-                case _CollectionChangedTypeEnum_.Remove_Bulk:
+                //case CollectionChangedTypeEnum.BulkUpdate:
+                case CollectionChangedTypeEnum.Remove_Bulk:
                     existsRows = _DownloadListModel.GetRows_ArrayCopy();
 
                     var existsLogs = existsRows.Select( r => r.Log );
@@ -608,12 +616,12 @@ namespace m3u8.download.manager.ui
                     _ExternalProgRunner_Queues.RemoveAllExcept( existsOutputFullFileNames );
                     break;
 
-                case _CollectionChangedTypeEnum_.Clear:
+                case CollectionChangedTypeEnum.Clear:
                     _LogRowsHeightStorer.Clear();
                     _ExternalProgRunner_Queues.Clear();
                     break;
 
-                case _CollectionChangedTypeEnum_.Add:
+                case CollectionChangedTypeEnum.Add:
                     var row_restored = TryRestoreOrClearDownloadParams( row );
                     if ( (!row_restored || !row.IsFinishedOrError()) )
                     {
@@ -635,7 +643,6 @@ namespace m3u8.download.manager.ui
             switch ( propertyName )
             {
                 case nameof(DownloadRow.Status):
-                {
                     if ( this.InvokeRequired )
                     {
                         //this.BeginInvoke( _DownloadListModel_RowPropertiesChangedAction, row, propertyName );
@@ -666,19 +673,18 @@ namespace m3u8.download.manager.ui
                        )
                     {
                         const long MIN_NON_ZERO_FILE_LENGTH_IN_BYTES = 1_024 * 100; //100KB
-                        if ( MIN_NON_ZERO_FILE_LENGTH_IN_BYTES <= FileHelperEx.GetFileSize( outputFileName ) ) //NonZeroLength
+                        if ( MIN_NON_ZERO_FILE_LENGTH_IN_BYTES <= (FileHelperEx.TryGetFileSize( outputFileName, out var size ) ? size : 0) ) //NonZeroLength
                         {
                             if ( _ExternalProgRunner   .Queue.Remove( outputFileName ) ) _ExternalProgRunner   .Run( outputFileName, checkIsExternalProgFileAreExists: true );
                             if ( _FFmpegConverterRunner.Queue.Remove( outputFileName ) ) _FFmpegConverterRunner.Run( outputFileName, checkIsExternalProgFileAreExists: true );
                         }
                     }
                     #endregion
-                }
-                break;
+                    break;
             }
         }
 
-        private void _NotifyIcon_BalloonTipClosed( object sender, EventArgs e ) => _NotifyIcon.Visible = false;
+        private void NotifyIcon_BalloonTipClosed( object sender, EventArgs e ) => _NotifyIcon.Visible = false;
         private void DownloadController_IsDownloadingChanged( bool isDownloading )
         {
             bool any_running() => _DownloadListModel.GetRows_Enumerable().Any( row => row.Status switch { DownloadStatus.Started => true, DownloadStatus.Running => true, DownloadStatus.Wait => true, _ => false } );
@@ -691,14 +697,14 @@ namespace m3u8.download.manager.ui
                     {
                         _NotifyIcon = new NotifyIcon() { Visible = true, Icon = Resources.m3u8_32x36, Text = _APP_TITLE_ };
 
-                        _NotifyIcon.BalloonTipClicked += _NotifyIcon_BalloonTipClosed;
-                        _NotifyIcon.BalloonTipShown += (_, _) => { _NotifyIcon.BalloonTipClosed -= _NotifyIcon_BalloonTipClosed; _NotifyIcon.BalloonTipClosed += _NotifyIcon_BalloonTipClosed; };
+                        _NotifyIcon.BalloonTipClicked += NotifyIcon_BalloonTipClosed;
+                        _NotifyIcon.BalloonTipShown += (_, _) => { _NotifyIcon.BalloonTipClosed -= NotifyIcon_BalloonTipClosed; _NotifyIcon.BalloonTipClosed += NotifyIcon_BalloonTipClosed; };
                     }
                     else
                     {
                         _NotifyIcon.Visible = true;
                     }
-                    _NotifyIcon.BalloonTipClosed -= _NotifyIcon_BalloonTipClosed;
+                    _NotifyIcon.BalloonTipClosed -= NotifyIcon_BalloonTipClosed;
                     _NotifyIcon.ShowBalloonTip( 2_500, _APP_TITLE_, Resources.ALL_DOWNLOADS_COMPLETED_NOTIFICATION, ToolTipIcon.Info );
                 }
             }
@@ -732,16 +738,16 @@ namespace m3u8.download.manager.ui
         }
 
         
-        private _SummaryDownloadInfo_ _Last_SummaryDownloadInfo;
-        private void downloadListUC_UpdatedSummaryDownloadInfo( in _SummaryDownloadInfo_ sdi )
+        private SummaryDownloadInfo _Last_SummaryDownloadInfo;
+        private void downloadListUC_UpdatedSummaryDownloadInfo( in SummaryDownloadInfo sdi )
         {
             if ( _Last_SummaryDownloadInfo == sdi ) return;
             _Last_SummaryDownloadInfo = sdi;
 
             var taskbarProgressBarState = TaskbarProgressBarState.NoProgress;
-                 if ( sdi.State.HasFlag( _SummaryDownloadInfo_.StateEmun.HasError    ) ) taskbarProgressBarState = TaskbarProgressBarState.Error;
-            else if ( sdi.State.HasFlag( _SummaryDownloadInfo_.StateEmun.Paused      ) ) taskbarProgressBarState = TaskbarProgressBarState.Paused;
-            else if ( sdi.State.HasFlag( _SummaryDownloadInfo_.StateEmun.Downloading ) ) taskbarProgressBarState = TaskbarProgressBarState.Normal;
+                 if ( sdi.State.HasFlag( SummaryDownloadInfo.StateEmun.HasError    ) ) taskbarProgressBarState = TaskbarProgressBarState.Error;
+            else if ( sdi.State.HasFlag( SummaryDownloadInfo.StateEmun.Paused      ) ) taskbarProgressBarState = TaskbarProgressBarState.Paused;
+            else if ( sdi.State.HasFlag( SummaryDownloadInfo.StateEmun.Downloading ) ) taskbarProgressBarState = TaskbarProgressBarState.Normal;
 
             TaskbarManager.Instance.SetProgressValue( sdi.TotalProgressValue, 100, this.Handle );
             TaskbarManager.Instance.SetProgressState( taskbarProgressBarState, this.Handle );
@@ -768,18 +774,18 @@ namespace m3u8.download.manager.ui
             SetDownloadToolButtonsStatus( row );
         }
         private bool downloadListUC_IsDrawCheckMark( DownloadRow row ) => _ExternalProgRunner_Queues.Contains( row.GetOutputFullFileName() );
-        private _CheckMarkTypeEnum_ downloadListUC_GetDrawCheckMarkType( DownloadRow row )
+        private CheckMarkTypeEnum downloadListUC_GetDrawCheckMarkType( DownloadRow row )
         {
             var outputFullFileName = row.GetOutputFullFileName();
 
-            var cmt = _CheckMarkTypeEnum_.None;
-            if ( _ExternalProgRunner.Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Orange;
+            var cmt = CheckMarkTypeEnum.None;
+            if ( _ExternalProgRunner.Queue.Contains( outputFullFileName ) ) cmt |= CheckMarkTypeEnum.Orange;
             //---if ( _FFmpegConverterRunner.Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Green;
             switch ( _FFmpegConverterRunner.GetStatus( outputFullFileName ) )
             {
-                case IExternalProgRunner.StatusTypeEnum.InQueue            : cmt |= _CheckMarkTypeEnum_.Green; break;
-                case IExternalProgRunner.StatusTypeEnum.InProcessInnerQueue: cmt |= _CheckMarkTypeEnum_.InProcessInnerQueue; break;
-                case IExternalProgRunner.StatusTypeEnum.InProcessNow       : cmt |= _CheckMarkTypeEnum_.InProcessNow; break;
+                case IExternalProgRunner.StatusTypeEnum.InQueue            : cmt |= CheckMarkTypeEnum.Green; break;
+                case IExternalProgRunner.StatusTypeEnum.InProcessInnerQueue: cmt |= CheckMarkTypeEnum.InProcessInnerQueue; break;
+                case IExternalProgRunner.StatusTypeEnum.InProcessNow       : cmt |= CheckMarkTypeEnum.InProcessNow; break;
             }
             return (cmt);
         }
@@ -879,9 +885,9 @@ namespace m3u8.download.manager.ui
             else
             {
                 var status = row.Status;
-                startDownloadToolButton .Enabled = StartDownload_IsAllowed ( status );
-                cancelDownloadToolButton.Enabled = CancelDownload_IsAllowed( status );
-                pauseDownloadToolButton .Enabled = PauseDownload_IsAllowed ( status );
+                startDownloadToolButton .Enabled = status.IsAllowed_StartDownload();
+                cancelDownloadToolButton.Enabled = status.IsAllowed_CancelDownload();
+                pauseDownloadToolButton .Enabled = status.IsAllowed_PauseDownload();
                 editDownloadToolButton  .Enabled = !status.IsRunningOrPaused();
                 changeSettingsParams4DownloadRow_ToolButton.Enabled = status.IsRunningOrPaused();
 
@@ -1130,6 +1136,18 @@ namespace m3u8.download.manager.ui
             return (false);
         }
 
+        private bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
+        //private void SuspendDrawing_DownloadListUC_And_Log()
+        //{
+        //    downloadListUC.SuspendDrawing();
+        //    logUC.SuspendDrawing();
+        //}
+        //private void ResumeDrawing_DownloadListUC_And_Log()
+        //{
+        //    downloadListUC.ResumeDrawing();
+        //    logUC.ResumeDrawing();
+        //}
+        #endregion
 
         #region [.AddNewDownloads & AddNewDownload_4_GroupedByAudioVideo.]
         private void AddNewDownloads( UrlInputParams[] array )
@@ -1378,7 +1396,10 @@ namespace m3u8.download.manager.ui
         {
             if ( (row == null) || row.Status.IsRunningOrPaused() ) return;
 
-            AddNewDownloadForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/,
+            AddNewDownloadForm.Edit( this, _DC, _SC, row, 
+                                     _OutputFileNamePatternProcessor, 
+                                     _ReceivedAndWritedPartsProcessor, 
+                                     null/*e => e.Cancel = e.Cancel || row.Status.IsRunningOrPaused()*/,
                                      AddNewDownloadForm_when_Edit_formClosedAction, 
                                      AddNewDownloadForm_when_Add_formClosedAction, 
                                      activeTabPageKind );
@@ -1404,10 +1425,12 @@ namespace m3u8.download.manager.ui
         {
             var suc = (row != null) && row.Status.IsRunningOrPaused();
             if ( suc )
-            ChangeSettingsParams4DownloadRowForm.Edit( this, _DC, _SC, row, _OutputFileNamePatternProcessor,
+            ChangeSettingsParams4DownloadRowForm.Edit( this, _DC, _SC, row, 
+                                                       _OutputFileNamePatternProcessor,
+                                                       _ReceivedAndWritedPartsProcessor,
                                                        ChangeSettingsParams4DownloadRow_formClosedAction, 
                                                        AddNewDownloadForm_when_Add_formClosedAction, 
-                                                       _ReceivedAndWritedPartsProcessor, activeTabPageKind );
+                                                       activeTabPageKind );
             return (suc);
         }
         private async void ChangeSettingsParams4DownloadRow_formClosedAction( ChangeSettingsParams4DownloadRowForm f, DownloadRow row )
@@ -1440,20 +1463,6 @@ namespace m3u8.download.manager.ui
             }
         }
         #endregion
-
-        private bool IsWaitBannerShown() => this.Controls.OfType< WaitBannerUC >().Any();
-        //private void SuspendDrawing_DownloadListUC_And_Log()
-        //{
-        //    downloadListUC.SuspendDrawing();
-        //    logUC.SuspendDrawing();
-        //}
-        //private void ResumeDrawing_DownloadListUC_And_Log()
-        //{
-        //    downloadListUC.ResumeDrawing();
-        //    logUC.ResumeDrawing();
-        //}
-        #endregion
-
 
         #region [.menu.]
         private void addNewDownloadToolButton_Click( object sender, EventArgs e ) => AddNewDownload( default/*(null, null, false)*/ );
@@ -1639,9 +1648,9 @@ namespace m3u8.download.manager.ui
                 foreach ( var row in _DownloadListModel.GetRows_Enumerable() )
                 {
                     var status = row.Status;
-                    start  += StartDownload_IsAllowed ( status ) && !status.IsFinished() ? 1 : 0;
-                    cancel += CancelDownload_IsAllowed( status ) ? 1 : 0;
-                    pause  += PauseDownload_IsAllowed ( status ) ? 1 : 0;
+                    start  += status.IsAllowed_StartDownload () && !status.IsFinished() ? 1 : 0;
+                    cancel += status.IsAllowed_CancelDownload() ? 1 : 0;
+                    pause  += status.IsAllowed_PauseDownload () ? 1 : 0;
                     delete++;
                     if ( FileHelperEx.AnyFileExists( row.GetOutputFullFileNames() ) )
                     {
@@ -1712,17 +1721,15 @@ namespace m3u8.download.manager.ui
 #endif
             }
         }
-        private void openOutputFilesWithExternalMenuItem_Click( object sender, EventArgs e ) 
-            => ExternalProgRunner_Run_Routine( _ExternalProgRunner, openOutputFilesWithExternalMenuItem, runEachFileAsSeparate: ((Control.ModifierKeys & Keys.Control) == 0) );
-        private void ffmpegConverterRunMenuItem_Click( object sender, EventArgs e )
-            => FFmpegConverterRunner_Run_Routine(); //ExternalProgRunner_Run_Routine( _FFmpegConverterRunner, ffmpegConverterRunMenuItem, runEachFileAsSeparate: true/*always separate*//*((Control.ModifierKeys & Keys.Control) == 0)*/ );
+        private void openOutputFilesWithExternalMenuItem_Click( object sender, EventArgs e ) => ExternalProgRunner_Run( runEachFileAsSeparate: ((Control.ModifierKeys & Keys.Control) == 0) );
+        private void ffmpegConverterRunMenuItem_Click( object sender, EventArgs e ) => FFmpegConverterRunner_Run_Routine();
 
         private void startAllDownloadsMenuItem_Click( object sender, EventArgs e )
         {
             foreach ( var row in _DownloadListModel.GetRows_ArrayCopy() )
             {
                 var status = row.Status;
-                if ( StartDownload_IsAllowed( status ) && !status.IsFinished() )
+                if ( status.IsAllowed_StartDownload() && !status.IsFinished() )
                 {
                     _DC.Start( row );
                 }
@@ -1732,7 +1739,7 @@ namespace m3u8.download.manager.ui
         {
             foreach ( var row in _DownloadListModel.GetRows_ArrayCopy() )
             {
-                if ( PauseDownload_IsAllowed( row.Status ) )
+                if ( row.Status.IsAllowed_PauseDownload() )
                 {
                     _DC.Pause( row );
                 }
@@ -1742,7 +1749,7 @@ namespace m3u8.download.manager.ui
         {
             foreach ( var row in _DownloadListModel.GetRows_ArrayCopy() )
             {
-                if ( CancelDownload_IsAllowed( row.Status ) )
+                if ( row.Status.IsAllowed_CancelDownload() )
                 {
                     _DC.Cancel( row );
                 }
@@ -1753,8 +1760,14 @@ namespace m3u8.download.manager.ui
         private void deleteAllWithOutputFilesMenuItem_Click( object sender, EventArgs e ) => DeleteDownloads( _DownloadListModel.GetRows_ArrayCopy(), deleteOutputFiles: true );
         #endregion
 
-        #region [.ExternalProgRunner_Run_Routine.]
-        private void ExternalProgRunner_Run_Routine( IExternalProgRunner externalProgRunner, ToolStripMenuItem menuItem, bool runEachFileAsSeparate )
+        #region [.ExternalProgRunner & FFmpegConverterRunner.]
+        private void ExternalProgRunner_Run( bool runEachFileAsSeparate )
+        {
+            var rows = downloadListUC.GetSelectedDownloadRows();
+            ExternalProgRunner_Run( rows, runEachFileAsSeparate );
+        }
+        private void ExternalProgRunner_Run( IReadOnlyList< DownloadRow > rows, bool runEachFileAsSeparate ) => ExternalProgRunner_Run_Routine( rows, _ExternalProgRunner, openOutputFilesWithExternalMenuItem, runEachFileAsSeparate );
+        private void ExternalProgRunner_Run_Routine( IReadOnlyList< DownloadRow > rows, IExternalProgRunner externalProgRunner, ToolStripMenuItem menuItem, bool runEachFileAsSeparate )
         {
             if ( !externalProgRunner.IsExternalProgFileAreExists() )
             {
@@ -1762,7 +1775,6 @@ namespace m3u8.download.manager.ui
                 return;
             }
 
-            var rows = downloadListUC.GetSelectedDownloadRows();
             var outputFileNames = (from row in rows
                                    where row.IsFinishedOrErrorOrCreated()
                                    let t = FileHelperEx.TryGetFirstFileExists( row.GetOutputFullFileNames() )
@@ -1839,16 +1851,61 @@ namespace m3u8.download.manager.ui
                 downloadListUC.Invalidate( true );
             }
         }
+        private async void FFmpegConverterRunner_FinishSuccessProcessFile( string inputFileName, string convertedFileName )
+        {
+            if ( !_SC.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner ) return;
+
+            if ( this.InvokeRequired )
+            {
+                await this.BeginInvoke_UseTask( FFmpegConverterRunner_FinishSuccessProcessFile, inputFileName, convertedFileName );
+                return;
+            }
+
+            //1. find row, delete prev and rename to converted
+            var row = _DownloadListModel.GetRows()
+                .FirstOrDefault( r => FileHelperEx.TryGetFirstFileExists( r.GetOutputFullFileNames(), out var existsFileName ) && existsFileName.EqualIgnoreCase( inputFileName ) );
+            if ( row != null )
+            {
+                var suc = FileHelper.DeleteFile_NoThrow( inputFileName );
+                if ( suc )
+                {
+                    //var ts = _ExternalProgRunner_Queues.Remove( row.GetOutputFullFileName() );
+                    row.SetOutputFileName ( Path.GetFileName     ( convertedFileName ) );
+                    row.SetOutputDirectory( Path.GetDirectoryName( convertedFileName ) );
+                    ClearDownloadParams( row );
+                    row.SetDownloadBytesLength( FileHelperEx.TryGetFileSize( row.GetOutputFullFileName() ) );
+                    //if ( ts.Any( t => t.suc ) )
+                    //{
+                    //    var outputFullFileName = row.GetOutputFullFileName();
+                    //    ts.ForEach( t => { if ( t.suc ) t.queue.Add( outputFullFileName ); } );
+                    //}
+
+                    ////2. open renamed file in ExternalProgRunner
+                    //ExternalProgRunner_Run( [row], runEachFileAsSeparate: false );
+                    //return;
+                }
+            }
+            else
+            {
+                Debug.WriteLine( $"Unable to find the row by filename: '{inputFileName}'." );
+            }
+
+            //2. try open converted file in ExternalProgRunner
+            _ExternalProgRunner.Run( convertedFileName, checkIsExternalProgFileAreExists: true/*false*/ );
+        }
         #endregion
 
-        #region [.DelOutputFileAndChangeExt.]
-        private void moreOp_delOutputFileAndChangeExt2Mp3_MenuItem_Click( object sender, EventArgs e ) => DelOutputFileAndChangeExt( ".mp3" );
-        private void moreOp_delOutputFileAndChangeExt2Mp4_MenuItem_Click( object sender, EventArgs e ) => DelOutputFileAndChangeExt( ".mp4" );
-        private void DelOutputFileAndChangeExt( /*DownloadRow[] rows,*/ string ext )
+        #region [.moreOp => DeleteOutputFileAndChangeExt.]
+        private void moreOp_delOutputFileAndChangeExt2Mp3_MenuItem_Click( object sender, EventArgs e ) => DeleteOutputFileAndChangeExt( ".mp3" );
+        private void moreOp_delOutputFileAndChangeExt2Mp4_MenuItem_Click( object sender, EventArgs e ) => DeleteOutputFileAndChangeExt( ".mp4" );
+        private void DeleteOutputFileAndChangeExt( string ext )
         {
             var rows = downloadListUC.GetSelectedDownloadRows().ToArrayEx();
-
-            OnlyDeleteOutputFiles( rows, ask: true, row =>
+            DeleteOutputFileAndChangeExt( rows, ext, askAboutDelete: true );
+        }
+        private void DeleteOutputFileAndChangeExt( DownloadRow[] rows, string ext, bool askAboutDelete )
+        {
+            OnlyDeleteOutputFiles( rows, ask: askAboutDelete, row =>
             {
                 var fn     = row.OutputFileName;
                 var new_fn = Path.GetFileNameWithoutExtension( fn ) + ext;
@@ -1856,6 +1913,7 @@ namespace m3u8.download.manager.ui
                 {
                     var ts = _ExternalProgRunner_Queues.Remove( row.GetOutputFullFileName() );
                     row.SetOutputFileName( new_fn );
+                    row.SetDownloadBytesLength( downloadBytesLength: FileHelperEx.TryGetFileSize( row.GetOutputFullFileName() ) );
                     if ( ts.Any( t => t.suc ) )
                     {
                         var outputFullFileName = row.GetOutputFullFileName();
@@ -1970,20 +2028,6 @@ namespace m3u8.download.manager.ui
 
             statusBarUC.ShowDisappearingMessage( $"Collect Garbage. Total Memory: {(totalMemoryBytes / (1024.0 * 1024)):N2} MB." );
         }
-        #endregion
-
-        #region [.helper methods => allowed Command by current status.]
-        [M(O.AggressiveInlining)] private static bool StartDownload_IsAllowed( DownloadStatus status ) => (status == DownloadStatus.Created) ||
-                                                                                                          (status == DownloadStatus.Paused) ||
-                                                                                                          (status == DownloadStatus.Canceled) ||
-                                                                                                          (status == DownloadStatus.Finished) ||
-                                                                                                          (status == DownloadStatus.Error);
-        [M(O.AggressiveInlining)] private static bool CancelDownload_IsAllowed( DownloadStatus status ) => (status == DownloadStatus.Started) ||
-                                                                                                           (status == DownloadStatus.Running) ||
-                                                                                                           (status == DownloadStatus.Wait) ||
-                                                                                                           (status == DownloadStatus.Paused);
-        [M(O.AggressiveInlining)] private static bool PauseDownload_IsAllowed( DownloadStatus status ) => (status == DownloadStatus.Started) ||
-                                                                                                          (status == DownloadStatus.Running);
         #endregion
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+
 #if !(WINDOWS)
 using System.Diagnostics;
 #endif
@@ -160,7 +162,26 @@ namespace m3u8.download.manager.infrastructure
         }
         public static bool AnyFileExists( IReadOnlyCollection< string > fileNames ) => TryGetFirstFileExists( fileNames, out var _ );
 
-        public static long GetFileSize( string fileName ) => new FileInfo( fileName ).Length;
+        //public static long GetFileSize( string fileName ) => new FileInfo( fileName ).Length;
+        public static bool TryGetFileSize( string fileName, out long size )
+        {
+            try
+            {
+                var fi = new FileInfo( fileName );
+                if ( fi.Exists )
+                {
+                    size = fi.Length; 
+                    return (true);
+                }
+            }
+            catch ( Exception ex )
+            {
+                Debug.WriteLine( ex );               
+            }
+            size = default;
+            return (false);
+        }
+        public static long TryGetFileSize( string fileName, long defVal = 0 ) => TryGetFileSize( fileName, out var size ) ? size : 0;
 
         public static void RemoveBadFileAttrs( bool checkExists, string fn )
         {

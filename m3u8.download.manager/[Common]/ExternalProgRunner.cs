@@ -20,6 +20,9 @@ namespace m3u8.download.manager
     /// </summary>
     internal interface IExternalProgRunner
     {
+        public delegate void FinishSuccessProcessFileDelegate( string inputFileName, string convertedFileName );
+        public delegate void FinishFailProcessFileDelegate( string inputFileName, string convertedFileName, Exception error );
+
         /// <summary>
         /// 
         /// </summary>
@@ -32,6 +35,9 @@ namespace m3u8.download.manager
         }
         StatusTypeEnum GetStatus( string outputFileName );
         void RemoveFromInnerQueue( string outputFileName );
+
+        event FinishSuccessProcessFileDelegate FinishSuccessProcessFile;
+        event FinishFailProcessFileDelegate    FinishFailProcessFile;
 
         string ExternalProgFilePath { get; }
         bool IsExternalProgFileAreExists();
@@ -48,6 +54,12 @@ namespace m3u8.download.manager
     {
         protected ExternalProgRunnerBase() => Queue = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
         public HashSet< string > Queue { get; }
+
+        public event FinishSuccessProcessFileDelegate FinishSuccessProcessFile;
+        public event FinishFailProcessFileDelegate    FinishFailProcessFile;
+        protected void Raise_FinishSuccessProcessFile( string inputFileName, string convertedFileName ) => FinishSuccessProcessFile?.Invoke( inputFileName, convertedFileName );
+        protected void Raise_FinishFailProcessFile( string inputFileName, string convertedFileName, Exception error ) => FinishFailProcessFile?.Invoke( inputFileName, convertedFileName, error );
+
         public virtual StatusTypeEnum GetStatus( string outputFileName ) => Queue.Contains( outputFileName ) ? StatusTypeEnum.InQueue : StatusTypeEnum.None;
         public virtual void RemoveFromInnerQueue( string outputFileName ) { }
 
@@ -121,38 +133,18 @@ namespace m3u8.download.manager
     /// </summary>
     internal sealed class FFmpegConverterRunner : ExternalProgRunnerBase
     {
-        private string             _FFmpegFileLocation;
-        private ProcessWindowStyle _ProcessWindowStyle;
-        private readonly object    __outputFileNames__lock;
-        private BlockingCollection< string > __outputFileNames__;
-        private HashSet< string > _OutputFileNamesSet;
-        private Task _Run_FFmpegTask;
-        public FFmpegConverterRunner( string ffmpegFileLocation, ProcessWindowStyle processWindowStyle = ProcessWindowStyle.Minimized ) //.Minimized )
+        private string              _FFmpegFileLocation;
+        private ProcessWindowStyle  _ProcessWindowStyle;
+        private OutputFileNamesList _OutputFileNamesList;
+        private Task                _Run_FFmpegTask;
+        public FFmpegConverterRunner( string ffmpegFileLocation, ProcessWindowStyle processWindowStyle = ProcessWindowStyle.Minimized )
         {
-            _FFmpegFileLocation     = ffmpegFileLocation;
-            _ProcessWindowStyle     = processWindowStyle;
-            __outputFileNames__lock = new object();
-            __outputFileNames__     = new BlockingCollection< string >();
-            _OutputFileNamesSet     = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
-            _Run_FFmpegTask         = Task.Run( Run_FFmpegTask_Routine );
+            _FFmpegFileLocation  = ffmpegFileLocation;
+            _ProcessWindowStyle  = processWindowStyle;
+            _OutputFileNamesList = new OutputFileNamesList();
+            _Run_FFmpegTask      = Task.Run( Run_FFmpegTask_Routine );
         }
         public override string ExternalProgFilePath => _FFmpegFileLocation;
-
-        private static bool IsEquals( string s_1, string s_2 ) => (string.Compare( s_1, s_2, true ) == 0);
-        private BlockingCollection< string > _OutputFileNames
-        {
-            get
-            {
-                lock ( __outputFileNames__lock ) return (__outputFileNames__);
-            }
-            set
-            {
-                lock ( __outputFileNames__lock )
-                {
-                    __outputFileNames__ = value;
-                }
-            }
-        }
 
         public override void SetExternalProgFilePath( string ffmpegFileLocation ) => _FFmpegFileLocation = ffmpegFileLocation;
         public override bool IsExternalProgFileAreExists() => File.Exists( _FFmpegFileLocation );
@@ -162,7 +154,7 @@ namespace m3u8.download.manager
             var suc = (!checkIsExternalProgFileAreExists || IsExternalProgFileAreExists()) && !outputFileName.IsNullOrEmpty();
             if ( suc )
             {
-                Add2OutputFileNames/*Run_FFmpeg*/( outputFileName );
+                _OutputFileNamesList.Add( outputFileName );
             }
             return (suc);
         }
@@ -171,10 +163,7 @@ namespace m3u8.download.manager
             var suc = (!checkIsExternalProgFileAreExists || IsExternalProgFileAreExists()) && outputFileNames.AnyEx();
             if ( suc )
             {
-                foreach ( var fn in outputFileNames )
-                {
-                    Add2OutputFileNames/*Run_FFmpeg*/( fn );
-                }
+                _OutputFileNamesList.Add( outputFileNames );
             }
             return (suc);
         }
@@ -185,66 +174,39 @@ namespace m3u8.download.manager
             {
                 return (StatusTypeEnum.InQueue);
             }
-            lock ( _OutputFileNamesSet )
+            if ( _OutputFileNamesList.Contains( outputFileName ) )
             {
-                if ( _OutputFileNamesSet.Contains( outputFileName ) )
-                {
-                    return (IsInProcessNow( outputFileName ) ? StatusTypeEnum.InProcessNow : StatusTypeEnum.InProcessInnerQueue);
-                }
+                return (IsInProcessNow( outputFileName ) ? StatusTypeEnum.InProcessNow : StatusTypeEnum.InProcessInnerQueue);
             }
             return (StatusTypeEnum.None);
             //return (base.GetStatus( outputFileName ));
         }
-        public override void RemoveFromInnerQueue( string outputFileName )
-        {
-            lock ( _OutputFileNamesSet )
-            {
-                var suc = _OutputFileNamesSet.Remove( outputFileName );
-                if ( suc )
-                {
-                    var new_OutputFileNames = new BlockingCollection< string >();
-                    var filtered = _OutputFileNames.Where( fn => !IsEquals( fn, outputFileName ) );
-                    foreach ( var fn in filtered )
-                    {
-                        new_OutputFileNames.Add( fn );
-                    }
-                    _OutputFileNames = new_OutputFileNames;
-                }
-            }
-        }
+        public override void RemoveFromInnerQueue( string outputFileName ) => _OutputFileNamesList.Remove( outputFileName );
 
-        private void Add2OutputFileNames( string outputFileName )
-        {
-            lock ( _OutputFileNamesSet )
-            {
-                if ( _OutputFileNamesSet.Add( outputFileName ) )
-                {
-                    _OutputFileNames.Add( outputFileName );
-                }
-            }
-        }
+        private bool IsInProcessNow( string outputFileName ) => _InProcessNow_outputFileName.EqualIgnoreCase( outputFileName );
 
-        private bool IsInProcessNow( string outputFileName ) => IsEquals( _InProcessNow_outputFileName, outputFileName );
         private string _InProcessNow_outputFileName;
         private void Run_FFmpegTask_Routine()
         {
             while ( true )
             {
-                var outputFileName = _OutputFileNames.Take();
+                var outputFileName = _OutputFileNamesList.Take();
                 _InProcessNow_outputFileName = outputFileName;
-                var (suc, error) = Run_FFmpeg( outputFileName );
+                var (suc, convertedFileName, error) = Run_FFmpeg( outputFileName );
                 _InProcessNow_outputFileName = null;
-                if ( error != null )
+                _OutputFileNamesList.Remove( outputFileName );
+
+                if ( suc )
                 {
-                    Debug.WriteLine( error );
+                    Raise_FinishSuccessProcessFile( outputFileName, convertedFileName );
                 }
-                lock ( _OutputFileNamesSet )
+                else //if ( error != null )
                 {
-                    _OutputFileNamesSet.Remove( outputFileName );
-                }
+                    Raise_FinishFailProcessFile( outputFileName, convertedFileName, error );
+                }                
             }
         }
-        private (bool suc, Exception error) Run_FFmpeg( string outputFileName )
+        private (bool suc, string convertedFileName, Exception error) Run_FFmpeg( string outputFileName )
         {
             const string DEFAULT_EXTENSION = ".mp4";
 
@@ -285,10 +247,10 @@ namespace m3u8.download.manager
 
                         //var errorLog = ffmpeg.StandardError.ReadToEnd();
                         var error = new Exception( $"FFmpeg exited with an error (Code: {ffmpeg.ExitCode})." );//$"FFmpeg завершился с ошибкой (Код: {ffmpeg.ExitCode}). Лог: {errorLog}" );
-                        return (false, error);
+                        return (false, new_ffn, error);
                     }
 
-                    return (true, default);
+                    return (true, new_ffn, default);
                 }
             }
             catch ( Exception ex )
@@ -298,7 +260,7 @@ namespace m3u8.download.manager
 
                 ///*await*/ Task.Delay( 250 ).Wait();
                 //FileHelper.DeleteFile_NoThrow( new_fn );
-                return (false, ex);
+                return (false, new_ffn, ex);
             }
         }
 
@@ -353,6 +315,90 @@ namespace m3u8.download.manager
         //}
 
         public override string ToString() => ExternalProgFilePath;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    internal sealed class OutputFileNamesList
+    {
+        private readonly object __outputFileNames__lock;
+        private BlockingCollection< string > __outputFileNames__;
+        private HashSet< string > _OutputFileNamesSet;
+        public OutputFileNamesList()
+        {
+            __outputFileNames__lock = new object();
+            __outputFileNames__     = new BlockingCollection< string >();
+            _OutputFileNamesSet     = new HashSet< string >( StringComparer.InvariantCultureIgnoreCase );
+        }
+
+        private BlockingCollection< string > _OutputFileNames
+        {
+            get
+            {
+                lock ( __outputFileNames__lock ) return (__outputFileNames__);
+            }
+            set
+            {
+                lock ( __outputFileNames__lock )
+                {
+                    __outputFileNames__ = value;
+                }
+            }
+        }
+
+        public bool Add( string outputFileName )
+        {
+            lock ( _OutputFileNamesSet )
+            {
+                var suc = _OutputFileNamesSet.Add( outputFileName );
+                if ( suc )
+                {
+                    _OutputFileNames.Add( outputFileName );
+                }
+                return (suc);
+            }
+        }
+        public void Add( IReadOnlyCollection< string > outputFileNames )
+        {
+            lock ( _OutputFileNamesSet )
+            {
+                foreach ( var fn in outputFileNames )
+                {
+                    var suc = _OutputFileNamesSet.Add( fn );
+                    if ( suc )
+                    {
+                        _OutputFileNames.Add( fn );
+                    }
+                }
+            }
+        }
+        public bool Remove( string outputFileName )
+        {
+            lock ( _OutputFileNamesSet )
+            {
+                var suc = _OutputFileNamesSet.Remove( outputFileName );
+                if ( suc )
+                {
+                    var temp     = new BlockingCollection< string >();
+                    var filtered = _OutputFileNames.Where( fn => !fn.EqualIgnoreCase( outputFileName ) );
+                    foreach ( var fn in filtered )
+                    {
+                        temp.Add( fn );
+                    }
+                    _OutputFileNames = temp;
+                }
+                return (suc);
+            }
+        }
+        public bool Contains( string outputFileName )
+        {
+            lock ( _OutputFileNamesSet )
+            {
+                return (_OutputFileNamesSet.Contains( outputFileName ));
+            }
+        }
+        public string Take() => _OutputFileNames.Take();
     }
 
     /// <summary>

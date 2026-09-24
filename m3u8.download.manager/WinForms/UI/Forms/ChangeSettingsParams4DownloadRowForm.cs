@@ -136,10 +136,10 @@ namespace m3u8.download.manager.ui
         public static void Edit( IWin32Window owner, _DC_ dc, _SC_ sc
             , DownloadRow row
             , OutputFileNamePatternProcessor outputFileNamePatternProcessor
+            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
             //, Action< FormClosingEventArgs > formClosingAction
             , Action< ChangeSettingsParams4DownloadRowForm, DownloadRow > formClosedAction
-            , Func< AddNewDownloadForm, Task > formClosedAction_4_DownloadAdditionalM3u8Url
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
+            , Func< AddNewDownloadForm, Task > formClosedAction_4_DownloadAdditionalM3u8Url            
             , TabPageKind? activeTabPageKind = null )
         {
             var f = new ChangeSettingsParams4DownloadRowForm( dc, sc, row, outputFileNamePatternProcessor, receivedAndWritedPartsProcessor ) 

@@ -76,6 +76,7 @@ namespace m3u8.download.manager.controllers
 #if !(AVALONIA)
         public bool     ExternalProgApplyByDefault          { [M(O.AggressiveInlining)] get => Settings.ExternalProgApplyByDefault; }
         public bool     FFmpegApplyByDefault                { [M(O.AggressiveInlining)] get => Settings.FFmpegApplyByDefault; }
+        public bool     RenameAfterFFmpegConverterAndOpenWithExternalProgRunner { [M(O.AggressiveInlining)] get => Settings.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner; }
 #endif
         public IEnumerable< DownloadRow_Definer_3 > GetDownloadRows() => DownloadRowsSerializer.FromJSON( Settings.DownloadRowsJson );
         public void SetDownloadRows_WithSaveIfChanged( IEnumerable< DownloadRow > rows )

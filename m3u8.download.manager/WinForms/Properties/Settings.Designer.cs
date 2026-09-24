@@ -432,6 +432,18 @@ namespace m3u8.download.manager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RenameAfterFFmpegConverterAndOpenWithExternalProgRunner {
+            get {
+                return ((bool)(this["RenameAfterFFmpegConverterAndOpenWithExternalProgRunner"]));
+            }
+            set {
+                this["RenameAfterFFmpegConverterAndOpenWithExternalProgRunner"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool UseDirectorySelectDialogModern {
             get {

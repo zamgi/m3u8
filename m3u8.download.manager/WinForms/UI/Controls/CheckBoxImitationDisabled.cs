@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Linq;
 
 namespace System.Windows.Forms
 {
@@ -67,5 +68,29 @@ namespace System.Windows.Forms
             return (disabled);
         }
 
+
+        //public static void Set_AllCheckBox_ForeColorAndImage( Control c )
+        //{
+        //    if ( c is CheckBoxImitationDisabled ch )
+        //    {
+        //        ch.Set_CheckBox_ForeColorAndImage();
+        //    }
+        //    else
+        //    {
+        //        foreach ( var cc in c.Controls.Cast< Control >() )
+        //        {
+        //            if ( cc is CheckBoxImitationDisabled cch ) cch.Set_CheckBox_ForeColorAndImage();
+        //            else Set_AllCheckBox_ForeColorAndImage( cc );
+        //        }
+        //    }
+        //}
+        public static void Set_AllCheckBox_ForeColorAndImage( ControlCollection cs )
+        {
+            foreach ( var c in cs.Cast< Control >() )
+            {
+                if ( c is CheckBoxImitationDisabled ch ) ch.Set_CheckBox_ForeColorAndImage();
+                else Set_AllCheckBox_ForeColorAndImage( c.Controls );
+            }
+        }
     }
 }
