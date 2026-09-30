@@ -295,6 +295,12 @@ namespace m3u8.download.manager.ui
                     e.Cancel = true;
                     attemptRequestCountByPartNUD.FocusAndBlinkBackColor();
                 }
+
+                if ( !e.Cancel )
+                {
+                    outputDirectoryComboBox.AddToHead( this.OutputDirectory );
+                    outputFileNameComboBox .AddToHead( this.OutputFileName  );
+                }
             }
 
             if ( !e.Cancel && (_LastForegroundWnd != this.Handle) )
