@@ -1317,11 +1317,11 @@ namespace m3u8.download.manager.ui
                         }
                         else if ( cmt.HasFlag( CheckMarkTypeEnum.InProcessInnerQueue ) )
                         {
-                            gr.DrawString( HOURGLASS, defCellFont, Brushes.Green, rc, _SF_Right );
+                            gr.DrawString( WATCH, defCellFont, Brushes.Green, rc, _SF_Right );
                         }
                         else if ( cmt.HasFlag( CheckMarkTypeEnum.InProcessNow ) )
                         {
-                            gr.DrawString( WATCH, defCellFont, Brushes.Green, rc, _SF_Right );
+                            gr.DrawString( HOURGLASS, defCellFont, Brushes.Green, rc, _SF_Right );
                         }
                     }
                     #endregion

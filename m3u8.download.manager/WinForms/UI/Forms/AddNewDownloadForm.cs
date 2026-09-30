@@ -46,7 +46,7 @@ namespace m3u8.download.manager.ui
         private Settings           _Settings;
         private DownloadListModel  _DownloadListModel;
         private FileNameCleaner4UI.Processor _FNCP;
-        private bool               _WasFocusSet2outputFileNameTextBoxAfterFirstChanges;
+        private bool               _WasFocusSet2outputFileNameComboBoxAfterFirstChanges;
         private (int n, int total) _SeriesInfo;
         private string             _Initial_M3u8FileUrl;
         private DownloadRow        _EditedRow;
@@ -81,7 +81,7 @@ namespace m3u8.download.manager.ui
             logPanel.Visible = false;
             logUC.ShowResponseColumn = false;
 
-            _FNCP = new FileNameCleaner4UI.Processor( outputFileNameTextBox, () => this.OutputFileName, setOutputFileName );
+            _FNCP = new FileNameCleaner4UI.Processor( outputFileNameComboBox, () => this.OutputFileName, setOutputFileName );
 
             #region [.ImageList 4 tabControl.]
             var imgLst = tabControl.ImageList = new ImageList() { ImageSize = new Size(16, 16) };
@@ -127,7 +127,7 @@ namespace m3u8.download.manager.ui
             m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
             this.M3u8FileUrl = row.Url;
             //---m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
-            _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
+            _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
@@ -158,7 +158,7 @@ namespace m3u8.download.manager.ui
 
             this.M3u8FileUrl     = m3u8FileUrl;
             this.OutputDirectory = _Settings.OutputFileDirectory;
-            _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
+            _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
 
             logUC.SetModel( _Model = new LogListModel() );
 
@@ -198,7 +198,7 @@ namespace m3u8.download.manager.ui
 
             this.M3u8FileUrl     = m3u8FileUrl_CombinedFake;
             this.OutputDirectory = _Settings.OutputFileDirectory;
-            _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = m3u8FileUrl_CombinedFake.IsNullOrWhiteSpace();
+            _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = m3u8FileUrl_CombinedFake.IsNullOrWhiteSpace();
 
             logUC.SetModel( _Model = new LogListModel() );
 
@@ -240,7 +240,7 @@ namespace m3u8.download.manager.ui
             m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
             this.M3u8FileUrl = dd3.Url;
             //---m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
-            _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = dd3.Url.IsNullOrWhiteSpace();
+            _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = dd3.Url.IsNullOrWhiteSpace();
 
             logUC.SetModel( _Model = new LogListModel() );
 
@@ -360,7 +360,7 @@ namespace m3u8.download.manager.ui
             f.downloadLaterButton.Text = "Cancel"; f.downloadLaterButton.DialogResult = DialogResult.Cancel;
             f.downloadStartButton.Click += close;
             f.downloadLaterButton.Click += close;
-            f.Shown += (_, _) => f.setFocus2outputFileNameTextBox_Core();
+            f.Shown += (_, _) => f.setFocus2outputFileNameComboBox_Core();
             f.Show( owner );
         }
 
@@ -392,7 +392,7 @@ namespace m3u8.download.manager.ui
         public void ActivateAfterCloseOther()
         {
             this.Activate();
-            setFocus2outputFileNameTextBox();
+            setFocus2outputFileNameComboBox();
         }
         #endregion
 
@@ -528,13 +528,13 @@ namespace m3u8.download.manager.ui
                 if ( this.GetOutputFileName_Internal().IsNullOrWhiteSpace() )
                 {
                     e.Cancel = true;
-                    outputFileNameTextBox.FocusAndBlinkBackColor();
+                    outputFileNameComboBox.FocusAndBlinkBackColor();
                 }
                 else
                 if ( this.GetOutputDirectory().IsNullOrWhiteSpace() )
                 {
                     e.Cancel = true;
-                    outputDirectoryTextBox.FocusAndBlinkBackColor();
+                    outputDirectoryComboBox.FocusAndBlinkBackColor();
                 }
                 else
                 if ( this.Timeout.HasValue && (this.Timeout <= TimeSpan.Zero) )
@@ -549,10 +549,16 @@ namespace m3u8.download.manager.ui
                     attemptRequestCountByPartNUD.FocusAndBlinkBackColor();
                 }
 
-                if ( !e.Cancel && (DialogResult == DialogResult.Yes) )
+                if ( !e.Cancel )
                 {
-                    _DownloadLater = true;
-                    DialogResult   = DialogResult.OK;
+                    if ( DialogResult == DialogResult.Yes )
+                    {
+                        _DownloadLater = true;
+                        DialogResult   = DialogResult.OK;
+                    }
+
+                    outputDirectoryComboBox.AddToHead( this.OutputDirectory );
+                    outputFileNameComboBox .AddToHead( this.OutputFileName );
                 }
             }
 
@@ -641,27 +647,27 @@ namespace m3u8.download.manager.ui
 
         private string OutputFileName
         {
-            get => outputFileNameTextBox.Text.Trim();
+            get => outputFileNameComboBox.GetCurrentValue();
             set
             {
                 value = value?.Trim();
-                if ( outputFileNameTextBox.Text.Trim() != value )
+                if ( outputFileNameComboBox.GetCurrentValue() != value )
                 {
-                    outputFileNameTextBox.TextChanged -= outputFileNameTextBox_TextChanged;
-                    outputFileNameTextBox.Text = value;
-                    outputFileNameTextBox.TextChanged += outputFileNameTextBox_TextChanged;
+                    outputFileNameComboBox.TextChanged -= outputFileNameComboBox_TextChanged;
+                    outputFileNameComboBox.SetCurrentValue( value );
+                    outputFileNameComboBox.TextChanged += outputFileNameComboBox_TextChanged;
                 }
             }
         }
         private string OutputDirectory
         {
-            get => outputDirectoryTextBox.Text.Trim();
+            get => outputDirectoryComboBox.GetCurrentValue();
             set
             {
                 value = value?.Trim();
-                if ( outputDirectoryTextBox.Text.Trim() != value )
+                if ( outputDirectoryComboBox.GetCurrentValue() != value )
                 {
-                    outputDirectoryTextBox.Text = value;
+                    outputDirectoryComboBox.SetCurrentValue( value );
                 }
             }
         }
@@ -704,22 +710,22 @@ namespace m3u8.download.manager.ui
         private string _Last_m3u8FileUrlText;
         private string _LastManualInputed_outputFileNameText;
 
-        private bool setFocus2outputFileNameTextBox_Core( string outputFileName = null )
+        private bool setFocus2outputFileNameComboBox_Core( string outputFileName = null )
         {
-            var suc = outputFileNameTextBox.Focus();
-            var i = (outputFileName ?? outputFileNameTextBox.Text).LastIndexOf( '.' );
+            var suc = outputFileNameComboBox.Focus();
+            var i = (outputFileName ?? outputFileNameComboBox.Text/*GetCurrentValue()*/).LastIndexOf( '.' );
             if ( i != -1 )
             {
-                outputFileNameTextBox.SelectionStart  = i;
-                outputFileNameTextBox.SelectionLength = 0;
+                outputFileNameComboBox.SelectionStart  = i;
+                outputFileNameComboBox.SelectionLength = 0;
             }
             return (suc);
         }
-        private void setFocus2outputFileNameTextBox()
+        private void setFocus2outputFileNameComboBox()
         {
-            if ( !_WasFocusSet2outputFileNameTextBoxAfterFirstChanges )
+            if ( !_WasFocusSet2outputFileNameComboBoxAfterFirstChanges )
             {
-                _WasFocusSet2outputFileNameTextBoxAfterFirstChanges = setFocus2outputFileNameTextBox_Core();
+                _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = setFocus2outputFileNameComboBox_Core();
             }
         }
         private async void m3u8FileUrlTextBox_TextChanged( object sender, EventArgs e )
@@ -740,17 +746,17 @@ namespace m3u8.download.manager.ui
                 await FileNameCleaner4UI.SetOutputFileNameByUrl_Async( m3u8FileUrlText, _Settings.OutputFileExtension, setOutputFileName, TEXTBOX_MILLISECONDS_DELAY );
             }
 
-            setFocus2outputFileNameTextBox();
+            setFocus2outputFileNameComboBox();
         }
 
         private void setOutputFileName( string outputFileName ) => this.OutputFileName = outputFileName;
-        private void outputFileNameTextBox_TextChanged( object sender, EventArgs e )
+        private void outputFileNameComboBox_TextChanged( object sender, EventArgs e )
         {
             _FNCP.FileNameTextBox_TextChanged( outputFileName => _LastManualInputed_outputFileNameText = outputFileName );
 
             Process_use_OutputFileNamePatternProcessor();
         }
-        private void outputFileNameTextBox_ClearButtonClick( object sender, EventArgs e ) => outputFileNameTextBox.Focus();
+        private void outputFileNameComboBox_ClearButtonClick( object sender, EventArgs e ) => outputFileNameComboBox.Focus();
         private void outputFileNameSelectButton_Click( object sender, EventArgs e )
         {
             using ( var sfd = new SaveFileDialog() { InitialDirectory = this.OutputDirectory,
@@ -816,7 +822,7 @@ namespace m3u8.download.manager.ui
                 if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
                 {
                     var shown = default(EventHandler);
-                    shown = (_, _) => { setFocus2outputFileNameTextBox_Core( t.Patterned_Last_OutputFileName ); this.Shown -= shown; };
+                    shown = (_, _) => { setFocus2outputFileNameComboBox_Core( t.Patterned_Last_OutputFileName ); this.Shown -= shown; };
                     this.Shown += shown;
                 }
             }
@@ -831,8 +837,8 @@ namespace m3u8.download.manager.ui
             //    {
             //        const string txt = "Last_OutputFileName_Num - **.txt";
             //        this.OutputFileName = txt;
-            //        setFocus2outputFileNameTextBox_Core( txt );
-            //        outputFileNameTextBox_TextChanged( this, EventArgs.Empty );
+            //        setFocus2outputFileNameComboBox_Core( txt );
+            //        outputFileNameComboBox_TextChanged( this, EventArgs.Empty );
             //        this.Shown -= shown;
             //    };
             //    this.Shown += shown;

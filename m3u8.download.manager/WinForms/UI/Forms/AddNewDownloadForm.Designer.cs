@@ -32,14 +32,16 @@ namespace m3u8.download.manager.ui
             this.requestHeadersEditor = new RequestHeadersEditor( sc );
             this.webProxyUC = new WebProxyUC();
             this.m3u8FileUrlTextBox = new System.Windows.Forms.TextBoxEx();
-            this.outputFileNameTextBox = new TextBoxWithCustomPathPaste();
+            //---this.outputFileNameTextBox = new TextBoxWithCustomPathPaste();
+            this.outputFileNameComboBox = new OutputFilenameSuggestionsComboBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.outputDirectorySelectButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.outputFileNameSelectButton = new System.Windows.Forms.ButtonWithFocusCues();
             this.logPanel = new System.Windows.Forms.Panel();
             this.logUC = new m3u8.download.manager.ui.LogUC( sc );
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.outputDirectoryTextBox = new TextBoxWithCustomPathPaste();
+            //---this.outputDirectoryTextBox = new TextBoxWithCustomPathPaste();
+            this.outputDirectoryComboBox = new OutputDirectorySuggestionsComboBox();
             this.isLiveStreamCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
             this.liveStreamMaxSizeInMbLabel = new System.Windows.Forms.Label();
             this.liveStreamMaxSizeInMbNumUpDn = new System.Windows.Forms.NumericUpDownEx();
@@ -177,6 +179,7 @@ namespace m3u8.download.manager.ui
             //this.m3u8FileUrlTextBox.ClearButtonColor = System.Drawing.Color.LightBlue;
             //this.m3u8FileUrlTextBox.ClearButtonColorHover = System.Drawing.Color.Blue;
             this.m3u8FileUrlTextBox.TextChanged += new System.EventHandler(this.m3u8FileUrlTextBox_TextChanged);
+            /*
             // 
             // outputFileNameTextBox
             // 
@@ -193,6 +196,24 @@ namespace m3u8.download.manager.ui
             this.outputFileNameTextBox.ClearButtonBackcolorHover = System.Drawing.Color.White;// Smoke;
             this.outputFileNameTextBox.ClearButtonClick += new System.EventHandler(this.outputFileNameTextBox_ClearButtonClick);
             this.outputFileNameTextBox.TextChanged += new System.EventHandler(this.outputFileNameTextBox_TextChanged);
+            */
+            // 
+            // outputFileNameComboBox
+            // 
+            this.outputFileNameComboBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.outputFileNameComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
+            this.outputFileNameComboBox.Location = new System.Drawing.Point(67, 6);
+            this.outputFileNameComboBox.Size = new System.Drawing.Size(539, 18);
+            this.outputFileNameComboBox.TabIndex = 1;
+            //---this.outputFileNameComboBox.WordWrap = false;
+            this.outputFileNameComboBox.PlaceHolderText = "output file name";
+            //---this.outputFileNameComboBox.ClearButtonColor = System.Drawing.Color.Gray; //System.Drawing.Color.DodgerBlue;
+            //this.outputFileNameComboBox.ClearButtonColorHover = System.Drawing.Color.Blue;
+            //---this.outputFileNameComboBox.ClearButtonBackcolor = System.Drawing.Color.White;// Smoke;
+            //---this.outputFileNameComboBox.ClearButtonBackcolorHover = System.Drawing.Color.White;// Smoke;
+            this.outputFileNameComboBox.ClearButtonClick += new System.EventHandler(this.outputFileNameComboBox_ClearButtonClick);
+            this.outputFileNameComboBox.TextChanged += new System.EventHandler(this.outputFileNameComboBox_TextChanged);
+            /*
             // 
             // outputDirectoryTextBox
             // 
@@ -205,6 +226,20 @@ namespace m3u8.download.manager.ui
             this.outputDirectoryTextBox.WordWrap = false;
             this.outputDirectoryTextBox.PlaceHolderText = "output directory";
             this.outputDirectoryTextBox.DrawClearButton = false;
+            */
+            // 
+            // outputDirectoryComboBox
+            // 
+            this.outputDirectoryComboBox.Anchor = System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.outputDirectoryComboBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(235)))), ((int)(((byte)(235)))), ((int)(((byte)(235)))));
+            this.outputDirectoryComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
+            this.outputDirectoryComboBox.Location = new System.Drawing.Point(67, 66);
+            this.outputDirectoryComboBox.Size = new System.Drawing.Size(539, 18);
+            this.outputDirectoryComboBox.TabIndex = 5;
+            //---this.outputDirectoryComboBox.WordWrap = false;
+            this.outputDirectoryComboBox.PlaceHolderText = "output directory";
+            this.outputDirectoryComboBox.DrawClearButton = false;
+
             // 
             // outputDirectorySelectButton
             // 
@@ -274,8 +309,8 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());//8
 
             this.mainLayoutPanel.Controls.Add(outputFileNameLabel, 0, 0);
-            this.mainLayoutPanel.Controls.Add(this.outputFileNameTextBox, 1, 0);
-            this.mainLayoutPanel.SetColumnSpan(this.outputFileNameTextBox, 6/*3*/);
+            this.mainLayoutPanel.Controls.Add(this.outputFileNameComboBox/*outputFileNameTextBox*/, 1, 0);
+            this.mainLayoutPanel.SetColumnSpan(this.outputFileNameComboBox/*outputFileNameTextBox*/, 6/*3*/);
             this.mainLayoutPanel.Controls.Add(this.outputFileNameSelectButton, 7, 0);
 
             this.mainLayoutPanel.Controls.Add(this.liveStreamMaxSizeInMbLabel  , 3, 1);
@@ -284,8 +319,8 @@ namespace m3u8.download.manager.ui
             this.mainLayoutPanel.Controls.Add(this.isLiveStreamCheckBox        , 8, 0);
 
             this.mainLayoutPanel.Controls.Add(outputDirectoryLabel, 0, 2);
-            this.mainLayoutPanel.Controls.Add(this.outputDirectoryTextBox, 1, 2);
-            this.mainLayoutPanel.SetColumnSpan(this.outputDirectoryTextBox, 6/*3*/);
+            this.mainLayoutPanel.Controls.Add(this.outputDirectoryComboBox/*outputDirectoryTextBox*/, 1, 2);
+            this.mainLayoutPanel.SetColumnSpan(this.outputDirectoryComboBox/*outputDirectoryTextBox*/, 6/*3*/);
             this.mainLayoutPanel.Controls.Add(this.outputDirectorySelectButton, 7, 2);
 
             this.mainLayoutPanel.Controls.Add(this.patternOutputFileNameLabelCaption, 0, 1);
@@ -626,7 +661,8 @@ namespace m3u8.download.manager.ui
         private m3u8.download.manager.ui.WebProxyUC webProxyUC;
         private System.Windows.Forms.Panel topPanel;
         private System.Windows.Forms.TextBoxEx m3u8FileUrlTextBox;
-        private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputFileNameTextBox;
+        //---private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputFileNameTextBox;
+        private m3u8.download.manager.ui.OutputFilenameSuggestionsComboBox outputFileNameComboBox;
         private System.Windows.Forms.ToolTip toolTip;
         private System.Windows.Forms.ButtonWithFocusCues loadM3u8FileContentButton;
         private System.Windows.Forms.ButtonWithFocusCues calcTotalContentLengthPartsButton;
@@ -643,7 +679,8 @@ namespace m3u8.download.manager.ui
         private System.Windows.Forms.ButtonWithFocusCues downloadStartButton;
         private System.Windows.Forms.ButtonWithFocusCues downloadLaterButton;
         private System.Windows.Forms.ButtonWithFocusCues outputDirectorySelectButton;
-        private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputDirectoryTextBox;
+        //---private m3u8.download.manager.ui.TextBoxWithCustomPathPaste outputDirectoryTextBox;
+        private m3u8.download.manager.ui.OutputDirectorySuggestionsComboBox outputDirectoryComboBox;
         private System.Windows.Forms.CheckBoxImitationDisabled externalProgApplyByDefaultCheckBox;
         private System.Windows.Forms.CheckBoxImitationDisabled ffmpegApplyByDefaultCheckBox;
         private System.Windows.Forms.Label attemptRequestCountByPartLabel;

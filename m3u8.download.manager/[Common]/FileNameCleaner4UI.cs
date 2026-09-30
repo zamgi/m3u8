@@ -235,6 +235,7 @@ namespace m3u8.download.manager.ui
         public sealed class Processor : IDisposable
         {
             public Processor( TextBox fileNameTextBox, Func< string > getFileNameAction, Action< string > setFileNameAction ) { }
+            public Processor( ComboBox fileNameComboBox, Func<string> getFileNameAction, Action<string> setFileNameAction ) { }
             public void Dispose() { }
 
             public void FileNameTextBox_TextChanged( Action< string > setFileNameFinishAction = null ) { }

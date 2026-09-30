@@ -513,5 +513,51 @@ namespace m3u8.download.manager.Properties {
                 this["IgnoreHostHttpHeader"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection OutputFilenameSuggestions {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["OutputFilenameSuggestions"]));
+            }
+            set {
+                this["OutputFilenameSuggestions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int OutputFilenameSuggestionsMaxCount {
+            get {
+                return ((int)(this["OutputFilenameSuggestionsMaxCount"]));
+            }
+            set {
+                this["OutputFilenameSuggestionsMaxCount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection OutputDirectorySuggestions {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["OutputDirectorySuggestions"]));
+            }
+            set {
+                this["OutputDirectorySuggestions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int OutputDirectorySuggestionsMaxCount {
+            get {
+                return ((int)(this["OutputDirectorySuggestionsMaxCount"]));
+            }
+            set {
+                this["OutputDirectorySuggestionsMaxCount"] = value;
+            }
+        }
     }
 }

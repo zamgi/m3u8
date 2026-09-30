@@ -145,6 +145,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Update="UI\Controls\ComboBoxEx\OutputDirectorySuggestionsComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="UI\Controls\DataGridViewTextBoxColumnEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -173,6 +176,9 @@
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="UI\Controls\ComboBoxEx\%28ComboBoxWithCustomPathPaste.cs%29">
+      <SubType>Component</SubType>
     </None>
   </ItemGroup>
   
