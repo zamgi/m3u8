@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -224,6 +225,18 @@ namespace m3u8.download.manager.ui
             tabControl.TabPages.Cast< TabPage >().ForEach( p => BindFocusTracking( p, p ) );
             #endregion
         }
+
+        private IntPtr _LastForegroundWnd;
+        protected override void OnShown( EventArgs e )
+        {
+            base.OnShown( e );
+
+            _LastForegroundWnd = WinApi.GetForegroundWindow(); //WinApi.GetTopForegroundWindow();
+
+            this.Activate();
+            WinApi.SetForegroundWindow( this.Handle );
+            WinApi.SetForceForegroundWindow( this.Handle, _LastForegroundWnd );
+        }
         protected override void OnFormClosed( FormClosedEventArgs e )
         {
             base.OnFormClosed( e );
@@ -247,19 +260,6 @@ namespace m3u8.download.manager.ui
                 _SC.SaveNoThrow_IfAnyChanged();
             }
         }
-        
-        private IntPtr _LastForegroundWnd;
-        protected override void OnShown( EventArgs e )
-        {
-            base.OnShown( e );
-
-            _LastForegroundWnd = WinApi.GetForegroundWindow(); //WinApi.GetTopForegroundWindow();
-
-            this.Activate();
-            WinApi.SetForegroundWindow( this.Handle );
-            WinApi.SetForceForegroundWindow( this.Handle, _LastForegroundWnd );
-        }
-
         protected override void OnFormClosing( FormClosingEventArgs e )
         {
             base.OnFormClosing( e );
@@ -298,8 +298,8 @@ namespace m3u8.download.manager.ui
 
                 if ( !e.Cancel )
                 {
-                    outputDirectoryComboBox.AddToHead( this.OutputDirectory );
-                    outputFileNameComboBox .AddToHead( this.OutputFileName  );
+                    outputDirectoryComboBox.AddToHead( this.GetOutputDirectory() );
+                    outputFileNameComboBox .AddToHead( this.GetOutputFileName()  );
                 }
             }
 
@@ -350,12 +350,40 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        public  string GetOutputFileName()
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private static class GetOutputFileName_Storer
         {
-            var outputFileName_1 = GetOutputFileName_Internal();
-            var outputFileName_2 = _OutputFileNamePatternProcessor.Process( outputFileName_1 );
-            return (outputFileName_2);
+            /// <summary>
+            /// 
+            /// </summary>
+            public readonly struct StoreTuple
+            {
+                required public string Last_outputFileName_1 { get; init; }
+                required public string Final_outputFileName { get; init; }
+            }
+            public static string GetOutputFileName( ChangeSettingsParams4DownloadRowForm f, ref GetOutputFileName_Storer.StoreTuple st )
+            {
+                var outputFileName_1 = f.GetOutputFileName_Internal();
+                if ( outputFileName_1 == st.Last_outputFileName_1 )
+                {
+                    Debug.Assert( !st.Final_outputFileName.IsNullOrEmpty() );
+                    return (st.Final_outputFileName);
+                }
+                var outputFileName_2 = f._OutputFileNamePatternProcessor.Process( outputFileName_1 );
+                st = new StoreTuple() { Last_outputFileName_1 = outputFileName_1, Final_outputFileName = outputFileName_2 };
+                return (outputFileName_2);
+            }
         }
+        private GetOutputFileName_Storer.StoreTuple _GetOutputFileName_StoreTuple;
+        public  string GetOutputFileName() => GetOutputFileName_Storer.GetOutputFileName( this, ref _GetOutputFileName_StoreTuple );
+        //{
+        //    var outputFileName_1 = GetOutputFileName_Internal();
+        //    var outputFileName_2 = _OutputFileNamePatternProcessor.Process( outputFileName_1 );
+        //    return (outputFileName_2);
+        //}
         private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _Settings.OutputFileExtension, _OutputFileNamePatternProcessor.PatternChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();

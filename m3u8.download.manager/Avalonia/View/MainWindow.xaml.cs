@@ -35,9 +35,9 @@ namespace m3u8.download.manager.ui
     public sealed class MainWindow : StoreBoundsWindowBase/*Window*/, IDisposable
     {
 #if M3U8_CLIENT_FACTORY_TYPE__HttpMessageInvoker
-        const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpMessageInvoker;
+        private const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpMessageInvoker;
 #else
-        const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpClient;
+        private const m3u8_client_factory_enum_type M3U8_CLIENT_FACTORY_TYPE = m3u8_client_factory_enum_type.HttpClient;
 #endif
         #region [.fields from markup.]
         private DownloadListUC downloadListUC;
@@ -87,6 +87,7 @@ namespace m3u8.download.manager.ui
         private bool _ShowDownloadStatistics;
         private Window _HostWindow_4_Notification;
         private WindowNotificationManager _NotificationManager;
+        private Func< DownloadRow, ExternalProgRunnerStatusTypeEnum > _GetExternalProgRunnerStatusFunc;
         #endregion
 
 #if DEBUG
@@ -100,6 +101,7 @@ namespace m3u8.download.manager.ui
         {
             InitializeComponent();
             PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopy += NamedPipeServer__Input_ReceivedSend2FirstCopy;
+            _GetExternalProgRunnerStatusFunc = new Func< DownloadRow, ExternalProgRunnerStatusTypeEnum >( row => ExternalProgRunnerStatusTypeEnum.None );
         }
         public MainWindow( in X[] array ) : this() => _InputParamsArray = array;
         private void InitializeComponent()
@@ -260,7 +262,7 @@ namespace m3u8.download.manager.ui
             #region [.save settings.]
             _VM.SettingsController.MainFormPositionJson = this.GetBounds().ToJSON();
             _VM.SettingsController.SetDownloadListColumnsInfoJson( downloadListUC.GetColumnsInfoJson() );
-            _VM.SettingsController.SetDownloadRows( _VM.DownloadListModel.GetRows() );
+            _VM.SettingsController.SetDownloadRows( _VM.DownloadListModel.GetRows(), _GetExternalProgRunnerStatusFunc );
             if ( logUC.IsVisible ) _VM.SettingsController.Settings.LogUC_RowDefinition_Height = Get_LogUC_RowDefinition_Height();
             _VM.SettingsController.SaveNoThrow_IfAnyChanged();
             #endregion
@@ -343,7 +345,7 @@ namespace m3u8.download.manager.ui
                             if ( rows.Any() )
                             {
                                 e.Handled = true;
-                                await this.CopyToClipboard( rows );
+                                await this.CopyToClipboard( rows, _GetExternalProgRunnerStatusFunc );
                                 return;
                             }
                             else
@@ -597,7 +599,7 @@ namespace m3u8.download.manager.ui
                     break;
             }
 
-            _VM.SettingsController.SetDownloadRows_WithSaveIfChanged( _VM.DownloadListModel.GetRows() );
+            _VM.SettingsController.SetDownloadRows_WithSaveIfChanged( _VM.DownloadListModel.GetRows(), _GetExternalProgRunnerStatusFunc );
         }
         private void DownloadController_IsDownloadingChanged( bool isDownloading )
         {
@@ -1035,7 +1037,7 @@ namespace m3u8.download.manager.ui
             var rows = downloadListUC.GetSelectedDownloadRows();
             if ( rows.Any() )
             {
-                await this.CopyToClipboard( rows );
+                await this.CopyToClipboard( rows, _GetExternalProgRunnerStatusFunc );
             }
             else
             {

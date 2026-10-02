@@ -39,7 +39,6 @@ namespace m3u8.download.manager.ui
         public ChangeOutputFileForm()
         {
             InitializeComponent();
-
             //---_FNCP = new FileNameCleaner4UI.Processor( outputFileNameComboBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
         }
         internal ChangeOutputFileForm( DownloadRow row, _SC_ sc ) : this()
@@ -88,8 +87,6 @@ namespace m3u8.download.manager.ui
             {
                 FormPositionStorer.LoadAllExcludeHeight( this, _SC.Settings.ChangeOutputFileFormPositionJson, 200, 70 );
             }
-
-            //set_outputFileNameComboBox_Selection_Position( this.OutputFileName );
         }
         protected override async void OnShown( EventArgs e )
         {

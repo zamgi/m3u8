@@ -336,9 +336,8 @@ namespace m3u8.download.manager.ui
             this.downloadListUC.OutputDirectoryClick += new m3u8.download.manager.ui.DownloadListUC.OutputDirectoryClickEventHandler(this.downloadListUC_OutputDirectoryClick);
             this.downloadListUC.LiveStreamMaxFileSizeClick += new m3u8.download.manager.ui.DownloadListUC.LiveStreamMaxFileSizeClickEventHandler(this.downloadListUC_LiveStreamMaxFileSizeClick);
             this.downloadListUC.UsedWebProxyClick += new m3u8.download.manager.ui.DownloadListUC.UsedWebProxyClickEventHandler(this.downloadListUC_UsedWebProxyClick);
-            this.downloadListUC.IsDrawCheckMark += new DownloadListUC.IsDrawCheckMarkDelegate(this.downloadListUC_IsDrawCheckMark);
-            this.downloadListUC.GetDrawCheckMarkType += new DownloadListUC.GetDrawCheckMarkTypeDelegate(this.downloadListUC_GetDrawCheckMarkType);
-            this.downloadListUC.GetDrawCheckMarkToolTip += new DownloadListUC.GetDrawCheckMarkToolTipDelegate(this.downloadListUC_GetDrawCheckMarkToolTip);
+            this.downloadListUC.GetExternalProgRunnerType += new DownloadListUC.GetExternalProgRunnerTypeDelegate(this.downloadListUC_GetExternalProgRunnerType);
+            this.downloadListUC.GetExternalProgRunnerToolTip += new DownloadListUC.GetExternalProgRunnerToolTipDelegate(this.downloadListUC_GetExternalProgRunnerToolTip);
             // 
             // logUC
             // 

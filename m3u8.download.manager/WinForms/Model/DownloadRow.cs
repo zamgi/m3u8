@@ -592,6 +592,16 @@ namespace m3u8.download.manager.models
             LiveStreamMaxFileSizeInBytes = liveStreamMaxFileSizeInBytes
         };
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [Flags] internal enum ExternalProgRunnerStatusTypeEnum
+    {
+        None         = 0x0,
+        FFmpeg       = 0x1,
+        ExternalProg = 0x2,
+    }
     /// <summary>
     /// 
     /// </summary>
@@ -599,5 +609,6 @@ namespace m3u8.download.manager.models
     {
         required public DateTime       CreatedOrStartedDateTime { get; init; }
         required public DownloadStatus Status                   { get; init; }
+        required public ExternalProgRunnerStatusTypeEnum ExternalProgRunnerStatus { get; init; }
     }
 }

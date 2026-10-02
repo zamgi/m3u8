@@ -79,9 +79,9 @@ namespace m3u8.download.manager.controllers
         public bool     RenameAfterFFmpegConverterAndOpenWithExternalProgRunner { [M(O.AggressiveInlining)] get => Settings.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner; }
 #endif
         public IEnumerable< DownloadRow_Definer_3 > GetDownloadRows() => DownloadRowsSerializer.FromJSON( Settings.DownloadRowsJson );
-        public void SetDownloadRows_WithSaveIfChanged( IEnumerable< DownloadRow > rows )
+        public void SetDownloadRows_WithSaveIfChanged( IEnumerable< DownloadRow > rows, Func< DownloadRow, ExternalProgRunnerStatusTypeEnum > getExternalProgRunnerStatusFunc )
         {
-            var json = DownloadRowsSerializer.ToJSON( rows );
+            var json = DownloadRowsSerializer.ToJSON( rows, getExternalProgRunnerStatusFunc );
             if ( Settings.DownloadRowsJson != json )
             {
                 Settings.DownloadRowsJson = json;
@@ -89,7 +89,8 @@ namespace m3u8.download.manager.controllers
                 _AllJson = ObjAsDict_JsonSerializer.ToJSON( Settings );
             }
         }
-        public void SetDownloadRows( IEnumerable< DownloadRow > rows ) => Settings.DownloadRowsJson = DownloadRowsSerializer.ToJSON( rows );
+        public void SetDownloadRows( IEnumerable< DownloadRow > rows, Func< DownloadRow, ExternalProgRunnerStatusTypeEnum > getExternalProgRunnerStatusFunc ) 
+            => Settings.DownloadRowsJson = DownloadRowsSerializer.ToJSON( rows, getExternalProgRunnerStatusFunc );
         public void SaveNoThrow_IfAnyChanged()
         {
             var json = ObjAsDict_JsonSerializer.ToJSON( Settings );
@@ -173,13 +174,13 @@ namespace m3u8.download.manager.controllers
             var prop = typeof(_Settings_).GetProperty( e.PropertyName );
             if ( prop == null )
             {
-                Debug.WriteLine( $"Unknown prop: '{e.PropertyName}'" );
+                Debug.WriteLine( $"Unknown prop: '{e.PropertyName}'." );
                 return;
             }
 
             if ( !prop.PropertyType.IsValueType )
             {
-                Debug.WriteLine( $"NOT struct/(ValueType): {prop}" );
+                Debug.WriteLine( $"NOT struct/(ValueType): '{prop}'." );
                 return;
             }
 

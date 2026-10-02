@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 
 using m3u8.download.manager.models;
 
+using _Out_ExternalProgRunnerStatusTypeEnum_ = m3u8.download.manager.models.ExternalProgRunnerStatusTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -20,10 +21,20 @@ namespace m3u8.download.manager
         /// <summary>
         /// 
         /// </summary>
+        [DataContract][Flags] private enum ExternalProgRunnerStatusTypeEnum
+        {
+            None         = 0x0,
+            FFmpeg       = 0x1,
+            ExternalProg = 0x2,
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
         [DataContract] private sealed class DownloadRow_4_Serialize
         {
             public DownloadRow_4_Serialize() { }
-            public DownloadRow_4_Serialize( DownloadRow r )
+            public DownloadRow_4_Serialize( DownloadRow r, ExternalProgRunnerStatusTypeEnum externalProgRunnerStatus )
             {
                 CreatedOrStartedDateTime     = r.CreatedOrStartedDateTime;
                 Url                          = r.Url;
@@ -34,6 +45,7 @@ namespace m3u8.download.manager
                 WebProxyInfo                 = new web_proxy_info_4_Serialize( r.WebProxyInfo );
                 Timeout                      = r.Timeout;
                 AttemptRequestCount          = r.AttemptRequestCount;
+                ExternalProgRunnerStatus     = externalProgRunnerStatus;
 
                 if ( r.IsLiveStream && !r.VeryFirstOutputFullFileName.IsNullOrEmpty() )
                 {
@@ -45,17 +57,18 @@ namespace m3u8.download.manager
                     OutputFileName = r.OutputFileName;
                 }
             }
-            [DataMember(Name="c")] public DateTime       CreatedOrStartedDateTime     { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="u")] public string         Url                          { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="f")] public string         OutputFileName               { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="d")] public string         OutputDirectory              { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="s")] public DownloadStatus Status                       { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="x")] public bool           IsLiveStream                 { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="y")] public long           LiveStreamMaxFileSizeInBytes { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="c")] public DateTime       CreatedOrStartedDateTime      { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="u")] public string         Url                           { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="f")] public string         OutputFileName                { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="d")] public string         OutputDirectory               { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="s")] public DownloadStatus Status                        { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="x")] public bool           IsLiveStream                  { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="y")] public long           LiveStreamMaxFileSizeInBytes  { [M(O.AggressiveInlining)] get; set; }
             [DataMember(Name="r")] public IDictionary< string, string > RequestHeaders { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="w")] public web_proxy_info_4_Serialize WebProxyInfo { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="t")] public TimeSpan? Timeout             { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="a")] public int?      AttemptRequestCount { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="w")] public web_proxy_info_4_Serialize    WebProxyInfo   { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="t")] public TimeSpan?      Timeout                       { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="a")] public int?           AttemptRequestCount           { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="b")] public ExternalProgRunnerStatusTypeEnum ExternalProgRunnerStatus { [M(O.AggressiveInlining)] get; set; }
         }
 
         /// <summary>
@@ -88,7 +101,8 @@ namespace m3u8.download.manager
             [DataMember(Name="c")] public (string Username, string Password) Credentials { get; set; }
         }
 
-        public static string ToJSON( IEnumerable< DownloadRow > rows ) => rows.Select( r => new DownloadRow_4_Serialize( r ) ).ToJSON();
+        public static string ToJSON( IEnumerable< DownloadRow > rows, Func< DownloadRow, _Out_ExternalProgRunnerStatusTypeEnum_ > get_Out_ExternalProgRunnerStatus_Func )
+            => rows.Select( r => new DownloadRow_4_Serialize( r, get_Out_ExternalProgRunnerStatus_Func( r ).ToExternalProgRunnerStatusTypeEnum() ) ).ToJSON();
         public static IEnumerable< DownloadRow_Definer_3 > FromJSON( string json )
         {
             if ( !json.IsNullOrWhiteSpace() )
@@ -108,7 +122,8 @@ namespace m3u8.download.manager
                                    OutputDirectory              = r.OutputDirectory, 
                                    Status                       = DownloadStatus.Created/*r.Status*/,
                                    IsLiveStream                 = r.IsLiveStream, 
-                                   LiveStreamMaxFileSizeInBytes = r.LiveStreamMaxFileSizeInBytes
+                                   LiveStreamMaxFileSizeInBytes = r.LiveStreamMaxFileSizeInBytes,
+                                   ExternalProgRunnerStatus     = r.ExternalProgRunnerStatus.To_Out_ExternalProgRunnerStatusTypeEnum_() 
                                };
                     return (rows);
                 }
@@ -119,6 +134,22 @@ namespace m3u8.download.manager
             }
             return (Enumerable.Empty< DownloadRow_Definer_3 >());
         }
+        [M(O.AggressiveInlining)] private static _Out_ExternalProgRunnerStatusTypeEnum_ To_Out_ExternalProgRunnerStatusTypeEnum_( this ExternalProgRunnerStatusTypeEnum st ) => st switch
+        {
+            ExternalProgRunnerStatusTypeEnum.ExternalProg => _Out_ExternalProgRunnerStatusTypeEnum_.ExternalProg,
+            ExternalProgRunnerStatusTypeEnum.FFmpeg => _Out_ExternalProgRunnerStatusTypeEnum_.FFmpeg,
+            ExternalProgRunnerStatusTypeEnum.ExternalProg | ExternalProgRunnerStatusTypeEnum.FFmpeg => _Out_ExternalProgRunnerStatusTypeEnum_.ExternalProg | _Out_ExternalProgRunnerStatusTypeEnum_.FFmpeg,
+            ExternalProgRunnerStatusTypeEnum.None => _Out_ExternalProgRunnerStatusTypeEnum_.None,
+            _ => throw new ArgumentException( st.ToString() )
+        };
+        [M(O.AggressiveInlining)] private static ExternalProgRunnerStatusTypeEnum ToExternalProgRunnerStatusTypeEnum( this _Out_ExternalProgRunnerStatusTypeEnum_ st ) => st switch
+        {
+            _Out_ExternalProgRunnerStatusTypeEnum_.ExternalProg => ExternalProgRunnerStatusTypeEnum.ExternalProg,
+            _Out_ExternalProgRunnerStatusTypeEnum_.FFmpeg => ExternalProgRunnerStatusTypeEnum.FFmpeg,
+            _Out_ExternalProgRunnerStatusTypeEnum_.ExternalProg | _Out_ExternalProgRunnerStatusTypeEnum_.FFmpeg => ExternalProgRunnerStatusTypeEnum.ExternalProg | ExternalProgRunnerStatusTypeEnum.FFmpeg,
+            _Out_ExternalProgRunnerStatusTypeEnum_.None => ExternalProgRunnerStatusTypeEnum.None,
+            _ => throw new ArgumentException( st.ToString() )
+        };
 
         public static string ToJSON( in web_proxy_info t ) => (new web_proxy_info_4_Serialize( t )).ToJSON();
         public static web_proxy_info FromJSON_2_WebProxyInfo( string json, bool suppressError = false )

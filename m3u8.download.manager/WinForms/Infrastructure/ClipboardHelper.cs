@@ -36,6 +36,7 @@ namespace m3u8.download.manager
                 WebProxyInfo             = sc.GetDefaultWebProxyInfo(),
                 IsLiveStream             = false,
                 LiveStreamMaxFileSizeInBytes = 0,
+                ExternalProgRunnerStatus     = ExternalProgRunnerStatusTypeEnum.None,
             };
             return (r);
         }
@@ -149,9 +150,9 @@ namespace m3u8.download.manager
             urls = default;
             return (false);
         }
-        public static void CopyUrlsToClipboard( IEnumerable< DownloadRow > rows )
+        public static void CopyUrlsToClipboard( IEnumerable< DownloadRow > rows, Func< DownloadRow, ExternalProgRunnerStatusTypeEnum > getExternalProgRunnerStatusFunc )
         {
-            var txt = string.Join( "\r\n", DownloadRowsSerializer.ToJSON( rows ) );
+            var txt = string.Join( "\r\n", DownloadRowsSerializer.ToJSON( rows, getExternalProgRunnerStatusFunc ) );
             Clipboard.SetText( txt, TextDataFormat.UnicodeText );
         }
 

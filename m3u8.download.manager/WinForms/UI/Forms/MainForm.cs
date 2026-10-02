@@ -19,7 +19,7 @@ using m3u8.helpers;
 
 using _DC_                                 = m3u8.download.manager.controllers.DownloadController;
 using _SC_                                 = m3u8.download.manager.controllers.SettingsPropertyChangeController;
-using CheckMarkTypeEnum                    = m3u8.download.manager.ui.DownloadListUC.CheckMarkTypeEnum;
+using ExternalProgRunnerTypeEnum                    = m3u8.download.manager.ui.DownloadListUC.ExternalProgRunnerTypeEnum;
 using CollectionChangedTypeEnum            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using M                                    = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                                    = System.Runtime.CompilerServices.MethodImplOptions;
@@ -60,6 +60,7 @@ namespace m3u8.download.manager.ui
         private IExternalProgRunner              _ExternalProgRunner;
         private IExternalProgRunner              _FFmpegConverterRunner;
         private ExternalProgRunner_Queues        _ExternalProgRunner_Queues;
+        private Func< DownloadRow, ExternalProgRunnerStatusTypeEnum > _GetExternalProgRunnerStatusFunc;
 #if DEBUG
         private LoggerForm _LoggerForm;
 #endif
@@ -109,7 +110,8 @@ namespace m3u8.download.manager.ui
 
             _DownloadListModel_RowPropertiesChangedAction = new Action< DownloadRow, string >( DownloadListModel_RowPropertiesChanged );
             _DownloadListModel_CollectionChangedAction    = new Action< CollectionChangedTypeEnum, DownloadRow >( DownloadListModel_CollectionChanged );
-            
+            _GetExternalProgRunnerStatusFunc              = new Func< DownloadRow, ExternalProgRunnerStatusTypeEnum >( GetExternalProgRunnerStatus );
+
             _LogRowsHeightStorer = new LogRowsHeightStorer();
 
             _SC.SettingsPropertyChanged += SettingsController_PropertyChanged;
@@ -174,7 +176,7 @@ namespace m3u8.download.manager.ui
             if ( !base.DesignMode )
             {
                 FormPositionStorer.Load( this, _SC.MainFormPositionJson );
-                _DownloadListModel.AddRows( _SC.GetDownloadRows() );
+                LoadStoredDownloadRows(); //---_DownloadListModel.AddRows( _SC.GetDownloadRows() );
                 logUC.ShowOnlyRequestRowsWithErrors = _SC.Settings.ShowOnlyRequestRowsWithErrors;
                 logUC.ScrollToLastRow               = _SC.Settings.ScrollToLastRow;
             }
@@ -187,19 +189,6 @@ namespace m3u8.download.manager.ui
                 _DownloadListModel.AddRow( ("http://s12.seplay.net/content/stream/films/the.resident.s03e16.720p.octopus_173547/hls/720/index.m3u8-34", "xz-3", dir) );
             }
 #endif
-        }
-        protected override void OnFormClosed( FormClosedEventArgs e )
-        {
-            base.OnFormClosed( e );
-
-            if ( !base.DesignMode )
-            {
-                _SC.MainFormPositionJson = FormPositionStorer.Save( this );
-                _SC.SetDownloadRows( _DownloadListModel.GetRows_Enumerable() );
-                _SC.Settings.ShowOnlyRequestRowsWithErrors = logUC.ShowOnlyRequestRowsWithErrors;
-                _SC.Settings.ScrollToLastRow               = logUC.ScrollToLastRow;
-                _SC.SaveNoThrow_IfAnyChanged();
-            }
         }
         protected override void OnShown( EventArgs e )
         {
@@ -262,7 +251,19 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
+        protected override void OnFormClosed( FormClosedEventArgs e )
+        {
+            base.OnFormClosed( e );
 
+            if ( !base.DesignMode )
+            {
+                _SC.MainFormPositionJson = FormPositionStorer.Save( this );
+                _SC.SetDownloadRows( _DownloadListModel.GetRows_Enumerable(), _GetExternalProgRunnerStatusFunc );
+                _SC.Settings.ShowOnlyRequestRowsWithErrors = logUC.ShowOnlyRequestRowsWithErrors;
+                _SC.Settings.ScrollToLastRow               = logUC.ScrollToLastRow;
+                _SC.SaveNoThrow_IfAnyChanged();
+            }
+        }
         protected override void OnKeyDown( KeyEventArgs e )
         {
             if ( e.Control )  //Ctrl
@@ -292,7 +293,7 @@ namespace m3u8.download.manager.ui
                             if ( rows.Any() )
                             {
                                 e.SuppressKeyPress = true;
-                                ClipboardHelper.CopyUrlsToClipboard( rows );
+                                ClipboardHelper.CopyUrlsToClipboard( rows, _GetExternalProgRunnerStatusFunc );
                                 return;
                             }
                             else
@@ -628,7 +629,7 @@ namespace m3u8.download.manager.ui
                         (var externalProgApplyByDefault, var ffmpegApplyByDefault) = (_SC.ExternalProgApplyByDefault, _SC.FFmpegApplyByDefault);
                         if ( externalProgApplyByDefault || ffmpegApplyByDefault )
                         {
-                            var outputFullFileName = row.GetOutputFullFileName() /*(from _row in _DownloadListModel.GetRows() select _row.GetOutputFullFileName())*/;
+                            var outputFullFileName = row.GetOutputFullFileName();
                             if ( externalProgApplyByDefault ) _ExternalProgRunner.Queue.AddIfNotNull( outputFullFileName );
                             if ( ffmpegApplyByDefault       ) _FFmpegConverterRunner.Queue.AddIfNotNull( outputFullFileName );
                         }
@@ -636,7 +637,7 @@ namespace m3u8.download.manager.ui
                     break;
             }
 
-            _SC.SetDownloadRows_WithSaveIfChanged( existsRows ?? _DownloadListModel.GetRows_ArrayCopy() );
+            _SC.SetDownloadRows_WithSaveIfChanged( existsRows ?? _DownloadListModel.GetRows_ArrayCopy(), _GetExternalProgRunnerStatusFunc );
         }
         private async void DownloadListModel_RowPropertiesChanged( DownloadRow row, string propertyName )
         {
@@ -773,29 +774,28 @@ namespace m3u8.download.manager.ui
 
             SetDownloadToolButtonsStatus( row );
         }
-        private bool downloadListUC_IsDrawCheckMark( DownloadRow row ) => _ExternalProgRunner_Queues.Contains( row.GetOutputFullFileName() );
-        private CheckMarkTypeEnum downloadListUC_GetDrawCheckMarkType( DownloadRow row )
+        private ExternalProgRunnerTypeEnum downloadListUC_GetExternalProgRunnerType( DownloadRow row )
         {
             var outputFullFileName = row.GetOutputFullFileName();
 
-            var cmt = CheckMarkTypeEnum.None;
-            if ( _ExternalProgRunner.Queue.Contains( outputFullFileName ) ) cmt |= CheckMarkTypeEnum.Orange;
-            //---if ( _FFmpegConverterRunner.Queue.Contains( outputFullFileName ) ) cmt |= _CheckMarkTypeEnum_.Green;
+            var eprt = ExternalProgRunnerTypeEnum.None;
+            if ( _ExternalProgRunner.Queue.Contains( outputFullFileName ) ) eprt |= ExternalProgRunnerTypeEnum.ExternalProg;
+            //---if ( _FFmpegConverterRunner.Queue.Contains( outputFullFileName ) ) eprt |= _CheckMarkTypeEnum_.Green;
             switch ( _FFmpegConverterRunner.GetStatus( outputFullFileName ) )
             {
-                case IExternalProgRunner.StatusTypeEnum.InQueue            : cmt |= CheckMarkTypeEnum.Green; break;
-                case IExternalProgRunner.StatusTypeEnum.InProcessInnerQueue: cmt |= CheckMarkTypeEnum.InProcessInnerQueue; break;
-                case IExternalProgRunner.StatusTypeEnum.InProcessNow       : cmt |= CheckMarkTypeEnum.InProcessNow; break;
+                case IExternalProgRunner.StatusTypeEnum.InQueue            : eprt |= ExternalProgRunnerTypeEnum.FFmpeg; break;
+                case IExternalProgRunner.StatusTypeEnum.InProcessInnerQueue: eprt |= ExternalProgRunnerTypeEnum.FFmpeg_InProcessInnerQueue; break;
+                case IExternalProgRunner.StatusTypeEnum.InProcessNow       : eprt |= ExternalProgRunnerTypeEnum.FFmpeg_InProcessNow; break;
             }
-            return (cmt);
+            return (eprt);
         }
-        private string downloadListUC_GetDrawCheckMarkToolTip( CheckMarkTypeEnum checkMarkType /*DownloadRow row*/ ) => checkMarkType switch
+        private string downloadListUC_GetExternalProgRunnerToolTip( ExternalProgRunnerTypeEnum eprt /*, DownloadRow row*/ ) => eprt switch
         {
-            CheckMarkTypeEnum.Green => $"convert with '{_SC.Settings.FFmpegConverterCaption}' (after download)",
-            CheckMarkTypeEnum.Orange => $"open with '{_SC.Settings.ExternalProgCaption}' (after download)",
-            CheckMarkTypeEnum.InProcessInnerQueue => $"in queue for convert with '{_SC.Settings.FFmpegConverterCaption}'",
-            CheckMarkTypeEnum.InProcessNow => $"converted now with '{_SC.Settings.FFmpegConverterCaption}'",
-            CheckMarkTypeEnum.Orange | CheckMarkTypeEnum.Green => $"convert and open with '{_SC.Settings.FFmpegConverterCaption}', '{_SC.Settings.ExternalProgCaption}' (after download)",
+            ExternalProgRunnerTypeEnum.FFmpeg => $"convert with '{_SC.Settings.FFmpegConverterCaption}' (after download)",
+            ExternalProgRunnerTypeEnum.ExternalProg => $"open with '{_SC.Settings.ExternalProgCaption}' (after download)",
+            ExternalProgRunnerTypeEnum.FFmpeg_InProcessInnerQueue => $"in queue for convert with '{_SC.Settings.FFmpegConverterCaption}'",
+            ExternalProgRunnerTypeEnum.FFmpeg_InProcessNow => $"converted now with '{_SC.Settings.FFmpegConverterCaption}'",
+            ExternalProgRunnerTypeEnum.ExternalProg | ExternalProgRunnerTypeEnum.FFmpeg => $"convert and open with '{_SC.Settings.FFmpegConverterCaption}', '{_SC.Settings.ExternalProgCaption}' (after download)",
             _ => null
         };
         private void downloadListUC_UpdatedSingleRunningRow( DownloadRow row )
@@ -819,6 +819,69 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.Core-Private methods.]
+        private void LoadStoredDownloadRows()
+        {
+            //---_DownloadListModel.AddRows( _SC.GetDownloadRows() );
+
+            _DownloadListModel.CollectionChanged -= DownloadListModel_CollectionChanged;
+            try
+            {
+                (var externalProgApplyByDefault, var ffmpegApplyByDefault) = (_SC.ExternalProgApplyByDefault, _SC.FFmpegApplyByDefault);
+                var externalProgApplyByDefault_or_ffmpegApplyByDefault = externalProgApplyByDefault || ffmpegApplyByDefault;
+
+                foreach ( var t in _SC.GetDownloadRows() )
+                {
+                    var row = _DownloadListModel.AddRow( t );
+
+                    var row_restored = TryRestoreOrClearDownloadParams( row );
+                    if ( (!row_restored || !row.IsFinishedOrError())
+                        && (t.ExternalProgRunnerStatus != ExternalProgRunnerStatusTypeEnum.None) 
+                        && externalProgApplyByDefault_or_ffmpegApplyByDefault
+                       )
+                    {
+                        var outputFullFileName = row.GetOutputFullFileName();
+                        if ( externalProgApplyByDefault && t.ExternalProgRunnerStatus.HasFlag( ExternalProgRunnerStatusTypeEnum.ExternalProg ) )
+                        {
+                            _ExternalProgRunner.Queue.AddIfNotNull( outputFullFileName );
+                        }
+                        if ( ffmpegApplyByDefault && t.ExternalProgRunnerStatus.HasFlag( ExternalProgRunnerStatusTypeEnum.FFmpeg ) )
+                        {
+                            _FFmpegConverterRunner.Queue.AddIfNotNull( outputFullFileName );
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                _DownloadListModel.CollectionChanged += DownloadListModel_CollectionChanged;
+            }
+        }
+        private ExternalProgRunnerStatusTypeEnum GetExternalProgRunnerStatus( DownloadRow row )
+        {
+            /*
+            var checkMarkType = downloadListUC_GetDrawCheckMarkType( row );
+            var st = checkMarkType switch
+            {
+                CheckMarkTypeEnum.Orange => ExternalProgRunnerStatusTypeEnum.ExternalProg,
+                CheckMarkTypeEnum.Green => ExternalProgRunnerStatusTypeEnum.FFmpeg,
+                CheckMarkTypeEnum.Orange | CheckMarkTypeEnum.Green => ExternalProgRunnerStatusTypeEnum.ExternalProg | ExternalProgRunnerStatusTypeEnum.FFmpeg,
+                CheckMarkTypeEnum.InProcessInnerQueue => ExternalProgRunnerStatusTypeEnum.FFmpeg,
+                CheckMarkTypeEnum.InProcessNow => ExternalProgRunnerStatusTypeEnum.FFmpeg,
+                CheckMarkTypeEnum.None => ExternalProgRunnerStatusTypeEnum.None,
+                _ => throw new ArgumentException( checkMarkType.ToString() )
+            };
+            return (st);
+            //*/
+
+            //*
+            var st = ExternalProgRunnerStatusTypeEnum.None;
+            var outputFullFileName = row.GetOutputFullFileName();
+            if ( _ExternalProgRunner   .Queue.Contains( outputFullFileName ) ) st |= ExternalProgRunnerStatusTypeEnum.ExternalProg;
+            if ( _FFmpegConverterRunner.Queue.Contains( outputFullFileName ) ) st |= ExternalProgRunnerStatusTypeEnum.FFmpeg;
+            return (st);
+            //*/
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -1478,7 +1541,7 @@ namespace m3u8.download.manager.ui
             var rows = downloadListUC.GetSelectedDownloadRows();
             if ( rows.Any() )
             {
-                ClipboardHelper.CopyUrlsToClipboard( rows );
+                ClipboardHelper.CopyUrlsToClipboard( rows, _GetExternalProgRunnerStatusFunc );
             }
             else
             {

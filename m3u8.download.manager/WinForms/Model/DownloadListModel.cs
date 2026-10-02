@@ -29,14 +29,21 @@ namespace m3u8.download.manager.models
             _Urls.Add( row.Url );
             return (row);
         }
-        public void AddRows( IEnumerable< DownloadRow_Definer_3 > rows )
+        public DownloadRow AddRow( DownloadRow_Definer_3 t/*, int? index = null*/ )
         {
-            foreach ( var t in rows )
-            {
-                var row = base.Add( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler ) );
-                _Urls.Add( row.Url );
-            }
+            var row = base.Add( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler )/*, index*/ );
+            _Urls.Add( row.Url );
+            return (row);
         }
+        //public void AddRows( IEnumerable< DownloadRow_Definer_3 > rows )
+        //{
+        //    foreach ( var t in rows )
+        //    {
+        //        //var row = base.Add( new DownloadRow( t, this, base._Fire_RowPropertiesChangedEventHandler ) );
+        //        //_Urls.Add( row.Url );
+        //        AddRow( t );
+        //    }
+        //}
         public void AddRow( DownloadRow row )
         {
             row = base.Add( row );
