@@ -19,13 +19,13 @@ using m3u8.helpers;
 
 using _DC_                                 = m3u8.download.manager.controllers.DownloadController;
 using _SC_                                 = m3u8.download.manager.controllers.SettingsPropertyChangeController;
-using ExternalProgRunnerTypeEnum                    = m3u8.download.manager.ui.DownloadListUC.ExternalProgRunnerTypeEnum;
 using CollectionChangedTypeEnum            = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
-using M                                    = System.Runtime.CompilerServices.MethodImplAttribute;
-using O                                    = System.Runtime.CompilerServices.MethodImplOptions;
 using ReceivedInputParamsArrayEventHandler = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedInputParamsArrayEventHandler;
 using ReceivedSend2FirstCopyEventHandler   = m3u8.download.manager.ipc.PipeIPC.NamedPipeServer__Input.ReceivedSend2FirstCopyEventHandler;
+using ExternalProgRunnerTypeEnum           = m3u8.download.manager.ui.DownloadListUC.ExternalProgRunnerTypeEnum;
 using SummaryDownloadInfo                  = m3u8.download.manager.ui.DownloadListUC.SummaryDownloadInfo;
+using M                                    = System.Runtime.CompilerServices.MethodImplAttribute;
+using O                                    = System.Runtime.CompilerServices.MethodImplOptions;
 
 namespace m3u8.download.manager.ui
 {
