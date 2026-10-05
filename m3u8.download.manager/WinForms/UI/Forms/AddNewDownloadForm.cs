@@ -46,7 +46,7 @@ namespace m3u8.download.manager.ui
         private Settings           _Settings;
         private DownloadListModel  _DownloadListModel;
         private FileNameCleaner4UI.Processor _FNCP;
-        private bool               _WasFocusSet2outputFileNameComboBoxAfterFirstChanges;
+        private bool               _WasFocusSet2OutputFileNameAfterFirstChanges;
         private (int n, int total) _SeriesInfo;
         private string             _Initial_M3u8FileUrl;
         private DownloadRow        _EditedRow;
@@ -127,7 +127,7 @@ namespace m3u8.download.manager.ui
             m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
             this.M3u8FileUrl = row.Url;
             //---m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
-            _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
+            _WasFocusSet2OutputFileNameAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
 
             _Model = new LogListModel();
             logUC.SetModel( _Model );
@@ -158,7 +158,7 @@ namespace m3u8.download.manager.ui
 
             this.M3u8FileUrl     = m3u8FileUrl;
             this.OutputDirectory = _Settings.OutputFileDirectory;
-            _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
+            _WasFocusSet2OutputFileNameAfterFirstChanges = m3u8FileUrl.IsNullOrWhiteSpace();
 
             logUC.SetModel( _Model = new LogListModel() );
 
@@ -198,7 +198,7 @@ namespace m3u8.download.manager.ui
 
             this.M3u8FileUrl     = m3u8FileUrl_CombinedFake;
             this.OutputDirectory = _Settings.OutputFileDirectory;
-            _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = m3u8FileUrl_CombinedFake.IsNullOrWhiteSpace();
+            _WasFocusSet2OutputFileNameAfterFirstChanges = m3u8FileUrl_CombinedFake.IsNullOrWhiteSpace();
 
             logUC.SetModel( _Model = new LogListModel() );
 
@@ -234,13 +234,13 @@ namespace m3u8.download.manager.ui
 
             #region [.if setted outputFileName.]
             //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            //---Process_use_OutputFileNamePatternProcessor_on_Init();
+            Process_use_OutputFileNamePatternProcessor_on_Init();
             #endregion
 
             m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
             this.M3u8FileUrl = dd3.Url;
             //---m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
-            _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = dd3.Url.IsNullOrWhiteSpace();
+            _WasFocusSet2OutputFileNameAfterFirstChanges = dd3.Url.IsNullOrWhiteSpace();
 
             logUC.SetModel( _Model = new LogListModel() );
 
@@ -616,6 +616,7 @@ namespace m3u8.download.manager.ui
             }
         }
 
+        /*
         /// <summary>
         /// 
         /// </summary>
@@ -629,7 +630,7 @@ namespace m3u8.download.manager.ui
                 required public string Last_outputFileName_1 { get; init; }
                 required public string Final_outputFileName  { get; init; }
             }
-            public static string GetOutputFileName( AddNewDownloadForm f, ref GetOutputFileName_Storer.StoreTuple st )
+            public static string GetOutputFileName( AddNewDownloadForm f, ref StoreTuple st )
             {
                 var outputFileName_1 = f.GetOutputFileName_Internal();
                 if ( outputFileName_1 == st.Last_outputFileName_1 )
@@ -644,11 +645,18 @@ namespace m3u8.download.manager.ui
         }
         private GetOutputFileName_Storer.StoreTuple _GetOutputFileName_StoreTuple;
         public string GetOutputFileName() => GetOutputFileName_Storer.GetOutputFileName( this, ref _GetOutputFileName_StoreTuple );
-        //{
-        //    var outputFileName_1 = GetOutputFileName_Internal();
-        //    var outputFileName_2 = _OutputFileNamePatternProcessor.Process( outputFileName_1 );
-        //    return (outputFileName_2);
-        //}
+        //*/
+        private string _Final_GetOutputFileName;
+        public string GetOutputFileName()
+        {
+            if ( _Final_GetOutputFileName == null )
+            {
+                var outputFileName_1 = GetOutputFileName_Internal();
+                var outputFileName_2 = _OutputFileNamePatternProcessor.Process( outputFileName_1 );
+                _Final_GetOutputFileName = outputFileName_2;
+            }
+            return (_Final_GetOutputFileName);
+        }
         private string GetOutputFileName_Internal() => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, _Settings.OutputFileExtension, _OutputFileNamePatternProcessor.PatternChar );
         public  string GetOutputDirectory() => this.OutputDirectory;
         public  IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();
@@ -703,26 +711,12 @@ namespace m3u8.download.manager.ui
         public bool ExternalProgApplyByDefault
         {
             get => externalProgApplyByDefaultCheckBox.Checked;
-            set
-            {
-                //if ( externalProgApplyByDefaultCheckBox.Checked != value )
-                //{
-                externalProgApplyByDefaultCheckBox.Checked = value;
-                //Set_CheckBox_ForeColor( externalProgApplyByDefaultCheckBox, value );
-                //}
-            }
+            set => externalProgApplyByDefaultCheckBox.Checked = value;
         }
         public bool FFmpegApplyByDefault
         {
             get => ffmpegApplyByDefaultCheckBox.Checked;
-            set
-            {
-                //if ( ffmpegApplyByDefaultCheckBox.Checked != value )
-                //{
-                ffmpegApplyByDefaultCheckBox.Checked = value;
-                //Set_CheckBox_ForeColor( ffmpegApplyByDefaultCheckBox, value );
-                //}
-            }
+            set => ffmpegApplyByDefaultCheckBox.Checked = value;
         }
 
         public DownloadRow_Definer_2 GetParamsTuple() => DownloadRow_Definer_2.Create( this.M3u8FileUrl, this.GetRequestHeaders(), 
@@ -751,9 +745,9 @@ namespace m3u8.download.manager.ui
         }
         private void setFocus2outputFileNameComboBox()
         {
-            if ( !_WasFocusSet2outputFileNameComboBoxAfterFirstChanges )
+            if ( !_WasFocusSet2OutputFileNameAfterFirstChanges )
             {
-                _WasFocusSet2outputFileNameComboBoxAfterFirstChanges = setFocus2outputFileNameComboBox_Core();
+                _WasFocusSet2OutputFileNameAfterFirstChanges = setFocus2outputFileNameComboBox_Core();
             }
         }
         private async void m3u8FileUrlTextBox_TextChanged( object sender, EventArgs e )
@@ -850,28 +844,10 @@ namespace m3u8.download.manager.ui
                 if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
                 {
                     var shown = default(EventHandler);
-                    shown = (_, _) => { setFocus2outputFileNameComboBox_Core( t.Patterned_Last_OutputFileName ); this.Shown -= shown; };
+                    shown = (_, _) => { this.Shown -= shown; setFocus2outputFileNameComboBox_Core( t.Patterned_Last_OutputFileName ); };
                     this.Shown += shown;
                 }
             }
-
-            //TEMP
-#if DEBUG
-            //else if ( !_Initial_M3u8FileUrl.IsNullOrWhiteSpace() )
-            //{
-            //    m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
-            //    var shown = default(EventHandler);
-            //    shown = (_, _) =>
-            //    {
-            //        const string txt = "Last_OutputFileName_Num - **.txt";
-            //        this.OutputFileName = txt;
-            //        setFocus2outputFileNameComboBox_Core( txt );
-            //        outputFileNameComboBox_TextChanged( this, EventArgs.Empty );
-            //        this.Shown -= shown;
-            //    };
-            //    this.Shown += shown;
-            //}
-#endif
             return (suc);
         }
         private void Process_use_OutputFileNamePatternProcessor()

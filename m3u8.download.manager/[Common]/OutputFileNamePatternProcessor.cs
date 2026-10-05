@@ -26,7 +26,8 @@
 
         public string Process( string outputFileName )
         {
-            if ( outputFileName.EqualIgnoreCase( Get_Patterned_Last_OutputFileName() ) )
+            var x = Get_Patterned_Last_OutputFileName();
+            if ( outputFileName.EqualIgnoreCase( x ) )
             {
                 _Last_OutputFileName_Num++;
                 return (outputFileName);

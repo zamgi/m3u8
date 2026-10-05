@@ -619,13 +619,18 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        //public  string GetOutputFileName( char? skipChar = null ) => FileNameCleaner4UI.GetOutputFileName( this.OutputFileName, skipChar );
+
+        private string _Final_GetOutputFileName;
         public string GetOutputFileName()
         {
-            var outputFileName_1 = GetOutputFileName_Internal();
-            var outputFileName_2 = _OutputFileNamePatternProcessor.Process( outputFileName_1 );
-            return (outputFileName_2);
-        }       
+            if ( _Final_GetOutputFileName == null )
+            {
+                var outputFileName_1 = GetOutputFileName_Internal();
+                var outputFileName_2 = _OutputFileNamePatternProcessor.Process( outputFileName_1 );
+                _Final_GetOutputFileName = outputFileName_2;
+            }
+            return (_Final_GetOutputFileName);
+        }
         public string GetOutputDirectory() => this.OutputDirectory;
         public IDictionary< string, string > GetRequestHeaders() => requestHeadersEditor.GetRequestHeaders();
         public web_proxy_info GetWebProxyInfo() => webProxyUC.GetWebProxyInfo();
@@ -678,7 +683,7 @@ namespace m3u8.download.manager.ui
             set
             {
                 value = value?.Trim();
-                if ( (outputDirectoryTextBox != null) && outputDirectoryTextBox.Text?.Trim() != value )
+                if ( (outputDirectoryTextBox != null) && (outputDirectoryTextBox.Text?.Trim() != value) )
                 {
                     outputDirectoryTextBox.Text = value;
                 }
