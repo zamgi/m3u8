@@ -95,47 +95,6 @@ namespace m3u8.download.manager.ui
         }
 
         /// <summary>
-        /// Edit
-        /// </summary>
-        private AddNewDownloadForm( _DC_ dc, _SC_ sc
-            , DownloadRow row
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor ) : this( dc, sc, receivedAndWritedPartsProcessor )
-        {
-            _EditedRow = row;
-            _DownloadListModel = dc?.Model;
-            requestHeadersEditor.SetRequestHeaders( row.RequestHeaders, sc.IgnoreHostHttpHeader );
-
-            this.OutputFileName               = row.OutputFileName;
-            this.OutputDirectory              = row.OutputDirectory;
-            this.IsLiveStream                 = row.IsLiveStream; if ( row.IsLiveStream ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
-            this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;
-
-            #region [.Timeout & AttemptRequestCount.]
-            if ( row.Timeout            .HasValue ) requestTimeoutByPartDTP     .Value        = requestTimeoutByPartDTP.MinDate.Date + row.Timeout.Value;
-            if ( row.AttemptRequestCount.HasValue ) attemptRequestCountByPartNUD.ValueAsInt32 = row.AttemptRequestCount.Value;
-            #endregion
-
-            _Initial_M3u8FileUrl = row.Url;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
-
-            #region [.if setted outputFileName.]
-            //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            //---Process_use_OutputFileNamePatternProcessor_on_Init();
-            #endregion
-
-            m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
-            this.M3u8FileUrl = row.Url;
-            //---m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
-            _WasFocusSet2OutputFileNameAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
-
-            _Model = new LogListModel();
-            logUC.SetModel( _Model );
-
-            set_WebProxyInfo( row.WebProxyInfo );
-        }
-
-        /// <summary>
         /// Add
         /// </summary>
         private AddNewDownloadForm( _DC_ dc, _SC_ sc
@@ -165,46 +124,6 @@ namespace m3u8.download.manager.ui
             Init_SeriesInfo( seriesInfo );
             this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
             TryRestoreOutputFileNameByAddress( m3u8FileUrl );
-        }
-
-        private (string audio, string video) _GroupedUrls;
-        /// <summary>
-        /// Add Grouped
-        /// </summary>
-        private AddNewDownloadForm( _DC_ dc, _SC_ sc
-            , string m3u8FileUrl_CombinedFake, in (string audio, string video) groupedUrls
-            , string outputFileName
-            , ICollection< KeyValuePair< string, string > > requestHeaders
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
-            , in (int n, int total)? seriesInfo = null ) : this( dc, sc, receivedAndWritedPartsProcessor )
-        {
-            _DownloadListModel = dc?.Model;
-            requestHeadersEditor.SetRequestHeaders( requestHeaders, sc.IgnoreHostHttpHeader );
-
-            _Initial_M3u8FileUrl = m3u8FileUrl_CombinedFake;
-            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
-
-            _GroupedUrls = groupedUrls;
-            #region [.if setted outputFileName.]
-            //before 'this.M3u8FileUrl = m3u8FileUrl;'
-            var suc = Process_use_OutputFileNamePatternProcessor_on_Init();
-            if ( !suc )
-            {
-                m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
-                this.OutputFileName = outputFileName;
-            }
-            #endregion
-
-            this.M3u8FileUrl     = m3u8FileUrl_CombinedFake;
-            this.OutputDirectory = _Settings.OutputFileDirectory;
-            _WasFocusSet2OutputFileNameAfterFirstChanges = m3u8FileUrl_CombinedFake.IsNullOrWhiteSpace();
-
-            logUC.SetModel( _Model = new LogListModel() );
-
-            Init_SeriesInfo( seriesInfo );
-            this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
-            suc = TryRestoreOutputFileNameByAddress( groupedUrls.video ) || TryRestoreOutputFileNameByAddress( groupedUrls.audio );
         }
 
         /// <summary>
@@ -249,6 +168,87 @@ namespace m3u8.download.manager.ui
             if ( dd3.OutputFileName.IsNullOrWhiteSpace() ) TryRestoreOutputFileNameByAddress( dd3.Url );
         }
 
+        private (string audio, string video) _GroupedUrls;
+        /// <summary>
+        /// Add Grouped
+        /// </summary>
+        private AddNewDownloadForm( _DC_ dc, _SC_ sc
+            , string m3u8FileUrl_CombinedFake, in (string audio, string video) groupedUrls
+            , string outputFileName
+            , ICollection< KeyValuePair< string, string > > requestHeaders
+            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
+            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
+            , in (int n, int total)? seriesInfo = null ) : this( dc, sc, receivedAndWritedPartsProcessor )
+        {
+            _DownloadListModel = dc?.Model;
+            requestHeadersEditor.SetRequestHeaders( requestHeaders, sc.IgnoreHostHttpHeader );
+
+            _Initial_M3u8FileUrl = m3u8FileUrl_CombinedFake;
+            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
+
+            _GroupedUrls = groupedUrls;
+            #region [.if setted outputFileName.]
+            //before 'this.M3u8FileUrl = m3u8FileUrl;'
+            var suc = Process_use_OutputFileNamePatternProcessor_on_Init();
+            if ( !suc )
+            {
+                m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
+                this.OutputFileName = outputFileName;
+            }
+            #endregion
+
+            this.M3u8FileUrl     = m3u8FileUrl_CombinedFake;
+            this.OutputDirectory = _Settings.OutputFileDirectory;
+            _WasFocusSet2OutputFileNameAfterFirstChanges = m3u8FileUrl_CombinedFake.IsNullOrWhiteSpace();
+
+            logUC.SetModel( _Model = new LogListModel() );
+
+            Init_SeriesInfo( seriesInfo );
+            this.LiveStreamMaxFileSizeInMb = _Settings.LiveStreamMaxSingleFileSizeInMb;
+            suc = TryRestoreOutputFileNameByAddress( groupedUrls.video ) || TryRestoreOutputFileNameByAddress( groupedUrls.audio );
+        }
+
+        /// <summary>
+        /// Edit
+        /// </summary>
+        private AddNewDownloadForm( _DC_ dc, _SC_ sc
+            , DownloadRow row
+            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
+            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor ) : this( dc, sc, receivedAndWritedPartsProcessor )
+        {
+            _EditedRow = row;
+            _DownloadListModel = dc?.Model;
+            requestHeadersEditor.SetRequestHeaders( row.RequestHeaders, sc.IgnoreHostHttpHeader );
+
+            this.OutputFileName               = row.OutputFileName;
+            this.OutputDirectory              = row.OutputDirectory;
+            this.IsLiveStream                 = row.IsLiveStream; if ( row.IsLiveStream ) isLiveStreamCheckBox_Click( isLiveStreamCheckBox, EventArgs.Empty );
+            this.LiveStreamMaxFileSizeInBytes = row.LiveStreamMaxFileSizeInBytes;
+
+            #region [.Timeout & AttemptRequestCount.]
+            if ( row.Timeout            .HasValue ) requestTimeoutByPartDTP     .Value        = requestTimeoutByPartDTP.MinDate.Date + row.Timeout.Value;
+            if ( row.AttemptRequestCount.HasValue ) attemptRequestCountByPartNUD.ValueAsInt32 = row.AttemptRequestCount.Value;
+            #endregion
+
+            _Initial_M3u8FileUrl = row.Url;
+            _OutputFileNamePatternProcessor = outputFileNamePatternProcessor;
+
+            #region comm. [.if setted outputFileName.]
+            //before 'this.M3u8FileUrl = m3u8FileUrl;'
+            //---Process_use_OutputFileNamePatternProcessor_on_Init();
+            #endregion
+
+            m3u8FileUrlTextBox.TextChanged -= m3u8FileUrlTextBox_TextChanged;
+            this.M3u8FileUrl = row.Url;
+            //---m3u8FileUrlTextBox.TextChanged += m3u8FileUrlTextBox_TextChanged;
+            _WasFocusSet2OutputFileNameAfterFirstChanges = row.Url.IsNullOrWhiteSpace();
+
+            _Model = new LogListModel();
+            logUC.SetModel( _Model );
+
+            set_WebProxyInfo( row.WebProxyInfo );
+        }
+
         protected override void Dispose( bool disposing )
         {
             if ( disposing )
@@ -262,30 +262,6 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.static show-form methods.]
-        /// <summary>
-        /// Add Grouped
-        /// </summary>
-        public static void AddGrouped( IWin32Window owner, _DC_ dc, _SC_ sc
-            , string m3u8FileUrl_CombinedFake, in (string audio, string video) groupedUrls
-            , string outputFileName
-            , ICollection< KeyValuePair< string, string > > requestHeaders
-            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
-            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
-            , in (int n, int total)? seriesInfo
-            , Func< AddNewDownloadForm, Task > formClosedAction )
-        {
-            var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl_CombinedFake, groupedUrls, outputFileName, requestHeaders, outputFileNamePatternProcessor, receivedAndWritedPartsProcessor, seriesInfo )
-            {
-                Icon = Resources.group_by_audio_video.CreateSafeIcon(), 
-                Text = "add new download (grouped by audio-video urls)" + GetCaptionBySeriesInfo( seriesInfo ),
-                _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url = formClosedAction,
-            };
-            f.m3u8FileUrlTextBox       .ReadOnly = true;
-            f.requestHeadersEditor     .ReadOnly = true;
-            f.loadM3u8FileContentButton.ReadOnly = true;
-            f.InitAndShowWhenAdd( owner, m3u8FileUrl_CombinedFake, formClosedAction );
-        }
-
         /// <summary>
         /// Add
         /// </summary>
@@ -319,6 +295,30 @@ namespace m3u8.download.manager.ui
                 _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url = formClosedAction 
             };
             f.InitAndShowWhenAdd( owner, dd3.Url, formClosedAction );
+        }
+
+        /// <summary>
+        /// Add Grouped
+        /// </summary>
+        public static void AddGrouped( IWin32Window owner, _DC_ dc, _SC_ sc
+            , string m3u8FileUrl_CombinedFake, in (string audio, string video) groupedUrls
+            , string outputFileName
+            , ICollection< KeyValuePair< string, string > > requestHeaders
+            , OutputFileNamePatternProcessor outputFileNamePatternProcessor
+            , IReceivedAndWritedPartsProcessor receivedAndWritedPartsProcessor
+            , in (int n, int total)? seriesInfo
+            , Func< AddNewDownloadForm, Task > formClosedAction )
+        {
+            var f = new AddNewDownloadForm( dc, sc, m3u8FileUrl_CombinedFake, groupedUrls, outputFileName, requestHeaders, outputFileNamePatternProcessor, receivedAndWritedPartsProcessor, seriesInfo )
+            {
+                Icon = Resources.group_by_audio_video.CreateSafeIcon(), 
+                Text = "add new download (grouped by audio-video urls)" + GetCaptionBySeriesInfo( seriesInfo ),
+                _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url = formClosedAction,
+            };
+            f.m3u8FileUrlTextBox       .ReadOnly = true;
+            f.requestHeadersEditor     .ReadOnly = true;
+            f.loadM3u8FileContentButton.ReadOnly = true;
+            f.InitAndShowWhenAdd( owner, m3u8FileUrl_CombinedFake, formClosedAction );
         }
 
         private void InitAndShowWhenAdd( IWin32Window owner, string m3u8FileUrl, Func< AddNewDownloadForm, Task > formClosedAction )
