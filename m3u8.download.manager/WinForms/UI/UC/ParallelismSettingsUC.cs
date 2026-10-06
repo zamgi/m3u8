@@ -55,7 +55,7 @@ namespace m3u8.download.manager.ui
         [B(false)]
         public int  MaxDegreeOfParallelism
         {
-            get => Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, Convert.ToInt32( maxDegreeOfParallelismNUD.Value ) ) );
+            get => Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, maxDegreeOfParallelismNUD.ValueAsInt32 ) );
             set => maxDegreeOfParallelismNUD.Value = Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, value ) );
         }
         [B(false)]
@@ -68,7 +68,7 @@ namespace m3u8.download.manager.ui
         [B(false)]
         public int? MaxCrossDownloadInstance      => (useMaxCrossDownloadInstanceCheckBox.Checked ? MaxCrossDownloadInstanceSaved : null);
         [B(false)]
-        public int  MaxCrossDownloadInstanceSaved => Math.Max( 1, Convert.ToInt32( maxCrossDownloadInstanceNUD.Value ) );
+        public int  MaxCrossDownloadInstanceSaved => Math.Max( 1, maxCrossDownloadInstanceNUD.ValueAsInt32 );
         public void SetMaxCrossDownloadInstance( int? maxCrossDownloadInstance, int maxCrossDownloadInstanceSaved )
         {
             maxCrossDownloadInstanceNUD.Value = Math.Max( 1, maxCrossDownloadInstance.GetValueOrDefault( maxCrossDownloadInstanceSaved ) );

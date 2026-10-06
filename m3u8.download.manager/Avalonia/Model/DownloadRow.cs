@@ -412,6 +412,7 @@ namespace m3u8.download.manager.models
                 {
                     SetStatus( DownloadStatus.Canceled );
                 }
+                _FinitaElapsed = default;
             }
             Fire_PropertyChanged_Events( nameof(MySelf) );
         }

@@ -361,6 +361,7 @@ namespace m3u8.download.manager.models
                 {
                     SetStatus( DownloadStatus.Canceled );
                 }
+                _FinitaElapsed = default;
             }
             _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
         }

@@ -213,27 +213,28 @@ namespace m3u8.download.manager
             approxRemainedTime = default;
             return (true);
         }
-        [M(O.AggressiveInlining)] public static bool TryGetDownloadSpeedInBps( this DownloadRow row, out double speedInBps )
+        [M(O.AggressiveInlining)] public static bool TryGetDownloadSpeedInBps( this DownloadRow row, out double speedInBps, out long downloadBytes )
         {
             //if ( !row.Status.IsPaused() )
             if ( row.Status != DownloadStatus.Created )
             {
                 var elapsedSeconds = row.GetElapsed4SpeedMeasurement().TotalSeconds;
-                var downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
-                if ( (1_024 < downloadBytes) ||/*&&*/ (2.5 <= elapsedSeconds) )
+                    downloadBytes  = row.GetDownloadBytesLengthAfterLastRun();
+                if ( ((1_024 < downloadBytes) && (0 < elapsedSeconds)) ||/*&&*/ (2.5 <= elapsedSeconds) )
                 {
                     speedInBps = GetSpeedInBps( downloadBytes, elapsedSeconds );
                     return (true);
                 }
             }
-            speedInBps = default;
+            speedInBps    = default;
+            downloadBytes = default;
             return (false);
         }
+        [M(O.AggressiveInlining)] public static bool TryGetDownloadSpeedInBps( this DownloadRow row, out double speedInBps ) => row.TryGetDownloadSpeedInBps( out speedInBps, out _ );
         [M(O.AggressiveInlining)] public static bool TryGetDownloadSpeedText( this DownloadRow row, out string speedText )
         {
-            if ( row.TryGetDownloadSpeedInBps( out var speedInBps ) )
+            if ( row.TryGetDownloadSpeedInBps( out var speedInBps, out var downloadBytes ) )
             {
-                var downloadBytes = row.GetDownloadBytesLengthAfterLastRun();
                 speedText = GetSpeedText( speedInBps, downloadBytes, row.GetInstantSpeedInMbps() );
                 return (true);
             }

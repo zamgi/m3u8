@@ -20,7 +20,6 @@ namespace System.Windows.Forms
             this.BorderStyle = BorderStyle.FixedSingle;
         }
 
-
         public Color? BorderColor    { get; set; } = Color.Silver;
         public float  BorderThikness { get; set; } = 1;
 
@@ -115,7 +114,7 @@ namespace System.Windows.Forms
 
         public decimal? Increment_MouseWheel { get; set; }
         public bool     Round2NextTenGroup   { get; set; }
-        public int      ValueAsInt32         { get => (int) this.Value; set => this.Value = value; }
+        public int      ValueAsInt32         { get => Convert.ToInt32( this.Value )/*(int) this.Value*/; set => this.Value = value; }
         protected override void OnMouseWheel( MouseEventArgs e )
         {
             if ( e is HandledMouseEventArgs hme )

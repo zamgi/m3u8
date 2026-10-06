@@ -142,58 +142,64 @@ namespace m3u8.download.manager.ui
             var st = GetSettings();
             using ( var f = new SettingsForm( _DC/*, _SC*/, _ReceivedAndWritedPartsProcessor, tabPageKind ) )
             {
-                f.Parallelism.MaxDegreeOfParallelism = st.MaxDegreeOfParallelism;
-                f.Parallelism.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
-                f.Parallelism.SetMaxCrossDownloadInstance( st.MaxCrossDownloadInstance, st.MaxCrossDownloadInstanceSaved );
-                f.Parallelism.SetMaxSpeedThresholdInMbps ( st.MaxSpeedThresholdInMbps , st.MaxSpeedThresholdInMbpsSaved  );
+                var f_p = f.Parallelism;
+                f_p.MaxDegreeOfParallelism = st.MaxDegreeOfParallelism;
+                f_p.ShareMaxDownloadThreadsBetweenAllDownloadsInstance = st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
+                f_p.SetMaxCrossDownloadInstance( st.MaxCrossDownloadInstance, st.MaxCrossDownloadInstanceSaved );
+                f_p.SetMaxSpeedThresholdInMbps ( st.MaxSpeedThresholdInMbps , st.MaxSpeedThresholdInMbpsSaved  );
 
-                f.Other.AttemptRequestCountByPart              = st.AttemptRequestCountByPart;
-                f.Other.RequestTimeoutByPart                   = st.RequestTimeoutByPart;
-                f.Other.ShowOnlyRequestRowsWithErrors          = st.ShowOnlyRequestRowsWithErrors;
-                f.Other.ShowDownloadStatisticsInMainFormTitle  = st.ShowDownloadStatisticsInMainFormTitle;
-                f.Other.ShowAllDownloadsCompleted_Notification = st.ShowAllDownloadsCompleted_Notification;
-                f.Other.OutputFileExtension                    = st.OutputFileExtension;
-                f.Other.ExternalProgCaption                    = st.ExternalProgCaption;
-                f.Other.ExternalProgFilePath                   = st.ExternalProgFilePath;
-                f.Other.ExternalProgApplyByDefault             = st.ExternalProgApplyByDefault;
-                f.Other.FFmpegFileLocation                     = st.FFmpegFileLocation;
-                f.Other.FFmpegConverterCaption                 = st.FFmpegConverterCaption;
-                f.Other.FFmpegApplyByDefault                   = st.FFmpegApplyByDefault;
-                f.Other.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner
-                                                               = st.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner;
-                f.Other.UseDirectorySelectDialogModern         = st.UseDirectorySelectDialogModern;
-                f.Other.UniqueUrlsOnly                         = st.UniqueUrlsOnly;
-                f.Other.IgnoreHostHttpHeader                   = st.IgnoreHostHttpHeader;
+                var f_o = f.Other;
+                f_o.AttemptRequestCountByPart              = st.AttemptRequestCountByPart;
+                f_o.RequestTimeoutByPart                   = st.RequestTimeoutByPart;
+                f_o.ShowOnlyRequestRowsWithErrors          = st.ShowOnlyRequestRowsWithErrors;
+                f_o.ShowDownloadStatisticsInMainFormTitle  = st.ShowDownloadStatisticsInMainFormTitle;
+                f_o.ShowAllDownloadsCompleted_Notification = st.ShowAllDownloadsCompleted_Notification;
+                f_o.OutputFileExtension                    = st.OutputFileExtension;
+                f_o.ExternalProgCaption                    = st.ExternalProgCaption;
+                f_o.ExternalProgFilePath                   = st.ExternalProgFilePath;
+                f_o.ExternalProgApplyByDefault             = st.ExternalProgApplyByDefault;
+                f_o.FFmpegFileLocation                     = st.FFmpegFileLocation;
+                f_o.FFmpegConverterCaption                 = st.FFmpegConverterCaption;
+                f_o.FFmpegApplyByDefault                   = st.FFmpegApplyByDefault;
+                f_o.FFmpegDegreeOfParallelism              = st.FFmpegDegreeOfParallelism;
+                f_o.FFmpeg_RenameAfterFFmpegConverter      = st.FFmpeg_RenameAfterFFmpegConverter;
+                f_o.FFmpeg_OpenAfterWithExternalProgRunner = st.FFmpeg_OpenAfterWithExternalProgRunner;
+                f_o.UseDirectorySelectDialogModern         = st.UseDirectorySelectDialogModern;
+                f_o.UniqueUrlsOnly                         = st.UniqueUrlsOnly;
+                f_o.IgnoreHostHttpHeader                   = st.IgnoreHostHttpHeader;
 
                 f.WebProxy.SetWebProxyInfo( _SC.GetDefaultWebProxyInfo() );
 
                 if ( f.ShowDialog() == DialogResult.OK )
                 {
-                    st.MaxDegreeOfParallelism              = f.Parallelism.MaxDegreeOfParallelism;
+                    //f_p = f.Parallelism;
+                    st.MaxDegreeOfParallelism              = f_p.MaxDegreeOfParallelism;
                     st.ShareMaxDownloadThreadsBetweenAllDownloadsInstance 
-                                                           = f.Parallelism.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
-                    st.MaxCrossDownloadInstance            = f.Parallelism.MaxCrossDownloadInstance;
-                    st.MaxCrossDownloadInstanceSaved       = f.Parallelism.MaxCrossDownloadInstanceSaved;
-                    st.MaxSpeedThresholdInMbps             = f.Parallelism.MaxSpeedThresholdInMbps;
-                    st.MaxSpeedThresholdInMbpsSaved        = f.Parallelism.MaxSpeedThresholdInMbpsSaved;
+                                                           = f_p.ShareMaxDownloadThreadsBetweenAllDownloadsInstance;
+                    st.MaxCrossDownloadInstance            = f_p.MaxCrossDownloadInstance;
+                    st.MaxCrossDownloadInstanceSaved       = f_p.MaxCrossDownloadInstanceSaved;
+                    st.MaxSpeedThresholdInMbps             = f_p.MaxSpeedThresholdInMbps;
+                    st.MaxSpeedThresholdInMbpsSaved        = f_p.MaxSpeedThresholdInMbpsSaved;
 
-                    st.AttemptRequestCountByPart              = f.Other.AttemptRequestCountByPart;
-                    st.RequestTimeoutByPart                   = f.Other.RequestTimeoutByPart;
-                    st.ShowOnlyRequestRowsWithErrors          = f.Other.ShowOnlyRequestRowsWithErrors;
-                    st.ShowDownloadStatisticsInMainFormTitle  = f.Other.ShowDownloadStatisticsInMainFormTitle;
-                    st.ShowAllDownloadsCompleted_Notification = f.Other.ShowAllDownloadsCompleted_Notification;
-                    st.OutputFileExtension                    = f.Other.OutputFileExtension;
-                    st.ExternalProgCaption                    = f.Other.ExternalProgCaption;
-                    st.ExternalProgFilePath                   = f.Other.ExternalProgFilePath;
-                    st.ExternalProgApplyByDefault             = f.Other.ExternalProgApplyByDefault;
-                    st.FFmpegConverterCaption                 = f.Other.FFmpegConverterCaption;
-                    st.FFmpegFileLocation                     = f.Other.FFmpegFileLocation;
-                    st.FFmpegApplyByDefault                   = f.Other.FFmpegApplyByDefault;
-                    st.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner
-                                                              = f.Other.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner;
-                    st.UseDirectorySelectDialogModern         = f.Other.UseDirectorySelectDialogModern;
-                    st.UniqueUrlsOnly                         = f.Other.UniqueUrlsOnly;
-                    st.IgnoreHostHttpHeader                   = f.Other.IgnoreHostHttpHeader;
+                    //f_o = f.Other;
+                    st.AttemptRequestCountByPart              = f_o.AttemptRequestCountByPart;
+                    st.RequestTimeoutByPart                   = f_o.RequestTimeoutByPart;
+                    st.ShowOnlyRequestRowsWithErrors          = f_o.ShowOnlyRequestRowsWithErrors;
+                    st.ShowDownloadStatisticsInMainFormTitle  = f_o.ShowDownloadStatisticsInMainFormTitle;
+                    st.ShowAllDownloadsCompleted_Notification = f_o.ShowAllDownloadsCompleted_Notification;
+                    st.OutputFileExtension                    = f_o.OutputFileExtension;
+                    st.ExternalProgCaption                    = f_o.ExternalProgCaption;
+                    st.ExternalProgFilePath                   = f_o.ExternalProgFilePath;
+                    st.ExternalProgApplyByDefault             = f_o.ExternalProgApplyByDefault;
+                    st.FFmpegConverterCaption                 = f_o.FFmpegConverterCaption;
+                    st.FFmpegFileLocation                     = f_o.FFmpegFileLocation;
+                    st.FFmpegApplyByDefault                   = f_o.FFmpegApplyByDefault;
+                    st.FFmpegDegreeOfParallelism              = f_o.FFmpegDegreeOfParallelism;
+                    st.FFmpeg_RenameAfterFFmpegConverter      = f_o.FFmpeg_RenameAfterFFmpegConverter;
+                    st.FFmpeg_OpenAfterWithExternalProgRunner = f_o.FFmpeg_OpenAfterWithExternalProgRunner;
+                    st.UseDirectorySelectDialogModern         = f_o.UseDirectorySelectDialogModern;
+                    st.UniqueUrlsOnly                         = f_o.UniqueUrlsOnly;
+                    st.IgnoreHostHttpHeader                   = f_o.IgnoreHostHttpHeader;
 
                     _SC.SetDefaultWebProxyInfo( f.WebProxy.GetWebProxyInfo() );
 

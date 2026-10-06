@@ -148,9 +148,9 @@ namespace m3u8.download.manager.ui
             _OutputFileNamePatternProcessor = new OutputFileNamePatternProcessor();
 
             _ExternalProgRunner        = new ExternalProgRunner( _SC.Settings.ExternalProgFilePath.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.ExternalProgFilePath ) );
-            _FFmpegConverterRunner     = new FFmpegConverterRunner( _SC.Settings.FFmpegFileLocation.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.FFmpegFileLocation ) );            
+            _FFmpegConverterRunner     = new FFmpegConverterRunner( _SC.Settings.FFmpegFileLocation.GetValueIfNotNullOrWhiteSpaceOrDefault( Resources.FFmpegFileLocation ), _SC.Settings.FFmpegDegreeOfParallelism );            
             _ExternalProgRunner_Queues = new ExternalProgRunner_Queues( _ExternalProgRunner, _FFmpegConverterRunner );
-            if ( _SC.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner ) _FFmpegConverterRunner.FinishSuccessProcessFile += FFmpegConverterRunner_FinishSuccessProcessFile;
+            if ( _SC.FFmpeg_RenameAfterFFmpegConverter ) _FFmpegConverterRunner.FinishSuccessProcessFile += FFmpegConverterRunner_FinishSuccessProcessFile;
         }
         public MainForm( in UrlInputParams[] array ) : this() => _InputParamsArray = array;
 
@@ -514,6 +514,10 @@ namespace m3u8.download.manager.ui
                     _FFmpegConverterRunner.SetExternalProgFilePath( settings.FFmpegFileLocation );
                     break;
 
+                case nameof(Settings.FFmpegDegreeOfParallelism):
+                    _FFmpegConverterRunner.DegreeOfParallelism = settings.FFmpegDegreeOfParallelism;
+                    break;
+
                 case nameof(Settings.ShowAllDownloadsCompleted_Notification):
                     _DC.IsDownloadingChanged -= DownloadController_IsDownloadingChanged;
                     if ( settings.ShowAllDownloadsCompleted_Notification )
@@ -522,9 +526,9 @@ namespace m3u8.download.manager.ui
                     }
                     break;
 
-                case nameof(Settings.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner):
+                case nameof(Settings.FFmpeg_RenameAfterFFmpegConverter ):
                     _FFmpegConverterRunner.FinishSuccessProcessFile -= FFmpegConverterRunner_FinishSuccessProcessFile;
-                    if ( settings.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner )
+                    if ( settings.FFmpeg_RenameAfterFFmpegConverter )
                     {
                         _FFmpegConverterRunner.FinishSuccessProcessFile += FFmpegConverterRunner_FinishSuccessProcessFile;
                     }
@@ -791,10 +795,10 @@ namespace m3u8.download.manager.ui
         }
         private string downloadListUC_GetExternalProgRunnerToolTip( ExternalProgRunnerTypeEnum eprt /*, DownloadRow row*/ ) => eprt switch
         {
-            ExternalProgRunnerTypeEnum.FFmpeg => $"convert with '{_SC.Settings.FFmpegConverterCaption}' (after download)",
             ExternalProgRunnerTypeEnum.ExternalProg => $"open with '{_SC.Settings.ExternalProgCaption}' (after download)",
-            ExternalProgRunnerTypeEnum.FFmpeg_InProcessInnerQueue => $"in queue for convert with '{_SC.Settings.FFmpegConverterCaption}'",
-            ExternalProgRunnerTypeEnum.FFmpeg_InProcessNow => $"converted now with '{_SC.Settings.FFmpegConverterCaption}'",
+            ExternalProgRunnerTypeEnum.FFmpeg => $"convert with '{_SC.Settings.FFmpegConverterCaption}' (after download), (max parallel run: {_SC.Settings.FFmpegDegreeOfParallelism})",            
+            ExternalProgRunnerTypeEnum.FFmpeg_InProcessInnerQueue => $"in queue for convert with '{_SC.Settings.FFmpegConverterCaption}', (max parallel run: {_SC.Settings.FFmpegDegreeOfParallelism})",
+            ExternalProgRunnerTypeEnum.FFmpeg_InProcessNow => $"converted now with '{_SC.Settings.FFmpegConverterCaption}', (max parallel run: {_SC.Settings.FFmpegDegreeOfParallelism})",
             ExternalProgRunnerTypeEnum.ExternalProg | ExternalProgRunnerTypeEnum.FFmpeg => $"convert and open with '{_SC.Settings.FFmpegConverterCaption}', '{_SC.Settings.ExternalProgCaption}' (after download)",
             _ => null
         };
@@ -1916,7 +1920,7 @@ namespace m3u8.download.manager.ui
         }
         private async void FFmpegConverterRunner_FinishSuccessProcessFile( string inputFileName, string convertedFileName )
         {
-            if ( !_SC.RenameAfterFFmpegConverterAndOpenWithExternalProgRunner ) return;
+            if ( !_SC.FFmpeg_RenameAfterFFmpegConverter ) return;
 
             if ( this.InvokeRequired )
             {
@@ -1944,8 +1948,9 @@ namespace m3u8.download.manager.ui
                     //}
 
                     ////2. open renamed file in ExternalProgRunner
+                    //if ( _SC.FFmpeg_OpenAfterWithExternalProgRunner ) {
                     //ExternalProgRunner_Run( [row], runEachFileAsSeparate: false );
-                    //return;
+                    //return; }
                 }
             }
             else
@@ -1953,8 +1958,11 @@ namespace m3u8.download.manager.ui
                 Debug.WriteLine( $"Unable to find the row by filename: '{inputFileName}'." );
             }
 
-            //2. try open converted file in ExternalProgRunner
-            _ExternalProgRunner.Run( convertedFileName, checkIsExternalProgFileAreExists: true/*false*/ );
+            if ( _SC.FFmpeg_OpenAfterWithExternalProgRunner )
+            {
+                //2. try open converted file in ExternalProgRunner
+                _ExternalProgRunner.Run( convertedFileName, checkIsExternalProgFileAreExists: true/*false*/ );
+            }
         }
         #endregion
 

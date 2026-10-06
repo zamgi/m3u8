@@ -432,13 +432,37 @@ namespace m3u8.download.manager.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool RenameAfterFFmpegConverterAndOpenWithExternalProgRunner {
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int FFmpegDegreeOfParallelism {
             get {
-                return ((bool)(this["RenameAfterFFmpegConverterAndOpenWithExternalProgRunner"]));
+                return ((int)(this["FFmpegDegreeOfParallelism"]));
             }
             set {
-                this["RenameAfterFFmpegConverterAndOpenWithExternalProgRunner"] = value;
+                this["FFmpegDegreeOfParallelism"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FFmpeg_RenameAfterFFmpegConverter {
+            get {
+                return ((bool)(this["FFmpeg_RenameAfterFFmpegConverter"]));
+            }
+            set {
+                this["FFmpeg_RenameAfterFFmpegConverter"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FFmpeg_OpenAfterWithExternalProgRunner {
+            get {
+                return ((bool)(this["FFmpeg_OpenAfterWithExternalProgRunner"]));
+            }
+            set {
+                this["FFmpeg_OpenAfterWithExternalProgRunner"] = value;
             }
         }
         

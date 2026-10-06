@@ -143,6 +143,33 @@ namespace m3u8.download.manager.controllers
             }
             _RWLS.ExitUpgradeableReadLock();
         }
+        [M(O.AggressiveInlining)] public void ResetSemaphore( int degreeOfParallelism, int busyCount, bool releaseWorking )
+        {
+            _RWLS.EnterUpgradeableReadLock();
+            {                
+                if ( _DegreeOfParallelism != degreeOfParallelism )
+                {
+                    _RWLS.EnterWriteLock();
+                    {
+                        if ( releaseWorking )
+                        {
+                            var workingCount = this.BusyCount;
+                            if ( 0 < workingCount )
+                            {
+                                _Semaphore.Release( workingCount );
+                            }
+                        }
+                        
+                        var newFreeCount = Math.Max( 0, degreeOfParallelism - busyCount );
+                        var newSemaphore = new SemaphoreSlim( newFreeCount, degreeOfParallelism );
+                        _DegreeOfParallelism = degreeOfParallelism;
+                        _Semaphore           = newSemaphore;
+                    }
+                    _RWLS.ExitWriteLock();
+                }
+            }
+            _RWLS.ExitUpgradeableReadLock();
+        }
 
         [M(O.AggressiveInlining)] public void Wait( CancellationToken ct ) => GetSemaphoreThreadSafe().Wait( ct );  //thrown 'System.OperationCanceledException'
         [M(O.AggressiveInlining)] public Task WaitAsync( CancellationToken ct ) => GetSemaphoreThreadSafe().WaitAsync( ct );  //thrown 'System.OperationCanceledException'
@@ -181,8 +208,9 @@ namespace m3u8.download.manager.controllers
 
         public int MaxCount => _DegreeOfParallelism;
         public int CurrentCount => _Semaphore.CurrentCount;
+        public int BusyCount => _DegreeOfParallelism - _Semaphore.CurrentCount;
 
-        public override string ToString() => (_Semaphore != null) ? $"MAX = {_DegreeOfParallelism}, CurrentCount = {_Semaphore.CurrentCount}" : "Semaphore=NULL";
+        public override string ToString() => (_Semaphore != null) ? $"MAX = {_DegreeOfParallelism}, Current/Free = {_Semaphore.CurrentCount}, Busy = {BusyCount}" : "Semaphore=NULL";
     }
 
     /// <summary>

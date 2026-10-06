@@ -42,7 +42,10 @@
             this.ffmpegFilePathTextBox = new System.Windows.Forms.TextBoxEx();
             this.ffmpegCaptionTextBox = new System.Windows.Forms.TextBoxEx();
             this.ffmpegApplyByDefaultCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
-            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
+            this.ffmpegDegreeOfParallelismLabel = new System.Windows.Forms.Label();
+            this.ffmpegDegreeOfParallelismNUD = new System.Windows.Forms.NumericUpDownEx();
+            this.ffmpeg_RenameAfterFFmpegConverterCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
+            this.ffmpeg_OpenAfterWithExternalProgRunnerCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
             this.ffmpegFilePathButton = new System.Windows.Forms.Button();
             this.ffmpegResetButton = new System.Windows.Forms.Button();            
             this.requestTimeoutByPartDTP = new System.Windows.Forms.BorderDateTimePicker();
@@ -80,6 +83,7 @@
             gcGroupBox.SuspendLayout();
             receivedAndWritedPartsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attemptRequestCountByPartNUD)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ffmpegDegreeOfParallelismNUD)).BeginInit();
             this.SuspendLayout();
             // 
             // downloadParamsGroupBox
@@ -120,11 +124,11 @@
             // 
             //this.attemptRequestCountByPartNUD.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.attemptRequestCountByPartNUD.Location = new System.Drawing.Point(167, 18);
-            this.attemptRequestCountByPartNUD.Minimum = new decimal(new int[] { 1, 0, 0, 0 } );
             this.attemptRequestCountByPartNUD.Size = new System.Drawing.Size(89, 16);
-            this.attemptRequestCountByPartNUD.TabIndex = 1;
+            this.attemptRequestCountByPartNUD.Minimum = 1;
+            this.attemptRequestCountByPartNUD.Value = 1;            
             this.attemptRequestCountByPartNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.attemptRequestCountByPartNUD.Value = new decimal(new int[] { 1, 0, 0, 0 } );
+            this.attemptRequestCountByPartNUD.TabIndex = 1;
             // 
             // requestTimeoutByPartDTP
             // 
@@ -370,7 +374,7 @@
             // ffmpegGroupBox
             // 
             ffmpegGroupBox.Location = new System.Drawing.Point(285, 138);
-            ffmpegGroupBox.Size = new System.Drawing.Size(261, 155);
+            ffmpegGroupBox.Size = new System.Drawing.Size(261, 198);
             ffmpegGroupBox.TabIndex = 2;
             ffmpegGroupBox.TabStop = false;
             ffmpegGroupBox.Text = "      FFmpeg converter";
@@ -380,7 +384,10 @@
             ffmpegGroupBox.Controls.Add(this.ffmpegFilePathTextBox);
             ffmpegGroupBox.Controls.Add(this.ffmpegCaptionTextBox);
             ffmpegGroupBox.Controls.Add(this.ffmpegApplyByDefaultCheckBox);
-            ffmpegGroupBox.Controls.Add(this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox);
+            ffmpegGroupBox.Controls.Add(this.ffmpegDegreeOfParallelismLabel);
+            ffmpegGroupBox.Controls.Add(this.ffmpegDegreeOfParallelismNUD);
+            ffmpegGroupBox.Controls.Add(this.ffmpeg_RenameAfterFFmpegConverterCheckBox);
+            ffmpegGroupBox.Controls.Add(this.ffmpeg_OpenAfterWithExternalProgRunnerCheckBox);
             ffmpegGroupBox.Controls.Add(ffmpegCaptionlabel);
             ffmpegGroupBox.Controls.Add(ffmpegFilePathLabel);
             //
@@ -467,17 +474,43 @@
             this.ffmpegApplyByDefaultCheckBox.Location = new System.Drawing.Point(6, 101);
             this.ffmpegApplyByDefaultCheckBox.Text = "Apply to all new downloads by default";
             // 
-            // renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox
+            // ffmpegDegreeOfParallelismLabel
             // 
-            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.AutoSize = true;
-            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Location = new System.Drawing.Point(6, 120/*this.ffmpegApplyByDefaultCheckBox.Bottom*/);
-            this.renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Text = "Rename output file after FFmpeg convert and\r\n" + "open with external program";
+            this.ffmpegDegreeOfParallelismLabel.AutoSize = true;
+            this.ffmpegDegreeOfParallelismLabel.ForeColor = System.Drawing.Color.DarkGoldenrod;
+            this.ffmpegDegreeOfParallelismLabel.Location = new System.Drawing.Point(6, 125);
+            //this.ffmpegDegreeOfParallelismLabel.Size = new System.Drawing.Size(157, 13);
+            this.ffmpegDegreeOfParallelismLabel.Text = "Max parallel run:";
+            toolTip.SetToolTip(this.ffmpegDegreeOfParallelismLabel, "Maximum number of parallel/simultaneously running ffmpeg instances");
+            // 
+            // ffmpegDegreeOfParallelismNUD
+            // 
+            this.ffmpegDegreeOfParallelismNUD.Location = new System.Drawing.Point(90/*this.ffmpegDegreeOfParallelismLabel.Right*/, 123);
+            this.ffmpegDegreeOfParallelismNUD.Size = new System.Drawing.Size(50, 16);
+            this.ffmpegDegreeOfParallelismNUD.Minimum = 1;
+            this.ffmpegDegreeOfParallelismNUD.Value = 1;
+            this.ffmpegDegreeOfParallelismNUD.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // ffmpeg_RenameAfterFFmpegConverterCheckBox
+            // 
+            this.ffmpeg_RenameAfterFFmpegConverterCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.ffmpeg_RenameAfterFFmpegConverterCheckBox.AutoSize = true;
+            this.ffmpeg_RenameAfterFFmpegConverterCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ffmpeg_RenameAfterFFmpegConverterCheckBox.Location = new System.Drawing.Point(6, 148/*this.ffmpegDegreeOfParallelismNUD.Bottom*/);
+            this.ffmpeg_RenameAfterFFmpegConverterCheckBox.Text = "Rename output file after FFmpeg convert"; //"Rename output file after FFmpeg convert and\r\n" + "open with external program";
+            this.ffmpeg_RenameAfterFFmpegConverterCheckBox.CheckedChanged += new System.EventHandler(this.ffmpeg_RenameAfterFFmpegConverterCheckBox_CheckedChanged);
+            // 
+            // ffmpeg_OpenAfterWithExternalProgRunnerCheckBox
+            // 
+            this.ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            this.ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.AutoSize = true;
+            this.ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.Location = new System.Drawing.Point(16, 168);
+            this.ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.Text = "Open with external program";
             // 
             // gcGroupBox
             // 
-            gcGroupBox.Location = new System.Drawing.Point(285, 299);
+            gcGroupBox.Location = new System.Drawing.Point(285, 342);
             gcGroupBox.Size = new System.Drawing.Size(261, 85);
             gcGroupBox.TabIndex = 4;
             gcGroupBox.TabStop = false;
@@ -512,7 +545,7 @@
             // 
             // receivedAndWritedPartsGroupBox
             // 
-            receivedAndWritedPartsGroupBox.Location = new System.Drawing.Point(13, 331/*285, 360*/);
+            receivedAndWritedPartsGroupBox.Location = new System.Drawing.Point(13, 331);
             receivedAndWritedPartsGroupBox.Size = new System.Drawing.Size(261, 85);
             receivedAndWritedPartsGroupBox.TabIndex = 4;
             receivedAndWritedPartsGroupBox.TabStop = false;
@@ -564,9 +597,9 @@
             this.AutoScroll = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(560, 406);
+            this.ClientSize = new System.Drawing.Size(560, 416);
             this.Controls.Add(downloadParamsGroupBox);
-            this.Controls.Add(ui_downloadLogUIGroupBox);            
+            this.Controls.Add(ui_downloadLogUIGroupBox);
             this.Controls.Add(externalProgGroupBox);
             this.Controls.Add(ffmpegGroupBox);
             this.Controls.Add(gcGroupBox);
@@ -585,6 +618,7 @@
             receivedAndWritedPartsGroupBox.ResumeLayout(false);
             receivedAndWritedPartsGroupBox.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.attemptRequestCountByPartNUD)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ffmpegDegreeOfParallelismNUD)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -611,7 +645,10 @@
         private System.Windows.Forms.TextBoxEx ffmpegFilePathTextBox;
         private System.Windows.Forms.TextBoxEx ffmpegCaptionTextBox;
         private System.Windows.Forms.CheckBoxImitationDisabled ffmpegApplyByDefaultCheckBox;
-        private System.Windows.Forms.CheckBoxImitationDisabled renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox;
+        private System.Windows.Forms.Label ffmpegDegreeOfParallelismLabel;
+        private System.Windows.Forms.NumericUpDownEx ffmpegDegreeOfParallelismNUD;
+        private System.Windows.Forms.CheckBoxImitationDisabled ffmpeg_RenameAfterFFmpegConverterCheckBox;
+        private System.Windows.Forms.CheckBoxImitationDisabled ffmpeg_OpenAfterWithExternalProgRunnerCheckBox;
         private System.Windows.Forms.Button ffmpegFilePathButton;
         private System.Windows.Forms.Button ffmpegResetButton;
         private System.Windows.Forms.Button collectGarbageButton;

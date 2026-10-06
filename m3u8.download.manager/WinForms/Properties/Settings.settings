@@ -110,7 +110,13 @@
     <Setting Name="FFmpegConverterCaption" Type="System.String" Scope="User">
       <Value Profile="(Default)">FFmpeg</Value>
     </Setting>
-    <Setting Name="RenameAfterFFmpegConverterAndOpenWithExternalProgRunner" Type="System.Boolean" Scope="User">
+    <Setting Name="FFmpegDegreeOfParallelism" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>    
+    <Setting Name="FFmpeg_RenameAfterFFmpegConverter" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FFmpeg_OpenAfterWithExternalProgRunner" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
 

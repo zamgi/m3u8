@@ -66,9 +66,11 @@ namespace m3u8.download.manager.ui
         }
         #endregion
 
+        #region [.public methods.]
         public void OnShown() 
         { 
-            _ExternalProgFilePath_InitValue = this.ExternalProgFilePath; _FFmpegFileLocation_InitValue = this.FFmpegFileLocation;
+            _ExternalProgFilePath_InitValue = this.ExternalProgFilePath; 
+            _FFmpegFileLocation_InitValue   = this.FFmpegFileLocation;
 
             CheckBoxImitationDisabled.Set_AllCheckBox_ForeColorAndImage( this.Controls );
         }
@@ -120,13 +122,18 @@ namespace m3u8.download.manager.ui
                 _CalcReceivedAndWritedPartsTask_Cts?.Cancel_NoThrow();
             }
         }
-
+        public void ActiveteTab()
+        {
+            StartShowTotalMemory();
+            StartCalcReceivedAndWritedParts();
+        }
+        #endregion
 
         #region [.public props.]
         public int      AttemptRequestCountByPart
         {
-            get => Convert.ToInt32( attemptRequestCountByPartNUD.Value );
-            set => attemptRequestCountByPartNUD.Value = value;
+            get => attemptRequestCountByPartNUD.ValueAsInt32;
+            set => attemptRequestCountByPartNUD.ValueAsInt32 = value;
         }
         public TimeSpan RequestTimeoutByPart
         {
@@ -147,7 +154,7 @@ namespace m3u8.download.manager.ui
         {
             get => showAllDownloadsCompleted_NotificationCheckBox.Checked;
             set => showAllDownloadsCompleted_NotificationCheckBox.Checked = value;
-        }        
+        }
         public bool     UniqueUrlsOnly
         {
             get => uniqueUrlsOnlyCheckBox.Checked;
@@ -188,11 +195,25 @@ namespace m3u8.download.manager.ui
             get => ffmpegApplyByDefaultCheckBox.Checked;
             set => ffmpegApplyByDefaultCheckBox.Checked = value;
         }
-        public bool     RenameAfterFFmpegConverterAndOpenWithExternalProgRunner
+        public int      FFmpegDegreeOfParallelism
         {
-            get => renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Checked;
-            set => renameAfterFFmpegConverterAndOpenWithExternalProgRunnerCheckBox.Checked = value;
-        }        
+            get => ffmpegDegreeOfParallelismNUD.ValueAsInt32;
+            set => ffmpegDegreeOfParallelismNUD.ValueAsInt32 = value;
+        }
+        public bool     FFmpeg_RenameAfterFFmpegConverter
+        {
+            get => ffmpeg_RenameAfterFFmpegConverterCheckBox.Checked;
+            set
+            {
+                ffmpeg_RenameAfterFFmpegConverterCheckBox.Checked = value;
+                ffmpeg_RenameAfterFFmpegConverterCheckBox_CheckedChanged( ffmpeg_RenameAfterFFmpegConverterCheckBox, EventArgs.Empty );
+            }
+        }
+        public bool     FFmpeg_OpenAfterWithExternalProgRunner
+        {
+            get => ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.Checked;
+            set => ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.Checked = value;
+        }
         public bool     UseDirectorySelectDialogModern
         {
             get => useDirectorySelectDialogModernCheckBox.Checked;
@@ -321,6 +342,8 @@ namespace m3u8.download.manager.ui
                 this.FFmpegFileLocation = ofd.FileName;
             }
         }
+        private void ffmpeg_RenameAfterFFmpegConverterCheckBox_CheckedChanged( object sender, EventArgs e ) 
+            => ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.Enabled = ffmpeg_RenameAfterFFmpegConverterCheckBox.Checked;
 
         private void testDirectorySelectDialog_Click( object sender, EventArgs e )
         {
@@ -467,11 +490,5 @@ namespace m3u8.download.manager.ui
             }
         }
         #endregion
-
-        public void ActiveteTab()
-        {
-            StartShowTotalMemory();
-            StartCalcReceivedAndWritedParts();
-        }
     }
 }
