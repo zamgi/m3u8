@@ -144,17 +144,17 @@ namespace m3u8.download.manager.ui
         }
 
         #region [.column index's.]
-        private const int OUTPUTFILENAME_COLUMN_INDEX            = 0;
-        private const int OUTPUTDIRECTORY_COLUMN_INDEX           = 1;
         private const int SPECIAL_OUTPUTFILENAME_COLUMN_INDEX    = -1;
-        private const int STATUS_COLUMN_INDEX                    = 2;
-        private const int DOWNLOAD_PROGRESS_COLUMN_INDEX         = 3;
-        private const int DOWNLOAD_TIME_COLUMN_INDEX             = 4;
-        private const int APPROX_REMAINED_TIME_COLUMN_INDEX      = 5;
-        private const int DOWNLOAD_SPEED_COLUMN_INDEX            = 6;
-        private const int DOWNLOAD_BYTES_COLUMN_INDEX            = 7;
-        private const int APPROX_REMAINED_BYTES_COLUMN_INDEX     = 8;
-        private const int APPROX_TOTAL_BYTES_COLUMN_INDEX        = 9;
+        private const int OUTPUTFILENAME_COLUMN_INDEX            =  0;
+        private const int OUTPUTDIRECTORY_COLUMN_INDEX           =  1;        
+        private const int STATUS_COLUMN_INDEX                    =  2;
+        private const int DOWNLOAD_PROGRESS_COLUMN_INDEX         =  3;
+        private const int DOWNLOAD_TIME_COLUMN_INDEX             =  4;
+        private const int APPROX_REMAINED_TIME_COLUMN_INDEX      =  5;
+        private const int DOWNLOAD_SPEED_COLUMN_INDEX            =  6;
+        private const int DOWNLOAD_BYTES_COLUMN_INDEX            =  7;
+        private const int APPROX_REMAINED_BYTES_COLUMN_INDEX     =  8;
+        private const int APPROX_TOTAL_BYTES_COLUMN_INDEX        =  9;
         private const int IS_LIVE_STREAM_COLUMN_INDEX            = 10;
         private const int LIVE_STREAM_MAX_FILE_SIZE_COLUMN_INDEX = 11;
         private const int REQUEST_HEADERS_COLUMN_INDEX           = 12;

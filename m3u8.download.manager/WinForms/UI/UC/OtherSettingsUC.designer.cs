@@ -24,21 +24,21 @@
             System.Windows.Forms.Label attemptRequestCountLabel;
             System.Windows.Forms.Label requestTimeoutByPartLabel;
             System.Windows.Forms.Label externalProgFilePathLabel;
-            System.Windows.Forms.Label externalProgCaptionlabel;
-            System.Windows.Forms.PictureBox externalProgPictureBox;
+            System.Windows.Forms.Label externalProgCaptionlabel;            
             System.Windows.Forms.Label ffmpegFilePathLabel;
-            System.Windows.Forms.Label ffmpegCaptionlabel;
-            System.Windows.Forms.PictureBox ffmpegPictureBox;
+            System.Windows.Forms.Label ffmpegCaptionlabel;            
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.showOnlyRequestRowsWithErrorsCheckBox = new System.Windows.Forms.CheckBox();
             this.showDownloadStatisticsInMainFormTitleCheckBox = new System.Windows.Forms.CheckBox();
             this.showAllDownloadsCompleted_NotificationCheckBox = new System.Windows.Forms.CheckBox();
             this.useDirectorySelectDialogModernCheckBox = new System.Windows.Forms.CheckBox();
-            this.testDirectorySelectDialog = new System.Windows.Forms.Button();
-            this.externalProgFilePathButton = new System.Windows.Forms.Button();
+            this.testDirectorySelectDialog = new System.Windows.Forms.ButtonWithDotsText();
+            this.externalProgPictureBox = new System.Windows.Forms.PictureBoxEx();
+            this.externalProgFilePathButton = new System.Windows.Forms.ButtonWithDotsText();
             this.externalProgFilePathTextBox = new System.Windows.Forms.TextBoxEx();
             this.externalProgCaptionTextBox = new System.Windows.Forms.TextBoxEx();
             this.externalProgApplyByDefaultCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
+            this.ffmpegPictureBox = new System.Windows.Forms.PictureBoxEx();
             this.ffmpegFilePathTextBox = new System.Windows.Forms.TextBoxEx();
             this.ffmpegCaptionTextBox = new System.Windows.Forms.TextBoxEx();
             this.ffmpegApplyByDefaultCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
@@ -46,7 +46,7 @@
             this.ffmpegDegreeOfParallelismNUD = new System.Windows.Forms.NumericUpDownEx();
             this.ffmpeg_RenameAfterFFmpegConverterCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
             this.ffmpeg_OpenAfterWithExternalProgRunnerCheckBox = new System.Windows.Forms.CheckBoxImitationDisabled();
-            this.ffmpegFilePathButton = new System.Windows.Forms.Button();
+            this.ffmpegFilePathButton = new System.Windows.Forms.ButtonWithDotsText();
             this.ffmpegResetButton = new System.Windows.Forms.Button();            
             this.requestTimeoutByPartDTP = new System.Windows.Forms.BorderDateTimePicker();
             this.uniqueUrlsOnlyCheckBox = new System.Windows.Forms.CheckBox();
@@ -60,14 +60,12 @@
             this.collectGarbageButton = new System.Windows.Forms.Button();
             this.currentMemoryLabel = new System.Windows.Forms.Label();
             this.receivedAndWritedPartsClearAllButton = new System.Windows.Forms.Button();
-            this.browseReceivedAndWritedPartsDirectoryButton = new System.Windows.Forms.Button();
+            this.browseReceivedAndWritedPartsDirectoryButton = new System.Windows.Forms.ButtonWithDotsText();
             this.receivedAndWritedPartsLabel = new System.Windows.Forms.Label();
             downloadParamsGroupBox = new System.Windows.Forms.GroupBox();
             ui_downloadLogUIGroupBox = new System.Windows.Forms.GroupBox();
             externalProgGroupBox = new System.Windows.Forms.GroupBox();
-            externalProgPictureBox = new System.Windows.Forms.PictureBox();
-            ffmpegGroupBox = new System.Windows.Forms.GroupBox();
-            ffmpegPictureBox = new System.Windows.Forms.PictureBox();
+            ffmpegGroupBox = new System.Windows.Forms.GroupBox();            
             gcGroupBox = new System.Windows.Forms.GroupBox();
             receivedAndWritedPartsGroupBox = new System.Windows.Forms.GroupBox();
             attemptRequestCountLabel = new System.Windows.Forms.Label();
@@ -253,31 +251,30 @@
             this.useDirectorySelectDialogModernCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.useDirectorySelectDialogModernCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.useDirectorySelectDialogModernCheckBox.Location = new System.Drawing.Point(30, 105);
-            //this.useDirectorySelectDialogClassicCheckBox.Size = new System.Drawing.Size(177, 30);
             this.useDirectorySelectDialogModernCheckBox.TabIndex = 2;
             this.useDirectorySelectDialogModernCheckBox.Text = "use directory select dialog modern style";
             this.useDirectorySelectDialogModernCheckBox.UseVisualStyleBackColor = true;
             // 
             // testDirectorySelectDialog
             // 
-            this.testDirectorySelectDialog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));            
+            this.testDirectorySelectDialog.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this.testDirectorySelectDialog.Cursor = System.Windows.Forms.Cursors.Hand;
             this.testDirectorySelectDialog.Location = new System.Drawing.Point(240, 105);
             this.testDirectorySelectDialog.Size = new System.Drawing.Size(16, 18);
             this.testDirectorySelectDialog.TabIndex = 3;            
             this.testDirectorySelectDialog.UseVisualStyleBackColor = true;
             this.testDirectorySelectDialog.Click += new System.EventHandler(this.testDirectorySelectDialog_Click);
-            this.testDirectorySelectDialog.Paint += new System.Windows.Forms.PaintEventHandler(paintButtonWithDotsText_Paint);
             this.toolTip.SetToolTip(this.testDirectorySelectDialog, "test directory select dialog");
             // 
             // externalProgGroupBox
             // 
+            externalProgGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             externalProgGroupBox.Location = new System.Drawing.Point(285, 7);
-            externalProgGroupBox.Size = new System.Drawing.Size(261, 125);
+            externalProgGroupBox.Size = new System.Drawing.Size(265, 125);
             externalProgGroupBox.TabIndex = 2;
             externalProgGroupBox.TabStop = false;
             externalProgGroupBox.Text = "      External program";
-            externalProgGroupBox.Controls.Add(externalProgPictureBox);
+            externalProgGroupBox.Controls.Add(this.externalProgPictureBox);
             externalProgGroupBox.Controls.Add(this.externalProgResetButton);
             externalProgGroupBox.Controls.Add(this.externalProgFilePathButton);
             externalProgGroupBox.Controls.Add(this.externalProgFilePathTextBox);
@@ -288,9 +285,9 @@
             //
             // externalProgPictureBox
             // 
-            externalProgPictureBox.Image = m3u8.download.manager.Properties.Resources.freemake_16х16;
-            externalProgPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            externalProgPictureBox.Location = new System.Drawing.Point(5, 0);
+            this.externalProgPictureBox.Image = m3u8.download.manager.Properties.Resources.freemake_16х16;
+            this.externalProgPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.externalProgPictureBox.Location = new System.Drawing.Point(5, 0);
             // 
             // externalProgCaptionlabel
             // 
@@ -310,26 +307,23 @@
             // 
             // externalProgFilePathButton
             // 
-            this.externalProgFilePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));            
+            this.externalProgFilePathButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this.externalProgFilePathButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.externalProgFilePathButton.Location = new System.Drawing.Point(244, 73);
-            this.externalProgFilePathButton.Size = new System.Drawing.Size(16, 18);
-            this.externalProgFilePathButton.TabIndex = 9;            
-            this.externalProgFilePathButton.UseVisualStyleBackColor = true;            
-            this.externalProgFilePathButton.Image = new System.Drawing.Bitmap( Properties.Resources.browse, new System.Drawing.Size( 10, 10 ) );
+            this.externalProgFilePathButton.Location = new System.Drawing.Point(244, 70);
+            this.externalProgFilePathButton.TabIndex = 9;
+            this.externalProgFilePathButton.UseVisualStyleBackColor = true;
             this.externalProgFilePathButton.Margin = new System.Windows.Forms.Padding(0);
+            this.externalProgFilePathButton.Size = new System.Drawing.Size(15, 23);
             this.externalProgFilePathButton.Click += new System.EventHandler(this.externalProgFilePathButton_Click);
             this.toolTip.SetToolTip(this.externalProgFilePathButton, "select path");
             // 
             // externalProgFilePathTextBox
             // 
-            this.externalProgFilePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            //this.externalProgFilePathTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.externalProgFilePathTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.externalProgFilePathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.externalProgFilePathTextBox.Location = new System.Drawing.Point(6, 71);
             this.externalProgFilePathTextBox.Size = new System.Drawing.Size(239, 18);
             this.externalProgFilePathTextBox.TabIndex = 8;
-            this.externalProgFilePathTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.externalProgFilePathTextBox.WordWrap = false;
             this.externalProgFilePathTextBox.PlaceHolderText = "path to external program";
             this.externalProgFilePathTextBox.DrawClearButton = false;
@@ -337,8 +331,7 @@
             // 
             // externalProgCaptionTextBox
             // 
-            this.externalProgCaptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            //this.externalProgCaptionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.externalProgCaptionTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.externalProgCaptionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.externalProgCaptionTextBox.Location = new System.Drawing.Point(19, 35 - 4);
             this.externalProgCaptionTextBox.Size = new System.Drawing.Size(226, 18);
@@ -351,13 +344,13 @@
             // 
             // externalProgResetButton
             // 
-            this.externalProgResetButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.externalProgResetButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this.externalProgResetButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.externalProgResetButton.Location = new System.Drawing.Point(241, 0);
-            this.externalProgResetButton.Size = new System.Drawing.Size(18, 22);
+            this.externalProgResetButton.Size = new System.Drawing.Size(16, 16);
             this.externalProgResetButton.TabIndex = 10;
             this.externalProgResetButton.UseVisualStyleBackColor = true;
-            this.externalProgResetButton.Click += new System.EventHandler( this.externalProgResetButton_Click );
+            this.externalProgResetButton.Click += new System.EventHandler(this.externalProgResetButton_Click);
             this.externalProgResetButton.Image = new System.Drawing.Bitmap( Properties.Resources.reset, new System.Drawing.Size(12, 12) );
             this.toolTip.SetToolTip( this.externalProgResetButton, "reset" );
             // 
@@ -368,17 +361,17 @@
             this.externalProgApplyByDefaultCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.externalProgApplyByDefaultCheckBox.Location = new System.Drawing.Point(6, 101);
             this.externalProgApplyByDefaultCheckBox.Text = "Apply to all new downloads by default";
-            //this.externalProgApplyByDefaultCheckBox.Size = new System.Drawing.Size( 245, 18 );
-            //this.externalProgApplyByDefaultCheckBox.AutoEllipsis = true;
+            this.externalProgApplyByDefaultCheckBox.CheckedChanged += new System.EventHandler(this.externalProgApplyByDefaultCheckBox_CheckedChanged);
             // 
             // ffmpegGroupBox
             // 
+            ffmpegGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             ffmpegGroupBox.Location = new System.Drawing.Point(285, 138);
-            ffmpegGroupBox.Size = new System.Drawing.Size(261, 198);
+            ffmpegGroupBox.Size = new System.Drawing.Size(265/*261*/, 198);
             ffmpegGroupBox.TabIndex = 2;
             ffmpegGroupBox.TabStop = false;
             ffmpegGroupBox.Text = "      FFmpeg converter";
-            ffmpegGroupBox.Controls.Add(ffmpegPictureBox);
+            ffmpegGroupBox.Controls.Add(this.ffmpegPictureBox);
             ffmpegGroupBox.Controls.Add(this.ffmpegResetButton);
             ffmpegGroupBox.Controls.Add(this.ffmpegFilePathButton);
             ffmpegGroupBox.Controls.Add(this.ffmpegFilePathTextBox);
@@ -393,14 +386,14 @@
             //
             // ffmpegPictureBox
             // 
-            ffmpegPictureBox.Image = m3u8.download.manager.Properties.Resources.ffmpeg_16х16;
-            ffmpegPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            ffmpegPictureBox.Location = new System.Drawing.Point(5, 0);
+            this.ffmpegPictureBox.Image = m3u8.download.manager.Properties.Resources.ffmpeg_16х16;
+            this.ffmpegPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.ffmpegPictureBox.Location = new System.Drawing.Point(5, 0);
             // 
             // ffmpegCaptionlabel
             // 
             ffmpegCaptionlabel.AutoSize = true;
-            ffmpegCaptionlabel.Location = new System.Drawing.Point(16, 19 - 4);
+            ffmpegCaptionlabel.Location = new System.Drawing.Point(16, 15);
             ffmpegCaptionlabel.Size = new System.Drawing.Size(38, 13);
             ffmpegCaptionlabel.TabIndex = 0;
             ffmpegCaptionlabel.Text = "Name:";
@@ -415,26 +408,23 @@
             // 
             // ffmpegFilePathButton
             // 
-            this.ffmpegFilePathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));            
+            this.ffmpegFilePathButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;            
             this.ffmpegFilePathButton.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ffmpegFilePathButton.Location = new System.Drawing.Point(244, 73);
-            this.ffmpegFilePathButton.Size = new System.Drawing.Size(16, 18);
+            this.ffmpegFilePathButton.Location = new System.Drawing.Point(244, 70);
+            this.ffmpegFilePathButton.Size = new System.Drawing.Size(15, 23);
             this.ffmpegFilePathButton.TabIndex = 9;            
-            this.ffmpegFilePathButton.UseVisualStyleBackColor = true;            
-            this.ffmpegFilePathButton.Image = new System.Drawing.Bitmap( Properties.Resources.browse, new System.Drawing.Size( 10, 10 ) );
+            this.ffmpegFilePathButton.UseVisualStyleBackColor = true;
             this.ffmpegFilePathButton.Margin = new System.Windows.Forms.Padding(0);
             this.ffmpegFilePathButton.Click += new System.EventHandler(this.ffmpegFilePathButton_Click);
             this.toolTip.SetToolTip(this.ffmpegFilePathButton, "select path");
             // 
             // ffmpegFilePathTextBox
             // 
-            this.ffmpegFilePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            //this.ffmpegFilePathTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ffmpegFilePathTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.ffmpegFilePathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.ffmpegFilePathTextBox.Location = new System.Drawing.Point(6, 71);
             this.ffmpegFilePathTextBox.Size = new System.Drawing.Size(239, 18);
             this.ffmpegFilePathTextBox.TabIndex = 8;
-            this.ffmpegFilePathTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.ffmpegFilePathTextBox.WordWrap = false;
             this.ffmpegFilePathTextBox.PlaceHolderText = "path to ffmpeg.exe program";
             this.ffmpegFilePathTextBox.DrawClearButton = false;
@@ -442,8 +432,7 @@
             // 
             // ffmpegCaptionTextBox
             // 
-            this.ffmpegCaptionTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-            //this.ffmpegCaptionTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ffmpegCaptionTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             this.ffmpegCaptionTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.5F);
             this.ffmpegCaptionTextBox.Location = new System.Drawing.Point(19, 35 - 4);
             this.ffmpegCaptionTextBox.Size = new System.Drawing.Size(226, 18);
@@ -456,10 +445,10 @@
             // 
             // ffmpegResetButton
             // 
-            this.ffmpegResetButton.Anchor = ((System.Windows.Forms.AnchorStyles) ((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ffmpegResetButton.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this.ffmpegResetButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ffmpegResetButton.Location = new System.Drawing.Point(241, 0);
-            this.ffmpegResetButton.Size = new System.Drawing.Size(18, 22);
+            this.ffmpegResetButton.Size = new System.Drawing.Size(16, 16);
             this.ffmpegResetButton.TabIndex = 10;
             this.ffmpegResetButton.UseVisualStyleBackColor = true;
             this.ffmpegResetButton.Click += new System.EventHandler(this.ffmpegResetButton_Click);
@@ -473,13 +462,13 @@
             this.ffmpegApplyByDefaultCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ffmpegApplyByDefaultCheckBox.Location = new System.Drawing.Point(6, 101);
             this.ffmpegApplyByDefaultCheckBox.Text = "Apply to all new downloads by default";
+            this.ffmpegApplyByDefaultCheckBox.CheckedChanged += new System.EventHandler(this.ffmpegApplyByDefaultCheckBox_CheckedChanged);
             // 
             // ffmpegDegreeOfParallelismLabel
             // 
             this.ffmpegDegreeOfParallelismLabel.AutoSize = true;
             this.ffmpegDegreeOfParallelismLabel.ForeColor = System.Drawing.Color.DarkGoldenrod;
             this.ffmpegDegreeOfParallelismLabel.Location = new System.Drawing.Point(6, 125);
-            //this.ffmpegDegreeOfParallelismLabel.Size = new System.Drawing.Size(157, 13);
             this.ffmpegDegreeOfParallelismLabel.Text = "Max parallel run:";
             toolTip.SetToolTip(this.ffmpegDegreeOfParallelismLabel, "Maximum number of parallel/simultaneously running ffmpeg instances");
             // 
@@ -497,7 +486,7 @@
             this.ffmpeg_RenameAfterFFmpegConverterCheckBox.AutoSize = true;
             this.ffmpeg_RenameAfterFFmpegConverterCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ffmpeg_RenameAfterFFmpegConverterCheckBox.Location = new System.Drawing.Point(6, 148/*this.ffmpegDegreeOfParallelismNUD.Bottom*/);
-            this.ffmpeg_RenameAfterFFmpegConverterCheckBox.Text = "Rename output file after FFmpeg convert"; //"Rename output file after FFmpeg convert and\r\n" + "open with external program";
+            this.ffmpeg_RenameAfterFFmpegConverterCheckBox.Text = "Rename output file after FFmpeg convert";
             this.ffmpeg_RenameAfterFFmpegConverterCheckBox.CheckedChanged += new System.EventHandler(this.ffmpeg_RenameAfterFFmpegConverterCheckBox_CheckedChanged);
             // 
             // ffmpeg_OpenAfterWithExternalProgRunnerCheckBox
@@ -510,8 +499,9 @@
             // 
             // gcGroupBox
             // 
+            gcGroupBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
             gcGroupBox.Location = new System.Drawing.Point(285, 342);
-            gcGroupBox.Size = new System.Drawing.Size(261, 85);
+            gcGroupBox.Size = new System.Drawing.Size(265, 85);
             gcGroupBox.TabIndex = 4;
             gcGroupBox.TabStop = false;
             gcGroupBox.Text = "GC";
@@ -574,7 +564,6 @@
             this.browseReceivedAndWritedPartsDirectoryButton.TabIndex = 0;            
             this.browseReceivedAndWritedPartsDirectoryButton.UseVisualStyleBackColor = true;
             this.browseReceivedAndWritedPartsDirectoryButton.Click += new System.EventHandler(this.browseReceivedAndWritedPartsDirectoryButton_Click);
-            this.browseReceivedAndWritedPartsDirectoryButton.Paint += new System.Windows.Forms.PaintEventHandler(paintButtonWithDotsText_Paint);
             this.toolTip.SetToolTip(this.browseReceivedAndWritedPartsDirectoryButton, "browsing a directory...");
             // 
             // receivedAndWritedPartsLabel
@@ -630,18 +619,20 @@
         private System.Windows.Forms.CheckBox showDownloadStatisticsInMainFormTitleCheckBox;
         private System.Windows.Forms.CheckBox showAllDownloadsCompleted_NotificationCheckBox;
         private System.Windows.Forms.CheckBox useDirectorySelectDialogModernCheckBox;
-        private System.Windows.Forms.Button testDirectorySelectDialog;
+        private System.Windows.Forms.ButtonWithDotsText testDirectorySelectDialog;
         private System.Windows.Forms.CheckBox uniqueUrlsOnlyCheckBox;
         private System.Windows.Forms.CheckBox ignoreHostHttpHeaderCheckBox;
         private System.Windows.Forms.Label only4NotRunLabel1;
         private System.Windows.Forms.Label only4NotRunLabel2;
         private System.Windows.Forms.Label outputFileExtensionLabel;
         private System.Windows.Forms.TextBoxEx outputFileExtensionTextBox;
+        private System.Windows.Forms.PictureBoxEx externalProgPictureBox;
         private System.Windows.Forms.TextBoxEx externalProgFilePathTextBox;
         private System.Windows.Forms.TextBoxEx externalProgCaptionTextBox;
         private System.Windows.Forms.CheckBoxImitationDisabled externalProgApplyByDefaultCheckBox;
-        private System.Windows.Forms.Button externalProgFilePathButton;
+        private System.Windows.Forms.ButtonWithDotsText externalProgFilePathButton;
         private System.Windows.Forms.Button externalProgResetButton;
+        private System.Windows.Forms.PictureBoxEx ffmpegPictureBox;
         private System.Windows.Forms.TextBoxEx ffmpegFilePathTextBox;
         private System.Windows.Forms.TextBoxEx ffmpegCaptionTextBox;
         private System.Windows.Forms.CheckBoxImitationDisabled ffmpegApplyByDefaultCheckBox;
@@ -649,12 +640,12 @@
         private System.Windows.Forms.NumericUpDownEx ffmpegDegreeOfParallelismNUD;
         private System.Windows.Forms.CheckBoxImitationDisabled ffmpeg_RenameAfterFFmpegConverterCheckBox;
         private System.Windows.Forms.CheckBoxImitationDisabled ffmpeg_OpenAfterWithExternalProgRunnerCheckBox;
-        private System.Windows.Forms.Button ffmpegFilePathButton;
+        private System.Windows.Forms.ButtonWithDotsText ffmpegFilePathButton;
         private System.Windows.Forms.Button ffmpegResetButton;
         private System.Windows.Forms.Button collectGarbageButton;
         private System.Windows.Forms.Label currentMemoryLabel;
         private System.Windows.Forms.Button receivedAndWritedPartsClearAllButton;
-        private System.Windows.Forms.Button browseReceivedAndWritedPartsDirectoryButton;
+        private System.Windows.Forms.ButtonWithDotsText browseReceivedAndWritedPartsDirectoryButton;
         private System.Windows.Forms.Label receivedAndWritedPartsLabel;
         private System.Windows.Forms.ToolTip toolTip;
     }

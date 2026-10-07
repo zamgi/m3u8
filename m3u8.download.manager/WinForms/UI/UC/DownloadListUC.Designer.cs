@@ -55,21 +55,21 @@
             this.DGV.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.DGV.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[]
             {
-                this.DGV_outputFileNameColumn,
-                this.DGV_outputDirectoryColumn,
-                this.DGV_statusColumn,
-                this.DGV_downloadProgressColumn,
-                this.DGV_downloadTimeColumn,
-                this.DGV_approxRemainedTimeColumn,
-                this.DGV_downloadSpeedColumn,
-                this.DGV_downloadBytesColumn,
-                this.DGV_approxRemainedBytesColumn,
-                this.DGV_approxTotalBytesColumn,
-                this.DGV_isLiveStreamColumn,
-                this.DGV_liveStreamMaxFileSizeColumn,
-                this.DGV_requestHeadersColumn,
-                this.DGV_webProxyColumn,
-                this.DGV_urlColumn
+                this.DGV_outputFileNameColumn,        // 0
+                this.DGV_outputDirectoryColumn,       // 1
+                this.DGV_statusColumn,                // 2
+                this.DGV_downloadProgressColumn,      // 3
+                this.DGV_downloadTimeColumn,          // 4
+                this.DGV_approxRemainedTimeColumn,    // 5
+                this.DGV_downloadSpeedColumn,         // 6
+                this.DGV_downloadBytesColumn,         // 7
+                this.DGV_approxRemainedBytesColumn,   // 8
+                this.DGV_approxTotalBytesColumn,      // 9
+                this.DGV_isLiveStreamColumn,          //10
+                this.DGV_liveStreamMaxFileSizeColumn, //11
+                this.DGV_requestHeadersColumn,        //12
+                this.DGV_webProxyColumn,              //13
+                this.DGV_urlColumn                    //14
             });
             cs2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             cs2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));            

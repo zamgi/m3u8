@@ -178,7 +178,11 @@ namespace m3u8.download.manager.ui
         public bool     ExternalProgApplyByDefault
         {
             get => externalProgApplyByDefaultCheckBox.Checked;
-            set => externalProgApplyByDefaultCheckBox.Checked = value;
+            set
+            {
+                externalProgApplyByDefaultCheckBox.Checked = value;
+                externalProgApplyByDefaultCheckBox_CheckedChanged( externalProgApplyByDefaultCheckBox, EventArgs.Empty );
+            }
         }
         public string   FFmpegConverterCaption
         {
@@ -193,7 +197,11 @@ namespace m3u8.download.manager.ui
         public bool     FFmpegApplyByDefault
         {
             get => ffmpegApplyByDefaultCheckBox.Checked;
-            set => ffmpegApplyByDefaultCheckBox.Checked = value;
+            set
+            {
+                ffmpegApplyByDefaultCheckBox.Checked = value;
+                ffmpegApplyByDefaultCheckBox_CheckedChanged( ffmpegApplyByDefaultCheckBox, EventArgs.Empty );
+            }
         }
         public int      FFmpegDegreeOfParallelism
         {
@@ -236,18 +244,6 @@ namespace m3u8.download.manager.ui
             }
             return (ext);
         }
-        private static void paintButtonWithDotsText_Paint( object sender, PaintEventArgs e )
-        {
-            var c  = (Control) sender;
-            var rc = e.ClipRectangle;
-            using var sf = new StringFormat() { LineAlignment = StringAlignment.Center, Alignment = StringAlignment.Center };
-            e.Graphics.DrawString( "...", c.Font, Brushes.Black, rc, sf );
-            if ( c.Focused )
-            {
-                rc.Inflate( -1, -1 );
-                ControlPaint.DrawFocusRectangle( e.Graphics, rc );
-            }
-        }
 
         private void DownloadController_IsDownloadingChanged( bool isDownloading )
         {
@@ -257,8 +253,12 @@ namespace m3u8.download.manager.ui
 
         private void externalProgResetButton_Click( object sender, EventArgs e )
         {
-            this.ExternalProgFilePath = Resources.ExternalProgFilePath;
-            this.ExternalProgCaption  = Resources.ExternalProgCaption;
+            if ( this.FindForm().MessageBox_ShowQuestion( "Reset params to default ?", "External program", MessageBoxButtons.OKCancel, MessageBoxDefaultButton.Button1 ) == DialogResult.OK )
+            {
+                this.ExternalProgFilePath = Resources.ExternalProgFilePath;
+                this.ExternalProgCaption  = Resources.ExternalProgCaption;
+                this.ExternalProgApplyByDefault = false;
+            }
         }
         private void externalProgFilePathTextBox_TextChanged( object sender, EventArgs e )
         {
@@ -298,11 +298,19 @@ namespace m3u8.download.manager.ui
                 this.ExternalProgFilePath = ofd.FileName;
             }
         }
+        private void externalProgApplyByDefaultCheckBox_CheckedChanged( object sender, EventArgs e ) => externalProgPictureBox.Enabled = externalProgApplyByDefaultCheckBox.Checked;
 
         private void ffmpegResetButton_Click( object sender, EventArgs e )
         {
-            this.FFmpegFileLocation     = Resources.FFmpegFileLocation;
-            this.FFmpegConverterCaption = Resources.FFmpegConverterCaption;
+            if ( this.FindForm().MessageBox_ShowQuestion( "Reset params to default ?", "FFmpeg converter", MessageBoxButtons.OKCancel, MessageBoxDefaultButton.Button1 ) == DialogResult.OK )
+            {
+                this.FFmpegFileLocation     = Resources.FFmpegFileLocation;
+                this.FFmpegConverterCaption = Resources.FFmpegConverterCaption;
+                this.FFmpegApplyByDefault                   = false;
+                this.FFmpegDegreeOfParallelism              = 1;
+                this.FFmpeg_RenameAfterFFmpegConverter      = false;
+                this.FFmpeg_OpenAfterWithExternalProgRunner = false;
+            }
         }
         private void ffmpegFilePathTextBox_TextChanged( object sender, EventArgs e )
         {
@@ -342,8 +350,8 @@ namespace m3u8.download.manager.ui
                 this.FFmpegFileLocation = ofd.FileName;
             }
         }
-        private void ffmpeg_RenameAfterFFmpegConverterCheckBox_CheckedChanged( object sender, EventArgs e ) 
-            => ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.Enabled = ffmpeg_RenameAfterFFmpegConverterCheckBox.Checked;
+        private void ffmpeg_RenameAfterFFmpegConverterCheckBox_CheckedChanged( object sender, EventArgs e ) => ffmpeg_OpenAfterWithExternalProgRunnerCheckBox.Enabled = ffmpeg_RenameAfterFFmpegConverterCheckBox.Checked;
+        private void ffmpegApplyByDefaultCheckBox_CheckedChanged( object sender, EventArgs e ) => ffmpegPictureBox.Enabled = ffmpegApplyByDefaultCheckBox.Checked;
 
         private void testDirectorySelectDialog_Click( object sender, EventArgs e )
         {

@@ -1941,6 +1941,7 @@ namespace m3u8.download.manager.ui
                     row.SetOutputDirectory( Path.GetDirectoryName( convertedFileName ) );
                     ClearDownloadParams( row );
                     row.SetDownloadBytesLength( FileHelperEx.TryGetFileSize( row.GetOutputFullFileName() ) );
+                    row.SetStatus( DownloadStatus.Finished );
                     //if ( ts.Any( t => t.suc ) )
                     //{
                     //    var outputFullFileName = row.GetOutputFullFileName();

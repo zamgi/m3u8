@@ -96,6 +96,10 @@ namespace m3u8.download.manager
                 var approxTotalBytes     = Convert.ToInt64( singlePartApproxSize * row.TotalParts );
                 return (approxTotalBytes);
             }
+            else if ( row.IsFinished() && (row.DownloadBytesLength != 0) )
+            {
+                return (row.DownloadBytesLength);
+            }
             return (null);
         }
         [M(O.AggressiveInlining)] public static long GetLiveStreamMaxFileSizeInMb( this DownloadRow row ) => (row.LiveStreamMaxFileSizeInBytes >> 20);
@@ -333,6 +337,31 @@ namespace m3u8.download.manager
                         var percent = (totalParts <= (successDownloadParts + failedDownloadParts)) ? 100 : Min( (byte) (100 * suc), 99 );
                         percentText = percent.ToString();
                     }
+                    else
+                    {
+                        switch ( st )
+                        {
+                            case DownloadStatus.Canceled: 
+                                parts        = default;
+                                progressText = null;
+                                return (false);
+
+                            case DownloadStatus.Finished:                                
+                                if ( row.DownloadBytesLength != 0 )
+                                {
+                                    parts        = (0, 0);
+                                    progressText = "100%";
+                                    return (true);
+                                }
+                                goto default;
+
+                            default:
+                                parts       = (0, 0);
+                                percentText = "-";
+                                break;
+                        }
+                    }
+                    /*
                     else if ( st == DownloadStatus.Canceled ) //not-started
                     {
                         parts        = default;
@@ -344,6 +373,7 @@ namespace m3u8.download.manager
                         parts       = (0, 0);
                         percentText = "-";
                     }
+                    //*/
 
                     var failedParts = ((failedDownloadParts != 0) ? $", [failed: {failedDownloadParts}]" : null);
                     progressText = $"{percentText}%  ({successDownloadParts} of {totalParts}{failedParts})";
