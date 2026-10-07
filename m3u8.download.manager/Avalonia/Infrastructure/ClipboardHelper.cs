@@ -28,18 +28,20 @@ namespace m3u8.download.manager
             var (timeout, attemptRequestCountByPart) = sc.GetCreateM3u8ClientParams();
             var r = new DownloadRow_Definer_3()
             {
-                Url = url,
-                RequestHeaders           = null,
-                OutputDirectory          = sc.OutputFileDirectory,
-                OutputFileName           = null,
-                CreatedOrStartedDateTime = DateTime.Now,
-                Status                   = DownloadStatus.Created,
-                AttemptRequestCount      = attemptRequestCountByPart,
-                Timeout                  = timeout,
-                WebProxyInfo             = sc.GetDefaultWebProxyInfo(),
-                IsLiveStream             = false,
+                Url                          = url,
+                RequestHeaders               = null,
+                OutputDirectory              = sc.OutputFileDirectory,
+                OutputFileName               = null,
+                CreatedOrStartedDateTime     = DateTime.Now,
+                Status                       = DownloadStatus.Created,
+                AttemptRequestCount          = attemptRequestCountByPart,
+                Timeout                      = timeout,
+                WebProxyInfo                 = sc.GetDefaultWebProxyInfo(),
+                IsLiveStream                 = false,
                 LiveStreamMaxFileSizeInBytes = 0,
                 ExternalProgRunnerStatus     = ExternalProgRunnerStatusTypeEnum.None,
+                DownloadBytesLength          = null,
+                FinitaElapsed                = null,
             };
             return (r);
         }

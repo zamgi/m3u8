@@ -74,9 +74,9 @@ namespace m3u8.download.manager.controllers
         public bool     ShowLog                             { [M(O.AggressiveInlining)] get => Settings.ShowLog; [M(O.AggressiveInlining)] set => Settings.ShowLog = value; }
         public bool     IgnoreHostHttpHeader                { [M(O.AggressiveInlining)] get => Settings.IgnoreHostHttpHeader; [M(O.AggressiveInlining)] set => Settings.IgnoreHostHttpHeader = value; }
 #if !(AVALONIA)
-        public bool     ExternalProgApplyByDefault          { [M(O.AggressiveInlining)] get => Settings.ExternalProgApplyByDefault; }
-        public bool     FFmpegApplyByDefault                { [M(O.AggressiveInlining)] get => Settings.FFmpegApplyByDefault; }
-        public bool     FFmpeg_RenameAfterFFmpegConverter      { [M(O.AggressiveInlining)] get => Settings.FFmpeg_RenameAfterFFmpegConverter; }
+        public bool     ExternalProgApplyByDefault             { [M(O.AggressiveInlining)] get => Settings.ExternalProgApplyByDefault;             }
+        public bool     FFmpegApplyByDefault                   { [M(O.AggressiveInlining)] get => Settings.FFmpegApplyByDefault;                   }
+        public bool     FFmpeg_RenameAfterFFmpegConverter      { [M(O.AggressiveInlining)] get => Settings.FFmpeg_RenameAfterFFmpegConverter;      }
         public bool     FFmpeg_OpenAfterWithExternalProgRunner { [M(O.AggressiveInlining)] get => Settings.FFmpeg_OpenAfterWithExternalProgRunner; }
 #endif
         public IEnumerable< DownloadRow_Definer_3 > GetDownloadRows() => DownloadRowsSerializer.FromJSON( Settings.DownloadRowsJson );

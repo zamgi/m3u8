@@ -1031,9 +1031,10 @@ namespace m3u8.download.manager.controllers
                 var status = row.Status;
                 switch ( status )
                 {
+                    case DownloadStatus.Created:
                     case DownloadStatus.Canceled:
                     case DownloadStatus.Finished:
-                    case DownloadStatus.Created:
+                    case DownloadStatus.FinishedReplaced:                    
                         break;
 
                     case DownloadStatus.Error:

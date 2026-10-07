@@ -554,7 +554,7 @@ namespace m3u8.download.manager.ui
 
                 var stats = _DownloadListModel.GetStatisticsByAllStatus();
 
-                var finishedCount = stats[ DownloadStatus.Finished ];
+                var finishedCount = stats[ DownloadStatus.Finished ] + stats[ DownloadStatus.FinishedReplaced ];
                 var errorCount    = stats[ DownloadStatus.Error    ];
 
                 var finishedText  = ((0 < finishedCount) ? $", end: {finishedCount}" : null);
@@ -833,22 +833,22 @@ namespace m3u8.download.manager.ui
                 (var externalProgApplyByDefault, var ffmpegApplyByDefault) = (_SC.ExternalProgApplyByDefault, _SC.FFmpegApplyByDefault);
                 var externalProgApplyByDefault_or_ffmpegApplyByDefault = externalProgApplyByDefault || ffmpegApplyByDefault;
 
-                foreach ( var t in _SC.GetDownloadRows() )
+                foreach ( var dd3 in _SC.GetDownloadRows() )
                 {
-                    var row = _DownloadListModel.AddRow( t );
+                    var row = _DownloadListModel.AddRow( dd3 );
 
                     var row_restored = TryRestoreOrClearDownloadParams( row );
                     if ( (!row_restored || !row.IsFinishedOrError())
-                        && (t.ExternalProgRunnerStatus != ExternalProgRunnerStatusTypeEnum.None) 
+                        && (dd3.ExternalProgRunnerStatus != ExternalProgRunnerStatusTypeEnum.None) 
                         && externalProgApplyByDefault_or_ffmpegApplyByDefault
                        )
                     {
                         var outputFullFileName = row.GetOutputFullFileName();
-                        if ( externalProgApplyByDefault && t.ExternalProgRunnerStatus.HasFlag( ExternalProgRunnerStatusTypeEnum.ExternalProg ) )
+                        if ( externalProgApplyByDefault && dd3.ExternalProgRunnerStatus.HasFlag( ExternalProgRunnerStatusTypeEnum.ExternalProg ) )
                         {
                             _ExternalProgRunner.Queue.AddIfNotNull( outputFullFileName );
                         }
-                        if ( ffmpegApplyByDefault && t.ExternalProgRunnerStatus.HasFlag( ExternalProgRunnerStatusTypeEnum.FFmpeg ) )
+                        if ( ffmpegApplyByDefault && dd3.ExternalProgRunnerStatus.HasFlag( ExternalProgRunnerStatusTypeEnum.FFmpeg ) )
                         {
                             _FFmpegConverterRunner.Queue.AddIfNotNull( outputFullFileName );
                         }
@@ -1936,22 +1936,17 @@ namespace m3u8.download.manager.ui
                 var suc = FileHelper.DeleteFile_NoThrow( inputFileName );
                 if ( suc )
                 {
-                    //var ts = _ExternalProgRunner_Queues.Remove( row.GetOutputFullFileName() );
+                    suc = _ReceivedAndWritedPartsProcessor.TryDeleteStorerFile( row.Url );
+                    row.MakeFinishedReplaced( convertedFileName, downloadBytesLength: FileHelperEx.TryGetFileSize( convertedFileName ), makeUrlFake: true );
+                    #region comm. prev.
+                    /*
                     row.SetOutputFileName ( Path.GetFileName     ( convertedFileName ) );
                     row.SetOutputDirectory( Path.GetDirectoryName( convertedFileName ) );
                     ClearDownloadParams( row );
                     row.SetDownloadBytesLength( FileHelperEx.TryGetFileSize( row.GetOutputFullFileName() ) );
                     row.SetStatus( DownloadStatus.Finished );
-                    //if ( ts.Any( t => t.suc ) )
-                    //{
-                    //    var outputFullFileName = row.GetOutputFullFileName();
-                    //    ts.ForEach( t => { if ( t.suc ) t.queue.Add( outputFullFileName ); } );
-                    //}
-
-                    ////2. open renamed file in ExternalProgRunner
-                    //if ( _SC.FFmpeg_OpenAfterWithExternalProgRunner ) {
-                    //ExternalProgRunner_Run( [row], runEachFileAsSeparate: false );
-                    //return; }
+                    //*/
+                    #endregion
                 }
             }
             else
@@ -1999,17 +1994,21 @@ namespace m3u8.download.manager.ui
         #region [.TryRestoreOrClearDownloadParams & ClearDownloadParams.]
         private bool TryRestoreOrClearDownloadParams( DownloadRow row )
         {
-            if ( (row != null) && !row.Status.IsRunningOrPaused() )
+            if ( row != null )
             {
-                if ( UrlHelper.TryGetM3u8FileUrl( row.Url, out var t ) &&
-                     _ReceivedAndWritedPartsProcessor.TryRestore( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) )
+                var status = row.Status;
+                if ( !status.IsRunningOrPaused() )
                 {
-                    row.RestoreDownloadParams_WithChangeStatus( exists.outputFileStreamPosition, exists.totalPartsCount, exists.lastReceivedAndWritedPartOrderNumber + 1 );
-                    return (true);
-                }
-                else
-                {
-                    row.ClearRestoredDownloadParams_WithChangeStatus();
+                    if ( UrlHelper.TryGetM3u8FileUrl( row.Url, out var t ) &&
+                         _ReceivedAndWritedPartsProcessor.TryRestore( t.m3u8FileUrl, row.GetOutputFullFileName(), out var exists ) )
+                    {
+                        row.RestoreDownloadParams_WithChangeStatus( exists.outputFileStreamPosition, exists.totalPartsCount, exists.lastReceivedAndWritedPartOrderNumber + 1 );
+                        return (true);
+                    }
+                    else if ( !status.IsFinishedReplaced() )
+                    {
+                        row.ClearRestoredDownloadParams_WithChangeStatus();
+                    }
                 }
             }
             return (false);

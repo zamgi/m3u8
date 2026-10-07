@@ -23,6 +23,7 @@ namespace m3u8.download.manager.models
         Paused,
         Canceled,
         Finished,
+        FinishedReplaced,
         Error,
     }
 
@@ -79,6 +80,20 @@ namespace m3u8.download.manager.models
             CreatedOrStartedDateTime     = t.CreatedOrStartedDateTime;// DateTime.Now;
             IsLiveStream                 = t.IsLiveStream;
             LiveStreamMaxFileSizeInBytes = t.LiveStreamMaxFileSizeInBytes;
+
+            switch ( t.Status )
+            {
+                case DownloadStatus.FinishedReplaced:
+                    Status              = DownloadStatus.FinishedReplaced;
+                    _FinitaElapsed      = t.FinitaElapsed.GetValueOrDefault( TimeSpan.Zero );
+                    DownloadBytesLength = t.DownloadBytesLength.GetValueOrDefault( 0 );
+                    break;
+
+                case DownloadStatus.Finished:
+                    Status         = DownloadStatus.Finished;
+                    _FinitaElapsed = t.FinitaElapsed.GetValueOrDefault( TimeSpan.Zero );
+                    break;
+            }
         }
         private DownloadRow( DownloadRow r, IEnumerable< LogRow > rows = null ) : base( r.Model )
         {
@@ -659,6 +674,8 @@ namespace m3u8.download.manager.models
     {
         required public DateTime       CreatedOrStartedDateTime { get; init; }
         required public DownloadStatus Status                   { get; init; }
+        required public long?          DownloadBytesLength      { get; init; }
+        required public TimeSpan?      FinitaElapsed            { get; init; }
         required public ExternalProgRunnerStatusTypeEnum ExternalProgRunnerStatus { get; init; }
     }
 }

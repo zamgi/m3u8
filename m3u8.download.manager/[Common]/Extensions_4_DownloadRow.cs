@@ -25,10 +25,12 @@ namespace m3u8.download.manager
         }
         public static void RemoveAllFinished( this DownloadListModel model ) => model.RemoveRows( model.GetAllFinished().ToList() );
 
-        [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadRow row ) => (row.Status == DownloadStatus.Finished);
-        [M(O.AggressiveInlining)] public static bool IsFinishedOrError( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, _ => false };
-        [M(O.AggressiveInlining)] public static bool IsFinishedOrErrorOrCreated( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.Error => true, DownloadStatus.Created => true, _ => false };
-        [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadStatus status ) => (status     == DownloadStatus.Finished);
+        [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.FinishedReplaced => true, _ => false }; //(row.Status == DownloadStatus.Finished);
+        [M(O.AggressiveInlining)] public static bool IsFinished( this DownloadStatus status ) => status switch { DownloadStatus.Finished => true, DownloadStatus.FinishedReplaced => true, _ => false }; //(status == DownloadStatus.Finished);
+        [M(O.AggressiveInlining)] public static bool IsFinishedReplaced( this DownloadRow row ) => (row.Status == DownloadStatus.FinishedReplaced);
+        [M(O.AggressiveInlining)] public static bool IsFinishedReplaced( this DownloadStatus status ) => (status == DownloadStatus.FinishedReplaced);
+        [M(O.AggressiveInlining)] public static bool IsFinishedOrError( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.FinishedReplaced => true, DownloadStatus.Error => true, _ => false };
+        [M(O.AggressiveInlining)] public static bool IsFinishedOrErrorOrCreated( this DownloadRow row ) => row.Status switch { DownloadStatus.Finished => true, DownloadStatus.FinishedReplaced => true, DownloadStatus.Error => true, DownloadStatus.Created => true, _ => false };        
         [M(O.AggressiveInlining)] public static bool IsError   ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Error);
         [M(O.AggressiveInlining)] public static bool IsRunning ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Running);
         [M(O.AggressiveInlining)] public static bool IsWait    ( this DownloadRow    row    ) => (row.Status == DownloadStatus.Wait);
@@ -96,7 +98,7 @@ namespace m3u8.download.manager
                 var approxTotalBytes     = Convert.ToInt64( singlePartApproxSize * row.TotalParts );
                 return (approxTotalBytes);
             }
-            else if ( row.IsFinished() && (row.DownloadBytesLength != 0) )
+            else if ( row.IsFinishedReplaced() )
             {
                 return (row.DownloadBytesLength);
             }
@@ -326,6 +328,11 @@ namespace m3u8.download.manager
                     progressText = null;
                     return (false);
 
+                case DownloadStatus.FinishedReplaced:
+                    parts        = default;
+                    progressText = "100%";
+                    return (true);
+
                 default:
                     (var totalParts, var successDownloadParts, var failedDownloadParts) = (row.TotalParts, row.SuccessDownloadParts, row.FailedDownloadParts);
                     string percentText;
@@ -337,6 +344,7 @@ namespace m3u8.download.manager
                         var percent = (totalParts <= (successDownloadParts + failedDownloadParts)) ? 100 : Min( (byte) (100 * suc), 99 );
                         percentText = percent.ToString();
                     }
+                    /*
                     else
                     {
                         switch ( st )
@@ -361,7 +369,7 @@ namespace m3u8.download.manager
                                 break;
                         }
                     }
-                    /*
+                    //*/
                     else if ( st == DownloadStatus.Canceled ) //not-started
                     {
                         parts        = default;
@@ -370,10 +378,9 @@ namespace m3u8.download.manager
                     }
                     else
                     {
-                        parts       = (0, 0);
+                        parts       = default; //(0, 0);
                         percentText = "-";
                     }
-                    //*/
 
                     var failedParts = ((failedDownloadParts != 0) ? $", [failed: {failedDownloadParts}]" : null);
                     progressText = $"{percentText}%  ({successDownloadParts} of {totalParts}{failedParts})";
@@ -424,31 +431,59 @@ namespace m3u8.download.manager
             return (downloadInfo);
         }
 
-
-        private static string SPACE_17 = new string(' ', 17);
-        private static string DownloadStatus_Created  = $"Created{SPACE_17}";
-        private static string DownloadStatus_Started  = $"Started{SPACE_17}";
-        private static string DownloadStatus_Running  = $"Running{SPACE_17}";
-        private static string DownloadStatus_Wait     = $"Wait{SPACE_17}";
-        private static string DownloadStatus_Paused   = $"Paused{SPACE_17}";
-        private static string DownloadStatus_Canceled = $"Canceled{SPACE_17}";
-        private static string DownloadStatus_Finished = $"Finished{SPACE_17}";
-        private static string DownloadStatus_Error    = $"Error{SPACE_17}";
+        private const string DownloadStatus_Created          = "Created";
+        private const string DownloadStatus_Started          = "Started";
+        private const string DownloadStatus_Running          = "Running";
+        private const string DownloadStatus_Wait             = "Wait";
+        private const string DownloadStatus_Paused           = "Paused";
+        private const string DownloadStatus_Canceled         = "Canceled";
+        private const string DownloadStatus_Finished         = "Finished";
+        private const string DownloadStatus_FinishedReplaced = "Finished (Replaced)";
+        private const string DownloadStatus_Error            = "Error";
         [M(O.AggressiveInlining)] public static string ToText4View( this DownloadStatus status )
         {
             switch ( status )
             {
-                case DownloadStatus.Created : return (DownloadStatus_Created);
-                case DownloadStatus.Started : return (DownloadStatus_Started);
-                case DownloadStatus.Running : return (DownloadStatus_Running);
-                case DownloadStatus.Wait    : return (DownloadStatus_Wait);
-                case DownloadStatus.Paused  : return (DownloadStatus_Paused);
-                case DownloadStatus.Canceled: return (DownloadStatus_Canceled);
-                case DownloadStatus.Finished: return (DownloadStatus_Finished);
-                case DownloadStatus.Error   : return (DownloadStatus_Error);
+                case DownloadStatus.Created         : return (DownloadStatus_Created);
+                case DownloadStatus.Started         : return (DownloadStatus_Started);
+                case DownloadStatus.Running         : return (DownloadStatus_Running);
+                case DownloadStatus.Wait            : return (DownloadStatus_Wait);
+                case DownloadStatus.Paused          : return (DownloadStatus_Paused);
+                case DownloadStatus.Canceled        : return (DownloadStatus_Canceled);
+                case DownloadStatus.Finished        : return (DownloadStatus_Finished);
+                case DownloadStatus.FinishedReplaced: return (DownloadStatus_FinishedReplaced);
+                case DownloadStatus.Error           : return (DownloadStatus_Error);
                 default: 
-                    return (status.ToString() + SPACE_17);
+                    return (status.ToString());
             }
         }
+
+        //private static string SPACE_17 = new string(' ', 17);
+        //private static string CellValue_Created          = $"{DownloadStatus_Created}{SPACE_17}";
+        //private static string CellValue_Started          = $"{DownloadStatus_Started}{SPACE_17}";
+        //private static string CellValue_Running          = $"{DownloadStatus_Running}{SPACE_17}";
+        //private static string CellValue_Wait             = $"{DownloadStatus_Wait}{SPACE_17}";
+        //private static string CellValue_Paused           = $"{DownloadStatus_Paused}{SPACE_17}";
+        //private static string CellValue_Canceled         = $"{DownloadStatus_Canceled}{SPACE_17}";
+        //private static string CellValue_Finished         = $"{DownloadStatus_Finished}{SPACE_17}";
+        //private static string CellValue_FinishedReplaced = $"{DownloadStatus_FinishedReplaced}{SPACE_17}";
+        //private static string CellValue_Error            = $"{DownloadStatus_Error}{SPACE_17}";
+        //[M(O.AggressiveInlining)] public static string ToDGVCellValue( this DownloadStatus status )
+        //{
+        //    switch ( status )
+        //    {
+        //        case DownloadStatus.Created         : return (CellValue_Created);
+        //        case DownloadStatus.Started         : return (CellValue_Started);
+        //        case DownloadStatus.Running         : return (CellValue_Running);
+        //        case DownloadStatus.Wait            : return (CellValue_Wait);
+        //        case DownloadStatus.Paused          : return (CellValue_Paused);
+        //        case DownloadStatus.Canceled        : return (CellValue_Canceled);
+        //        case DownloadStatus.Finished        : return (CellValue_Finished);
+        //        case DownloadStatus.FinishedReplaced: return (CellValue_FinishedReplaced);
+        //        case DownloadStatus.Error           : return (CellValue_Error);
+        //        default: 
+        //            return (status.ToString() + SPACE_17);
+        //    }
+        //}
     }
 }

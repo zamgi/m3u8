@@ -14,9 +14,11 @@ using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
-using CollectionChangedTypeEnum = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using static m3u8.download.manager.ui.DefaultColors;
+
 using _SC_                      = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using CellStyle                 = System.Windows.Forms.DataGridViewCellStyle;
+using CollectionChangedTypeEnum = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
 using HitTestInfo               = System.Windows.Forms.DataGridView.HitTestInfo;
 using M                         = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                         = System.Runtime.CompilerServices.MethodImplOptions;
@@ -123,6 +125,7 @@ namespace m3u8.download.manager.ui
                 Wait       = Resources.wait;
                 Canceled   = Resources.canceled;
                 Finished   = Resources.finished;
+                FinishedReplaced = Resources.finished_replaced;
                 Error      = Resources.error;
                 FFmpeg     = Resources.ffmpeg_16х16;
                 Freemake   = Resources.freemake_16х16;
@@ -136,6 +139,7 @@ namespace m3u8.download.manager.ui
             public Image Wait       { get; }
             public Image Canceled   { get; }
             public Image Finished   { get; }
+            public Image FinishedReplaced { get; }
             public Image Error      { get; }
             public Image FFmpeg     { get; }
             public Image Freemake   { get; }
@@ -718,7 +722,9 @@ namespace m3u8.download.manager.ui
                     case DownloadStatus.Wait:     return (3);
                     case DownloadStatus.Canceled: return (4);
                     case DownloadStatus.Error:    return (5);
-                    case DownloadStatus.Finished: return (6);
+                    case DownloadStatus.Finished: 
+                    case DownloadStatus.FinishedReplaced: 
+                                                  return (6);
                     case DownloadStatus.Created:  return (7);
 
                     default: return (int.MaxValue);
@@ -938,7 +944,7 @@ namespace m3u8.download.manager.ui
             {
                 case OUTPUTFILENAME_COLUMN_INDEX           : e.Value = row.OutputFileName;  break;
                 case OUTPUTDIRECTORY_COLUMN_INDEX          : e.Value = row.OutputDirectory; break;
-                case STATUS_COLUMN_INDEX                   : e.Value = row.Status.ToText4View(); break;
+                case STATUS_COLUMN_INDEX                   : e.Value = row.Status.ToText4View/*ToDGVCellValue*/(); break;
                 case DOWNLOAD_PROGRESS_COLUMN_INDEX        : 
                     e.Value = (row.TryGetDownloadProgress( out _, out var progressText ) ? progressText : null/*string.Empty*/) + SPACE_10;
                     break;
@@ -971,6 +977,7 @@ namespace m3u8.download.manager.ui
                     break;
 
                 case DownloadStatus.Finished:
+                case DownloadStatus.FinishedReplaced:
                     e.CellStyle         = _FinishedCellStyle;
                     e.FormattingApplied = true;
                     break;
@@ -1258,6 +1265,7 @@ namespace m3u8.download.manager.ui
                         case DownloadStatus.Wait    : img = _Images.Wait    ; break;
                         case DownloadStatus.Canceled: img = _Images.Canceled; break;
                         case DownloadStatus.Finished: img = _Images.Finished; break;
+                        case DownloadStatus.FinishedReplaced: img = _Images.FinishedReplaced; break;
                         case DownloadStatus.Error   : img = _Images.Error   ; break;
                     }
 
@@ -1271,7 +1279,7 @@ namespace m3u8.download.manager.ui
                     }
                     #endregion
 
-                    #region [.-6.1- draw-check-mark.]
+                    #region [.-6.1- get ExternalProgRunnerType.]
                     var eprt = (GetExternalProgRunnerType?.Invoke( row )).GetValueOrDefault( ExternalProgRunnerTypeEnum.None );
                     #endregion
 
@@ -1282,10 +1290,10 @@ namespace m3u8.download.manager.ui
                     rc = e.CellBounds; 
                     rc.X     += STATUS_TEXT_OFFSET_X;
                     rc.Width -= STATUS_TEXT_OFFSET_X + width;
-                    gr.DrawString( row.Status.ToString(), defCellFont, Brushes.Black, rc, _SF_Left );
+                    gr.DrawString( row.Status.ToText4View(), defCellFont, Brushes.Black, rc, _SF_Left );
                     #endregion
 
-                    #region [.-6.2- draw-check-mark.]
+                    #region [.-6.2- draw ExternalProgRunnerType.]
                     if ( eprt != ExternalProgRunnerTypeEnum.None )
                     {
                         const string HOURGLASS = "\u231B";
@@ -1471,12 +1479,6 @@ namespace m3u8.download.manager.ui
                             ExternalProgRunnerTypeEnum.FFmpeg_InProcessInnerQueue => (ExternalProgRunner_MARK_WIDTH, RIGHT_PADDING), 
                             ExternalProgRunnerTypeEnum.FFmpeg_InProcessNow => (ExternalProgRunner_MARK_WIDTH, RIGHT_PADDING),
                             ExternalProgRunnerTypeEnum.ExternalProg | ExternalProgRunnerTypeEnum.FFmpeg => (IMAGE_HEIGHT + IMAGE_PAD_RIGHT + IMAGE_HEIGHT, 0), _ => (0, 0) };
-        /*[M(O.AggressiveInlining)] private static (int width, int rigthPadding) GetWidthAndRigthPadding( ExternalProgRunnerTypeEnum eprt )
-           => eprt switch { ExternalProgRunnerTypeEnum.FFmpeg => (ExternalProgRunner_MARK_WIDTH, 0), 
-                            ExternalProgRunnerTypeEnum.ExternalProg => (ExternalProgRunner_MARK_WIDTH, 0),
-                            ExternalProgRunnerTypeEnum.FFmpeg_InProcessInnerQueue => (ExternalProgRunner_MARK_WIDTH, RIGTH_PADDING), 
-                            ExternalProgRunnerTypeEnum.FFmpeg_InProcessNow => (ExternalProgRunner_MARK_WIDTH, RIGTH_PADDING),
-                            ExternalProgRunnerTypeEnum.ExternalProg | ExternalProgRunnerTypeEnum.FFmpeg => (ExternalProgRunner_MARK_WIDTH + SECOND_CHECK_MARK_OFFSET, 0), _ => (0, 0) };//*/
 
         private void DGV_AdditionDrawColumnsHeadersAction( DataGridViewCellPaintingEventArgs e )
         {
@@ -1518,9 +1520,15 @@ namespace m3u8.download.manager.ui
                 case STATUS_COLUMN_INDEX:
                     e.Handled = true;
                     var func = GetExternalProgRunnerType ?? (_ => ExternalProgRunnerTypeEnum.None);
-                    using ( var sf = StringFormat.GenericDefault )
-                    AutoSizeColumnWidth( e.ColumnIndex, sf, r => r.Status.ToString(), 
-                        r => (func( r ) != ExternalProgRunnerTypeEnum.None) ? /*IMAGE_HEIGHT*/ExternalProgRunner_MARK_WIDTH : 0, STATUS_TEXT_OFFSET_X );                        
+                    //using ( var sf = StringFormat.GenericDefault )
+                    AutoSizeColumnWidth( e.ColumnIndex, _SF_Left/*sf*/, r => r.Status.ToText4View(), r =>
+                        {
+                            var eprt = func( r );
+                            (var width, var rigthPad) = GetWidthAndRigthPadding( eprt );
+                            return (width + rigthPad);
+                        },
+                        unconditionalIncreaseWidth: STATUS_TEXT_OFFSET_X + 1
+                    );
                     break;
 
                 //case DOWNLOAD_PROGRESS_COLUMN_INDEX:
@@ -1713,7 +1721,14 @@ namespace m3u8.download.manager.ui
                 }
             }
         }
-        private void DGV_DoubleClick( object sender, EventArgs e ) => DoubleClickEx?.Invoke( sender, e );
+        private void DGV_MouseDoubleClick( object sender, MouseEventArgs e )
+        {
+            var hitTestInfo = DGV.HitTest( e.X, e.Y );
+            if ( hitTestInfo.Type == DataGridViewHitTestType.Cell )
+            {
+                DoubleClickEx?.Invoke( sender, e );
+            }
+        }
 
         #region [.DragDrop rows.]
         /// <summary>

@@ -45,6 +45,9 @@ namespace m3u8.download.manager
                 WebProxyInfo                 = new web_proxy_info_4_Serialize( r.WebProxyInfo );
                 Timeout                      = r.Timeout;
                 AttemptRequestCount          = r.AttemptRequestCount;
+                Status                       = r.Status;
+                DownloadBytesLength          = r.DownloadBytesLength;
+                FinitaElapsed                = r.GetElapsed();
                 ExternalProgRunnerStatus     = externalProgRunnerStatus;
 
                 if ( r.IsLiveStream && !r.VeryFirstOutputFullFileName.IsNullOrEmpty() )
@@ -68,7 +71,9 @@ namespace m3u8.download.manager
             [DataMember(Name="w")] public web_proxy_info_4_Serialize    WebProxyInfo   { [M(O.AggressiveInlining)] get; set; }
             [DataMember(Name="t")] public TimeSpan?      Timeout                       { [M(O.AggressiveInlining)] get; set; }
             [DataMember(Name="a")] public int?           AttemptRequestCount           { [M(O.AggressiveInlining)] get; set; }
-            [DataMember(Name="b")] public ExternalProgRunnerStatusTypeEnum ExternalProgRunnerStatus { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="b")] public long           DownloadBytesLength           { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="e")] public TimeSpan       FinitaElapsed                 { [M(O.AggressiveInlining)] get; set; }
+            [DataMember(Name="p")] public ExternalProgRunnerStatusTypeEnum ExternalProgRunnerStatus { [M(O.AggressiveInlining)] get; set; }
         }
 
         /// <summary>
@@ -110,6 +115,8 @@ namespace m3u8.download.manager
                 try
                 {
                     var rows = from r in Extensions.FromJSON< List< DownloadRow_4_Serialize > >( json )
+                               let is_FinishedReplaced = (r.Status == DownloadStatus.FinishedReplaced)
+                               let is_Finished         = r.Status.IsFinished()
                                select new DownloadRow_Definer_3()
                                {
                                    CreatedOrStartedDateTime     = r.CreatedOrStartedDateTime,
@@ -120,7 +127,9 @@ namespace m3u8.download.manager
                                    AttemptRequestCount          = r.AttemptRequestCount,
                                    OutputFileName               = r.OutputFileName, 
                                    OutputDirectory              = r.OutputDirectory, 
-                                   Status                       = DownloadStatus.Created/*r.Status*/,
+                                   Status                       = is_FinishedReplaced ? DownloadStatus.FinishedReplaced : DownloadStatus.Created/*r.Status*/,
+                                   DownloadBytesLength          = is_FinishedReplaced ? r.DownloadBytesLength : null,
+                                   FinitaElapsed                = is_Finished         ? r.FinitaElapsed       : null,
                                    IsLiveStream                 = r.IsLiveStream, 
                                    LiveStreamMaxFileSizeInBytes = r.LiveStreamMaxFileSizeInBytes,
                                    ExternalProgRunnerStatus     = r.ExternalProgRunnerStatus.To_Out_ExternalProgRunnerStatusTypeEnum_() 

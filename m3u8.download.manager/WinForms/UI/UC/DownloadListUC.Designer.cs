@@ -105,7 +105,7 @@
             this.DGV.ColumnDividerDoubleClick += new System.Windows.Forms.DataGridViewColumnDividerDoubleClickEventHandler(this.DGV_ColumnDividerDoubleClick);
             this.DGV.MouseDown +=new System.Windows.Forms.MouseEventHandler(this.DGV_MouseDown);
             this.DGV.MouseClick += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseClick);
-            this.DGV.DoubleClick += new System.EventHandler(this.DGV_DoubleClick);            
+            this.DGV.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.DGV_MouseDoubleClick);
             this.DGV.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.DGV_DataError);
             this.DGV.StartDrawSelectRect += new System.EventHandler(this.DGV_StartDrawSelectRect);
             this.DGV.EndDrawSelectRect += new System.EventHandler(this.DGV_EndDrawSelectRect);

@@ -4,8 +4,6 @@ using System.IO;
 
 using m3u8.client;
 
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-
 using _RowPropertiesChanged_ = m3u8.download.manager.models.DownloadListModel.RowPropertiesChangedEventHandler;
 using M                      = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                      = System.Runtime.CompilerServices.MethodImplOptions;
@@ -24,6 +22,7 @@ namespace m3u8.download.manager.models
         Paused,
         Canceled,
         Finished,
+        FinishedReplaced,
         Error,
     }
 
@@ -71,6 +70,20 @@ namespace m3u8.download.manager.models
             CreatedOrStartedDateTime     = t.CreatedOrStartedDateTime;// DateTime.Now;
             IsLiveStream                 = t.IsLiveStream;
             LiveStreamMaxFileSizeInBytes = t.LiveStreamMaxFileSizeInBytes;
+
+            switch ( t.Status )
+            {
+                case DownloadStatus.FinishedReplaced:
+                    Status              = DownloadStatus.FinishedReplaced;
+                    _FinitaElapsed      = t.FinitaElapsed.GetValueOrDefault( TimeSpan.Zero );
+                    DownloadBytesLength = t.DownloadBytesLength.GetValueOrDefault( 0 );
+                    break;
+
+                case DownloadStatus.Finished:
+                    Status         = DownloadStatus.Finished;
+                    _FinitaElapsed = t.FinitaElapsed.GetValueOrDefault( TimeSpan.Zero );
+                    break;
+            }
         }
         private DownloadRow( DownloadRow r, IEnumerable< LogRow > rows = null ) : base( r.Model )
         {
@@ -372,8 +385,8 @@ namespace m3u8.download.manager.models
                 TotalParts           = 0;
                 SuccessDownloadParts = 0;
                 DownloadBytesLength  = 0;
+                _FinitaElapsed       = default;
 
-                _FinitaElapsed = default;
                 SetStatus( DownloadStatus.Created );
             }
             _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
@@ -393,6 +406,31 @@ namespace m3u8.download.manager.models
             {
                 _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
             }
+        }
+        internal void MakeFinishedReplaced( string convertedFileName, long downloadBytesLength, bool makeUrlFake )
+        {
+            this.SetOutputFileName ( Path.GetFileName     ( convertedFileName ) );
+            this.SetOutputDirectory( Path.GetDirectoryName( convertedFileName ) );
+
+            const DownloadStatus newStatus = DownloadStatus.FinishedReplaced;
+            DownloadStatus prevStatus;
+            lock ( this )
+            {
+                if ( makeUrlFake )
+                {
+                    Url = "[no-url]";
+                }
+                TotalParts           = 0;
+                SuccessDownloadParts = 0;
+                DownloadBytesLength  = downloadBytesLength;
+
+                //_FinitaElapsed = default;
+                SetStatus_Routine( newStatus, out prevStatus );
+            }
+
+            OnDownloadStatusChanged?.Invoke( this, prevStatus, newStatus );
+            _RowPropertiesChanged?.Invoke( this, nameof(Status) );
+            _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
         }
 
         [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
@@ -483,6 +521,7 @@ namespace m3u8.download.manager.models
                 case DownloadStatus.Canceled:
                 case DownloadStatus.Error:
                 case DownloadStatus.Finished:
+                case DownloadStatus.FinishedReplaced:
                     return (_FinitaElapsed);
 
                 default:
@@ -495,8 +534,11 @@ namespace m3u8.download.manager.models
             {
                 case DownloadStatus.Canceled:
                 case DownloadStatus.Error:
-                case DownloadStatus.Finished:
+                case DownloadStatus.Finished:                
                     return (_FinitaElapsed);
+
+                case DownloadStatus.FinishedReplaced:
+                    return (TimeSpan.Zero);
 
                 case DownloadStatus.Paused:
                 case DownloadStatus.Wait:
@@ -611,6 +653,8 @@ namespace m3u8.download.manager.models
     {
         required public DateTime       CreatedOrStartedDateTime { get; init; }
         required public DownloadStatus Status                   { get; init; }
-        required public ExternalProgRunnerStatusTypeEnum ExternalProgRunnerStatus { get; init; }
+        required public long?          DownloadBytesLength      { get; init; }
+        required public TimeSpan?      FinitaElapsed            { get; init; }
+        required public ExternalProgRunnerStatusTypeEnum ExternalProgRunnerStatus { get; init; }        
     }
 }

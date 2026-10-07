@@ -326,6 +326,16 @@ namespace m3u8.download.manager.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap finished_replaced {
+            get {
+                object obj = ResourceManager.GetObject("finished_replaced", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap freemake_16х16 {
             get {
                 object obj = ResourceManager.GetObject("freemake_16х16", resourceCulture);

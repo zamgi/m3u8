@@ -550,13 +550,13 @@ namespace m3u8.client
         {
             if ( _DirectoryLocation4StoreFiles.IsNullOrEmpty() || address.IsNullOrEmpty() )
             {
-                storedFileName = default;
+                storedFileName    = default;
                 normalizedAddress = default;
                 return (false);
             }
-
-            Debug.Assert( address == new Uri( address ).AbsoluteUri );
-
+#if DEBUG
+            try { Debug.Assert( address == new Uri( address ).AbsoluteUri ); } catch ( Exception ex ) { Debug.WriteLine( ex ); }
+#endif
             normalizedAddress = address.ToUpperInvariant();
             var addressBytes = Encoding.UTF8.GetBytes( normalizedAddress );
             //

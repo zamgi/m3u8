@@ -19,6 +19,7 @@ namespace m3u8.download.manager.models
         public UrlsUniquer() => _Urls = new Dictionary< string, int >( StringComparer.InvariantCultureIgnoreCase );
         public void Add( string url )
         {
+            if ( url.IsNullOrEmpty() ) return;
 #if NETCOREAPP
             ref var cnt = ref CollectionsMarshal.GetValueRefOrAddDefault( _Urls, url, out _/*var exists*/ );
             cnt++;

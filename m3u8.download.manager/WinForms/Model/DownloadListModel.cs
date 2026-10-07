@@ -71,7 +71,7 @@ namespace m3u8.download.manager.models
         }
 
         [M(O.AggressiveInlining)] public bool HasAnyFinished() => GetAllFinished().Any();
-        [M(O.AggressiveInlining)] public IEnumerable< DownloadRow > GetAllFinished() => (from row in GetRows_Enumerable() where (row.Status == DownloadStatus.Finished) select row);
+        [M(O.AggressiveInlining)] public IEnumerable< DownloadRow > GetAllFinished() => (from row in GetRows_Enumerable() where (row.IsFinished()) select row);
 
         [M(O.AggressiveInlining)] public bool ContainsUrl( string url ) => (!url.IsNullOrEmpty() && _Urls.Contains( url ));
         [M(O.AggressiveInlining)] public bool ContainsAnyUrls( string url_1, string url_2, string url_3 ) => ContainsUrl( url_1 ) || ContainsUrl( url_2 ) || ContainsUrl( url_3 );
