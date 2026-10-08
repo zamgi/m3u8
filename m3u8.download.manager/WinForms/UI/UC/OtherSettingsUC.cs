@@ -376,7 +376,7 @@ namespace m3u8.download.manager.ui
             {
                 var exists = File.Exists( filePath );
                 errorProvider.SetError( textBox, exists ? null : $"file not exists: '{filePath}'." );
-                if ( exists )
+                if ( !exists )
                 {
                     errorProvider.SetIconPadding  ( textBox, -17 ); 
                     errorProvider.SetIconAlignment( textBox, ErrorIconAlignment.MiddleRight );
