@@ -31,6 +31,7 @@
             this.showOnlyRequestRowsWithErrorsCheckBox = new System.Windows.Forms.CheckBox();
             this.showDownloadStatisticsInMainFormTitleCheckBox = new System.Windows.Forms.CheckBox();
             this.showAllDownloadsCompleted_NotificationCheckBox = new System.Windows.Forms.CheckBox();
+            this.downloadList_DrawOutputfileExistsMarkCheckBox = new System.Windows.Forms.CheckBox();
             this.useDirectorySelectDialogModernCheckBox = new System.Windows.Forms.CheckBox();
             this.testDirectorySelectDialog = new System.Windows.Forms.ButtonWithDotsText();
             this.externalProgPictureBox = new System.Windows.Forms.PictureBoxEx();
@@ -203,13 +204,14 @@
             // ui_downloadLogUIGroupBox
             // 
             ui_downloadLogUIGroupBox.Location = new System.Drawing.Point(13, 185);
-            ui_downloadLogUIGroupBox.Size = new System.Drawing.Size(261, 140);
+            ui_downloadLogUIGroupBox.Size = new System.Drawing.Size(261, 165);
             ui_downloadLogUIGroupBox.TabIndex = 1;
             ui_downloadLogUIGroupBox.TabStop = false;
             ui_downloadLogUIGroupBox.Text = "UI / download log UI";
             ui_downloadLogUIGroupBox.Controls.Add(this.showOnlyRequestRowsWithErrorsCheckBox);
             ui_downloadLogUIGroupBox.Controls.Add(this.showDownloadStatisticsInMainFormTitleCheckBox);
             ui_downloadLogUIGroupBox.Controls.Add(this.showAllDownloadsCompleted_NotificationCheckBox);
+            ui_downloadLogUIGroupBox.Controls.Add(this.downloadList_DrawOutputfileExistsMarkCheckBox);
             ui_downloadLogUIGroupBox.Controls.Add(this.useDirectorySelectDialogModernCheckBox);
             ui_downloadLogUIGroupBox.Controls.Add(this.testDirectorySelectDialog);
             // 
@@ -245,12 +247,22 @@
             this.showAllDownloadsCompleted_NotificationCheckBox.Text = "show all downloads completed notification";
             this.showAllDownloadsCompleted_NotificationCheckBox.UseVisualStyleBackColor = true;
             // 
+            // downloadList_DrawOutputfileExistsMarkCheckBox
+            // 
+            this.downloadList_DrawOutputfileExistsMarkCheckBox.AutoSize = true;
+            this.downloadList_DrawOutputfileExistsMarkCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.downloadList_DrawOutputfileExistsMarkCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.downloadList_DrawOutputfileExistsMarkCheckBox.Location = new System.Drawing.Point(30, 105);
+            this.downloadList_DrawOutputfileExistsMarkCheckBox.TabIndex = 2;
+            this.downloadList_DrawOutputfileExistsMarkCheckBox.Text = "show output file exists mark in download list";
+            this.downloadList_DrawOutputfileExistsMarkCheckBox.UseVisualStyleBackColor = true;
+            // 
             // useDirectorySelectDialogModernCheckBox
             // 
             this.useDirectorySelectDialogModernCheckBox.AutoSize = true;
             this.useDirectorySelectDialogModernCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
             this.useDirectorySelectDialogModernCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.useDirectorySelectDialogModernCheckBox.Location = new System.Drawing.Point(30, 105);
+            this.useDirectorySelectDialogModernCheckBox.Location = new System.Drawing.Point(30, 130);
             this.useDirectorySelectDialogModernCheckBox.TabIndex = 2;
             this.useDirectorySelectDialogModernCheckBox.Text = "use directory select dialog modern style";
             this.useDirectorySelectDialogModernCheckBox.UseVisualStyleBackColor = true;
@@ -259,7 +271,7 @@
             // 
             this.testDirectorySelectDialog.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this.testDirectorySelectDialog.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.testDirectorySelectDialog.Location = new System.Drawing.Point(240, 105);
+            this.testDirectorySelectDialog.Location = new System.Drawing.Point(240, 130);
             this.testDirectorySelectDialog.Size = new System.Drawing.Size(16, 18);
             this.testDirectorySelectDialog.TabIndex = 3;            
             this.testDirectorySelectDialog.UseVisualStyleBackColor = true;
@@ -535,7 +547,7 @@
             // 
             // receivedAndWritedPartsGroupBox
             // 
-            receivedAndWritedPartsGroupBox.Location = new System.Drawing.Point(13, 331);
+            receivedAndWritedPartsGroupBox.Location = new System.Drawing.Point(13, 356);
             receivedAndWritedPartsGroupBox.Size = new System.Drawing.Size(261, 85);
             receivedAndWritedPartsGroupBox.TabIndex = 4;
             receivedAndWritedPartsGroupBox.TabStop = false;
@@ -586,7 +598,7 @@
             this.AutoScroll = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(560, 416);
+            this.ClientSize = new System.Drawing.Size(560, 441);
             this.Controls.Add(downloadParamsGroupBox);
             this.Controls.Add(ui_downloadLogUIGroupBox);
             this.Controls.Add(externalProgGroupBox);
@@ -618,6 +630,7 @@
         private System.Windows.Forms.CheckBox showOnlyRequestRowsWithErrorsCheckBox;
         private System.Windows.Forms.CheckBox showDownloadStatisticsInMainFormTitleCheckBox;
         private System.Windows.Forms.CheckBox showAllDownloadsCompleted_NotificationCheckBox;
+        private System.Windows.Forms.CheckBox downloadList_DrawOutputfileExistsMarkCheckBox;
         private System.Windows.Forms.CheckBox useDirectorySelectDialogModernCheckBox;
         private System.Windows.Forms.ButtonWithDotsText testDirectorySelectDialog;
         private System.Windows.Forms.CheckBox uniqueUrlsOnlyCheckBox;

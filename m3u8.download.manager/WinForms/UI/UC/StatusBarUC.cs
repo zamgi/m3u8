@@ -154,6 +154,7 @@ namespace m3u8.download.manager.ui
                 f_o.ShowOnlyRequestRowsWithErrors          = st.ShowOnlyRequestRowsWithErrors;
                 f_o.ShowDownloadStatisticsInMainFormTitle  = st.ShowDownloadStatisticsInMainFormTitle;
                 f_o.ShowAllDownloadsCompleted_Notification = st.ShowAllDownloadsCompleted_Notification;
+                f_o.DownloadList_DrawOutputfileExistsMark  = st.DownloadList_DrawOutputfileExistsMark;
                 f_o.OutputFileExtension                    = st.OutputFileExtension;
                 f_o.ExternalProgCaption                    = st.ExternalProgCaption;
                 f_o.ExternalProgFilePath                   = st.ExternalProgFilePath;
@@ -187,6 +188,7 @@ namespace m3u8.download.manager.ui
                     st.ShowOnlyRequestRowsWithErrors          = f_o.ShowOnlyRequestRowsWithErrors;
                     st.ShowDownloadStatisticsInMainFormTitle  = f_o.ShowDownloadStatisticsInMainFormTitle;
                     st.ShowAllDownloadsCompleted_Notification = f_o.ShowAllDownloadsCompleted_Notification;
+                    st.DownloadList_DrawOutputfileExistsMark  = f_o.DownloadList_DrawOutputfileExistsMark;
                     st.OutputFileExtension                    = f_o.OutputFileExtension;
                     st.ExternalProgCaption                    = f_o.ExternalProgCaption;
                     st.ExternalProgFilePath                   = f_o.ExternalProgFilePath;

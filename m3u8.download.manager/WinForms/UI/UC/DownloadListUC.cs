@@ -14,11 +14,9 @@ using m3u8.download.manager.infrastructure;
 using m3u8.download.manager.models;
 using m3u8.download.manager.Properties;
 
-using static m3u8.download.manager.ui.DefaultColors;
-
 using _SC_                      = m3u8.download.manager.controllers.SettingsPropertyChangeController;
-using CellStyle                 = System.Windows.Forms.DataGridViewCellStyle;
 using CollectionChangedTypeEnum = m3u8.download.manager.models.DownloadListModel.CollectionChangedTypeEnum;
+using CellStyle                 = System.Windows.Forms.DataGridViewCellStyle;
 using HitTestInfo               = System.Windows.Forms.DataGridView.HitTestInfo;
 using M                         = System.Runtime.CompilerServices.MethodImplAttribute;
 using O                         = System.Runtime.CompilerServices.MethodImplOptions;
@@ -118,33 +116,33 @@ namespace m3u8.download.manager.ui
         {
             public Images() 
             {
-                Created    = Resources.created;
-                Started    = Resources.running;
-                Running    = Resources.running;
-                Paused     = Resources.paused;
-                Wait       = Resources.wait;
-                Canceled   = Resources.canceled;
-                Finished   = Resources.finished;
+                Created          = Resources.created;
+                Started          = Resources.running;
+                Running          = Resources.running;
+                Paused           = Resources.paused;
+                Wait             = Resources.wait;
+                Canceled         = Resources.canceled;
+                Finished         = Resources.finished;
                 FinishedReplaced = Resources.finished_replaced;
-                Error      = Resources.error;
-                FFmpeg     = Resources.ffmpeg_16х16;
-                Freemake   = Resources.freemake_16х16;
-                LiveStream = Resources.live_stream;
-                Workgroup  = Resources.workgroup_16x16;
+                Error            = Resources.error;
+                FFmpeg           = Resources.ffmpeg_16х16;
+                Freemake         = Resources.freemake_16х16;
+                LiveStream       = Resources.live_stream;
+                Workgroup        = Resources.workgroup_16x16;
             }
-            public Image Created    { get; }
-            public Image Started    { get; }
-            public Image Running    { get; }
-            public Image Paused     { get; }
-            public Image Wait       { get; }
-            public Image Canceled   { get; }
-            public Image Finished   { get; }
+            public Image Created          { get; }
+            public Image Started          { get; }
+            public Image Running          { get; }
+            public Image Paused           { get; }
+            public Image Wait             { get; }
+            public Image Canceled         { get; }
+            public Image Finished         { get; }
             public Image FinishedReplaced { get; }
-            public Image Error      { get; }
-            public Image FFmpeg     { get; }
-            public Image Freemake   { get; }
-            public Image LiveStream { get; }
-            public Image Workgroup  { get; }
+            public Image Error            { get; }
+            public Image FFmpeg           { get; }
+            public Image Freemake         { get; }
+            public Image LiveStream       { get; }
+            public Image Workgroup        { get; }
         }
 
         #region [.column index's.]
@@ -199,6 +197,7 @@ namespace m3u8.download.manager.ui
         private ContextMenuStrip  _ColumnsContextMenu;
         private ToolStripMenuItem _SpecialSortByOutputFileName_MenuItem;
         private Images            _Images;
+        private bool              _DrawOutputfileExistsMark;
         #endregion
 #if DEBUG
         /// <summary>
@@ -266,6 +265,7 @@ namespace m3u8.download.manager.ui
             _SF_Right  = new StringFormat( StringFormatFlags.NoWrap ) { Trimming = StringTrimming.EllipsisCharacter, Alignment = StringAlignment.Far   , LineAlignment = StringAlignment.Center };
 
             _Images = new Images();
+            _DrawOutputfileExistsMark = true;
             //----------------------------------------//
 
             CreateColumnsContextMenu();
@@ -529,9 +529,15 @@ namespace m3u8.download.manager.ui
 
         public DownloadListModel Model => _Model;
         public void SetModel_And_SettingsController( DownloadListModel model, _SC_ sc )
-        {         
-            _SC = sc;
+        {
+            DetachSC();
+
+            _SC = sc ?? throw (new ArgumentNullException( nameof(sc) ));
             _LastSortInfo = SortInfo.FromJson( _SC.Settings.LastSortInfoJson );
+
+            _SC.SettingsPropertyChanged -= SC_SettingsPropertyChanged;
+            _SC.SettingsPropertyChanged += SC_SettingsPropertyChanged;
+            _DrawOutputfileExistsMark = _SC.Settings.DownloadList_DrawOutputfileExistsMark;
             //--------------------------------//
 
             if ( _Model == model ) return;
@@ -566,6 +572,14 @@ namespace m3u8.download.manager.ui
                     DGV.CellFormatting  += DGV_CellFormatting;
                 }
                 #endregion
+            }
+        }
+        private void DetachSC()
+        {
+            if ( _SC != null )
+            {
+                _SC.SettingsPropertyChanged -= SC_SettingsPropertyChanged;
+                _SC = null;
             }
         }
 
@@ -671,6 +685,17 @@ namespace m3u8.download.manager.ui
                 }
                 //*/
                 #endregion
+            }
+        }
+
+        private void SC_SettingsPropertyChanged( Settings settings, string propertyName )
+        {
+            switch ( propertyName )
+            {
+                case nameof(Settings.DownloadList_DrawOutputfileExistsMark):
+                    _DrawOutputfileExistsMark = settings.DownloadList_DrawOutputfileExistsMark;
+                    DGV.Invalidate();
+                    break;
             }
         }
 
@@ -1077,38 +1102,27 @@ namespace m3u8.download.manager.ui
             if ( (e.Button == MouseButtons.None) && (0 <= e.RowIndex) )
             {
                 DownloadRow row;
+                Point pt;
                 switch ( e.ColumnIndex )
                 {
-                    case STATUS_COLUMN_INDEX:
-                        row = _Model[ e.RowIndex ];
-                        var eprt = (GetExternalProgRunnerType?.Invoke( row )).GetValueOrDefault( ExternalProgRunnerTypeEnum.None );
-                        if ( eprt != ExternalProgRunnerTypeEnum.None )
-                        {
-                            var rc = DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true );
-                            var pt = DGV.PointToClient( Control.MousePosition );
-//---eprt = ExternalProgRunnerTypeEnum.FFmpeg_InProcessNow; //ExternalProgRunnerTypeEnum.FFmpeg | ExternalProgRunnerTypeEnum.ExternalProg; //
-                            (var width, var rigthPad) = GetWidthAndRigthPadding( eprt );
-                            rc.X += rc.Width - width - rigthPad;
-                            rc.Width = width;
-                            if ( rc.Contains( pt ) )
-                            {
-                                var toolTipText = GetExternalProgRunnerToolTip?.Invoke( eprt );
-                                if ( toolTipText != null )
-                                {
-                                    ShowCustomToolTip_4_PartOfDGVCellMouseMove( toolTipText, pt );
-                                    return;
-                                }
-                            }
-                        }
-                        break;
-
                     case OUTPUTFILENAME_COLUMN_INDEX:
                         row = _Model[ e.RowIndex ];
                         var useWebProxy = row.WebProxyInfo.UseWebProxy;
+
+                        var cellbounds = DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true );
+                            pt         = DGV.PointToClient( Control.MousePosition );
+
+                        var outputfileExistsEllipseRect = GetOutputfileExistsEllipseRect_CutCellBounds( ref cellbounds, _DrawOutputfileExistsMark );
+                        if ( outputfileExistsEllipseRect.Contains( pt ) )
+                        {
+                            var outputfile_exists = File.Exists( row.GetOutputFullFileName() );
+                            ShowCustomToolTip_4_PartOfDGVCellMouseMove( $"output file exists -> {outputfile_exists}", pt );
+                            return;
+                        }
+
                         if ( row.IsLiveStream || useWebProxy )
                         {
-                            var isLiveStreamRect = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
-                            var pt               = DGV.PointToClient( Control.MousePosition );
+                            var isLiveStreamRect = GetIsLiveStreamImageRect( cellbounds );
 
                             if ( row.IsLiveStream )
                             {                        
@@ -1123,6 +1137,52 @@ namespace m3u8.download.manager.ui
                             {
                                 ShowCustomToolTip_4_PartOfDGVCellMouseMove( $"web proxy -> {row.WebProxyInfo.GetWebProxyAddressText()}", pt );
                                 return;
+                            }
+                        }
+
+                        #region comm. prev.
+                        //if ( row.IsLiveStream || useWebProxy )
+                        //{
+                        //    var isLiveStreamRect = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
+                        //    var pt               = DGV.PointToClient( Control.MousePosition );
+
+                        //    if ( row.IsLiveStream )
+                        //    {                        
+                        //        if ( isLiveStreamRect.Contains( pt /*e.Location*/ ) )
+                        //        {
+                        //            ShowCustomToolTip_4_PartOfDGVCellMouseMove( $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)", pt );                                    
+                        //            return;
+                        //        }
+                        //        MakeUseWebProxyImageRect( ref isLiveStreamRect );
+                        //    }
+                        //    if ( useWebProxy && isLiveStreamRect.Contains( pt /*e.Location*/ ) )
+                        //    {
+                        //        ShowCustomToolTip_4_PartOfDGVCellMouseMove( $"web proxy -> {row.WebProxyInfo.GetWebProxyAddressText()}", pt );
+                        //        return;
+                        //    }
+                        //}
+                        #endregion
+                        break;
+
+                    case STATUS_COLUMN_INDEX:
+                        row = _Model[ e.RowIndex ];
+                        var eprt = (GetExternalProgRunnerType?.Invoke( row )).GetValueOrDefault( ExternalProgRunnerTypeEnum.None );
+                        if ( eprt != ExternalProgRunnerTypeEnum.None )
+                        {
+                            var rc = DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true );
+                                pt = DGV.PointToClient( Control.MousePosition );
+//---eprt = ExternalProgRunnerTypeEnum.FFmpeg_InProcessNow; //ExternalProgRunnerTypeEnum.FFmpeg | ExternalProgRunnerTypeEnum.ExternalProg; //
+                            (var width, var rigthPad) = GetWidthAndRigthPadding( eprt );
+                            rc.X += rc.Width - width - rigthPad;
+                            rc.Width = width;
+                            if ( rc.Contains( pt ) )
+                            {
+                                var toolTipText = GetExternalProgRunnerToolTip?.Invoke( eprt );
+                                if ( toolTipText != null )
+                                {
+                                    ShowCustomToolTip_4_PartOfDGVCellMouseMove( toolTipText, pt );
+                                    return;
+                                }
                             }
                         }
                         break;
@@ -1143,7 +1203,9 @@ namespace m3u8.download.manager.ui
                         var useWebProxy = row.WebProxyInfo.UseWebProxy;
                         if ( row.IsLiveStream || useWebProxy )
                         {
-                            var isLiveStreamRect = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
+                            var cellBounds = DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true );
+                                GetOutputfileExistsEllipseRect_CutCellBounds( ref cellBounds, _DrawOutputfileExistsMark );
+                            var isLiveStreamRect = GetIsLiveStreamImageRect( cellBounds );
                             var pt               = DGV.PointToClient( Control.MousePosition );
                             
                             if ( row.IsLiveStream )
@@ -1164,7 +1226,7 @@ namespace m3u8.download.manager.ui
                         
                         //if ( !row.IsFinished() )
                         //{
-                            OutputFileNameClick?.Invoke( row );
+                        OutputFileNameClick?.Invoke( row );
                         //}
                     }
                     break;
@@ -1249,6 +1311,104 @@ namespace m3u8.download.manager.ui
 
             switch ( e.ColumnIndex )
             {
+                case OUTPUTFILENAME_COLUMN_INDEX:
+                {
+                    #region [.IsLiveStream & WebProxy image's in output-filename.]
+                    var row = _Model[ e.RowIndex ];
+                    var useWebProxy = row.WebProxyInfo.UseWebProxy;
+
+                    const DataGridViewPaintParts BackgroundAndBorder = DataGridViewPaintParts.Background | DataGridViewPaintParts.SelectionBackground | DataGridViewPaintParts.Border;
+
+                    e.Handled = true;
+                    e.PaintEx( BackgroundAndBorder );
+
+                    var gr         = e.Graphics;
+                    var cellBounds = e.CellBounds;
+                    
+                    var rc_outputfile_exists = GetOutputfileExistsEllipseRect_CutCellBounds( ref cellBounds, _DrawOutputfileExistsMark );
+                    //cellBounds.Width = rc_outputfile_exists.X - cellBounds.X;
+                    
+                    if ( row.IsLiveStream || useWebProxy )
+                    {                        
+                        var rc_IsLiveStream = GetIsLiveStreamImageRect( cellBounds );
+                        var rc_useWebProxy  = rc_IsLiveStream;
+                        if ( row.IsLiveStream && useWebProxy )
+                        {
+                            MakeUseWebProxyImageRect( ref rc_useWebProxy );
+                        }
+
+                        cellBounds.Width = rc_useWebProxy.X - cellBounds.X;
+                        var ee = e.Create( DGV, cellBounds );
+                        ee.PaintEx( DataGridViewPaintParts.All & ~BackgroundAndBorder );
+
+                        if ( row.IsLiveStream )
+                        {
+                            gr.FillRectangle( Brushes.White, rc_IsLiveStream );
+                            gr.DrawImage( _Images.LiveStream, rc_IsLiveStream );
+                        }
+                        if ( useWebProxy )
+                        {
+                            gr.FillRectangle( Brushes.White, rc_useWebProxy );
+                            gr.DrawImage( _Images.Workgroup, rc_useWebProxy );
+                        }
+                    }
+                    else
+                    {
+                        var ee = e.Create( DGV, cellBounds );
+                        ee.PaintEx( DataGridViewPaintParts.All & ~BackgroundAndBorder );
+                    }
+
+                    #region [.draw outputfile exists mark(ellipse) sign.]
+                    if ( _DrawOutputfileExistsMark )
+                    {
+                        var outputfile_exists = File.Exists( row.GetOutputFullFileName() );
+                        var br = outputfile_exists ? Brushes.ForestGreen : Brushes.IndianRed;
+                        //gr.FillRectangle( Brushes.White, rc_ofn_exists );
+                        gr.FillEllipse( Brushes.White, Rectangle.Inflate( rc_outputfile_exists, 1, 1 ) );
+                        gr.FillEllipse( br, rc_outputfile_exists );
+                    }
+                    #endregion 
+
+                    #region comm. prev.
+                    /*
+                    if ( row.IsLiveStream || useWebProxy )
+                    {
+                        const DataGridViewPaintParts BackgroundAndBorder = DataGridViewPaintParts.Background | DataGridViewPaintParts.SelectionBackground | DataGridViewPaintParts.Border;
+
+                        e.Handled = true;
+                        e.PaintEx( BackgroundAndBorder );
+
+                        var cellBounds = e.CellBounds;
+                        var rc_IsLiveStream = GetIsLiveStreamImageRect( e.CellBounds );
+                        var rc_useWebProxy  = rc_IsLiveStream;
+                        if ( row.IsLiveStream && useWebProxy )
+                        {
+                            MakeUseWebProxyImageRect( ref rc_useWebProxy );
+                        }
+
+                        cellBounds.Width = rc_useWebProxy.X - cellBounds.X;
+                        var ee = e.Create( DGV, cellBounds );
+                        ee.PaintEx( DataGridViewPaintParts.All & ~BackgroundAndBorder );
+
+                        if ( row.IsLiveStream )
+                        {
+                            e.Graphics.FillRectangle( Brushes.White, rc_IsLiveStream );
+                            e.Graphics.DrawImage( _Images.LiveStream, rc_IsLiveStream );
+                        }
+                        if ( useWebProxy )
+                        {
+                            e.Graphics.FillRectangle( Brushes.White, rc_useWebProxy );
+                            e.Graphics.DrawImage( _Images.Workgroup, rc_useWebProxy );
+                        }
+                    }
+                    //*/
+                    #endregion 
+
+                    //Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );
+                    #endregion
+                }
+                break;
+
                 case STATUS_COLUMN_INDEX:
                 {
                     CellPaintRoutine( e );
@@ -1423,52 +1583,28 @@ namespace m3u8.download.manager.ui
                     #endregion
                 }
                 break;
-
-                case OUTPUTFILENAME_COLUMN_INDEX:
-                {
-                    #region [.IsLiveStream & WebProxy image's in output-filename.]
-                    var row = _Model[ e.RowIndex ];
-                    var useWebProxy = row.WebProxyInfo.UseWebProxy;
-                    if ( row.IsLiveStream || useWebProxy )
-                    {
-                        const DataGridViewPaintParts BackgroundAndBorder = DataGridViewPaintParts.Background | DataGridViewPaintParts.SelectionBackground | DataGridViewPaintParts.Border;
-
-                        e.Handled = true;
-                        e.PaintEx( BackgroundAndBorder );
-
-                        var cellBounds = e.CellBounds;
-                        var rc_IsLiveStream = GetIsLiveStreamImageRect( e.CellBounds );
-                        var rc_useWebProxy  = rc_IsLiveStream;
-                        if ( row.IsLiveStream && useWebProxy )
-                        {
-                            MakeUseWebProxyImageRect( ref rc_useWebProxy );
-                        }
-
-                        cellBounds.Width = rc_useWebProxy.X - cellBounds.X;
-                        var ee = e.Create( DGV, cellBounds );
-                        ee.PaintEx( DataGridViewPaintParts.All & ~BackgroundAndBorder );
-
-                        if ( row.IsLiveStream )
-                        {
-                            e.Graphics.FillRectangle( Brushes.White, rc_IsLiveStream );
-                            e.Graphics.DrawImage( _Images.LiveStream, rc_IsLiveStream );
-                        }
-                        if ( useWebProxy )
-                        {
-                            e.Graphics.FillRectangle( Brushes.White, rc_useWebProxy );
-                            e.Graphics.DrawImage( _Images.Workgroup, rc_useWebProxy );
-                        }
-                    }
-
-                    //Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );
-                    #endregion
-                }
-                break;
             }
         }
 
         private const int STATUS_TEXT_OFFSET_X = 18, ExternalProgRunner_MARK_WIDTH = 12, SECOND_ExternalProgRunner_MARK_OFFSET = 4, RIGHT_PADDING = 3;
         private const int IMAGE_HEIGHT = 16, IMAGE_PAD_RIGHT = 2, IsLiveStream_IMAGE_PAD_RIGHT = 5, UseWebProxy_IMAGE_PAD_RIGHT = 3;
+        private const int OUTPUTFILE_EXISTS_ELLIPSE_SIZE = 7, OUTPUTFILE_EXISTS_ELLIPSE_PAD_RIGHT = 3;
+        [M(O.AggressiveInlining)] private static Rectangle GetOutputfileExistsEllipseRect_CutCellBounds( ref Rectangle cellBounds, bool drawOutputfileExistsMark )
+        {
+            Rectangle rc;
+            if ( drawOutputfileExistsMark )
+            {
+                rc = new Rectangle( cellBounds.Right - OUTPUTFILE_EXISTS_ELLIPSE_SIZE - OUTPUTFILE_EXISTS_ELLIPSE_PAD_RIGHT,
+                                    cellBounds.Y + (cellBounds.Height - OUTPUTFILE_EXISTS_ELLIPSE_SIZE) / 2,
+                                    OUTPUTFILE_EXISTS_ELLIPSE_SIZE, OUTPUTFILE_EXISTS_ELLIPSE_SIZE );
+                cellBounds.Width = rc.X - cellBounds.X;
+            }
+            else
+            {
+                rc = Rectangle.Empty;
+            }
+            return (rc);
+        }
         [M(O.AggressiveInlining)] private static Rectangle GetIsLiveStreamImageRect( in Rectangle cellClipBounds )
             => new Rectangle( cellClipBounds.Right - (IMAGE_HEIGHT + IsLiveStream_IMAGE_PAD_RIGHT), cellClipBounds.Y + (cellClipBounds.Height - IMAGE_HEIGHT) / 2, IMAGE_HEIGHT, IMAGE_HEIGHT );
         [M(O.AggressiveInlining)] private static void MakeUseWebProxyImageRect( ref Rectangle isLiveStreamRect ) => isLiveStreamRect.X -= IMAGE_HEIGHT + UseWebProxy_IMAGE_PAD_RIGHT;

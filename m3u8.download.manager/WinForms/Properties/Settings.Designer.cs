@@ -583,5 +583,17 @@ namespace m3u8.download.manager.Properties {
                 this["OutputDirectorySuggestionsMaxCount"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DownloadList_DrawOutputfileExistsMark {
+            get {
+                return ((bool)(this["DownloadList_DrawOutputfileExistsMark"]));
+            }
+            set {
+                this["DownloadList_DrawOutputfileExistsMark"] = value;
+            }
+        }
     }
 }

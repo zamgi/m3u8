@@ -407,7 +407,7 @@ namespace m3u8.download.manager.models
                 _RowPropertiesChanged?.Invoke( this, DownloadParts_DownloadBytesLength_PROP_NAME );
             }
         }
-        internal void MakeFinishedReplaced( string convertedFileName, long downloadBytesLength, bool makeUrlFake )
+        internal void MakeFinishedReplaced( string convertedFileName, long downloadBytesLength, bool makeUrlFake = true )
         {
             this.SetOutputFileName ( Path.GetFileName     ( convertedFileName ) );
             this.SetOutputDirectory( Path.GetDirectoryName( convertedFileName ) );
