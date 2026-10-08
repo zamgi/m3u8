@@ -404,6 +404,19 @@ namespace m3u8.download.manager.ui
                     CollectGarbage.GetTotalMemory( out var totalMemoryBytes );
                     currentMemoryLabel.Text    = $"Current Memory: {GetTotalMemoryFormatText( totalMemoryBytes )}.";
                     currentMemoryLabel.Visible = true;
+
+                    void set_error( TextBox textBox, string filePath )
+                    {
+                        var exists = File.Exists( filePath );
+                        errorProvider.SetError( textBox, exists ? null : $"file not exists: '{filePath}'." );
+                        if ( exists )
+                        {
+                            errorProvider.SetIconPadding  ( textBox, -17 ); 
+                            errorProvider.SetIconAlignment( textBox, ErrorIconAlignment.MiddleRight );
+                        }
+                    }
+                    set_error( externalProgFilePathTextBox, this.ExternalProgFilePath );
+                    set_error( ffmpegFilePathTextBox      , this.FFmpegFileLocation   );
                 });
                 _GetTotalMemoryTimer = new WinTimer( components ) { Interval = 1_000, Enabled = true };
                 _GetTotalMemoryTimer.Tick += tick;

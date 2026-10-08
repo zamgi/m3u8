@@ -28,6 +28,7 @@
             System.Windows.Forms.Label ffmpegFilePathLabel;
             System.Windows.Forms.Label ffmpegCaptionlabel;            
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.showOnlyRequestRowsWithErrorsCheckBox = new System.Windows.Forms.CheckBox();
             this.showDownloadStatisticsInMainFormTitleCheckBox = new System.Windows.Forms.CheckBox();
             this.showAllDownloadsCompleted_NotificationCheckBox = new System.Windows.Forms.CheckBox();
@@ -482,7 +483,7 @@
             this.ffmpegDegreeOfParallelismLabel.ForeColor = System.Drawing.Color.DarkGoldenrod;
             this.ffmpegDegreeOfParallelismLabel.Location = new System.Drawing.Point(6, 125);
             this.ffmpegDegreeOfParallelismLabel.Text = "Max parallel run:";
-            toolTip.SetToolTip(this.ffmpegDegreeOfParallelismLabel, "Maximum number of parallel/simultaneously running ffmpeg instances");
+            this.toolTip.SetToolTip(this.ffmpegDegreeOfParallelismLabel, "Maximum number of parallel/simultaneously running ffmpeg instances");
             // 
             // ffmpegDegreeOfParallelismNUD
             // 
@@ -661,5 +662,6 @@
         private System.Windows.Forms.ButtonWithDotsText browseReceivedAndWritedPartsDirectoryButton;
         private System.Windows.Forms.Label receivedAndWritedPartsLabel;
         private System.Windows.Forms.ToolTip toolTip;
+        private System.Windows.Forms.ErrorProvider errorProvider;
     }
 }
