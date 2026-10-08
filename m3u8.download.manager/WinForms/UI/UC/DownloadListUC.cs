@@ -1113,7 +1113,7 @@ namespace m3u8.download.manager.ui
                             pt         = DGV.PointToClient( Control.MousePosition );
 
                         var outputfileExistsEllipseRect = GetOutputfileExistsEllipseRect_CutCellBounds( ref cellbounds, _DrawOutputfileExistsMark );
-                        if ( outputfileExistsEllipseRect.Contains( pt ) )
+                        if ( _DrawOutputfileExistsMark && outputfileExistsEllipseRect.Contains( pt ) )
                         {
                             var outputfile_exists = File.Exists( row.GetOutputFullFileName() );
                             ShowCustomToolTip_4_PartOfDGVCellMouseMove( $"output file exists -> {outputfile_exists}", pt );
@@ -1653,6 +1653,24 @@ namespace m3u8.download.manager.ui
         {
             switch ( e.ColumnIndex )
             {
+                case OUTPUTFILENAME_COLUMN_INDEX:
+                    e.Handled = true;
+                    using ( var sf = StringFormat.GenericTypographic )
+                    AutoSizeColumnWidth( e.ColumnIndex, sf, r => r.OutputFileName, r => 
+                        {
+                            var w = _DrawOutputfileExistsMark ? OUTPUTFILE_EXISTS_ELLIPSE_SIZE + OUTPUTFILE_EXISTS_ELLIPSE_PAD_RIGHT : 0;
+                            if ( r.IsLiveStream )
+                            {
+                                w += IMAGE_HEIGHT + IsLiveStream_IMAGE_PAD_RIGHT;
+                                if ( r.WebProxyInfo.UseWebProxy ) w += IMAGE_HEIGHT + UseWebProxy_IMAGE_PAD_RIGHT;
+                            }
+                            else if ( r.WebProxyInfo.UseWebProxy ) w += IMAGE_HEIGHT + IsLiveStream_IMAGE_PAD_RIGHT;
+                            return (w);
+                        },
+                        unconditionalIncreaseWidth: 0/*-10*/
+                    );
+                    break;
+
                 case STATUS_COLUMN_INDEX:
                     e.Handled = true;
                     var func = GetExternalProgRunnerType ?? (_ => ExternalProgRunnerTypeEnum.None);
@@ -1672,24 +1690,6 @@ namespace m3u8.download.manager.ui
                 //    using ( var sf = StringFormat.GenericDefault )
                 //    AutoSizeColumnWidth( e.ColumnIndex, sf, r => TryGetDownloadProgress( r, out _, out var progressText ) ? progressText : "-", _ => false, 0, unconditionalIncreaseWidth: 66 );
                 //    break;
-
-                case OUTPUTFILENAME_COLUMN_INDEX:
-                    e.Handled = true;
-                    using ( var sf = StringFormat.GenericTypographic )
-                    AutoSizeColumnWidth( e.ColumnIndex, sf, r => r.OutputFileName, r => 
-                        {
-                            var w = 0;
-                            if ( r.IsLiveStream )
-                            {
-                                w += IMAGE_HEIGHT + IsLiveStream_IMAGE_PAD_RIGHT;
-                                if ( r.WebProxyInfo.UseWebProxy ) w += IMAGE_HEIGHT + UseWebProxy_IMAGE_PAD_RIGHT;
-                            }
-                            else if ( r.WebProxyInfo.UseWebProxy ) w += IMAGE_HEIGHT + IsLiveStream_IMAGE_PAD_RIGHT;
-                            return (w);
-                        },
-                        unconditionalIncreaseWidth: -10
-                    );
-                    break;
             }
         }
         private void AutoSizeColumnWidth( int columnIndex
