@@ -16,11 +16,21 @@ namespace m3u8.download.manager
     /// </summary>
     internal static partial class Extensions_4_DownloadRow
     {
+        //public static void CancelAll( this DownloadController controller, IEnumerable< DownloadRow > rows )
+        //{
+        //    foreach ( var row in rows )
+        //    {
+        //        controller.Cancel( row );
+        //    }
+        //}
         public static void CancelAll( this DownloadController controller, IEnumerable< DownloadRow > rows )
         {
             foreach ( var row in rows )
             {
-                controller.Cancel( row );
+                if ( row.Status.IsAllowed_CancelDownload() )
+                {
+                    controller.Cancel( row );
+                }
             }
         }
         public static void RemoveAllFinished( this DownloadListModel model ) => model.RemoveRows( model.GetAllFinished().ToList() );
@@ -47,6 +57,7 @@ namespace m3u8.download.manager
                                                                                                                (status == DownloadStatus.Running) ||
                                                                                                                (status == DownloadStatus.Wait) ||
                                                                                                                (status == DownloadStatus.Paused);
+        //[M(O.AggressiveInlining)] public static bool IsNotRunning( this DownloadStatus status ) => !status.IsAllowed_CancelDownload();
         [M(O.AggressiveInlining)] public static bool IsAllowed_PauseDownload( this DownloadStatus status ) => (status == DownloadStatus.Started) ||
                                                                                                               (status == DownloadStatus.Running);
         [M(O.AggressiveInlining)] public static bool HasAnyFailedDownloadParts( this DownloadRow row ) => (row.FailedDownloadParts != 0);

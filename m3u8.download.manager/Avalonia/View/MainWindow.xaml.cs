@@ -426,10 +426,7 @@ namespace m3u8.download.manager.ui
                         break;
 
                     case Key.Z:
-                        if ( _VM.UndoModel.TryUndo( out var row ) )
-                        {
-                            _VM.DownloadListModel.AddRowIf( row );
-                        }
+                        undoToolButton_Click( null, EventArgs.Empty );
                         break;
                 }
             }
@@ -467,6 +464,10 @@ namespace m3u8.download.manager.ui
                     //case Key.F4: //settings
                     //    _VM.SettingsCommand.Execute( null );
                     //    break;
+
+                    case Key.F5:
+                        RefreshOutputFileSize();
+                        break;
 
                     case Key.F11:
                         this.WindowState = (this.WindowState == WindowState.Normal) ? WindowState.Maximized : WindowState.Normal;
@@ -953,6 +954,33 @@ namespace m3u8.download.manager.ui
             }        
         }
 
+        private async void RefreshOutputFileSize()
+        {
+            downloadListUC.IsVisible = false;
+            await Task.Delay( 25 );
+            try
+            {
+                foreach ( var row in _VM.DownloadListModel.GetRows_ArrayCopy() )
+                {
+                    RefreshOutputFileSize( row );
+                }
+            }
+            finally
+            {
+                downloadListUC.IsVisible = true;
+            }
+        }
+        private bool RefreshOutputFileSize( DownloadRow row )
+        {
+            if ( !row.Status.IsAllowed_CancelDownload()/*IsNotRunning*/
+                && FileHelperEx.TryGetFileSize( row.GetOutputFullFileName(), out var size ) )
+            {
+                row.SetDownloadBytesLength( size );
+                return (true);
+            }
+            return (false);
+        }
+
         private bool IsWaitBannerShown() => !this.IsEnabled;
 
         private double? Get_LogUC_RowDefinition_Height()
@@ -989,14 +1017,15 @@ namespace m3u8.download.manager.ui
         #endregion
 
         #region [.menu.]
-        private GridLength? _Last_logUC_row_Height;
         private void undoToolButton_Click( object sender, EventArgs e )
         {
             if ( _VM.UndoModel.TryUndo( out var row ) )
             {
-                _VM.DownloadListModel.AddRowIf( row );
+                RefreshOutputFileSize( row );
             }
         }
+
+        private GridLength? _Last_logUC_row_Height;
         private void showLogToolButton_Click( object sender, EventArgs e )
         {
             #region comm.

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using _CollectionChangedTypeEnum_ = m3u8.download.manager.models.ListModel< m3u8.download.manager.models.DownloadRow >.CollectionChangedTypeEnum;
+using CollectionChangedTypeEnum = m3u8.download.manager.models.ListModel< m3u8.download.manager.models.DownloadRow >.CollectionChangedTypeEnum;
 using M = System.Runtime.CompilerServices.MethodImplAttribute;
 using O = System.Runtime.CompilerServices.MethodImplOptions;
 
@@ -33,43 +33,46 @@ namespace m3u8.download.manager.models
             _UndoList.Clear();
             _ShadowRowsModel.Clear();
         }
-        private void _DownloadListModel_CollectionChanged( _CollectionChangedTypeEnum_ changedType, DownloadRow row )
+        private void _DownloadListModel_CollectionChanged( CollectionChangedTypeEnum changedType, DownloadRow row )
         {
             switch ( changedType )
             {
-                case _CollectionChangedTypeEnum_.Remove:
+                case CollectionChangedTypeEnum.Remove:
                     if ( _UndoList.AddIf( row ) ) Fire_UndoChanged();
                     break;
 
-                //case _CollectionChangedTypeEnum_.BulkUpdate:
-                case _CollectionChangedTypeEnum_.Remove_Bulk:
+                //case CollectionChangedTypeEnum.BulkUpdate:
+                case CollectionChangedTypeEnum.Remove_Bulk:
                     var existsRows = _DownloadListModel.GetRows();
                     var undoRows   = _ShadowRowsModel.GetRows().Except( existsRows ).ToList();
                     if ( _UndoList.Add( undoRows ) ) Fire_UndoChanged();
                     _ShadowRowsModel.RemoveRows( undoRows );
                     break;
 
-                case _CollectionChangedTypeEnum_.Clear:
+                case CollectionChangedTypeEnum.Clear:
                     if ( _UndoList.Replace( _ShadowRowsModel.GetRows() ) ) Fire_UndoChanged();
                     _ShadowRowsModel.Clear();
                     break;
 
-                case _CollectionChangedTypeEnum_.Add_Bulk:
-                case _CollectionChangedTypeEnum_.Sort:
+                case CollectionChangedTypeEnum.Add_Bulk:
+                case CollectionChangedTypeEnum.Sort:
                     _ShadowRowsModel.Replace( _DownloadListModel.GetRows() );
                     break;
 
-                case _CollectionChangedTypeEnum_.Add:
+                case CollectionChangedTypeEnum.Add:
                     _ShadowRowsModel.AddRowIf( row );
                     break;
             }
         }
 
+        //public bool TryUndo() => TryUndo( out _ );
         public bool TryUndo( out DownloadRow row )
 #if NETCOREAPP
         {
             if ( _UndoList.TryDequeue( out row ) )
             {
+                _DownloadListModel.AddRowIf( row );
+
                 Fire_UndoChanged();
                 return (true);
             }
@@ -80,6 +83,8 @@ namespace m3u8.download.manager.models
             if ( 0 < _UndoList.Count )
             {
                 row = _UndoList.Dequeue();
+                _DownloadListModel.AddRowIf( row );
+
                 Fire_UndoChanged();
                 return (true);
             }

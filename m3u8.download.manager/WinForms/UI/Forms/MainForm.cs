@@ -389,10 +389,7 @@ namespace m3u8.download.manager.ui
                         break;
 
                     case Keys.Z: // UNDO
-                        if ( _UndoModel.TryUndo( out var row ) )
-                        {
-                            _DownloadListModel.AddRowIf( row );
-                        }
+                        undoToolButton_Click( null, EventArgs.Empty );
                         break;
                 }
             }
@@ -428,6 +425,10 @@ namespace m3u8.download.manager.ui
 
                     case Keys.F4:
                         statusBarUC.ShowDialog_Settings();
+                        break;
+
+                    case Keys.F5:
+                        RefreshOutputFileSize();
                         break;
 
                     case Keys.F11:
@@ -601,7 +602,7 @@ namespace m3u8.download.manager.ui
 
             var existsRows = default(IReadOnlyList< DownloadRow >);
             switch ( changedType )
-            {                
+            {
                 case CollectionChangedTypeEnum.Remove:
                     if ( row != null )
                     {
@@ -1075,7 +1076,6 @@ namespace m3u8.download.manager.ui
                 #region [.variant #2.]
                 _DC.CancelAll( rows );
                 _DownloadListModel.RemoveRows( rows );
-                //---_ExternalProgQueue.Remove( rows.SelectMany( row => row.GetOutputFullFileNames() ) );
 
                 SetDownloadToolButtonsStatus( downloadListUC.GetSelectedDownloadRow() );
                 #endregion
@@ -1206,6 +1206,33 @@ namespace m3u8.download.manager.ui
                 var msg = $"Delete download{deleteOutputFileText}:\n '{row.Url}' ?\n\nOutput file ({outputFileExistsText}):{outputFileNameText}";
                 var yes = (this.MessageBox_ShowQuestion( msg, this.Text, MessageBoxButtons.YesNoCancel, MessageBoxDefaultButton.Button1 ) == DialogResult.Yes);
                 return (yes);
+            }
+            return (false);
+        }
+
+        private async void RefreshOutputFileSize()
+        {
+            downloadListUC.Visible = false;
+            await Task.Delay( 25 );
+            try
+            {
+                foreach ( var row in _DownloadListModel.GetRows_ArrayCopy() )
+                {
+                    RefreshOutputFileSize( row );
+                }
+            }
+            finally
+            {
+                downloadListUC.Visible = true;
+            }
+        }
+        private bool RefreshOutputFileSize( DownloadRow row )
+        {
+            if ( !row.Status.IsAllowed_CancelDownload()/*IsNotRunning*/
+                && FileHelperEx.TryGetFileSize( row.GetOutputFullFileName(), out var size ) )
+            {
+                row.SetDownloadBytesLength( size );
+                return (true);
             }
             return (false);
         }
@@ -1618,7 +1645,7 @@ namespace m3u8.download.manager.ui
         {
             if ( _UndoModel.TryUndo( out var row ) )
             {
-                _DownloadListModel.AddRowIf( row );
+                RefreshOutputFileSize( row );
             }
         }
 

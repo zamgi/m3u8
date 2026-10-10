@@ -438,10 +438,27 @@ namespace m3u8.download.manager.models
                 TotalParts           = 0;
                 SuccessDownloadParts = 0;
                 DownloadBytesLength  = 0;
+                _FinitaElapsed       = default;
 
                 SetStatus( DownloadStatus.Created );
             }
             Fire_PropertyChanged_Events( nameof(MySelf) );
+        }
+        internal void SetDownloadBytesLength( long downloadBytesLength )
+        {
+            var call__RowPropertiesChanged = false;
+            lock ( this )
+            {
+                if ( DownloadBytesLength != downloadBytesLength )
+                {
+                    DownloadBytesLength = downloadBytesLength;
+                    call__RowPropertiesChanged = true;
+                }
+            }
+            if ( call__RowPropertiesChanged )
+            {
+                Fire_PropertyChanged_Events( nameof(MySelf) );
+            }
         }
 
         [M(O.AggressiveInlining)] public void SetStatus( DownloadStatus newStatus )
