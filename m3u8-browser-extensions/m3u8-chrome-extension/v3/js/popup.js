@@ -300,7 +300,20 @@ function create_grouped_m3u8_url__html(x, order_num) {
     return (tr.outerHTML);
 }
 
-function set_no_requests(content) { content.innerHTML = '<h5 class="not-found">m3u8 requests no were made from this page</h5>'; }
+function setHTML(contentElem, rawHTML) {
+    // 1. Парсим строку в полноценный HTML-документ (картинки и структура не пострадают)
+    const parser = new DOMParser();
+    const parsedDoc = parser.parseFromString(rawHTML, 'text/html');
+
+    // 2. Полностью очищаем контейнер, куда вставляем код
+    content.textContent = '';
+
+    // 3. Переносим готовые элементы в DOM (теперь querySelector и поиск элементов будут работать)
+    while (parsedDoc.body.firstChild) {
+        contentElem.appendChild(parsedDoc.body.firstChild);
+    }
+}
+function set_no_requests(content) { setHTML(content, '<h5 class="not-found">m3u8 requests no were made from this page</h5>'); /*content.innerHTML = '<h5 class="not-found">m3u8 requests no were made from this page</h5>'; */ }
 function set_header_content(content, trs, urls_count, group_by_av_count, opt) {
     let clearUrlList            = '<td> <a id="clearUrlListButton" class="delete_all" title="clear all" href="#"><img src="img/delete_all.png" /></a> </td>';    
     let auto_start_download_all = '<td> <a class="auto_start_download_all" title="auto start download all' + 
@@ -323,8 +336,9 @@ function set_header_content(content, trs, urls_count, group_by_av_count, opt) {
         caption_grouped_count = grouped + non_grouped;
     }
 
-    content.innerHTML   = '<table class="header' + (group_by_av_count ? '' : ' no-border') + '"><tr>' + clearUrlList + auto_start_download_all + caption_total_count + caption_grouped_count + '</tr></table>' +
-                          '<table class="content">' + trs.join('') + '</table>';
+    const rawHTML = '<table class="header' + (group_by_av_count ? '' : ' no-border') + '"><tr>' + clearUrlList + auto_start_download_all + caption_total_count + caption_grouped_count + '</tr></table>' +
+                    '<table class="content">' + trs.join('') + '</table>';
+    setHTML(content, rawHTML); //---content.innerHTML = rawHTML;    
 }
 function append_common_EventListeners(content, handlers) {
     const set_click_handler__4_send2host_msgObj = (querySelector, auto_start_download) => {
