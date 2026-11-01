@@ -34,7 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8-firefox-extension", "m
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_xpi", "_xpi", "{3C43194B-AA3D-4916-A292-FB9E65955B11}"
 	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-firefox-extension\_xpi\m3u8_file_downloader-2.6.xpi = m3u8-browser-extensions\m3u8-firefox-extension\_xpi\m3u8_file_downloader-2.6.xpi
+		m3u8-browser-extensions\m3u8-firefox-extension\_xpi\m3u8_file_downloader-2.7.xpi = m3u8-browser-extensions\m3u8-firefox-extension\_xpi\m3u8_file_downloader-2.7.xpi
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "m3u8.downloader.host", "m3u8.downloader.host", "{4A091DFF-C923-491B-B4C4-2762163EE716}"
@@ -84,39 +84,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution_Items", "_Solutio
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v3", "v3", "{1945AF49-9C85-4DC5-8EF5-35D159440475}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\manifest.json = m3u8-browser-extensions\m3u8-chrome-extension\v3\manifest.json
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\options.html = m3u8-browser-extensions\m3u8-chrome-extension\v3\options.html
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\popup.html = m3u8-browser-extensions\m3u8-chrome-extension\v3\popup.html
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v2", "v2", "{F9ABD157-62AF-4992-9323-B596975891E9}"
 	ProjectSection(SolutionItems) = preProject
 		m3u8-browser-extensions\m3u8-chrome-extension\v2\background.html = m3u8-browser-extensions\m3u8-chrome-extension\v2\background.html
 		m3u8-browser-extensions\m3u8-chrome-extension\v2\m3u8.html = m3u8-browser-extensions\m3u8-chrome-extension\v2\m3u8.html
 		m3u8-browser-extensions\m3u8-chrome-extension\v2\m3u8_options.html = m3u8-browser-extensions\m3u8-chrome-extension\v2\m3u8_options.html
 		m3u8-browser-extensions\m3u8-chrome-extension\v2\manifest.json = m3u8-browser-extensions\m3u8-chrome-extension\v2\manifest.json
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{2769B859-5BB5-4BB7-B722-5069BA4BB929}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\css\main.css = m3u8-browser-extensions\m3u8-chrome-extension\v3\css\main.css
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{EFB0BA45-C192-4542-B402-ED35ADB12140}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\auto_start_download.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\auto_start_download.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8_148.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8_148.png
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{B2219F69-9981-4229-9EE5-C412403AF846}"
-	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\options.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\options.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\popup.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\popup.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\serviceWorker.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\serviceWorker.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\workInfoType.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\workInfoType.js
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{8EED9A63-0A36-4026-8757-BB877EC6685F}"
@@ -163,36 +136,36 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{0930BC31-112
 		m3u8-browser-extensions\m3u8-firefox-extension\css\main.css = m3u8-browser-extensions\m3u8-firefox-extension\css\main.css
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v3_next", "v3_next", "{D910DB62-8245-4739-ACEF-47B247BB3ED5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "v3", "v3", "{D910DB62-8245-4739-ACEF-47B247BB3ED5}"
 	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\manifest.json = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\manifest.json
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\options.html = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\options.html
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\popup.html = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\popup.html
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\manifest.json = m3u8-browser-extensions\m3u8-chrome-extension\v3\manifest.json
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\options.html = m3u8-browser-extensions\m3u8-chrome-extension\v3\options.html
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\popup.html = m3u8-browser-extensions\m3u8-chrome-extension\v3\popup.html
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{D4D7C286-79E7-4BB2-A7AF-D6D6EF088C39}"
 	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\css\main.css = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\css\main.css
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\css\main.css = m3u8-browser-extensions\m3u8-chrome-extension\v3\css\main.css
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "img", "img", "{E485FD8B-2732-4950-B1CF-9AC3C7AC8BB7}"
 	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\auto_start_download.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\auto_start_download.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\delete.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\delete.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\delete_all.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\delete_all.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\group_by_audio_video_1.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\group_by_audio_video_1.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\group_by_audio_video_2.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\group_by_audio_video_2.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\m3u8.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\m3u8.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\m3u8_128.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\m3u8_128.png
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\refresh.png = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\img\refresh.png
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\auto_start_download.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\auto_start_download.png
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\delete.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\delete.png
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\delete_all.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\delete_all.png
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\group_by_audio_video_1.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\group_by_audio_video_1.png
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\group_by_audio_video_2.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\group_by_audio_video_2.png
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8.png
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8_128.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\m3u8_128.png
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\img\refresh.png = m3u8-browser-extensions\m3u8-chrome-extension\v3\img\refresh.png
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{22D06D5D-CC04-47C9-AED2-2A2C3C5BD466}"
 	ProjectSection(SolutionItems) = preProject
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\options.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\options.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\popup.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\popup.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\serviceWorker.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\serviceWorker.js
-		m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\workInfoType.js = m3u8-browser-extensions\m3u8-chrome-extension\v3_next\js\workInfoType.js
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\options.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\options.js
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\popup.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\popup.js
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\serviceWorker.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\serviceWorker.js
+		m3u8-browser-extensions\m3u8-chrome-extension\v3\js\workInfoType.js = m3u8-browser-extensions\m3u8-chrome-extension\v3\js\workInfoType.js
 	EndProjectSection
 EndProject
 Global
@@ -201,6 +174,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2B632E6-8000-4B07-91D2-24B017C31232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2B632E6-8000-4B07-91D2-24B017C31232}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2B632E6-8000-4B07-91D2-24B017C31232}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2B632E6-8000-4B07-91D2-24B017C31232}.Release|Any CPU.Build.0 = Release|Any CPU
 		{46961224-7B51-4115-BA59-53F8537CF7C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{46961224-7B51-4115-BA59-53F8537CF7C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46961224-7B51-4115-BA59-53F8537CF7C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -209,18 +190,10 @@ Global
 		{B17C29AF-E052-413B-9149-4F49E5DA2571}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B17C29AF-E052-413B-9149-4F49E5DA2571}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B17C29AF-E052-413B-9149-4F49E5DA2571}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A5B22706-A9D2-4545-959B-957718B4BA84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A5B22706-A9D2-4545-959B-957718B4BA84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A5B22706-A9D2-4545-959B-957718B4BA84}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A5B22706-A9D2-4545-959B-957718B4BA84}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A2B632E6-8000-4B07-91D2-24B017C31232}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A2B632E6-8000-4B07-91D2-24B017C31232}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A2B632E6-8000-4B07-91D2-24B017C31232}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A2B632E6-8000-4B07-91D2-24B017C31232}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3EA7DC6-8C12-4A40-B437-9C737EC0EF28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3EA7DC6-8C12-4A40-B437-9C737EC0EF28}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3EA7DC6-8C12-4A40-B437-9C737EC0EF28}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -230,24 +203,20 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634} = {FB9BF7F1-2D48-429E-81CE-369C7D48E076}
+		{FB9BF7F1-2D48-429E-81CE-369C7D48E076} = {63AC3FAC-138F-4E04-ACF9-D0C877D7C341}
+		{46B5F521-C239-4F29-9C6A-F674B7385F51} = {63AC3FAC-138F-4E04-ACF9-D0C877D7C341}
+		{A2B632E6-8000-4B07-91D2-24B017C31232} = {46B5F521-C239-4F29-9C6A-F674B7385F51}
 		{1894D434-5969-44B7-B51A-87F123427C6D} = {18F2AF0D-B182-4885-9B27-68F67E1E14A0}
 		{96151C69-A1DB-49F5-BE3A-C61B5835D5E3} = {18F2AF0D-B182-4885-9B27-68F67E1E14A0}
 		{5F7272EB-A4D3-4D05-80AF-67D4348E03E7} = {18F2AF0D-B182-4885-9B27-68F67E1E14A0}
 		{3C43194B-AA3D-4916-A292-FB9E65955B11} = {5F7272EB-A4D3-4D05-80AF-67D4348E03E7}
 		{4A091DFF-C923-491B-B4C4-2762163EE716} = {1894D434-5969-44B7-B51A-87F123427C6D}
 		{3E37E8AD-C2A1-4981-B316-F4D4B06AC253} = {1894D434-5969-44B7-B51A-87F123427C6D}
-		{3EA1CBEA-1BEC-4E2C-9642-3C616AFF3634} = {FB9BF7F1-2D48-429E-81CE-369C7D48E076}
-		{FB9BF7F1-2D48-429E-81CE-369C7D48E076} = {63AC3FAC-138F-4E04-ACF9-D0C877D7C341}
-		{46B5F521-C239-4F29-9C6A-F674B7385F51} = {63AC3FAC-138F-4E04-ACF9-D0C877D7C341}
-		{A2B632E6-8000-4B07-91D2-24B017C31232} = {46B5F521-C239-4F29-9C6A-F674B7385F51}
 		{272F6ACB-DD20-476A-821D-8F30B88F728F} = {1894D434-5969-44B7-B51A-87F123427C6D}
 		{55A1DC66-91D7-44F2-A1FB-E66157FDE368} = {272F6ACB-DD20-476A-821D-8F30B88F728F}
 		{A9507421-E719-4ECB-90F6-8095FC672A2E} = {272F6ACB-DD20-476A-821D-8F30B88F728F}
-		{1945AF49-9C85-4DC5-8EF5-35D159440475} = {96151C69-A1DB-49F5-BE3A-C61B5835D5E3}
 		{F9ABD157-62AF-4992-9323-B596975891E9} = {96151C69-A1DB-49F5-BE3A-C61B5835D5E3}
-		{2769B859-5BB5-4BB7-B722-5069BA4BB929} = {1945AF49-9C85-4DC5-8EF5-35D159440475}
-		{EFB0BA45-C192-4542-B402-ED35ADB12140} = {1945AF49-9C85-4DC5-8EF5-35D159440475}
-		{B2219F69-9981-4229-9EE5-C412403AF846} = {1945AF49-9C85-4DC5-8EF5-35D159440475}
 		{8EED9A63-0A36-4026-8757-BB877EC6685F} = {F9ABD157-62AF-4992-9323-B596975891E9}
 		{612F0485-9180-4FF4-A3BE-660BC24E682D} = {F9ABD157-62AF-4992-9323-B596975891E9}
 		{437B5C61-8986-4DAB-AAF8-C24004A38C3E} = {F9ABD157-62AF-4992-9323-B596975891E9}

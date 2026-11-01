@@ -1,17 +1,23 @@
 {
   "manifest_version": 2,
-  "name"       : "m3u8 file downloader 2.6",
-  "description": "m3u8 file downloader firefox extension 2.6",
-  "version"    : "2.6",
+  "name"       : "m3u8 file downloader 2.7",
+  "description": "m3u8 file downloader firefox extension 2.7",
+  "version"    : "2.7",
   "icons": {
     "32" : "img/m3u8.png",
     "128": "img/m3u8_128.png"
   },
 
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
       "id": "{64807ac5-de2d-4f7f-8bac-da6e1e935a1b}",
-      "strict_min_version": "79.0"
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [ "none" ]
+      }
+    },
+    "gecko_android": {
+      "strict_min_version": "142.0"
     }
   },
 

@@ -331,8 +331,9 @@ function set_header_content(content, trs, urls_count, group_by_av_count, opt) {
         caption_grouped_count = grouped + non_grouped;
     }
 
-    content.innerHTML   = '<table class="header' + (group_by_av_count ? '' : ' no-border') + '"><tr>' + clearUrlList + auto_start_download_all + caption_total_count + caption_grouped_count + '</tr></table>' +
-                          '<table class="content">' + trs.join('') + '</table>';
+    const rawHTML = '<table class="header' + (group_by_av_count ? '' : ' no-border') + '"><tr>' + clearUrlList + auto_start_download_all + caption_total_count + caption_grouped_count + '</tr></table>' +
+                    '<table class="content">' + trs.join('') + '</table>';
+    content.setHTML(rawHTML); //---content.innerHTML = rawHTML;
 }
 function append_common_EventListeners(content, handlers) {
     const set_click_handler__4_send2host_msgObj = (querySelector, auto_start_download) => {

@@ -1,89 +1,235 @@
-const conv_2_workInfo = saved_wi => new workInfoType(saved_wi);
-const load_workInfo = async () => {
-    const opt = await chrome.storage.local.get();
-    return (new workInfoType(opt.workInfo));
-}
+﻿const root = chrome;
+root.browserAction = root.browserAction || root.action;
 
-const workInfoType = function (saved_wi) {
-    if (saved_wi?.tabs) {
-        this.tabs = saved_wi.tabs;
-    }
+const getActiveTabId = async () => {
+    const tabs = await root.tabs.query({ active: true, currentWindow: true });
+    return (tabs?.length ? tabs[ 0 ].id : undefined);
+};
+//-----------------------------------------------------------------//
+
+const create_RpcClient = function () {
+    const getLocalWorkInfo = async () => {
+        const json = await root.runtime.sendMessage({ action: 'getWorkInfo' });
+        const stored = JSON.parse(json); 
+        const wi = create_WorkInfoType(stored);
+
+        console.log(`getWorkInfo => tabs.count: ${Object.keys(stored?.tabs || {}).length}`);
+
+        return (wi);
+    };
+    const deleteAllUrlsFromTab = async tabId => {
+        const suc = await root.runtime.sendMessage({ action: 'deleteAllUrlsFromTab', options: { tabId } });
+    };
+    const deleteUrlFromTab = async (tabId, m3u8_url, save2Storage) => {
+        const suc = await root.runtime.sendMessage({ action: 'deleteUrlFromTab', options: { tabId, m3u8_url, save2Storage } });
+    };
+
+    const save2Storage = async () => {
+        const suc = await root.runtime.sendMessage({ action: 'save2Storage' });
+    };
+
+    const getM3u8UrlsByActiveTabId = async activeTabId => {
+        const tabInfo = await root.runtime.sendMessage({ action: 'getM3u8UrlsByActiveTabId', options: { activeTabId } });
+
+        console.log(`getM3u8UrlsByActiveTabId => tabInfo.m3u8_urls.length: ${tabInfo?.m3u8_urls?.length || '/xz (unk)/'}`);
+
+        return (tabInfo);
+    };
+
+    return { getLocalWorkInfo, deleteAllUrlsFromTab, deleteUrlFromTab, save2Storage, getM3u8UrlsByActiveTabId };
 };
 
-workInfoType.prototype = {
-    tabs: {},
-    save2Storage: async function () { await chrome.storage.local.set({ workInfo: this }); },
-    clear: async function () {
-        this.tabs = {};
-        await this.save2Storage();
-    },
+const create_RpcSeverRoutine = function (getWorkInfoFunc) {
+    if (!getWorkInfoFunc) throw (new '!getWorkInfoFunc');
+    const _getWorkInfoFunc = getWorkInfoFunc;
 
-    onActivateTab: async function (tabId) { await this.setUrlsCountText(tabId, this.tabs[tabId]); },
-    onRemoveTab: async function (tabId) {
-        if (this.tabs[tabId]) {
-            delete this.tabs[tabId];
-            await this.save2Storage();
+    const routine_async = async (message, sender, sendResponse) => {
+        const op = message.options;
+        switch (message.action || '') {
+            case 'getWorkInfo':
+                sendResponse(_getWorkInfoFunc().toJson()/*{ data: 'Send message from serviceWorker.' }*/);
+                break;
+
+            case 'deleteAllUrlsFromTab':
+                await (_getWorkInfoFunc()).deleteAllUrlsFromTab(op.tabId);
+                break;
+
+            case 'deleteUrlFromTab':
+                await (_getWorkInfoFunc()).deleteUrlFromTab(op.tabId, op.m3u8_url, op.save2Storage);
+                break;
+
+            case 'save2Storage':
+                await (_getWorkInfoFunc()).save2Storage();
+                break;
+
+            case 'getM3u8UrlsByActiveTabId':
+                const tabInfo = await (_getWorkInfoFunc()).getM3u8UrlsByActiveTabId(op.activeTabId);
+                const json = JSON.stringify(tabInfo);
+                sendResponse(json/*tabInfo*/);
+                break;
+
+            default:
+                console.error(`unknown rpc-action: ${message.action || '[NULL]'}`)
+                break;
         }
-    },
-    deleteTab: async function (tabId) {
-        const has = !!this.tabs[tabId];
-        if (has) delete this.tabs[tabId];
+        return (true); // Important for asynchronous response
+    };
+    const routine = (message, sender, sendResponse) => {
+        const op = message.options;
+        switch (message.action || '') {
+            case 'getWorkInfo':
+                sendResponse(_getWorkInfoFunc().toJson());
+                break;
 
-        await chrome.action.disable(tabId);
-        await this.setUrlsCountText(tabId, null);
-        if (has) await this.save2Storage();
-    },
-    deleteTabUrls: async function (tabId) {
-        const has = !!this.tabs[tabId];
-        if (has) delete this.tabs[tabId];
+            case 'deleteAllUrlsFromTab':
+                _getWorkInfoFunc().deleteAllUrlsFromTab(op.tabId).then(() => sendResponse({ suc: true }));
+                break;
 
-        await this.setUrlsCountText(tabId, null);
-        if (has) await this.save2Storage();
-    },
-    removeEmptyTabs: async function () {
-        let openTabs = (await chrome.tabs.query({ currentWindow: false })).map(tab => tab.id + ''),
+            case 'deleteUrlFromTab':
+                _getWorkInfoFunc().deleteUrlFromTab(op.tabId, op.m3u8_url, op.save2Storage).then(() => sendResponse({ suc: true }));
+                break;
+
+            case 'save2Storage':
+                _getWorkInfoFunc().save2Storage().then(() => sendResponse({ suc: true }));
+                break;
+
+            case 'getM3u8UrlsByActiveTabId':
+                const tabInfo = _getWorkInfoFunc().getM3u8UrlsByActiveTabId(op.activeTabId)
+                sendResponse(tabInfo);
+                break;
+
+            default:
+                console.error(`unknown rpc-action: ${message.action || '[NULL]'}`)
+                break;
+        }
+        return (true); // Important for asynchronous response
+    };    
+    return (routine);
+}
+//-----------------------------------------------------------------//
+
+const create_WorkInfoType = stored => {
+    const _Store = {
+        tabs       : stored?.tabs || {},
+        activeTabId: stored?.activeTabId
+    };
+
+    const save2Storage = async () => { } ,//await root.storage.local.set({ workInfo: _Store }),
+    //clear = async () => { _Store.tabs = {}; await save2Storage(); },
+    toJson = () => JSON.stringify( _Store ),
+    removeEmptyTabs = async () => {
+        let openTabs = (await root.tabs.query({ currentWindow: false })).map(tab => tab.id + ''),
             need_save = false;
-        for (let tabId in this.tabs) {
-            let o = this.tabs[tabId];
+        for (let tabId in _Store.tabs) {
+            let o = _Store.tabs[tabId];
             if (!o?.m3u8_urls?.length || (openTabs.indexOf(tabId) === -1)) {
-                delete this.tabs[tabId];
+                delete _Store.tabs[tabId];
                 need_save = true;
             }
         }
-        if (need_save) await this.save2Storage();
+        if (need_save) await save2Storage();
     },
-    addM3u8Urls: async function (tabId, m3u8_url, requestHeaders) {
-        let o = this.tabs[tabId], need_save = true;
-        if (!o) {
-            o = this.tabs[tabId] = { m3u8_urls: [m3u8_url], requestHeaders: { [m3u8_url]: requestHeaders } };
-        }
-        else if (!o.m3u8_urls) {
-            o.m3u8_urls = [m3u8_url];
-            if (!o.requestHeaders) o.requestHeaders = {};
-            o.requestHeaders[m3u8_url] = requestHeaders;
-        }
-        else if (o.m3u8_urls.indexOf(m3u8_url) === -1) {
-            o.m3u8_urls.push(m3u8_url);
-            if (!o.requestHeaders) o.requestHeaders = {};
-            o.requestHeaders[m3u8_url] = requestHeaders;
-        } else {
-            need_save = false;
+
+    activateTab = async tabId => {
+        if (_Store.activeTabId !== tabId) {
+            _Store.activeTabId = tabId;
+
+            if (tabId !== undefined) {
+                let o = _Store.tabs[tabId];
+                if (!o) {
+                    o = _Store.tabs[tabId] = { m3u8_urls: [] };
+                }
+                else if (!o.m3u8_urls) {
+                    o.m3u8_urls = [];
+                }
+            }
+
+            await save2Storage();
         }
 
-        await this.setUrlsCountText(tabId, o);
-        if (need_save) await this.save2Storage();
+        await setUrlsCountText(tabId);
     },
-    setUrlsCountText: async function (tabId, o) {
-        const cnt = (o?.m3u8_urls?.length || 0);
+    deleteTab = async tabId =>  {
+        const has = !!_Store.tabs[tabId];
+        if (has) {
+            delete _Store.tabs[tabId];
+            await save2Storage();
 
-        await chrome.action.setBadgeText({ text: (cnt || '') + '' });
+            const activeTabId = await getActiveTabId();
+            await setUrlsCountText(activeTabId);
+        }
+    },
+    deleteAllUrlsFromTab = async tabId => await deleteTab(tabId),
+    deleteUrlFromTab = async (tabId, m3u8_url, execSave2Storage) => {
+        if ((tabId !== undefined) && m3u8_url) {
+            const o = _Store.tabs[tabId];
+            if (o?.m3u8_urls) {
+                const i = o.m3u8_urls.indexOf(m3u8_url);
+                if (i !== -1) {
+                    o.m3u8_urls.splice(i, 1);
+                    delete o.requestHeaders[m3u8_url];
+
+                    await setUrlsCountText(tabId);
+                    if (execSave2Storage !== false) await save2Storage();
+                }
+            }
+        }
+    },
+
+    setUrlsCountText = async tabId => {
+        if (tabId === undefined) return;
+    
+        const cnt = _Store.tabs[tabId]?.m3u8_urls?.length ?? 0;
+        const text = cnt ? String(cnt) : '';
+    
+        // Устанавливаем badge ДЛЯ КОНКРЕТНОЙ вкладки
+        await root.browserAction.setBadgeText({ text: text, tabId: tabId });
+    
         if (cnt) {
-            await chrome.action.enable(tabId);
+            await root.browserAction.enable(tabId);
+        } else {
+            try { await root.browserAction.disable(tabId); } catch (e) {}
         }
     },
 
-    getM3u8Urls: function (tabId) {
-        const o = this.tabs[tabId];
+    resetM3u8Urls = async tabId => {
+        const o = _Store.tabs[tabId];
+        if (o) {
+            o.m3u8_urls = [];
+            o.requestHeaders = {};
+            await save2Storage();
+        }
+    },
+    addM3u8Urls = async (tabId, m3u8_url, requestHeaders) => {
+        if ((tabId !== undefined) && m3u8_url) {
+            let o = _Store.tabs[tabId], need_save = true;
+            if (!o) {
+                o = _Store.tabs[tabId] = { m3u8_urls: [m3u8_url], requestHeaders: { [m3u8_url]: requestHeaders } };
+            }
+            else if (!o.m3u8_urls) {
+                o.m3u8_urls = [m3u8_url];
+                if (!o.requestHeaders) o.requestHeaders = {};
+                o.requestHeaders[m3u8_url] = requestHeaders;
+            }
+            else if (o.m3u8_urls.indexOf(m3u8_url) === -1) {
+                o.m3u8_urls.push(m3u8_url);
+                if (!o.requestHeaders) o.requestHeaders = {};
+                o.requestHeaders[m3u8_url] = requestHeaders;
+            }
+            else {
+                need_save = false;
+            }
+
+            if (need_save) {
+                await setUrlsCountText(tabId);
+                await save2Storage();
+            }
+        }
+    },
+    getM3u8UrlsByActiveTabId = activeTabId => {
+        const o = _Store.tabs[activeTabId] || _Store.tabs[_Store.activeTabId]
         return (o?.m3u8_urls ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
-    }
+    };
+
+    return { save2Storage, toJson, removeEmptyTabs, activateTab, deleteTab, deleteAllUrlsFromTab, deleteUrlFromTab, resetM3u8Urls, addM3u8Urls, getM3u8UrlsByActiveTabId };
 };

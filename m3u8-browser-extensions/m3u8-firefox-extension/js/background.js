@@ -6,7 +6,6 @@ const is_match_url = url => {
 };
 const is_match_method = method => {
     const m = (method || '').toLowerCase();
-    //return (m === 'get');
     switch (m) { case 'get': case 'post': return (true); default: console.log(`skip req-method: ${method}`); break; }
 };
 const is_match_url_n_method = d => is_match_url(d.url) && is_match_method(d.method);
@@ -16,7 +15,7 @@ window.addEventListener('load', function () {
 
     const _RequestHeadersByUrl = {};
     root.webRequest.onCompleted.addListener(async d => {
-        if (is_match_url_n_method(d)/*is_match_url(d.url) && is_match_method(d.method)*/) {
+        if (is_match_url_n_method(d)) {
             const requestHeaders = _RequestHeadersByUrl[d.url];
             if (requestHeaders) delete _RequestHeadersByUrl[d.url];
 
@@ -27,7 +26,7 @@ window.addEventListener('load', function () {
     {urls: ['<all_urls>']});
 
     root.webRequest.onBeforeSendHeaders.addListener(d => {
-        if (is_match_url_n_method(d)/*is_match_url(d.url) && is_match_method(d.method)*/) {
+        if (is_match_url_n_method(d)) {
             _RequestHeadersByUrl[d.url] = JSON.stringify(d.requestHeaders);
         }
     },
@@ -40,7 +39,6 @@ window.addEventListener('load', function () {
     root.tabs.onUpdated.addListener(async (tabId, info, tab) => {
         if (!info?.status || (info.status.toLowerCase() !== 'complete')) return;
 
-        // if user open empty tab or ftp protocol and etc.
         if ((tabId === undefined) || !tab?.url || (!tab.url.startsWith('http://') && !tab.url.startsWith('https://'))) {
             if (tabId !== undefined) await root.browserAction.disable(tabId);
         }
@@ -50,15 +48,20 @@ window.addEventListener('load', function () {
                 window.workInfo.resetM3u8Urls(tabId);
             }
 
-            //if (opt.enableButtonEvenIfNoUrls) {
-            //    await root.browserAction.enable(tabId);
-            //}
-            await window.workInfo.activateTab(tabId);
+            // Обновляем badge ТОЛЬКО если это активная вкладка
+            const activeTabs = await root.tabs.query({ active: true, currentWindow: true });
+            if (activeTabs?.[0]?.id === tabId) {
+                await window.workInfo.activateTab(tabId);
+            } else {
+                // Для неактивной — просто обновляем badge без смены activeTabId
+                await window.workInfo.setUrlsCountText(tabId);
+            }
         }
     });
 
     root.tabs.onRemoved.addListener(async tabId => await window.workInfo.deleteTab(tabId));
 });
+//---------------------------------------------------------------------------//
 
 window.workInfoType = function () { };
 window.workInfoType.prototype = {
@@ -107,37 +110,19 @@ window.workInfoType.prototype = {
     },
 
     setUrlsCountText: async function (tabId) {
-        //if (tabId !== undefined) {
-        //    const cnt = this.tabs[tabId]?.m3u8_urls?.length;
-        //    if (tabId === this.activeTabId) {
-        //        await root.browserAction.setBadgeText({ text: (cnt || '') + '' });
-        //    }
+        if (tabId === undefined) return;
 
-        //    const opt = await root.storage.local.get();
-        //    if (!opt.enableButtonEvenIfNoUrls) {
-        //        if (cnt) await root.browserAction.enable(tabId);
-        //        else     await root.browserAction.disable(tabId)
-        //    }
-        //}
+        const cnt = this.tabs[tabId]?.m3u8_urls?.length ?? 0;
+        const text = cnt ? String(cnt) : '';
 
-        if (tabId !== undefined) {
-            const opt = await root.storage.local.get();
-            if (opt.enableButtonEvenIfNoUrls) {
-                await root.browserAction.enable(tabId);
+        // Устанавливаем badge ДЛЯ КОНКРЕТНОЙ вкладки
+        await root.browserAction.setBadgeText({ text: text, tabId: tabId });
 
-                if (tabId === this.activeTabId) {
-                    const cnt = this.tabs[tabId]?.m3u8_urls?.length;
-                    await root.browserAction.setBadgeText({ text: (cnt || '') + '' });
-                }
-            } else {
-                const cnt = this.tabs[tabId]?.m3u8_urls?.length;
-                if (tabId === this.activeTabId) {
-                    await root.browserAction.setBadgeText({ text: (cnt || '') + '' });
-                }
-
-                if (cnt) await root.browserAction.enable(tabId);
-                else     await root.browserAction.disable(tabId)
-            }
+        const opt = await root.storage.local.get();
+        if (opt.enableButtonEvenIfNoUrls || (0 < cnt)) {
+            await root.browserAction.enable(tabId);
+        } else {
+            try { await root.browserAction.disable(tabId); } catch (e) { }
         }
     },
 

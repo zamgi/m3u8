@@ -1,164 +1,445 @@
-window.addEventListener('load', async function () {
+﻿window.addEventListener('load', async function () {
+    try {
+        // get m3u8 urls for current active tab
+        const activeTabId = await getActiveTabId();
+        const rpcClient   = create_RpcClient();
 
-    let tabs  = await chrome.tabs.query({ active: true, currentWindow: true });
-    let tabId = (tabs?.length ? tabs[ 0 ].id : -1);
+        const set_def_val = (d, prop, defVal) => { if (d[prop] === undefined) d[prop] = defVal; };
+        let opt = await root.storage.local.get(); if (!opt) opt = {}; set_def_val(opt, 'groupByAudioVideo', true);
+                                                                      set_def_val(opt, 'saveUrlListBetweenTabReload', false);
+        const set_checkbox_click_handler = async (checkboxId, onClickFunc, opt_prop) => {
+            if (!opt_prop) opt_prop = checkboxId;
 
-    let opt = await chrome.storage.local.get();
-    let workInfo = conv_2_workInfo(opt.workInfo);
+            const ch = document.getElementById(checkboxId);
+            ch.checked = !!opt[opt_prop];
+            if (onClickFunc) await onClickFunc(ch.checked);
+            ch.addEventListener('click', async function () {                
+                opt[opt_prop] = this.checked;
+                await root.storage.local.set(opt);
+                if (onClickFunc) onClickFunc(this.checked);
+            });
+        };
 
-    let t = workInfo.getM3u8Urls(tabId);
-    let m3u8_urls = t.m3u8_urls;
-
-    // function render m3u8 urls list
-    render_m3u8_urls(m3u8_urls, t.requestHeaders);
-
-    let ch = document.getElementById('saveUrlListBetweenTabReload');
-    ch.checked = !!opt.saveUrlListBetweenTabReload;    
-    ch.addEventListener('click', async function () {
-        opt.saveUrlListBetweenTabReload = this.checked;
-        await chrome.storage.local.set(opt);
-    });
-
-    let content = document.getElementById('content');
-    ch = document.getElementById('directionRtl');
-    ch.checked = (opt.directionRtl !== undefined) ? !!opt.directionRtl : (content.style.direction === 'rtl');
-    content.style.direction = ch.checked ? 'rtl' : '';
-    ch.addEventListener('click', async function () {
-        content.style.direction = this.checked ? 'rtl' : '';
-        opt.directionRtl = this.checked;
-        await chrome.storage.local.set(opt);
-    });
-
-    if (m3u8_urls?.length) {
-        let bt = document.getElementById('clearUrlList');
-        bt.style.display = '';
-        bt.addEventListener('click', async function () {
-            await workInfo.deleteTabUrls(tabId);
-            
-            this.style.display = 'none';
+        const clearUrlListFunc = async () => {
+            await rpcClient.deleteAllUrlsFromTab(activeTabId);
             render_m3u8_urls();
+        },
+        deleteUrlFromListFunc = async d => {
+            if (d.is_group_by_audio_video) {                
+                await rpcClient.deleteUrlFromTab(activeTabId, d.video_url, false); 
+                await rpcClient.deleteUrlFromTab(activeTabId, d.audio_url); 
+            }
+            else {
+                await rpcClient.deleteUrlFromTab(activeTabId, d.m3u8_url); 
+            }
+            await renderFunc(opt.groupByAudioVideo);
+        },
+        clearSingleUrlsFunc = async () => {
+            const aa = document.querySelectorAll('a.download');
+            if (aa.length) {
+                for (let i = 0; i < aa.length; i++) {
+                    const d = create_msgObj(aa[i]);
+                    rpcClient.deleteUrlFromTab(activeTabId, d.m3u8_url, false); 
+                }
+                await rpcClient.save2Storage();
+                await renderFunc(opt.groupByAudioVideo);
+            }
+        },
+        clearGroupedUrlsFunc = async () => {
+            const aa = document.querySelectorAll('a.is_group_by_audio_video');
+            if (aa.length) {
+                for (let i = 0; i < aa.length; i++) {
+                    const d = create_grouped_msgObj(aa[i]);
+                    await rpcClient.deleteUrlFromTab(activeTabId, d.video_url, false);
+                    await rpcClient.deleteUrlFromTab(activeTabId, d.audio_url, false); 
+                }
+                await rpcClient.save2Storage();
+                await renderFunc(opt.groupByAudioVideo);
+            }
+        },
+        showSingleUrlsClick = async function () {
+            opt.hideSingleUrls = !this.checked;
+            await root.storage.local.set(opt);
+
+            await renderFunc(opt.groupByAudioVideo);
+        },
+        showGroupedUrlsClick = async function () {
+            opt.hideGroupedUrls = !this.checked;
+            await root.storage.local.set(opt);
+
+            await renderFunc(opt.groupByAudioVideo);
+        };
+
+        const handlers = { clearUrlListFunc, deleteUrlFromListFunc, clearSingleUrlsFunc, clearGroupedUrlsFunc, showSingleUrlsClick, showGroupedUrlsClick };
+        const renderFunc = async groupByAudioVideo => {
+            const tabInfo = await rpcClient.getM3u8UrlsByActiveTabId(activeTabId);
+            if (groupByAudioVideo) {
+                const urls = group_by_audio_video(tabInfo);
+                render_grouped_m3u8_urls(urls, handlers, opt);
+            } else {
+                render_m3u8_urls(tabInfo, handlers);
+            }
+        }
+
+        await set_checkbox_click_handler('groupByAudioVideo', renderFunc /*render func call here first time*/);        
+        await set_checkbox_click_handler('saveUrlListBetweenTabReload');
+        //set_checkbox_click_handler('directionRtl', rtl => document.getElementById('content').style.direction = rtl ? 'rtl' : '');
+
+        document.getElementById('refreshButton')?.addEventListener('click', () => {
+            Array.from(document.getElementById('content').children).forEach(e => e.style.visibility = 'hidden');
+            setTimeout(async () => await renderFunc(opt.groupByAudioVideo), 100);
         });
+    }
+    catch (ex) {
+        console.error('m3u8:popup => ' + ex);
+        render_m3u8_urls();
     }
 });
-function render_m3u8_urls(m3u8_urls, requestHeaders) {
+
+function get_trimmed_url(url, max_len) {
+    if (!max_len) max_len = 110;
+    if (max_len < url?.length) {
+        url = url.substring(0, max_len / 2 - 2) + '...' + url.substring(url.length - max_len/2 - 2);
+    }
+    return (url);
+}
+function group_by_audio_video(tabInfo) {
+    const { m3u8_urls, requestHeaders } = tabInfo || {};
+    if (!m3u8_urls?.length) return;
+
+    let res = [], skiped_urls = {};
+    for (let i = 0, cnt = m3u8_urls.length; i < cnt; i++) {
+        let m3u8_url = m3u8_urls[i];
+        if (skiped_urls[m3u8_url]) continue;
+        let requestHeaders_4_url = requestHeaders[m3u8_url] || '';
+
+        const SUFFIX_v = '-v1.m3u8', SUFFIX_a = '-a1.m3u8';
+        let is_video = m3u8_url.endsWith(SUFFIX_v),
+            is_audio = !is_video && m3u8_url.endsWith(SUFFIX_a);
+        if (is_video || is_audio) {
+            let suf_v = is_video ? SUFFIX_v : SUFFIX_a,
+                suf_a = is_video ? SUFFIX_a : SUFFIX_v;
+
+            let grouped_url = m3u8_url.substring(0, m3u8_url.length - suf_v.length),
+                url_av = grouped_url + suf_a,
+                idx   = m3u8_urls.indexOf(url_av);
+            if (idx !== -1) {
+                skiped_urls[url_av] = 1;
+
+                let v = { url: m3u8_url, requestHeaders: requestHeaders_4_url },
+                    a = { url: url_av  , requestHeaders: requestHeaders[url_av] || '' };
+                let o = {
+                    is_group_by_audio_video: true,
+                    grouped_url_text: grouped_url + ' + (' + suf_a + ')+(' + suf_v + ')',
+                    video: is_video ? v : a,
+                    audio: is_video ? a : v
+                };
+                res.push(o);
+                continue;
+            }
+        }
+
+        res.push({ url: m3u8_url, requestHeaders: requestHeaders_4_url });
+    }
+    return (res);
+}
+function render_grouped_m3u8_urls(urls, handlers, opt) {
+    const content = document.getElementById('content');
+
+    if (!urls?.length) return set_no_requests(content);
+
+    let trs = [], group_by_av_cnt = 0, no_group_cnt = 0;
+    for (let i = 0, cnt = urls.length; i < cnt; i++) {
+        const x = urls[i];
+        if (x.is_group_by_audio_video) {
+            //x = {
+            //    is_group_by_audio_video: true,
+            //    video: { url: , requestHeaders: },
+            //    audio: { url: , requestHeaders: }
+            //}
+
+            group_by_av_cnt++;
+            if (!opt.hideGroupedUrls)
+                trs.push( create_grouped_m3u8_url__html(x, group_by_av_cnt) );
+        }
+        else {
+            //x = { url: , requestHeaders: }
+            if (!opt.hideSingleUrls)
+                trs.push( create_single_m3u8_url__html(x, ++no_group_cnt) );
+        }
+    }
+    set_header_content(content, trs, urls.length + group_by_av_cnt, group_by_av_cnt, opt);
+    append_common_EventListeners(content, handlers);
+
+    if (group_by_av_cnt) {
+        const aa = content.querySelectorAll('a.is_group_by_audio_video');
+        for (let i = 0; i < aa.length; i++) {
+            aa[i].addEventListener('click', function (e) {
+                send2host_msgObj(create_grouped_msgObj(this));
+                e.preventDefault();
+                return (false);
+            });
+        }
+    }
+}
+
+function render_m3u8_urls(tabInfo, handlers) {
     let content = document.getElementById('content');
 
-    if (!m3u8_urls || !m3u8_urls.length) {
-        content.innerHTML = '<h5 class="not-found">m3u8 requests no were made from this page</h5>';
-        return;
-    }
-    
+    const { m3u8_urls, requestHeaders } = tabInfo || {};
+    if (!m3u8_urls?.length) return set_no_requests(content);
+
     let trs = [];
     for (let i = 0, cnt = m3u8_urls.length; i < cnt; i++) {
-        let m3u8_url = m3u8_urls[i], requestHeaders_4_url = requestHeaders[m3u8_url] || '';
-        let a = document.createElement('a'); a.className = 'auto_start_download'; a.title = 'auto start download'; a.href = m3u8_url; a.setAttribute('requestHeaders', requestHeaders_4_url);
-
-        let img = document.createElement('img'); img.src = 'img/auto_start_download.png'; img.style.height = '16px';
-        a.appendChild(img);
-
-        let td = document.createElement('td');
-        td.appendChild(a);
-
-        let a2 = document.createElement('a'); a2.className = 'download'; a2.href = m3u8_url; a2.setAttribute('requestHeaders', requestHeaders_4_url);
-        a2.appendChild(document.createTextNode(m3u8_url));
-
-        let td2 = document.createElement('td'); td2.className = 'content'; td2.title = m3u8_url;
-        td2.appendChild(a2);
-
-        let tr = document.createElement('tr');
-        tr.appendChild(td);
-        tr.appendChild(td2);
-        
-        trs.push(tr.outerHTML);
-
-        //trs.push('<tr><td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="img/auto_start_download.png" style="height: 16px"/></a></td>' +
-        //         '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td></tr>');
+        const m3u8_url = m3u8_urls[i];
+        trs.push(create_single_m3u8_url__html({ url: m3u8_url, requestHeaders: requestHeaders[m3u8_url] || '' }, i + 1));
     }
-    let download_all = '<h5 class="found"><a class="download_all" title="download all" href="#">m3u8 urls: ' + m3u8_urls.length + '</a></h5>',
-        auto_start_download_all = ((1 < m3u8_urls.length) ? '<a class="auto_start_download_all" title="auto start download all" href="#"><img src="img/auto_start_download.png" style="height: 16px"/></a>' : '');
-    content.innerHTML = '<table><tr><td>' + auto_start_download_all + '</td><td>' + download_all + '</td></tr></table>' +
-                        '<table class="content">' + trs.join('') + '</table>';
+    set_header_content(content, trs, m3u8_urls.length);
+    append_common_EventListeners(content, handlers);
+}
 
-    let aa = content.querySelectorAll('a.download');
+function create_single_m3u8_url__html(x, order_num /*x = { url: m3u8_url, requestHeaders: requestHeaders_4_url}*/) {
+    //1.
+    let a1 = document.createElement('a');
+    a1.className = 'delete';
+    a1.title     = 'delete url';
+    a1.href      = '#';
+    a1.setAttribute('m3u8_url', x.url);
+
+    let img1 = document.createElement('img'); img1.src = 'img/delete.png';
+    a1.appendChild(img1);
+
+    let td1 = document.createElement('td');
+    td1.appendChild(a1);
+
+    //2.
+    let a2 = document.createElement('a');
+    a2.className = 'auto_start_download';
+    a2.title     = 'auto start download';
+    a2.href      = x.url;
+    a2.setAttribute('requestHeaders', x.requestHeaders);
+
+    let img2 = document.createElement('img'); img2.src = 'img/auto_start_download.png';
+    a2.appendChild(img2);
+
+    let td2 = document.createElement('td');
+    td2.appendChild(a2);
+
+    //3.
+    let a3 = document.createElement('a'); a3.className = 'download'; a3.href = x.url; a3.setAttribute('requestHeaders', x.requestHeaders);
+    a3.appendChild(document.createTextNode(get_trimmed_url(x.url) /*+ ' (' + order_num + ')'*/));
+    let span = document.createElement('span'); span.className = 'ord_num'; span.appendChild(document.createTextNode('(' + order_num + ')'));
+    a3.appendChild(span);
+
+    let td3 = document.createElement('td'); td3.className = 'content'; td3.title = x.url;
+    td3.appendChild(a3);
+
+    //fin.
+    let tr = document.createElement('tr');
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+
+    return (tr.outerHTML);
+
+    //'<tr>' +
+    //    '<td><a class="delete" title="delete url" href="#"><img src="img/delete.png" /></a></td>' +
+    //    '<td><a class="auto_start_download" title="auto start download" href="' + m3u8_url + '"><img src="img/auto_start_download.png" /></a></td>' +
+    //    '<td class="content" title="' + m3u8_url + '"><a class="download" href="' + m3u8_url + '">' + m3u8_url + '</a></td>' + 
+    //'</tr>'
+}
+function create_grouped_m3u8_url__html(x, order_num) {
+    //x = {
+    //    is_group_by_audio_video: true,
+    //    video: { url: m3u8_url, requestHeaders: requestHeaders_4_url },
+    //    audio: { url: url_a   , requestHeaders: requestHeaders[url_a] || ''}
+    //}
+
+    //1.
+    let a1 = document.createElement('a');
+    a1.className = 'delete';
+    a1.title     = 'delete url';
+    a1.href      = '#';
+    a1.setAttribute('is_group_by_audio_video', true);
+    a1.setAttribute('video-url', x.video.url);
+    a1.setAttribute('audio-url', x.audio.url);
+
+    let img1 = document.createElement('img'); img1.src = 'img/delete.png';
+    a1.appendChild(img1);
+
+    let td1 = document.createElement('td');
+    td1.appendChild(a1);
+
+    //2.
+    let img2 = document.createElement('img'); img2.src = 'img/group_by_audio_video_1.png';
+    let td2  = document.createElement('td');
+    td2.appendChild(img2);
+
+
+    //3.
+    let a3 = document.createElement('a'); a3.className = 'is_group_by_audio_video'; a3.title = 'grouped by audio+video'; img2.title = a3.title;
+    a3.href = '#';
+    a3.setAttribute('is_group_by_audio_video', true);
+    a3.setAttribute('video-url'           , x.video.url);
+    a3.setAttribute('video-requestHeaders', x.video.requestHeaders);
+    a3.setAttribute('audio-url'           , x.audio.url);
+    a3.setAttribute('audio-requestHeaders', x.audio.requestHeaders);
+    a3.appendChild(document.createTextNode(get_trimmed_url(x.grouped_url_text) /*+ ' (' + order_num + ')'*/));
+    let span = document.createElement('span'); span.className = 'ord_num'; span.appendChild(document.createTextNode('(' + order_num + ')'));
+    a3.appendChild(span);
+
+    let td3 = document.createElement('td'); td3.className = 'content'; td3.title = x.grouped_url_text;
+    td3.appendChild(a3);
+
+    //fin.
+    let tr = document.createElement('tr');
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+
+    return (tr.outerHTML);
+}
+
+function set_no_requests(content) { content.innerHTML = '<h5 class="not-found">m3u8 requests no were made from this page</h5>'; }
+function set_header_content(content, trs, urls_count, group_by_av_count, opt) {
+    let clearUrlList            = '<td> <a id="clearUrlListButton" class="delete_all" title="clear all" href="#"><img src="img/delete_all.png" /></a> </td>';    
+    let auto_start_download_all = '<td> <a class="auto_start_download_all" title="auto start download all' + 
+                                                      (group_by_av_count ? ' single/non-grouped' : '') + '" href="#"><img src="img/auto_start_download.png" /></a> </td>';
+    let caption_total_count     = '<td> <h5 class="found"><a class="download_all" title="download all" href="#">total: ' + urls_count + '</a></h5> </td>';
+
+    let caption_grouped_count = '';
+    if (group_by_av_count) {
+        let non_grouped_count = (urls_count - 2*group_by_av_count), non_grouped = '';
+        if (non_grouped_count) {
+            non_grouped = '<td class="separator"></td>' +                           
+                          '<td> <a id="clearSingleUrlsButton" class="delete_all' + (opt.hideSingleUrls ? ' vis_hidden' : '') + '" title="delete all single/non-grouped" href="#"><img src="img/delete_all.png" /></a> </td>' + 
+                          '<td> <h5 class="found"><a class="download_all_singles" title="download all single/non-grouped" href="#">singles: ' + non_grouped_count + '</a></h5> </td>' +
+                          '<td> <input id="showSingleUrlsCheckbox" type="checkbox" ' + (opt.hideSingleUrls ? '' : 'checked="checked"') + ' title="show / hide" /> </td>';
+        }
+        let grouped     = '<td class="separator"></td>' + 
+                          '<td> <a id="clearGroupedUrlsButton" class="delete_all' + (opt.hideGroupedUrls ? ' vis_hidden' : '') + '" title="delete all grouped" href="#"><img src="img/delete_all.png" /></a> </td>' +
+                          '<td> <h5 class="found"><a class="download_all_grouped" title="download all grouped" href="#">grouped: ' + group_by_av_count + '/(' + (2*group_by_av_count) + ')</a></h5> </td>' + 
+                          '<td> <input id="showGroupedUrlsCheckbox" type="checkbox" ' + (opt.hideGroupedUrls ? '' : 'checked="checked"') + ' title="show / hide" /> </td>';
+        caption_grouped_count = grouped + non_grouped;
+    }
+
+    content.innerHTML   = '<table class="header' + (group_by_av_count ? '' : ' no-border') + '"><tr>' + clearUrlList + auto_start_download_all + caption_total_count + caption_grouped_count + '</tr></table>' +
+                          '<table class="content">' + trs.join('') + '</table>';
+}
+function append_common_EventListeners(content, handlers) {
+    const set_click_handler__4_send2host_msgObj = (querySelector, auto_start_download) => {
+        const aa = content.querySelectorAll(querySelector);
+        for (let i = 0; i < aa.length; i++) {
+            aa[i].addEventListener('click', function (e) {
+                send2host_msgObj(create_msgObj(this, !!auto_start_download));
+                e.preventDefault();
+                return (false);
+            });
+        }
+    };
+
+    set_click_handler__4_send2host_msgObj('a.download');
+    set_click_handler__4_send2host_msgObj('a.auto_start_download', true);
+
+    const set_click_handler__4_send2host_msgObjsArray = (querySelector, querySelector_2, create_msgObj_Func) => {
+        const aa = content.querySelectorAll(querySelector);
+        if (0 < aa.length) {
+            aa[0].addEventListener('click', function (e) {
+                const msgObjsArray = [], bb = content.querySelectorAll(querySelector_2);
+                for (let j = 0; j < bb.length; j++) {
+                    msgObjsArray.push( create_msgObj_Func( bb[ j ] ) );
+                }
+                send2host_msgObjsArray(msgObjsArray);
+                e.preventDefault();
+                return (false);
+            });
+        }
+    };
+
+    set_click_handler__4_send2host_msgObjsArray('a.download_all', 'a.download, a.is_group_by_audio_video', a => a.getAttribute('is_group_by_audio_video') ? create_grouped_msgObj(a) : create_msgObj(a));
+    set_click_handler__4_send2host_msgObjsArray('a.auto_start_download_all', 'a.auto_start_download', a => create_msgObj(a, true));
+
+    set_click_handler__4_send2host_msgObjsArray('a.download_all_singles', 'a.download', a => create_msgObj(a));
+    set_click_handler__4_send2host_msgObjsArray('a.download_all_grouped', 'a.is_group_by_audio_video', a => create_grouped_msgObj(a));
+
+    document.getElementById('clearUrlListButton')?.addEventListener('click', handlers.clearUrlListFunc);
+    document.getElementById('clearSingleUrlsButton')?.addEventListener('click', handlers.clearSingleUrlsFunc);
+    document.getElementById('clearGroupedUrlsButton')?.addEventListener('click', handlers.clearGroupedUrlsFunc);
+    document.getElementById('showSingleUrlsCheckbox')?.addEventListener('click', handlers.showSingleUrlsClick);
+    document.getElementById('showGroupedUrlsCheckbox')?.addEventListener('click', handlers.showGroupedUrlsClick);
+
+    const aa = content.querySelectorAll('a.delete');
     for (let i = 0; i < aa.length; i++) {
         aa[i].addEventListener('click', function (e) {
-            send2host_single(this.href, this.getAttribute('requestHeaders') || '');
-            e.preventDefault();
-            return (false);
-        });
-    }
-
-    aa = content.querySelectorAll('a.auto_start_download');
-    for (let i = 0; i < aa.length; i++) {
-        aa[i].addEventListener('click', function (e) {
-            send2host_single(this.href, this.getAttribute('requestHeaders') || '', true);
-            e.preventDefault();
-            return (false);
-        });
-    }
-
-    aa = content.querySelectorAll('a.download_all');
-    if (0 < aa.length) {
-        aa[0].addEventListener('click', function (e) {
-            const msgObjsArray = [], bb = content.querySelectorAll('a.download');
-            for (let j = 0; j < bb.length; j++) {
-                msgObjsArray.push( create_msgObj(bb[j].href, bb[j].getAttribute('requestHeaders') || '') );
-            }
-            send2host_multi(msgObjsArray);
-            e.preventDefault();
-            return (false);
-        });
-    }
-
-    aa = content.querySelectorAll('a.auto_start_download_all');
-    if (0 < aa.length) {
-        aa[0].addEventListener('click', function (e) {
-            const msgObjsArray = [], bb = content.querySelectorAll('a.auto_start_download');
-            for (let j = 0; j < bb.length; j++) {
-                msgObjsArray.push( create_msgObj(bb[j].href, bb[j].getAttribute('requestHeaders') || '', true) );
-            }
-            send2host_multi(msgObjsArray);
+            const d = this.getAttribute('is_group_by_audio_video')
+                ? { is_group_by_audio_video: true, video_url: this.getAttribute('video-url'), audio_url: this.getAttribute('audio-url') }
+                : { m3u8_url: this.getAttribute('m3u8_url') };
+            handlers.deleteUrlFromListFunc(d);
             e.preventDefault();
             return (false);
         });
     }
 }
 
-function create_msgObj(m3u8_url, requestHeaders, auto_start_download) {
-    return ({
-        m3u8_url: m3u8_url,
-        requestHeaders: requestHeaders,
+function create_grouped_msgObj(a, auto_start_download) {
+    return {
+        is_group_by_audio_video: true,
+        auto_start_download    : !!auto_start_download,
+        video_url              : a.getAttribute('video-url'),
+        video_requestHeaders   : a.getAttribute('video-requestHeaders') || '',
+        audio_url              : a.getAttribute('audio-url'),
+        audio_requestHeaders   : a.getAttribute('audio-requestHeaders') || ''
+    };
+}
+function create_msgObj(a, auto_start_download) {
+    return {
+        m3u8_url           : a.href,
+        requestHeaders     : a.getAttribute('requestHeaders') || '',
         auto_start_download: !!auto_start_download
-    });
+    };
 }
-async function send2host_single(m3u8_url, requestHeaders, auto_start_download) { await send2host_multi( [ create_msgObj(m3u8_url, requestHeaders, auto_start_download) ] ); }
-async function send2host_multi(msgObjsArray) {
+function send2host_msgObj(msgObj) { send2host_msgObjsArray([msgObj]); }
+function send2host_msgObjsArray(msgObjsArray) {
     const HOST_NAME = 'm3u8.downloader.host';
 
-    let res, message;
     try {
-        res = await chrome.runtime.sendNativeMessage(HOST_NAME, { array: msgObjsArray });
-    } catch (ex) {
-        message = ex + '';
-    }
-    if (res) {
-        if (res.text === 'success') {
-            console.log('[' + HOST_NAME + '] sent the response: "' + JSON.stringify(res) + '"');
-            return;
-        }
-        message = res.text || JSON.stringify(res);
-    }
-    else if (chrome.runtime.lastError?.message) {
-        message = (message ? (message + ', ') : '') + chrome.runtime.lastError.message;
-    }
+        root.runtime.sendNativeMessage(
+            HOST_NAME,
+            { array: msgObjsArray },
+            resp => {
+                let message;
+                if (resp) {
+                    if (resp.text === 'success') {
+                        console.log('[' + HOST_NAME + '] sent the response: \'' + JSON.stringify(resp) + '\'');
+                        return;
+                    }
+                    message = resp.text || JSON.stringify(resp);
+                }
+                else if (root.runtime.lastError?.message) {
+                    message = root.runtime.lastError.message;
+                }
 
-    let notificationOptions = {
-        type    : 'basic',
-        title   : '[' + HOST_NAME + '] => send-native-message ERROR:',
-        message : message || '[NULL]',
-        iconUrl : 'img/m3u8_148.png',
-        priority: 2
-    };
-    await chrome.notifications.clear(HOST_NAME);
-    await chrome.notifications.create(HOST_NAME, notificationOptions);
+                let notificationOptions = {
+                    type    : 'basic',
+                    title   : '[' + HOST_NAME + '] => send-native-message ERROR:',
+                    message : message || '[NULL]',
+                    iconUrl : 'img/m3u8_148.png',
+                    priority: 2
+                };
+                root.notifications.clear(HOST_NAME);
+                root.notifications.create(HOST_NAME, notificationOptions);
+            });
+    }
+    catch (ex) {
+        let message = ex + '';
+        let notificationOptions = {
+            type    : 'basic',
+            title   : '[' + HOST_NAME + '] => send-native-message ERROR:',
+            message : message || '[NULL]',
+            iconUrl : 'img/m3u8_148.png',
+            priority: 2
+        };
+        root.notifications.clear(HOST_NAME);
+        root.notifications.create(HOST_NAME, notificationOptions);
+    }
 }
