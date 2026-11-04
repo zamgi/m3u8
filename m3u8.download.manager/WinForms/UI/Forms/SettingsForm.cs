@@ -95,11 +95,6 @@ namespace m3u8.download.manager.ui
             }
         }
 
-        //private void set_WebProxyInfo( in web_proxy_info webProxyInfo )
-        //{
-        //    set_WebProxyTabPageText( webProxyInfo.UseWebProxy, webProxyInfo.GetWebProxyAddressText() );
-        //    webProxyUC.SetWebProxyInfo( webProxyInfo );
-        //}
         private void set_WebProxyTabPageText( bool useRequestWebProxy, string webProxyAddress )
         {
             webProxyTabPage.Text = "web proxy";

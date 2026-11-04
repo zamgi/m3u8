@@ -105,26 +105,6 @@ namespace m3u8.helpers
         }
         //-------------------------------------------------------------------------------------------------------------------------//
 
-        /*public static IFileWriterHolder CreateFileWriter( string fileName, bool setLength2Zero, out FileStream fs )
-        {
-            fs = new FileStream( fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.ReadWrite | FileShare.Delete );
-            if ( setLength2Zero ) fs.SetLength( 0 );
-            var fsShadowLock = new FileStream( fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite );
-            try
-            {
-                var fw = new FileWriterHolder( fs, fsShadowLock );
-                return (fw);
-            }
-            catch ( Exception ex ) 
-            {
-                Debug.WriteLine( ex );
-                fs?.Dispose();
-                fsShadowLock?.Dispose();
-
-                throw;
-            }
-        }
-        //*/
         public static IFileWriterHolder CreateFileWriterHolder( string fileName ) => new FileWriterHolder( fileName );
     }
 
@@ -145,13 +125,6 @@ namespace m3u8.helpers
     /// </summary>
     internal sealed class FileWriterHolder : IFileWriterHolder
     {
-        //private readonly FileStream _Fs;
-        //private FileStream _FsShadowLock;
-        //public FileWriterHolder( FileStream fs, FileStream fsShadowLock )
-        //{
-        //    _Fs = fs;
-        //    _FsShadowLock = fsShadowLock;
-        //}
         private FileStream __fs__;
         private FileStream __fsShadowLock__;
         private string __fileName__;

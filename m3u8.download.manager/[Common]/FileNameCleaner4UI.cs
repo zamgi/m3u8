@@ -95,16 +95,6 @@ namespace m3u8.download.manager.ui
                     if ( outputFileExtension.HasFirstCharNotDot() ) outputFileName += '.';
                     outputFileName += outputFileExtension;
                 }
-
-                //if ( !outputFileName.EndsWith( outputFileExtension, StringComparison.InvariantCultureIgnoreCase )
-                //     && !HasValidExtension( outputFileName )
-                //   )
-                //{
-                //    outputFileName = outputFileName.CutAtEndByMaxLen( maxOutputFileNameLength - outputFileExtension.Length );
-
-                //    if ( outputFileExtension.HasFirstCharNotDot() ) outputFileName += '.';
-                //    outputFileName += outputFileExtension;
-                //}
             }
             return (outputFileName);
         }

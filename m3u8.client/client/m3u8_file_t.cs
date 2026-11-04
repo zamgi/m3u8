@@ -144,11 +144,5 @@ namespace m3u8.infrastructure
     internal static partial class Extensions
     {
         [M(O.AggressiveInlining)] internal static Uri GetPartUrl( this /*in*/ m3u8_part_ts part, Uri baseAddress ) => baseAddress.GetPartUrl( part.RelativeUrlName );
-        //internal static List< T > ToList< T >( this IEnumerable< T > source, int capacity )
-        //{
-        //    var lst = new List< T >( capacity );
-        //    lst.AddRange( source );
-        //    return (lst);
-        //}
     }
 }

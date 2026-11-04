@@ -64,8 +64,6 @@ namespace m3u8.client
         //------------------------------------------------------------------------------------------//
 
         protected override Task< HttpResponseMessage > SendRequest_Impl( HttpRequestMessage req, CancellationToken ct ) => _HttpClient.SendAsync( req, _HttpCompletionOption, ct );
-        //protected override Task< HttpResponseMessage > SendRequest_Impl( 
-        //    HttpRequestMessage req, IObjectPool< CancellationTokenSource > _/*timeoutCtsPool*/, CancellationToken ct ) => _HttpClient.SendAsync( req, _HttpCompletionOption, ct );
         protected override Task< HttpResponseMessage > SendRequest_Impl( 
             HttpRequestMessage req, CtsTimerPool _/*timeoutCtsPool*/, CancellationToken ct ) => _HttpClient.SendAsync( req, _HttpCompletionOption, ct );
         protected override Task< HttpResponseMessage > SendRequest_Impl( 

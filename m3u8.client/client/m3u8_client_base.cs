@@ -264,23 +264,6 @@ namespace m3u8.client
                                 if ( bytesReaded == 0 )
                                     break;
 
-                                #region comm.
-/*
-var rnd = new Random();
-if ( rnd.Next( 10 ) == 0 )
-{
-    await Task.Delay( rnd.Next( 1, 11 ) ).CAX();
-}
-//*/
-
-/*
-if ( (new Random()).Next( 10 ) == 0 )
-{
-    throw new Exception( "(new Random()).Next( 10 ) == 0" );
-}
-//*/
-                                #endregion
-
                                 await part.Stream.WriteAsync( buf, 0, bytesReaded, ct ).CAX();
                                 totalBytesReaded += bytesReaded;
 

@@ -65,8 +65,6 @@ namespace m3u8.download.manager.ui
                     _VisibleDelayInMilliseconds = null;
                 }
             }
-            //captionLabel .Text    = (_IsInWaitingForOtherAppInstanceFinished ? "...waiting for other app-instance finished..."
-            //                                                                 : (ShowPercentSteps ? $"{_CaptionText}{_PercentSteps}%" : _CaptionText));
             captionLabel .Text    = ShowPercentSteps         ? $"{_CaptionText}{_PercentSteps}%"   : _CaptionText;
             progressLabel.Text    = ShowCurrentAndTotalSteps ? $"{_CurrentSteps} of {_TotalSteps}" : null;
             elapsedLabel .Text    = '(' + ts.ToString( HH_MM_SS ) + ')';
@@ -92,14 +90,9 @@ namespace m3u8.download.manager.ui
             _CurrentSteps++;
             _PercentSteps = Convert.ToByte( (100.0 * _CurrentSteps) / _TotalSteps );
             _SpeedText    = speedText;
-
-            //_IsInWaitingForOtherAppInstanceFinished = false;
         }
         public void SetCaptionText( string captionText ) => _CaptionText = captionText;
         public void SetCaptionText( string captionText, bool showPercentSteps ) => (_CaptionText, _ShowPercentSteps) = (captionText, showPercentSteps);
-
-        //private bool _IsInWaitingForOtherAppInstanceFinished;
-        //public void WaitingForOtherAppInstanceFinished() => _IsInWaitingForOtherAppInstanceFinished = true;
 
         public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, int visibleDelayInMilliseconds ) => Create( parent, cts, CAPTION_TEXT, visibleDelayInMilliseconds );
         public static WaitBannerUC Create( Control parent, CancellationTokenSource cts, string captionText = CAPTION_TEXT, int? visibleDelayInMilliseconds = null )

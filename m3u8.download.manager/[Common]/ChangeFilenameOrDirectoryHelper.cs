@@ -15,21 +15,6 @@ namespace m3u8.download.manager.infrastructure
     /// </summary>
     internal static partial class ChangeFilenameOrDirectoryHelper
     {
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        //private static class Set
-        //{
-        //    /// <summary>
-        //    /// 
-        //    /// </summary>
-        //    private static class EmptySet< T >
-        //    {
-        //        public static readonly ISet< T > Value = new HashSet< T >();
-        //    }
-        //    public static ISet< T > Empty< T >() => EmptySet< T >.Value;
-        //}       
-
         #region [.change OutputFileName & OutputDirectory.]
         public static async Task ChangeOutputFileName_Or_OutputDirectory( DownloadRow row, string outputFileName_or_outputDirectory, bool change_outputDirectory
             , Func< string, Task< bool > > askForOverwriteFunc
@@ -87,11 +72,6 @@ namespace m3u8.download.manager.infrastructure
                             t.queue.Add( prev_outputFullFileName );
                         }
                     });
-                    //if ( need_add )
-                    //{
-                    //    externalProgQueue.Remove( new_outputFullFileName );
-                    //    externalProgQueue.Add( prev_outputFullFileName );
-                    //}
                     break;
             }
         }
@@ -199,11 +179,6 @@ namespace m3u8.download.manager.infrastructure
                             t.queue.Add( prev_outputFullFileName );
                         }
                     });
-                    //if ( need_add )
-                    //{
-                    //    externalProgQueue.Remove( new_outputFullFileName );
-                    //    externalProgQueue.Add( prev_outputFullFileName );
-                    //}
                     break;
             }
         }

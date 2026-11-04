@@ -30,6 +30,7 @@ namespace m3u8.download.manager.ui.infrastructure
             Visible      = column.Visible;
         }
     }
+
     /// <summary>
     /// 
     /// </summary>

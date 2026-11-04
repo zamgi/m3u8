@@ -169,7 +169,8 @@ namespace System.Threading
             {
                 snapshot = target;
                 stillLess = newValue < snapshot;
-            } while ( stillLess && Interlocked.CompareExchange( ref target, newValue, snapshot ) != snapshot );
+            } 
+            while ( stillLess && Interlocked.CompareExchange( ref target, newValue, snapshot ) != snapshot );
 
             return stillLess;
         }
@@ -181,7 +182,8 @@ namespace System.Threading
             {
                 snapshot = target;
                 stillMore = newValue > snapshot;
-            } while ( stillMore && Interlocked.CompareExchange( ref target, newValue, snapshot ) != snapshot );
+            } 
+            while ( stillMore && Interlocked.CompareExchange( ref target, newValue, snapshot ) != snapshot );
 
             return stillMore;
         }

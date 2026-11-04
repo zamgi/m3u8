@@ -109,10 +109,7 @@ namespace m3u8.infrastructure
                 set_Protocol( h.SslOptions, SslProtocols.Ssl2  );
                 set_Protocol( h.SslOptions, SslProtocols.Ssl3  );
 #pragma warning restore CS0618
-                //if ( _timeout.HasValue )
-                //{
-                //    h.ConnectTimeout = _timeout.Value;
-                //}
+                //if ( _timeout.HasValue ) h.ConnectTimeout = _timeout.Value;
                 return (h);
             };
             

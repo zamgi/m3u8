@@ -226,28 +226,6 @@ namespace m3u8.download.manager
         
         [M(O.AggressiveInlining)] private bool IsInProcessNow( string outputFileName ) => _InProcessNow_OutputFileNamesSet.ContainsWithLock( outputFileName );
 
-        //---[M(O.AggressiveInlining)] private bool IsInProcessNow( string outputFileName ) => _InProcessNow_outputFileName.EqualIgnoreCase( outputFileName );
-        //---private string _InProcessNow_outputFileName;
-        //private void Run_FFmpegTask_Routine__PREV()
-        //{
-        //    while ( true )
-        //    {
-        //        var outputFileName = _OutputFileNamesList.Take();
-        //        _InProcessNow_OutputFileNamesSet.AddWithLock( outputFileName ); //---_InProcessNow_outputFileName = outputFileName;
-        //        var (suc, convertedFileName, error) = Run_FFmpeg( outputFileName );
-        //        _InProcessNow_OutputFileNamesSet.RemoveWithLock( outputFileName ); //---_InProcessNow_outputFileName = null;                
-        //        _OutputFileNamesList.Remove( outputFileName );
-
-        //        if ( suc )
-        //        {
-        //            Raise_FinishSuccessProcessFile( outputFileName, convertedFileName );
-        //        }
-        //        else //if ( error != null )
-        //        {
-        //            Raise_FinishFailProcessFile( outputFileName, convertedFileName, error );
-        //        }
-        //    }
-        //}
         private bool Enter2Semaphore()
         {
         ONE_MORE_TIME_AFTER_TEMP_BREAK:

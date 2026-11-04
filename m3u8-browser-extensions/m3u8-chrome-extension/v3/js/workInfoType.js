@@ -231,5 +231,5 @@ const create_WorkInfoType = stored => {
         return (o?.m3u8_urls ? { m3u8_urls: o.m3u8_urls, requestHeaders: o.requestHeaders || {} } : { m3u8_urls: [], requestHeaders: {} });
     };
 
-    return { save2Storage, toJson, removeEmptyTabs, activateTab, deleteTab, deleteAllUrlsFromTab, deleteUrlFromTab, resetM3u8Urls, addM3u8Urls, getM3u8UrlsByActiveTabId };
+    return { save2Storage, toJson, removeEmptyTabs, activateTab, deleteTab, deleteAllUrlsFromTab, deleteUrlFromTab, resetM3u8Urls, addM3u8Urls, getM3u8UrlsByActiveTabId, setUrlsCountText };
 };

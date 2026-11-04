@@ -1127,7 +1127,7 @@ namespace m3u8.download.manager.ui
                 m3u8FileUrlText = combinedUrl.ToString();
             }
 
-            AddNewDownloadForm.Add( this, _DC, _SC, m3u8FileUrlText, this.requestHeadersEditor.GetRequestHeaders(),
+            AddNewDownloadForm.Add( this.Owner ?? this/*this*/, _DC, _SC, m3u8FileUrlText, this.requestHeadersEditor.GetRequestHeaders(),
             _OutputFileNamePatternProcessor, _ReceivedAndWritedPartsProcessor, seriesInfo: null, _Transitive_FormClosedAction_When_DownloadAdditionalM3u8Url );
         }
         #endregion

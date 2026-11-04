@@ -49,7 +49,7 @@ namespace System.Windows.Forms.Taskbar
             }
         }
 
-        #region IDisposable Members
+        #region [.IDisposable Members.]
         ~TabbedThumbnailProxyWindow() => Dispose( false );
         void IDisposable.Dispose()
         {

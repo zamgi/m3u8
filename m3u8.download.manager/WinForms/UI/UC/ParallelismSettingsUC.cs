@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using m3u8.download.manager.controllers;
-using SETTINGS = m3u8.download.manager.controllers.SettingsPropertyChangeController;
+using SC = m3u8.download.manager.controllers.SettingsPropertyChangeController;
 using B = System.ComponentModel.BrowsableAttribute;
 
 namespace m3u8.download.manager.ui
@@ -22,7 +22,7 @@ namespace m3u8.download.manager.ui
         {
             InitializeComponent();
 
-            maxDegreeOfParallelismNUD.Maximum = SETTINGS.MAX_DEGREE_OF_PARALLELISM;
+            maxDegreeOfParallelismNUD.Maximum = SC.MAX_DEGREE_OF_PARALLELISM;
 
             this.SetForeColor4ParentOnly< GroupBox >( Color.DodgerBlue );
             useMaxCrossDownloadInstanceCheckBox.ForeColor = Color.DodgerBlue;
@@ -55,8 +55,8 @@ namespace m3u8.download.manager.ui
         [B(false)]
         public int  MaxDegreeOfParallelism
         {
-            get => Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, maxDegreeOfParallelismNUD.ValueAsInt32 ) );
-            set => maxDegreeOfParallelismNUD.Value = Math.Min( SETTINGS.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, value ) );
+            get => Math.Min( SC.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, maxDegreeOfParallelismNUD.ValueAsInt32 ) );
+            set => maxDegreeOfParallelismNUD.Value = Math.Min( SC.MAX_DEGREE_OF_PARALLELISM, Math.Max( 1, value ) );
         }
         [B(false)]
         public bool ShareMaxDownloadThreadsBetweenAllDownloadsInstance

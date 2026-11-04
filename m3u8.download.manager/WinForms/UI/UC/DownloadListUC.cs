@@ -1139,29 +1139,6 @@ namespace m3u8.download.manager.ui
                                 return;
                             }
                         }
-
-                        #region comm. prev.
-                        //if ( row.IsLiveStream || useWebProxy )
-                        //{
-                        //    var isLiveStreamRect = GetIsLiveStreamImageRect( DGV.GetCellDisplayRectangle( e.ColumnIndex, e.RowIndex, cutOverflow: true ) );
-                        //    var pt               = DGV.PointToClient( Control.MousePosition );
-
-                        //    if ( row.IsLiveStream )
-                        //    {                        
-                        //        if ( isLiveStreamRect.Contains( pt /*e.Location*/ ) )
-                        //        {
-                        //            ShowCustomToolTip_4_PartOfDGVCellMouseMove( $"Is Live Stream, (max single output file size: {row.GetLiveStreamMaxFileSizeInMb()} mb)", pt );                                    
-                        //            return;
-                        //        }
-                        //        MakeUseWebProxyImageRect( ref isLiveStreamRect );
-                        //    }
-                        //    if ( useWebProxy && isLiveStreamRect.Contains( pt /*e.Location*/ ) )
-                        //    {
-                        //        ShowCustomToolTip_4_PartOfDGVCellMouseMove( $"web proxy -> {row.WebProxyInfo.GetWebProxyAddressText()}", pt );
-                        //        return;
-                        //    }
-                        //}
-                        #endregion
                         break;
 
                     case STATUS_COLUMN_INDEX:
@@ -1369,41 +1346,6 @@ namespace m3u8.download.manager.ui
                     }
                     #endregion 
 
-                    #region comm. prev.
-                    /*
-                    if ( row.IsLiveStream || useWebProxy )
-                    {
-                        const DataGridViewPaintParts BackgroundAndBorder = DataGridViewPaintParts.Background | DataGridViewPaintParts.SelectionBackground | DataGridViewPaintParts.Border;
-
-                        e.Handled = true;
-                        e.PaintEx( BackgroundAndBorder );
-
-                        var cellBounds = e.CellBounds;
-                        var rc_IsLiveStream = GetIsLiveStreamImageRect( e.CellBounds );
-                        var rc_useWebProxy  = rc_IsLiveStream;
-                        if ( row.IsLiveStream && useWebProxy )
-                        {
-                            MakeUseWebProxyImageRect( ref rc_useWebProxy );
-                        }
-
-                        cellBounds.Width = rc_useWebProxy.X - cellBounds.X;
-                        var ee = e.Create( DGV, cellBounds );
-                        ee.PaintEx( DataGridViewPaintParts.All & ~BackgroundAndBorder );
-
-                        if ( row.IsLiveStream )
-                        {
-                            e.Graphics.FillRectangle( Brushes.White, rc_IsLiveStream );
-                            e.Graphics.DrawImage( _Images.LiveStream, rc_IsLiveStream );
-                        }
-                        if ( useWebProxy )
-                        {
-                            e.Graphics.FillRectangle( Brushes.White, rc_useWebProxy );
-                            e.Graphics.DrawImage( _Images.Workgroup, rc_useWebProxy );
-                        }
-                    }
-                    //*/
-                    #endregion 
-
                     //Debug.WriteLine( "DGV_CellPainting::OUTPUTFILENAME_COLUMN_INDEX" );
                     #endregion
                 }
@@ -1493,39 +1435,6 @@ namespace m3u8.download.manager.ui
                             }
                         }
                     }
-                    #endregion
-
-                    #region comm. prev. [.-6.2- draw-check-mark.]
-                    /*
-                    if ( eprt != ExternalProgRunnerTypeEnum.None )
-                    {
-                        const string CHECK_MARK = "\u2713";
-                        const string HOURGLASS  = "\u231B";
-                        const string WATCH      = "\u231A";
-
-                        rc = e.CellBounds;
-                        if ( eprt.HasFlag( ExternalProgRunnerTypeEnum.ExternalProg ) )
-                        { 
-                            gr.DrawString( CHECK_MARK, defCellFont, Brushes.Orange, rc, _SF_Right );
-                            if ( eprt.HasFlag( ExternalProgRunnerTypeEnum.FFmpeg ) ) rc.Width -= SECOND_CHECK_MARK_OFFSET;
-                        }
-
-                        if ( eprt.HasFlag( ExternalProgRunnerTypeEnum.FFmpeg ) )
-                        {
-                            gr.DrawString( CHECK_MARK, defCellFont, Brushes.Green, rc, _SF_Right );
-                        }
-                        else if ( eprt.HasFlag( ExternalProgRunnerTypeEnum.FFmpeg_InProcessInnerQueue ) )
-                        {
-                            rc.Width -= rigthPad;
-                            gr.DrawString( WATCH, defCellFont, Brushes.Green, rc, _SF_Right );
-                        }
-                        else if ( eprt.HasFlag( ExternalProgRunnerTypeEnum.FFmpeg_InProcessNow ) )
-                        {
-                            rc.Width -= rigthPad;
-                            gr.DrawString( HOURGLASS, defCellFont, Brushes.Green, rc, _SF_Right );
-                        }
-                    }
-                    //*/
                     #endregion
                 }
                 break;

@@ -83,12 +83,12 @@ namespace System.Collections.DigitLetterSort
                                 {
                                     if ( int.MaxValue <= d )
                                     {
-                                        //return (Decimal.GetBits( _r ).Max());
+                                        //return (Decimal.GetBits( d ).Max());
                                         return (int.MaxValue);
                                     }
                                     else if ( d <= int.MinValue )
                                     {
-                                        //return (Decimal.GetBits( _r ).Min());
+                                        //return (Decimal.GetBits( d ).Min());
                                         return (int.MinValue);
                                     }
                                     return ((int) d);
@@ -151,63 +151,5 @@ namespace System.Collections.DigitLetterSort
             dict.Add( key, value );
             return (value);
         }
-
-        /*public static IEnumerable< FileViewItem > DigitLetterSortByFullNameAsc( this IEnumerable< FileViewItem > fvis )
-            => fvis.OrderBy< FileViewItem, PartOfString >( fvi => new PartOfString( fvi.FullName ), new PartOfString.Comparer() );
-
-        public static IEnumerable< FileViewItem > DigitLetterSortByFullNameDesc( this IEnumerable< FileViewItem > fvis )
-            => fvis.OrderByDescending< FileViewItem, PartOfString >( fvi => new PartOfString( fvi.FullName ), new PartOfString.Comparer() );
-
-        public static IEnumerable< FileViewItem > DigitLetterSortByNameAsc( this IEnumerable< FileViewItem > fvis )
-            => fvis.OrderBy< FileViewItem, PartOfString >( fvi => new PartOfString( fvi.Name ), new PartOfString.Comparer() );
-
-        public static IEnumerable< FileViewItem > DigitLetterSortByNameDesc( this IEnumerable< FileViewItem > fvis )
-            => fvis.OrderByDescending< FileViewItem, PartOfString >( fvi => new PartOfString( fvi.Name ), new PartOfString.Comparer() );
-        */
-
-        /*/// <summary>
-        /// Digit-Letter sort by short name of IEnumerable&lt; string &gt; 
-        /// </summary>
-        /// <returns>Sorted IEnumerable&lt; string &gt;</returns>
-        public static IEnumerable< string > DigitLetterSort( this IEnumerable< string > values )
-            => values.OrderBy< string, PartOfString >( value => new PartOfString( value ), new PartOfString.Comparer() );
-
-        /// <summary>
-        /// Digit-Letter sort by short name of [FileSystemInfo] 
-        /// </summary>
-        /// <returns>Sorted IEnumerable&lt; FileSystemInfo &gt;</returns>
-        public static IEnumerable< FileSystemInfo > DigitLetterSortByShortName( this IEnumerable< FileSystemInfo > fileSystemInfos )
-            => fileSystemInfos.OrderBy< FileSystemInfo, PartOfString >( fsInfo => new PartOfString( fsInfo.Name ), new PartOfString.Comparer() );
-
-        /// <summary>
-        /// Digit-Letter sort by full name of [FileSystemInfo] 
-        /// </summary>
-        /// <returns>Sorted IEnumerable&lt; FileSystemInfo &gt;</returns>
-        public static IEnumerable< FileSystemInfo > DigitLetterSortByFullName( this IEnumerable< FileSystemInfo > fileSystemInfos )
-            => fileSystemInfos.OrderBy< FileSystemInfo, PartOfString >( fsInfo => new PartOfString( fsInfo.FullName ), new PartOfString.Comparer() );
-
-        /// <summary>
-        /// Digit-Letter sort by short name of [FileSystemInfo] with using [Dictionary] for faster sort with more [FileSystemInfo] (prevent repeatedly create similar obejcts. may be quicker than without him)
-        /// </summary>
-        /// <returns>Sorted IEnumerable&lt; FileSystemInfo &gt;</returns>
-        public static IEnumerable< FileSystemInfo > DigitLetterSortByShortNameAtDictionary( this IEnumerable< FileSystemInfo > fileSystemInfos )
-        {
-            var dict     = new Dictionary< string, PartOfString >();// FileSystemInfos.Count() );
-            var comparer = new PartOfString.Comparer();
-            var result   = fileSystemInfos.OrderBy< FileSystemInfo, PartOfString >( fsi => dict.GetExistsOrAddNewValue( fsi.Name ), comparer );
-            return (result);
-        }
-        /// <summary>
-        /// Digit-Letter sort by full name of [FileSystemInfo] with using [Dictionary] for faster sort with more [FileSystemInfo] (prevent repeatedly create similar obejcts. may be quicker than without him)
-        /// </summary>
-        /// <returns>Sorted IEnumerable&lt; FileSystemInfo &gt;</returns>
-        public static IEnumerable< FileSystemInfo > DigitLetterSortByFullNameAtDictionary( this IEnumerable< FileSystemInfo > fileSystemInfos )
-        {
-            var dict     = new Dictionary< string, PartOfString >();// FileSystemInfos.Count() );
-            var comparer = new PartOfString.Comparer();
-            var result   = fileSystemInfos.OrderBy< FileSystemInfo, PartOfString >( fsi => dict.GetExistsOrAddNewValue( fsi.FullName ), comparer );
-            return (result);
-        }
-        */
     }
 }

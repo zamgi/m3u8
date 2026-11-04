@@ -258,13 +258,6 @@ namespace m3u8.download.manager.models
                     _List.Add( t );
                 }
             }
-            //public void AddRange( IEnumerable< (T move_row, int move_idx) > seq )
-            //{
-            //    foreach ( var t in seq )
-            //    {
-            //        Add( t );
-            //    }
-            //}
             public bool Contains( T t ) => _HS.Contains( t );
 
             public IEnumerator< (T move_row, int move_idx) > GetEnumerator() => _List.GetEnumerator();

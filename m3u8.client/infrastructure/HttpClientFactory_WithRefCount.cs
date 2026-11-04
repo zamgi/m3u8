@@ -59,7 +59,6 @@ namespace m3u8.infrastructure
         }
 
         private static ILRUCache< tuple_t > _LRUCache;
-
         static HttpClientFactory_WithRefCount() => _LRUCache = LRUCache< tuple_t >.CreateWithLimitMaxValue( 0x10, new tuple_t.EqualityComparer() );
 
         /// <summary>
@@ -111,10 +110,7 @@ namespace m3u8.infrastructure
                 set_Protocol( h.SslOptions, SslProtocols.Ssl2  );
                 set_Protocol( h.SslOptions, SslProtocols.Ssl3  );
 #pragma warning restore CS0618
-                if ( _timeout.HasValue )
-                {
-                    h.ConnectTimeout = _timeout.Value;
-                }
+                if ( _timeout.HasValue ) h.ConnectTimeout = _timeout.Value;
                 return (h);
             };
             
@@ -158,10 +154,7 @@ namespace m3u8.infrastructure
                 set_Protocol( h, SslProtocols.Ssl2 );
                 set_Protocol( h, SslProtocols.Ssl3 );
 #pragma warning restore CS0618
-                //if ( _timeout.HasValue )
-                //{
-                //    h.ConnectTimeout = _timeout.Value;
-                //}
+                //if ( _timeout.HasValue ) h.ConnectTimeout = _timeout.Value;
                 return (h);
             };
 

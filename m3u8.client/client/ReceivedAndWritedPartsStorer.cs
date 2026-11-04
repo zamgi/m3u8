@@ -355,40 +355,6 @@ namespace m3u8.client
 
                 restored = (has: true, new_m3u8File, outputFileStreamPosition);
             }
-            #region comm.
-            //if ( outputDirectoryExists && File.Exists( ffn ) )
-            //{
-            //    using ( var sr = File.OpenText( ffn ) )
-            //    {
-            //        var addressTextStored = sr.ReadLine();
-            //        if ( addressTextStored == normalizedAddress )
-            //        {
-            //            var totalPartsCountText = sr.ReadLine();
-            //            if ( int.TryParse( totalPartsCountText, out var totalPartsCount ) && (m3u8File.Parts.Count == totalPartsCount) )
-            //            {
-            //                var lastReceivedAndWritedPartOrderNumberText = sr.ReadLine();
-            //                if ( int.TryParse( lastReceivedAndWritedPartOrderNumberText, out lastReceivedAndWritedPartOrderNumber ) && 
-            //                     (lastReceivedAndWritedPartOrderNumber < m3u8File.Parts.Count) 
-            //                   )
-            //                {
-            //                    var outputFileStreamPositionText = sr.ReadLine();
-            //                    if ( long.TryParse( outputFileStreamPositionText, out outputFileStreamPosition ) && 
-            //                        (outputFileStreamPosition <= outputFileStreamLength) 
-            //                       )
-            //                    {
-            //                        var new_parts = new List< m3u8_part_ts__v2 >( m3u8File.Parts.Count - (lastReceivedAndWritedPartOrderNumber + 1) );
-            //                            new_parts.AddRange( m3u8File.Parts.SkipWhile( p => p.OrderNumber <= lastReceivedAndWritedPartOrderNumber ) );
-            //                        var new_m3u8File = m3u8_file_t__v2.From( m3u8File, new_parts.AsReadOnly() );
-
-            //                        //(new_m3u8File, outputFileStreamPosition)
-            //                        restored = (has: true, new_m3u8File, outputFileStreamPosition);
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-            #endregion
             else
             {
                 lastReceivedAndWritedPartOrderNumber = 0;

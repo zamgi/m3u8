@@ -718,29 +718,6 @@ namespace m3u8.download.manager.ui
             {
                 _NotifyIcon.Visible = false;
             }
-
-            /*
-            if ( isDownloading || any_running() ) 
-            {
-                if ( _NotifyIcon != null ) _NotifyIcon.Visible = false;
-            }
-            else if ( _SC.Settings.ShowAllDownloadsCompleted_Notification )
-            {
-                if ( _NotifyIcon == null )
-                {
-                    _NotifyIcon = new NotifyIcon() { Visible = true, Icon = Resources.m3u8_32x36, Text = _APP_TITLE_ };
-
-                    _NotifyIcon.BalloonTipClicked += _NotifyIcon_BalloonTipClosed;
-                    _NotifyIcon.BalloonTipShown += (_, _) => { _NotifyIcon.BalloonTipClosed -= _NotifyIcon_BalloonTipClosed; _NotifyIcon.BalloonTipClosed += _NotifyIcon_BalloonTipClosed; };
-                }
-                else
-                {
-                    _NotifyIcon.Visible = true;
-                }
-                _NotifyIcon.BalloonTipClosed -= _NotifyIcon_BalloonTipClosed;
-                _NotifyIcon.ShowBalloonTip( 2_500, _APP_TITLE_, Resources.ALL_DOWNLOADS_COMPLETED_NOTIFICATION, ToolTipIcon.Info );
-            }
-            //*/
         }
 
         
@@ -870,28 +847,11 @@ namespace m3u8.download.manager.ui
         }
         private ExternalProgRunnerStatusTypeEnum GetExternalProgRunnerStatus( DownloadRow row )
         {
-            /*
-            var checkMarkType = downloadListUC_GetDrawCheckMarkType( row );
-            var st = checkMarkType switch
-            {
-                CheckMarkTypeEnum.Orange => ExternalProgRunnerStatusTypeEnum.ExternalProg,
-                CheckMarkTypeEnum.Green => ExternalProgRunnerStatusTypeEnum.FFmpeg,
-                CheckMarkTypeEnum.Orange | CheckMarkTypeEnum.Green => ExternalProgRunnerStatusTypeEnum.ExternalProg | ExternalProgRunnerStatusTypeEnum.FFmpeg,
-                CheckMarkTypeEnum.InProcessInnerQueue => ExternalProgRunnerStatusTypeEnum.FFmpeg,
-                CheckMarkTypeEnum.InProcessNow => ExternalProgRunnerStatusTypeEnum.FFmpeg,
-                CheckMarkTypeEnum.None => ExternalProgRunnerStatusTypeEnum.None,
-                _ => throw new ArgumentException( checkMarkType.ToString() )
-            };
-            return (st);
-            //*/
-
-            //*
             var st = ExternalProgRunnerStatusTypeEnum.None;
             var outputFullFileName = row.GetOutputFullFileName();
             if ( _ExternalProgRunner   .Queue.Contains( outputFullFileName ) ) st |= ExternalProgRunnerStatusTypeEnum.ExternalProg;
             if ( _FFmpegConverterRunner.Queue.Contains( outputFullFileName ) ) st |= ExternalProgRunnerStatusTypeEnum.FFmpeg;
             return (st);
-            //*/
         }
 
         /// <summary>
@@ -1001,54 +961,6 @@ namespace m3u8.download.manager.ui
                                 //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
                             }
                         );
-
-                        #region [.parallel.]
-                        /*
-                        var syncCtx = SynchronizationContext.Current;
-                        await Task.Run(() =>
-                        {
-                            Parallel.ForEach( rows, new ParallelOptions() { CancellationToken = cts.Token, MaxDegreeOfParallelism = rows.Length }, row =>
-                            {
-                                using ( var statusTran = _DownloadController.CancelIfInProgress_WithTransaction( row ) )
-                                {
-                                    FileDeleter.TryDeleteFiles( row.GetOutputFullFileNames(), cts.Token );
-                                    statusTran.CommitStatus();
-
-                                    syncCtx.Invoke(() =>
-                                    {
-                                        _DownloadListModel.RemoveRow( row );
-                                        //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
-                                    });
-                                }
-       
-                            });
-                        });
-                        */
-                        #endregion
-
-                        #region comm prev. [.consecutively.]
-                        //await _DownloadController.DeleteRowsWithOutputFiles_Consecutively( rows, cts.Token,
-                        //    (row, ct) => FileDeleter.TryDeleteFiles_Async( row.GetOutputFullFileNames(), ct ),
-                        //    (row) =>
-                        //    {
-                        //        _DownloadListModel.RemoveRow( row );
-                        //        //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
-                        //    }
-                        //);
-
-                        /*foreach ( var row in rows )
-                        {
-                            using ( var statusTran = _DownloadController.CancelIfInProgress_WithTransaction( row ) )
-                            {
-                                await FileDeleter.TryDeleteFiles_Async( row.GetOutputFullFileNames(), cts.Token );
-                                statusTran.CommitStatus();
-
-                                _DownloadListModel.RemoveRow( row );
-                                //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
-                            }
-                        }
-                        //*/
-                        #endregion
                     }
                 }
                 catch ( OperationCanceledException )

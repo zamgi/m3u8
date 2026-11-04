@@ -16,13 +16,6 @@ namespace m3u8.download.manager
     /// </summary>
     internal static partial class Extensions_4_DownloadRow
     {
-        //public static void CancelAll( this DownloadController controller, IEnumerable< DownloadRow > rows )
-        //{
-        //    foreach ( var row in rows )
-        //    {
-        //        controller.Cancel( row );
-        //    }
-        //}
         public static void CancelAll( this DownloadController controller, IEnumerable< DownloadRow > rows )
         {
             foreach ( var row in rows )
@@ -57,33 +50,9 @@ namespace m3u8.download.manager
                                                                                                                (status == DownloadStatus.Running) ||
                                                                                                                (status == DownloadStatus.Wait) ||
                                                                                                                (status == DownloadStatus.Paused);
-        //[M(O.AggressiveInlining)] public static bool IsNotRunning( this DownloadStatus status ) => !status.IsAllowed_CancelDownload();
         [M(O.AggressiveInlining)] public static bool IsAllowed_PauseDownload( this DownloadStatus status ) => (status == DownloadStatus.Started) ||
                                                                                                               (status == DownloadStatus.Running);
         [M(O.AggressiveInlining)] public static bool HasAnyFailedDownloadParts( this DownloadRow row ) => (row.FailedDownloadParts != 0);
-        //[M(O.AggressiveInlining)] public static int? GetIndex4InsertByExistsRowStatus( this DownloadListModel model )
-        //{
-        //    var i = 0;
-        //    var rows = model.GetRows();
-        //    foreach ( var row in rows )
-        //    {
-        //        switch ( row.Status )
-        //        {
-        //            case DownloadStatus.Started:
-        //            case DownloadStatus.Running:
-        //            case DownloadStatus.Wait:
-        //            case DownloadStatus.Paused:
-        //                i++;
-        //                break;
-
-        //            default:
-        //                return (i);
-        //        }
-        //    }
-        //    return (null/*-1*/);
-        //}
-        //[M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_1 t ) => model.AddRow( t, index: model.GetIndex4InsertByExistsRowStatus() );
-        //[M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_2 t ) => model.AddRow( t, index: model.GetIndex4InsertByExistsRowStatus() );
         [M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_1 t ) => model.AddRow( t );
         [M(O.AggressiveInlining)] public static DownloadRow AddInsertRowByExistsRowStatus( this DownloadListModel model, DownloadRow_Definer_2 t ) => model.AddRow( t );
 
@@ -355,32 +324,6 @@ namespace m3u8.download.manager
                         var percent = (totalParts <= (successDownloadParts + failedDownloadParts)) ? 100 : Min( (byte) (100 * suc), 99 );
                         percentText = percent.ToString();
                     }
-                    /*
-                    else
-                    {
-                        switch ( st )
-                        {
-                            case DownloadStatus.Canceled: 
-                                parts        = default;
-                                progressText = null;
-                                return (false);
-
-                            case DownloadStatus.Finished:                                
-                                if ( row.DownloadBytesLength != 0 )
-                                {
-                                    parts        = (0, 0);
-                                    progressText = "100%";
-                                    return (true);
-                                }
-                                goto default;
-
-                            default:
-                                parts       = (0, 0);
-                                percentText = "-";
-                                break;
-                        }
-                    }
-                    //*/
                     else if ( st == DownloadStatus.Canceled ) //not-started
                     {
                         parts        = default;
@@ -468,33 +411,5 @@ namespace m3u8.download.manager
                     return (status.ToString());
             }
         }
-
-        //private static string SPACE_17 = new string(' ', 17);
-        //private static string CellValue_Created          = $"{DownloadStatus_Created}{SPACE_17}";
-        //private static string CellValue_Started          = $"{DownloadStatus_Started}{SPACE_17}";
-        //private static string CellValue_Running          = $"{DownloadStatus_Running}{SPACE_17}";
-        //private static string CellValue_Wait             = $"{DownloadStatus_Wait}{SPACE_17}";
-        //private static string CellValue_Paused           = $"{DownloadStatus_Paused}{SPACE_17}";
-        //private static string CellValue_Canceled         = $"{DownloadStatus_Canceled}{SPACE_17}";
-        //private static string CellValue_Finished         = $"{DownloadStatus_Finished}{SPACE_17}";
-        //private static string CellValue_FinishedReplaced = $"{DownloadStatus_FinishedReplaced}{SPACE_17}";
-        //private static string CellValue_Error            = $"{DownloadStatus_Error}{SPACE_17}";
-        //[M(O.AggressiveInlining)] public static string ToDGVCellValue( this DownloadStatus status )
-        //{
-        //    switch ( status )
-        //    {
-        //        case DownloadStatus.Created         : return (CellValue_Created);
-        //        case DownloadStatus.Started         : return (CellValue_Started);
-        //        case DownloadStatus.Running         : return (CellValue_Running);
-        //        case DownloadStatus.Wait            : return (CellValue_Wait);
-        //        case DownloadStatus.Paused          : return (CellValue_Paused);
-        //        case DownloadStatus.Canceled        : return (CellValue_Canceled);
-        //        case DownloadStatus.Finished        : return (CellValue_Finished);
-        //        case DownloadStatus.FinishedReplaced: return (CellValue_FinishedReplaced);
-        //        case DownloadStatus.Error           : return (CellValue_Error);
-        //        default: 
-        //            return (status.ToString() + SPACE_17);
-        //    }
-        //}
     }
 }

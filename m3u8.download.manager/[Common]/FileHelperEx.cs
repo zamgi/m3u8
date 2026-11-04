@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-
-#if !(WINDOWS)
-using System.Diagnostics;
-#endif
 using System.IO;
 using System.Linq;
 #if WINDOWS

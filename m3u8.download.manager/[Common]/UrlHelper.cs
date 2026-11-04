@@ -64,27 +64,6 @@ namespace m3u8.download.manager
             (webProxyInfo, error) = (/*default*/web_proxy_info.Empty, default);
             return (false);
         }
-        //public static bool TryCreateWebProxyInfo( WebProxyUrlEnumType? urlType, string hostname, int? port, bool use, out web_proxy_info webProxyInfo )
-        //{
-        //    var suc = urlType.HasValue && !hostname.IsNullOrWhiteSpace();
-        //    webProxyInfo = new web_proxy_info()
-        //    { 
-        //        Hostname    = hostname,
-        //        Port        = port,
-        //        UrlType     = urlType.GetValueOrDefault(),
-        //        UseWebProxy = use,
-        //    };
-        //    return (suc);
-        //}
-        //public static string GetWebProxyAddressText( this in (web_proxy_info webProxyInfo, Exception error) res )
-        //{
-        //    if ( (res.webProxyInfo.Url == null) || (res.error != null) || res.webProxyInfo.Hostname.IsNullOrEmpty() )
-        //    {
-        //        return (null);
-        //    }
-
-        //    return (res.webProxyInfo.GetWebProxyAddressText());
-        //}
 
         public static bool TryParseHostnameAndPort( string hostnameAndPortRaw, out (string Hostname, int? Port, Exception Error) t, bool ignorePortErrors = true )
         {
@@ -137,26 +116,6 @@ namespace m3u8.download.manager
             t = default;
             return (false);
         }
-
-        //private static bool TryParseUri( string addressRaw, out string address, out int port )
-        //{
-        //    if ( Uri.TryCreate( addressRaw, UriKind.RelativeOrAbsolute, out var uri ) )
-        //    {
-        //        try
-        //        {
-        //            address = uri.Host;
-        //            port = uri.Port;
-        //            return (true);
-        //        }
-        //        catch ( Exception ex )
-        //        {
-        //            Debug.WriteLine( ex );
-        //        }
-        //    }
-        //    address = default;
-        //    port = default;
-        //    return (false);
-        //}
 
         public static bool IsLookLikeM3u8Url( string text )
         {

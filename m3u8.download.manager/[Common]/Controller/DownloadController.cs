@@ -676,25 +676,6 @@ namespace m3u8.download.manager.controllers
                                     logRow.SetAttemptRequestNumber( p.AttemptRequestNumber );
                                 }
                             }
-                            #region comm. prev.
-                            /*
-                            if ( raiseRowPropertiesChangedEvent && rows_Dict.TryGetValue( p.Part.OrderNumber, out var logRow ) )
-                            {
-                                if ( p.Part.Error != null )
-                                {
-                                    rows_Dict.Remove( p.Part.OrderNumber );
-                                    anyErrorHappend = true;
-                                    logRow.SetResponseError( p.Part.Error.ToString(), p.AttemptRequestNumber );
-                                }
-                                else
-                                {
-                                    var msg = p.TotalContentLength.HasValue ? $"{Extensions.GetSizeFormatted( p.TotalBytesReaded )} of {Extensions.GetSizeFormatted( p.TotalContentLength.Value )}" 
-                                                                               : Extensions.GetSizeFormatted( p.TotalBytesReaded );
-                                    logRow.SetResponse( msg, p.AttemptRequestNumber );
-                                }
-                            }
-                            //*/
-                            #endregion
                         });
                         var waitingIfPausedBefore = new Action( () =>
                         {

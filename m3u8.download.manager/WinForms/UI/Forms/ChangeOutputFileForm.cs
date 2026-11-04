@@ -15,7 +15,6 @@ namespace m3u8.download.manager.ui
     internal sealed partial class ChangeOutputFileForm : Form
     {
         #region [.field's.]
-        //---private FileNameCleaner4UI.Processor _FNCP;
         private _SC_ _SC;
         #endregion
 
@@ -39,22 +38,17 @@ namespace m3u8.download.manager.ui
         public ChangeOutputFileForm()
         {
             InitializeComponent();
-            //---_FNCP = new FileNameCleaner4UI.Processor( outputFileNameComboBox, () => this.OutputFileName, outputFileName => this.OutputFileName = outputFileName );
         }
         internal ChangeOutputFileForm( DownloadRow row, _SC_ sc ) : this()
         {
             (Row, this.OutputFileName) = (row, row.OutputFileName);
             _SC = sc;
-
-            //---set_outputFileNameComboBox_Selection_Position( this.OutputFileName );
-            //---_FNCP.FileNameTextBox_TextChanged( outputFileName => set_outputFileNameComboBox_Selection_Position( outputFileName ) );
         }
         protected override void Dispose( bool disposing )
         {
             if ( disposing )
             {
                 components?.Dispose();
-                //---_FNCP.Dispose(); //CancelAndDispose_Cts_outputFileNameTextBox_TextChanged();
             }
             base.Dispose( disposing );
         }
@@ -147,7 +141,6 @@ namespace m3u8.download.manager.ui
         private void cancelButton_Click( object sender, EventArgs e ) => this.Close();
 
         private void outputFileNameComboBox_ClearButtonClick( object sender, EventArgs e ) => outputFileNameComboBox.Focus();
-        //---private void outputFileNameComboBox_TextChanged( object sender, EventArgs e ) => _FNCP.FileNameTextBox_TextChanged();
 
         private void set_outputFileNameComboBox_Selection_Position( string outputFileName )
         {

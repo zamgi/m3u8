@@ -106,7 +106,6 @@ namespace m3u8
         private Dictionary< string, PartUrlStatusEnum >  _PartUrlsStatus;
         private I_ThrottlerBySpeed_InDownloadProcessUser _ThrottlerBySpeed_User;
 
-        //protected m3u8_live_stream_downloader_base( in i_m3u8_live_stream_downloader.InitParams ip ) : this( null, ip ) { }
         protected m3u8_live_stream_downloader_base( TInvoker httpInvoker, in i_m3u8_live_stream_downloader.InitParams ip )
         {
             M3u8Url        = ip.M3u8Url        ?? throw (new ArgumentNullException( nameof(ip.M3u8Url) ));
@@ -223,10 +222,7 @@ namespace m3u8
                 set_Protocol( h.SslOptions, SslProtocols.Ssl2 );
                 set_Protocol( h.SslOptions, SslProtocols.Ssl3 );
 #pragma warning restore CS0618
-                if ( _timeout.HasValue )
-                {
-                    h.ConnectTimeout = _timeout.Value;
-                }
+                if ( _timeout.HasValue ) h.ConnectTimeout = _timeout.Value;
                 return (h);
             };
 
@@ -260,10 +256,7 @@ namespace m3u8
                 set_Protocol( h, SslProtocols.Ssl2 );
                 set_Protocol( h, SslProtocols.Ssl3 );
 #pragma warning restore CS0618
-                //if ( _timeout.HasValue )
-                //{
-                //    h.ConnectTimeout = _timeout.Value;
-                //}
+                //if ( _timeout.HasValue ) h.ConnectTimeout = _timeout.Value;
                 return (h);
             };
 
@@ -278,8 +271,6 @@ namespace m3u8
         private Task RunDownloadContent( string m3u8_url, IDictionary< string, string > requestHeaders, CancellationToken ct, int milliseconds_delay )
             => Task.Run( async () =>
             {
-                //var debug_hs = new HashSet< string >();
-
                 for ( var hs = new HashSet< string >(); !ct.IsCancellationRequested; )
                 {
                     WaitIfPaused( ct );
@@ -299,8 +290,6 @@ namespace m3u8
                             {
                                 if ( _PartUrlsStatus.TryAddWithLock( p, PartUrlStatusEnum.Queueed ) )
                                 {
-                                    //var suc = debug_hs.Add( p ); Debug.Assert( suc );
-
                                     _PartUrls.Add( p, ct );
                                     _IP.DownloadContent?.Invoke( p );
                                     new_parts++;
@@ -409,7 +398,6 @@ namespace m3u8
                 using var fs = new FileStream( output_file_name, FileMode.Create, FileAccess.Write, FileShare.Read );
                 _IP.DownloadCreateOutputFile?.Invoke( output_file_name );
 
-                //var debug_lst = new List< string >();
                 long totalBytes = 0;
                 var fi = new FileInfo( output_file_name );
                 for ( var n = 0; !ct.IsCancellationRequested; )
@@ -425,7 +413,6 @@ namespace m3u8
 
                     try
                     {
-                        //debug_lst.Add( p );
                         Debug.WriteLine( p );
                         using var x = await GetStreamAsync_Ex( part_url, requestHeaders, ct ).CAX();
                         await x.Stream.CopyToAsync( fs, bufferSize: 81920, ct ).CAX();
