@@ -953,13 +953,13 @@ namespace m3u8.download.manager.ui
                     using ( var cts = new CancellationTokenSource() )
                     using ( WaitBannerUC.Create( this, cts, "delete files...", visibleDelayInMilliseconds: 2_000 ) )
                     {
-                        await _DC.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token,
+                        await _DC.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows,
                             (row, ct) => FileHelperEx.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
                             (row) =>
                             {
                                 _DownloadListModel.RemoveRow( row );
                                 //---_ExternalProgQueue.Remove( row.GetOutputFullFileNames() );
-                            }
+                            }, cts.Token
                         );
                     }
                 }
@@ -1138,7 +1138,7 @@ namespace m3u8.download.manager.ui
                 downloadListUC.Visible = true;
             }
         }
-        private bool RefreshOutputFileSize( DownloadRow row )
+        private static bool RefreshOutputFileSize( DownloadRow row )
         {
             if ( !row.Status.IsAllowed_CancelDownload()/*IsNotRunning*/
                 && FileHelperEx.TryGetFileSize( row.GetOutputFullFileName(), out var size ) )

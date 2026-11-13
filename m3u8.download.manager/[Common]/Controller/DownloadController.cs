@@ -354,7 +354,7 @@ namespace m3u8.download.manager.controllers
         }
         [M(O.AggressiveInlining)] private void Fire_IsDownloadingChanged()
         {
-            var isDownloading = (_Dict.Count != 0);
+            var isDownloading = !_Dict.IsEmpty; //(_Dict.Count != 0);
             if ( !isDownloading )
             {
                 _DownloadThreadsSemaphoreFactory.ReleaseAll();
@@ -518,7 +518,7 @@ namespace m3u8.download.manager.controllers
         public event IsDownloadingChangedEventHandler IsDownloadingChanged;
 
         public DownloadListModel Model { get => _Model; }
-        public bool IsDownloading { [M(O.AggressiveInlining)] get => (_Dict.Count != 0); }
+        public bool IsDownloading { [M(O.AggressiveInlining)] get => !_Dict.IsEmpty/*(_Dict.Count != 0)*/; }
         #endregion
 
         #region [.public methods.]
@@ -1138,7 +1138,7 @@ namespace m3u8.download.manager.controllers
 
                 return (new Result() { tuples = tuples, statuses = hs });
             }
-            private static async Task WaitAll_For_NotHas_Status( Result pr, CancellationToken ct, int millisecondsDelay, int? totalMillisecondsTimeout )
+            private static async Task WaitAll_For_NotHas_Status( Result pr, int millisecondsDelay, int? totalMillisecondsTimeout, CancellationToken ct )
             {
                 await Task.Run( /*async*/ () =>
                 {
@@ -1172,7 +1172,7 @@ namespace m3u8.download.manager.controllers
                 var pr = PausedAll_ByStatus_GetThem( _Dict, DownloadStatus.Started, DownloadStatus.Running );
 
                 //-2-//
-                await WaitAll_For_NotHas_Status( pr, _Ct, millisecondsDelay, totalMillisecondsTimeout ).CAX();
+                await WaitAll_For_NotHas_Status( pr, millisecondsDelay, totalMillisecondsTimeout, _Ct ).CAX();
 
                 return (pr.tuples);
             }
@@ -1208,9 +1208,9 @@ namespace m3u8.download.manager.controllers
         #endregion
 
         #region [.Delete rows with output-files.]
-        public Task DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( IReadOnlyList< DownloadRow > rows, CancellationToken ct, 
+        public Task DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( IReadOnlyList< DownloadRow > rows, 
             Action< DownloadRow, CancellationToken > deleteFilesAction, 
-            Action< DownloadRow > afterSuccesDeleteAction )
+            Action< DownloadRow > afterSuccesDeleteAction, CancellationToken ct )
         {
             var syncCtx = SynchronizationContext.Current;
             var delete_task = Task.Run(() =>
@@ -1225,12 +1225,12 @@ namespace m3u8.download.manager.controllers
                         syncCtx.Invoke(() => afterSuccesDeleteAction( row ));
                     }
                 });
-            });
+            }, ct );
             return (delete_task);
         }
-        public async Task DeleteRowsWithOutputFiles_Consecutively( DownloadRow[] rows, CancellationToken ct,
+        public async Task DeleteRowsWithOutputFiles_Consecutively( DownloadRow[] rows,
             Func< DownloadRow, CancellationToken, Task > deleteFilesAction, 
-            Action< DownloadRow > afterSuccesDeleteAction )
+            Action< DownloadRow > afterSuccesDeleteAction, CancellationToken ct )
         {
             foreach ( var row in rows )
             {

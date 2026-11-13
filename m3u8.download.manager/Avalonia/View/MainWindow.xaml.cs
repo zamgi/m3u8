@@ -653,7 +653,7 @@ namespace m3u8.download.manager.ui
                 if ( XZ_LEN < title.Length )
                 {
                     var i = title.IndexOf( ' ', XZ_LEN );
-                    if ( i != -1 ) title = title.Substring( 0, i ) + '\n' + title.Substring( i + 1 );
+                    if ( i != -1 ) title = string.Concat( title.AsSpan( 0, i ), "\n", title.AsSpan( i + 1 ) ); //---title.Substring( 0, i ) + '\n' + title.Substring( i + 1 );
                 }
                 #endregion
                 var notification = new Notification( title/*GET_APP_TITLE()*/, _Resources_.ALL_DOWNLOADS_COMPLETED_NOTIFICATION, NotificationType.Information, TimeSpan.FromSeconds( 2_500 ),
@@ -827,9 +827,9 @@ namespace m3u8.download.manager.ui
                     using ( var cts = new CancellationTokenSource() )
                     using ( WaitBannerForm.CreateAndShow( this, cts, visibleDelayInMilliseconds: 2_000 ) )
                     {
-                        await _VM.DownloadController.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows, cts.Token,
+                        await _VM.DownloadController.DeleteRowsWithOutputFiles_Parallel_UseSynchronizationContext( rows,
                             (row, ct) => FileHelperEx.TryDeleteFiles( row.GetOutputFullFileNames(), ct ),
-                            (row) => _VM.DownloadListModel.RemoveRow( row ) 
+                            (row) => _VM.DownloadListModel.RemoveRow( row ), cts.Token 
                         );
                     }
                 }
@@ -970,7 +970,7 @@ namespace m3u8.download.manager.ui
                 downloadListUC.IsVisible = true;
             }
         }
-        private bool RefreshOutputFileSize( DownloadRow row )
+        private static bool RefreshOutputFileSize( DownloadRow row )
         {
             if ( !row.Status.IsAllowed_CancelDownload()/*IsNotRunning*/
                 && FileHelperEx.TryGetFileSize( row.GetOutputFullFileName(), out var size ) )
@@ -1364,7 +1364,7 @@ namespace m3u8.download.manager.ui
             var rows = downloadListUC.GetSelectedDownloadRows();
             if ( rows.Any() )
             {
-                var first_row = rows.First();
+                var first_row = rows[ 0 ];
                 var descr = (rows.Count == 1) ? $"Select output directory for file: '{first_row.OutputFileName}'" : $"Select output directory for ({rows.Count}) files";
 
                 var sf = await this.StorageProvider.OpenFolderPickerAsync( new FolderPickerOpenOptions()
